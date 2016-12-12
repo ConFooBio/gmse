@@ -1,4 +1,4 @@
-
+dyn.load('resource.so') # Just keep this here for now.
 
 RESOURCE_t <- NULL;
 RESOURCE_1 <- 100;
