@@ -1,3 +1,3 @@
-resources <- function(RESOURCE_1) {
-    .Call("resources", RESOURCE_1)
+resource <- function(RESOURCE_1) {
+    .Call("resource", RESOURCE_1)
 }
