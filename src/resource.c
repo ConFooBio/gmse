@@ -17,12 +17,12 @@ SEXP resource(SEXP RESOURCE_1, SEXP RESOURCE_2, SEXP LANDSCAPE){
     int protected_n;
     int *dim_RESOURCE_1;
     int *dim_LANDSCAPE;
-    double *R_ptr_1;
+    double *R_ptr_1;      /* These pointers need to be doubles for R to C */
     double *R_ptr_1_new;
     double *land_ptr;
-    int **individuals_old_1;
-    int **individuals_new_1;
-    int **land;
+    double **individuals_old_1;
+    double **individuals_new_1;
+    double **land;
     int vec_pos;
 
     /* First take care of all the reading in of code from R to C */
@@ -60,6 +60,7 @@ SEXP resource(SEXP RESOURCE_1, SEXP RESOURCE_2, SEXP LANDSCAPE){
         land[xloc] = malloc(land_y * sizeof(int));   
     } /* LANDSCAPE is now stored as land */
     
+    /* Do the biology here now */
     
     
         
@@ -91,7 +92,7 @@ SEXP resource(SEXP RESOURCE_1, SEXP RESOURCE_2, SEXP LANDSCAPE){
     vec_pos = 0;
     for(trait=0; trait<trait_number_1; trait++){
         for(individual=0; individual<individuals_total_1; individual++){
-            R_ptr_1_new[vec_pos] = individuals_new_1[individual][trait] + 10;
+            R_ptr_1_new[vec_pos] = individuals_new_1[individual][trait] + 5.5;
             vec_pos++;
         }
     }            
