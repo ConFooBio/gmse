@@ -8,12 +8,14 @@
 #' -- i.e., 'agent-based' -- models are allowed)
 #'@return Data frame of Resource 2 at the end of the time step
 #'@export
-resource <- function(RESOURCES, model = "IBM") {
+resource <- function(RESOURCE_1, RESOURCE_2, LANDSCAPE, model = "IBM") {
+    if(missing(RESOURCE_1)){
+        stop("Need at least one resource");   
+    }
     new_resource <- NULL;
     if(model == "IBM"){
-        resource_quantities <- length(RESOURCES);
-        if(resource_quantities == 1){
-            new_resource <- .Call("resource", RESOURCE_1);
+        if(missing(RESOURCE_2)){
+            new_resource <- .Call("resource", RESOURCE_1, -1, LANDSCAPE);
         }else{
             stop("Cannot yet model >1 resource in an IBM");   
         }

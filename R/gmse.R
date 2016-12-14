@@ -21,17 +21,20 @@ LANDSCAPE  <- make_landscape( model      = pop_model,
                             );
 
 # Set the starting conditions for one resource
-starting_cond <- initialise( model               = pop_model, 
-                             resource_quantity_1 = RESOURCE_1_ini,
-                             rows                = land_dim_1,
-                             cols                = land_dim_2
-                           );
+starting_cond_1 <- initialise( model               = pop_model, 
+                               resource_quantity_1 = RESOURCE_1_ini,
+                               rows                = land_dim_1,
+                               cols                = land_dim_2
+                             );
 
 
 RESOURCE_REC <- NULL;
-RESOURCES    <- starting_cond;
+RESOURCE_1   <- starting_cond_1;
 while(time < time_max){
-   RESOURCE_NEW  <- resource(RESOURCES, model=pop_model);
+   RESOURCE_NEW  <- resource(RESOURCE_1 = RESOURCE_1,
+                             LANDSCAPE  = LANDSCAPE,
+                             model      = "IBM"
+                             );
    RESOURCES     <- RESOURCE_NEW;
    RESOURCE_REC  <- rbind(RESOURCE_REC[[1]], RESOURCE_NEW[[1]]);
    time <- time + 1;
