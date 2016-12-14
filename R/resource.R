@@ -8,20 +8,19 @@
 #' -- i.e., 'agent-based' -- models are allowed)
 #'@return Data frame of Resource 2 at the end of the time step
 #'@export
-resource <- function(RESOURCE_1, RESOURCE_2, LANDSCAPE, model = "IBM") {
-    if(missing(RESOURCE_1)){
-        stop("Need at least one resource");   
-    }
-    new_resource <- NULL;
+resource <- function(resource_1, resource_2, landscape, paras, model = "IBM") {
+    check_model <- 0;
     if(model == "IBM"){
-        if(missing(RESOURCE_2)){
-            new_resource <- .Call("resource", RESOURCE_1, -1, LANDSCAPE);
-        }else{
-            stop("Cannot yet model >1 resource in an IBM");   
-        }
+        RESOURCE_OUT <- run_resource_a( RESOURCE_1_c = resource_1,
+                                        LANDSCAPE_c  = landscape);
+        check_model <- 1;
     }
-    if( is.null(new_resource) ){
+    if(check_model == 0){
         stop("Invalid model selected (Must be 'IBM')");
     }
-    return(new_resource);
+    return(RESOURCE_OUT);
+}
+
+run_resource_a <- function(RESOURCE_1_c, LANDSCAPE_c){
+    .Call("resource", RESOURCE_1_c, LANDSCAPE_c);
 }
