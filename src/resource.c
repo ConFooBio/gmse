@@ -3,7 +3,7 @@
 #include <Rinternals.h>
 #include <Rmath.h>
 
-
+/* This function just adds a time step to the relevant individual column */
 void add_time(double **res_adding, int time_trait, int rows, int time_para){
     int resource;
     
@@ -12,6 +12,7 @@ void add_time(double **res_adding, int time_trait, int rows, int time_para){
     }
 }
 
+/* This function moves individuals on the landscape according to some rules */
 void mover(double **res_moving, int xloc, int yloc, int move_para, int rows){
     
     int res_num;      /* Resource number index    */
