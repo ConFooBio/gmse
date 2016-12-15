@@ -3,30 +3,31 @@
 #include <Rinternals.h>
 #include <Rmath.h>
 
-void mover(double **inds_moving, int xloc, int yloc, int move_para, int rows){
+void mover(double **res_moving, int xloc, int yloc, int move_para, int rows){
     
-    int individual;
-    int move_len, move_dir;
-    double rand_uni;
+    int res_num;      /* Resource number index    */
+    int move_len;     /* Length of a move         */
+    int move_dir;     /* Move direction (-1 or 1) */
+    double rand_uni;  /* Randum uniform number    */
     
-    for(individual=0; individual < rows; individual++){
-        /* Move first in the xloc direction -------------------------------- */
+    for(res_num=0; res_num < rows; res_num++){
+        /* Move first in the xloc direction --------------------------------- */
         rand_uni = 0.0;
-        do{ /* On the very of chance that runif selects zero exactly */
-            rand_uni  = runif(-1, 1); /* Rand uni between -1 and 2 */
+        do{ /* On the very off chance that runif selects zero exactly */
+            rand_uni  = runif(-1, 1); /* Rand uni between -1 and 1 */
         } while(rand_uni == 0.0);
-        if(rand_uni > 0){
+        if(rand_uni > 0){  /* Below assigns a sign to move_dir */
             move_dir = 1;
         }else{
             move_dir = -1;
         }
         rand_uni = 1.0;
-        do{ /* Again, just to make sure the individual never moves too far */
+        do{ /* Again, just to make sure the res_num never moves too far */
             rand_uni = runif(0, 1);
         } while(rand_uni == 1.0);
-        move_len = floor( rand_uni * (inds_moving[individual][move_para] + 1) );
-        inds_moving[individual][xloc] += (move_dir * move_len); 
-        /* Move next in the yloc direction --------------------------------- */
+        move_len = floor( rand_uni * (res_moving[res_num][move_para] + 1) );
+        res_moving[res_num][xloc] += (move_dir * move_len); /* x change added */
+        /* Move next in the yloc direction ---------------------------------- */
         rand_uni = 0.0;
         do{ /* On the very of chance that runif selects zero exactly */
             rand_uni  = runif(-1, 1); /* Rand uni between -1 and 1 */
@@ -37,71 +38,72 @@ void mover(double **inds_moving, int xloc, int yloc, int move_para, int rows){
             move_dir = -1;
         }
         rand_uni = 1.0;
-        do{ /* Again, just to make sure the individual never moves too far */
+        do{ /* Again, just to make sure the res_num never moves too far */
             rand_uni = runif(0, 1);
         } while(rand_uni == 1.0);
-        move_len = floor( rand_uni * (inds_moving[individual][move_para] + 1) );
-        inds_moving[individual][yloc] += (move_dir * move_len);
+        move_len = floor( rand_uni * (res_moving[res_num][move_para] + 1) );
+        res_moving[res_num][yloc] += (move_dir * move_len); /* y change added */
     }
 }
 
-/* Just add a number by two to test */
-/* TODO: Arguments: RESOURCE_1, RESOURCE_2, VECTOR_OF_PARAMETER_VALUES */
-SEXP resource(SEXP RESOURCE_1, SEXP LANDSCAPE){
+/* TODO: Argument: VECTOR_OF_PARAMETER_VALUES */
+SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE){
  
     /* SOME STANDARD DECLARATIONS OF KEY VARIABLES AND POINTERS               */
     /* ====================================================================== */
-    int xloc, yloc;
-    int land_x, land_y;
-    int individual;
-    int trait;
-    int individual_number_1, trait_number_1;
-    int individuals_added_1, individuals_total_1;
-    int protected_n;
-    int vec_pos;
-    int *dim_RESOURCE_1;
-    int *dim_LANDSCAPE;
-    double *R_ptr_1;      /* These pointers need to be doubles for R to C */
-    double *R_ptr_1_new;
-    double *land_ptr;
-    double **individuals_old_1;
-    double **individuals_new_1;
-    double **land;
+    int xloc, yloc;          /* x and y locations in the RESOURCE array */ 
+    int land_x, land_y;      /* x and y maximum location given LANDSCAPE */
+    int resource;            /* Index for resource (rows of RESOURCE) */
+    int trait;               /* Index for resource traits (cols of RESOURCE) */
+    int res_number;          /* Number of resources included (default = 1) */
+    int trait_number;        /* Number of traits included */
+    int res_nums_added;      /* Number of resources to be added */
+    int res_num_total;       /* Total number of resources in returned array */
+    int protected_n;         /* Number of protected R objects */
+    int vec_pos;             /* Vector position for making arrays */
+    int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
+    int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
+    double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
+    double *R_ptr_new;       /* Pointer to RESOURCE_NEW (interface R and C) */
+    double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
+    double **res_old;        /* Array to store the old RESOURCE in C */
+    double **res_new;        /* Array to store the new RESOURCE in C */
+    double **land;           /* Array to store the landscape in C*/
 
     /* First take care of all the reading in of code from R to C */
     /* ====================================================================== */
 
     protected_n = 0;
     
-    PROTECT( RESOURCE_1 = AS_NUMERIC(RESOURCE_1) );
+    PROTECT( RESOURCE = AS_NUMERIC(RESOURCE) );
     protected_n++;
-    R_ptr_1 = REAL(RESOURCE_1);
+    R_ptr = REAL(RESOURCE);
     
     PROTECT( LANDSCAPE = AS_NUMERIC(LANDSCAPE) );
     protected_n++;
     land_ptr = REAL(LANDSCAPE);
     
-    dim_RESOURCE_1 = INTEGER( GET_DIM(RESOURCE_1) );
+    dim_RESOURCE = INTEGER( GET_DIM(RESOURCE) );
     dim_LANDSCAPE  = INTEGER( GET_DIM(LANDSCAPE) );
     
     /* The C code for the model itself falls under here */
     /* ====================================================================== */
     
-    /* Code below remakes the RESOURCE_1 matrix for easier use */
-    individual_number_1 = dim_RESOURCE_1[0];
-    trait_number_1      = dim_RESOURCE_1[1];
-    individuals_old_1   = malloc(individual_number_1 * sizeof(double *));
-    for(individual = 0; individual < individual_number_1; individual++){
-        individuals_old_1[individual] = malloc(trait_number_1 * sizeof(double));   
+    /* Code below remakes the RESOURCE matrix for easier use */
+    res_number        = dim_RESOURCE[0];
+    trait_number      = dim_RESOURCE[1];
+    res_old   = malloc(res_number * sizeof(double *));
+    for(resource = 0; resource < res_number; resource++){
+        res_old[resource] = malloc(trait_number * sizeof(double));   
     } 
     vec_pos = 0;
-    for(trait = 0; trait < trait_number_1; trait++){
-        for(individual = 0; individual < individual_number_1; individual++){
-            individuals_old_1[individual][trait] = R_ptr_1[vec_pos];
+    for(trait = 0; trait < trait_number; trait++){
+        for(resource = 0; resource < res_number; resource++){
+            res_old[resource][trait] = R_ptr[vec_pos];
             vec_pos++;
         }
     }
-    /* RESOURCE_1 is now stored as individuals_old_1 (discrete resources) */
+    /* RESOURCE is now stored as res_old (discrete resources) */
 
     /* Code below reads in the LANDSCAPE for easy of use */
     land_y = dim_LANDSCAPE[0];
@@ -112,47 +114,46 @@ SEXP resource(SEXP RESOURCE_1, SEXP LANDSCAPE){
     } /* LANDSCAPE is now stored as land */
     
     /* Do the biology here now */
+    /* ====================================================================== */
     
-    /* Individuals move according to move function and parameter) */
-    mover(individuals_old_1, 1, 2, 3, individual_number_1); 
-    
-    
-    
+    /* Resources move according to move function and parameter) */
+    mover(res_old, 2, 3, 4, res_number); 
     
     
-    individuals_added_1 = 0; /* TODO: Add a birth function here */
-    individuals_total_1 = individual_number_1 + individuals_added_1;
+    
+    
+    
+    res_nums_added = 0; /* TODO: Add a birth function here */
+    res_num_total  = res_number + res_nums_added;
 
-    /* Below makes a new array for new Resource_1, then adds it */
-    individuals_new_1 = malloc(individuals_total_1 * sizeof(double *));
-    for(individual = 0; individual < individuals_total_1; individual++){
-        individuals_new_1[individual] = malloc(trait_number_1 * sizeof(double));   
+    /* Below makes a new array for new RESOURCE, then adds it */
+    res_new = malloc(res_num_total * sizeof(double *));
+    for(resource = 0; resource < res_num_total; resource++){
+        res_new[resource] = malloc(trait_number * sizeof(double));   
     }    
     
-    /* TODO: Loop first through all retained individuals, then new ones */
+    /* TODO: Loop first through all retained res_nums, then new ones */
     /* Will need some more complex rules for the below -- these loops will */
-    /* eventually paste every individual together that makes it out */
-    for(trait=0; trait<trait_number_1; trait++){
-        for(individual=0; individual<individuals_total_1; individual++){
-            individuals_new_1[individual][trait] = 
-                individuals_old_1[individual][trait];
+    /* eventually paste every res_num together that makes it out */
+    for(trait=0; trait<trait_number; trait++){
+        for(resource=0; resource<res_num_total; resource++){
+            res_new[resource][trait] = res_old[resource][trait];
         }
     }
     
     /* This code switches from C back to R */
     /* ====================================================================== */        
     
-    SEXP RESOURCE_1_NEW;
-    PROTECT( RESOURCE_1_NEW = allocMatrix(REALSXP, individuals_total_1, 
-                                          trait_number_1) );
+    SEXP RESOURCE_NEW;
+    PROTECT( RESOURCE_NEW = allocMatrix(REALSXP, res_num_total, trait_number) );
     protected_n++;
     
-    R_ptr_1_new = REAL(RESOURCE_1_NEW);
+    R_ptr_new = REAL(RESOURCE_NEW);
 
     vec_pos = 0;
-    for(trait=0; trait<trait_number_1; trait++){
-        for(individual=0; individual<individuals_total_1; individual++){
-            R_ptr_1_new[vec_pos] = individuals_new_1[individual][trait];
+    for(trait=0; trait<trait_number; trait++){
+        for(resource=0; resource<res_num_total; resource++){
+            R_ptr_new[vec_pos] = res_new[resource][trait];
             vec_pos++;
         }
     }            
@@ -161,17 +162,17 @@ SEXP resource(SEXP RESOURCE_1, SEXP LANDSCAPE){
     UNPROTECT(protected_n);
     
     /* Free all of the allocated memory used in arrays */
-    for(individual = 0; individual < individual_number_1; individual++){
-        free(individuals_old_1[individual]);
+    for(resource = 0; resource < res_number; resource++){
+        free(res_old[resource]);
     } 
-    for(individual = 0; individual < individuals_total_1; individual++){
-        free(individuals_new_1[individual]);
+    for(resource = 0; resource < res_num_total; resource++){
+        free(res_new[resource]);
     }
     for(xloc = 0; xloc < land_x; xloc++){
         free(land[xloc]);        
     }
     
-    return(RESOURCE_1_NEW); 
+    return(RESOURCE_NEW); 
 }
 
           
