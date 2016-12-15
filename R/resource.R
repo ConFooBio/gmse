@@ -13,8 +13,9 @@
 resource <- function(resource, landscape, paras, model = "IBM") {
     check_model <- 0;
     if(model == "IBM"){
-        RESOURCE_OUT <- run_resource_a( RESOURCE_c = resource,
-                                        LANDSCAPE_c  = landscape);
+        RESOURCE_OUT <- run_resource_a( RESOURCE_c   = resource,
+                                        LANDSCAPE_c  = landscape,
+                                        PARAMETERS_c = paras);
         check_model <- 1;
     }
     if(check_model == 0){
@@ -23,6 +24,6 @@ resource <- function(resource, landscape, paras, model = "IBM") {
     return(RESOURCE_OUT);
 }
 
-run_resource_a <- function(RESOURCE_c, LANDSCAPE_c){
-    .Call("resource", RESOURCE_c, LANDSCAPE_c);
+run_resource_a <- function(RESOURCE_c, LANDSCAPE_c, PARAMETERS_c){
+    .Call("resource", RESOURCE_c, LANDSCAPE_c, PARAMETERS_c);
 }

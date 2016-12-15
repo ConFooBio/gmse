@@ -22,8 +22,9 @@ initialise <- function(model, resource_quantity, resource_types = 1,
                         replace = TRUE);
         yloc  <- sample(x = 1:cols, size = resource_quantity, 
                         replace = TRUE);
-        move  <- rep(x=move, times = resource_quantity);
-        the_resource <- cbind(IDs, type, xloc, yloc, move);
+        move  <- rep(x = move, times = resource_quantity);
+        time  <- rep(x = 0, times = resource_quantity);
+        the_resource <- cbind(IDs, type, xloc, yloc, move, time);
     }
     if( is.null(the_resource) ){
         stop("Invalid model selected (Must be 'IBM')");

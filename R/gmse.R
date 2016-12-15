@@ -31,18 +31,21 @@ starting_resources <- initialise( model              = pop_model,
                                   move               = movement
                                 );
 
+time       <- time + 1;  # Ready for the initial time step.
+parameters <- c(time, 0);
 
 RESOURCE_REC <- NULL;
 RESOURCES    <- starting_resources;
 while(time < time_max){
    RESOURCE_NEW  <- resource(resource   = RESOURCES,
                              landscape  = LANDSCAPE_r,
+                             paras      = parameters,
                              model      = "IBM"
                              );
    RESOURCES     <- RESOURCE_NEW;
    timestamp     <- cbind(RESOURCES, rep(x = time, length = dim(RESOURCES)[1]));
    RESOURCE_REC  <- rbind(RESOURCE_REC, timestamp);
-   time <- time + 1;
+   time          <- time + 1;
 }
 
 

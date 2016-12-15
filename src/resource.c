@@ -3,6 +3,15 @@
 #include <Rinternals.h>
 #include <Rmath.h>
 
+
+void add_time(double **res_adding, int time_trait, int rows, int time_para){
+    int resource;
+    
+    for(resource = 0; resource < rows; resource++){
+        res_adding[resource][time_trait] = time_para;   
+    }
+}
+
 void mover(double **res_moving, int xloc, int yloc, int move_para, int rows){
     
     int res_num;      /* Resource number index    */
@@ -47,7 +56,7 @@ void mover(double **res_moving, int xloc, int yloc, int move_para, int rows){
 }
 
 /* TODO: Argument: VECTOR_OF_PARAMETER_VALUES */
-SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE){
+SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
  
     /* SOME STANDARD DECLARATIONS OF KEY VARIABLES AND POINTERS               */
     /* ====================================================================== */
@@ -57,15 +66,18 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE){
     int trait;               /* Index for resource traits (cols of RESOURCE) */
     int res_number;          /* Number of resources included (default = 1) */
     int trait_number;        /* Number of traits included */
+    int para_number;         /* Number of parameters included */
     int res_nums_added;      /* Number of resources to be added */
     int res_num_total;       /* Total number of resources in returned array */
     int protected_n;         /* Number of protected R objects */
     int vec_pos;             /* Vector position for making arrays */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
+    int *len_PARAMETERS;     /* Length of the PARAMETERS vector incoming */
     double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
     double *R_ptr_new;       /* Pointer to RESOURCE_NEW (interface R and C) */
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
+    double *paras;           /* Pointer to PARAMETER (interface R and C) */
     double **res_old;        /* Array to store the old RESOURCE in C */
     double **res_new;        /* Array to store the new RESOURCE in C */
     double **land;           /* Array to store the landscape in C*/
@@ -74,7 +86,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE){
     /* ====================================================================== */
 
     protected_n = 0;
-    
+
     PROTECT( RESOURCE = AS_NUMERIC(RESOURCE) );
     protected_n++;
     R_ptr = REAL(RESOURCE);
@@ -83,9 +95,13 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE){
     protected_n++;
     land_ptr = REAL(LANDSCAPE);
     
-    dim_RESOURCE = INTEGER( GET_DIM(RESOURCE) );
-    dim_LANDSCAPE  = INTEGER( GET_DIM(LANDSCAPE) );
+    PROTECT( PARAMETERS = AS_NUMERIC(PARAMETERS) );
+    protected_n++;
+    paras = REAL(PARAMETERS);
     
+    dim_RESOURCE   = INTEGER( GET_DIM(RESOURCE)  );
+    dim_LANDSCAPE  = INTEGER( GET_DIM(LANDSCAPE) );
+
     /* The C code for the model itself falls under here */
     /* ====================================================================== */
     
@@ -112,7 +128,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE){
     for(xloc = 0; xloc < land_x; xloc++){
         land[xloc] = malloc(land_y * sizeof(double));   
     } /* LANDSCAPE is now stored as land */
-    
+
     /* Do the biology here now */
     /* ====================================================================== */
     
@@ -141,6 +157,8 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE){
         }
     }
     
+    add_time(res_new, 5, res_num_total, paras[0]);
+    
     /* This code switches from C back to R */
     /* ====================================================================== */        
     
@@ -162,12 +180,12 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE){
     UNPROTECT(protected_n);
     
     /* Free all of the allocated memory used in arrays */
-    for(resource = 0; resource < res_number; resource++){
-        free(res_old[resource]);
-    } 
     for(resource = 0; resource < res_num_total; resource++){
         free(res_new[resource]);
     }
+    for(resource = 0; resource < res_number; resource++){
+        free(res_old[resource]);
+    } 
     for(xloc = 0; xloc < land_x; xloc++){
         free(land[xloc]);        
     }
