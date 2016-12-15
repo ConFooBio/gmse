@@ -45,6 +45,7 @@ while(time < time_max){
    RESOURCES     <- RESOURCE_NEW;
    RESOURCE_REC  <- rbind(RESOURCE_REC, RESOURCES);
    time          <- time + 1;
+   parameters[1] <- time;
 }
 
 
@@ -61,3 +62,11 @@ colnames(RESOURCE_REC) <- c("Resource_ID",
 
 
 # For fun, for now, let's see the indivdiuals move around
+for(i in 1:(time_max-1)){
+    res_t <- RESOURCE_REC[RESOURCE_REC[,7]==i,];
+    plot(x=res_t[,4], y=res_t[,5], pch=20, col=res_t[,1], xlim=c(-20,120),
+         ylim=c(-20,120));
+    p1 <- proc.time()
+    Sys.sleep(1)
+    proc.time() - p1 # The cpu usage should be negligible
+}
