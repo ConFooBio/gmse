@@ -1,4 +1,11 @@
-setwd("Dropbox/projects/gmse");
+#' General function for now
+#'
+#' Function to run G-MSE model
+#'
+#'@export
+
+
+#setwd("Dropbox/projects/gmse");
 
 dyn.load('src/resource.so') # Just keep this here for now.
 
@@ -8,7 +15,7 @@ source("R/resource.R");
 
 pop_model       <- "IBM";
 RESOURCE_ini    <- 100;
-time_max        <- 10;
+time_max        <- 200;
 time            <- 0;
 land_dim_1      <- 10;
 land_dim_2      <- 10;
@@ -64,9 +71,13 @@ colnames(RESOURCE_REC) <- c("Resource_ID",
 # For fun, for now, let's see the indivdiuals move around
 for(i in 1:(time_max-1)){
     res_t <- RESOURCE_REC[RESOURCE_REC[,7]==i,];
-    plot(x=res_t[,4], y=res_t[,5], pch=20, col=res_t[,1], xlim=c(-20,120),
-         ylim=c(-20,120));
+    par(mar=c(0,0,0,0))
+    plot(x=res_t[,4], y=res_t[,5], pch=20, col=res_t[,1], xlim=c(-10,20),
+         ylim=c(-10,20),xaxt="n",yaxt="n", cex=2);
     p1 <- proc.time()
-    Sys.sleep(1)
+    Sys.sleep(0.1)
     proc.time() - p1 # The cpu usage should be negligible
 }
+
+
+
