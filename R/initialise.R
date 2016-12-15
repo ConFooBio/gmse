@@ -1,4 +1,4 @@
-#' Landscape initialisation
+#' Simulation initialisation
 #'
 #' Function to initialise the landscape of the G-MSE model
 #'

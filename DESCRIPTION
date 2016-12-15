@@ -1,0 +1,10 @@
+Package: G-MSE
+Type: Package
+Title: Game-theoretic management strategy evaluation simulator
+Version: 0.0.1
+Author: A. Bradley Duthie
+Maintainer: A. Bradley Duthie <alexander.duthie@stir.ac.uk>
+Description: Simulates G-MSE (more on this later)
+License: Unlicensed and private for the moment
+LazyData: TRUE
+RoxygenNote: 5.0.1
