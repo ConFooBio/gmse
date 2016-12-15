@@ -18,13 +18,14 @@ initialise <- function(model, resource_quantity, resource_types = 1,
         IDs   <- seq(from = 1, to = resource_quantity, by = 1);
         type  <- sample(x = 1:resource_types, size = resource_quantity,
                         replace = TRUE);
+        type2 <- rep(x = 0, times = resource_quantity);
         xloc  <- sample(x = 1:rows, size = resource_quantity, 
                         replace = TRUE);
         yloc  <- sample(x = 1:cols, size = resource_quantity, 
                         replace = TRUE);
         move  <- rep(x = move, times = resource_quantity);
         time  <- rep(x = 0, times = resource_quantity);
-        the_resource <- cbind(IDs, type, xloc, yloc, move, time);
+        the_resource <- cbind(IDs, type, type2, xloc, yloc, move, time);
     }
     if( is.null(the_resource) ){
         stop("Invalid model selected (Must be 'IBM')");

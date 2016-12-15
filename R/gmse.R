@@ -43,15 +43,20 @@ while(time < time_max){
                              model      = "IBM"
                              );
    RESOURCES     <- RESOURCE_NEW;
-   timestamp     <- cbind(RESOURCES, rep(x = time, length = dim(RESOURCES)[1]));
-   RESOURCE_REC  <- rbind(RESOURCE_REC, timestamp);
+   RESOURCE_REC  <- rbind(RESOURCE_REC, RESOURCES);
    time          <- time + 1;
 }
 
 
 
 
-
+colnames(RESOURCE_REC) <- c("Resource_ID",
+                            "Resource_type_1",
+                            "Resource_type_2",
+                            "Resource_loc_x",
+                            "Resource_loc_y",
+                            "Resource_move",
+                            "Resource_time");
 
 
 

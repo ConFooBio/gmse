@@ -133,7 +133,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     /* ====================================================================== */
     
     /* Resources move according to move function and parameter) */
-    mover(res_old, 2, 3, 4, res_number); 
+    mover(res_old, 3, 4, 5, res_number); 
     
     
     
@@ -157,7 +157,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
         }
     }
     
-    add_time(res_new, 5, res_num_total, paras[0]);
+    add_time(res_new, 6, res_num_total, paras[0]);
     
     /* This code switches from C back to R */
     /* ====================================================================== */        
