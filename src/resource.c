@@ -16,32 +16,57 @@ void add_time(double **res_adding, int time_trait, int rows, int time_para){
  * The 'edge' argument defines what happens at the landscape edge:
  *     0: Nothing happens (individual is just off the map)
  *     1: Torus landscape (individual wraps around to the other side)
+ * The 'type' argument defines the type of movement allowed:
+ *     0: No movement is allowed
+ *     1: Movement is random uniform from zero to move_para in any direction
+ *     2: Movement is poisson(move_para) in any direction
  */
 void mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
-           int edge, double **landscape, int land_x, int land_y){
+           int edge, double **landscape, int land_x, int land_y, int type){
     
     int res_num;      /* Resource number index                       */
     int move_len;     /* Length of a move                            */
     int move_dir;     /* Move direction (-1 or 1)                    */
     int new_pos;      /* New position: check if over landscape edge  */
-    double rand_uni;  /* Randum uniform number                       */
+    double rand_num;  /* Random number used for sampling             */
+    double rand_uni;  /* Random uniform number                       */
+    double rand_pois; /* Random poisson number                       */
+    double raw_move;  /* Movement length before floor() truncation   */
     
     for(res_num=0; res_num < rows; res_num++){
         /* Move first in the xloc direction --------------------------------- */
-        rand_uni = 0.0;
-        do{ /* On the very off chance that runif selects zero exactly */
-            rand_uni  = runif(-1, 1); /* Rand uni between -1 and 1 */
-        } while(rand_uni == 0.0);
-        if(rand_uni > 0){  /* Below assigns a sign to move_dir */
-            move_dir = 1;
+        new_pos  = res_moving[res_num][xloc];
+        rand_num = 0.5;
+        do{ /* Note that rand_num can never be exactly 0.5 */
+            rand_num = runif(0, 1);
+        } while(rand_num == 0.5);
+        if(rand_num > 0.5){
+            move_dir = 1;   
         }else{
-            move_dir = -1;
+            move_dir = -1;   
+        } /* Now we have the direction the resource is moving */
+        switch(type){
+            case 0: /* No change in position */
+                move_len = 0;
+                break;
+            case 1: /* Uniform selection of position change */
+                do{ /* Again, so that res_num never moves too far */
+                    rand_uni = runif(0, 1);
+                } while(rand_uni == 1.0);
+                raw_move = rand_uni * (res_moving[res_num][move_para] + 1);
+                move_len = floor(raw_move);
+                break;
+            case 2: /* Poisson selection of position change */
+                rand_pois = rpois(res_moving[res_num][move_para]);    
+                raw_move  = rand_pois * (res_moving[res_num][move_para] + 1);
+                move_len  = floor(raw_move);
+                break;
+            default:
+                if(res_num == 0){
+                    printf("Unclear specification of movement type \n");
+                }
+                break;
         }
-        rand_uni = 1.0;
-        do{ /* Again, just to make sure the res_num never moves too far */
-            rand_uni = runif(0, 1);
-        } while(rand_uni == 1.0);
-        move_len = floor( rand_uni * (res_moving[res_num][move_para] + 1) );
         new_pos  = res_moving[res_num][xloc] + (move_dir * move_len); 
         if(new_pos > land_x || new_pos < land_x){ /* If off the edge */
             switch(edge){
@@ -56,41 +81,57 @@ void mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
                     }
                     break;
                 default:
-                    printf("ERROR: Unclear specification of edge effects");
+                    if(res_num == 0){
+                        printf("ERROR: Edge effects set incorrectly \n");
+                    }
                     break;
             }
         }
         res_moving[res_num][xloc] = new_pos;
         /* Move next in the yloc direction ---------------------------------- */
-        rand_uni = 0.0;
-        do{ /* On the very of chance that runif selects zero exactly */
-            rand_uni  = runif(-1, 1); /* Rand uni between -1 and 1 */
-        } while(rand_uni == 0);
-        if(rand_uni > 0){
-            move_dir = 1;
+        new_pos  = res_moving[res_num][yloc];
+        rand_num = 0.5;
+        do{ /* Note that rand_num can never be exactly 0.5 */
+            rand_num = runif(0, 1);
+        } while(rand_num == 0.5);
+        if(rand_num > 0.5){
+            move_dir = 1;   
         }else{
-            move_dir = -1;
+            move_dir = -1;   
+        } /* Now we have the direction the resource is moving */
+        switch(type){
+            case 0: /* No change in position */
+                move_len = 0;
+                break;
+            case 1: /* Uniform selection of position change */
+                do{ /* Again, so that res_num never moves too far */
+                    rand_uni = runif(0, 1);
+                } while(rand_uni == 1.0);
+                raw_move = rand_uni * (res_moving[res_num][move_para] + 1);
+                move_len = floor(raw_move);
+                break;
+            case 2: /* Poisson selection of position change */
+                rand_pois = rpois(res_moving[res_num][move_para]);    
+                raw_move  = rand_pois * (res_moving[res_num][move_para] + 1);
+                move_len  = floor(raw_move);
+                break;
+            default:
+                break;
         }
-        rand_uni = 1.0;
-        do{ /* Again, just to make sure the res_num never moves too far */
-            rand_uni = runif(0, 1);
-        } while(rand_uni == 1.0);
-        move_len = floor( rand_uni * (res_moving[res_num][move_para] + 1) );
-        new_pos  = res_moving[res_num][yloc] + (move_dir * move_len);
-        if(new_pos > land_y || new_pos < land_y){ /* If off the edge */
+        new_pos  = res_moving[res_num][yloc] + (move_dir * move_len); 
+        if(new_pos > land_x || new_pos < land_x){ /* If off the edge */
             switch(edge){
                 case 0: /* Nothing happens (effectively, no edge) */
                     break;
                 case 1: /* Corresponds to a torus landscape */
-                    if(new_pos > land_y){
-                        new_pos = new_pos - land_y;   
+                    if(new_pos > land_x){
+                        new_pos = new_pos - land_x;   
                     }
                     if(new_pos < 0){
-                        new_pos = new_pos + land_y;   
+                        new_pos = new_pos + land_x;   
                     }
                     break;
                 default:
-                    printf("ERROR: Unclear specification of edge effects");
                     break;
             }
         }
@@ -176,7 +217,8 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     /* ====================================================================== */
     
     /* Resources move according to move function and parameter) */
-    mover(res_old, 3, 4, 5, res_number, paras[1], land, land_x, land_y); 
+    mover(res_old, 3, 4, 5, res_number, paras[1], land, land_x, land_y, 
+          paras[2]); 
     
     
     

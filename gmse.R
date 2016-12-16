@@ -15,11 +15,11 @@ source("R/resource.R");
 
 pop_model       <- "IBM";
 RESOURCE_ini    <- 100;
-time_max        <- 200;
+time_max        <- 100;
 time            <- 0;
 land_dim_1      <- 20;
 land_dim_2      <- 20;
-movement        <- 1;
+movement        <- 0.2;
 res_types_ini   <- 1; 
 
 # Set the landscape
@@ -40,8 +40,10 @@ starting_resources <- initialise( model              = pop_model,
 
 time       <- time + 1;  # Ready for the initial time step.
 parameters <- c(time,    # The dynamic time step for each function to use 
-                1);      # The edge effect (0: nothing, 1: torus)
-
+                1,       # The edge effect (0: nothing, 1: torus)
+                2        # Type of movement (0: none, 1: uniform, 2: Poisson)
+                );
+                
 RESOURCE_REC <- NULL;
 RESOURCES    <- starting_resources;
 while(time < time_max){
@@ -73,8 +75,8 @@ colnames(RESOURCE_REC) <- c("Resource_ID",
 for(i in 1:(time_max-1)){
     res_t <- RESOURCE_REC[RESOURCE_REC[,7]==i,];
     par(mar=c(0,0,0,0))
-    plot(x=res_t[,4], y=res_t[,5], pch=20, col=res_t[,1], xlim=c(0,20),
-         ylim=c(0,20),xaxt="n",yaxt="n", cex=2);
+    plot(x=res_t[,4], y=res_t[,5], pch=20, col=res_t[,1], xlim=c(-2,22),
+         ylim=c(-2,22),xaxt="n",yaxt="n", cex=2);
     p1 <- proc.time()
     Sys.sleep(0.1)
     proc.time() - p1 # The cpu usage should be negligible
