@@ -5,7 +5,7 @@
 #'@export
 
 
-#setwd("Dropbox/projects/gmse");
+setwd("~/Dropbox/projects/gmse");
 
 dyn.load('src/resource.so') # Just keep this here for now.
 
@@ -17,8 +17,8 @@ pop_model       <- "IBM";
 RESOURCE_ini    <- 100;
 time_max        <- 200;
 time            <- 0;
-land_dim_1      <- 10;
-land_dim_2      <- 10;
+land_dim_1      <- 20;
+land_dim_2      <- 20;
 movement        <- 1;
 res_types_ini   <- 1; 
 
@@ -39,7 +39,8 @@ starting_resources <- initialise( model              = pop_model,
                                 );
 
 time       <- time + 1;  # Ready for the initial time step.
-parameters <- c(time, 0);
+parameters <- c(time,    # The dynamic time step for each function to use 
+                1);      # The edge effect (0: nothing, 1: torus)
 
 RESOURCE_REC <- NULL;
 RESOURCES    <- starting_resources;
@@ -72,8 +73,8 @@ colnames(RESOURCE_REC) <- c("Resource_ID",
 for(i in 1:(time_max-1)){
     res_t <- RESOURCE_REC[RESOURCE_REC[,7]==i,];
     par(mar=c(0,0,0,0))
-    plot(x=res_t[,4], y=res_t[,5], pch=20, col=res_t[,1], xlim=c(-10,20),
-         ylim=c(-10,20),xaxt="n",yaxt="n", cex=2);
+    plot(x=res_t[,4], y=res_t[,5], pch=20, col=res_t[,1], xlim=c(0,20),
+         ylim=c(0,20),xaxt="n",yaxt="n", cex=2);
     p1 <- proc.time()
     Sys.sleep(0.1)
     proc.time() - p1 # The cpu usage should be negligible

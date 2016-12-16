@@ -12,13 +12,19 @@ void add_time(double **res_adding, int time_trait, int rows, int time_para){
     }
 }
 
-/* This function moves individuals on the landscape according to some rules */
-void mover(double **res_moving, int xloc, int yloc, int move_para, int rows){
+/* This function moves individuals on the landscape according to some rules
+ * The 'edge' argument defines what happens at the landscape edge:
+ *     0: Nothing happens (individual is just off the map)
+ *     1: Torus landscape (individual wraps around to the other side)
+ */
+void mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
+           int edge, double **landscape, int land_x, int land_y){
     
-    int res_num;      /* Resource number index    */
-    int move_len;     /* Length of a move         */
-    int move_dir;     /* Move direction (-1 or 1) */
-    double rand_uni;  /* Randum uniform number    */
+    int res_num;      /* Resource number index                       */
+    int move_len;     /* Length of a move                            */
+    int move_dir;     /* Move direction (-1 or 1)                    */
+    int new_pos;      /* New position: check if over landscape edge  */
+    double rand_uni;  /* Randum uniform number                       */
     
     for(res_num=0; res_num < rows; res_num++){
         /* Move first in the xloc direction --------------------------------- */
@@ -36,7 +42,25 @@ void mover(double **res_moving, int xloc, int yloc, int move_para, int rows){
             rand_uni = runif(0, 1);
         } while(rand_uni == 1.0);
         move_len = floor( rand_uni * (res_moving[res_num][move_para] + 1) );
-        res_moving[res_num][xloc] += (move_dir * move_len); /* x change added */
+        new_pos  = res_moving[res_num][xloc] + (move_dir * move_len); 
+        if(new_pos > land_x || new_pos < land_x){ /* If off the edge */
+            switch(edge){
+                case 0: /* Nothing happens (effectively, no edge) */
+                    break;
+                case 1: /* Corresponds to a torus landscape */
+                    if(new_pos > land_x){
+                        new_pos = new_pos - land_x;   
+                    }
+                    if(new_pos < 0){
+                        new_pos = new_pos + land_x;   
+                    }
+                    break;
+                default:
+                    printf("ERROR: Unclear specification of edge effects");
+                    break;
+            }
+        }
+        res_moving[res_num][xloc] = new_pos;
         /* Move next in the yloc direction ---------------------------------- */
         rand_uni = 0.0;
         do{ /* On the very of chance that runif selects zero exactly */
@@ -52,7 +76,25 @@ void mover(double **res_moving, int xloc, int yloc, int move_para, int rows){
             rand_uni = runif(0, 1);
         } while(rand_uni == 1.0);
         move_len = floor( rand_uni * (res_moving[res_num][move_para] + 1) );
-        res_moving[res_num][yloc] += (move_dir * move_len); /* y change added */
+        new_pos  = res_moving[res_num][yloc] + (move_dir * move_len);
+        if(new_pos > land_y || new_pos < land_y){ /* If off the edge */
+            switch(edge){
+                case 0: /* Nothing happens (effectively, no edge) */
+                    break;
+                case 1: /* Corresponds to a torus landscape */
+                    if(new_pos > land_y){
+                        new_pos = new_pos - land_y;   
+                    }
+                    if(new_pos < 0){
+                        new_pos = new_pos + land_y;   
+                    }
+                    break;
+                default:
+                    printf("ERROR: Unclear specification of edge effects");
+                    break;
+            }
+        }
+        res_moving[res_num][yloc] = new_pos;
     }
 }
 
@@ -134,7 +176,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     /* ====================================================================== */
     
     /* Resources move according to move function and parameter) */
-    mover(res_old, 3, 4, 5, res_number); 
+    mover(res_old, 3, 4, 5, res_number, paras[1], land, land_x, land_y); 
     
     
     
