@@ -3,7 +3,9 @@
 #include <Rinternals.h>
 #include <Rmath.h>
 
-/* This function just adds a time step to the relevant individual column */
+/* =============================================================================
+ * This function just adds a time step to the relevant individual column 
+ * ========================================================================== */
 void add_time(double **res_adding, int time_trait, int rows, int time_para){
     int resource;
     
@@ -11,8 +13,10 @@ void add_time(double **res_adding, int time_trait, int rows, int time_para){
         res_adding[resource][time_trait] = time_para;   
     }
 }
+/* ===========================================================================*/
 
-/* This function moves individuals on the landscape according to some rules
+/* =============================================================================
+ * This function moves individuals on the landscape according to some rules
  * The 'edge' argument defines what happens at the landscape edge:
  *     0: Nothing happens (individual is just off the map)
  *     1: Torus landscape (individual wraps around to the other side)
@@ -20,7 +24,7 @@ void add_time(double **res_adding, int time_trait, int rows, int time_para){
  *     0: No movement is allowed
  *     1: Movement is random uniform from zero to move_para in any direction
  *     2: Movement is poisson(move_para) in any direction
- */
+ * ========================================================================== */
 void mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
            int edge, double **landscape, int land_x, int land_y, int type){
     
@@ -138,23 +142,80 @@ void mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
         res_moving[res_num][yloc] = new_pos;
     }
 }
+/* ===========================================================================*/
 
-
-
-/* This function selects a random uniform and tests whether or not the resource
+/* =============================================================================
+ * This function selects a random uniform and tests whether or not the resource
  * should be removed (e.g., an individual should die at a fixed rate
- */
-void res_remove(double **res_adding, int rows, int rm_row){
+ * Inputs include:
+ *     res_adding: data frame of individuals to potentially be removed
+ *     rows: total number of rows in the res_addign data frame
+ *     rm_row: which row in res_adding is the removal (i.e., death) parameter
+ *     type: Type of removal (0: None, 1: uniform)
+ * ========================================================================== */
+void res_remove(double **res_adding, int rows, int rm_row, int type){
     int resource;
     double rand_unif;
     
-    for(resource = 0; resource < rows; resource++){
-        rand_unif = runif(0, 1);
-        if(rand_unif < res_adding[resource][rm_row]){
-            res_adding[resource][rm_row] = -1;   
+    switch(type){
+        case 0: /* No removal */
+            break;
+        case 1:
+            for(resource = 0; resource < rows; resource++){
+                rand_unif = runif(0, 1);
+                if(rand_unif < res_adding[resource][rm_row]){
+                    res_adding[resource][rm_row] = -1;   
+                }
+            }
+    }
+}
+/* ===========================================================================*/
+
+/* =============================================================================
+ * This function determines the number of new resources to be added, as
+ * contributed by each individual resource
+ * Inputs include:
+ *     res_adding: data frame of individuals doing the adding (e.g., births)
+ *     rows: Total number of rows in the res_adding data frame
+ *     add: which row in res_adding is the growth parameter
+ *     type: Type of growth (0: , 1: , 2: poisson)
+ *     K_add: Carrying capacity applied to the addition of a new resource
+ * ========================================================================== */
+void res_new(double **res_adding, int rows, int add, int type, int K_add){
+    int resource;
+    int realised; /* Where the count of added goes (using add + 1) */
+    int sampled;
+    int added;
+    double rand_pois;
+    double rand_unif;
+
+    added    = 0;
+    realised = add + 1;
+    
+    switch(type){
+        case 0:
+            break;
+        case 1:
+            break; /* Add in a different type of birth here */
+        case 2:
+            for(resource = 0; resource < rows; resource++){
+                res_adding[resource][realised] = 0;
+                rand_pois = rpois(res_adding[resource][add]);
+                res_adding[resource][realised] = rand_pois;
+                added += rand_pois;
+            }
+    }
+    if(K_add > 0){ /* If there is a carrying capacity applied to adding */
+        while(added > K_add){ 
+            rand_unif = runif(0, 1);
+            sampled   = floor(rand_unif * rows);
+            res_adding[resource][realised]--; /* Less memory used now */
+            added--;
         }
     }
 }
+/* ===========================================================================*/
+
 
 
 /* TODO: Argument: VECTOR_OF_PARAMETER_VALUES */
@@ -175,6 +236,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     int res_num_total;       /* Total number of resources in returned array */
     int protected_n;         /* Number of protected R objects */
     int vec_pos;             /* Vector position for making arrays */
+    int *add_resource;       /* Vector of added resources */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     int *len_PARAMETERS;     /* Length of the PARAMETERS vector incoming */
@@ -239,13 +301,16 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     /* Resources move according to move function and parameter) */
     mover(res_old, 3, 4, 5, res_number, paras[1], land, land_x, land_y, 
           paras[2]); 
-    
-    res_remove(res_old, res_number, 7);
-    
+
     
     
     res_nums_added      = 0; /* TODO: Add a birth function here */
     
+        
+    res_remove(res_old, res_number, 7, paras[4]);
+    
+    
+
     res_nums_subtracted = 0; /* Calculate number of removed individuals */
     for(resource = 0; resource < res_number; resource++){
         if(res_old[resource][7] < 0){

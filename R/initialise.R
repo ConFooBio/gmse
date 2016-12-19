@@ -26,8 +26,10 @@ initialise <- function(model, resource_quantity, resource_types = 1,
         move     <- rep(x = move, times = resource_quantity);
         time     <- rep(x = 0, times = resource_quantity);
         remov_pr <- rep(x = rm_pr, times = resource_quantity);
+        growth   <- rep(x = lambda, times = resource_quantity);
+        offspr   <- rep(x = 0, times = resource_quantity); # None at init
         the_resource <- cbind(IDs, type, type2, xloc, yloc, move, time, 
-                              remov_pr);
+                              remov_pr, growth, offspr);
     }
     if( is.null(the_resource) ){
         stop("Invalid model selected (Must be 'IBM')");

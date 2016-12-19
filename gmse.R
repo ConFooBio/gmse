@@ -15,13 +15,14 @@ source("R/resource.R");
 
 pop_model       <- "IBM";
 RESOURCE_ini    <- 100;
-time_max        <- 300;
+time_max        <- 100;
 time            <- 0;
 land_dim_1      <- 20;
 land_dim_2      <- 20;
 movement        <- 0.2;
 res_types_ini   <- 1;
 remove_pr       <- 0.001;
+lambda          <- 2;
 
 # Set the landscape
 LANDSCAPE_r  <- make_landscape( model      = pop_model, 
@@ -43,7 +44,9 @@ starting_resources <- initialise( model              = pop_model,
 time       <- time + 1;  # Ready for the initial time step.
 parameters <- c(time,    # The dynamic time step for each function to use 
                 1,       # The edge effect (0: nothing, 1: torus)
-                2        # Type of movement (0: none, 1: uniform, 2: Poisson)
+                2,       # Type of movement (0: none, 1: uniform, 2: Poisson)
+                2,       # Type of birth (0: none, 1: uniform, 2: Poisson)
+                1        # Type of death (0: none, 1: uniform)
                 );
                 
 RESOURCE_REC <- NULL;
@@ -74,7 +77,10 @@ colnames(RESOURCE_REC) <- c("Resource_ID",
                             "Resource_loc_y",
                             "Resource_move",
                             "Resource_time",
-                            "Resource_rm_pr");
+                            "Resource_rm_pr",
+                            "Resource_growth",
+                            "Resource_grown"
+                            );
 
 
 
