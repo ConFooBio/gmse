@@ -167,6 +167,7 @@ void res_remove(double **res_removing, int rows, int rm_row, int type){
                     res_removing[resource][rm_row] = -1;   
                 }
             }
+            break;
         default:
             printf("ERROR: Resource removal/death type set incorrectly \n");
             break;
@@ -189,10 +190,10 @@ void res_add(double **res_adding, int rows, int add, int type, int K_add){
     int realised; /* Where the count of added goes (using add + 1) */
     int sampled;
     int added;
+    int loops;
     double rand_pois;
     double rand_unif;
 
-    added    = 0;
     realised = add + 1;
     
     switch(type){
@@ -207,20 +208,65 @@ void res_add(double **res_adding, int rows, int add, int type, int K_add){
                 res_adding[resource][realised] = rand_pois;
                 added += rand_pois;
             }
+            break;
         default:
             printf("ERROR: Resource growth/birth type set incorrectly \n");
             break;
     }
     if(K_add > 0){ /* If there is a carrying capacity applied to adding */
+        loops = 100000;
         while(added > K_add){ 
             rand_unif = runif(0, 1);
             sampled   = floor(rand_unif * rows);
-            res_adding[resource][realised]--; /* Less memory used now */
-            added--;
+            if(res_adding[sampled][realised] > 0){
+                res_adding[sampled][realised]--; /* Less memory used now */
+                added--;
+            }
+            loops--;
+            if(loops < 0){
+                printf("ERROR: Possible infinite loop in res_add");
+                break;
+            }
         }
     }
 }
 /* ===========================================================================*/
+
+/* =============================================================================
+ * This function adds in the new resource to their own array
+ * ========================================================================== */
+void res_place(double **make, double **old, int res_added, int old_number, 
+               int traits, int realised){
+    int resource;
+    int newbie;
+    int trait;
+    int to_make;
+    int to_add;
+    int make_res;
+    int last_old;
+    double res_index;
+    
+    make_res  = 0;
+    to_make   = 0;
+    to_add    = 0; /* Maybe try to cut down the loops here later? */
+    last_old  = old_number - 1;
+    res_index = old[last_old][0] + 1;
+    for(resource = 0; resource < old_number; resource++){
+        to_add += old[resource][realised];
+        for(newbie = to_make; newbie < to_add; newbie++){
+            make[newbie][0] = res_index;
+            for(trait = 1; trait < traits; trait++){
+                make[newbie][trait] = old[resource][trait];
+            }
+            res_index++;
+        }
+        to_make = to_add;
+    }
+    if(to_make > res_added){
+        printf("WARNING: Non-conformable arrays placing new resources");   
+    }
+}
+
 
 
 
@@ -265,6 +311,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
     double *paras;           /* Pointer to PARAMETER (interface R and C) */
     double **res_old;        /* Array to store the old RESOURCE in C */
+    double **res_make;       /* Array of newly made resources */
     double **res_new;        /* Array to store the new RESOURCE in C */
     double **land;           /* Array to store the landscape in C*/
 
@@ -323,13 +370,17 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
           paras[2]); 
 
     /* Identify, and calculate the number of, added individuals */
-    res_add(res_old, res_number, 8, 1, paras[5]);
+    res_add(res_old, res_number, 8, paras[3], paras[5]);
     res_nums_added      = 0; 
     for(resource = 0; resource < res_number; resource++){
         res_nums_added += res_old[resource][9];
     }
-    /* TODO: ADD A FUNCTION FOR ACTUALLY PLACING THESE INDIVIDUALS */
-        
+    res_make = malloc(res_nums_added * sizeof(double *));
+    for(resource = 0; resource < res_nums_added; resource++){
+        res_make[resource] = malloc(trait_number * sizeof(double));   
+    }
+    res_place(res_make, res_old, res_nums_added, res_number, trait_number, 9);
+    
     /* Identify, and calculate the number, of removed individuals */    
     res_remove(res_old, res_number, 7, paras[4]);
     res_nums_subtracted = 0; 
@@ -353,11 +404,17 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     resource_new = 0;
     for(resource = 0; resource < res_number; resource++){
         if(res_old[resource][7] >= 0){
-            for(trait=0; trait<trait_number; trait++){
+            for(trait=0; trait < trait_number; trait++){
                 res_new[resource_new][trait] = res_old[resource][trait];
             }
             resource_new++; /* Move on to the next new resource */
         }
+    }
+    for(resource = 0; resource < res_nums_added; resource++){
+        for(trait = 0; trait < trait_number; trait++){
+            res_new[resource_new][trait] = res_make[resource][trait];
+        }
+        resource_new++;
     }
     
     add_time(res_new, 6, res_num_total, paras[0]);
@@ -383,6 +440,9 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     UNPROTECT(protected_n);
     
     /* Free all of the allocated memory used in arrays */
+    for(resource = 0; resource < res_nums_added; resource++){
+        free(res_make[resource]);
+    }
     for(resource = 0; resource < res_num_total; resource++){
         free(res_new[resource]);
     }

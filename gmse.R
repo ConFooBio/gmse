@@ -22,7 +22,7 @@ land_dim_2      <- 20;
 movement        <- 0.2;
 res_types_ini   <- 1;
 remove_pr       <- 0.001;
-lambda          <- 2;
+lambda          <- 1.5;
 
 # Set the landscape
 LANDSCAPE_r  <- make_landscape( model      = pop_model, 
