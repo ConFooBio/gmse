@@ -218,6 +218,20 @@ void res_new(double **res_adding, int rows, int add, int type, int K_add){
 
 
 
+/* =============================================================================
+ * MAIN RESOURCE FUNCTION:
+ * ===========================================================================*/
+
+/* =============================================================================
+ *  ****     This is the main function for the resource model     ****
+ *  This function reads resource and landscape arrays, and a parameter vector
+ *  from R, runs other functions in the resources.c file, then returns the
+ *  new resource array.
+ *  Inputs include:
+ *      RESOURCE:   An array of *row resources and *col traits for each resource
+ *      LANDSCAPE:  An array of *row by *col size that makes up the landscape
+ *      PARAMETERS: Parameters read into the function for population processes
+ * ===========================================================================*/
 /* TODO: Argument: VECTOR_OF_PARAMETER_VALUES */
 SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
  
@@ -374,7 +388,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     
     return(RESOURCE_NEW); 
 }
-
+/* ===========================================================================*/
           
           
           
