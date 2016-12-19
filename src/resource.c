@@ -153,7 +153,7 @@ void mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
  *     rm_row: which row in res_adding is the removal (i.e., death) parameter
  *     type: Type of removal (0: None, 1: uniform)
  * ========================================================================== */
-void res_remove(double **res_adding, int rows, int rm_row, int type){
+void res_remove(double **res_removing, int rows, int rm_row, int type){
     int resource;
     double rand_unif;
     
@@ -163,10 +163,13 @@ void res_remove(double **res_adding, int rows, int rm_row, int type){
         case 1:
             for(resource = 0; resource < rows; resource++){
                 rand_unif = runif(0, 1);
-                if(rand_unif < res_adding[resource][rm_row]){
-                    res_adding[resource][rm_row] = -1;   
+                if(rand_unif < res_removing[resource][rm_row]){
+                    res_removing[resource][rm_row] = -1;   
                 }
             }
+        default:
+            printf("ERROR: Resource removal/death type set incorrectly \n");
+            break;
     }
 }
 /* ===========================================================================*/
@@ -181,7 +184,7 @@ void res_remove(double **res_adding, int rows, int rm_row, int type){
  *     type: Type of growth (0: , 1: , 2: poisson)
  *     K_add: Carrying capacity applied to the addition of a new resource
  * ========================================================================== */
-void res_new(double **res_adding, int rows, int add, int type, int K_add){
+void res_add(double **res_adding, int rows, int add, int type, int K_add){
     int resource;
     int realised; /* Where the count of added goes (using add + 1) */
     int sampled;
@@ -204,6 +207,9 @@ void res_new(double **res_adding, int rows, int add, int type, int K_add){
                 res_adding[resource][realised] = rand_pois;
                 added += rand_pois;
             }
+        default:
+            printf("ERROR: Resource growth/birth type set incorrectly \n");
+            break;
     }
     if(K_add > 0){ /* If there is a carrying capacity applied to adding */
         while(added > K_add){ 
@@ -316,16 +322,17 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     mover(res_old, 3, 4, 5, res_number, paras[1], land, land_x, land_y, 
           paras[2]); 
 
-    
-    
-    res_nums_added      = 0; /* TODO: Add a birth function here */
-    
+    /* Identify, and calculate the number of, added individuals */
+    res_add(res_old, res_number, 8, 1, paras[5]);
+    res_nums_added      = 0; 
+    for(resource = 0; resource < res_number; resource++){
+        res_nums_added += res_old[resource][9];
+    }
+    /* TODO: ADD A FUNCTION FOR ACTUALLY PLACING THESE INDIVIDUALS */
         
+    /* Identify, and calculate the number, of removed individuals */    
     res_remove(res_old, res_number, 7, paras[4]);
-    
-    
-
-    res_nums_subtracted = 0; /* Calculate number of removed individuals */
+    res_nums_subtracted = 0; 
     for(resource = 0; resource < res_number; resource++){
         if(res_old[resource][7] < 0){
             res_nums_subtracted += 1;

@@ -42,11 +42,14 @@ starting_resources <- initialise( model              = pop_model,
                                 );
 
 time       <- time + 1;  # Ready for the initial time step.
-parameters <- c(time,    # The dynamic time step for each function to use 
-                1,       # The edge effect (0: nothing, 1: torus)
-                2,       # Type of movement (0: none, 1: uniform, 2: Poisson)
-                2,       # Type of birth (0: none, 1: uniform, 2: Poisson)
-                1        # Type of death (0: none, 1: uniform)
+cells      <- land_dim_1 * land_dim_2; # Number of cells in the landscape
+
+parameters <- c(time,    # 0. The dynamic time step for each function to use 
+                1,       # 1. The edge effect (0: nothing, 1: torus)
+                2,       # 2. Type of movement (0: none, 1: uniform, 2: Poisson)
+                2,       # 3. Type of birth (0: none, 1: uniform, 2: Poisson)
+                1,       # 4. Type of death (0: none, 1: uniform)
+                cells    # 5. Carrying capacity for birth
                 );
                 
 RESOURCE_REC <- NULL;
