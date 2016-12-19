@@ -139,6 +139,24 @@ void mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
     }
 }
 
+
+
+/* This function selects a random uniform and tests whether or not the resource
+ * should be removed (e.g., an individual should die at a fixed rate
+ */
+void res_remove(double **res_adding, int rows, int rm_row){
+    int resource;
+    double rand_unif;
+    
+    for(resource = 0; resource < rows; resource++){
+        rand_unif = runif(0, 1);
+        if(rand_unif < res_adding[resource][rm_row]){
+            res_adding[resource][rm_row] = -1;   
+        }
+    }
+}
+
+
 /* TODO: Argument: VECTOR_OF_PARAMETER_VALUES */
 SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
  
@@ -147,11 +165,13 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     int xloc, yloc;          /* x and y locations in the RESOURCE array */ 
     int land_x, land_y;      /* x and y maximum location given LANDSCAPE */
     int resource;            /* Index for resource (rows of RESOURCE) */
+    int resource_new;        /* Index for resource in new array */
     int trait;               /* Index for resource traits (cols of RESOURCE) */
     int res_number;          /* Number of resources included (default = 1) */
     int trait_number;        /* Number of traits included */
     int para_number;         /* Number of parameters included */
     int res_nums_added;      /* Number of resources to be added */
+    int res_nums_subtracted; /* Number of resoruces to be removed */
     int res_num_total;       /* Total number of resources in returned array */
     int protected_n;         /* Number of protected R objects */
     int vec_pos;             /* Vector position for making arrays */
@@ -220,12 +240,20 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     mover(res_old, 3, 4, 5, res_number, paras[1], land, land_x, land_y, 
           paras[2]); 
     
+    res_remove(res_old, res_number, 7);
     
     
     
+    res_nums_added      = 0; /* TODO: Add a birth function here */
     
-    res_nums_added = 0; /* TODO: Add a birth function here */
-    res_num_total  = res_number + res_nums_added;
+    res_nums_subtracted = 0; /* Calculate number of removed individuals */
+    for(resource = 0; resource < res_number; resource++){
+        if(res_old[resource][7] < 0){
+            res_nums_subtracted += 1;
+        }
+    }
+    
+    res_num_total  = res_number + res_nums_added - res_nums_subtracted;
 
     /* Below makes a new array for new RESOURCE, then adds it */
     res_new = malloc(res_num_total * sizeof(double *));
@@ -236,9 +264,13 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     /* TODO: Loop first through all retained res_nums, then new ones */
     /* Will need some more complex rules for the below -- these loops will */
     /* eventually paste every res_num together that makes it out */
-    for(trait=0; trait<trait_number; trait++){
-        for(resource=0; resource<res_num_total; resource++){
-            res_new[resource][trait] = res_old[resource][trait];
+    resource_new = 0;
+    for(resource = 0; resource < res_number; resource++){
+        if(res_old[resource][7] >= 0){
+            for(trait=0; trait<trait_number; trait++){
+                res_new[resource_new][trait] = res_old[resource][trait];
+            }
+            resource_new++; /* Move on to the next new resource */
         }
     }
     

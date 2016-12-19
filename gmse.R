@@ -15,12 +15,13 @@ source("R/resource.R");
 
 pop_model       <- "IBM";
 RESOURCE_ini    <- 100;
-time_max        <- 100;
+time_max        <- 300;
 time            <- 0;
 land_dim_1      <- 20;
 land_dim_2      <- 20;
 movement        <- 0.2;
-res_types_ini   <- 1; 
+res_types_ini   <- 1;
+remove_pr       <- 0.001;
 
 # Set the landscape
 LANDSCAPE_r  <- make_landscape( model      = pop_model, 
@@ -35,7 +36,8 @@ starting_resources <- initialise( model              = pop_model,
                                   resource_types     = res_types_ini,
                                   rows               = land_dim_1,
                                   cols               = land_dim_2,
-                                  move               = movement
+                                  move               = movement,
+                                  rm_pr              = remove_pr
                                 );
 
 time       <- time + 1;  # Ready for the initial time step.
@@ -56,6 +58,10 @@ while(time < time_max){
    RESOURCE_REC  <- rbind(RESOURCE_REC, RESOURCES);
    time          <- time + 1;
    parameters[1] <- time;
+   if(dim(RESOURCES)[1] < 10){
+       print("Extinction has occurred");
+       break;
+   }
 }
 
 
@@ -67,7 +73,8 @@ colnames(RESOURCE_REC) <- c("Resource_ID",
                             "Resource_loc_x",
                             "Resource_loc_y",
                             "Resource_move",
-                            "Resource_time");
+                            "Resource_time",
+                            "Resource_rm_pr");
 
 
 
