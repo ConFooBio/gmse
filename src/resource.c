@@ -207,7 +207,7 @@ void res_add(double **res_adding, int rows, int add, int type, int K_add){
  * This function adds in the new resource to their own array
  * ========================================================================== */
 void res_place(double **make, double **old, int res_added, int old_number, 
-               int traits, int realised){
+               int traits, int realised, int age_trait){
     int resource;
     int newbie;
     int trait;
@@ -229,7 +229,7 @@ void res_place(double **make, double **old, int res_added, int old_number,
             for(trait = 1; trait < traits; trait++){
                 make[newbie][trait] = old[resource][trait];
             }
-            make[newbie][10] = 0;
+            make[newbie][age_trait] = 0;
             res_index++;
         }
         to_make = to_add;
@@ -398,7 +398,8 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     for(resource = 0; resource < res_nums_added; resource++){
         res_make[resource] = malloc(trait_number * sizeof(double));   
     }
-    res_place(res_make, res_old, res_nums_added, res_number, trait_number, 9);
+    res_place(res_make, res_old, res_nums_added, res_number, trait_number, 
+              9, 10);
     
     /* Identify, and calculate the number, of removed individuals */    
     res_remove(res_old, res_number, 7, paras[4], paras[6]);

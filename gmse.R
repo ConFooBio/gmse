@@ -26,7 +26,7 @@ land_dim_2      <- 50;
 movement        <- 0.2;
 res_types_ini   <- 1;
 remove_pr       <- 0.0;
-lambda          <- 0.2;
+lambda          <- 0.7;
 
 # Set the landscape
 LANDSCAPE_r  <- make_landscape( model      = pop_model, 
@@ -110,7 +110,8 @@ gens <- NULL;
 abun <- NULL;
 land_cols <- c("#F2F2F2FF", "#ECB176FF", "#000000"); 
 
-ymaxi <- max(tapply(RESOURCE_REC[,7],RESOURCE_REC[,7],length)) + 100;
+aged_res <- RESOURCE_REC[RESOURCE_REC[,11] > 0,];
+ymaxi    <- max(tapply(aged_res[,7],aged_res[,7],length)) + 100;
 for(i in 1:(time_max-1)){
     res_t <- RESOURCE_REC[RESOURCE_REC[,7]==i,];
     if(i > 1){
