@@ -145,37 +145,6 @@ void mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
 /* ===========================================================================*/
 
 /* =============================================================================
- * This function selects a random uniform and tests whether or not the resource
- * should be removed (e.g., an individual should die at a fixed rate
- * Inputs include:
- *     res_adding: data frame of individuals to potentially be removed
- *     rows: total number of rows in the res_addign data frame
- *     rm_row: which row in res_adding is the removal (i.e., death) parameter
- *     type: Type of removal (0: None, 1: uniform)
- * ========================================================================== */
-void res_remove(double **res_removing, int rows, int rm_row, int type){
-    int resource;
-    double rand_unif;
-    
-    switch(type){
-        case 0: /* No removal */
-            break;
-        case 1:
-            for(resource = 0; resource < rows; resource++){
-                rand_unif = runif(0, 1);
-                if(rand_unif < res_removing[resource][rm_row]){
-                    res_removing[resource][rm_row] = -1;   
-                }
-            }
-            break;
-        default:
-            printf("ERROR: Resource removal/death type set incorrectly \n");
-            break;
-    }
-}
-/* ===========================================================================*/
-
-/* =============================================================================
  * This function determines the number of new resources to be added, as
  * contributed by each individual resource
  * Inputs include:
@@ -267,7 +236,36 @@ void res_place(double **make, double **old, int res_added, int old_number,
     }
 }
 
-
+/* =============================================================================
+ * This function selects a random uniform and tests whether or not the resource
+ * should be removed (e.g., an individual should die at a fixed rate
+ * Inputs include:
+ *     res_adding: data frame of individuals to potentially be removed
+ *     rows: total number of rows in the res_addign data frame
+ *     rm_row: which row in res_adding is the removal (i.e., death) parameter
+ *     type: Type of removal (0: None, 1: uniform)
+ * ========================================================================== */
+void res_remove(double **res_removing, int rows, int rm_row, int type){
+    int resource;
+    double rand_unif;
+    
+    switch(type){
+    case 0: /* No removal */
+break;
+    case 1:
+        for(resource = 0; resource < rows; resource++){
+            rand_unif = runif(0, 1);
+            if(rand_unif < res_removing[resource][rm_row]){
+                res_removing[resource][rm_row] = -1;   
+            }
+        }
+        break;
+    default:
+        printf("ERROR: Resource removal/death type set incorrectly \n");
+    break;
+    }
+}
+/* ===========================================================================*/
 
 
 /* =============================================================================
