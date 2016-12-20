@@ -25,7 +25,7 @@ land_dim_1      <- 50;
 land_dim_2      <- 50;
 movement        <- 0.2;
 res_types_ini   <- 1;
-remove_pr       <- 0.4;
+remove_pr       <- 0.0;
 lambda          <- 0.2;
 
 # Set the landscape
@@ -53,8 +53,8 @@ parameters <- c(time,    # 0. The dynamic time step for each function to use
                 2,       # 2. Type of movement (0: none, 1: uniform, 2: Poisson)
                 2,       # 3. Type of birth (0: none, 1: uniform, 2: Poisson)
                 2,       # 4. Type of death (0: none, 1: uniform, 2: K-based)
-                cells,   # 5. Carrying capacity for birth (-1 = unregulated)
-                200      # 6. Carrying capacity for death (-1 = unregulated)
+                -1,   # 5. Carrying capacity for birth (-1 = unregulated)
+                300      # 6. Carrying capacity for death (-1 = unregulated)
                 );
                 
 RESOURCE_REC <- NULL;
@@ -110,9 +110,12 @@ gens <- NULL;
 abun <- NULL;
 land_cols <- c("#F2F2F2FF", "#ECB176FF", "#000000"); 
 
-ymaxi <- max(tapply(RESOURCE_REC[,7],RESOURCE_REC[,7],length)) + 300;
+ymaxi <- max(tapply(RESOURCE_REC[,7],RESOURCE_REC[,7],length)) + 100;
 for(i in 1:(time_max-1)){
     res_t <- RESOURCE_REC[RESOURCE_REC[,7]==i,];
+    if(i > 1){
+        res_t <- res_t[res_t[,11] > 0,]; # Only look at res not just added
+    }
     gens  <- c(gens, i);
     abun  <- c(abun, dim(res_t)[1]);
     par(mfrow=c(2,1),mar=c(0,0,0,0));
@@ -121,6 +124,7 @@ for(i in 1:(time_max-1)){
     par(mar=c(4,4,1,1));
     plot(x=gens, y=abun, pch=20, type="l", lwd=2, ylim=c(0, ymaxi),
          xlim=c(0,time_max), xlab="Time Step", ylab="Abundance");
+    abline(h=parameters[7], col="red", lwd=0.8, lty="dashed");
     Sys.sleep(0.1);
 }
 

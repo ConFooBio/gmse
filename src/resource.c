@@ -6,11 +6,13 @@
 /* =============================================================================
  * This function just adds a time step to the relevant individual column 
  * ========================================================================== */
-void add_time(double **res_adding, int time_trait, int rows, int time_para){
+void add_time(double **res_adding, int time_trait, int rows, int time_para,
+              int age_trait){
     int resource;
     
     for(resource = 0; resource < rows; resource++){
-        res_adding[resource][time_trait] = time_para;   
+        res_adding[resource][time_trait] = time_para;
+        res_adding[resource][age_trait]++;
     }
 }
 /* ===========================================================================*/
@@ -227,6 +229,7 @@ void res_place(double **make, double **old, int res_added, int old_number,
             for(trait = 1; trait < traits; trait++){
                 make[newbie][trait] = old[resource][trait];
             }
+            make[newbie][10] = 0;
             res_index++;
         }
         to_make = to_add;
@@ -241,9 +244,9 @@ void res_place(double **make, double **old, int res_added, int old_number,
  * should be removed (e.g., an individual should die at a fixed rate
  * Inputs include:
  *     res_adding: data frame of individuals to potentially be removed
- *     rows: total number of rows in the res_addign data frame
- *     rm_row: which row in res_adding is the removal (i.e., death) parameter
- *     type: Type of removal (0: None, 1: uniform)
+ *     rows: total number of rows in the res_adding data frame
+ *     rm_row: which col in res_adding is the removal (i.e., death) parameter
+ *     type: Type of removal (0: None, 1: uniform, 2: K based)
  *     K: Carrying capacity on removal/death -- only used some cases 
  * ========================================================================== */
 void res_remove(double **res_removing, int rows, int rm_row, int type, int K){
@@ -251,7 +254,7 @@ void res_remove(double **res_removing, int rows, int rm_row, int type, int K){
     int over_K;
     double rand_unif;
     double rm_odds;
-    
+
     switch(type){
         case 0: /* No removal */
             break;
@@ -273,11 +276,12 @@ void res_remove(double **res_removing, int rows, int rm_row, int type, int K){
                         res_removing[resource][rm_row] = -1;   
                     }
                 }
+                printf("%d\t%d\t%d\tSim says that we're over K \n",rows,K,over_K);
             }
             break;
-    default:
-        printf("ERROR: Resource removal/death type set incorrectly \n");
-    break;
+        default:
+            printf("ERROR: Resource removal/death type set incorrectly \n");
+        break;
     }
 }
 /* ===========================================================================*/
@@ -378,6 +382,9 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     /* Do the biology here now */
     /* ====================================================================== */
     
+    /* Resource time step and age needs to be increased by one */
+    add_time(res_old, 6, res_number, paras[0], 10);
+    
     /* Resources move according to move function and parameter) */
     mover(res_old, 3, 4, 5, res_number, paras[1], land, land_x, land_y, 
           paras[2]); 
@@ -430,7 +437,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
         resource_new++;
     }
     
-    add_time(res_new, 6, res_num_total, paras[0]);
+    /* add_time(res_new, 6, res_num_total, paras[0]); */
     
     /* This code switches from C back to R */
     /* ====================================================================== */        
