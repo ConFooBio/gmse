@@ -19,14 +19,14 @@ proc_start <- proc.time();
 
 pop_model       <- "IBM";
 RESOURCE_ini    <- 100;
-time_max        <- 200;
+time_max        <- 100;
 time            <- 0;
 land_dim_1      <- 50;
 land_dim_2      <- 50;
 movement        <- 0.2;
 res_types_ini   <- 1;
-remove_pr       <- 0.01;
-lambda          <- 0.4;
+remove_pr       <- 0.4;
+lambda          <- 0.2;
 
 # Set the landscape
 LANDSCAPE_r  <- make_landscape( model      = pop_model, 
@@ -52,8 +52,9 @@ parameters <- c(time,    # 0. The dynamic time step for each function to use
                 1,       # 1. The edge effect (0: nothing, 1: torus)
                 2,       # 2. Type of movement (0: none, 1: uniform, 2: Poisson)
                 2,       # 3. Type of birth (0: none, 1: uniform, 2: Poisson)
-                1,       # 4. Type of death (0: none, 1: uniform)
-                300      # 5. Carrying capacity for birth
+                2,       # 4. Type of death (0: none, 1: uniform, 2: K-based)
+                cells,   # 5. Carrying capacity for birth (-1 = unregulated)
+                200      # 6. Carrying capacity for death (-1 = unregulated)
                 );
                 
 RESOURCE_REC <- NULL;
@@ -76,7 +77,6 @@ while(time < time_max){
 
 proc_end <- proc.time();
 
-print(proc_end - proc_start);
 
 colnames(RESOURCE_REC) <- c("Resource_ID",
                             "Resource_type_1",
@@ -87,7 +87,8 @@ colnames(RESOURCE_REC) <- c("Resource_ID",
                             "Resource_time",
                             "Resource_rm_pr",
                             "Resource_growth",
-                            "Resource_grown"
+                            "Resource_grown",
+                            "Resource_age"
                             );
 
 
@@ -109,6 +110,7 @@ gens <- NULL;
 abun <- NULL;
 land_cols <- c("#F2F2F2FF", "#ECB176FF", "#000000"); 
 
+ymaxi <- max(tapply(RESOURCE_REC[,7],RESOURCE_REC[,7],length)) + 300;
 for(i in 1:(time_max-1)){
     res_t <- RESOURCE_REC[RESOURCE_REC[,7]==i,];
     gens  <- c(gens, i);
@@ -117,14 +119,14 @@ for(i in 1:(time_max-1)){
     indis  <- ind_to_land(inds=res_t, landscape=LANDSCAPE_r);
     image(indis, col=land_cols, xaxt="n", yaxt="n");
     par(mar=c(4,4,1,1));
-    plot(x=gens, y=abun, pch=20, type="b", lwd=2, ylim=c(0,parameters[6] + 50),
+    plot(x=gens, y=abun, pch=20, type="l", lwd=2, ylim=c(0, ymaxi),
          xlim=c(0,time_max), xlab="Time Step", ylab="Abundance");
     Sys.sleep(0.1);
 }
 
 
 
-
+print(proc_end - proc_start);
 
 
 

@@ -244,22 +244,37 @@ void res_place(double **make, double **old, int res_added, int old_number,
  *     rows: total number of rows in the res_addign data frame
  *     rm_row: which row in res_adding is the removal (i.e., death) parameter
  *     type: Type of removal (0: None, 1: uniform)
+ *     K: Carrying capacity on removal/death -- only used some cases 
  * ========================================================================== */
-void res_remove(double **res_removing, int rows, int rm_row, int type){
+void res_remove(double **res_removing, int rows, int rm_row, int type, int K){
     int resource;
+    int over_K;
     double rand_unif;
+    double rm_odds;
     
     switch(type){
-    case 0: /* No removal */
-break;
-    case 1:
-        for(resource = 0; resource < rows; resource++){
-            rand_unif = runif(0, 1);
-            if(rand_unif < res_removing[resource][rm_row]){
-                res_removing[resource][rm_row] = -1;   
+        case 0: /* No removal */
+            break;
+        case 1:
+            for(resource = 0; resource < rows; resource++){
+                rand_unif = runif(0, 1);
+                if(rand_unif < res_removing[resource][rm_row]){
+                    res_removing[resource][rm_row] = -1;   
+                }
             }
-        }
-        break;
+            break;
+        case 2: 
+            over_K  = rows - K;
+            if(over_K > 0){
+                rm_odds = (double) over_K / (rows + K);
+                for(resource = 0; resource < rows; resource++){
+                    rand_unif = runif(0, 1);
+                    if(rand_unif < rm_odds){
+                        res_removing[resource][rm_row] = -1;   
+                    }
+                }
+            }
+            break;
     default:
         printf("ERROR: Resource removal/death type set incorrectly \n");
     break;
@@ -380,7 +395,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     res_place(res_make, res_old, res_nums_added, res_number, trait_number, 9);
     
     /* Identify, and calculate the number, of removed individuals */    
-    res_remove(res_old, res_number, 7, paras[4]);
+    res_remove(res_old, res_number, 7, paras[4], paras[6]);
     res_nums_subtracted = 0; 
     for(resource = 0; resource < res_number; resource++){
         if(res_old[resource][7] < 0){
