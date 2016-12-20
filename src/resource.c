@@ -269,14 +269,13 @@ void res_remove(double **res_removing, int rows, int rm_row, int type, int K){
         case 2: 
             over_K  = rows - K;
             if(over_K > 0){
-                rm_odds = (double) over_K / (rows + K);
+                rm_odds = (double) over_K / rows;
                 for(resource = 0; resource < rows; resource++){
                     rand_unif = runif(0, 1);
                     if(rand_unif < rm_odds){
                         res_removing[resource][rm_row] = -1;   
                     }
                 }
-                printf("%d\t%d\t%d\tSim says that we're over K \n",rows,K,over_K);
             }
             break;
         default:
