@@ -13,22 +13,26 @@ source("R/initialise.R");
 source("R/landscape.R");
 source("R/resource.R");
 
+
+proc_start <- proc.time();
+
+
 pop_model       <- "IBM";
 RESOURCE_ini    <- 100;
-time_max        <- 100;
+time_max        <- 200;
 time            <- 0;
-land_dim_1      <- 20;
-land_dim_2      <- 20;
+land_dim_1      <- 50;
+land_dim_2      <- 50;
 movement        <- 0.2;
 res_types_ini   <- 1;
-remove_pr       <- 0.001;
-lambda          <- 1.5;
+remove_pr       <- 0.01;
+lambda          <- 0.4;
 
 # Set the landscape
 LANDSCAPE_r  <- make_landscape( model      = pop_model, 
                                 rows       = land_dim_1, 
                                 cols       = land_dim_2, 
-                                cell_types = 0 
+                                cell_types = 2
                               );
 
 # Set the starting conditions for one resource
@@ -49,7 +53,7 @@ parameters <- c(time,    # 0. The dynamic time step for each function to use
                 2,       # 2. Type of movement (0: none, 1: uniform, 2: Poisson)
                 2,       # 3. Type of birth (0: none, 1: uniform, 2: Poisson)
                 1,       # 4. Type of death (0: none, 1: uniform)
-                cells    # 5. Carrying capacity for birth
+                300      # 5. Carrying capacity for birth
                 );
                 
 RESOURCE_REC <- NULL;
@@ -70,8 +74,9 @@ while(time < time_max){
    }
 }
 
+proc_end <- proc.time();
 
-
+print(proc_end - proc_start);
 
 colnames(RESOURCE_REC) <- c("Resource_ID",
                             "Resource_type_1",
@@ -87,23 +92,46 @@ colnames(RESOURCE_REC) <- c("Resource_ID",
 
 
 
-# For fun, for now, let's see the indivdiuals move around
+# Actually put the individuals on the landscape with function below
+ind_to_land <- function(inds, landscape){
+    ind_rep <- max(landscape) + 1;
+
+    for(i in 1:dim(inds)[1]){
+        x <- as.numeric(inds[i,4]);
+        y <- as.numeric(inds[i,5]);
+        landscape[x,y] <- ind_rep;
+    }
+    
+    return(landscape);
+}
+
 gens <- NULL;
 abun <- NULL;
+land_cols <- c("#F2F2F2FF", "#ECB176FF", "#000000"); 
+
 for(i in 1:(time_max-1)){
     res_t <- RESOURCE_REC[RESOURCE_REC[,7]==i,];
     gens  <- c(gens, i);
     abun  <- c(abun, dim(res_t)[1]);
     par(mfrow=c(2,1),mar=c(0,0,0,0));
-    plot(x=res_t[,4], y=res_t[,5], pch=20, col=res_t[,1], xlim=c(-2,22),
-         ylim=c(-2,22),xaxt="n",yaxt="n", cex=2);
+    indis  <- ind_to_land(inds=res_t, landscape=LANDSCAPE_r);
+    image(indis, col=land_cols, xaxt="n", yaxt="n");
     par(mar=c(4,4,1,1));
-    plot(x=gens, y=abun, pch=20, type="b", lwd=2, ylim=c(0,cells+40),
+    plot(x=gens, y=abun, pch=20, type="b", lwd=2, ylim=c(0,parameters[6] + 50),
          xlim=c(0,time_max), xlab="Time Step", ylab="Abundance");
-    p1 <- proc.time();
     Sys.sleep(0.1);
-    proc.time() - p1; # The cpu usage should be negligible
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
