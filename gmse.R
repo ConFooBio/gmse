@@ -26,7 +26,7 @@ land_dim_2      <- 50;
 movement        <- 0.2;
 res_types_ini   <- 1;
 remove_pr       <- 0.0;
-lambda          <- 0.7;
+lambda          <- 0.6;
 
 # Set the landscape
 LANDSCAPE_r  <- make_landscape( model      = pop_model, 
@@ -53,8 +53,8 @@ parameters <- c(time,    # 0. The dynamic time step for each function to use
                 2,       # 2. Type of movement (0: none, 1: uniform, 2: Poisson)
                 2,       # 3. Type of birth (0: none, 1: uniform, 2: Poisson)
                 2,       # 4. Type of death (0: none, 1: uniform, 2: K-based)
-                -1,   # 5. Carrying capacity for birth (-1 = unregulated)
-                300      # 6. Carrying capacity for death (-1 = unregulated)
+                cells,   # 5. Carrying capacity for birth (-1 = unregulated)
+                999      # 6. Carrying capacity for death (-1 = unregulated)
                 );
                 
 RESOURCE_REC <- NULL;
