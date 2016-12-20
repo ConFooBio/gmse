@@ -88,14 +88,21 @@ colnames(RESOURCE_REC) <- c("Resource_ID",
 
 
 # For fun, for now, let's see the indivdiuals move around
+gens <- NULL;
+abun <- NULL;
 for(i in 1:(time_max-1)){
     res_t <- RESOURCE_REC[RESOURCE_REC[,7]==i,];
-    par(mar=c(0,0,0,0))
+    gens  <- c(gens, i);
+    abun  <- c(abun, dim(res_t)[1]);
+    par(mfrow=c(2,1),mar=c(0,0,0,0));
     plot(x=res_t[,4], y=res_t[,5], pch=20, col=res_t[,1], xlim=c(-2,22),
          ylim=c(-2,22),xaxt="n",yaxt="n", cex=2);
-    p1 <- proc.time()
-    Sys.sleep(0.1)
-    proc.time() - p1 # The cpu usage should be negligible
+    par(mar=c(4,4,1,1));
+    plot(x=gens, y=abun, pch=20, type="b", lwd=2, ylim=c(0,cells+40),
+         xlim=c(0,time_max), xlab="Time Step", ylab="Abundance");
+    p1 <- proc.time();
+    Sys.sleep(0.1);
+    proc.time() - p1; # The cpu usage should be negligible
 }
 
 
