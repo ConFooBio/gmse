@@ -21,9 +21,9 @@ pop_model       <- "IBM";
 RESOURCE_ini    <- 100;
 time_max        <- 100;
 time            <- 0;
-land_dim_1      <- 50;
+land_dim_1      <- 100; # FIXIT: DIFFERENT X Y DIMS IS NOT WORKING
 land_dim_2      <- 50;
-movement        <- 0.2;
+movement        <- 0.5;
 res_types_ini   <- 1;
 remove_pr       <- 0.0;
 lambda          <- 0.6;
@@ -50,11 +50,11 @@ cells      <- land_dim_1 * land_dim_2; # Number of cells in the landscape
 
 parameters <- c(time,    # 0. The dynamic time step for each function to use 
                 1,       # 1. The edge effect (0: nothing, 1: torus)
-                2,       # 2. Type of movement (0: none, 1: uniform, 2: Poisson)
-                2,       # 3. Type of birth (0: none, 1: uniform, 2: Poisson)
-                2,       # 4. Type of death (0: none, 1: uniform, 2: K-based)
+                1,       # 2. Type of movement (0: none, 1: uniform, 2: Poisson)
+                0,       # 3. Type of birth (0: none, 1: uniform, 2: Poisson)
+                0,       # 4. Type of death (0: none, 1: uniform, 2: K-based)
                 cells,   # 5. Carrying capacity for birth (-1 = unregulated)
-                999      # 6. Carrying capacity for death (-1 = unregulated)
+                400      # 6. Carrying capacity for death (-1 = unregulated)
                 );
                 
 RESOURCE_REC <- NULL;
@@ -100,7 +100,7 @@ ind_to_land <- function(inds, landscape){
     for(i in 1:dim(inds)[1]){
         x <- as.numeric(inds[i,4]);
         y <- as.numeric(inds[i,5]);
-        landscape[x,y] <- ind_rep;
+        landscape[y,x] <- ind_rep;
     }
     
     return(landscape);
@@ -136,6 +136,23 @@ print(proc_end - proc_start);
 
 
 
+# The code below can be used to do the same as above, but see individuals move
+for(i in 1:(time_max-1)){
+    res_t <- RESOURCE_REC[RESOURCE_REC[,7]==i,];
+    if(i > 1){
+        res_t <- res_t[res_t[,11] > 0,]; # Only look at res not just added
+    }
+    gens  <- c(gens, i);
+    abun  <- c(abun, dim(res_t)[1]);
+    par(mfrow=c(2,1),mar=c(0,0,0,0));
+    plot(x=res_t[,4], y=res_t[,5], pch=20, col=res_t[,1], xlim=c(-2,100),
+         ylim=c(-2,100),xaxt="n",yaxt="n", cex=2);
+    par(mar=c(4,4,1,1));
+    plot(x=gens, y=abun, pch=20, type="l", lwd=2, ylim=c(0, ymaxi),
+         xlim=c(0,time_max), xlab="Time Step", ylab="Abundance");
+    abline(h=parameters[7], col="red", lwd=0.8, lty="dashed");
+    Sys.sleep(0.1);    
+}
 
 
 
