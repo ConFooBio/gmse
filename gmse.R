@@ -22,8 +22,8 @@ RESOURCE_ini    <- 100;
 time_max        <- 100;
 time            <- 0;
 land_dim_1      <- 100; # FIXIT: DIFFERENT X Y DIMS IS NOT WORKING
-land_dim_2      <- 50;
-movement        <- 0.5;
+land_dim_2      <- 100;
+movement        <- 0.1;
 res_types_ini   <- 1;
 remove_pr       <- 0.0;
 lambda          <- 0.6;
@@ -51,8 +51,8 @@ cells      <- land_dim_1 * land_dim_2; # Number of cells in the landscape
 parameters <- c(time,    # 0. The dynamic time step for each function to use 
                 1,       # 1. The edge effect (0: nothing, 1: torus)
                 1,       # 2. Type of movement (0: none, 1: uniform, 2: Poisson)
-                0,       # 3. Type of birth (0: none, 1: uniform, 2: Poisson)
-                0,       # 4. Type of death (0: none, 1: uniform, 2: K-based)
+                2,       # 3. Type of birth (0: none, 1: uniform, 2: Poisson)
+                2,       # 4. Type of death (0: none, 1: uniform, 2: K-based)
                 cells,   # 5. Carrying capacity for birth (-1 = unregulated)
                 400      # 6. Carrying capacity for death (-1 = unregulated)
                 );
