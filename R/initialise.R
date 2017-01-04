@@ -1,4 +1,4 @@
-#' Simulation initialisation
+#' Resource initialisation
 #'
 #' Function to initialise the landscape of the G-MSE model
 #'
@@ -11,8 +11,14 @@
 #'@param move Parameter affecting individual movement
 #'@return the_resources List of data frames of resources being modelled
 #'@export
-initialise <- function(model, resource_quantity, resource_types = 1, 
-                       rows, cols, move, rm_pr){
+make_resource <- function(model              = "IBM", 
+                          resource_quantity  = 100, 
+                          resource_types     = 1, 
+                          rows               = 100, 
+                          cols               = 100, 
+                          move               = 1, 
+                          rm_pr              = 0
+                          ){
     the_resource   <- NULL;
     if(model == "IBM"){
         IDs      <- seq(from = 1, to = resource_quantity, by = 1);

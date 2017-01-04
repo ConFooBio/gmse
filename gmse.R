@@ -54,7 +54,9 @@ parameters <- c(time,    # 0. The dynamic time step for each function to use
                 2,       # 3. Type of birth (0: none, 1: uniform, 2: Poisson)
                 2,       # 4. Type of death (0: none, 1: uniform, 2: K-based)
                 cells,   # 5. Carrying capacity for birth (-1 = unregulated)
-                400      # 6. Carrying capacity for death (-1 = unregulated)
+                400,     # 6. Carrying capacity for death (-1 = unregulated)
+                0,       # 7. The type of AGENT doing the observations
+                0        # 8. The type of observing done for estimating pop.
                 );
 
 # Create a warning somewhere if population size is not regulated

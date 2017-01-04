@@ -4,7 +4,8 @@
 \alias{initialise}
 \title{Simulation initialisation}
 \usage{
-initialise(model, resource_quantity, resource_types = 1, rows, cols, move)
+initialise(model, resource_quantity, resource_types = 1, rows, cols, move,
+  rm_pr)
 }
 \arguments{
 \item{model}{The type of model being applied (Currently only individual-based

@@ -10,7 +10,11 @@
 #' -- i.e., 'agent-based' -- models are allowed)
 #'@return Data frame of Resource 2 at the end of the time step
 #'@export
-resource <- function(resource, landscape, paras, model = "IBM") {
+resource <- function(resource  = NULL, 
+                     landscape = NULL, 
+                     paras     = NULL, 
+                     model     = "IBM"
+                     ) {
     check_model <- 0;
     if(model == "IBM"){
         # Relevant warnings below if the inputs are not of the right type
