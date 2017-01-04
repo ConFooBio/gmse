@@ -56,6 +56,8 @@ parameters <- c(time,    # 0. The dynamic time step for each function to use
                 cells,   # 5. Carrying capacity for birth (-1 = unregulated)
                 400      # 6. Carrying capacity for death (-1 = unregulated)
                 );
+
+# Create a warning somewhere if population size is not regulated
                 
 RESOURCE_REC <- NULL;
 RESOURCES    <- starting_resources;
@@ -81,6 +83,7 @@ proc_end <- proc.time();
 colnames(RESOURCE_REC) <- c("Resource_ID",
                             "Resource_type_1",
                             "Resource_type_2",
+                            "Resource_type_3",
                             "Resource_loc_x",
                             "Resource_loc_y",
                             "Resource_move",
@@ -98,8 +101,8 @@ ind_to_land <- function(inds, landscape){
     ind_rep <- max(landscape) + 1;
 
     for(i in 1:dim(inds)[1]){
-        x <- as.numeric(inds[i,4]);
-        y <- as.numeric(inds[i,5]);
+        x <- as.numeric(inds[i,5]);
+        y <- as.numeric(inds[i,6]);
         landscape[y,x] <- ind_rep;
     }
     
@@ -110,12 +113,12 @@ gens <- NULL;
 abun <- NULL;
 land_cols <- c("#F2F2F2FF", "#ECB176FF", "#000000"); 
 
-aged_res <- RESOURCE_REC[RESOURCE_REC[,11] > 0,];
-ymaxi    <- max(tapply(aged_res[,7],aged_res[,7],length)) + 100;
+aged_res <- RESOURCE_REC[RESOURCE_REC[,12] > 0,];
+ymaxi    <- max(tapply(aged_res[,8],aged_res[,8],length)) + 100;
 for(i in 1:(time_max-1)){
-    res_t <- RESOURCE_REC[RESOURCE_REC[,7]==i,];
+    res_t <- RESOURCE_REC[RESOURCE_REC[,8]==i,];
     if(i > 1){
-        res_t <- res_t[res_t[,11] > 0,]; # Only look at res not just added
+        res_t <- res_t[res_t[,12] > 0,]; # Only look at res not just added
     }
     gens  <- c(gens, i);
     abun  <- c(abun, dim(res_t)[1]);

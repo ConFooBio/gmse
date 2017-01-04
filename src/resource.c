@@ -382,30 +382,30 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     /* ====================================================================== */
     
     /* Resource time step and age needs to be increased by one */
-    add_time(res_old, 6, res_number, paras[0], 10);
+    add_time(res_old, 7, res_number, paras[0], 11);
     
     /* Resources move according to move function and parameter) */
-    mover(res_old, 3, 4, 5, res_number, paras[1], land, land_x, land_y, 
+    mover(res_old, 4, 5, 6, res_number, paras[1], land, land_x, land_y, 
           paras[2]); 
 
     /* Identify, and calculate the number of, added individuals */
-    res_add(res_old, res_number, 8, paras[3], paras[5]);
+    res_add(res_old, res_number, 9, paras[3], paras[5]);
     res_nums_added      = 0; 
     for(resource = 0; resource < res_number; resource++){
-        res_nums_added += res_old[resource][9];
+        res_nums_added += res_old[resource][10];
     }
     res_make = malloc(res_nums_added * sizeof(double *));
     for(resource = 0; resource < res_nums_added; resource++){
         res_make[resource] = malloc(trait_number * sizeof(double));   
     }
     res_place(res_make, res_old, res_nums_added, res_number, trait_number, 
-              9, 10);
+              10, 11);
     
     /* Identify, and calculate the number, of removed individuals */    
-    res_remove(res_old, res_number, 7, paras[4], paras[6]);
+    res_remove(res_old, res_number, 8, paras[4], paras[6]);
     res_nums_subtracted = 0; 
     for(resource = 0; resource < res_number; resource++){
-        if(res_old[resource][7] < 0){
+        if(res_old[resource][8] < 0){
             res_nums_subtracted += 1;
         }
     }
@@ -423,7 +423,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     /* eventually paste every res_num together that makes it out */
     resource_new = 0;
     for(resource = 0; resource < res_number; resource++){
-        if(res_old[resource][7] >= 0){
+        if(res_old[resource][8] >= 0){
             for(trait=0; trait < trait_number; trait++){
                 res_new[resource_new][trait] = res_old[resource][trait];
             }

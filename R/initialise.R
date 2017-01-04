@@ -16,9 +16,10 @@ initialise <- function(model, resource_quantity, resource_types = 1,
     the_resource   <- NULL;
     if(model == "IBM"){
         IDs      <- seq(from = 1, to = resource_quantity, by = 1);
-        type     <- sample(x = 1:resource_types, size = resource_quantity,
+        type1    <- sample(x = 1:resource_types, size = resource_quantity,
                            replace = TRUE);
         type2    <- rep(x = 0, times = resource_quantity);
+        type3    <- rep(x = 0, times = resource_quantity);
         xloc     <- sample(x = 1:rows, size = resource_quantity, 
                            replace = TRUE);
         yloc     <- sample(x = 1:cols, size = resource_quantity, 
@@ -29,7 +30,7 @@ initialise <- function(model, resource_quantity, resource_types = 1,
         growth   <- rep(x = lambda, times = resource_quantity);
         offspr   <- rep(x = 0, times = resource_quantity); # None at init
         age      <- rep(x = 0, times = resource_quantity); # Start age zero
-        the_resource <- cbind(IDs, type, type2, xloc, yloc, move, time, 
+        the_resource <- cbind(IDs, type1, type2, type3, xloc, yloc, move, time, 
                               remov_pr, growth, offspr, age);
     }
     if( is.null(the_resource) ){
