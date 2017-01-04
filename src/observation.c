@@ -3,11 +3,8 @@
 #include <Rinternals.h>
 #include <Rmath.h>
 
-
-
-
 /* =============================================================================
- * MAIN RESOURCE FUNCTION:
+ * MAIN OBSERVATION FUNCTION:
  * ===========================================================================*/
 
 /* =============================================================================
@@ -20,10 +17,9 @@
  *      LANDSCAPE:  An array of *row by *col size that makes up the landscape
  *      PARAMETERS: Parameters read into the function for population processes
  *      AGENT:      An array of *row agents and *col traits for each agent
- *      DATA:       An array of *row observations of resources
  * ===========================================================================*/
 /* TODO: Argument: VECTOR_OF_PARAMETER_VALUES */
-SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
+SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
  
     /* SOME STANDARD DECLARATIONS OF KEY VARIABLES AND POINTERS               */
     /* ====================================================================== */
@@ -87,7 +83,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     /* Code below remakes the RESOURCE matrix for easier use */
     res_number        = dim_RESOURCE[0];
     trait_number      = dim_RESOURCE[1];
-    resource_array           = malloc(res_number * sizeof(double *));
+    resource_array    = malloc(res_number * sizeof(double *));
     for(resource = 0; resource < res_number; resource++){
         resource_array[resource] = malloc(trait_number * sizeof(double));   
     } 
@@ -113,7 +109,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     agent_traits        = dim_AGENT[1];
     agent_array         = malloc(agent_number * sizeof(double *));
     for(agent = 0; agent < agent_number; agent++){
-        agent_array[resource] = malloc(agent_traits * sizeof(double));   
+        agent_array[agent] = malloc(agent_traits * sizeof(double));   
     } 
     vec_pos = 0;
     for(agent_trait = 0; agent_trait < agent_traits; agent_trait++){

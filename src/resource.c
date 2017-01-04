@@ -466,11 +466,11 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     }
     for(xloc = 0; xloc < land_x; xloc++){
         free(land[xloc]);        
-    }
+    }    
     for(resource = 0; resource < res_number; resource++){
         free(res_old[resource]);
-    } 
-    
+    }     
+
     return(RESOURCE_NEW); 
 }
 /* ===========================================================================*/

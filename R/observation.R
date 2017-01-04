@@ -15,8 +15,7 @@ observation <- function(resource  = NULL,
                         landscape = NULL, 
                         paras     = NULL, 
                         agent     = NULL,
-                        dat       = NULL, 
-                        model     = "IBM",
+                        model     = "IBM"
                         ){
     check_model <- 0;
     # Use DATA as an array for mark-recapture information
@@ -39,8 +38,7 @@ observation <- function(resource  = NULL,
         OBSERVE_OUT  <- run_observation_a( RESOURCE_c   = resource,
                                            LANDSCAPE_c  = landscape,
                                            PARAMETERS_c = paras,
-                                           AGENT_c      = agent,
-                                           DATA_c       = dat
+                                           AGENT_c      = agent
                                            );
         check_model <- 1;
     }
@@ -50,9 +48,6 @@ observation <- function(resource  = NULL,
     return(OBSERVE_OUT);
 }
 
-run_observation_a <- function(RESOURCE_c, LANDSCAPE_c, PARAMETERS_c, AGENT_c,
-                              DATA_c
-                              ){
-    .Call("observation", RESOURCE_c, LANDSCAPE_c, PARAMETERS_c, AGENT_c, 
-          DATA_c);
+run_observation_a <- function(RESOURCE_c, LANDSCAPE_c, PARAMETERS_c, AGENT_c){
+    .Call("observation", RESOURCE_c, LANDSCAPE_c, PARAMETERS_c, AGENT_c);
 }

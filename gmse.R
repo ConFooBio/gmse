@@ -12,7 +12,7 @@ dyn.load('src/resource.so') # Just keep this here for now.
 source("R/initialise.R");
 source("R/landscape.R");
 source("R/resource.R");
-
+source("R/observation.R");
 
 proc_start <- proc.time();
 
@@ -36,14 +36,17 @@ LANDSCAPE_r  <- make_landscape( model      = pop_model,
                               );
 
 # Set the starting conditions for one resource
-starting_resources <- initialise( model              = pop_model, 
-                                  resource_quantity  = RESOURCE_ini,
-                                  resource_types     = res_types_ini,
-                                  rows               = land_dim_1,
-                                  cols               = land_dim_2,
-                                  move               = movement,
-                                  rm_pr              = remove_pr
-                                );
+starting_resources <- make_resource( model              = pop_model, 
+                                     resource_quantity  = RESOURCE_ini,
+                                     resource_types     = res_types_ini,
+                                     rows               = land_dim_1,
+                                     cols               = land_dim_2,
+                                     move               = movement,
+                                     rm_pr              = remove_pr
+                                   );
+
+# This will obviously need to be changed -- new function in initialise.R
+AGENTS   <- matrix(data=0, nrow=2, ncol=2);
 
 time       <- time + 1;  # Ready for the initial time step.
 cells      <- land_dim_1 * land_dim_2; # Number of cells in the landscape
@@ -61,16 +64,24 @@ parameters <- c(time,    # 0. The dynamic time step for each function to use
 
 # Create a warning somewhere if population size is not regulated
                 
-RESOURCE_REC <- NULL;
-RESOURCES    <- starting_resources;
+RESOURCE_REC    <- NULL;
+RESOURCES       <- starting_resources;
+OBSERVATION_REC <- NULL;
 while(time < time_max){
-   RESOURCE_NEW  <- resource(resource   = RESOURCES,
-                             landscape  = LANDSCAPE_r,
-                             paras      = parameters,
-                             model      = "IBM"
-                             );
-   RESOURCES     <- RESOURCE_NEW;
-   RESOURCE_REC  <- rbind(RESOURCE_REC, RESOURCES);
+   RESOURCE_NEW      <- resource(resource   = RESOURCES,
+                                 landscape  = LANDSCAPE_r,
+                                 paras      = parameters,
+                                 model      = "IBM"
+                                 );
+   RESOURCES         <- RESOURCE_NEW;
+   RESOURCE_REC      <- rbind(RESOURCE_REC, RESOURCES);
+   
+   OBSERVATION_NEW   <- observation(resource   = RESOURCES,
+                                    landscape  = LANDSCAPE_r,
+                                    paras      = parameters,
+                                    agent      = AGENTS
+                                    );
+   OBSERVATION_REC   <- rbind(OBSERVATION_REC, OBSERVATION_NEW);
    time          <- time + 1;
    parameters[1] <- time;
    if(dim(RESOURCES)[1] < 10){
