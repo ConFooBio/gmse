@@ -418,9 +418,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
         res_new[resource] = malloc(trait_number * sizeof(double));   
     }    
     
-    /* TODO: Loop first through all retained res_nums, then new ones */
-    /* Will need some more complex rules for the below -- these loops will */
-    /* eventually paste every res_num together that makes it out */
+    /* Below pastes surviving old and new resources into the new array */
     resource_new = 0;
     for(resource = 0; resource < res_number; resource++){
         if(res_old[resource][8] >= 0){
@@ -466,12 +464,12 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     for(resource = 0; resource < res_num_total; resource++){
         free(res_new[resource]);
     }
-    for(resource = 0; resource < res_number; resource++){
-        free(res_old[resource]);
-    } 
     for(xloc = 0; xloc < land_x; xloc++){
         free(land[xloc]);        
     }
+    for(resource = 0; resource < res_number; resource++){
+        free(res_old[resource]);
+    } 
     
     return(RESOURCE_NEW); 
 }
