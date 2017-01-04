@@ -21,7 +21,7 @@ pop_model       <- "IBM";
 RESOURCE_ini    <- 100;
 time_max        <- 100;
 time            <- 0;
-land_dim_1      <- 100; # FIXIT: DIFFERENT X Y DIMS IS NOT WORKING
+land_dim_1      <- 100;
 land_dim_2      <- 100;
 movement        <- 0.1;
 res_types_ini   <- 1;

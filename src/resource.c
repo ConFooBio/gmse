@@ -185,7 +185,7 @@ void res_add(double **res_adding, int rows, int add, int type, int K_add){
             break;
     }
     if(K_add > 0){ /* If there is a carrying capacity applied to adding */
-        loops = 100000;
+        loops = 1000000000;
         while(added > K_add){ 
             rand_unif = runif(0, 1);
             sampled   = floor(rand_unif * rows);
