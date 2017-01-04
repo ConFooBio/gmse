@@ -7,7 +7,9 @@
 
 setwd("~/Dropbox/projects/gmse");
 
-dyn.load('src/resource.so') # Just keep this here for now.
+# Compiled using the following
+# R CMD SHLIB -o gmse.so resource.c observation.c
+dyn.load('src/gmse.so') # Just keep this here for now.
 
 source("R/initialise.R");
 source("R/landscape.R");
