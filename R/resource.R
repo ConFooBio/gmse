@@ -13,6 +13,17 @@
 resource <- function(resource, landscape, paras, model = "IBM") {
     check_model <- 0;
     if(model == "IBM"){
+        # Relevant warnings below if the inputs are not of the right type
+        if(!is.array(resource)){
+            stop("Warning: Resources need to be in an array");   
+        }
+        if(!is.array(landscape)){
+            stop("Warning: Landscape need to be in an array");
+        } # TODO: make sure paras is right length below
+        if(!is.vector(paras) | !is.numeric(paras)){
+            stop("Warning: Parameters must be in a numeric vector");
+        }
+        # If all checks out, then run the population model
         RESOURCE_OUT <- run_resource_a( RESOURCE_c   = resource,
                                         LANDSCAPE_c  = landscape,
                                         PARAMETERS_c = paras);
