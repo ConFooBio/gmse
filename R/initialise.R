@@ -37,8 +37,9 @@ make_resource <- function(model              = "IBM",
         growth   <- rep(x = lambda, times = resource_quantity);
         offspr   <- rep(x = 0, times = resource_quantity); # None at init
         age      <- rep(x = 0, times = resource_quantity); # Start age zero
+        mark     <- rep(x = 0, times = resource_quantity); # Can be marked
         the_resource <- cbind(IDs, type1, type2, type3, xloc, yloc, mover, time, 
-                              remov_pr, growth, offspr, age);
+                              remov_pr, growth, offspr, age, mark);
     }
     if( is.null(the_resource) ){
         stop("Invalid model selected (Must be 'IBM')");
@@ -93,8 +94,9 @@ make_agents <- function(model        = "IBM",
         time    <- rep(x = 0, times = agent_number);
         view    <- rep(x = vision, times = agent_number);
         error   <- rep(x = 0, times = agent_number);
+        marks   <- rep(x = 0, times = agent_number);
         the_agents <- cbind(IDs, type1, type2, type3, xloc, yloc, mover, time,
-                            view, error);
+                            view, error, marks);
     }
     if( is.null(the_agents) ){
         stop("Invalid model selected (Must be 'IBM')");

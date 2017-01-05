@@ -107,21 +107,23 @@ while(time < time_max){
 proc_end <- proc.time();
 
 
-colnames(RESOURCE_REC) <- c("Resource_ID",
-                            "Resource_type_1",
-                            "Resource_type_2",
-                            "Resource_type_3",
-                            "Resource_loc_x",
-                            "Resource_loc_y",
-                            "Resource_move",
-                            "Resource_time",
-                            "Resource_rm_pr",
-                            "Resource_growth",
-                            "Resource_grown",
-                            "Resource_age"
-                            );
+res_columns <- c("Resource_ID",
+                 "Resource_type_1",
+                 "Resource_type_2",
+                 "Resource_type_3",
+                 "Resource_loc_x",
+                 "Resource_loc_y",
+                 "Resource_move",
+                 "Resource_time",
+                 "Resource_rm_pr",
+                 "Resource_growth",
+                 "Resource_grown",
+                 "Resource_age",
+                 "Resource_marked"
+                );
 
-
+colnames(RESOURCE_REC)    <- res_columns;
+colnames(OBSERVATION_REC) <- res_columns;
 
 # Actually put the individuals on the landscape with function below
 ind_to_land <- function(inds, landscape){
