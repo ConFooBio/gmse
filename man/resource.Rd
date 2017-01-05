@@ -4,7 +4,7 @@
 \alias{resource}
 \title{Resource model}
 \usage{
-resource(resource, landscape, paras, model = "IBM")
+resource(resource = NULL, landscape = NULL, paras = NULL, model = "IBM")
 }
 \arguments{
 \item{resource}{Resource data frame at the start of the time step}

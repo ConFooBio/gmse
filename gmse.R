@@ -44,11 +44,18 @@ starting_resources <- make_resource( model              = pop_model,
                                      rows               = land_dim_1,
                                      cols               = land_dim_2,
                                      move               = movement,
-                                     rm_pr              = remove_pr
+                                     rm_pr              = remove_pr,
+                                     lambda             = lambda
                                    );
 
 # This will obviously need to be changed -- new function in initialise.R
-AGENTS   <- matrix(data=0, nrow=2, ncol=2);
+AGENTS   <- make_agents( model        = pop_model,
+                         agent_number = 2,
+                         type_counts  = c(1,1),
+                         vision       = 20,
+                         rows         = land_dim_1,
+                         cols         = land_dim_2
+                        );
 
 time       <- time + 1;  # Ready for the initial time step.
 cells      <- land_dim_1 * land_dim_2; # Number of cells in the landscape
@@ -61,7 +68,10 @@ parameters <- c(time,    # 0. The dynamic time step for each function to use
                 cells,   # 5. Carrying capacity for birth (-1 = unregulated)
                 400,     # 6. Carrying capacity for death (-1 = unregulated)
                 0,       # 7. The type of AGENT doing the observations
-                0        # 8. The type of observing done for estimating pop.
+                0,       # 8. The type of observing done for estimating pop.
+                0,       # 9. The type of resource observed (note: dynamic)
+                0,       # 10. Fix mark? Do observers mark exactly n resources?
+                1        # 11. Times resources observed during one time step
                 );
 
 # Create a warning somewhere if population size is not regulated
@@ -81,7 +91,9 @@ while(time < time_max){
    OBSERVATION_NEW   <- observation(resource   = RESOURCES,
                                     landscape  = LANDSCAPE_r,
                                     paras      = parameters,
-                                    agent      = AGENTS
+                                    agent      = AGENTS,
+                                    type       = 0, # Resource(s) observed
+                                    fix_mark   = FALSE
                                     );
    OBSERVATION_REC   <- rbind(OBSERVATION_REC, OBSERVATION_NEW);
    time          <- time + 1;

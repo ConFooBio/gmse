@@ -7,7 +7,7 @@
 #'@param landscape Data frame at the start of the time step
 #'@param paras Vector of parameter values to read into the model
 #'@param agent Agent data frame at the start of the time step
-#'@param dat The data frame recording observations that are made
+#'@param types The types of data being observed
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
 #'@return Data frame observations at the end of the time step
@@ -15,6 +15,8 @@ observation <- function(resource  = NULL,
                         landscape = NULL, 
                         paras     = NULL, 
                         agent     = NULL,
+                        type      = 0,
+                        fix_mark  = FALSE,
                         model     = "IBM"
                         ){
     check_model <- 0;
@@ -34,7 +36,10 @@ observation <- function(resource  = NULL,
         if(!is.array(agent)){
             stop("Warning: Agents need to be in an array");
         }
-        # If all checks out, then run the population model
+        # If all checks out, first put the type into paras for easier input 
+        paras[10] <- type;
+        paras[11] <- as.numeric(fix_mark); # Note: 'FALSE' coerced to zero
+        # Then run the population model
         OBSERVE_OUT  <- run_observation_a( RESOURCE_c   = resource,
                                            LANDSCAPE_c  = landscape,
                                            PARAMETERS_c = paras,
