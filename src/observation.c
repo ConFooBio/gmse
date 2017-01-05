@@ -3,6 +3,305 @@
 #include <Rinternals.h>
 #include <Rmath.h>
 
+
+/* =============================================================================
+ * This function moves agents on the landscape according to some rules
+ * For now, it is repeated in both c files, but if there are more functions
+ * that serve two purposes, then a general utilily c file might be created
+ * The 'edge' argument defines what happens at the landscape edge:
+ *     0: Nothing happens (individual is just off the map)
+ *     1: Torus landscape (individual wraps around to the other side)
+ * The 'type' argument defines the type of movement allowed:
+ *     0: No movement is allowed
+ *     1: Movement is random uniform from zero to move_para in any direction
+ *     2: Movement is poisson(move_para) in any direction
+ * ========================================================================== */
+void a_mover(double **agent_moving, int xloc, int yloc, int move_para, int rows,
+           int edge, double **landscape, int land_x, int land_y, int type){
+    
+    int a_num;        /* Agent number index                          */
+    int move_len;     /* Length of a move                            */
+    int move_dir;     /* Move direction (-1 or 1)                    */
+    int new_pos;      /* New position: check if over landscape edge  */
+    double rand_num;  /* Random number used for sampling             */
+    double rand_uni;  /* Random uniform number                       */
+    double rand_pois; /* Random poisson number                       */
+    double raw_move;  /* Movement length before floor() truncation   */
+
+    for(a_num=0; a_num < rows; a_num++){
+        /* Move first in the xloc direction --------------------------------- */
+        new_pos  = agent_moving[a_num][xloc];
+        rand_num = 0.5;
+        do{ /* Note that rand_num can never be exactly 0.5 */
+            rand_num = runif(0, 1);
+        } while(rand_num == 0.5);
+        if(rand_num > 0.5){
+            move_dir = 1;   
+        }else{
+            move_dir = -1;   
+        } /* Now we have the direction the resource is moving */
+        switch(type){
+            case 0: /* No change in position */
+                move_len = 0;
+                break;
+            case 1: /* Uniform selection of position change */
+                do{ /* Again, so that a_num never moves too far */
+                    rand_uni = runif(0, 1);
+                } while(rand_uni == 1.0);
+                raw_move = rand_uni * (agent_moving[a_num][move_para] + 1);
+                move_len = floor(raw_move);
+                break;
+            case 2: /* Poisson selection of position change */
+                rand_pois = rpois(agent_moving[a_num][move_para]);    
+                raw_move  = rand_pois * (agent_moving[a_num][move_para] + 1);
+                move_len  = floor(raw_move);
+                break;
+            default:
+                if(a_num == 0){
+                    printf("Unclear specification of movement type \n");
+                }
+                break;
+        }
+        new_pos  = agent_moving[a_num][xloc] + (move_dir * move_len); 
+        if(new_pos > land_x || new_pos < 0){ /* If off the edge */
+            switch(edge){
+                case 0: /* Nothing happens (effectively, no edge) */
+                    break;
+                case 1: /* Corresponds to a torus landscape */
+                    if(new_pos > land_x){
+                        new_pos = new_pos - land_x;   
+                    }
+                    if(new_pos < 0){
+                        new_pos = new_pos + land_x;   
+                    }
+                    break;
+                default:
+                    if(a_num == 0){
+                        printf("ERROR: Edge effects set incorrectly \n");
+                    }
+                    break;
+            }
+        }
+        agent_moving[a_num][xloc] = new_pos;
+        /* Move next in the yloc direction ---------------------------------- */
+        new_pos  = agent_moving[a_num][yloc];
+        rand_num = 0.5;
+        do{ /* Note that rand_num can never be exactly 0.5 */
+            rand_num = runif(0, 1);
+        } while(rand_num == 0.5);
+        if(rand_num > 0.5){
+            move_dir = 1;   
+        }else{
+            move_dir = -1;   
+        } /* Now we have the direction the resource is moving */
+        switch(type){
+            case 0: /* No change in position */
+                move_len = 0;
+                break;
+            case 1: /* Uniform selection of position change */
+                do{ /* Again, so that a_num never moves too far */
+                    rand_uni = runif(0, 1);
+                } while(rand_uni == 1.0);
+                raw_move = rand_uni * (agent_moving[a_num][move_para] + 1);
+                move_len = floor(raw_move);
+                break;
+            case 2: /* Poisson selection of position change */
+                rand_pois = rpois(agent_moving[a_num][move_para]);    
+                raw_move  = rand_pois * (agent_moving[a_num][move_para] + 1);
+                move_len  = floor(raw_move);
+                break;
+            default:
+                break;
+        }
+        new_pos  = agent_moving[a_num][yloc] + (move_dir * move_len); 
+        if(new_pos > land_y || new_pos < 0){ /* If off the edge */
+            switch(edge){
+                case 0: /* Nothing happens (effectively, no edge) */
+                    break;
+                case 1: /* Corresponds to a torus landscape */
+                    if(new_pos > land_y){
+                        new_pos = new_pos - land_y;  
+                    }
+                    if(new_pos < 0){
+                        new_pos = new_pos + land_y;   
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        agent_moving[a_num][yloc] = new_pos;
+    }
+}
+/* ===========================================================================*/
+
+
+
+
+/* =============================================================================
+ * This simulates one agent looking around: which resources does an agent see?
+ * Marks the resource_array accordingly
+ * ========================================================================== */
+int binoculars(int obs_x, int obs_y, int res_x, int res_y, int edge, int view,
+               int xdim, int ydim){
+    
+    int see_it;
+    double sq_xdist;
+    double sq_ydist;
+    double min_sq_x;
+    double min_sq_y;
+    double x_test;
+    double y_test;
+    double distance;
+    
+    see_it  = 0;
+    
+    switch(edge){
+        case 0:
+            sq_xdist = (obs_x - res_x) * (obs_x - res_x);
+            sq_ydist = (obs_y - res_y) * (obs_y - res_y);
+            distance = sqrt(sq_xdist + sq_ydist);
+            if(distance <= view){
+                see_it = 1;   
+            }
+            break;    
+        case 1: /* There's a cleverer way, but probably not a clearer one */
+            /* Get the squared distance on the x dimension */
+            min_sq_x = (obs_x - res_x) * (obs_x - res_x);
+            x_test   = ( (obs_x + xdim) - res_x) * ( (obs_x + xdim) - res_x);
+            if(x_test < min_sq_x){
+                min_sq_x = x_test;    
+            }
+            x_test   = (obs_x - (res_x + xdim) ) * (obs_x - (res_x + xdim) );
+            if(x_test < min_sq_x){
+                min_sq_x = x_test;    
+            }
+            sq_xdist = min_sq_x; /* Now have the squared x distance on torus */
+            /* Get the squared distance on the y dimension */
+            min_sq_y = (obs_y - res_y) * (obs_y - res_y);
+            y_test   = ( (obs_y + ydim) - res_y) * ( (obs_y + ydim) - res_y);
+            if(y_test < min_sq_y){
+                min_sq_y = y_test;   
+            }
+            y_test   = (obs_y - (res_y + ydim) ) * (obs_y - (res_y + ydim) );
+            if(y_test < min_sq_y){
+                min_sq_y = y_test;   
+            }    
+            sq_ydist = min_sq_y; /* Now have the squared x distance on torus */
+            distance = sqrt(sq_xdist + sq_ydist);
+            if(distance <= view){
+                see_it = 1;   
+            }            
+            break;
+        default: /* Default assumes no torus */
+            sq_xdist = (obs_x - res_x) * (obs_x - res_x);
+            sq_ydist = (obs_y - res_y) * (obs_y - res_y);
+            distance = sqrt(sq_xdist + sq_ydist);
+            if(distance <= view){
+                see_it = 1;   
+            }
+        break;    
+    }
+    
+    return see_it;
+}
+
+/* =============================================================================
+ * This simulates an individual agent doing some field work (observing)
+ * Inputs include:
+ *     resource_array: data frame of resources to be marked and/or recaptured
+ *     agent_array: data frame of agents, potentially doing the marking
+ *     paras: vector of parameter values
+ *     res_rows: Total number of rows in the res_adding data frame
+ *     worker: The row of the agent that is doing the working
+ * Output:
+ *     The resource_array is marked by a particular agent
+ * ========================================================================== */
+void field_work(double **resource_array, double **agent_array, double *paras,
+                int res_row, int worker, int find_proc){
+
+    int xloc;
+    int yloc;
+    int view;
+    int marks;
+    int edge;
+    
+    xloc  = (int) agent_array[worker][4];
+    yloc  = (int) agent_array[worker][5];
+    view  = (int) agent_array[worker][8];
+    marks = (int) agent_array[worker][10];
+    edge  = (int) paras[1];
+    
+    switch(find_proc){
+        case 0: /* Mark all individuals within view */
+            break;
+        case 1: /* Alternative (only one now) is to sample fixed number */
+/* TODO: For all resources, use the binoculars to see if seen */
+            break;
+        default:
+            printf("Error setting observation type: using vision-based CMR");
+            break;
+        
+    }
+    
+}
+
+/*
+count = find;
+while(count > 0){
+    samp_res = runif(0, 1) * ;
+    count--;    
+}
+*/
+
+/* =============================================================================
+ * CAPTURE MARK-RECAPTURE (CMR) METHOD:
+ * ===========================================================================*/
+/* =============================================================================
+ * This simulates the capture-mark-recapture of a resource type
+ * Inputs include:
+ *     resource_array: data frame of resources to be marked and/or recaptured
+ *     agent_array: data frame of agents, potentially doing the marking
+ *     paras: vector of parameter values
+ *     res_rows: Total number of resources that can be sampled
+ *     a_row: Total number agents that could possibly sample
+ * Output:
+ *     Accumlated markings of resources by agents
+ * ========================================================================== */
+
+void mark_res(double **resource_array, double **agent_array, double *paras, 
+              int res_row, int a_row){
+    
+    int resource;
+    int agent;
+    int count;
+    int find;
+    int is_fixed;
+    int find_type; /* Fixed number of observations? */
+    int edge;      /* How does edge woagent_arrayrk? (Effects agent vision & movement) */
+    int samp_res;  /* A randomly sampled resource */
+    
+    find_type = (int) paras[10]; /* Conversion to int type with type caster */
+    if(find_type > 0){
+        find      = (int) find_type; 
+        find_type = 1;
+    }
+    
+    for(agent = 0; agent < a_row; agent++){
+        if(agent_array[agent][1] == 0){ /* Zeros are manager agents */
+            field_work();
+        }
+    }
+
+
+                   
+    for(resource = 0; resource < rows; resource++){
+        res_adding[resource][time_trait] = time_para;
+        res_adding[resource][age_trait]++;
+    }
+}
+
+
 /* =============================================================================
  * MAIN OBSERVATION FUNCTION:
  * ===========================================================================*/
@@ -37,6 +336,8 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int protected_n;         /* Number of protected R objects */
     int vec_pos;             /* Vector position for making arrays */
     int new_obs;             /* New observations made */
+    int method;              /* Type of method used to estimate pop size */
+    int who_observes;        /* Type of agent that does the observing */
     int *add_resource;       /* Vector of added resources */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
@@ -122,7 +423,21 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
 
     /* Do the biology here now */
     /* ====================================================================== */
+
     
+    who_observes = paras[7];  /* What type of agent does the observing */   
+    method       = paras[8];  /* Specifies the method of estimation used */
+
+    
+    /* This switch function calls a method of population size estimation */
+    switch(method){
+       case 0:
+           mark_recapture();
+       default:
+           printf("ERROR: No observation method set: using mark-recapture \n");
+           mark_recapture();
+    }
+        
     new_obs   = 10;
     obs_array = malloc(new_obs * sizeof(double *));
     for(resource = 0; resource < new_obs; resource++){
@@ -135,7 +450,9 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
                 resource_array[resource][resource_trait];
         }
     }
+
     
+        
     /* This code switches from C back to R */
     /* ====================================================================== */        
     
