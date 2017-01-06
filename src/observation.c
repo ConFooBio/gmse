@@ -215,21 +215,23 @@ int binos(int obs_x, int obs_y, int res_x, int res_y, int edge, int view,
  *     The resource_array is marked by a particular agent
  * ========================================================================== */
 void field_work(double **resource_array, double **agent_array, double *paras,
-                int res_rows, int worker, int find_proc){
+                int res_rows, int worker, int find_proc, int res_type, int itr){
 
     int xloc;     /* x location of the agent doing work */
     int yloc;     /* y location of the agent doing work */
     int view;     /* The 'view' (or sampling range) around agent's location */
     int edge;     /* What type of edge is being used in the simulation */
     int resource; /* Index for resource array */
-    int res_x;    /* x location of a resource */
-    int res_y;    /* y location of a resource */
+    int r_x;      /* x location of a resource */
+    int r_y;      /* y location of a resource */
     int seeme;    /* Test whether or not observer sees/captures the resource */
     int ldx;      /* Landscape dimension on the x-axis */
     int ldy;      /* Landscape dimension on the y-axis */
     int fixn;     /* If procedure is to sample a fixed number; how many? */
+    int remrk;    /* Remark if not on the first iteration (itr) (0/1 = N/Y) */
     int count;    /* Index for sampling a fixed number of resource */
     int sampled;  /* The resource randomly sampled */
+    int type_num; /* Number of the type of resource to be fixed sampled */
     double sampl; /* Random uniform sampling of a resource */
     
     xloc  = (int) agent_array[worker][4];
@@ -239,49 +241,67 @@ void field_work(double **resource_array, double **agent_array, double *paras,
     ldx   = (int) paras[12];
     ldy   = (int) paras[13];
     fixn  = (int) paras[10];
+    remrk = (int) paras[16];
     
     switch(find_proc){
         case 0: /* Mark all individuals within view */
             for(resource = 0; resource < res_rows; resource++){
-               res_x = resource_array[resource][4];
-               res_y = resource_array[resource][5];
-               seeme = binos(xloc, yloc, res_x, res_y, edge, view, ldx, ldy);
-               agent_array[worker][10]      += seeme;
-               resource_array[resource][12] += seeme;
+                if(resource_array[resource][1] == res_type){
+                    r_x   = resource_array[resource][4];
+                    r_y   = resource_array[resource][5];
+                    seeme = binos(xloc, yloc, r_x, r_y, edge, view, ldx, ldy);
+                    agent_array[worker][10]      += seeme;
+                    resource_array[resource][12] += seeme;
+                }
             }
             break;
         case 1: /* Alternative (only one now) is to sample fixed number */
-            if(res_rows > fixn){ /* If more resources than the sample number */
+            type_num = 0;
+            for(resource = 0; resource < res_rows; resource++){
+                if(resource_array[resource][1] == res_type){
+                    type_num++;   
+                }
+            }
+            if(type_num > fixn){ /* If more resources than the sample number */
                /* Temp tallies are used here to sample without replacement */
-               for(resource = 0; resource < res_rows; resource++){
-                   resource_array[resource][13] = 0; /* Start off untallied */   
-               }
-               count = fixn;
-               sampl = 0;
-               while(count > 0){
-                   do{ /* Find an un-tallied resource in the array */
-                       sampl   = runif(0, 1) * res_rows;
-                       sampled = (int) sampl;
-                   }while(resource_array[sampled][13] == 1 && sampl < res_rows);
-                   resource_array[sampled][12]++;   /* Marks accumulate  */
-                   resource_array[sampled][13] = 1; /* Tally is noted    */
-                   count--;
-               }
+                for(resource = 0; resource < res_rows; resource++){
+                    if(resource_array[resource][1] == res_type){
+                        resource_array[resource][13] = 0; /* Start untallied */
+                    }
+                }
+                count = fixn;
+                sampl = 0;
+                while(count > 0){
+                    do{ /* Find an un-tallied resource in the array */
+                        sampl   = runif(0, 1) * res_rows;
+                        sampled = (int) sampl;
+                    } while(resource_array[sampled][13] == 1        && 
+                            resource_array[sampled][1]  == res_type &&
+                            sampl < res_rows /* In case sample returns 1 */
+                            );
+                    resource_array[sampled][12]++;   /* Marks accumulate  */
+                    resource_array[sampled][13] = 1; /* Tally is noted    */
+                    count--;
+                }
             }else{ /* Else all of the resources should be marked */
                 for(resource = 0; resource < res_rows; resource++){
-                    resource_array[resource][12]++; /* Mark all resources */  
+                    if(resource_array[resource][1] == res_type){
+                        resource_array[resource][12]++; /* Mark all resources */
+                    }
                 }
-                agent_array[worker][10] += res_rows; /* All resources marked */ 
+                agent_array[worker][10] += type_num; /* All resources marked */ 
             }
             break;
         default:
             printf("Error setting observation type: using vision-based CMR");
             for(resource = 0; resource < res_rows; resource++){
-                res_x = resource_array[resource][4];
-                res_y = resource_array[resource][5];
-                seeme = binos(xloc, yloc, res_x, res_y, edge, view, ldx, ldy);
-                agent_array[worker][10]      += seeme;
-                resource_array[resource][12] += seeme;
+                if(resource_array[resource][1] == res_type){
+                    r_x = resource_array[resource][4];
+                    r_y = resource_array[resource][5];
+                    seeme = binos(xloc, yloc, r_x, r_y, edge, view, ldx, ldy);
+                    agent_array[worker][10]      += seeme;
+                    resource_array[resource][12] += seeme;
+                }
             }
             break;
     }
@@ -303,13 +323,13 @@ void field_work(double **resource_array, double **agent_array, double *paras,
  *     Accumlated markings of resources by agents
  * ========================================================================== */
 void mark_res(double **resource_array, double **agent_array, double **land,
-              double *paras, int res_rows, int a_row){
+              double *paras, int res_rows, int a_row, int res_type, int itr){
     
     int resource;
     int agent;
     int count;
     int is_fixed;
-    int ft;          /* Find type -- fixed number of observations? */
+    int find_type;   /* Find type -- fixed number of observations? */
     int edge;        /* How does edge work? (Effects agent vision & movement) */
     int samp_res;    /* A randomly sampled resource */
     int ldx, ldy;
@@ -322,14 +342,15 @@ void mark_res(double **resource_array, double **agent_array, double **land,
     ldy        = (int) paras[13];
     move_t     = (int) paras[14]; /* Type of movement being used  */
 
-    ft = (int) paras[10]; /* Conversion to int type with type caster */
-    if(ft > 0){
-        ft = 1;
+    find_type = (int) paras[10]; /* Conversion to int type with type caster */
+    if(find_type > 0){
+        find_type = 1;
     }
     
     for(agent = 0; agent < a_row; agent++){
         if(agent_array[agent][1] == 0){ /* Zeros are manager agents */
-            field_work(resource_array, agent_array, paras, res_rows, agent, ft);
+            field_work(resource_array, agent_array, paras, res_rows, agent, 
+                       find_type, res_type, itr);
         }
         if(sample_num > 1){
             a_mover(agent_array, 4, 5, 6, edge, agent, land, ldx, ldy, move_t);
@@ -375,6 +396,8 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int method;              /* Type of method used to estimate pop size */
     int who_observes;        /* Type of agent that does the observing */
     int times_obs;           /* Number of times observation is conducted */
+    int obs_iter;            /* To count up -- which observation iteration */
+    int res_type;            /* Types of resources that are being observed */
     int agent_return;        /* Do agents return to location after moving */
     int *save_x;             /* Saved x locations of agents if moving */
     int *save_y;             /* Saved y locations of agents if moving */
@@ -466,9 +489,10 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
 
     who_observes = (int) paras[7];  /* What type of agent does the observing */   
     method       = (int) paras[8];  /* Specifies method of estimation used   */
+    res_type     = (int) paras[9];  /* What type of resources are observed   */
     times_obs    = (int) paras[11]; /* Number of times observation conducted */
     agent_return = (int) paras[15]; /* Do the agents return back to location */
-
+    
     for(resource = 0; resource < res_number; resource++){
         resource_array[resource][12] = 0;   /* Set marks to zero   */
         resource_array[resource][13] = 0;   /* Set tallies to zero */
@@ -486,18 +510,22 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     /* This switch function calls a method of population size estimation */
     switch(method){
        case 0:
+           obs_iter = 0;
            while(times_obs > 0){
                mark_res(resource_array, agent_array, land, paras, res_number, 
-                        agent_number);
+                        agent_number, res_type, obs_iter);
                times_obs--; /* Then move agents if need be for new sample */
+               obs_iter++;
            }
            break;
        default:
            printf("ERROR: No observation method set: marking all in view \n");
+           obs_iter = 0;
            while(times_obs > 0){
                mark_res(resource_array, agent_array, land, paras, res_number, 
-                        agent_number);
+                        agent_number, res_type, obs_iter);
                times_obs--; /* Then move agents if need be for new sample */
+               obs_iter++;
            }
        break;
     }

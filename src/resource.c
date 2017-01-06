@@ -25,7 +25,8 @@ void add_time(double **res_adding, int time_trait, int rows, int time_para,
  * The 'type' argument defines the type of movement allowed:
  *     0: No movement is allowed
  *     1: Movement is random uniform from zero to move_para in any direction
- *     2: Movement is poisson(move_para) in any direction
+ *     2: Movement length is poisson(move_para) in x then y direction
+ *     3: Movement length is poisson(move_para) in any direction
  * ========================================================================== */
 void mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
            int edge, double **landscape, int land_x, int land_y, int type){

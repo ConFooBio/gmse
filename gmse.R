@@ -52,9 +52,10 @@ starting_resources <- make_resource( model              = pop_model,
 AGENTS   <- make_agents( model        = pop_model,
                          agent_number = 2,
                          type_counts  = c(1,1),
-                         vision       = 20,
+                         vision       = 40,
                          rows         = land_dim_1,
-                         cols         = land_dim_2
+                         cols         = land_dim_2,
+                         move         = 99 # Make sure <= landscape dims
                         );
 
 time       <- time + 1;  # Ready for the initial time step.
@@ -72,13 +73,14 @@ parameters <- c(time,    # 0. The dynamic time step for each function to use
                 400,     # 6. Carrying capacity for death (-1 = unregulated)
                 0,       # 7. The type of AGENT doing the observations
                 0,       # 8. The type of observing done for estimating pop.
-                0,       # 9. The type of resource observed (note: dynamic)
+                1,       # 9. The type of resource observed (note: dynamic)
                 0,       # 10. Fix mark? Do observers mark exactly n resources?
                 1,       # 11. Times resources observed during one time step
                 ldx,     # 12. Land dimension on the x axis
                 ldy,     # 13. Land dimension on the y axis
                 1,       # 14. Agent movement (option same as #2)
-                1        # 15. Agents return back after field work (0/1 = N/Y)
+                1,       # 15. Agents return back after field work (0/1 = N/Y)
+                1        # 16. Mark 1st time, then capture if marked (0/1 = N/Y)
                 );
 
 # Create a warning somewhere if population size is not regulated
@@ -99,9 +101,12 @@ while(time < time_max){
                                     landscape  = LANDSCAPE_r,
                                     paras      = parameters,
                                     agent      = AGENTS,
-                                    type       = 0, # Resource(s) observed
-                                    fix_mark   = FALSE
+                                    type       = 1,      # Resource(s) observed
+                                    fix_mark   = FALSE,  # Fixed or view-based
+                                    times      = 2,      # Times observed
+                                    recapt     = TRUE    # Rec cond on first
                                     );
+   
    OBSERVATION_REC   <- rbind(OBSERVATION_REC, OBSERVATION_NEW);
    time          <- time + 1;
    parameters[1] <- time;
@@ -126,11 +131,21 @@ res_columns <- c("Resource_ID",
                  "Resource_growth",
                  "Resource_grown",
                  "Resource_age",
-                 "Resource_marked"
+                 "Resource_marked",
+                 "Resource_tally"
                 );
 
 colnames(RESOURCE_REC)    <- res_columns;
 colnames(OBSERVATION_REC) <- res_columns;
+
+# Give this it's own place in an analysis file later
+cmr_estimate <- function(obs, year){
+    dat <- obs[obs[,8]==year,];
+    K_tot   <- dim(dat)[1];
+    k_cau   <- dat[dat[,13]==2,];
+    
+}
+
 
 # Actually put the individuals on the landscape with function below
 ind_to_land <- function(inds, landscape){
@@ -147,12 +162,14 @@ ind_to_land <- function(inds, landscape){
 
 gens <- NULL;
 abun <- NULL;
+est  <- NULL;
 land_cols <- c("#F2F2F2FF", "#ECB176FF", "#000000"); 
 
 aged_res <- RESOURCE_REC[RESOURCE_REC[,12] > 0,];
 ymaxi    <- max(tapply(aged_res[,8],aged_res[,8],length)) + 100;
 for(i in 1:(time_max-1)){
     res_t <- RESOURCE_REC[RESOURCE_REC[,8]==i,];
+    obs_t <- OBSERVATION_REC[OBSERVATION_REC[,8]==i,];
     if(i > 1){
         res_t <- res_t[res_t[,12] > 0,]; # Only look at res not just added
     }
@@ -164,6 +181,8 @@ for(i in 1:(time_max-1)){
     par(mar=c(4,4,1,1));
     plot(x=gens, y=abun, pch=20, type="l", lwd=2, ylim=c(0, ymaxi),
          xlim=c(0,time_max), xlab="Time Step", ylab="Abundance");
+    est <- c(est, dim(obs_t)[1] / 5);
+    points(x=gens, y=est, pch=20, type="l", lwd=2, col="blue");
     abline(h=parameters[7], col="red", lwd=0.8, lty="dashed");
     Sys.sleep(0.1);
 }

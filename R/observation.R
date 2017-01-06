@@ -15,8 +15,10 @@ observation <- function(resource  = NULL,
                         landscape = NULL, 
                         paras     = NULL, 
                         agent     = NULL,
-                        type      = 0,
+                        type      = 1,
                         fix_mark  = FALSE,
+                        times     = 1,
+                        recapt    = FALSE,
                         model     = "IBM"
                         ){
     check_model <- 0;
@@ -39,6 +41,8 @@ observation <- function(resource  = NULL,
         # If all checks out, first put the type into paras for easier input 
         paras[10] <- type;
         paras[11] <- as.numeric(fix_mark); # Note: 'FALSE' coerced to zero
+        paras[12] <- times;
+        paras[17] <- recapt;
         # Then run the population model
         OBSERVE_OUT  <- run_observation_a( RESOURCE_c   = resource,
                                            LANDSCAPE_c  = landscape,
