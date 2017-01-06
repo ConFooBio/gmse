@@ -205,9 +205,17 @@ void res_add(double **res_adding, int rows, int add, int type, int K_add){
 
 /* =============================================================================
  * This function adds in the new resource to their own array
+ * Inputs include:
+ *     make: The data frame being used to place old and new resources
+ *     old: The old data frame that stores the old resources to be retained
+ *     res_added: The number of new resources to be added
+ *     old_number: The number of old resources to be retained in the add
+ *     traits: The number of traits to be added
+ *     realised: The column in the old array that defines number added to new
+ *     age: The column in which age is located (always starts at zero)
  * ========================================================================== */
 void res_place(double **make, double **old, int res_added, int old_number, 
-               int traits, int realised, int age_trait){
+               int traits, int realised, int age){
     int resource;
     int newbie;
     int trait;
@@ -221,7 +229,7 @@ void res_place(double **make, double **old, int res_added, int old_number,
     to_make   = 0;
     to_add    = 0; /* Maybe try to cut down the loops here later? */
     last_old  = old_number - 1;
-    res_index = old[last_old][0] + 1;
+    res_index = old[last_old][0] + 1; /* Note: arrays should not be shuffled */
     for(resource = 0; resource < old_number; resource++){
         to_add += old[resource][realised];
         for(newbie = to_make; newbie < to_add; newbie++){
@@ -229,7 +237,7 @@ void res_place(double **make, double **old, int res_added, int old_number,
             for(trait = 1; trait < traits; trait++){
                 make[newbie][trait] = old[resource][trait];
             }
-            make[newbie][age_trait] = 0;
+            make[newbie][age]   = 0; /* A bit inefficient given loop above */
             res_index++;
         }
         to_make = to_add;
