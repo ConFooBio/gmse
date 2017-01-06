@@ -139,11 +139,11 @@ void a_mover(double **agent_moving, int xloc, int yloc, int move_para, int rows,
 
 
 /* =============================================================================
- * This simulates one agent looking around: which resources does an agent see?
- * Marks the resource_array accordingly
+ * This simulates one agent looking around: Is a particular resource within
+ * their field of vision? If yes, return 1, if no, return 0.
  * ========================================================================== */
-int binoculars(int obs_x, int obs_y, int res_x, int res_y, int edge, int view,
-               int xdim, int ydim){
+int binos(int obs_x, int obs_y, int res_x, int res_y, int edge, int view,
+          int xdim, int ydim){
     
     int see_it;
     double sq_xdist;
@@ -218,41 +218,78 @@ int binoculars(int obs_x, int obs_y, int res_x, int res_y, int edge, int view,
  *     The resource_array is marked by a particular agent
  * ========================================================================== */
 void field_work(double **resource_array, double **agent_array, double *paras,
-                int res_row, int worker, int find_proc){
+                int res_rows, int worker, int find_proc){
 
-    int xloc;
-    int yloc;
-    int view;
-    int marks;
-    int edge;
+    int xloc;     /* x location of the agent doing work */
+    int yloc;     /* y location of the agent doing work */
+    int view;     /* The 'view' (or sampling range) around agent's location */
+    int edge;     /* What type of edge is being used in the simulation */
+    int resource; /* Index for resource array */
+    int res_x;    /* x location of a resource */
+    int res_y;    /* y location of a resource */
+    int seeme;    /* Test whether or not observer sees/captures the resource */
+    int ldx;      /* Landscape dimension on the x-axis */
+    int ldy;      /* Landscape dimension on the y-axis */
+    int fixn;     /* If procedure is to sample a fixed number; how many? */
+    int count;    /* Index for sampling a fixed number of resource */
+    int sampled;  /* The resource randomly sampled */
+    double sampl; /* Random uniform sampling of a resource */
     
     xloc  = (int) agent_array[worker][4];
     yloc  = (int) agent_array[worker][5];
     view  = (int) agent_array[worker][8];
-    marks = (int) agent_array[worker][10];
     edge  = (int) paras[1];
+    ldx   = (int) paras[12];
+    ldy   = (int) paras[13];
+    fixn  = (int) paras[10];
     
     switch(find_proc){
         case 0: /* Mark all individuals within view */
+            for(resource = 0; resource < res_rows; resource++){
+               res_x = resource_array[resource][4];
+               res_y = resource_array[resource][5];
+               seeme = binos(xloc, yloc, res_x, res_y, edge, view, ldx, ldy);
+               agent_array[worker][10]      += seeme;
+               resource_array[resource][12] += seeme;
+            }
             break;
         case 1: /* Alternative (only one now) is to sample fixed number */
-/* TODO: For all resources, use the binoculars to see if seen */
+            if(res_rows > fixn){ /* If more resources than the sample number */
+               /* Temp tallies are used here to sample without replacement */
+               for(resource = 0; resource < res_rows; resource++){
+                   resource_array[resource][13] = 0; /* Start off untallied */   
+               }
+               count = fixn;
+               sampl = 0;
+               while(count > 0){
+                   do{ /* Find an un-tallied resource in the array */
+                       sampl   = runif(0, 1) * res_rows;
+                       sampled = (int) sampl;
+                   }while(resource_array[sampled][13] == 1 && sampl < res_rows);
+                   resource_array[sampled][12]++;   /* Marks accumulate  */
+                   resource_array[sampled][13] = 1; /* Tally is noted    */
+                   count--;
+               }
+            }else{ /* Else all of the resources should be marked */
+                for(resource = 0; resource < res_rows; resource++){
+                    resource_array[resource][12]++; /* Mark all resources */  
+                }
+                agent_array[worker][10] += res_rows; /* All resources marked */ 
+            }
             break;
         default:
             printf("Error setting observation type: using vision-based CMR");
+            for(resource = 0; resource < res_rows; resource++){
+                res_x = resource_array[resource][4];
+                res_y = resource_array[resource][5];
+                seeme = binos(xloc, yloc, res_x, res_y, edge, view, ldx, ldy);
+                agent_array[worker][10]      += seeme;
+                resource_array[resource][12] += seeme;
+            }
             break;
-        
     }
-    
 }
 
-/*
-count = find;
-while(count > 0){
-    samp_res = runif(0, 1) * ;
-    count--;    
-}
-*/
 
 /* =============================================================================
  * CAPTURE MARK-RECAPTURE (CMR) METHOD:
@@ -268,36 +305,26 @@ while(count > 0){
  * Output:
  *     Accumlated markings of resources by agents
  * ========================================================================== */
-
 void mark_res(double **resource_array, double **agent_array, double *paras, 
-              int res_row, int a_row){
+              int res_rows, int a_row){
     
     int resource;
     int agent;
     int count;
-    int find;
     int is_fixed;
-    int find_type; /* Fixed number of observations? */
-    int edge;      /* How does edge woagent_arrayrk? (Effects agent vision & movement) */
+    int ft;        /* Find type -- fixed number of observations? */
+    int edge;      /* How does edge work? (Effects agent vision & movement) */
     int samp_res;  /* A randomly sampled resource */
     
-    find_type = (int) paras[10]; /* Conversion to int type with type caster */
-    if(find_type > 0){
-        find      = (int) find_type; 
-        find_type = 1;
+    ft = (int) paras[10]; /* Conversion to int type with type caster */
+    if(ft > 0){
+        ft = 1;
     }
     
     for(agent = 0; agent < a_row; agent++){
         if(agent_array[agent][1] == 0){ /* Zeros are manager agents */
-            field_work();
+            field_work(resource_array, agent_array, paras, res_rows, agent, ft);
         }
-    }
-
-
-                   
-    for(resource = 0; resource < rows; resource++){
-        res_adding[resource][time_trait] = time_para;
-        res_adding[resource][age_trait]++;
     }
 }
 
@@ -325,7 +352,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int xloc, yloc;          /* x and y locations in the RESOURCE array */ 
     int land_x, land_y;      /* x and y maximum location given LANDSCAPE */
     int resource;            /* Index for resource (rows of RESOURCE) */
-    int resource_trait;      /* Index for resource traits (cols of RESOURCE) */
+    int res_trait;           /* Index for resource traits (cols of RESOURCE) */
     int agent;               /* Index for agent in the array (rows) */
     int agent_trait;         /* Index for agent traits (cols of agent_array) */
     int res_number;          /* Number of resources included (default = 1) */
@@ -338,6 +365,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int new_obs;             /* New observations made */
     int method;              /* Type of method used to estimate pop size */
     int who_observes;        /* Type of agent that does the observing */
+    int times_obs;           /* Number of times observation is conducted */
     int *add_resource;       /* Vector of added resources */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
@@ -389,9 +417,9 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
         resource_array[resource] = malloc(trait_number * sizeof(double));   
     } 
     vec_pos = 0;
-    for(resource_trait = 0; resource_trait < trait_number; resource_trait++){
+    for(res_trait = 0; res_trait < trait_number; res_trait++){
         for(resource = 0; resource < res_number; resource++){
-            resource_array[resource][resource_trait] = R_ptr[vec_pos];
+            resource_array[resource][res_trait] = R_ptr[vec_pos];
             vec_pos++;
         }
     }
@@ -424,35 +452,59 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     /* Do the biology here now */
     /* ====================================================================== */
 
+    who_observes = (int) paras[7];  /* What type of agent does the observing */   
+    method       = (int) paras[8];  /* Specifies method of estimation used   */
+    times_obs    = (int) paras[11]; /* Number of times observation conducted */
     
-    who_observes = paras[7];  /* What type of agent does the observing */   
-    method       = paras[8];  /* Specifies the method of estimation used */
-
+    for(resource = 0; resource < res_number; resource++){
+        resource_array[resource][12] = 0;   /* Set marks to zero   */
+        resource_array[resource][13] = 0;   /* Set tallies to zero */
+    }
+ 
     
     /* This switch function calls a method of population size estimation */
     switch(method){
        case 0:
-           mark_recapture();
+           while(times_obs > 0){
+               mark_res(resource_array, agent_array, paras, res_number, 
+                        agent_number);
+               times_obs--;
+           }
        default:
-           printf("ERROR: No observation method set: using mark-recapture \n");
-           mark_recapture();
+           printf("ERROR: No observation method set: marking all in view \n");
+           mark_res(resource_array, agent_array, paras, res_number, 
+                    agent_number);
+           while(times_obs > 0){
+               mark_res(resource_array, agent_array, paras, res_number, 
+                        agent_number);
+               times_obs--;
+           }
+    }
+
+    /* Check to see how many resources were observed */        
+    new_obs   = 0;
+    for(resource = 0; resource < res_number; resource++){
+        if(resource_array[resource][12] > 0){
+            new_obs++; 
+        }
     }
         
-    new_obs   = 10;
+    /* Build an array with the appropriate number of resources observed */
     obs_array = malloc(new_obs * sizeof(double *));
     for(resource = 0; resource < new_obs; resource++){
         obs_array[resource] = malloc(trait_number * sizeof(double));
     }
 
-    for(resource_trait = 0; resource_trait < trait_number; resource_trait++){   
-        for(resource = 0; resource < new_obs; resource++){
-            obs_array[resource][resource_trait] = 
-                resource_array[resource][resource_trait];
+    /* Fill the new array with the resources observed */
+    for(resource = 0; resource < new_obs; resource++){
+        if(resource_array[resource][12] > 0){
+            for(res_trait = 0; res_trait < trait_number; res_trait++){
+                obs_array[resource][res_trait] = 
+                    resource_array[resource][res_trait];
+            }
         }
     }
 
-    
-        
     /* This code switches from C back to R */
     /* ====================================================================== */        
     
@@ -463,9 +515,9 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     data_ptr = REAL(NEW_OBSERVATIONS);
 
     vec_pos = 0;
-    for(resource_trait=0; resource_trait<trait_number; resource_trait++){
+    for(res_trait=0; res_trait<trait_number; res_trait++){
         for(resource=0; resource<new_obs; resource++){
-            data_ptr[vec_pos] = obs_array[resource][resource_trait];
+            data_ptr[vec_pos] = obs_array[resource][res_trait];
             vec_pos++;
         }
     }            
@@ -474,6 +526,9 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     UNPROTECT(protected_n);
     
     /* Free all of the allocated memory used in arrays */
+    for(resource = 0; resource < new_obs; resource++){
+        free(obs_array[resource]);
+    }    
     for(agent = 0; agent < agent_number; agent++){
         free(agent_array[agent]);
     }    
