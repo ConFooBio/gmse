@@ -86,7 +86,7 @@ make_agents <- function(model        = "IBM",
             stop("ERROR: Agent number must equal sum of all agent type counts");   
         }
         IDs     <- seq(from = 1, to = agent_number, by = 1);
-        type1   <- rep(x = 1:agent_types, times = type_counts);
+        type1   <- rep(x = 0:(agent_types-1), times = type_counts);
         type2   <- rep(x = 0, times = agent_number);
         type3   <- rep(x = 0, times = agent_number);
         xloc    <- sample(x = 1:rows, size = agent_number, replace = TRUE);
@@ -96,6 +96,7 @@ make_agents <- function(model        = "IBM",
         view    <- rep(x = vision, times = agent_number);
         error   <- rep(x = 0, times = agent_number);
         mark    <- rep(x = 0, times = agent_number);
+        tally   <- rep(x = 0, times = agent_number);
         the_agents <- cbind(IDs, type1, type2, type3, xloc, yloc, mover, time,
                             view, error, mark, tally);
     }

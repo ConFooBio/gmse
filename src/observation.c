@@ -200,7 +200,7 @@ int binos(int obs_x, int obs_y, int res_x, int res_y, int edge, int view,
             if(distance <= view){
                 see_it = 1;   
             }
-        break;    
+            break;    
     }
     
     return see_it;
@@ -363,6 +363,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int protected_n;         /* Number of protected R objects */
     int vec_pos;             /* Vector position for making arrays */
     int new_obs;             /* New observations made */
+    int add_obs;             /* Index for adding observations */
     int method;              /* Type of method used to estimate pop size */
     int who_observes;        /* Type of agent that does the observing */
     int times_obs;           /* Number of times observation is conducted */
@@ -461,7 +462,6 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
         resource_array[resource][13] = 0;   /* Set tallies to zero */
     }
  
-    
     /* This switch function calls a method of population size estimation */
     switch(method){
        case 0:
@@ -470,15 +470,15 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
                         agent_number);
                times_obs--;
            }
+           break;
        default:
            printf("ERROR: No observation method set: marking all in view \n");
-           mark_res(resource_array, agent_array, paras, res_number, 
-                    agent_number);
            while(times_obs > 0){
                mark_res(resource_array, agent_array, paras, res_number, 
                         agent_number);
                times_obs--;
            }
+           break;
     }
 
     /* Check to see how many resources were observed */        
@@ -488,7 +488,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
             new_obs++; 
         }
     }
-        
+
     /* Build an array with the appropriate number of resources observed */
     obs_array = malloc(new_obs * sizeof(double *));
     for(resource = 0; resource < new_obs; resource++){
@@ -496,11 +496,17 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     }
 
     /* Fill the new array with the resources observed */
-    for(resource = 0; resource < new_obs; resource++){
+    add_obs = 0;
+    for(resource = 0; resource < res_number; resource++){
         if(resource_array[resource][12] > 0){
             for(res_trait = 0; res_trait < trait_number; res_trait++){
-                obs_array[resource][res_trait] = 
+                obs_array[add_obs][res_trait] = 
                     resource_array[resource][res_trait];
+            }
+            add_obs++;
+            if(add_obs > new_obs){ /* Below should not every happen */
+                printf("\n\nFATAL ERROR: Added observes exceed expected\n\n");  
+                break;
             }
         }
     }
@@ -515,14 +521,13 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     data_ptr = REAL(NEW_OBSERVATIONS);
 
     vec_pos = 0;
-    for(res_trait=0; res_trait<trait_number; res_trait++){
-        for(resource=0; resource<new_obs; resource++){
+    for(res_trait = 0; res_trait < trait_number; res_trait++){
+        for(resource = 0; resource < new_obs; resource++){
             data_ptr[vec_pos] = obs_array[resource][res_trait];
             vec_pos++;
         }
-    }            
-        
-        
+    }   
+
     UNPROTECT(protected_n);
     
     /* Free all of the allocated memory used in arrays */
@@ -539,7 +544,6 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
         free(resource_array[resource]);
     } 
 
-    
     return(NEW_OBSERVATIONS); 
 }
 /* ===========================================================================*/

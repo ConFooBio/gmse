@@ -60,6 +60,9 @@ AGENTS   <- make_agents( model        = pop_model,
 time       <- time + 1;  # Ready for the initial time step.
 cells      <- land_dim_1 * land_dim_2; # Number of cells in the landscape
 
+ldx <- land_dim_1;
+ldy <- land_dim_2;
+
 parameters <- c(time,    # 0. The dynamic time step for each function to use 
                 1,       # 1. The edge effect (0: nothing, 1: torus)
                 1,       # 2. Type of movement (0: none, 1: uniform, 2: Poisson)
@@ -71,7 +74,9 @@ parameters <- c(time,    # 0. The dynamic time step for each function to use
                 0,       # 8. The type of observing done for estimating pop.
                 0,       # 9. The type of resource observed (note: dynamic)
                 0,       # 10. Fix mark? Do observers mark exactly n resources?
-                1        # 11. Times resources observed during one time step
+                1,       # 11. Times resources observed during one time step
+                ldx,     # 12. Land dimension on the x axis
+                ldy      # 13. Land dimension on the y axis
                 );
 
 # Create a warning somewhere if population size is not regulated
