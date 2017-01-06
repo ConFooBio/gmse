@@ -60,12 +60,12 @@ void mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
                     rand_uni = runif(0, 1);
                 } while(rand_uni == 1.0);
                 raw_move = rand_uni * (res_moving[res_num][move_para] + 1);
-                move_len = floor(raw_move);
+                move_len = (int) floor(raw_move);
                 break;
             case 2: /* Poisson selection of position change */
                 rand_pois = rpois(res_moving[res_num][move_para]);    
                 raw_move  = rand_pois * (res_moving[res_num][move_para] + 1);
-                move_len  = floor(raw_move);
+                move_len  = (int) floor(raw_move);
                 break;
             default:
                 if(res_num == 0){
@@ -114,12 +114,12 @@ void mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
                     rand_uni = runif(0, 1);
                 } while(rand_uni == 1.0);
                 raw_move = rand_uni * (res_moving[res_num][move_para] + 1);
-                move_len = floor(raw_move);
+                move_len = (int) floor(raw_move);
                 break;
             case 2: /* Poisson selection of position change */
                 rand_pois = rpois(res_moving[res_num][move_para]);    
                 raw_move  = rand_pois * (res_moving[res_num][move_para] + 1);
-                move_len  = floor(raw_move);
+                move_len  = (int) floor(raw_move);
                 break;
             default:
                 break;
