@@ -443,8 +443,6 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
         resource_new++;
     }
     
-    /* add_time(res_new, 6, res_num_total, paras[0]); */
-    
     /* This code switches from C back to R */
     /* ====================================================================== */        
     
