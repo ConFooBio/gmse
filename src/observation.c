@@ -5,7 +5,7 @@
 
 
 /* =============================================================================
- * This function moves agents on the landscape according to some rules
+ * This function moves one on the landscape according to some rules
  * For now, it is repeated in both c files, but if there are more functions
  * that serve two purposes, then a general utilily c file might be created
  * The 'edge' argument defines what happens at the landscape edge:
@@ -16,10 +16,9 @@
  *     1: Movement is random uniform from zero to move_para in any direction
  *     2: Movement is poisson(move_para) in any direction
  * ========================================================================== */
-void a_mover(double **agent_moving, int xloc, int yloc, int move_para, int rows,
-           int edge, double **landscape, int land_x, int land_y, int type){
+void a_mover(double **agent_moving, int xloc, int yloc, int move_para, int edge,
+             int a_row, double **landscape, int land_x, int land_y, int type){
     
-    int a_num;        /* Agent number index                          */
     int move_len;     /* Length of a move                            */
     int move_dir;     /* Move direction (-1 or 1)                    */
     int new_pos;      /* New position: check if over landscape edge  */
@@ -28,110 +27,108 @@ void a_mover(double **agent_moving, int xloc, int yloc, int move_para, int rows,
     double rand_pois; /* Random poisson number                       */
     double raw_move;  /* Movement length before floor() truncation   */
 
-    for(a_num=0; a_num < rows; a_num++){
-        /* Move first in the xloc direction --------------------------------- */
-        new_pos  = agent_moving[a_num][xloc];
-        rand_num = 0.5;
-        do{ /* Note that rand_num can never be exactly 0.5 */
-            rand_num = runif(0, 1);
-        } while(rand_num == 0.5);
-        if(rand_num > 0.5){
-            move_dir = 1;   
-        }else{
-            move_dir = -1;   
-        } /* Now we have the direction the resource is moving */
-        switch(type){
-            case 0: /* No change in position */
-                move_len = 0;
+    /* Move first in the xloc direction --------------------------------- */
+    new_pos  = agent_moving[a_row][xloc];
+    rand_num = 0.5;
+    do{ /* Note that rand_num can never be exactly 0.5 */
+        rand_num = runif(0, 1);
+    } while(rand_num == 0.5);
+    if(rand_num > 0.5){
+        move_dir = 1;   
+    }else{
+        move_dir = -1;   
+    } /* Now we have the direction the resource is moving */
+    switch(type){
+        case 0: /* No change in position */
+            move_len = 0;
+            break;
+        case 1: /* Uniform selection of position change */
+            do{ /* Again, so that agent never moves too far */
+                rand_uni = runif(0, 1);
+            } while(rand_uni == 1.0);
+            raw_move = rand_uni * (agent_moving[a_row][move_para] + 1);
+            move_len = (int) floor(raw_move);
+            break;
+        case 2: /* Poisson selection of position change */
+            rand_pois = rpois(agent_moving[a_row][move_para]);    
+            raw_move  = rand_pois * (agent_moving[a_row][move_para] + 1);
+            move_len  = (int) floor(raw_move);
+            break;
+        default:
+            if(a_row == 0){
+                printf("Unclear specification of movement type \n");
+            }
+            break;
+    }
+    new_pos  = agent_moving[a_row][xloc] + (move_dir * move_len); 
+    if(new_pos > land_x || new_pos < 0){ /* If off the edge */
+        switch(edge){
+            case 0: /* Nothing happens (effectively, no edge) */
                 break;
-            case 1: /* Uniform selection of position change */
-                do{ /* Again, so that a_num never moves too far */
-                    rand_uni = runif(0, 1);
-                } while(rand_uni == 1.0);
-                raw_move = rand_uni * (agent_moving[a_num][move_para] + 1);
-                move_len = floor(raw_move);
-                break;
-            case 2: /* Poisson selection of position change */
-                rand_pois = rpois(agent_moving[a_num][move_para]);    
-                raw_move  = rand_pois * (agent_moving[a_num][move_para] + 1);
-                move_len  = floor(raw_move);
+            case 1: /* Corresponds to a torus landscape */
+                if(new_pos > land_x){
+                    new_pos = new_pos - land_x;   
+                }
+                if(new_pos < 0){
+                    new_pos = new_pos + land_x;   
+                }
                 break;
             default:
-                if(a_num == 0){
-                    printf("Unclear specification of movement type \n");
+                if(a_row == 0){
+                    printf("ERROR: Edge effects set incorrectly \n");
                 }
                 break;
         }
-        new_pos  = agent_moving[a_num][xloc] + (move_dir * move_len); 
-        if(new_pos > land_x || new_pos < 0){ /* If off the edge */
-            switch(edge){
-                case 0: /* Nothing happens (effectively, no edge) */
-                    break;
-                case 1: /* Corresponds to a torus landscape */
-                    if(new_pos > land_x){
-                        new_pos = new_pos - land_x;   
-                    }
-                    if(new_pos < 0){
-                        new_pos = new_pos + land_x;   
-                    }
-                    break;
-                default:
-                    if(a_num == 0){
-                        printf("ERROR: Edge effects set incorrectly \n");
-                    }
-                    break;
-            }
-        }
-        agent_moving[a_num][xloc] = new_pos;
-        /* Move next in the yloc direction ---------------------------------- */
-        new_pos  = agent_moving[a_num][yloc];
-        rand_num = 0.5;
-        do{ /* Note that rand_num can never be exactly 0.5 */
-            rand_num = runif(0, 1);
-        } while(rand_num == 0.5);
-        if(rand_num > 0.5){
-            move_dir = 1;   
-        }else{
-            move_dir = -1;   
-        } /* Now we have the direction the resource is moving */
-        switch(type){
-            case 0: /* No change in position */
-                move_len = 0;
+    }
+    agent_moving[a_row][xloc] = new_pos;
+    /* Move next in the yloc direction ---------------------------------- */
+    new_pos  = agent_moving[a_row][yloc];
+    rand_num = 0.5;
+    do{ /* Note that rand_num can never be exactly 0.5 */
+        rand_num = runif(0, 1);
+    } while(rand_num == 0.5);
+    if(rand_num > 0.5){
+        move_dir = 1;   
+    }else{
+        move_dir = -1;   
+    } /* Now we have the direction the resource is moving */
+    switch(type){
+        case 0: /* No change in position */
+            move_len = 0;
+            break;
+        case 1: /* Uniform selection of position change */
+            do{ /* Again, so that a_num never moves too far */
+                rand_uni = runif(0, 1);
+            } while(rand_uni == 1.0);
+            raw_move = rand_uni * (agent_moving[a_row][move_para] + 1);
+            move_len = (int) floor(raw_move);
+            break;
+        case 2: /* Poisson selection of position change */
+            rand_pois = rpois(agent_moving[a_row][move_para]);    
+            raw_move  = rand_pois * (agent_moving[a_row][move_para] + 1);
+            move_len  = (int) floor(raw_move);
+            break;
+        default:
+            break;
+    }
+    new_pos  = agent_moving[a_row][yloc] + (move_dir * move_len); 
+    if(new_pos > land_y || new_pos < 0){ /* If off the edge */
+        switch(edge){
+            case 0: /* Nothing happens (effectively, no edge) */
                 break;
-            case 1: /* Uniform selection of position change */
-                do{ /* Again, so that a_num never moves too far */
-                    rand_uni = runif(0, 1);
-                } while(rand_uni == 1.0);
-                raw_move = rand_uni * (agent_moving[a_num][move_para] + 1);
-                move_len = floor(raw_move);
-                break;
-            case 2: /* Poisson selection of position change */
-                rand_pois = rpois(agent_moving[a_num][move_para]);    
-                raw_move  = rand_pois * (agent_moving[a_num][move_para] + 1);
-                move_len  = floor(raw_move);
+            case 1: /* Corresponds to a torus landscape */
+                if(new_pos > land_y){
+                    new_pos = new_pos - land_y;  
+                }
+                if(new_pos < 0){
+                    new_pos = new_pos + land_y;   
+                }
                 break;
             default:
                 break;
         }
-        new_pos  = agent_moving[a_num][yloc] + (move_dir * move_len); 
-        if(new_pos > land_y || new_pos < 0){ /* If off the edge */
-            switch(edge){
-                case 0: /* Nothing happens (effectively, no edge) */
-                    break;
-                case 1: /* Corresponds to a torus landscape */
-                    if(new_pos > land_y){
-                        new_pos = new_pos - land_y;  
-                    }
-                    if(new_pos < 0){
-                        new_pos = new_pos + land_y;   
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-        agent_moving[a_num][yloc] = new_pos;
     }
+    agent_moving[a_row][yloc] = new_pos;
 }
 /* ===========================================================================*/
 
@@ -305,17 +302,26 @@ void field_work(double **resource_array, double **agent_array, double *paras,
  * Output:
  *     Accumlated markings of resources by agents
  * ========================================================================== */
-void mark_res(double **resource_array, double **agent_array, double *paras, 
-              int res_rows, int a_row){
+void mark_res(double **resource_array, double **agent_array, double **land,
+              double *paras, int res_rows, int a_row){
     
     int resource;
     int agent;
     int count;
     int is_fixed;
-    int ft;        /* Find type -- fixed number of observations? */
-    int edge;      /* How does edge work? (Effects agent vision & movement) */
-    int samp_res;  /* A randomly sampled resource */
-    
+    int ft;          /* Find type -- fixed number of observations? */
+    int edge;        /* How does edge work? (Effects agent vision & movement) */
+    int samp_res;    /* A randomly sampled resource */
+    int ldx, ldy;
+    int move_t;
+    int sample_num;   /* Times resources observed during one time step */
+
+    edge       = (int) paras[1];  /* What type of edge is on the landscape */
+    sample_num = (int) paras[11];
+    ldx        = (int) paras[12]; /* dimensions of landscape -- x and y */
+    ldy        = (int) paras[13];
+    move_t     = (int) paras[14]; /* Type of movement being used  */
+
     ft = (int) paras[10]; /* Conversion to int type with type caster */
     if(ft > 0){
         ft = 1;
@@ -325,9 +331,11 @@ void mark_res(double **resource_array, double **agent_array, double *paras,
         if(agent_array[agent][1] == 0){ /* Zeros are manager agents */
             field_work(resource_array, agent_array, paras, res_rows, agent, ft);
         }
+        if(sample_num > 1){
+            a_mover(agent_array, 4, 5, 6, edge, agent, land, ldx, ldy, move_t);
+        }
     }
 }
-
 
 /* =============================================================================
  * MAIN OBSERVATION FUNCTION:
@@ -367,6 +375,9 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int method;              /* Type of method used to estimate pop size */
     int who_observes;        /* Type of agent that does the observing */
     int times_obs;           /* Number of times observation is conducted */
+    int agent_return;        /* Do agents return to location after moving */
+    int *save_x;             /* Saved x locations of agents if moving */
+    int *save_y;             /* Saved y locations of agents if moving */
     int *add_resource;       /* Vector of added resources */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
@@ -456,31 +467,50 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     who_observes = (int) paras[7];  /* What type of agent does the observing */   
     method       = (int) paras[8];  /* Specifies method of estimation used   */
     times_obs    = (int) paras[11]; /* Number of times observation conducted */
-    
+    agent_return = (int) paras[15]; /* Do the agents return back to location */
+
     for(resource = 0; resource < res_number; resource++){
         resource_array[resource][12] = 0;   /* Set marks to zero   */
         resource_array[resource][13] = 0;   /* Set tallies to zero */
     }
- 
+            
+    if(agent_return == 1){
+        save_x = malloc(agent_number * sizeof(int));
+        save_y = malloc(agent_number * sizeof(int));
+        for(agent = 0; agent < agent_number; agent++){
+            save_x[agent] = agent_array[agent][4];
+            save_y[agent] = agent_array[agent][5];
+        }
+    }
+        
     /* This switch function calls a method of population size estimation */
     switch(method){
        case 0:
            while(times_obs > 0){
-               mark_res(resource_array, agent_array, paras, res_number, 
+               mark_res(resource_array, agent_array, land, paras, res_number, 
                         agent_number);
-               times_obs--;
+               times_obs--; /* Then move agents if need be for new sample */
            }
            break;
        default:
            printf("ERROR: No observation method set: marking all in view \n");
            while(times_obs > 0){
-               mark_res(resource_array, agent_array, paras, res_number, 
+               mark_res(resource_array, agent_array, land, paras, res_number, 
                         agent_number);
-               times_obs--;
+               times_obs--; /* Then move agents if need be for new sample */
            }
-           break;
+       break;
     }
 
+    if(agent_return == 1){
+        for(agent = 0; agent < agent_number; agent++){
+            agent_array[agent][4] = save_x[agent];
+            agent_array[agent][5] = save_y[agent];
+        }
+        free(save_x);
+        free(save_y);
+    }
+    
     /* Check to see how many resources were observed */        
     new_obs   = 0;
     for(resource = 0; resource < res_number; resource++){

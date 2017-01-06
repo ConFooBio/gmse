@@ -65,7 +65,7 @@ ldy <- land_dim_2;
 
 parameters <- c(time,    # 0. The dynamic time step for each function to use 
                 1,       # 1. The edge effect (0: nothing, 1: torus)
-                1,       # 2. Type of movement (0: none, 1: uniform, 2: Poisson)
+                1,       # 2. Res movement (0: none, 1: uniform, 2: Poisson)
                 2,       # 3. Type of birth (0: none, 1: uniform, 2: Poisson)
                 2,       # 4. Type of death (0: none, 1: uniform, 2: K-based)
                 cells,   # 5. Carrying capacity for birth (-1 = unregulated)
@@ -76,7 +76,9 @@ parameters <- c(time,    # 0. The dynamic time step for each function to use
                 0,       # 10. Fix mark? Do observers mark exactly n resources?
                 1,       # 11. Times resources observed during one time step
                 ldx,     # 12. Land dimension on the x axis
-                ldy      # 13. Land dimension on the y axis
+                ldy,     # 13. Land dimension on the y axis
+                1,       # 14. Agent movement (option same as #2)
+                1        # 15. Agents return back after field work (0/1 = N/Y)
                 );
 
 # Create a warning somewhere if population size is not regulated
