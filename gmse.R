@@ -74,13 +74,12 @@ parameters <- c(time,    # 0. The dynamic time step for each function to use
                 0,       # 7. The type of AGENT doing the observations
                 0,       # 8. The type of observing done for estimating pop.
                 1,       # 9. The type of resource observed (note: dynamic)
-                0,       # 10. Fix mark? Do observers mark exactly n resources?
-                1,       # 11. Times resources observed during one time step
+                10,      # 10. Fix mark? Do observers mark exactly n resources?
+                0,       # 11. Times resources observed during one time step
                 ldx,     # 12. Land dimension on the x axis
                 ldy,     # 13. Land dimension on the y axis
                 1,       # 14. Agent movement (option same as #2)
-                1,       # 15. Agents return back after field work (0/1 = N/Y)
-                1        # 16. Mark 1st time, then capture if marked (0/1 = N/Y)
+                1        # 15. Agents return back after field work (0/1 = N/Y)
                 );
 
 # Create a warning somewhere if population size is not regulated
@@ -103,13 +102,12 @@ while(time < time_max){
                                     agent      = AGENTS,
                                     type       = 1,      # Resource(s) observed
                                     fix_mark   = FALSE,  # Fixed or view-based
-                                    times      = 2,      # Times observed
-                                    recapt     = TRUE    # Rec cond on first
+                                    times      = 2       # Times observed
                                     );
    
    OBSERVATION_REC   <- rbind(OBSERVATION_REC, OBSERVATION_NEW);
-   time          <- time + 1;
-   parameters[1] <- time;
+   time              <- time + 1;
+   parameters[1]     <- time;
    if(dim(RESOURCES)[1] < 10){
        print("Extinction has occurred");
        break;
@@ -132,7 +130,8 @@ res_columns <- c("Resource_ID",
                  "Resource_grown",
                  "Resource_age",
                  "Resource_marked",
-                 "Resource_tally"
+                 "Resource_tally",
+                 "Resource_1st"
                 );
 
 colnames(RESOURCE_REC)    <- res_columns;

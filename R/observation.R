@@ -8,6 +8,8 @@
 #'@param paras Vector of parameter values to read into the model
 #'@param agent Agent data frame at the start of the time step
 #'@param types The types of data being observed
+#'@param fix_mark Fixed number of individuals marked? (A number, or FALSE)
+#'@param times Number of times that the observations are made
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
 #'@return Data frame observations at the end of the time step
@@ -18,7 +20,6 @@ observation <- function(resource  = NULL,
                         type      = 1,
                         fix_mark  = FALSE,
                         times     = 1,
-                        recapt    = FALSE,
                         model     = "IBM"
                         ){
     check_model <- 0;
@@ -38,11 +39,10 @@ observation <- function(resource  = NULL,
         if(!is.array(agent)){
             stop("Warning: Agents need to be in an array");
         }
-        # If all checks out, first put the type into paras for easier input 
+        # If all checks out, first put the type into paras for easier input
         paras[10] <- type;
         paras[11] <- as.numeric(fix_mark); # Note: 'FALSE' coerced to zero
         paras[12] <- times;
-        paras[17] <- recapt;
         # Then run the population model
         OBSERVE_OUT  <- run_observation_a( RESOURCE_c   = resource,
                                            LANDSCAPE_c  = landscape,

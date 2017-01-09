@@ -156,9 +156,6 @@ void a_mover(double **agent_moving, int xloc, int yloc, int move_para, int edge,
 }
 /* ===========================================================================*/
 
-
-
-
 /* =============================================================================
  * This simulates one agent looking around: Is a particular resource within
  * their field of vision? If yes, return 1, if no, return 0.
@@ -239,7 +236,8 @@ int binos(int obs_x, int obs_y, int res_x, int res_y, int edge, int view,
  *     The resource_array is marked by a particular agent
  * ========================================================================== */
 void field_work(double **resource_array, double **agent_array, double *paras,
-                int res_rows, int worker, int find_proc, int res_type, int itr){
+                int res_rows, int worker, int find_proc, int res_type, 
+                int obs_col){
 
     int xloc;     /* x location of the agent doing work */
     int yloc;     /* y location of the agent doing work */
@@ -252,7 +250,6 @@ void field_work(double **resource_array, double **agent_array, double *paras,
     int ldx;      /* Landscape dimension on the x-axis */
     int ldy;      /* Landscape dimension on the y-axis */
     int fixn;     /* If procedure is to sample a fixed number; how many? */
-    int remrk;    /* Remark if not on the first iteration (itr) (0/1 = N/Y) */
     int count;    /* Index for sampling a fixed number of resource */
     int sampled;  /* The resource randomly sampled */
     int type_num; /* Number of the type of resource to be fixed sampled */
@@ -265,7 +262,6 @@ void field_work(double **resource_array, double **agent_array, double *paras,
     ldx   = (int) paras[12];
     ldy   = (int) paras[13];
     fixn  = (int) paras[10];
-    remrk = (int) paras[16];
     
     switch(find_proc){
         case 0: /* Mark all individuals within view */
@@ -274,8 +270,9 @@ void field_work(double **resource_array, double **agent_array, double *paras,
                     r_x   = resource_array[resource][4];
                     r_y   = resource_array[resource][5];
                     seeme = binos(xloc, yloc, r_x, r_y, edge, view, ldx, ldy);
-                    agent_array[worker][10]      += seeme;
-                    resource_array[resource][12] += seeme;
+                    agent_array[worker][10]           += seeme;
+                    resource_array[resource][obs_col] += seeme;
+                    resource_array[resource][12]      += seeme;
                 }
             }
             break;
@@ -303,18 +300,22 @@ void field_work(double **resource_array, double **agent_array, double *paras,
                             resource_array[sampled][1]  == res_type &&
                             sampl < res_rows /* In case sample returns 1 */
                             );
-                    resource_array[sampled][12]++;   /* Marks accumulate  */
-                    resource_array[sampled][13] = 1; /* Tally is noted    */
+                    resource_array[sampled][obs_col]++; /* Marks accumulate  */
+                    resource_array[resource][12]++;
+                    resource_array[sampled][13] = 1;    /* Tally is noted    */
                     count--;
                 }
+                agent_array[worker][10] += fixn;
             }else{ /* Else all of the resources should be marked */
                 for(resource = 0; resource < res_rows; resource++){
                     if(resource_array[resource][1] == res_type){
-                        resource_array[resource][12]++; /* Mark all resources */
+                        resource_array[resource][obs_col]++;  /* Mark all */
+                        resource_array[resource][12]++;
                     }
                 }
                 agent_array[worker][10] += type_num; /* All resources marked */ 
             }
+            printf("Here I am \n");
             break;
         default:
             printf("Error setting observation type: using vision-based CMR");
@@ -323,8 +324,9 @@ void field_work(double **resource_array, double **agent_array, double *paras,
                     r_x = resource_array[resource][4];
                     r_y = resource_array[resource][5];
                     seeme = binos(xloc, yloc, r_x, r_y, edge, view, ldx, ldy);
-                    agent_array[worker][10]      += seeme;
-                    resource_array[resource][12] += seeme;
+                    agent_array[worker][10]           += seeme;
+                    resource_array[resource][12]      += seeme;
+                    resource_array[resource][obs_col] += seeme;
                 }
             }
             break;
@@ -343,11 +345,14 @@ void field_work(double **resource_array, double **agent_array, double *paras,
  *     paras: vector of parameter values
  *     res_rows: Total number of resources that can be sampled
  *     a_row: Total number agents that could possibly sample
+ *     res_type: The type of resource being sampled
+ *     itr: The iteration 
  * Output:
  *     Accumlated markings of resources by agents
  * ========================================================================== */
 void mark_res(double **resource_array, double **agent_array, double **land,
-              double *paras, int res_rows, int a_row, int res_type, int itr){
+              double *paras, int res_rows, int a_row, int res_type, 
+              int obs_col){
     
     int resource;
     int agent;
@@ -366,7 +371,7 @@ void mark_res(double **resource_array, double **agent_array, double **land,
     ldy        = (int) paras[13];
     move_t     = (int) paras[14]; /* Type of movement being used  */
 
-    find_type = (int) paras[10]; /* Conversion to int type with type caster */
+    find_type  = (int) paras[10]; /* Conversion to int type with type caster */
     if(find_type > 0){
         find_type = 1;
     }
@@ -374,7 +379,7 @@ void mark_res(double **resource_array, double **agent_array, double **land,
     for(agent = 0; agent < a_row; agent++){
         if(agent_array[agent][1] == 0){ /* Zeros are manager agents */
             field_work(resource_array, agent_array, paras, res_rows, agent, 
-                       find_type, res_type, itr);
+                       find_type, res_type, obs_col);
         }
         if(sample_num > 1){
             a_mover(agent_array, 4, 5, 6, edge, agent, land, ldx, ldy, move_t);
@@ -410,6 +415,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int agent_trait;         /* Index for agent traits (cols of agent_array) */
     int res_number;          /* Number of resources included (default = 1) */
     int trait_number;        /* Number of traits included in the resource */
+    int obs_columns;         /* Columns for the observation array */
     int agent_number;        /* Number of agents that can potentially observe */
     int agent_traits;        /* Number of traits that each agent has */
     int para_number;         /* Number of parameters included */
@@ -467,13 +473,16 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
 
     /* The C code for the model itself falls under here */
     /* ====================================================================== */
+
+    times_obs    = (int) paras[11]; /* Number of times observation conducted */
     
-    /* Code below remakes the RESOURCE matrix for easier use */
+    /* Code below remakes the RESOURCE matrix, with extra columns for obs */
     res_number        = dim_RESOURCE[0];
-    trait_number      = dim_RESOURCE[1];
+    trait_number      = dim_RESOURCE[1]; 
+    obs_columns       = trait_number + times_obs;
     resource_array    = malloc(res_number * sizeof(double *));
     for(resource = 0; resource < res_number; resource++){
-        resource_array[resource] = malloc(trait_number * sizeof(double));   
+        resource_array[resource] = malloc(obs_columns * sizeof(double));   
     } 
     vec_pos = 0;
     for(res_trait = 0; res_trait < trait_number; res_trait++){
@@ -482,6 +491,12 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
             vec_pos++;
         }
     }
+    for(res_trait = trait_number; res_trait < obs_columns; res_trait++){
+        for(resource = 0; resource < res_number; resource++){
+            resource_array[resource][res_trait] = 0;
+        }
+    }
+ 
     /* RESOURCE is now stored as resource_array (discrete resources) */
 
     /* Code below reads in the LANDSCAPE for easy of use */
@@ -514,7 +529,6 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     who_observes = (int) paras[7];  /* What type of agent does the observing */   
     method       = (int) paras[8];  /* Specifies method of estimation used   */
     res_type     = (int) paras[9];  /* What type of resources are observed   */
-    times_obs    = (int) paras[11]; /* Number of times observation conducted */
     agent_return = (int) paras[15]; /* Do the agents return back to location */
     
     for(resource = 0; resource < res_number; resource++){
@@ -534,7 +548,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     /* This switch function calls a method of population size estimation */
     switch(method){
        case 0:
-           obs_iter = 0;
+           obs_iter = trait_number; /* Start of the observation column */
            while(times_obs > 0){
                mark_res(resource_array, agent_array, land, paras, res_number, 
                         agent_number, res_type, obs_iter);
@@ -544,7 +558,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
            break;
        default:
            printf("ERROR: No observation method set: marking all in view \n");
-           obs_iter = 0;
+           obs_iter = trait_number;
            while(times_obs > 0){
                mark_res(resource_array, agent_array, land, paras, res_number, 
                         agent_number, res_type, obs_iter);
@@ -574,14 +588,14 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     /* Build an array with the appropriate number of resources observed */
     obs_array = malloc(new_obs * sizeof(double *));
     for(resource = 0; resource < new_obs; resource++){
-        obs_array[resource] = malloc(trait_number * sizeof(double));
+        obs_array[resource] = malloc(obs_columns * sizeof(double));
     }
 
     /* Fill the new array with the resources observed */
     add_obs = 0;
     for(resource = 0; resource < res_number; resource++){
         if(resource_array[resource][12] > 0){
-            for(res_trait = 0; res_trait < trait_number; res_trait++){
+            for(res_trait = 0; res_trait < obs_columns; res_trait++){
                 obs_array[add_obs][res_trait] = 
                     resource_array[resource][res_trait];
             }
@@ -597,13 +611,13 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     /* ====================================================================== */        
     
     SEXP NEW_OBSERVATIONS;
-    PROTECT( NEW_OBSERVATIONS = allocMatrix(REALSXP, new_obs, trait_number) );
+    PROTECT( NEW_OBSERVATIONS = allocMatrix(REALSXP, new_obs, obs_columns) );
     protected_n++;
     
     data_ptr = REAL(NEW_OBSERVATIONS);
 
     vec_pos = 0;
-    for(res_trait = 0; res_trait < trait_number; res_trait++){
+    for(res_trait = 0; res_trait < obs_columns; res_trait++){
         for(resource = 0; resource < new_obs; resource++){
             data_ptr[vec_pos] = obs_array[resource][res_trait];
             vec_pos++;
