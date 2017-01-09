@@ -239,21 +239,22 @@ void field_work(double **resource_array, double **agent_array, double *paras,
                 int res_rows, int worker, int find_proc, int res_type, 
                 int obs_col){
 
-    int xloc;     /* x location of the agent doing work */
-    int yloc;     /* y location of the agent doing work */
-    int view;     /* The 'view' (or sampling range) around agent's location */
-    int edge;     /* What type of edge is being used in the simulation */
-    int resource; /* Index for resource array */
-    int r_x;      /* x location of a resource */
-    int r_y;      /* y location of a resource */
-    int seeme;    /* Test whether or not observer sees/captures the resource */
-    int ldx;      /* Landscape dimension on the x-axis */
-    int ldy;      /* Landscape dimension on the y-axis */
-    int fixn;     /* If procedure is to sample a fixed number; how many? */
-    int count;    /* Index for sampling a fixed number of resource */
-    int sampled;  /* The resource randomly sampled */
-    int type_num; /* Number of the type of resource to be fixed sampled */
-    double sampl; /* Random uniform sampling of a resource */
+    int xloc;         /* x location of the agent doing work */
+    int yloc;         /* y location of the agent doing work */
+    int view;         /* The 'view' (sampling range) around agent's location */
+    int edge;         /* What type of edge is being used in the simulation */
+    int resource;     /* Index for resource array */
+    int r_x;          /* x location of a resource */
+    int r_y;          /* y location of a resource */
+    int seeme;        /* Test if observer sees/captures the resource */
+    int ldx;          /* Landscape dimension on the x-axis */
+    int ldy;          /* Landscape dimension on the y-axis */
+    int fixn;         /* If procedure is to sample a fixed number; how many? */
+    int count;        /* Index for sampling a fixed number of resource */
+    int sampled;      /* The resource randomly sampled */
+    int type_num;     /* Number of the type of resource to be fixed sampled */
+    double sampl;     /* Random uniform sampling of a resource */
+    double min_age;   /* Minimum at which sampling can occur */
     
     xloc  = (int) agent_array[worker][4];
     yloc  = (int) agent_array[worker][5];
@@ -263,10 +264,13 @@ void field_work(double **resource_array, double **agent_array, double *paras,
     ldy   = (int) paras[13];
     fixn  = (int) paras[10];
     
+    min_age = paras[16];
+    
     switch(find_proc){
         case 0: /* Mark all individuals within view */
             for(resource = 0; resource < res_rows; resource++){
-                if(resource_array[resource][1] == res_type){
+                if(resource_array[resource][1] == res_type && 
+                   resource_array[resource][11] >= min_age){
                     r_x   = resource_array[resource][4];
                     r_y   = resource_array[resource][5];
                     seeme = binos(xloc, yloc, r_x, r_y, edge, view, ldx, ldy);
@@ -279,8 +283,9 @@ void field_work(double **resource_array, double **agent_array, double *paras,
         case 1: /* Alternative (only one now) is to sample fixed number */
             type_num = 0;
             for(resource = 0; resource < res_rows; resource++){
-                if(resource_array[resource][1] == res_type){
-                    type_num++;   
+                if(resource_array[resource][1]  == res_type &&
+                   resource_array[resource][11] >= min_age){
+                    type_num++;
                 }
             }
             if(type_num > fixn){ /* If more resources than the sample number */
@@ -296,31 +301,33 @@ void field_work(double **resource_array, double **agent_array, double *paras,
                     do{ /* Find an un-tallied resource in the array */
                         sampl   = runif(0, 1) * res_rows;
                         sampled = (int) sampl;
-                    } while(resource_array[sampled][13] == 1        && 
-                            resource_array[sampled][1]  == res_type &&
-                            sampl < res_rows /* In case sample returns 1 */
+                    } while(resource_array[sampled][13] == 1         || 
+                            resource_array[sampled][1]  != res_type  ||
+                            resource_array[sampled][11] <  min_age   ||
+                            sampled == res_rows /* In case sample returns 1 */
                             );
                     resource_array[sampled][obs_col]++; /* Marks accumulate  */
-                    resource_array[resource][12]++;
+                    resource_array[sampled][12]++;
                     resource_array[sampled][13] = 1;    /* Tally is noted    */
                     count--;
                 }
                 agent_array[worker][10] += fixn;
             }else{ /* Else all of the resources should be marked */
                 for(resource = 0; resource < res_rows; resource++){
-                    if(resource_array[resource][1] == res_type){
+                    if(resource_array[resource][1] == res_type && 
+                       resource_array[resource][11] >= min_age){
                         resource_array[resource][obs_col]++;  /* Mark all */
                         resource_array[resource][12]++;
                     }
                 }
                 agent_array[worker][10] += type_num; /* All resources marked */ 
             }
-            printf("Here I am \n");
             break;
         default:
             printf("Error setting observation type: using vision-based CMR");
             for(resource = 0; resource < res_rows; resource++){
-                if(resource_array[resource][1] == res_type){
+                if(resource_array[resource][1] == res_type && 
+                   resource_array[resource][11] > min_age){
                     r_x = resource_array[resource][4];
                     r_y = resource_array[resource][5];
                     seeme = binos(xloc, yloc, r_x, r_y, edge, view, ldx, ldy);

@@ -52,10 +52,10 @@ starting_resources <- make_resource( model              = pop_model,
 AGENTS   <- make_agents( model        = pop_model,
                          agent_number = 2,
                          type_counts  = c(1,1),
-                         vision       = 40,
+                         vision       = 30,
                          rows         = land_dim_1,
                          cols         = land_dim_2,
-                         move         = 99 # Make sure <= landscape dims
+                         move         = 50 # Make sure <= landscape dims
                         );
 
 time       <- time + 1;  # Ready for the initial time step.
@@ -74,16 +74,17 @@ parameters <- c(time,    # 0. The dynamic time step for each function to use
                 0,       # 7. The type of AGENT doing the observations
                 0,       # 8. The type of observing done for estimating pop.
                 1,       # 9. The type of resource observed (note: dynamic)
-                10,      # 10. Fix mark? Do observers mark exactly n resources?
+                0,       # 10. Fix mark? Do observers mark exactly n resources?
                 0,       # 11. Times resources observed during one time step
                 ldx,     # 12. Land dimension on the x axis
                 ldy,     # 13. Land dimension on the y axis
                 1,       # 14. Agent movement (option same as #2)
-                1        # 15. Agents return back after field work (0/1 = N/Y)
+                1,       # 15. Agents return back after field work (0/1 = N/Y)
+                1        # 16. Minimum age of sampling (1 excludes juveniles)
                 );
 
 # Create a warning somewhere if population size is not regulated
-                
+
 RESOURCE_REC    <- NULL;
 RESOURCES       <- starting_resources;
 OBSERVATION_REC <- NULL;
@@ -101,8 +102,9 @@ while(time < time_max){
                                     paras      = parameters,
                                     agent      = AGENTS,
                                     type       = 1,      # Resource(s) observed
-                                    fix_mark   = FALSE,  # Fixed or view-based
-                                    times      = 2       # Times observed
+                                    fix_mark   = 20,     # Fixed or view-based
+                                    times      = 12,     # Times observed
+                                    samp_age   = 1
                                     );
    
    OBSERVATION_REC   <- rbind(OBSERVATION_REC, OBSERVATION_NEW);
@@ -130,12 +132,11 @@ res_columns <- c("Resource_ID",
                  "Resource_grown",
                  "Resource_age",
                  "Resource_marked",
-                 "Resource_tally",
-                 "Resource_1st"
+                 "Resource_tally"
                 );
 
 colnames(RESOURCE_REC)    <- res_columns;
-colnames(OBSERVATION_REC) <- res_columns;
+#colnames(OBSERVATION_REC) <- res_columns;
 
 # Give this it's own place in an analysis file later
 cmr_estimate <- function(obs, year){
@@ -145,6 +146,34 @@ cmr_estimate <- function(obs, year){
     
 }
 
+chapman_est <- function(observation, marks = 1, recaptures = 1){
+    mcols  <- seq(from = 15, to = 15 + (marks-1), by = 1);
+    rcols  <- seq(from = max(mcols+1), to = max(mcols+1)+(recaptures-1), by=1);
+    if(marks > 1){
+        mrked <- apply(X=observation[,mcols], MARGIN = 1, FUN = sum);
+        mrked <- mrked > 0;
+    }else{
+        mrked <- observation[,mcols];   
+    }
+    if(recaptures > 1){
+        recpt <- apply(X=observation[,rcols], MARGIN = 1, FUN = sum);
+        recpt <- recpt > 0;
+    }else{
+        recpt <- observation[,rcols];   
+    }
+    n      <- sum(mrked);
+    K      <- sum(recpt);
+    recapt <- mrked + recpt;
+    k      <- sum(recapt == 2);
+    Nc     <- ((n + 1) * (K + 1) / (k + 1)) - 1;
+    Nc     <- floor(Nc);
+    a      <- ((n+1)*(K+1)*(n-k)*(K-k));
+    b      <- ((k+1)*(k+1)*(k+2));
+    varNc  <- a/b;
+    lci    <- Nc - (1.965 * sqrt(varNc));
+    uci    <- Nc + (1.965 * sqrt(varNc));
+    return(list(Nc=Nc,lci=lci,uci=uci));
+}
 
 # Actually put the individuals on the landscape with function below
 ind_to_land <- function(inds, landscape){
@@ -162,10 +191,12 @@ ind_to_land <- function(inds, landscape){
 gens <- NULL;
 abun <- NULL;
 est  <- NULL;
+lci  <- NULL;
+uci  <- NULL;
 land_cols <- c("#F2F2F2FF", "#ECB176FF", "#000000"); 
 
 aged_res <- RESOURCE_REC[RESOURCE_REC[,12] > 0,];
-ymaxi    <- max(tapply(aged_res[,8],aged_res[,8],length)) + 100;
+ymaxi    <- max(tapply(aged_res[,8],aged_res[,8],length)) + 400;
 for(i in 1:(time_max-1)){
     res_t <- RESOURCE_REC[RESOURCE_REC[,8]==i,];
     obs_t <- OBSERVATION_REC[OBSERVATION_REC[,8]==i,];
@@ -180,9 +211,16 @@ for(i in 1:(time_max-1)){
     par(mar=c(4,4,1,1));
     plot(x=gens, y=abun, pch=20, type="l", lwd=2, ylim=c(0, ymaxi),
          xlim=c(0,time_max), xlab="Time Step", ylab="Abundance");
-    est <- c(est, dim(obs_t)[1] / 5);
-    points(x=gens, y=est, pch=20, type="l", lwd=2, col="blue");
+    if(!is.null(obs_t)){
+        analysis <- chapman_est(observation=obs_t, marks=3, recaptures=9);
+        est      <- c(est, analysis$Nc);
+        lci      <- c(lci, analysis$lci);
+        uci      <- c(uci, analysis$uci);
+    }
+    polygon(y=c(lci,rev(uci)),x=c(gens,rev(gens)),border=NA,col="lightblue");
+    points(x=gens, y=est, pch=20, type="l", lwd=2, col="cyan3");
     abline(h=parameters[7], col="red", lwd=0.8, lty="dashed");
+    points(x=gens, y=abun, pch=20, type="l", lwd=3, col="black");
     Sys.sleep(0.1);
 }
 

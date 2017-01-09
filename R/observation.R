@@ -20,6 +20,7 @@ observation <- function(resource  = NULL,
                         type      = 1,
                         fix_mark  = FALSE,
                         times     = 1,
+                        samp_age  = 1,
                         model     = "IBM"
                         ){
     check_model <- 0;
@@ -43,6 +44,10 @@ observation <- function(resource  = NULL,
         paras[10] <- type;
         paras[11] <- as.numeric(fix_mark); # Note: 'FALSE' coerced to zero
         paras[12] <- times;
+        paras[17] <- samp_age;
+        if(times < 1){
+            stop("Need to sample at least once (else no observation)");   
+        }
         # Then run the population model
         OBSERVE_OUT  <- run_observation_a( RESOURCE_c   = resource,
                                            LANDSCAPE_c  = landscape,
