@@ -66,7 +66,7 @@ ldy <- land_dim_2;
 
 parameters <- c(time,    # 0. The dynamic time step for each function to use 
                 1,       # 1. The edge effect (0: nothing, 1: torus)
-                1,       # 2. Res movement (0: none, 1: uniform, 2: Poisson)
+                3,       # 2. Res movement (0: none, 1: unif, 2: Poisson, ...)
                 2,       # 3. Type of birth (0: none, 1: uniform, 2: Poisson)
                 2,       # 4. Type of death (0: none, 1: uniform, 2: K-based)
                 cells,   # 5. Carrying capacity for birth (-1 = unregulated)

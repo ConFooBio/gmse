@@ -68,6 +68,18 @@ void mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
                 raw_move  = rand_pois * (res_moving[res_num][move_para] + 1);
                 move_len  = (int) floor(raw_move);
                 break;
+            case 3: /* Uniform position movement a Poisson number of times */
+                rand_pois = rpois(res_moving[res_num][move_para]);
+                raw_move  = 0;
+                while(rand_pois > 0){
+                    do{
+                        rand_uni = runif(0, 1);
+                    } while(rand_uni == 1.0);
+                    raw_move += rand_uni * (res_moving[res_num][move_para] + 1);
+                    rand_pois--;
+                }
+                move_len = (int) floor(raw_move);
+                break;
             default:
                 if(res_num == 0){
                     printf("Unclear specification of movement type \n");
@@ -82,7 +94,7 @@ void mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
                 case 1: /* Corresponds to a torus landscape */
                     while(new_pos > land_x){
                         new_pos = new_pos - land_x;   
-                    } 
+                    }
                     while(new_pos < 0){
                         new_pos = new_pos + land_x;   
                     }
@@ -121,6 +133,18 @@ void mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
                 rand_pois = rpois(res_moving[res_num][move_para]);    
                 raw_move  = rand_pois * (res_moving[res_num][move_para] + 1);
                 move_len  = (int) floor(raw_move);
+                break;
+            case 3: /* Uniform position movement a Poisson number of times */
+                rand_pois = rpois(res_moving[res_num][move_para]);
+                raw_move  = 0;
+                while(rand_pois > 0){
+                    do{
+                        rand_uni = runif(0, 1);
+                    } while(rand_uni == 1.0);
+                    raw_move += rand_uni * (res_moving[res_num][move_para] + 1);
+                    rand_pois--;
+                }
+                move_len = (int) floor(raw_move);
                 break;
             default:
                 break;
