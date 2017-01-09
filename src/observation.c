@@ -54,6 +54,18 @@ void a_mover(double **agent_moving, int xloc, int yloc, int move_para, int edge,
             raw_move  = rand_pois * (agent_moving[a_row][move_para] + 1);
             move_len  = (int) floor(raw_move);
             break;
+        case 3: /* Uniform position movement a Poisson number of times */
+            rand_pois = rpois(agent_moving[a_row][move_para]);
+            raw_move  = 0;
+            while(rand_pois > 0){
+                do{
+                    rand_uni = runif(0, 1);
+                } while(rand_uni == 1.0);
+                raw_move += rand_uni * (agent_moving[a_row][move_para] + 1);
+                rand_pois--;
+            }
+            move_len = (int) floor(raw_move);
+            break;            
         default:
             if(a_row == 0){
                 printf("Unclear specification of movement type \n");
@@ -108,6 +120,18 @@ void a_mover(double **agent_moving, int xloc, int yloc, int move_para, int edge,
             raw_move  = rand_pois * (agent_moving[a_row][move_para] + 1);
             move_len  = (int) floor(raw_move);
             break;
+        case 3: /* Uniform position movement a Poisson number of times */
+            rand_pois = rpois(agent_moving[a_row][move_para]);
+            raw_move  = 0;
+            while(rand_pois > 0){
+                do{
+                    rand_uni = runif(0, 1);
+                } while(rand_uni == 1.0);
+                raw_move += rand_uni * (agent_moving[a_row][move_para] + 1);
+                rand_pois--;
+            }
+            move_len = (int) floor(raw_move);
+            break;                        
         default:
             break;
     }
