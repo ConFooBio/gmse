@@ -80,10 +80,10 @@ void mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
                 case 0: /* Nothing happens (effectively, no edge) */
                     break;
                 case 1: /* Corresponds to a torus landscape */
-                    if(new_pos > land_x){
+                    while(new_pos > land_x){
                         new_pos = new_pos - land_x;   
-                    }
-                    if(new_pos < 0){
+                    } 
+                    while(new_pos < 0){
                         new_pos = new_pos + land_x;   
                     }
                     break;
@@ -131,10 +131,10 @@ void mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
                 case 0: /* Nothing happens (effectively, no edge) */
                     break;
                 case 1: /* Corresponds to a torus landscape */
-                    if(new_pos > land_y){
+                    while(new_pos > land_y){
                         new_pos = new_pos - land_y;  
                     }
-                    if(new_pos < 0){
+                    while(new_pos < 0){
                         new_pos = new_pos + land_y;   
                     }
                     break;
