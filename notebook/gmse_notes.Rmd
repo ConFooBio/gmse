@@ -824,8 +824,6 @@ We can re-run the code at any point and essentially recreate a run of [Nilsen's 
 
 The [function](https://stat.ethz.ch/R-manual/R-patched/library/base/html/do.call.html) `do.call` in R [apparently](https://www.stat.berkeley.edu/~s133/Docall.html) calls a function and passes the arguments for the function from a list (e.g., if `A` is in a list form, or put in a list form with `list(A)`, then `do.call("f", list(A))` calls the function `f` for every list element in `A`, where individual list elements can be vectors with function arguments). This is a base R function.
 
-This notebook is being written on the 'rev' branch on git, then passed to gh-pages for publication to the ConFooBio group via the command: `git checkout --patch rev gmse_notes.Rmd` from the 'gh-pages' branch.
-
 
 <a name="ref">References consulted and annotated (Mendeley)</a>
 -----------------------------------------
