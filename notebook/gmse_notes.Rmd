@@ -66,8 +66,6 @@ library(rhandsontable)
 
 We now have a working G-MSE `v0.0.4`, which includes a stable population model and a stable observation model. 
 
-<<<<<<< HEAD
-=======
  - Identifies each observer in the agent array. Agents of a specified type (usually type 0) act as observers and thereby perform the observational tasks. By default, we assume that there is one agent of type 0 that acts as a lone manager (or, perhaps, a very cohesive team) who does all of the work, but if we have more type 0 agents, then each will do the same amount. For each type 0 agent, two functions are called in succession (recall that mark_res might be called multiple times in success by `observation`):
   - `field_work` causes the agent to go out and do some observational field work.
   - `a_mover` causes the agent to move according to some specified rules, as stored in the parameter vector and agent array. The default is simple uniform movement some Euclidean distance away after doing field work -- setting up for field work in a different location. The code is almost identical to the code that moves reources in `resource.c`, so I'll not explain this here.
@@ -102,7 +100,7 @@ For now, it's time to take another step back and take stock of what needs to be 
  
 Also -- and this might require some tweaking -- the flexibility of the type columns (type1, type2, type3) means that observing can be flexible too. We could allow each individual to observe, or groups of individuals of the same type to observe. **NEW:** *We can also specify the type of individuals doing the observing by any category, including individual ID*. This means that we can tell a specific agents (assuming they are represented by rows) to observe, or loop through the function with specific agents. The agent's type (or ID) is stored in the observation output, indicating which agent did the observing if data frames get amalgamated from looping the `observation` function.
  
->>>>>>> 1fc8394... Add some notes on the most recent updates on the dev branch, including the ability to specify the type of category (including ID) that defines which individuals will observe
+Add some notes on the most recent updates on the dev branch, including the ability to specify the type of category (including ID) that defines which individuals will observe
 
 > <a name="u-22-DEC-2016">Update: 22 DEC 2016</a>
 
