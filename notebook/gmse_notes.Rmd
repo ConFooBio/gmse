@@ -68,7 +68,9 @@ library(rhandsontable)
 
 We now have a working G-MSE `v0.0.4`, which includes a stable population model and a stable observation model. I've made a few minor updates to the population model code, and included one new type of movement that is allowed -- borrowed from individual-based modelling literature on plant-pollinator-exploiter interactions [@Bronstein2003; @Duthie2013]. This type of movement makes use of an individual's movement parameter `move` by having an individual move `Poisson(move)` times each time step, and with each movement travelling up to `move` cells away (Euclidean distance). This type of movement is `case 0:` in the `mover` function in `resource.c`.
 
-This update includes the major addition of the `observation.c` file, called by `ovbservation.R` to simulate the sampling of resources (i.e., individuals) from the population model. The function `observation.R` **requires** the following three data frames: 
+This update includes the major addition of the `observation.c` file, called by `observation.R` to simulate the sampling of resources (i.e., individuals) from the population model. The file `observation.R` holds the `observation()` function, which **returns a data frame of observed resources. The observation function thereby simulates the process of acquiring observational data, but not analysing those data**. Analysis of these data is left to R, or to a (yet written) c function (note, current analyses are fairly simple).
+
+The function `observation.R` **requires** the following three data frames: 
 
  1. `resources`: holds all of the resources simulated. 
  2. `landscape`: holds the landscape on which resources and agents are located.
@@ -86,8 +88,25 @@ Optional inputs include:
  
 The file `observation.R` calls the function `observation` in the file `observation.c`. This c file follows the following general protocol:
 
- - Reads the resource, landscape, and agent data arrays into c from R. It also reads in the parameter vector (which includes the optional inputs from the `observation.R` function.
+The function `observation` is called, which does the following:
 
+ - Reads the resource, landscape, and agent data arrays into c from R. It also reads in the parameter vector (which includes the optional inputs from the `observation.R` function).
+ - Calls the function `mark_res` a total of `times` times -- each time simulating a unique trip to do field work. `mark_res` is a general function for marking individuals. Other functions can eventually be called instead of, or in addition to, `mark_res`, but the function is already very flexible, so it's hard to imagine what other function might be needed -- `mark_res` is currently the default and only function called. **Details on the function are [below](#function-mark-res)**.
+ - builds a new array of observations `obs_array`. This array includes a row for every resource observed and all of the columns that also exist in the resource array (e.g., identifying resource location, identity number, types, life-history parameter values, etc.). Additionally, the observational array also includes a column for each `times` -- the number of times that observations are made. These columns hold values of 0 or 1, which indicate whether (1) or not (0) a resource was observed during a particular observation (can think of `times` as outings in the field, each producing a column of whether a resource was spotted/marked/recaptured or not).
+ - Reads the `obs_array` into a format that can be returned to R
+ 
+<a name="function-mark-res">The function</a> `mark_res` is called by `observation`, and does the following:
+
+ - Identifies each observer in the agent array. Agents of type 0 act as observers and managers. They are therefore a special type of agent that performs the observational tasks. By default, we assume that there is one agent that does all of the work, but if we have more type 0 agents, then each will do the same amount. For each type 0 agent, two functions are called in succession (recall that mark_res might be called multiple times in success by `observation`):
+  - `field_work` causes the agent to go out and do some observational field work.
+  - `a_mover` causes the agent to move according to some specified rules, as stored in the parameter vector and agent array. The default is simple uniform movement some Euclidean distance away after doing field work -- setting up for field work in a different location. The code is almost identical to the code that moves reources in `resource.c`, so I'll not explain this here.
+  
+The function `field_work` simulates the process of an agent looking for and tagging resources in some way (this can later be interpreted as viewing, tagging, marking, recapturing, etc.). There are currently two different tagging procedures possible (with the option to build more):
+
+ 1. Tag all resources within some Euclidean distance of the observer. The distance is determined by a parameter in the agent data frame. Resources within this distance are found using the `binos` function (simulating, e.g., binoculars).
+ 2. Randomly tag `fix_mark` resources on the landscape (*note: which resources is not a function of space*)
+
+**After the observation function is run, we thereby have an obervational data frame in which rows are individual resources, and columns include traits of those resources (same as in the resource data frame) and whether or not the resource was observed during a particular simulated outing. Through a combination of specifications for `times` and `fix_mark` options, observational data frame can then be interpreted in multiple ways and used in a simulated analysis:**
 
 > <a name="u-22-DEC-2016">Update: 22 DEC 2016</a>
 
