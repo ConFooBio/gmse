@@ -10,18 +10,21 @@
 #'@param types The types of data being observed
 #'@param fix_mark Fixed number of individuals marked? (A number, or FALSE)
 #'@param times Number of times that the observations are made
+#'@param samp_age Minimum age of the resource being sampled (default = 1)
+#'@param agent_type The type of agent doing the observing (default = 0)
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
 #'@return Data frame observations at the end of the time step
-observation <- function(resource  = NULL, 
-                        landscape = NULL, 
-                        paras     = NULL, 
-                        agent     = NULL,
-                        type      = 1,
-                        fix_mark  = FALSE,
-                        times     = 1,
-                        samp_age  = 1,
-                        model     = "IBM"
+observation <- function(resource   = NULL, 
+                        landscape  = NULL, 
+                        paras      = NULL, 
+                        agent      = NULL,
+                        type       = 1,
+                        fix_mark   = FALSE,
+                        times      = 1,
+                        samp_age   = 1,
+                        agent_type = 0,
+                        model      = "IBM"
                         ){
     check_model <- 0;
     # Use DATA as an array for mark-recapture information
@@ -44,6 +47,7 @@ observation <- function(resource  = NULL,
         paras[10] <- type;
         paras[11] <- as.numeric(fix_mark); # Note: 'FALSE' coerced to zero
         paras[12] <- times;
+        paras[16] <- agent_type;
         paras[17] <- samp_age;
         if(times < 1){
             stop("Need to sample at least once (else no observation)");   
