@@ -66,7 +66,11 @@ library(rhandsontable)
 
 > <a name="u-10-JAN-2017">Update: 10 JAN 2017</a>
 
-We now have a working G-MSE `v0.0.4`, which includes a stable population model and a stable observation model. I've made a few minor updates to the population model code, and included one new type of movement that is allowed -- borrowed from individual-based modelling literature on plant-pollinator-exploiter interactions [@Bronstein2003; @Duthie2013]. This type of movement makes use of an individual's movement parameter `move` by having an individual move `Poisson(move)` times each time step, and with each movement travelling up to `move` cells away (Euclidean distance). This type of movement is `case 0:` in the `mover` function in `resource.c`.
+We now have a working G-MSE `v0.0.4`, which includes a stable population model and a stable observation model. The figure below shows the visual output of the new version, with the landscape in the top panel (*note: different tan colours don't mean anything yet -- the landscape is effectively uniform*); resources (i.e., individuals in the population) are represented in black. In the bottom panel, the solid black line shows the actual change in (adult) population size over time, stabilising around a carrying capacity of 400 (red dotted line). The dark solid cyan line shows an estimate of the population size from the observation model, simulated through mark-recapture (other types of observation are available, see below). The shading around this line shows $95%$ confidence interval estimates. More details about this specific estimate [below](#10-JAN-2017-cmr-details).
+
+![Image an example run of the population model](images/pop_model_eg.png)
+
+I've made a few minor updates to the population model code, and included one new type of movement that is allowed -- borrowed from individual-based modelling literature on plant-pollinator-exploiter interactions [@Bronstein2003; @Duthie2013]. This type of movement makes use of an individual's movement parameter `move` by having an individual move `Poisson(move)` times each time step, and with each movement travelling up to `move` cells away (Euclidean distance). This type of movement is `case 0:` in the `mover` function in `resource.c`.
 
 This update includes the major addition of the `observation.c` file, called by `observation.R` to simulate the sampling of resources (i.e., individuals) from the population model. The file `observation.R` holds the `observation()` function, which **returns a data frame of observed resources. The observation function thereby simulates the process of acquiring observational data, but not analysing those data**. Analysis of these data is left to R, or to a (yet written) c function (note, current analyses are fairly simple).
 
@@ -107,6 +111,30 @@ The function `field_work` simulates the process of an agent looking for and tagg
  2. Randomly tag `fix_mark` resources on the landscape (*note: which resources is not a function of space*)
 
 **After the observation function is run, we thereby have an obervational data frame in which rows are individual resources, and columns include traits of those resources (same as in the resource data frame) and whether or not the resource was observed during a particular simulated outing. Through a combination of specifications for `times` and `fix_mark` options, observational data frame can then be interpreted in multiple ways and used in a simulated analysis:**
+
+There are multiple ways to interpret the observation results. Examples of this are as follows (for now, I'm assuming that there is one observer, but we can substitute the below with any number of observers):
+
+ - Have the observer tag every resource within their range of vision some number of times; take the average of number of resources tagged per time as an estimate of population density.
+ - Have the observer tag every resource within their range of vision some fixed number of times, but then interpret some of those times as *marks* and others as *recaptures*. Uneven times for marking and recapturing could be interpreted as different investment in each procedure (e.g., go out and mark at 3 different locations, then recapture at 9 locations). Unique marked and recaptured individuals can be summed to estimate population size using capture-mark-recapture techniques. Currently, there is some code in R simulating a [Lincoln-Petersen](https://en.wikipedia.org/wiki/Mark_and_recapture#Lincoln.E2.80.93Petersen_estimator) estimator of mark-recapture with a [Chapman correction](https://en.wikipedia.org/wiki/Mark_and_recapture#Chapman_estimator) for small sample size [see @Pollock1990]. It would be useful to add some other estimatores (e.g., Bayesian).
+ - Have the observer sample a fixed number of resources on the landscape some number of times (*not spatial -- resources are just randomly taken*). Interpret one or more of these samples as markings, and one or more as recaptures. Then, use these data to estimate population size using some technique such as mark-recapture estimation. This is the technique used in the [figure](#u-10-JAN-2017) shown above.
+ - Note, because observation arrays are stored by R, population size estimation can span multiple time steps (e.g., mark one year, recapture the next -- though some individuals might die in the intervening period)
+ 
+ <a name="10-JAN-2017-cmr-details">Details</a> of the technique used to produce the above figure include the following:
+ 
+ - One type 0 agent exists to do all of the observing.
+ - A fixed sample of 20 resources are marked (if fewer than 20 sampled resources exist, then all resources are sampled -- this never happened though) at each time field work is done.
+ - Field work is done 12 times in a time step, perhaps simulating 12 outings over a short time period within a calendar year.
+ - Three of these outings are interpreted as periods of marking, where resources are tagged.
+ - Nine of these outings are interpreted as periods of recapturing, where resources are caught and recorded.
+ - Unique resources tagged by the agent in the first three and last nine outings are interpreted as unique marks and recaptures, respectively.
+ - After all time steps are simulated, a function written in `gmse.R` figures out what the estimate of the population size would be for each time step. The analysis uses a very simple `chapman_est` function that I wrote in R. This function, or something like it, might be later incorporated as part of the observation model itself (likely by having observation.R call a different c file or R function), or in the manager model, or somewhere inbetween. I haven't decided.
+ 
+For now, it's time to take another step back and take stock of what needs to be done next. A manager model and user model will need to start looking at multiple resources for making decisions, and somehow both potentially feed into a game-theoretic model. The complexity involved with the integration of management, games, and user actions should be a bit mitigated by all of these eventual functions revolving mostly around the agent array, with some input from the observation array. Of course, managers will need access to the observational data as input, and users will need access to the resource array for off-take and other things.
+
+It's worth noting that the flexibility of the `observation` function 
+ 
+ 
+ 
 
 > <a name="u-22-DEC-2016">Update: 22 DEC 2016</a>
 
@@ -734,7 +762,6 @@ Impl1 <- function(TAC=10, ModType="A", p=0.7){
 **Hence, we can put four of these functions together to simulate a very simple MSE model:**
 
 ```{r}
-
 pop_abund      <- 100;
 harvest        <- 20;
 growth_rate    <- 1;
