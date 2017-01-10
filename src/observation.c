@@ -435,9 +435,6 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int times_obs;           /* Number of times observation is conducted */
     int obs_iter;            /* To count up -- which observation iteration */
     int res_type;            /* Types of resources that are being observed */
-    int agent_return;        /* Do agents return to location after moving */
-    int *save_x;             /* Saved x locations of agents if moving */
-    int *save_y;             /* Saved y locations of agents if moving */
     int *add_resource;       /* Vector of added resources */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
@@ -536,22 +533,12 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     who_observes = (int) paras[7];  /* What type of agent does the observing */   
     method       = (int) paras[8];  /* Specifies method of estimation used   */
     res_type     = (int) paras[9];  /* What type of resources are observed   */
-    agent_return = (int) paras[15]; /* Do the agents return back to location */
-    
+
     for(resource = 0; resource < res_number; resource++){
         resource_array[resource][12] = 0;   /* Set marks to zero   */
         resource_array[resource][13] = 0;   /* Set tallies to zero */
     }
-            
-    if(agent_return == 1){
-        save_x = malloc(agent_number * sizeof(int));
-        save_y = malloc(agent_number * sizeof(int));
-        for(agent = 0; agent < agent_number; agent++){
-            save_x[agent] = agent_array[agent][4];
-            save_y[agent] = agent_array[agent][5];
-        }
-    }
-        
+
     /* This switch function calls a method of population size estimation */
     switch(method){
        case 0:
@@ -575,15 +562,6 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
        break;
     }
 
-    if(agent_return == 1){
-        for(agent = 0; agent < agent_number; agent++){
-            agent_array[agent][4] = save_x[agent];
-            agent_array[agent][5] = save_y[agent];
-        }
-        free(save_x);
-        free(save_y);
-    }
-    
     /* Check to see how many resources were observed */        
     new_obs   = 0;
     for(resource = 0; resource < res_number; resource++){
