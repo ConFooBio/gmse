@@ -3,7 +3,6 @@
 #include <Rinternals.h>
 #include <Rmath.h>
 
-
 /* =============================================================================
  * This function moves one on the landscape according to some rules
  * For now, it is repeated in both c files, but if there are more functions
@@ -340,7 +339,6 @@ void field_work(double **resource_array, double **agent_array, double *paras,
     }
 }
 
-
 /* =============================================================================
  * CAPTURE MARK-RECAPTURE (CMR) METHOD:
  * ===========================================================================*/
@@ -384,7 +382,7 @@ void mark_res(double **resource_array, double **agent_array, double **land,
     }
     
     for(agent = 0; agent < a_row; agent++){
-        if(agent_array[agent][1] == a_type){ /* Zeros are manager agents */
+        if(agent_array[agent][1] == a_type){ 
             field_work(resource_array, agent_array, paras, res_rows, agent, 
                        find_type, res_type, obs_col);
         }
@@ -630,7 +628,4 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     return(NEW_OBSERVATIONS); 
 }
 /* ===========================================================================*/
-          
-          
-          
-          
+
