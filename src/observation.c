@@ -357,7 +357,7 @@ void field_work(double **resource_array, double **agent_array, double *paras,
  * ========================================================================== */
 void mark_res(double **resource_array, double **agent_array, double **land,
               double *paras, int res_rows, int a_row, int res_type, 
-              int obs_col, int a_type){
+              int obs_col, int a_type, int by_type){
     
     int resource;
     int agent;
@@ -382,7 +382,7 @@ void mark_res(double **resource_array, double **agent_array, double **land,
     }
     
     for(agent = 0; agent < a_row; agent++){
-        if(agent_array[agent][1] == a_type){ 
+        if(agent_array[agent][by_type] == a_type){ 
             field_work(resource_array, agent_array, paras, res_rows, agent, 
                        find_type, res_type, obs_col);
         }
@@ -407,7 +407,6 @@ void mark_res(double **resource_array, double **agent_array, double **land,
  *      PARAMETERS: Parameters read into the function for population processes
  *      AGENT:      An array of *row agents and *col traits for each agent
  * ===========================================================================*/
-/* TODO: Argument: VECTOR_OF_PARAMETER_VALUES */
 SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
  
     /* SOME STANDARD DECLARATIONS OF KEY VARIABLES AND POINTERS               */
@@ -434,6 +433,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int obs_iter;            /* To count up -- which observation iteration */
     int res_type;            /* Types of resources that are being observed */
     int a_type;              /* Type of agent doing observing (manager = 0) */
+    int by_type;             /* Type category for observing (default = 1)*/
     int *add_resource;       /* Vector of added resources */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
@@ -499,7 +499,6 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
             resource_array[resource][res_trait] = 0;
         }
     }
- 
     /* RESOURCE is now stored as resource_array (discrete resources) */
 
     /* Code below reads in the LANDSCAPE for easy of use */
@@ -532,7 +531,8 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     who_observes = (int) paras[7];  /* What type of agent does the observing */   
     method       = (int) paras[8];  /* Specifies method of estimation used   */
     res_type     = (int) paras[9];  /* What type of resources are observed   */
-    a_type       = (int) paras[15]; /* What type of agent is observing */
+    a_type       = (int) paras[15]; /* What type of agent is observing       */
+    by_type      = (int) paras[17]; /* Category (column) of type location    */
 
     for(resource = 0; resource < res_number; resource++){
         resource_array[resource][12] = 0;   /* Set marks to zero   */
@@ -541,21 +541,21 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
 
     /* This switch function calls a method of population size estimation */
     switch(method){
-       case 0:
-           obs_iter = trait_number; /* Start of the observation column */
+       case 0: /* Start of observation column, the +1 skips agent type col */
+           obs_iter = trait_number + 1; 
            while(times_obs > 0){
                mark_res(resource_array, agent_array, land, paras, res_number, 
-                        agent_number, res_type, obs_iter, a_type);
+                        agent_number, res_type, obs_iter, a_type, by_type);
                times_obs--; /* Then move agents if need be for new sample */
                obs_iter++;
            }
            break;
        default:
            printf("ERROR: No observation method set: marking all in view \n");
-           obs_iter = trait_number;
+           obs_iter = trait_number + 1; /* The 1 skips over the agent type */
            while(times_obs > 0){
                mark_res(resource_array, agent_array, land, paras, res_number, 
-                        agent_number, res_type, obs_iter, a_type);
+                        agent_number, res_type, obs_iter, a_type, by_type);
                times_obs--; /* Then move agents if need be for new sample */
                obs_iter++;
            }
@@ -584,6 +584,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
                 obs_array[add_obs][res_trait] = 
                     resource_array[resource][res_trait];
             }
+            obs_array[add_obs][13] = (double) a_type; /* Re-purpose tally col */
             add_obs++;
             if(add_obs > new_obs){ /* Below should not every happen */
                 printf("\n\nFATAL ERROR: Added observes exceed expected\n\n");  
@@ -591,7 +592,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
             }
         }
     }
-
+    
     /* This code switches from C back to R */
     /* ====================================================================== */        
     

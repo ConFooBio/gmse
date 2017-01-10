@@ -80,7 +80,8 @@ parameters <- c(time,    # 0. The dynamic time step for each function to use
                 ldy,     # 13. Land dimension on the y axis
                 1,       # 14. Agent movement (option same as #2)
                 0,       # 15. Agent type observing (default is 0 for managers)
-                1        # 16. Minimum age of sampling (1 excludes juveniles)
+                1,       # 16. Minimum age of sampling (1 excludes juveniles)
+                1        # 17. Type category for agent observation (default = 1)
                 );
 
 # Create a warning somewhere if population size is not regulated
@@ -104,7 +105,9 @@ while(time < time_max){
                                     type       = 1,      # Resource(s) observed
                                     fix_mark   = 20,     # Fixed or view-based
                                     times      = 12,     # Times observed
-                                    samp_age   = 1
+                                    samp_age   = 1,
+                                    agent_type = 0,
+                                    type_cat   = 1
                                     );
    
    OBSERVATION_REC   <- rbind(OBSERVATION_REC, OBSERVATION_NEW);

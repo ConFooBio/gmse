@@ -12,6 +12,7 @@
 #'@param times Number of times that the observations are made
 #'@param samp_age Minimum age of the resource being sampled (default = 1)
 #'@param agent_type The type of agent doing the observing (default = 0)
+#'@param type_cat The category of agent type (first 4 columns) doing observing
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
 #'@return Data frame observations at the end of the time step
@@ -24,6 +25,7 @@ observation <- function(resource   = NULL,
                         times      = 1,
                         samp_age   = 1,
                         agent_type = 0,
+                        type_cat   = 1,
                         model      = "IBM"
                         ){
     check_model <- 0;
@@ -49,6 +51,7 @@ observation <- function(resource   = NULL,
         paras[12] <- times;
         paras[16] <- agent_type;
         paras[17] <- samp_age;
+        paras[18] <- type_cat;
         if(times < 1){
             stop("Need to sample at least once (else no observation)");   
         }
