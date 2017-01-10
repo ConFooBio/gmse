@@ -39,6 +39,9 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - [10 JAN 2017](#u-10-JAN-2017)
+ - [22 DEC 2016](#u-22-DEC-2016)
+
 [Towards a Game-theoretic Management Strategy Evaluation (G-MSE)](#intro)
 
 [General model development](#gendev)
@@ -63,8 +66,27 @@ library(rhandsontable)
 
 > <a name="u-10-JAN-2017">Update: 10 JAN 2017</a>
 
+We now have a working G-MSE `v0.0.4`, which includes a stable population model and a stable observation model. I've made a few minor updates to the population model code, and included one new type of movement that is allowed -- borrowed from individual-based modelling literature on plant-pollinator-exploiter interactions [@Bronstein2003; @Duthie2013]. This type of movement makes use of an individual's movement parameter `move` by having an individual move `Poisson(move)` times each time step, and with each movement travelling up to `move` cells away (Euclidean distance). This type of movement is `case 0:` in the `mover` function in `resource.c`.
 
-We now have a working G-MSE `v0.0.4`, which includes a stable population model and a stable observation model. 
+This update includes the major addition of the `observation.c` file, called by `ovbservation.R` to simulate the sampling of resources (i.e., individuals) from the population model. The function `observation.R` **requires** the following three data frames: 
+
+ 1. `resources`: holds all of the resources simulated. 
+ 2. `landscape`: holds the landscape on which resources and agents are located.
+ 3. `agent`: holds all of the agents simulated (this also includes at least one manager -- even if the manager does not eventually participate in games). 
+ 
+The `observation.R` function also **requires** the `paras` vector, which holds all parameters that might be important throughout the simulation. 
+
+Optional inputs include:
+
+ - `type`, which specifies the type of resource being observed (default = 1).
+ - `fix_mark`, which either sets a fixed number of resources to be sampled during an observation (positive integer value) or sets an observer to ''observe'' all resources in its `view` (0 or FALSE).
+ - `times`, which sets how many times an observer will make observations during a time step (must be >0)
+ - `samp_age`, which defines the minimum age at which resources are sampled (the default is set to 1, meaning that resources just added are not sampled -- could conceptualise this as sampling only adults; for now, it also makes the initial testing easier because carrying capacity has not yet been applied to juveniles during before observation -- can change this, of course.
+ - `model`, which currently has to be "IBM". Eventually it might be nice to allow `observation.R` to shunt observations to something not individual-based, such as [Nilsen's model](#Nilsen), or another analytical equivalent, but not yet.
+ 
+The file `observation.R` calls the function `observation` in the file `observation.c`. This c file follows the following general protocol:
+
+ - Reads the resource, landscape, and agent data arrays into c from R. It also reads in the parameter vector (which includes the optional inputs from the `observation.R` function.
 
 
 > <a name="u-22-DEC-2016">Update: 22 DEC 2016</a>
