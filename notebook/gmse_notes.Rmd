@@ -68,7 +68,7 @@ library(rhandsontable)
 
 We now have a working G-MSE `v0.0.4`, which includes a stable population model and a stable observation model. The figure below shows the visual output of the new version, with the landscape in the top panel (*note: different tan colours don't mean anything yet -- the landscape is effectively uniform*); resources (i.e., individuals in the population) are represented in black. In the bottom panel, the solid black line shows the actual change in (adult) population size over time, stabilising around a carrying capacity of 400 (red dotted line). The dark solid cyan line shows an estimate of the population size from the observation model, simulated through mark-recapture (other types of observation are available, see below). The shading around this line shows $95%$ confidence interval estimates. More details about this specific estimate [below](#10-JAN-2017-cmr-details).
 
-![Image an example run of the population model](images/pop_model_eg.png)
+![*Figure above shows population and observation models*](images/obs_dev_eg.png)
 
 I've made a few minor updates to the population model code, and included one new type of movement that is allowed -- borrowed from individual-based modelling literature on plant-pollinator-exploiter interactions [@Bronstein2003; @Duthie2013]. This type of movement makes use of an individual's movement parameter `move` by having an individual move `Poisson(move)` times each time step, and with each movement travelling up to `move` cells away (Euclidean distance). This type of movement is `case 0:` in the `mover` function in `resource.c`.
 
@@ -78,7 +78,7 @@ The function `observation.R` **requires** the following three data frames:
 
  1. `resources`: holds all of the resources simulated. 
  2. `landscape`: holds the landscape on which resources and agents are located.
- 3. `agent`: holds all of the agents simulated (this also includes at least one manager -- even if the manager does not eventually participate in games). 
+ 3. `agent`: holds all of the agents simulated (this also includes at least one manager of type 0 -- even if the manager does not eventually participate in games). 
  
 The `observation.R` function also **requires** the `paras` vector, which holds all parameters that might be important throughout the simulation. 
 
@@ -88,6 +88,7 @@ Optional inputs include:
  - `fix_mark`, which either sets a fixed number of resources to be sampled during an observation (positive integer value) or sets an observer to ''observe'' all resources in its `view` (0 or FALSE).
  - `times`, which sets how many times an observer will make observations during a time step (must be >0)
  - `samp_age`, which defines the minimum age at which resources are sampled (the default is set to 1, meaning that resources just added are not sampled -- could conceptualise this as sampling only adults; for now, it also makes the initial testing easier because carrying capacity has not yet been applied to juveniles during before observation -- can change this, of course.
+ - `agent_type`, which identifies which agents are doing the observing. The default value is 0, which identifies the managers in the model. For most purposes, we will only need to have managers doing the observing, but there is definitely some utility in allowing other agents to do their own observing; more on this [below](#10-JAN-2017-other-obs).
  - `model`, which currently has to be "IBM". Eventually it might be nice to allow `observation.R` to shunt observations to something not individual-based, such as [Nilsen's model](#Nilsen), or another analytical equivalent, but not yet.
  
 The file `observation.R` calls the function `observation` in the file `observation.c`. This c file follows the following general protocol:
@@ -101,7 +102,7 @@ The function `observation` is called, which does the following:
  
 <a name="function-mark-res">The function</a> `mark_res` is called by `observation`, and does the following:
 
- - Identifies each observer in the agent array. Agents of type 0 act as observers and managers. They are therefore a special type of agent that performs the observational tasks. By default, we assume that there is one agent that does all of the work, but if we have more type 0 agents, then each will do the same amount. For each type 0 agent, two functions are called in succession (recall that mark_res might be called multiple times in success by `observation`):
+ - Identifies each observer in the agent array. Agents of a specified type (usually type 0) act as observers and thereby perform the observational tasks. By default, we assume that there is one agent of type 0 that acts as a lone manager (or, perhaps, a very cohesive team) who does all of the work, but if we have more type 0 agents, then each will do the same amount. For each type 0 agent, two functions are called in succession (recall that mark_res might be called multiple times in success by `observation`):
   - `field_work` causes the agent to go out and do some observational field work.
   - `a_mover` causes the agent to move according to some specified rules, as stored in the parameter vector and agent array. The default is simple uniform movement some Euclidean distance away after doing field work -- setting up for field work in a different location. The code is almost identical to the code that moves reources in `resource.c`, so I'll not explain this here.
   
@@ -129,11 +130,11 @@ There are multiple ways to interpret the observation results. Examples of this a
  - Unique resources tagged by the agent in the first three and last nine outings are interpreted as unique marks and recaptures, respectively.
  - After all time steps are simulated, a function written in `gmse.R` figures out what the estimate of the population size would be for each time step. The analysis uses a very simple `chapman_est` function that I wrote in R. This function, or something like it, might be later incorporated as part of the observation model itself (likely by having observation.R call a different c file or R function), or in the manager model, or somewhere inbetween. I haven't decided.
  
-For now, it's time to take another step back and take stock of what needs to be done next. A manager model and user model will need to start looking at multiple resources for making decisions, and somehow both potentially feed into a game-theoretic model. The complexity involved with the integration of management, games, and user actions should be a bit mitigated by all of these eventual functions revolving mostly around the agent array, with some input from the observation array. Of course, managers will need access to the observational data as input, and users will need access to the resource array for off-take and other things.
+For now, it's time to take another step back and take stock of what needs to be done next. A manager model and user model will need to start looking at multiple resources for making decisions, and somehow both potentially feed into a game-theoretic model. The complexity involved with the integration of management, games, and user actions should be a bit mitigated by all of these eventual functions revolving mostly around the agent array, with some input from the observation array. Of course, at least one type of agent will need access to the observational data as input (perhaps only to ignore it, sometimes), and users will need access to the resource array for off-take and other things. Some careful planning is needed for what happens next. I am particularly becoming aware that the flexibility of this model, while definitely a good thing, has the potential to tempt me into creating a lot of end user options that no one will actually want. **It might be a good idea to develop a list at some point separating key options that we definitely want to be visible to all end users from more obscure options that are available to us by editing the central gmse.R script.** It's also likely that a model of this scope will require a well written R function that translates different combinations of user-friendly inputs into an R list, which can then be interpreted by the script that calls `resource.R`, `observation.R`, `manager.R`, `game.R`, and `user.R`, and which places inputs into the vector `para` appropriately.
 
-It's worth noting that the flexibility of the `observation` function 
+<a name="#10-JAN-2017-other-obs">It's worth noting</a> that the flexibility of the `observation` function might be used to address social questions that interest us. I've been mainly conceptualising the observation model as something done by a disinterested third party -- a manager rather than a stake-holder per se. The manager would make some decision that then affected payoffs in a game among stake-holders. We can do this of course, but we can also allow the stake-holders themselves to observe, perhaps less thoroughly and with more potential for bias (as we assume that they have less time and expertise). For example, we might imagine some stake-holders to estimate population size or change over time for themselves by observing all of the resources within a short distance around their location -- perhaps (incorrectly) biased by large population changes (e.g., way more geese around my location this year than last -- estimate a lot of total geese this year overall). These observations could feed into the game and user models.
  
- 
+Also -- and this might require some tweaking -- the flexibility of the type columns (type1, type2, type3) means that observing can be flexible too. We could allow each individual to observe, or groups of individuals of the same type to observe. We could also let *everyone* observe, and tag the observation data array with the observer identity and types1: *I've just done this, as it was a trivial option to add to allow all individuals to observe*.
  
 
 > <a name="u-22-DEC-2016">Update: 22 DEC 2016</a>
@@ -762,6 +763,7 @@ Impl1 <- function(TAC=10, ModType="A", p=0.7){
 **Hence, we can put four of these functions together to simulate a very simple MSE model:**
 
 ```{r}
+
 pop_abund      <- 100;
 harvest        <- 20;
 growth_rate    <- 1;
