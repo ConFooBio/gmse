@@ -1,0 +1,821 @@
+---
+title: "Game-theoretic managemet strategy evaluation (G-MSE)"
+author: "Brad Duthie"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document: default
+  pdf_document:
+    fig_caption: yes
+  word_document:
+    fig_caption: yes
+    pandoc_args:
+    - --csl
+    - evolution.csl
+    reference_docx: docx_template.docx
+header-includes:
+- \usepackage{amsmath}
+- \usepackage{natbib}
+- \usepackage{lineno}
+- \linenumbers
+- \bibliographystyle{amnatnat}
+linestretch: 1
+csl: evolution.csl
+bibliography: references.bib
+---
+
+```{r, echo=FALSE}
+library(shiny)
+library(rhandsontable)
+```
+
+********************************************************************************
+
+> **This notebook tracks progress on the development of [G-MSE software](https://bradduthie.github.io/gmse/), for game-theoretic management strategy evaluation, and related issues surrounding the development and application of game theory for addressing questions of biodiversity and food security.**
+
+********************************************************************************
+
+<a name="contents">Contents:</a>
+================================================================================
+
+[Project updates](#updates)
+
+[Towards a Game-theoretic Management Strategy Evaluation (G-MSE)](#intro)
+
+[General model development](#gendev)
+
+[General software development](#soft)
+
+[Game-theory modelling (game.c; green box above)](#game)
+
+[Game-theory and modelling](#gamemod)
+
+[Notes regarding Nilsen's MSE](#Nilsen)
+
+[Some side-notes that might be of use](#side)
+
+[References consulted and annotated (Mendeley)](#ref)
+
+********************************************************************************
+
+<a name="updates">Progress updates:</a>
+================================================================================
+
+
+> <a name="u-10-JAN-2017">Update: 10 JAN 2017</a>
+
+
+We now have a working G-MSE `v0.0.4`, which includes a stable population model and a stable observation model. 
+
+
+> <a name="u-22-DEC-2016">Update: 22 DEC 2016</a>
+
+
+As a quick update, I now have a working population model for G-MSE, and have reached the point where it will probably be better for me to take a step back and plan a bit, then work on other aspects of the full model rather than add more bells and whistles to the population sub-component. The development that I have done includes five files (happy to send these for the curious):
+
+  1. gmse.R -- A master file that I'm currently using to call everything else
+  
+  2. landscape.R -- A file that constructs an $m \times n$ landscape (in the code, this is a simple 2D array, the elements of which can contain any real number). Currently, there is an option to make this landscape any size and randomly place any number of 'resources' onto it, if desired. In the past, I have used some [code](https://github.com/bradduthie/Duthie_and_Falcy_2013/blob/master/landscape.c) to produce autocorrelation of values on the landscape; if it suits us, I can rewrite this code (to improve the readability) for application to G-MSE. I also think it would be useful to have the option of reading in an image (i.e., a map) and converting it to an array to be used as the landscape (e.g., [JPG](http://stackoverflow.com/questions/25050974/how-to-convert-a-jpeg-to-an-image-matrix-in-r), [BMP](http://stackoverflow.com/questions/16787894/need-help-converting-a-bmp-image-to-a-matrix-in-r), [etc.](https://dahtah.github.io/imager/imager.html)) -- I suspect some stakeholders might find this especially useful, as it might help them see the applicability more clearly. Also, I've left hooks in the R file to allow eventual development of a non-spatial model.
+
+  3. initialise.R -- A file that generates a single 'RESOURCE' array, which will hold everything that might be of value to stakeholders; this includes, most obviously, individuals in populations of conservation interest, but can also be used to respresent things like hunting licenses or crop plots. The idea is to have a data structure that provides maximum flexibility -- individuals can be represented as rows (or *sets* of rows) within the array, and their types and attributes can be indexed by column:
+  
+```{r, echo=FALSE}
+IDs        <- seq(from = 1, to = 10, by = 1);
+type_1     <- sample(x = 1:2, size = 10, replace = TRUE);
+type_2     <- rep(x = 0, times = 10);
+x_loc      <- sample(x = 1:20, size = 10, replace = TRUE);
+y_loc      <- sample(x = 1:20, size = 10, replace = TRUE);
+move       <- rep(x = 2, times = 10);
+time       <- rep(x = 0, times = 10);
+remov_pr   <- rep(x = 0.1, times = 10);
+growth     <- rep(x = 1.1, times = 10);
+offspr     <- rep(x = 0, times = 10); # None at init
+age        <- rep(x = 0, times = 10); # Start age zero
+resource   <- cbind(IDs, type_1, type_2, x_loc, y_loc, move, time, remov_pr, growth, offspr, age);
+rownames(resource) <- c("res_1", "res_2", "res_3", "res_4", "res_5", "res_6", "res_7", "res_8", "res_9", "res_10");
+print(resource);
+```
+
+  - Note that the first column is a unique index for the discrete resource -- it tags it over time and the age of the resource. The type columns (cols 2 and 3) can respresented anything; perhaps most usefully different types of resources that stake-holders might have interest in (e.g., harriers versus grouse, geese versus crop biomass, reindeer versus ticket sales), but also sub-types (e.g., individual sex) and even *individuals at a different scale*. For example, we might loosely define individuals as being represented by the index of type-1 instead of rows explicitly. In doing so, we can interpret the above table as having two individuals (1 and 2) with perhaps a shared presence at 7 (individual 1) and 3 (individual 2) different locations (cols x-loc and y-loc); hence the scale of individuals can be finer than array rows. Similarly, we could represent multiple individuals in a single row by having each row represent a group of individuals of type-1 or type-2, with the quantity of individuals being represented in a column to be defined later. The key point here is that **this structure of coding and abstract definition of 'resource' will maximise flexibility over how individuals are represented and modelled**; a key challenge will be knowing when to use what kind of structure. Note also that these columns are not (yet) set in stone, and we can add more as need be (I'm already tempted to add a third abstract 'type', though I'm not sure if it would ever be needed).
+  
+  4. resource.R -- This file has only one real job, and that is to read in the `RESOURCE` array, `LANDSCAPE` array, `PARAMETER` vector, and `MODEL TYPE` (currently only individual-based model, "IBM"), and then call the appropriate resource model. this intermediary R file allows us to be flexible in re-routing the whole G-MSE to different population models, if need be. We could even mix and match the extent to which components use simple equation-based modelling (e.g., as in [Nilsen's MSE](#Nilsen)), and which use the more computationally-intense agent-based simulation (though I really don't think computation time will be much of an issue, even with the agent-based model). Currently, all this R file is doing is calling the C code and the file resource.c -- or, more accurately, it is calling the compiled file resource.so, which allows R to link to C. 
+  
+  5. resource.c -- This is the file that does all of the heavy lifting in terms of simulating resources on a landscape; it is written in C to make the computation run (much) more quickly (probably by two orders of magntiude). The file includes several C functions, one of which links them all by running the resource() function, which reads in the `RESOURCE` and `LANDSCAPE` arrays, and a `PARAMATER` vector (containing any key parameter values) from R, and returns a new `RESOURCE` array (hence, landscape and parameter values are unchanged). A rough outline of what this key function does is as follows:
+    - Reads and edits all of the key input into a form that C can store and use
+    - Calls function `add_time`, which writes a time step and adds an age to all rows (see table above)
+    - Calls function `mover` to move individuals some Euclidean distance according to a parameter (see above) and movement rules (currently: uniform probability of cell distances, Poisson probability of distances). This program also uses a parameter to determine what happens at the edge of the landscape -- currently, either nothing happens (i.e., individuals are just 'out of view') or the landscape wraps around as a torus (i.e., if you leave on the left side, you come back on the right).
+    - Calls the functions `res_add` and `res_place` to simulate the addition of new resources (e.g., birth of individuals) and place them in a new array, respectively. Currently, old rows (e.g., individuals) directly create new rows according to a `growth` parameter (see table above), simulating birth, but this can be changed. A carrying capacity can also be applied to addition of new rows. New rows are also identical to their 'parent' rows in everything except ID and age, but this can also be changed.
+    - Calls the function `remove` to remove some of the old rows from the input array -- currently removal of rows occurs with some fixed probability (`remov_pr`, see table above), or probabilistically based on a set carrying capacity. 
+    - Combines the rows of the original `RESOURCE` array that were not removed with the newly created resources to make one single array (*might want to make this its own function later, for readability*).
+    - Reads and edits all of the key output back into a form that can be recognised by R as a data frame.
+    - **Note**: There is plenty of room for expanding this population model, and adding components such as immigration and emigration, interaction of resources, more complex movement, spatial heterogeneity of birth and death, sexual reproduction, disturbance, etc. This is just what I consider to be a minimal individual-based model useful for simulating a population. The code appears to be stable, though a bit more error checking would be useful, and some warnings need to be added to the code -- also, as of now, it is possible to have divergent growth of population size, maxing out the computer's memory and causing the program to crash. Some safeguard against this needs to be written in. 
+    
+A small script can help us see the output of what's going on in the population, both in terms of individual movement and change in population abundance over time. The run time of the below population is negligible -- all of the data underlying the 100 time steps shown in the figure below is produced in a tenth of a second (**4 JAN Update: Assuming instead a carrying capacity of 40000, closer to the ball-park of the Islay geese, 100 time steps takes 11 seconds**). The upper panel of the figure below shows a landscape (light and dark brown -- these colours don't mean anything at the moment, but could represent different landscape properties) with individuals (black) that move around, reproduce, and die in each time step. The lower panel shows the abundance of these individuals as they increase to carrying capacity (red dashed line), whereafter the population size remains stable (of course, simulating a bigger population takes a bit more time -- it takes about nine tenths of a second to simulate 100 time steps at a carrying capacity of 4000). 
+
+![Image an example run of the population model](images/pop_model_eg.png)
+
+
+<a name="intro">Towards a Game-theoretic Management Strategy Evaluation (G-MSE):</a>
+================================================================================
+
+I would like to develop one general, efficient, open-source, and user- and developer-friendly program for G-MSE that would be a general tool for applying game theory and management strategy evaluation to specific problems of conflict among stake-holders. I'm somewhat flexible on the development, but my preference would be to have software that is:
+
+ - Open-source, with all version-controlled development history being publicly available on GitHub.
+ 
+ - Written primarily or entirely in C (for efficiency and portability)
+ 
+ - Easily called from R using an [R package](https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/) ([see also](http://r-pkgs.had.co.nz/description.html)) and appropriate R functions (as many scientists would likely want to integrate the program with other R packages and their own code or data). Note that this [could be tricky for windows users](https://b4winckler.wordpress.com/2012/04/14/r-package-c-code/). See details on the [most flexible](http://r-pkgs.had.co.nz/src.html) way to call R from C.
+ 
+ - Usable with a browser-based GUI (or perhaps an app, though I'd have to learn how to do this), probably 'shiny' on top of R.
+ 
+   - Useful for scientists or stake-holders unfamiliar with R, or command line code more generally
+
+   - Perhaps useful as a teaching tool for students or the general public
+
+   - Could look similar to this: < https://tomhopper.shinyapps.io/TB_Cases_shiny/ >, the code repository of which is availabile here: < https://github.com/tomhopper/TB_Cases_shiny >. Each tab could have a different set of related inputs and outputs, which together could produce a full report in the browser.
+
+ - Comparable in scope to something like RangeShifter: http://rsdevs.github.io/RSwebsite/ [@Bocedi2014a]
+
+
+<a name="gendev">General model development</a>
+--------------------------------------------------------------------------------
+
+**MAJOR POINTS: Some major points fleshed out given the thinking below:**
+
+ - **The G-MSE model will focus on the dynamics of 2+ different objects**
+ - **There will be 2+ stake-holders that each have an interest in the quantity of one or more objects**
+ - **The 2+ different objects modelled will have some effect on one another**
+ - **Effects of objects on one another will cause conflict (or cooperation) between stake-holders**
+
+> **Question**: The *objects* (i.e., populations, resources, commodities) will often be represented as discrete entities (individual animals in populations, but also things like licenses sold and crop patches saved or raided -- which could have individual locations). Should the *stake-holders* also be modelled as (potentially multiple) discrete entities? This is easy to see if, e.g., stake-holders are potential hunters that do or do not buy licenses and engage in hunting, but maybe conservationists could also be considered as discrete -- each individually affecting the decision of an organisation in a game. 
+
+**Given the question above**: Stake-holders could then also be represented by a data frame, which could generalise the model to allow many individual stake-holders to play a game (or not, if data frame is single row, or scalar). This could then more naturally incorporate mixed strategies (some will take one strategy, some another) and uncertainty. In the case that it is some sort of organisation making a decision, this would allow the individual stake-holders to collectively affect a single action or policy. This would appear to drift more into the realm of [agent-based computational economics](https://en.wikipedia.org/wiki/Agent-based_computational_economics), which might be a good thing given the goals of ConFooBio. This could allow for maximum flexibility too, if agents could also be discrete individuals making decisions.
+
+**Should the model therefore be focused on at least four data frames modelling individuals? At least two modelling individual species or resources of interest (and at least one being a population of conservation interset), and at least two modelling modelling individuals with interests in the former?**
+
+I think that the agent-based model is really going to be the default one to use, with other models being useful only if the end user is really tied to them in some way. In general, to find emergent phenomena and predict dynamics and decisions accurately, I think it will be useful to keep in mind the maxim of keeping situation rules simple while allowing agents to be complex ([Volker Grimm](https://www.ufz.de/index.php?en=36522) said something like this in one of his talks or publications, and given the ConFooBio focus, I think it's especially applicable).
+
+Before getting into specifics, it will be useful to walk through the G-MSE model conceptually to figure out what kinds of approaches are going to be most useful for the following:
+
+ 1. Manager model
+ 2. User model
+ 3. Natural resources model
+ 4. Observation model
+ 5. Game-theoretic model
+ 
+Each of these needs a general framework that will be most usefully applied to real-world problems of conflict. Ideally, these models will be modular -- i.e., not depend on the *type* of modelling being done in other areas of G-MSE. That way, we might, e.g., decide to substitute an entirely different kind of natural resources model (e.g., simple numerical Lotka-Volterra versus spatially explicit individual-based model), but still be able to generate input/output in each component to be used by the next.
+
+Nevertheless, there needs to be some *conceptual* framework that is consistent, in addition to the five above modules. I've written down some of these ideas, deliberately avoiding Nilsen's [MSEtools](https://github.com/ErlendNilsen/MSEtools) repository for now. Some potential things that are common to G-MSE:
+
+3. Population dynamics -- every case study, and indeed, every concievable application of G-MSE will include **at least two things that are dynamic**. In all of the case studies, at least one of these things is a population; sometimes the second is as well (e.g., hen harriers and grouse), but sometimes the second thing is a resource or commodity (e.g., crop biomass harvest, fishing licenses sold, etc.). I think that it is possible to generalise the model by tracking two *things* (loosely defined) over time with some sort of flexible structure (data frame, matrix, scalar). Different stake-holders will have an interest in one or both of these things. Change in these things over time might be dependent on previous time steps (as is expected for populations), or they might not be (as might be the case for fishing licenses sold). 
+
+The model is therefore going to need to generally hold two or more variables or objects that represent populations or resources (including biomass) that can both be affected by any of the sub-components (*note:* even something like fishing licenses sold can be *oberved*, perhaps with trivial error -- we can therefore apply the same process of MSE to both populations and the things with which they are in conflict). 
+
+In any case, there will be a need to model how properties of the population change from one time step to the next. Properties of interest for *populations* might include:
+
+ - Population size
+ - Population structure (age or stage classes)
+ - Individual attributes (location, phenotype, etc.)
+
+It would seem as though properties for conflicting resources would be more likely to boil down to one number (e.g., crop yield, licenses sold), but maybe not. We could, for example, assign a location to farms and licenses, or units of biomass in some way.
+
+I think an individual-based model that represents individuals and resources with a table is probably the best way to go in most cases. We can perhaps broaden this out so that the observation model will recognise a table (IBM), a vector (classes), or a number (just size), with some indication of the type of data being returned, but most of the time a full table will be the way to go (*in fact, we could probably just make everything a data frame, and have $1 \times 1$ data frames be interpreted as scalar, and $1 \times n$ data frames be interpreted as a vector*). The information about the population will represent all of the relevant information about the natural population being modelled, so it can pass all of this information onto the observation model, which can then run some function to search through it and extract parameters of interest (with error, potentially). Within this model, we'll want functions to model birth, death, immigration, and emigration.
+
+4. Observation -- Every application of G-MSE will include some type of sampling from the population dynamics model to extract statistics that are relevant to management. How exactly this sampling is done (and how it is modelled, perhaps, given diffent inputs from the population dynamics function) will vary with different techniques, but perhaps not so much. All observation samples a subset of the population (or some metric correlated with abundance -- e.g., dung or nest sites, which would be easy to represent). Therefore, there needs to be some sort of process for estimating the key parameters of interest (aforementioned population size, structure, attributes, etc.) from the complete table being inputted from the population dynamics part of the model. This could be something as simple as sampling from the full table:
+
+ - With or without replacement
+ - With bias to particular attributes
+ - With error (false detection), including error in attributes (age, sex, etc.)
+
+For scalar or vector inputs, observation error could be more directly simulated -- just with a parameter for bias and error (e.g., around population size, or sizes of each age or stage class). 
+
+Alternatively, a different, more general way of doing it might be to instead simulate some length of time $t_{obs}$ for modelling the process of observation. Then each time step could include a probability of observing an individual. This might be even better because I think it would be more generalisable. In the case of the IBM, individuals could be observed following a Poisson process at each time step that:
+
+ - Could recognise the same individual, or not
+ - Could be biased to particular attributes (including location)
+ - Include false detection probability at each time step
+
+The benefit here is that a scalar or vector could be modelled in the same way, just by sampling from a Poisson distribution to find observation number at each time step of some number of individuals (potentially of different ages or classes). 
+
+
+1. Management -- Here's where things get a bit more tricky, potentially. The management model will receive whatever the observation model produces, namely, two data frames representing the dynamic things of interest, typically:
+ 
+ - Population with individuals conservation interest, where an IBM is being used (perhaps simulated with time stamps, locations, and individual attributes -- error in observations already produced), which will be most of the time.
+ - Resource of interest, which might be interpreted by a manager, or not (if we're simulating a manager that is not concerned about the resource in question).
+
+It will then spit out something that will affect both the game that agents play and therefore actions of users. 
+
+One job of the management model will be to calculate statistics associated with the uncertainty surrounding these observations (e.g., confidence intervals), which will affect management decisions that are simulated.
+
+> **TODO:** Need to figure out how management decions are going to be implemented. These deisions will feed directly into the game model, and possibly the user model.
+
+5. Game model
+
+This part is especially tricky. Need some common framework to convert the dynamic *things* (resource, population) into a utility function, then into a payoff matrix (or perhaps something even more general). Questions that need addressing before building the model:
+
+ - Do we want the game to model more than two (types of) players?
+ - Do we want the game to model more than two strategies per player?
+ - Do we want the history of player actions to affect player strategies (i.e., extensive-form game versus a normal game)? If so, how complex are we willing to allow strategies to be?
+ - How rational are we expecting individuals to be (do we want to solve Nash equilibria by default, or base behaviour on something else)?
+
+We also want to include uncertainty in the games.
+
+
+<a name="soft">General software development</a>
+--------------------------------------------------------------------------------
+
+The general structure of the program itself, I think, could fit into Figure 1 of [@Bunnefeld2011] (TREE paper), with a game-theoretic component added into the management model and harvester operating. Would game-theory among agents then be applied to the harvesters who are making decisions? A basic computational model would then proceed something like as follows:
+
+********************************************************************************
+
+**Master file: gmse.R [also create standalone gmse.c with int main(void)]**
+
+ - Input all relevant variables, data.
+ - Run seven functions; 2-6 forming an inner loop:
+   1. initialise (initialise.c; start individuals, landscapes, etc)
+   2. -> resource (resource.c; resource model, might burn in for a while first)
+   3. -> observe (observe.c; observation model)
+   4. -> manager (manager.c; management model)
+   5. -> game (game.c; game theory applied, games played)
+   6. -> user (user.c; actions take based game)
+   7. summary (summary.R; extract and present information from data frames)
+ - Exit program
+
+**initialise.R: code within R to organise key data frames**
+
+ - Switch(model_type):
+ - case(agent_based):
+    - Generate array `STAKEHOLDER_1` (*Stake-holders can be discrete*)
+    - Generate array `STAKEHODLER_2` (*rows = individuals; cols = attributes*)
+    - Generate array `RESOURCE_1` (*note: resources can be populations*)
+    - Generate array `RESOURCE_2` (*rows = individuals; cols =  attribuets*)
+    - Generate matrix `LANDSCAPE` (*start with an $m \times m$ matrix*)
+ - case(matrix):
+    - Generate matrices as appropriate
+ - case(scalar):
+    - Create variables as appropriate
+
+**resources.c: sub-functions affect dynamics of resources**
+
+ - Read `RESOURCE_1`, `RESOURCE_2`, and `LANDSCAPE`
+ - Switch(model_type):
+ - case(agent_based):
+   - `move(double RESOURCE)`: move individuals or resources on LANDSCAPE
+   - `reproduce(double RESOURCE)`: New resources added based on some rules
+   - `die(double RESURCE)`: Resources removed based on some rules
+   - `immigrate(double RESOURCE)`: resources added by different rules (later?)
+   - `emgirate(double RESOURCE)`: resources removed by different rules (later?)
+   - `interact(double RESOURCE_1, double RESOURCE_2)`: Resources interact
+ - case(matrix):
+   - To be developed later
+ - case(scalar):
+   - To be deveoped later
+ - End with modified  `RESOURCE_1`, `RESOURCE_2`, and `LANDSCAPE`
+ 
+**observe.c: sub functions affecting simulated data collection**
+
+**manager.c: sub functions affecting management decision model**
+
+**game.c: sub functions affecting game played based on management decisions**
+
+**user.c: sub functions affecting implementation of users given game.c**
+
+**summary.R: Summarise information and plot (also create C standalone)**
+
+*Note*: The c standalone will also need the file gmse_util.c, for all of the other components (e.g., random number generation) which would normally be done in R. In R, these components can be incorporated with the appropriate R.h and Rmath.h header files.
+
+*Note*: The `RESOURCE_2` will have to be optional, because in some scenarios, two stake-holders might simply be in conflict over the use of one resource.
+
+********************************************************************************
+
+
+**Note** that [Erlend Nilsen](https://github.com/ErlendNilsen) has constructed the basic MSE framework in R already, and I've [forked](https://github.com/bradduthie/MSEtools) his repository on GitHub as a potential starting point. I've also starred a [repository](https://github.com/cjgeyer/foo) for calling C from R, as I think that this will be necessary. I'd like a standalone version of the model in C, but the focus should probably first to be writing the intense code in C while immediately making it called from R -- cloning and making a C standalone can come later (maybe avoid using too much of Rmath.h so that a C standalone is easier).
+
+This would allow a harvester operating module or function to fit within the broad simulation or program, G-MSE.
+
+The spatial aspect of some of the key cases studies [e.g., @Nellemann2000], and the importance of space more broadly in ecological processes, suggests to me that the G-MSE program will need to ahve a spatial component -- landscapes need to be a part of it, perhaps?
+
+Overall, based on the ERC proposal and @Bunnefeld2011, the model will function something like the below (subject to change):
+
+```{r, echo=FALSE, fig.height=6.5, fig.width=3.8}
+par(mar=c(0,0,0,0),mfrow=c(2,1));
+plot(x=0, y=0, type="n", xlim=c(0,100), ylim=c(0,100), xaxt="n", yaxt="n",
+     xlab="",ylab="");
+
+# ------- G-MSE logo below:
+text(x=0,y=97,pos=4,family="mono",labels="  ____       __  __ ____  _____ ");
+text(x=0,y=90,pos=4,family="mono",labels=" / ___|     |  \\/  / ___|| ____|");
+text(x=0,y=83,pos=4,family="mono",labels="| |  _ ____ | |\\/| \\___ \\|  _|  ");
+text(x=0,y=76,pos=4,family="mono",labels="| |_| |____|| |  | |___) | |___ ");
+text(x=0,y=69,pos=4,family="mono",labels=" \\____|     |_|  |_|____/|_____|");
+lines(x=1:100,y=rep(99,100),lwd=3,col="red");
+lines(x=1:100,y=rep(64,100),lwd=3,col="blue");
+lines(x=rep(0,36),y=64:99,lwd=3,col="yellow");
+lines(x=rep(100,36),y=99:64,lwd=3,col="orange");
+
+polygon(x=c(rep(14,16),14:40,rep(40,16),40:14), # box
+        y=c(40:55,rep(40,27),55:40,rep(55,27)),
+        lwd=3,border="black");
+text(x=27,y=50,labels="Long-term data", cex=0.65);
+text(x=27,y=45,labels="input as CSV file", cex=0.65);
+
+polygon(x=c(rep(45,16),45:90,rep(90,16),90:45), # box
+        y=c(40:55,rep(40,46),55:40,rep(55,46)),
+        lwd=3,border="black");
+text(x=65,y=50,labels="Set key parameters using", cex=0.65);
+text(x=65,y=45,labels="any of the below", cex=0.65);
+arrows(x0=65, x1=1, y0=40, y1=31, lwd=2, length=0.00);
+arrows(x0=65, x1=100, y0=40, y1=31, lwd=2, length=0.00);
+
+polygon(x=c(rep(1,20),1:15,rep(15,20),15:1), # box
+        y=c(11:30,rep(30,15),30:11,rep(11,15)),
+        lwd=3,border="black");
+text(x=8,y=25,labels="Browser", cex=0.65);
+text(x=8,y=20,labels="Interface", cex=0.65);
+
+polygon(x=c(rep(21,20),21:35,rep(35,20),35:21), # box
+        y=c(11:30,rep(30,15),30:11,rep(11,15)),
+        lwd=3,border="black");
+text(x=28,y=25,labels="R", cex=0.65);
+text(x=28,y=20,labels="Interface", cex=0.65);
+
+polygon(x=c(rep(41,20),41:100,rep(100,20),100:41), # box
+        y=c(11:30,rep(30,60),30:11,rep(11,60)),
+        lwd=3,border="black");
+text(x=68,y=25,labels="Main C file: contains int main()", cex=0.65);
+text(x=68,y=20,labels="Calls model; can relay to R", cex=0.65);
+
+arrows(x0=15, x1=20, y0=20, y1=20, lwd=2, length=0.08);
+arrows(x0=35, x1=41, y0=20, y1=20, lwd=2, length=0.08);
+arrows(x0=68, x1=1, y0=11, y1=2, lwd=2, length=0.00);
+arrows(x0=65, x1=100, y0=11, y1=2, lwd=2, length=0.00);
+
+text(x=56, y=0, cex=0.60,
+     labels="(Use long-term data in Natural Resource Model before MSE)"
+     );
+
+# ===============================================================
+plot(x=0, y=0, type="n", xlim=c(0,100), ylim=c(0,100), xaxt="n", yaxt="n",
+     xlab="",ylab="");
+# Manager model box
+polygon(x=c(rep(1,30),1:30,rep(30,30),30:1), # box
+        y=c(70:99,rep(99,30),99:70,rep(70,30)),
+        lwd=3,border="red");
+# User model box
+polygon(x=c(rep(70,30),70:99,rep(99,30),99:70), # box
+        y=c(70:99,rep(99,30),99:70,rep(70,30)),
+        lwd=3,border="orange");
+# Obeservation model box
+polygon(x=c(rep(1,30),1:30,rep(30,30),30:1), # box
+        y=c(1:30,rep(30,30),30:1,rep(1,30)),
+        lwd=3,border="yellow");
+# Natural resources model
+polygon(x=c(rep(70,30),70:99,rep(99,30),99:70), # box
+        y=c(1:30,rep(30,30),30:1,rep(1,30)),
+        lwd=3,border="blue");
+# Natural resources model
+polygon(x=c(rep(36,30),36:65,rep(65,30),65:36), # box
+        y=c(36:65,rep(65,30),65:36,rep(36,30)),
+        lwd=3,border="green");
+arrows(x0=15, x1=15, y0=30, y1=70, lwd=2, length=0.15);
+arrows(x0=30, x1=70, y0=85, y1=85, lwd=2, length=0.15);
+arrows(x0=85, x1=85, y0=70, y1=30, lwd=2, length=0.15);
+arrows(x0=70, x1=30, y0=15, y1=15, lwd=2, length=0.15);
+arrows(x0=30, x1=36, y0=70, y1=65, lwd=2, length=0.075, code=3);
+arrows(x0=65, x1=70, y0=65, y1=70, lwd=2, length=0.075, code=3);
+text(x=50, y=90, labels="Policy");
+text(x=50, y=20, labels="Monitoring");
+text(x=10, y=48, labels="Indicators", srt=90);
+text(x=90, y=52, labels="Off-take", srt=-90);
+text(x=50, y=70, labels="Bayesian Priors", cex=0.8);
+# Manager model details: 
+text(x=15, y=95, cex=0.75,labels="Manager model");
+text(x=15, y=90, cex=0.75,labels="file: manager.c");
+text(x=15, y=85, cex=0.75,labels="In: Obs. Data");
+text(x=15, y=80, cex=0.75,labels="Out: Game para.");
+# Bayesion priors details: 
+text(x=50, y=60, cex=0.75,labels="Bayesion Game");
+text(x=50, y=55, cex=0.75,labels="Theory model");
+text(x=50, y=50, cex=0.75,labels="file: game.c");
+text(x=50, y=45, cex=0.75,labels="In: Game para.");
+text(x=50, y=40, cex=0.75,labels="Out: Payoffs");
+# Manager model details: 
+text(x=85, y=95, cex=0.75,labels="User model");
+text(x=85, y=90, cex=0.75,labels="file: user.c");
+text(x=85, y=85, cex=0.75,labels="In: Payoff");
+text(x=85, y=80, cex=0.75,labels="In: Obs. Data");
+text(x=85, y=75, cex=0.75,labels="Out: Off-take");
+# Natural resources model details: 
+text(x=85, y=25, cex=0.75,labels="Natural");
+text(x=85, y=20, cex=0.75,labels="resources model");
+text(x=85, y=15, cex=0.75,labels="file: resources.c");
+text(x=85, y=10, cex=0.75,labels="In: Off-take");
+text(x=85, y=5, cex=0.75,labels="Out: Pop. Dyna.");
+# Natural resources model details: 
+text(x=15, y=25, cex=0.75,labels="Observ. model");
+text(x=15, y=20, cex=0.75,labels="file: observe.c");
+text(x=15, y=15, cex=0.75,labels="In: Pop. Dyna");
+text(x=15, y=10, cex=0.75,labels="Out: Obs. Data");
+
+```
+
+ 
+As long as not too many generations are run (e.g., not too much more than 100), I am *cautiously* optimistic that this program will be able to include an individual-based model of a focal population, and all of the other game-theoretic components, and not take more than a few minutes to run and produce simulated results (obviously less if it is called directly from C, but I'm shooting for this calling from shiny in a browser). For end users, dynamic graph production can make the wait time a bit more interesting, if it's possible. For us, the time it will take for me to call in c, especially if using a the cluster, will be trivial.
+
+For the **natural resources model**, it might be nice to have an option of burning in several time steps before starting the loop (if, e.g., no empirical data are available, and the model instead relies on parameters plugged into a Lotka-Volterra or Ricker model). Or, if data are available, long-term demographic data could be used and assumed to represent the *true* population dynamics (i.e., just use these data to simulate *N* individuals) before starting the G-MSE model loop. It is worth thinking about how much population structure we might want to add -- my inclination is to make the software as flexible as possible (e.g., allow sex, age, etc., to be attributes of discrete individuals), but this will depend on other aspects of the model.
+
+<a name="game">Game-theory modelling (game.c; green box above)</a>
+--------------------------------------------------------------------------------
+
+In the interest of making this model as general as possible, I believe that we'll eventually want to use an [extensive-form game]([https://en.wikipedia.org/wiki/Extensive-form_game) to allow for the sequence of moves to affect stake-holder actions. Nevertheless, just to get the basic framework underway, I think we can start out with a [normal-form game](https://en.wikipedia.org/wiki/Normal-form_game), with the intent of generalising the model later (the code will be modular enough to allow this). Generalisation should be easy if we have a separate function to keep track of the [game tree](https://en.wikipedia.org/wiki/Game_tree), and then allow agents to access the game tree (or parts of it, in the case of incomplete information) to make decisions about how to act. An extensive-form game package exists in R, published by @Kenkel2014 with [code](https://github.com/brentonk/games) available on GitHub, but the focus of this package is for 'estimating recursive, sequential games, and not simultaneous move games or dynamic games with infinite time horizons'. Since the quoted probably describes the kinds of games that ConFooBio is interested in, I think the games package will be a useful reference, but not something to directly apply. It incorporates uncertainty, which could be something useful to return to for further reference.
+
+A couple other (Java based) examples of games are available on GitHub, such as [GTE](https://github.com/gambitproject/gte), which has a [GUI](http://gte.csc.liv.ac.uk/gte/builder/) web application and a corresponding published paper [@Savani2014]. This model leads me to think that it's probably best to give each player two matrices: 
+
+ 1. A payoff matrix representing different player actions and payoffs 
+  - payoffs are defined by utility functions for each player.
+  - These could be represented by a three dimensional array, or a list (list would allow the `do.call` function to be used -- probably easier to deal with in R).
+ 2. A history matrix showing the results of previous interactions; note that giving each player their own history matrix will allow players to have incomplete (or perhaps incorrect) information about the game. 
+ 
+Another java extensive-form games [package](https://github.com/ChrKroer/ExtensiveFormGames) exists, though it seems like less useful for ConFooBio purposes.
+
+**Some notation to try out:** For the purpose of the below, to keep things simple, I'm going to just start with payoff matrices, and assume that history of interactions is not yet used in decisions.
+
+- Denote $U^{m}_{k}$ as the utility to agent $m$ ($m \in \{1, ..., M\}$) from the outcome $k$.
+- The probability that $m$ chooses an action $X_{i}$ from all possible options $i \in I$ can be represented as $p^{m}_{i}$.
+- The action for $m$ can be represented $X^{m}_{i}$, so $E[X^{m}_{i}] = \int_{I} x^{m}_{i} f(x^{m}_{i})dx$. Or something like it.
+- Hence we can write $U_{m,k}(X^{m}_{i})$ for all $m$, which defines the payoff, as affected by the actions of $m$ and other players.
+
+To further simplify, I am going to assume that there are only two players. The general payoff matrices can be represented as below (loosely following the notation of @Debarre2014):
+
+$$
+{\bf A^{1}} = \left( \begin{array}{cc}
+    U^{1}_{a} & U^{1}_{b} \\
+    U^{1}_{c} & U^{1}_{d} \end{array} \right), 
+{\bf A^{2}} = \left( \begin{array}{cc}
+    U^{2}_{a} & U^{2}_{b} \\
+    U^{2}_{c} & U^{2}_{d} \end{array} \right).
+$$
+
+In the above $a$, $b$, $c$, and $d$ are all different possible outcomes that depend upon the decisions of players 1 and 2. We can think about these in terms of the actions $X^{1}_{i}$ and $X^{2}_{i}$, and put these into the familiar payoff table below,
+
+|              | **Player 2**               |                            |
+|--------------|----------------------------|----------------------------| 
+| **Player 1** | Strategy 3                 | Strategy 4                 |
+| Strategy 1   | $a \to \{U^{1}, U^{2}\}$   | $b \to \{U^{1}, U^{2}\}$   |
+| Strategy 2   | $c \to \{U^{1}, U^{2}\}$   | $d \to \{U^{1}, U^{2}\}$   |
+
+For doing the maths though, individual matrices will be used. Note that to keep things general, the above strategies are unique to each player. I think that this will be relevant to ConFooBio because each actor will have a unique role. Hence, a vector $I$ can represent all possible options for action, with players (normally) only having access to a subset $i \in I$, though we might conceive of some players being able to do the same thing despite having different roles. 
+
+Making payoff matrices a list with $M$ elements of vectors is probably the best way to go in R, with $M=2$ players for most of what we'll do. Each player $m$ will have its own options for acting within the list `M[m]`.
+
+```{r}
+M     <- 2; # Number of players in the game
+S     <- list(); # Strategy vectors (elements all possible strategies)
+A     <- list(); # Payoff vectors (elements all possible strategy combinations)
+```
+
+For now, let's just assume that each player has two possible strategies, and we'll just use the traditional matrix to calculate Nash equilibria; for future reference, @Avis2009 might be useful for quick calculation of Nash equilibria for two player games. Continuing with the above, here's a basic setup computing the Prisoner's dilemma:
+
+```{r}
+S[[1]] <- c("C","D"); # Cooperate or defect strategies (change to numeric?);
+S[[2]] <- c("C","D");
+A[[1]] <- c(3,0,5,1); # Payoffs for player 1
+A[[2]] <- c(3,5,0,1); # Payoffs for player 2
+A1     <- matrix(data=A[[1]], nrow=length(S[[1]]), byrow=FALSE); 
+A2     <- matrix(data=A[[2]], nrow=length(S[[2]]), byrow=FALSE); 
+print(A1); # Note the traditional Prisoner's dilemma payoff structure
+print(A2);
+```
+
+Now check to see if the best possible response for each player is the same regardless of its opponent's strategy.
+
+```{r}
+best1 <- apply(A1,1,which.max); # Best strategies for Player 1
+best2 <- apply(A2,2,which.max); # Best strategies for Player 2
+tabl1 <- tabulate(best1); # Frequency of bests
+tabl2 <- tabulate(best2); 
+str1  <- tabl1 / sum(tabl1); # Frequency of each strategy
+str2  <- tabl2 / sum(tabl2);
+summ1 <- matrix(data=str1,nrow=1); # Summary vector of strategies
+summ2 <- matrix(data=str2,nrow=1);
+colnames(summ1) <- S[[1]];
+colnames(summ2) <- S[[2]];
+rownames(summ1) <- "Proportion";
+rownames(summ2) <- "Proportion";
+print(summ1); print(summ2);
+```
+
+One goal will be to develop a function that can return optimal strategies for each player, including mixed strategies, for any given $2 \times 2$ payoff matrix. The function below does not do this; it needs to be fixed. A starting point for looking at appropriate algorithms is @Avis2009, who come up with an efficient solution.
+
+**Before investing too much time in this, let's make sure that finding equilibrium solutions make sense in the context of games with uncertainty. We might need a different approach, e.g., if the payoffs themselves are uncertain and the optimal strategies are reflected in this uncertainty**
+
+One [package](https://github.com/cran/GNE) in R can solve Nash equilibria, though the documentation for it is not excellent. There's also a [repository](https://github.com/hphoellwirth/qpne-2016) that can do it in C, but that might take more time than it is worth -- the paper underlying it is @Miltersen2009. A benefit here is that it uses extensive-form games and computes [*quasi-perfect equilibria*](https://en.wikipedia.org/wiki/Quasi-perfect_equilibrium), which are specifically equilibria that assumes that a player's opponent is not perfect, and accounts for past mistakes.
+
+```{r}
+## XXX FIXIT: There is an error in calculating what each should play -- it is tabulating the frequency of best plays, but when mixed strategies occur, it returns a 1/2, 1/2 instead of the proportion based on the value. 
+solve.nash <- function(){ #Function to be made to solve Nash equilibrium
+   return(NULL);
+}
+
+
+game <- function(payoff1, payoff2){
+    if(length(payoff1) != length(payoff2)){
+      print("WARNING: Payoff vectors must be the same length");   
+      return(NULL);
+    }
+    if(min(payoff1) < 0){
+      payoff1 <- payoff1 + min(payoff1);   
+    }
+    if(min(payoff2) < 0){
+      payoff2 <- payoff2 + min(payoff2);   
+    }    
+    if(is.matrix(payoff1)==FALSE){
+      payoff1 <- matrix(data=payoff1, nrow=2, byrow=TRUE);   
+    }
+    if(is.matrix(payoff2)==FALSE){
+      payoff2 <- matrix(data=payoff2, nrow=2, byrow=TRUE);   
+    }
+    S      <- list(); 
+    S[[1]] <- c("Strategy_1","Strategy_2"); 
+    S[[2]] <- c("Strategy_3","Strategy_4");
+    best1  <- apply(payoff1,1,which.max); # Best strategies for Player 1
+    best2  <- apply(payoff2,2,which.max); # Best strategies for Player 2
+    tabl1  <- tabulate(best1); # Frequency of bests
+    tabl2  <- tabulate(best2);
+    expe1  <- apply(payoff1,2,sum) * tabl1;
+    expe2  <- apply(payoff2,1,sum) * tabl2;
+    str1   <- expe1 / sum(expe1); # Frequency of each strategy
+    str2   <- expe2 / sum(expe2);
+    summ1  <- matrix(data=str1,nrow=1); # Summary vector of strategies
+    summ2  <- matrix(data=str2,nrow=1);
+    colnames(summ1) <- S[[1]];
+    colnames(summ2) <- S[[2]];
+    rownames(summ1) <- "Proportion";
+    rownames(summ2) <- "Proportion";
+    strategy_pr     <- list(player1=summ1,player2=summ2);
+    return(strategy_pr);
+}
+```
+
+We can now use the function above to figure out and return strategies for any given payoff vectors from $a$, $b$, $c$, and $d$ for each player (1 and 2).
+
+```{r}
+u <- shinyUI(pageWithSidebar(
+
+  headerPanel(""),
+  sidebarPanel(
+    textInput('vec1', 'Player 1: a, b, c, d', "3, 5, 0, 1"),
+    textInput('vec2', 'Player 2: a, b, c, d', "3, 0, 5, 1")
+  ),
+
+  mainPanel(
+    h4('Proportion strategy is optimally played: (DOES NOT WORK YET)'),
+    verbatimTextOutput("oid1")
+  )
+))
+
+s <- shinyServer(function(input, output) {
+
+  output$oid1<-renderPrint({
+    p1  <- as.numeric(unlist(strsplit(input$vec1,",")))
+    p2  <- as.numeric(unlist(strsplit(input$vec2,",")))
+    pay <- game(payoff1=p1, payoff2=p2)
+    o1  <- as.numeric(pay$player1)
+    o2  <- as.numeric(pay$player2)
+    cat("Player 1 (Strategy 1, 2):\n")
+    print(o1)
+    cat("\n\n")
+    cat("Player 2 (Strategy 3, 4):\n")
+    print(o2)
+  }
+  )
+
+
+}
+)
+#shinyApp(ui = u, server = s)
+```
+
+
+<a name="gamemod">Game theory and modelling</a>
+================================================================================
+
+- How do we quantify costs and benefits in situations in which there is conflict between conservation and food security? Game theoretic models rely on numeric values being maximised by individual agents, with games promoting cooperation or conflict depending on equilibrium solutions when each agent maximises its value. But for conservation and food security, the values do not seem to be straightforwardly assigned -- how do we compare something like extinction risk against food production (or, e.g., tourism income)? It seems that we need to either figure out how to play games in which payoffs are in different, difficult-to-compare currencies, or figure out how to standardise disparate payoff types into a common currency to model games. 
+
+ - **Note that there is a whole literature surrounding utility and utility functions, most of which appears to be based in economics.** This is probably the best thing to tap into, although the question of what kind of utility functions to use (e.g., ordinal, continuous, etc.) is still something that will need to be worked out.
+
+ - Could figure out some sort of way to rank order or bin preferences for each agent (*Added note: this might link up with Jeremy's idea of attitude in some way?*). This might also help with dealing with uncertainty because the uncertaintly of outcomes could be expressed as the likelihood or probability of hitting a rank or getting into a bin. Successful cooperation could then be defined by increasing, or perhaps maximising, ranks or bins of each agent. I had a actually played around with an idea for using something like this in philosophy (ethics theory), in which 'maximise well-being' is sometimes considered a fundamental concept, but one that is hard to pin down (i.e., could have links to environmental ethics). As a bonus, the ranks or bins could be easier for real-world agents to understand.
+ 
+ - In any case, a game-theoretic model will need some sort of numbers to work with (even if they are just ordinal preferences), so I think this will be a key question early on.
+
+- Should we have tables, such as the hypothetical one below? This is the typical way that games are modelled, but it assumes that different agents are playing the same game. If there are conflicts among more than two types of agents (i.e., agents with three or more unique interests), then fitting games into two-by-two boxes could be difficult (this was mentioned in the project proposal). 
+
+
+|             | **Agent 2**     |                |
+|-------------|-----------------|----------------| 
+| **Agent 1** | Strategy 1      | Strategy 2     |
+| Strategy 1  | A1 pay, A2 pay  | A1 pay, A2 pay |
+| Strategy 2  | A1 pay, A2 pay  | A1 pay, A2 pay |
+
+
+- I also think it is important to recognise early on that these games are unlikely to be symmetrical -- the payoffs are unlikely to be the kinds of simple prisoners dilemmas that lead to both agents having the same effective strategy [see also @Colyvan2011].
+
+ - Note, I don't think that this means that simple Nash equilibria are impossible to find -- the solutions might just look a bit odd, depending on the payoff values in the matrices.
+ 
+ - We should not, however, overlook the possibility of solutions that are optimally cooperative when played iteratively but not cooperative when played once. Prisoner's dilemma is the classic example; see the Axelrod experiments and @Wilkinson1990, @Carter2013, @Carter2015, @Trivers1985 work on reciprocal allocation. @Dawkins1976 also had a chapter on this, I think.
+ 
+ - Given the above, we should also, perhaps, consider that payoffs might change over time (e.g., one year to the next) with changing environmental conditions (defined very loosely as anything outside of the agent's control that structures the payoff matrix), and that agents might capitalise on this stochasticity to maximise net gains. Further, they might change in a non-linear way such that one way of maximising payoffs is to let one agent 'win' in one year and another agent 'win' in the next year. This could benefit all if the payout in a given year has a huge benefit for the 'winner', but not an abnormally large loss for the 'loser' (probably should use different terminology than 'winner' and 'loser'); in subsequent years then, the other agent might find themselves in a situation where they have an abnormally high amount to gain from 'winning' and the other agent does not have an unusually bad year by 'losing'. Note that, I think, this implies that the changing payoff structure of a game over time might be dynamic in a way that is not purely a zero-sum situation; i.e., gains are non-additive (in the previous example 'sub-additive') over time. Non-additivity could work the opposite way too -- it might be that when it is unusually good time to 'win', it is an even worse time for the other agent to 'lose' -- I'd need to flesh out this idea more; it has conceptual connections to the community ecology (species interactions) literature.
+ 
+ - As a concrete example of the above -- maybe, e.g., the conditions are particularly good for hen harrier conservation in the current year (i.e., a population is poised to grow especially well, or rebound in some critical way) -- so good that maximising gains now would well compensate for the expected losses if grouse hunters enforced control in the subsequent few years. Perhaps banking these conservations gains would be the best solution, if at a later date the conditions would be such as to cause grouse hunters to benefit disproportionately from target control at a time in which the losses of control to conservation would not be especially severe. The net result of all this could be that each agent benefits by maximising its gains when times are tough at the cost of suffering higher losses when times are good. Again, this depends on variation in the payoff structure over time, and that the payoffs will vary in such a way as to cause sub-additive growth in gains. It also might require more certainty about gains that is reasonable.
+
+- Need to think about uncertainty more.
+
+<a name="Nilsen">Notes regarding Nilsen's MSE</a>
+--------------------------------------------------------------------------------
+
+The following recreates [Nilsen's MSE](https://github.com/ErlendNilsen/MSEtools) modelling work.
+
+```{r, echo=FALSE}
+PopMod1 <- function(X_t0=100, sigma2_e=0.2, N_Harv=20, K=200, theta=1, r_max=1.0){
+  eps <- rnorm(1, mean=0, sd=sqrt(sigma2_e))
+  X_star <- X_t0-N_Harv
+  r <- (r_max*(1-(X_star/K)^theta))+eps
+  X_t1 <- X_star*exp(r)
+  PopRes <- as.data.frame(matrix(ncol=4, nrow=1))
+  PopRes[1,1] <- eps
+  PopRes[1,2] <- X_star
+  PopRes[1,3] <- r
+  PopRes[1,4] <- X_t1
+  colnames(PopRes) <- c("eps", "X_star", "r", "X_t1")
+  PopRes
+}
+
+obs_mod1 <- function(scale="Abund", value=1000, bias=1, cv=0.2, LogNorm="ND"){
+  obs1 <-  switch(LogNorm,
+                  LND={rlnorm(n=1, meanlog=log(value*bias), sdlog=cv)},
+                  ND={rnorm(n=1,mean=value*bias, sd=cv*value)})
+  obs1 <- switch(scale,
+                 Abund={round(obs1)},
+                 Dens={obs1})
+  obs1
+}
+
+
+HarvDec1 <- function(HD_type="A", c=1000, qu=0.2, PopState_est=100){
+  TAC <- switch(HD_type,
+                A={PopState_est*qu},
+                B={ifelse(PopState_est>c, PopState_est-c, 0)},
+                C={qu},
+                D={ifelse(PopState_est>c, qu(PopState_est-c), 0)})
+  TAC
+}
+
+Impl1 <- function(TAC=10, ModType="A", p=0.7){
+  H_I <- switch(ModType,
+                A={rbinom(1, size=TAC, p=p)},
+                B=(rpois(n=1, lambda=TAC*p)))
+  H_I
+}
+
+```
+
+ - In the **population models**, the harvest occurs before population grows in a given time step.
+ - Four **population models** are included, all numerical models with no population structure and identical parameter inputs of initial population size, environmental stochasticity, harvest amount (raw number), carrying capacity, and max growth rate.
+ - The **observation model** is the simplest possible model, taking in the population model data and returning an estimate with some error associated with the coefficient of variation of monitoring around the real abundance/density and some degree of bias.
+ - The **manager model** (called the *Harvest Decision Model*) includes three types of management decisions:
+  1. Proportional harvest
+  2. Constant quota
+  3. Threshold harvest
+  
+ - The **manager model** receives the single estimate of population size (density or abundance), then returns a total allowable catch. A second function models hunter frustration, and is meant to be run after the first function. The second function checks to see if hunter frustration is within a set of bounds; if it is, then the function returns the original total allowable catch. If it is not, then the function adjust the total allowable catch.
+ 
+ - The **user model** (called the *implementation model*) includes four separate functions, including the very simple, which just samples from a random binomial or poisson function around total allowable catch.
+
+**Hence, we can put four of these functions together to simulate a very simple MSE model:**
+
+```{r}
+
+pop_abund      <- 100;
+harvest        <- 20;
+growth_rate    <- 1;
+K              <- 200;
+pr_harvest     <- 0.7;
+
+time           <- 1;
+time_end       <- 30;
+track          <- matrix(data=0, nrow=time_end, ncol=5);
+
+while(time <= time_end){
+    pop_vars     <- PopMod1(X_t0=pop_abund, sigma2_e=0.2, N_Harv=harvest, K=K, 
+                            r_max = growth_rate);
+    pop_abund    <- as.numeric(pop_vars[4]);
+    obs_vars     <- obs_mod1(scale="Abund", value=pop_abund, bias=1, cv=0.4);
+    if(obs_vars < 0){  # Nilsen's model allows estimate to be negative
+        obs_vars <- 0; # Make it so that negative equates to est. of extinction  
+    }
+    har_vars     <- HarvDec1(HD_type="A", qu=0.2, PopState_est=obs_vars);
+    imp_vars     <- Impl1(TAC=floor(har_vars), ModType="B", p=pr_harvest);
+    track[time,] <- c(time, pop_abund, obs_vars, har_vars, imp_vars);
+    time         <- time + 1;
+}
+colnames(track)  <- c("time", "Pop. Size", "Pop. Est.", "Harv. Rate", "Harv.");
+```
+
+We run the above code, and we can look at how key population and management quantities change over time:
+
+  1. Population size (panel A; solid line)
+  2. Population estimate size (panel A; dashed line)
+  3. Harvest rate set by manager (panel B; solid line)
+  4. Harvested number of animals (panel B; dashed line)
+ 
+The below figure shows all of these quantities over time.
+
+```{r, echo=FALSE, fig.height=6, fig.width=8}
+par(mfrow=c(2,1), mar=c(0.25,5,4,1));
+plot(x=track[,1], y=track[,2], xlab="", ylab="Pop. Abundance", lwd=2,
+     col="black", ylim = c(0,max(track[,2:3])+85), type="l", xaxt="n",
+     cex.lab=1.5, cex.axis=1.25);
+points(x=track[,1], y=track[,3], col="red", lwd=2, type="l");
+legend(x=2.5, y=max(track[,2:3]+85), horiz=TRUE,
+       legend=c("Actual", "Estimate"), fill=c("black","red"));
+par(mar=c(4,5,0.25,1));
+plot(x=track[,1], y=track[,4], xlab="Time", ylab="Harvest", lwd=2, cex.lab=1.5,
+     col="black", ylim = c(0,max(track[,4:5])+15), type="l", cex.axis=1.25);
+points(x=track[,1], y=track[,5], col="red", lwd=2, type="l");
+legend(x=2.5, y=max(track[,4:5]+15), horiz=TRUE,
+       legend=c("Set", "Removed"), fill=c("black","red"));
+```
+
+We can re-run the code at any point and essentially recreate a run of [Nilsen's MSE](https://github.com/ErlendNilsen/MSEtools) model. The hard work is now to come up with a G-MSE, which will allow for much more individual complexity through an agent-based approach.
+
+
+
+<a name="side">Some side-notes that might be of use</a>
+--------------------------------------------------------------------------------
+
+The [function](https://stat.ethz.ch/R-manual/R-patched/library/base/html/do.call.html) `do.call` in R [apparently](https://www.stat.berkeley.edu/~s133/Docall.html) calls a function and passes the arguments for the function from a list (e.g., if `A` is in a list form, or put in a list form with `list(A)`, then `do.call("f", list(A))` calls the function `f` for every list element in `A`, where individual list elements can be vectors with function arguments). This is a base R function.
+
+
+<a name="ref">References consulted and annotated (Mendeley)</a>
+-----------------------------------------
+
+Bautista, C., Naves, J., Revilla, E., Fernández, N., Albrecht, J., Scharf, A. K., ... Selva, N. (2016). Patterns and correlates of claims for brown bear damage on a continental scale. Journal of Applied Ecology. http://doi.org/10.1111/1365-2664.12708
+
+Bischof, R., Nilsen, E. B., Brøseth, H., Männil, P., Ozoliņš, J., & Linnell, J. D. C. (2012). Implementation uncertainty when using recreational hunting to manage carnivores. Journal of Applied Ecology, 49(4), 824–832. https://doi.org/10.1111/j.1365-2664.2012.02167.x
+
+Bjerketvedt, D. K., Reimers, E., Parker, H., & Borgstrøm, R. (2014). The Hardangervidda wild reindeer herd: a problematic management history. Rangifer, 34(1), 57–72.
+
+Bonabeau, E. (2002). Agent-based modeling: methods and techniques for simulating human systems. Proceedings of the National Academy of Sciences, 99, 7280–7287. https://doi.org/10.1073/pnas.082080899
+
+Bunnefeld, N., & Keane, A. (2014). Managing wildlife for ecological, socioeconomic, and evolutionary sustainability. Proceedings of the National Academy of Sciences, 111(36), 12964–12965. http://doi.org/10.1073/pnas.1413571111
+
+Bunnefeld, N., Hoshino, E., & Milner-Gulland, E. J. (2011). Management strategy evaluation: A powerful tool for conservation? Trends in Ecology and Evolution, 26(9), 441–447. http://doi.org/10.1016/j.tree.2011.05.003
+
+Chollett, I., Garavelli, L., O’Farrell, S., Cherubin, L., Matthews, T. R., Mumby, P. J., & Box, S. J. (2016). A Genuine Win-Win: Resolving the ``Conserve or Catch’’ Conflict in Marine Reserve Network Design. Conservation Letters, 0(0), 1–9. https://doi.org/10.1111/conl.12318
+
+Colyvan, M., Justus, J., & Regan, H. M. (2011). The conservation game. Biological Conservation, 144(4), 1246–1253. http://doi.org/10.1016/j.biocon.2010.10.028
+
+Duffy, R., St John, F. A. V, Büscher, B., & Brockington, D. (2016). Toward a new understanding of the links between poverty and illegal wildlife hunting. Conservation Biology, 30(1), 14–22. https://doi.org/10.1111/cobi.12622
+
+Elston, D. A., Spezia, L., Baines, D., & Redpath, S. M. (2014). Working with stakeholders to reduce conflict-modelling the impact of varying hen harrier Circus cyaneus densities on red grouse Lagopus lagopus populations. Journal of Applied Ecology, 51(5), 1236–1245. http://doi.org/10.1111/1365-2664.12315
+
+Farmer, J. D., & Foley, D. (2009). The economy needs agent-based modelling. Nature, 460(August), 685--686. https://doi.org/10.1038/460685a
+
+Hake, M., Mansson, J., & Wiberg, A. (2010). A working model for preventing crop damage caused by increasing goose populations in Sweden. Ornis Svecica, 20(3-4), 225–233.
+
+Heinonen, J. P. M., Palmer, S. C. F., Redpath, S. M., & Travis, J. M. J. (2014). Modelling hen harrier dynamics to inform human-wildlife conflict resolution: A spatially-realistic, individual-based approach. PLoS ONE, 9(11). http://doi.org/10.1371/journal.pone.0112492
+
+Hindar, K., Fleming, I. A., McGinnity, P., & Diserud, O. (2006). Genetic and ecological effects of salmon farming on wild salmon: modelling from experimental results. ICES Journal of Marine Science, 63(7), 1234–1247. https://doi.org/10.1016/j.icesjms.2006.04.025
+
+Janssen, M. A., Holahan, R., Lee, A., & Ostrom, E. (2010). Lab experiments for the study of socio-ecological systems. Science, 328, 613–618. http://doi.org/10.1126/science.1229223
+
+Karlsson, S., Diserud, O. H., Fiske, P., & Hindar, K. (2016). Widespread genetic introgression of escaped farmed Atlantic salmon in wild salmon populations. ICES Journal of Marine Science, 0, fsw121. https://doi.org/10.1093/icesjms/fsw121
+
+Liu, Y., Diserud, O. H., Hindar, K., & Skonhoft, A. (2013). An ecological-economic model on the effects of interactions between escaped farmed and wild salmon (Salmo salar). Fish and Fisheries, 14(2), 158–173. http://doi.org/10.1111/j.1467-2979.2012.00457.x
+
+Manfredo, M. J., Bruskotter, J. T., Teel, T. L., Fulton, D., Schwartz, S. H., Arlinghaus, R., ... Sullivan, L. (2016). Why social values cannot be changed for the sake of conservation. Conservation Biology. Accepted. https://doi.org/10.1111/cobi.12855.This
+
+Mansson, J., Nilsson, L., & Hake, M. (2013). Territory size and habitat selection of breeding Common Cranes (Grus grus) in a boreal landscape. Ornis Fennica, 90(2), 65–72.
+
+Mccann, R. K., Marcot, B. G., & Ellis, R. (2006). Bayesian belief networks: applications in ecology and natural resource. Canadian Journal of Forest Research, 36, 3053–3062.
+
+Nellemann, C., Jordhoy, P., Stoen, O. G., & Strand, O. (2000). Cumulative impacts of tourist resorts on wild reindeer (Rangifer tarandus tarandus) during winter. Arctic, 53(1), 9–17. https://doi.org/10.14430/arctic829
+
+Nellemann, C., Vistnes, I., Jordhoy, P., Strand, O., & Newton, A. (2003). Progressive impact of piecemeal infrastructure development on wild reindeer. Biological Conservation, 113(2), 307–317. https://doi.org/10.1016/S0006-3207(03)00048-X
+
+Olaussen, J. O., & Skonhoft, A. (2008). On the economics of biological invasion: An application to recreational fishing. Natural Resource Modeling, 21(4), 625–653. https://doi.org/10.1111/j.1939-7445.2008.00026.x
+
+Rumpff, L., Duncan, D. H., Vesk, P. A., Keith, D. A., & Wintle, B. A. (2011). State-and-transition modelling for Adaptive Management of native woodlands. Biological Conservation, 144(4), 1244–1235. http://doi.org/10.1016/j.biocon.2010.10.026
+
+Strand, O., Nilsen, E. B., Solberg, E. J., & Linnell, J. C. D. (2012). Can management regulate the population size of wild reindeer (*Rangifer tarandus*) through harvest? Canadian Journal of Zoology, 90, 163–171. http://doi.org/Doi 10.1139/Z11-123
+
+Tilman, A. R., Watson, J. R., & Levin, S. (2016). Maintaining cooperation in social-ecological systems: Theoretical Ecology. https://doi.org/10.1007/s12080-016-0318-8
+
+Wam, H. K., Bunnefeld, N., Clarke, N., & Hofstad, O. (2016). Conflicting interests of ecosystem services: Multi-criteria modelling and indirect evaluation to trade off monetary and non-monetary measures. Ecosystem Services.
+
+Wang, P., Poe, G. L., & Wolf, S. A. (2017). Payments for ecosystem services and wealth distribution. Ecological Economics, 132, 63–68. https://doi.org/10.1016/j.ecolecon.2016.10.009
+
+Wright, G. D., Andersson, K. P., Gibson, C. C., & Evans, T. P. (2016). Decentralization can help reduce deforestation when user groups engage with local government. Proceedings of the National Academy of Sciences, 201610650. https://doi.org/10.1073/pnas.1610650114
+
+
+References Cited
+-----------------------------------------
