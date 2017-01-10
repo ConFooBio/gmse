@@ -196,7 +196,7 @@ uci  <- NULL;
 land_cols <- c("#F2F2F2FF", "#ECB176FF", "#000000"); 
 
 aged_res <- RESOURCE_REC[RESOURCE_REC[,12] > 0,];
-ymaxi    <- max(tapply(aged_res[,8],aged_res[,8],length)) + 400;
+ymaxi    <- max(tapply(aged_res[,8],aged_res[,8],length)) + 325;
 for(i in 1:(time_max-1)){
     res_t <- RESOURCE_REC[RESOURCE_REC[,8]==i,];
     obs_t <- OBSERVATION_REC[OBSERVATION_REC[,8]==i,];
@@ -218,7 +218,7 @@ for(i in 1:(time_max-1)){
         uci      <- c(uci, analysis$uci);
     }
     polygon(y=c(lci,rev(uci)),x=c(gens,rev(gens)),border=NA,col="lightblue");
-    points(x=gens, y=est, pch=20, type="l", lwd=2, col="cyan3");
+    points(x=gens, y=est, pch=20, type="l", lwd=2, col="cyan4");
     abline(h=parameters[7], col="red", lwd=0.8, lty="dashed");
     points(x=gens, y=abun, pch=20, type="l", lwd=3, col="black");
     Sys.sleep(0.1);
