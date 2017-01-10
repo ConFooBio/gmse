@@ -333,7 +333,6 @@ void res_remove(double **res_removing, int rows, int rm_row, int type, int K){
  *      LANDSCAPE:  An array of *row by *col size that makes up the landscape
  *      PARAMETERS: Parameters read into the function for population processes
  * ===========================================================================*/
-/* TODO: Argument: VECTOR_OF_PARAMETER_VALUES */
 SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
  
     /* SOME STANDARD DECLARATIONS OF KEY VARIABLES AND POINTERS               */
