@@ -359,7 +359,7 @@ void field_work(double **resource_array, double **agent_array, double *paras,
  * ========================================================================== */
 void mark_res(double **resource_array, double **agent_array, double **land,
               double *paras, int res_rows, int a_row, int res_type, 
-              int obs_col){
+              int obs_col, int a_type){
     
     int resource;
     int agent;
@@ -384,7 +384,7 @@ void mark_res(double **resource_array, double **agent_array, double **land,
     }
     
     for(agent = 0; agent < a_row; agent++){
-        if(agent_array[agent][1] == 0){ /* Zeros are manager agents */
+        if(agent_array[agent][1] == a_type){ /* Zeros are manager agents */
             field_work(resource_array, agent_array, paras, res_rows, agent, 
                        find_type, res_type, obs_col);
         }
@@ -435,6 +435,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int times_obs;           /* Number of times observation is conducted */
     int obs_iter;            /* To count up -- which observation iteration */
     int res_type;            /* Types of resources that are being observed */
+    int a_type;              /* Type of agent doing observing (manager = 0) */
     int *add_resource;       /* Vector of added resources */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
@@ -533,6 +534,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     who_observes = (int) paras[7];  /* What type of agent does the observing */   
     method       = (int) paras[8];  /* Specifies method of estimation used   */
     res_type     = (int) paras[9];  /* What type of resources are observed   */
+    a_type       = (int) paras[15]; /* What type of agent is observing */
 
     for(resource = 0; resource < res_number; resource++){
         resource_array[resource][12] = 0;   /* Set marks to zero   */
@@ -545,7 +547,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
            obs_iter = trait_number; /* Start of the observation column */
            while(times_obs > 0){
                mark_res(resource_array, agent_array, land, paras, res_number, 
-                        agent_number, res_type, obs_iter);
+                        agent_number, res_type, obs_iter, a_type);
                times_obs--; /* Then move agents if need be for new sample */
                obs_iter++;
            }
@@ -555,7 +557,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
            obs_iter = trait_number;
            while(times_obs > 0){
                mark_res(resource_array, agent_array, land, paras, res_number, 
-                        agent_number, res_type, obs_iter);
+                        agent_number, res_type, obs_iter, a_type);
                times_obs--; /* Then move agents if need be for new sample */
                obs_iter++;
            }
