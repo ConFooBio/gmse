@@ -79,7 +79,7 @@ parameters <- c(time,    # 0. The dynamic time step for each function to use
                 ldx,     # 12. Land dimension on the x axis
                 ldy,     # 13. Land dimension on the y axis
                 1,       # 14. Agent movement (option same as #2)
-                0,       # 15. Agent type observing (default is 0 for managers)
+                0,       # 15. CURRENTLY UNUSED -- ADD IN AS NEEDED
                 1,       # 16. Minimum age of sampling (1 excludes juveniles)
                 1        # 17. Type category for agent observation (default = 1)
                 );
@@ -102,7 +102,7 @@ while(time < time_max){
                                     landscape  = LANDSCAPE_r,
                                     paras      = parameters,
                                     agent      = AGENTS,
-                                    type       = 1,      # Resource(s) observed
+                                    res_type   = 1,      # Resource(s) observed
                                     fix_mark   = 20,     # Fixed or view-based
                                     times      = 12,     # Times observed
                                     samp_age   = 1,
@@ -139,7 +139,6 @@ res_columns <- c("Resource_ID",
                 );
 
 colnames(RESOURCE_REC)    <- res_columns;
-#colnames(OBSERVATION_REC) <- res_columns;
 
 # Give this it's own place in an analysis file later
 cmr_estimate <- function(obs, year){

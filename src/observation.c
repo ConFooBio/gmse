@@ -418,10 +418,11 @@ void mark_res(double **resource_array, double **agent_array, double **land,
  * ===========================================================================*/
 
 /* =============================================================================
- *  ****     This is the main function for the resource model     ****
- *  This function reads resource and landscape arrays, and a parameter vector
- *  from R, runs other functions in the resources.c file, then returns the
- *  new resource array.
+ *  ****     This is the main function for the observation model     ****
+ *  This function reads resource, landscape, and agent arrays, and a parameter 
+ *  vector from R, runs other functions in the observation.c file, then returns 
+ *  the an observation array, which replicates the resource array with added
+ *  columns for tracking observations.
  *  Inputs include:
  *      RESOURCE:   An array of *row resources and *col traits for each resource
  *      LANDSCAPE:  An array of *row by *col size that makes up the landscape
@@ -449,7 +450,6 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int new_obs;             /* New observations made */
     int add_obs;             /* Index for adding observations */
     int method;              /* Type of method used to estimate pop size */
-    int who_observes;        /* Type of agent that does the observing */
     int times_obs;           /* Number of times observation is conducted */
     int obs_iter;            /* To count up -- which observation iteration */
     int res_type;            /* Types of resources that are being observed */
@@ -549,10 +549,9 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     /* Do the biology here now */
     /* ====================================================================== */
 
-    who_observes = (int) paras[7];  /* What type of agent does the observing */   
+    a_type       = (int) paras[7];  /* What type of agent does the observing */   
     method       = (int) paras[8];  /* Specifies method of estimation used   */
     res_type     = (int) paras[9];  /* What type of resources are observed   */
-    a_type       = (int) paras[15]; /* What type of agent is observing       */
     by_type      = (int) paras[17]; /* Category (column) of type location    */
 
     for(resource = 0; resource < res_number; resource++){

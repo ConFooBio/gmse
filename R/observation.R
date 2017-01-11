@@ -20,7 +20,7 @@ observation <- function(resource   = NULL,
                         landscape  = NULL, 
                         paras      = NULL, 
                         agent      = NULL,
-                        type       = 1,
+                        res_type   = 1,
                         fix_mark   = FALSE,
                         times      = 1,
                         samp_age   = 1,
@@ -46,10 +46,10 @@ observation <- function(resource   = NULL,
             stop("Warning: Agents need to be in an array");
         }
         # If all checks out, first put the type into paras for easier input
-        paras[10] <- type;
+        paras[8]  <- agent_type;
+        paras[10] <- res_type;
         paras[11] <- as.numeric(fix_mark); # Note: 'FALSE' coerced to zero
         paras[12] <- times;
-        paras[16] <- agent_type;
         paras[17] <- samp_age;
         paras[18] <- type_cat;
         if(times < 1){
