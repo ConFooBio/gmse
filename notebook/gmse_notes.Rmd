@@ -1,5 +1,5 @@
 ---
-title: "Game-theoretic managemet strategy evaluation (G-MSE)"
+title: "Game-theoretic management strategy evaluation (G-MSE)"
 author: "Brad Duthie"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -60,7 +60,7 @@ library(rhandsontable)
 
 ********************************************************************************
 
-<a name="updates">Progress updates:</a>
+<a name="updates">Project updates:</a>
 ================================================================================
 
 
