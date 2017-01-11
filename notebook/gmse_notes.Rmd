@@ -64,7 +64,7 @@ library(rhandsontable)
 <a name="updates">Project updates:</a>
 ================================================================================
 
-> <a name="u-10-JAN-2017">Update: 11 JAN 2017</a>
+> <a name="u-11-JAN-2017">Update: 11 JAN 2017</a>
 
 I'm going to start referring to issues that are introduced and resolved in the gmse GitHub repository by number.
 
