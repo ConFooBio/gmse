@@ -39,6 +39,7 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - [11 JAN 2017](#u-11-JAN-2017)
  - [10 JAN 2017](#u-10-JAN-2017)
  - [22 DEC 2016](#u-22-DEC-2016)
 
@@ -63,6 +64,32 @@ library(rhandsontable)
 <a name="updates">Project updates:</a>
 ================================================================================
 
+> <a name="u-10-JAN-2017">Update: 11 JAN 2017</a>
+
+I'm going to start referring to issues that are introduced and resolved in the gmse GitHub repository by number.
+
+**RESOLVED ISSUE #4: Repeat calls of resource within resourc.R** Now poorly named given the solution. The result is a brief update on the addition of a bit of a side function. The function `anecdotal` is now available in the `observation.c` file, and is called from the `anecdotal()` function in the file `anecdotal.R`. All this function does is cause agents of one or all types to count the number of a particular resource within the agents' view. It is similar to the `observation` function, but instead of returning an array of observations of resources (augmented with columns for different observations periods -- see [10 JAN](#u-10-JAN-2017)) that is intended to be used by R separately, the `anecdotal` function adds the number of resources viewed in an agent's vicinity to a column in the agent array. The name of the function therefore is meant to add to an agent's general mood or impression of the quantity of a resource, based on anecdotal evidence for what's going on around their location. We can imagine such anecdotal evidence as affecting the opinions and behaviours of stake-holders.
+
+**INTRODUCE NEW ISSUE #5: Sweep observation** Related to discussions with Jeremy and Tom regarding the Islay geese, need to have a kind of observational model in which agents move to take measurements, but resources move along roughly the same time scale. This can of course be accomplished one way if we:
+
+ - add an option for resource movement during the course of observation: Do this in the main observation function as an `if(resource_movement == 1)` type criteria at the tail end before the `break` (to avoid unnecessary movement). This will require also including the resource movement function (currently in `resource.c`) in the `observation.c` file. May as well just dump the whole thing in in the interest of modularity, though if it stays the same, it will be tempting to create a `utils.c` file of some sort. This resource movement option can be applied to the existing `method` `case 0`, as appears in the switch function of the `observation` function.
+
+To do a sweep of the landscape while allowing resources to move, I think we'll want a completely different `method` of population size estimation (most upstream switch function). What this method will do is:
+
+ 1. Start an observer(s) in a fixed `x` location of `x = 0` on the landscape
+ 2. Have the observer(s) census all individuals on the `x` locations `x` to `x+view` (i.e., observe `view` rows) 
+ 3. Set a new `x = x+view`
+ 4. Move resources
+ 5. Iterate 2-4 until `x+view` is greater than the y dimension `land_y`
+ 6. If there are any ys left, then iterate the last `x` to `land_y`.
+
+The procedure above will simulate observations over a time that is proportional to their `view` (and thus ability to census) -- the more time it takes, the more the resources can move and potentially lead to measurement error. The observational array returned will still be output in the same way -- resources will be marked as with the `case 0` option and read out as an observational array.
+
+*Note: It would be nice to eventually allow for **blocks** rather than long linear transects to be sampled, as square blocks might more realistically correspond to the kind of sampling that would be done by a real observer. I don't think that this would make too much difference in terms of finding sampling error, as there is no bias to resources movement in one direction; hence, the turnover of resources for any particular number of cells will be the same for any `N` cells sampled. It also stands to reason that this error should be normally distributed as the number of sampling attempts becomes large, and the error should be mean centred around the actual population size, since the probability of missing and double counting would seem to cancel out exactly. This might eventually lead to analytical estimate of observation and error actually being reasonable under some conditions.*
+
+**Plan for the near future**
+
+I will try to implement this new idea tomorrow, as I don't think it will take much more than a day's work, if that. Then, it's really time to take a step back and think -- need to read @Nuno2013 in more detail first, perhaps tonight, and potentially also add the observation model procedure used therein as different implementations of `case` -- this should be very similar to the solution for *ISSUE 5**, except through the use of random sampling of area and density measuring of resources. We'll then be in a position of having a stable resource and observation model with a few different options for observation, and I'll need to think more carefully about the big picture, and how to proceed with the rest of the model.
 
 > <a name="u-10-JAN-2017">Update: 10 JAN 2017</a>
 
