@@ -112,6 +112,7 @@ while(time < time_max){
                                     type_cat   = 1       # Type category (row)
                                     );
    
+   # anecdotal is a bit useless right now, but included here anyway. 
    ANECDOTAL_NEW     <- anecdotal(resource   = RESOURCES,
                                   landscape  = LANDSCAPE_r,
                                   paras      = parameters,
