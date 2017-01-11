@@ -7,10 +7,18 @@
  * This function moves one on the landscape according to some rules
  * For now, it is repeated in both c files, but if there are more functions
  * that serve two purposes, then a general utilily c file might be created
- * The 'edge' argument defines what happens at the landscape edge:
+ * agent_moving: Agent array
+ * xloc: Column indicating the agents' x positions
+ * yloc: Column indicating the agents' y positions
+ * move_para: Column affecting the distance that an agent can move
+ * edge: Defines what happens at the landscape edge:
  *     0: Nothing happens (individual is just off the map)
  *     1: Torus landscape (individual wraps around to the other side)
- * The 'type' argument defines the type of movement allowed:
+ * a_row: Row of the agent of interest
+ * landscape: The landscape array
+ * land_x: Max x dimension of the landscape
+ * land_y: Max y dimension of the landscape
+ * type: Defines the type of movement allowed:
  *     0: No movement is allowed
  *     1: Movement is random uniform from zero to move_para in any direction
  *     2: Movement is poisson(move_para) in any direction
@@ -158,6 +166,14 @@ void a_mover(double **agent_moving, int xloc, int yloc, int move_para, int edge,
 /* =============================================================================
  * This simulates one agent looking around: Is a particular resource within
  * their field of vision? If yes, return 1, if no, return 0.
+ *     obs_x: x location of the observer
+ *     obs_y: y location of the observer
+ *     res_x: x location of the resource
+ *     res_y: y location of the resource
+ *     edge:  The type of edge of the landscape (e.g., no edge, torus)
+ *     view:  Distance that an agent can view a resource
+ *     xdim:  Dimension of the landscape on the x-axis
+ *     ydim:  Dimension of the landscape on the y-axis
  * ========================================================================== */
 int binos(int obs_x, int obs_y, int res_x, int res_y, int edge, int view,
           int xdim, int ydim){
@@ -231,6 +247,9 @@ int binos(int obs_x, int obs_y, int res_x, int res_y, int edge, int view,
  *     paras: vector of parameter values
  *     res_rows: Total number of rows in the res_adding data frame
  *     worker: The row of the agent that is doing the working
+ *     find_proc: The procedure used for finding and marking resources
+ *     res_type: The type of resources being marked
+ *     obs_col: The number of columns in the observation array
  * Output:
  *     The resource_array is marked by a particular agent
  * ========================================================================== */
@@ -351,7 +370,9 @@ void field_work(double **resource_array, double **agent_array, double *paras,
  *     res_rows: Total number of resources that can be sampled
  *     a_row: Total number agents that could possibly sample
  *     res_type: The type of resource being sampled
- *     itr: The iteration 
+ *     obs_col: The number of columns in the observational array
+ *     a_type: The type of agent that is doing the marking
+ *     by_type: The type column that is being used
  * Output:
  *     Accumlated markings of resources by agents
  * ========================================================================== */
