@@ -79,9 +79,10 @@ parameters <- c(time,    # 0. The dynamic time step for each function to use
                 ldx,     # 12. Land dimension on the x axis
                 ldy,     # 13. Land dimension on the y axis
                 1,       # 14. Agent movement (option same as #2)
-                0,       # 15. CURRENTLY UNUSED -- ADD IN AS NEEDED
+                0,       # 15. Type category for resource observation
                 1,       # 16. Minimum age of sampling (1 excludes juveniles)
-                1        # 17. Type category for agent observation (default = 1)
+                1,       # 17. Type category for agent observation (default = 1)
+                12       # 18. Column where res seen recorded in obs array 
                 );
 
 # Create a warning somewhere if population size is not regulated
