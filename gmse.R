@@ -15,6 +15,7 @@ source("R/initialise.R");
 source("R/landscape.R");
 source("R/resource.R");
 source("R/observation.R");
+source("R/anecdotal.R");
 
 proc_start <- proc.time();
 
@@ -79,7 +80,7 @@ parameters <- c(time,    # 0. The dynamic time step for each function to use
                 ldx,     # 12. Land dimension on the x axis
                 ldy,     # 13. Land dimension on the y axis
                 1,       # 14. Agent movement (option same as #2)
-                0,       # 15. Type category for resource observation
+                1,       # 15. Type category for resource observation
                 1,       # 16. Minimum age of sampling (1 excludes juveniles)
                 1,       # 17. Type category for agent observation (default = 1)
                 12       # 18. Column where res seen recorded in obs array 
@@ -106,10 +107,20 @@ while(time < time_max){
                                     res_type   = 1,      # Resource(s) observed
                                     fix_mark   = 20,     # Fixed or view-based
                                     times      = 12,     # Times observed
-                                    samp_age   = 1,
-                                    agent_type = 0,
-                                    type_cat   = 1
+                                    samp_age   = 1,      # Minimum resource age
+                                    agent_type = 0,      # Agent type
+                                    type_cat   = 1       # Type category (row)
                                     );
+   
+   ANECDOTAL_NEW     <- anecdotal(resource   = RESOURCES,
+                                  landscape  = LANDSCAPE_r,
+                                  paras      = parameters,
+                                  agent      = AGENTS,
+                                  res_type   = 1,
+                                  samp_age   = 1,
+                                  agent_type = 0,
+                                  type_cat   = 1
+                                  );
    
    OBSERVATION_REC   <- rbind(OBSERVATION_REC, OBSERVATION_NEW);
    time              <- time + 1;
@@ -122,6 +133,16 @@ while(time < time_max){
 
 proc_end <- proc.time();
 
+
+ANECDOTAL_NEW     <- anecdotal(resource   = RESOURCES,
+                               landscape  = LANDSCAPE_r,
+                               paras      = parameters,
+                               agent      = AGENTS,
+                               res_type   = 1,
+                               samp_age   = 1,
+                               agent_type = 0,
+                               type_cat   = 1
+                               );
 
 res_columns <- c("Resource_ID",
                  "Resource_type_1",

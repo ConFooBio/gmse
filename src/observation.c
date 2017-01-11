@@ -680,7 +680,6 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int agent_trait;         /* Index for agent traits (cols of agent_array) */
     int res_number;          /* Number of resources included (default = 1) */
     int trait_number;        /* Number of traits included in the resource */
-    int obs_columns;         /* Columns for the observation array */
     int agent_number;        /* Number of agents that can potentially observe */
     int agent_traits;        /* Number of traits that each agent has */
     int protected_n;         /* Number of protected R objects */
@@ -743,7 +742,7 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     trait_number      = dim_RESOURCE[1]; 
     resource_array    = malloc(res_number * sizeof(double *));
     for(resource = 0; resource < res_number; resource++){
-        resource_array[resource] = malloc(obs_columns * sizeof(double));   
+        resource_array[resource] = malloc(trait_number * sizeof(double));   
     } 
     vec_pos = 0;
     for(res_trait = 0; res_trait < trait_number; res_trait++){
@@ -790,7 +789,7 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     rec_col      = (int) paras[18]; /* Column where viewed resources recorded */
     
     for(agent = 0; agent < agent_number; agent++){
-        seeit = 0; /* Start with an agent not seeing anything */
+        seeit = 0;     /* Start with an agent not seeing anything */
         for(resource = 0; resource < res_number; resource++){
             if( agent_array[agent][by_type_a]       == a_type   &&
                 resource_array[resource][by_type_r] == res_type &&
@@ -819,7 +818,7 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     vec_pos = 0;
     for(agent_trait = 0; agent_trait < agent_traits; agent_trait++){
         for(agent = 0; agent < agent_number; agent++){
-            data_ptr[vec_pos] = agent_array[resource][res_trait];
+            data_ptr[vec_pos] = agent_array[agent][agent_trait];
             vec_pos++;
         }
     }   
