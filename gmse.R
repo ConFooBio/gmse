@@ -113,13 +113,13 @@ while(time < time_max){
                                     );
    
    # anecdotal is a bit useless right now, but included here anyway. 
-   ANECDOTAL_NEW     <- anecdotal(resource   = RESOURCES,
+   AGENTS            <- anecdotal(resource   = RESOURCES,
                                   landscape  = LANDSCAPE_r,
                                   paras      = parameters,
                                   agent      = AGENTS,
                                   res_type   = 1,
                                   samp_age   = 1,
-                                  agent_type = 0,
+                                  agent_type = -1,
                                   type_cat   = 1
                                   );
    
@@ -134,16 +134,6 @@ while(time < time_max){
 
 proc_end <- proc.time();
 
-
-ANECDOTAL_NEW     <- anecdotal(resource   = RESOURCES,
-                               landscape  = LANDSCAPE_r,
-                               paras      = parameters,
-                               agent      = AGENTS,
-                               res_type   = 1,
-                               samp_age   = 1,
-                               agent_type = 0,
-                               type_cat   = 1
-                               );
 
 res_columns <- c("Resource_ID",
                  "Resource_type_1",

@@ -697,6 +697,7 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int r_y;                 /* Resource y location */
     int seeit;               /* Index summing number of seen resources */
     int rec_col;             /* Agent col where seen resources are recorded */
+    int a_check;             /* Check agent to see if they view (dynamic) */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
@@ -789,9 +790,13 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     rec_col      = (int) paras[18]; /* Column where viewed resources recorded */
     
     for(agent = 0; agent < agent_number; agent++){
-        seeit = 0;     /* Start with an agent not seeing anything */
+        seeit    = 0;     /* Start with an agent not seeing anything */
+        a_check  = 0;     /* Start assuming the agent won't be checking */
+        if( a_type < 0 || agent_array[agent][by_type_a] == a_type){
+            a_check = 1;    
+        }
         for(resource = 0; resource < res_number; resource++){
-            if( agent_array[agent][by_type_a]       == a_type   &&
+            if( a_check                             == 1        &&
                 resource_array[resource][by_type_r] == res_type &&
                 resource_array[resource][11]        >= min_age
                ){
