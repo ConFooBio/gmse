@@ -857,6 +857,8 @@ The [function](https://stat.ethz.ch/R-manual/R-patched/library/base/html/do.call
 
 Bautista, C., Naves, J., Revilla, E., Fernández, N., Albrecht, J., Scharf, A. K., ... Selva, N. (2016). Patterns and correlates of claims for brown bear damage on a continental scale. Journal of Applied Ecology. http://doi.org/10.1111/1365-2664.12708
 
+Bennett, E. M. (2017). Changing the agriculture and environment conversation. Nature Ecology and Evolution, 1(January), 1-2. https://doi.org/10.1038/s41559-016-0018
+
 Bischof, R., Nilsen, E. B., Brøseth, H., Männil, P., Ozoliņš, J., & Linnell, J. D. C. (2012). Implementation uncertainty when using recreational hunting to manage carnivores. Journal of Applied Ecology, 49(4), 824–832. https://doi.org/10.1111/j.1365-2664.2012.02167.x
 
 Bjerketvedt, D. K., Reimers, E., Parker, H., & Borgstrøm, R. (2014). The Hardangervidda wild reindeer herd: a problematic management history. Rangifer, 34(1), 57–72.
