@@ -446,7 +446,7 @@ void field_work(double **resource_array, double **agent_array, double *paras,
     switch(find_proc){
         case 0: /* Mark all individuals within view */
             for(resource = 0; resource < res_rows; resource++){
-                if(resource_array[resource][1] == res_type && 
+                if(resource_array[resource][1]  == res_type && 
                    resource_array[resource][11] >= min_age){
                     r_x   = resource_array[resource][4];
                     r_y   = resource_array[resource][5];
@@ -503,8 +503,8 @@ void field_work(double **resource_array, double **agent_array, double *paras,
         default:
             printf("Error setting observation type: using vision-based CMR");
             for(resource = 0; resource < res_rows; resource++){
-                if(resource_array[resource][1] == res_type && 
-                   resource_array[resource][11] > min_age){
+                if(resource_array[resource][1]  == res_type && 
+                   resource_array[resource][11] >= min_age){
                     r_x = resource_array[resource][4];
                     r_y = resource_array[resource][5];
                     seeme = binos(xloc, yloc, r_x, r_y, edge, view, ldx, ldy);
@@ -572,6 +572,51 @@ void mark_res(double **resource_array, double **agent_array, double **land,
     }
 }
 
+
+/* =============================================================================
+ * RECORD ALL RESOURCES ALONG A TRANSECT
+ * ===========================================================================*/
+/* =============================================================================
+ * This simulates the capture-mark-recapture of a resource type
+ * Inputs include:
+ *     resource_array: data frame of resources to be marked and/or recaptured
+ *     agent_array: data frame of agents, potentially doing the marking
+ *     land: landscape array
+ *     paras: vector of parameter values
+ *     start_x: The starting x location included in the transect
+ *     start_y: The starting y location included in the transect
+ *     end_x: The ending x location included in the transect
+ *     end_y: The ending y location included in the transect
+ *     res_rows: Total number of resources that can be sampled
+ *     res_type: The type of resource being sampled
+ *     obs_col: The number of columns in the observational array
+ * Output:
+ *     Accumlated markings of resources within a given area of landscape
+ * ========================================================================== */
+void transect(double **resource_array, double *paras, int start_x, int start_y, 
+              int end_x, int end_y, int res_rows, int res_type, int obs_iter){
+    
+    int resource;
+    int agent;
+    int min_age;
+    
+    min_age = paras[16];
+
+    for(resource = 0; resource < res_rows; resource++){
+        if(resource_array[resource][1]  == res_type  && 
+           resource_array[resource][11] >= min_age   &&
+           resource_array[resource][4]  >= start_x   &&
+           resource_array[resource][4]  <  end_x     &&
+           resource_array[resource][5]  >= start_y   &&
+           resource_array[resource][5]  <  end_y 
+        ){
+            resource_array[resource][12]++;
+            resource_array[resource][14] += obs_iter;
+        }
+    }
+}
+
+
 /* =============================================================================
  * MAIN OBSERVATION FUNCTION:
  * ===========================================================================*/
@@ -618,6 +663,8 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int edge_type;           /* The type of edge on the landscape */
     int move_type;           /* How resources move on the landscape */
     int move_res;            /* Should the resources move between obs */
+    int tx0, tx1, ty0, ty1;  /* Variables that define a transect sampled */
+    int transect_len;        /* The length of a transect sampled */
     int *add_resource;       /* Vector of added resources */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
@@ -660,7 +707,11 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     /* The C code for the model itself falls under here */
     /* ====================================================================== */
 
-    times_obs    = (int) paras[11]; /* Number of times observation conducted */
+    method    = (int) paras[8];  /* Specifies method of estimation used      */
+    times_obs = (int) paras[11]; /* Number of times observation conducted    */
+    if(method == 1){
+        times_obs = 1;   
+    }
     
     /* Code below remakes the RESOURCE matrix, with extra columns for obs */
     res_number        = dim_RESOURCE[0];
@@ -714,11 +765,10 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     time_para = (int) paras[0];
     edge_type = (int) paras[1];
     move_type = (int) paras[2];
-    a_type    = (int) paras[7];  /* What type of agent does the observing */   
-    method    = (int) paras[8];  /* Specifies method of estimation used   */
-    res_type  = (int) paras[9];  /* What type of resources are observed   */
-    by_type   = (int) paras[17]; /* Category (column) of type location    */
-    move_res  = (int) paras[19]; /* Should the resources be moved?        */
+    a_type    = (int) paras[7];  /* What type of agent does the observing    */   
+    res_type  = (int) paras[9];  /* What type of resources are observed      */
+    by_type   = (int) paras[17]; /* Category (column) of agent type location */
+    move_res  = (int) paras[19]; /* Should the resources be moved?           */
 
     for(resource = 0; resource < res_number; resource++){
         resource_array[resource][12] = 0;   /* Set marks to zero   */
@@ -727,35 +777,61 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
 
     /* This switch function calls a method of population size estimation */
     switch(method){
-       case 0: /* Start of obs column, the +1 skips a_type col added later */
-           obs_iter = trait_number + 1; 
-           while(times_obs > 0){
-               mark_res(resource_array, agent_array, land, paras, res_number, 
-                        agent_number, res_type, obs_iter, a_type, by_type);
-               times_obs--; /* Then move resources if need be for new sample */
-               if(move_res == 1){
-                   res_mover(resource_array, 4, 5, 6, res_number, edge_type, 
-                             land, land_x, land_y, move_type); 
-               }
-               obs_iter++;
-           }
-           break;
-       case 1:
-           break;
-       default:
-           printf("ERROR: No observation method set: marking all in view \n");
-           obs_iter = trait_number + 1; /* The 1 skips over the agent type */
-           while(times_obs > 0){
-               mark_res(resource_array, agent_array, land, paras, res_number, 
-                        agent_number, res_type, obs_iter, a_type, by_type);
-               times_obs--; /* Then move agents if need be for new sample */
-               if(move_res == 1){
-                   res_mover(resource_array, 4, 5, 6, res_number, edge_type, 
-                             land, land_x, land_y, move_type); 
-               }
-               obs_iter++;
-           }
-       break;
+        case 0: /* Start of obs column, the +1 skips a_type col added later */
+            obs_iter = trait_number + 1; 
+            while(times_obs > 0){
+                mark_res(resource_array, agent_array, land, paras, res_number, 
+                         agent_number, res_type, obs_iter, a_type, by_type);
+                times_obs--; /* Then move resources if need be for new sample */
+                if(move_res == 1){
+                    res_mover(resource_array, 4, 5, 6, res_number, edge_type, 
+                              land, land_x, land_y, move_type); 
+                }
+                obs_iter++;
+            }
+            break;
+        case 1: /* Sample along a linear (y-axis) transect of all rows */
+            transect_len = 0;
+            for(agent = 0; agent < agent_number; agent++){
+                if(agent_array[agent][by_type] == a_type){
+                    transect_len += (int) agent_array[agent][8]; 
+                }
+            }
+            if(transect_len < 1){
+                transect_len = 1;
+                printf("ERROR: Transect length was < 1; changing to 1");
+            }
+            obs_iter     = 0;
+            tx0          = 0;
+            tx1          = land_x + 1;
+            ty0          = 0;
+            ty1          = transect_len;
+            while(ty0 < land_y){
+                transect(resource_array, paras, tx0, ty0, tx1, ty1, res_number, 
+                         res_type, obs_iter);
+                obs_iter++;
+                ty0 =  ty1;
+                ty1 += transect_len + 1;
+                if(move_res == 1){
+                    res_mover(resource_array, 4, 5, 6, res_number, edge_type, 
+                              land, land_x, land_y, move_type); 
+                }
+            }
+            break;
+        default:
+            printf("ERROR: No observation method set: marking all in view \n");
+            obs_iter = trait_number + 1; /* The 1 skips over the agent type */
+            while(times_obs > 0){
+                mark_res(resource_array, agent_array, land, paras, res_number, 
+                         agent_number, res_type, obs_iter, a_type, by_type);
+                times_obs--; /* Then move agents if need be for new sample */
+                if(move_res == 1){
+                    res_mover(resource_array, 4, 5, 6, res_number, edge_type, 
+                              land, land_x, land_y, move_type); 
+                }
+                obs_iter++;
+            }
+        break;
     }
 
     /* Check to see how many resources were observed */        

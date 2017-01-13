@@ -53,7 +53,7 @@ starting_resources <- make_resource( model              = pop_model,
 AGENTS   <- make_agents( model        = pop_model,
                          agent_number = 2,
                          type_counts  = c(1,1),
-                         vision       = 30,
+                         vision       = 1,
                          rows         = land_dim_1,
                          cols         = land_dim_2,
                          move         = 50 # Make sure <= landscape dims
@@ -107,11 +107,12 @@ while(time < time_max){
                                     paras      = parameters,
                                     agent      = AGENTS,
                                     res_type   = 1,      # Resource(s) observed
-                                    fix_mark   = 20,     # Fixed or view-based
-                                    times      = 12,     # Times observed
+                                    fix_mark   = 0,      # Fixed or view-based
+                                    times      = 1,      # Times observed
                                     samp_age   = 1,      # Minimum resource age
                                     agent_type = 0,      # Agent type
                                     type_cat   = 1,      # Type category (row)
+                                    obs_method = 1,      # How res are observed
                                     move_res   = TRUE   # Do resources move
                                     );
    
@@ -206,6 +207,53 @@ ind_to_land <- function(inds, landscape){
     return(landscape);
 }
 
+
+
+
+###########################################################
+## Plot this way when looking at transect type sampling
+###########################################################
+gens <- NULL;
+abun <- NULL;
+est  <- NULL;
+lci  <- NULL;
+uci  <- NULL;
+land_cols <- c("#F2F2F2FF", "#ECB176FF", "#000000"); 
+
+aged_res <- RESOURCE_REC[RESOURCE_REC[,12] > 0,];
+ymaxi    <- max(tapply(aged_res[,8],aged_res[,8],length)) + 325;
+for(i in 1:(time_max-1)){
+    res_t <- RESOURCE_REC[RESOURCE_REC[,8]==i,];
+    obs_t <- OBSERVATION_REC[OBSERVATION_REC[,8]==i,];
+    if(i > 1){
+        res_t <- res_t[res_t[,12] > 0,]; # Only look at res not just added
+    }
+    gens  <- c(gens, i);
+    abun  <- c(abun, dim(res_t)[1]);
+    par(mfrow=c(2,1),mar=c(0,0,0,0));
+    indis  <- ind_to_land(inds=res_t, landscape=LANDSCAPE_r);
+    image(indis, col=land_cols, xaxt="n", yaxt="n");
+    par(mar=c(4,4,1,1));
+    plot(x=gens, y=abun, pch=20, type="l", lwd=2, ylim=c(0, ymaxi),
+         xlim=c(0,time_max), xlab="Time Step", ylab="Abundance");
+    obs_start <- dim(RESOURCE_REC)[2] + 1;
+    obs_end   <- dim(OBSERVATION_REC)[2];
+    new_est   <- sum(OBSERVATION_REC[OBSERVATION_REC[,8]==i,obs_start:obs_end]);
+    est       <- c(est, new_est);
+    points(x=gens, y=est, pch=20, type="l", lwd=2, col="cyan4");
+    abline(h=parameters[7], col="red", lwd=0.8, lty="dashed");
+    points(x=gens, y=abun, pch=20, type="l", lwd=3, col="black");
+    Sys.sleep(0.1);
+}
+
+
+
+
+
+
+####################################################################
+## Plot this way when looking at view or mark-recapture sampling
+####################################################################
 gens <- NULL;
 abun <- NULL;
 est  <- NULL;

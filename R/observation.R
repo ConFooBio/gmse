@@ -13,6 +13,7 @@
 #'@param samp_age Minimum age of the resource being sampled (default = 1)
 #'@param agent_type The type of agent doing the observing (default = 0)
 #'@param type_cat The category of agent type (first 4 columns) doing observing
+#'@param obs_method The type of method used to do the observing
 #'@param move_res Should resources be moved during observation (default = FALSE)
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
@@ -27,6 +28,7 @@ observation <- function(resource   = NULL,
                         samp_age   = 1,
                         agent_type = 0,
                         type_cat   = 1,
+                        obs_method = 0,
                         move_res   = FALSE,
                         model      = "IBM"
                         ){
@@ -49,12 +51,13 @@ observation <- function(resource   = NULL,
         }
         # If all checks out, first put the type into paras for easier input
         paras[8]  <- agent_type;
+        paras[9]  <- obs_method;
         paras[10] <- res_type;
         paras[11] <- as.numeric(fix_mark); # Note: 'FALSE' coerced to zero
         paras[12] <- times;
         paras[17] <- samp_age;
         paras[18] <- type_cat;
-        paras[19] <- as.numeric(move_res);
+        paras[20] <- as.numeric(move_res);
         if(times < 1){
             stop("Need to sample at least once (else no observation)");   
         }
