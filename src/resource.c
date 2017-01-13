@@ -350,6 +350,12 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     int res_num_total;       /* Total number of resources in returned array */
     int protected_n;         /* Number of protected R objects */
     int vec_pos;             /* Vector position for making arrays */
+    int time_para;           /* Time in the simulation the function called */
+    int edge_type;           /* The type of edge on the landscape */
+    int birthtype;           /* The type of birth of resources */
+    int birth_K;             /* Carrying capacity affecting birth rate */
+    int deathtype;           /* The type of death of resources */
+    int death_K;             /* Carrying capacity affecting death rate */
     int *add_resource;       /* Vector of added resources */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
@@ -413,15 +419,22 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     /* Do the biology here now */
     /* ====================================================================== */
     
+    time_para = (int) paras[0];
+    edge_type = (int) paras[1];
+    birthtype = (int) paras[3];
+    deathtype = (int) paras[4];
+    birth_K   = (int) paras[5];
+    death_K   = (int) paras[6];
+    
     /* Resource time step and age needs to be increased by one */
-    add_time(res_old, 7, res_number, paras[0], 11);
+    add_time(res_old, 7, res_number, time_para, 11);
     
     /* Resources move according to move function and parameter) */
-    mover(res_old, 4, 5, 6, res_number, paras[1], land, land_x, land_y, 
+    mover(res_old, 4, 5, 6, res_number, edge_type, land, land_x, land_y, 
           paras[2]); 
 
     /* Identify, and calculate the number of, added individuals */
-    res_add(res_old, res_number, 9, paras[3], paras[5]);
+    res_add(res_old, res_number, 9, birthtype, birth_K);
     res_nums_added      = 0; 
     for(resource = 0; resource < res_number; resource++){
         res_nums_added += res_old[resource][10];
@@ -434,7 +447,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
               10, 11);
     
     /* Identify, and calculate the number, of removed individuals */    
-    res_remove(res_old, res_number, 8, paras[4], paras[6]);
+    res_remove(res_old, res_number, 8, deathtype, death_K);
     res_nums_subtracted = 0; 
     for(resource = 0; resource < res_number; resource++){
         if(res_old[resource][8] < 0){
