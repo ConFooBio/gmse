@@ -357,6 +357,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     int birth_K;             /* Carrying capacity affecting birth rate */
     int deathtype;           /* The type of death of resources */
     int death_K;             /* Carrying capacity affecting death rate */
+    int move_res;            /* Should resources be allowed to move */
     int *add_resource;       /* Vector of added resources */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
@@ -427,13 +428,16 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     deathtype = (int) paras[4];
     birth_K   = (int) paras[5];
     death_K   = (int) paras[6];
+    move_res  = (int) paras[19]; /* Should the resources be moved?        */
     
     /* Resource time step and age needs to be increased by one */
     add_time(res_old, 7, res_number, time_para, 11);
     
     /* Resources move according to move function and parameter) */
-    mover(res_old, 4, 5, 6, res_number, edge_type, land, land_x, land_y, 
-          move_type); 
+    if(move_res == 1){
+        mover(res_old, 4, 5, 6, res_number, edge_type, land, land_x, land_y, 
+              move_type);
+    }
 
     /* Identify, and calculate the number of, added individuals */
     res_add(res_old, res_number, 9, birthtype, birth_K);

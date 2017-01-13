@@ -12,7 +12,8 @@
 #'@export
 resource <- function(resource  = NULL, 
                      landscape = NULL, 
-                     paras     = NULL, 
+                     paras     = NULL,
+                     move_res  = TRUE,
                      model     = "IBM"
                      ) {
     check_model <- 0;
@@ -28,6 +29,8 @@ resource <- function(resource  = NULL,
             stop("Warning: Parameters must be in a numeric vector");
         }
         # If all checks out, then run the population model
+        paras[20] <- as.numeric(move_res);
+
         RESOURCE_OUT <- run_resource_a( RESOURCE_c   = resource,
                                         LANDSCAPE_c  = landscape,
                                         PARAMETERS_c = paras);

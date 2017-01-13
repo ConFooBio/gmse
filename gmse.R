@@ -83,7 +83,8 @@ parameters <- c(time,    # 0. The dynamic time step for each function to use
                 1,       # 15. Type category for resource observation
                 1,       # 16. Minimum age of sampling (1 excludes juveniles)
                 1,       # 17. Type category for agent observation (default = 1)
-                12       # 18. Column where res seen recorded in obs array 
+                12,      # 18. Column where res seen recorded in agent array
+                1        # 19. Move resources while observing (0/1 = N/Y)
                 );
 
 # Create a warning somewhere if population size is not regulated
@@ -95,6 +96,7 @@ while(time < time_max){
    RESOURCE_NEW      <- resource(resource   = RESOURCES,
                                  landscape  = LANDSCAPE_r,
                                  paras      = parameters,
+                                 move_res   = TRUE,
                                  model      = "IBM"
                                  );
    RESOURCES         <- RESOURCE_NEW;
@@ -109,7 +111,8 @@ while(time < time_max){
                                     times      = 12,     # Times observed
                                     samp_age   = 1,      # Minimum resource age
                                     agent_type = 0,      # Agent type
-                                    type_cat   = 1       # Type category (row)
+                                    type_cat   = 1,      # Type category (row)
+                                    move_res   = TRUE   # Do resources move
                                     );
    
    # anecdotal is a bit useless right now, but included here anyway. 

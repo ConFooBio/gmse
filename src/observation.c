@@ -614,6 +614,10 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int res_type;            /* Types of resources that are being observed */
     int a_type;              /* Type of agent doing observing (manager = 0) */
     int by_type;             /* Type category for observing (default = 1)*/
+    int time_para;           /* Time in the simulation the function called */
+    int edge_type;           /* The type of edge on the landscape */
+    int move_type;           /* How resources move on the landscape */
+    int move_res;            /* Should the resources move between obs */
     int *add_resource;       /* Vector of added resources */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
@@ -707,10 +711,14 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     /* Do the biology here now */
     /* ====================================================================== */
 
-    a_type       = (int) paras[7];  /* What type of agent does the observing */   
-    method       = (int) paras[8];  /* Specifies method of estimation used   */
-    res_type     = (int) paras[9];  /* What type of resources are observed   */
-    by_type      = (int) paras[17]; /* Category (column) of type location    */
+    time_para = (int) paras[0];
+    edge_type = (int) paras[1];
+    move_type = (int) paras[2];
+    a_type    = (int) paras[7];  /* What type of agent does the observing */   
+    method    = (int) paras[8];  /* Specifies method of estimation used   */
+    res_type  = (int) paras[9];  /* What type of resources are observed   */
+    by_type   = (int) paras[17]; /* Category (column) of type location    */
+    move_res  = (int) paras[19]; /* Should the resources be moved?        */
 
     for(resource = 0; resource < res_number; resource++){
         resource_array[resource][12] = 0;   /* Set marks to zero   */
@@ -724,12 +732,15 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
            while(times_obs > 0){
                mark_res(resource_array, agent_array, land, paras, res_number, 
                         agent_number, res_type, obs_iter, a_type, by_type);
-               times_obs--; /* Then move agents if need be for new sample */
+               times_obs--; /* Then move resources if need be for new sample */
+               if(move_res == 1){
+                   res_mover(resource_array, 4, 5, 6, res_number, edge_type, 
+                             land, land_x, land_y, move_type); 
+               }
                obs_iter++;
            }
            break;
        case 1:
-           
            break;
        default:
            printf("ERROR: No observation method set: marking all in view \n");
@@ -738,6 +749,10 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
                mark_res(resource_array, agent_array, land, paras, res_number, 
                         agent_number, res_type, obs_iter, a_type, by_type);
                times_obs--; /* Then move agents if need be for new sample */
+               if(move_res == 1){
+                   res_mover(resource_array, 4, 5, 6, res_number, edge_type, 
+                             land, land_x, land_y, move_type); 
+               }
                obs_iter++;
            }
        break;
