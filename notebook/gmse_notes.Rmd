@@ -39,6 +39,7 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - [13 JAN 2017](#u-13-JAN-2017)
  - [11 JAN 2017](#u-11-JAN-2017)
  - [10 JAN 2017](#u-10-JAN-2017)
  - [22 DEC 2016](#u-22-DEC-2016)
@@ -63,6 +64,41 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-13-JAN-2017">Update: 13 JAN 2017</a>
+
+**Below shows a bit of additional coding, which resulted in two new ways (which is really just one flexible way) that observation can occur. There are couple trivial fixes and additions to make (see new issues 6 and 7), but these should be easy to implement. For now, it's time to take a step back and plan a bit more generally, especially with respect to implementing the game-theoretic component of the modelling.**
+
+**RESOLVED ISSUE #5:  Sweep observation** This issue has now been resolved. There are now two additional ways to observer populations, as guided by the `method` variable used in the main `switch` of the observational model. In biological terms, the observational model allows us to sample in the following two ways:
+
+ 1. By sampling `view` rows at a time, starting from the top of the landscape and working down to the bottom. Each time a new row is sampled, resources on the landscape can move (resource movement can also be turned off if desired). Hence, it is possible for observers to miss or double count resources. The bigger `view` is, the fewer iterations of sampling are needed to make it all the way across the landscape, hence fewer total times resources will move over the course of sampling.
+
+ 2. Identical to 1, but instead of sampling a full row and working down, observers start in the upper left corner of the landscape and sample around a `view` by `view` block, and hence a total of `view^2` cells. Sampling proceeds with blocks across rows until sampling of the very right side of the landscape has occurred. After sampling all to the end of the right side, observers move down, sampling another row of `view` by `view` blocks just beneath the first. This continues until the entire landscape has been sampled, and roughly simulates an observer working their way through the whole landscape over time (time in which resources might move).
+
+**Note: The first case is redundant, and therefore will probably be removed later, but it helped as a scaffold for the more general procedure and takes up little space; for now, I'll leave it**
+
+Testing on both of the above cases was successful (see the figure below). In each case, if resources are not allowed to move, then observers predict resource abundance with 100 percent accuracy (i.e., they sweep through the landscape and count all of the stationary resources). If resource can move, there is a bit of (normally distributed, it appears, and should be -- can look later) error  around the actual abundance. Either of these two methods of observation work fairly efficiently until `view` gets very low (ca 2), in which case a lot of sampling happens in each generation.
+
+![*Figure above shows a population model (black line) and a new observation model (blue line). The observation model was simulated by having one observer record all of the resources on a 10 by 10 cell block (100 total blocks), each one at a time, and between observing blocks, resouces were able to move *](images/obs_dev_eg_case2.png)
+
+
+After each sampling, resources moved an average of ca 5 cells away, with a distribution as shown below (Figure below shows the distance that an individual moves in **one** time step -- between successive iterations of observer sampling along a transect. 
+
+![*Figure shows the distance (in cells) travelled by a resource during one time step, between which observers sample. Movement is guided by a poisson function such that an individual moves a distance of `dist` a total of `Poisson(dist)` times in one time step. The figure above shows this for 1000 individuals.*](images/res_move_hist.png)
+
+I did not code sampling using the initially considered method, with agents physically moved to locations and then looking around. Instead, resources are just considered counted if they are within the row or block under consideration. To account for multiple agents sampling, `view` **is actually first multiplied by the number of agents sampling (only 1 for now)**. This makes sense for case 1, but for case 2, sampling ability actually increases with the square of agent number, so this will need to be changed (*Adding a new issue*).
+
+**INTRODUCE NEW ISSUE #6: Sampling ability with agent number**
+
+In `case` two of the observational model, the length and width of a sampling block will both increase linearly with the number of agents doing the sampling; hence, sampling area increases exponentially with the number of observers, which is probably unrealistic. There are two ways to potentially address this:
+
+ 1. Simply add another square for each agent observing, in the next place it would otherwise go.
+ 2. Probably more easy, have a countdown defined by `+= (int) agent_array[agent][8]`. Only allow resources to move when this countdown hits zero, and reset it it thereafter. Hence, observers will observe more *n* more blocks if there are *n* more observers.
+ 3. Could adjust the squared dimensions appropriately to retain a square block, but this seems inefficient, imprecise (due to rounding), and unnecessary.
+ 
+**INTRODUCE NEW ISSUE #7: DENSITY TYPE SAMPLING** 
+ 
+Of course, it will be easy to make this kind of transect sampling *random* instead of comprehensive over the landscape. This can be done by simply randomly choosing the positions of block on a landscape some `obs_iter` of times. This could allow an estimate of population size by considering *density* (i.e., assume that the number counted in a sampled block reflects the density of the larger landscape of known size), as was done by @Nuno2013. This shouldn't take much time to code and test.
 
 > <a name="u-11-JAN-2017">Update: 11 JAN 2017</a>
 
