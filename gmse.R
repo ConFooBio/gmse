@@ -113,7 +113,7 @@ while(time < time_max){
                                     agent_type = 0,      # Agent type
                                     type_cat   = 1,      # Type category (row)
                                     obs_method = 2,      # How res are observed
-                                    move_res   = FALSE   # Do resources move
+                                    move_res   = TRUE    # Do resources move
                                     );
    
    # anecdotal is a bit useless right now, but included here anyway. 
