@@ -26,7 +26,7 @@ time_max        <- 100;
 time            <- 0;
 land_dim_1      <- 100;
 land_dim_2      <- 100;
-movement        <- 0.4;
+movement        <- 4;
 res_types_ini   <- 1;
 remove_pr       <- 0.0;
 lambda          <- 0.6;
@@ -236,9 +236,7 @@ for(i in 1:(time_max-1)){
     par(mar=c(4,4,1,1));
     plot(x=gens, y=abun, pch=20, type="l", lwd=2, ylim=c(0, ymaxi),
          xlim=c(0,time_max), xlab="Time Step", ylab="Abundance");
-    obs_start <- dim(RESOURCE_REC)[2] + 1;
-    obs_end   <- dim(OBSERVATION_REC)[2];
-    new_est   <- sum(OBSERVATION_REC[OBSERVATION_REC[,8]==i,obs_start:obs_end]);
+    new_est   <- sum(OBSERVATION_REC[OBSERVATION_REC[,8]==i,13]);
     est       <- c(est, new_est);
     points(x=gens, y=est, pch=20, type="l", lwd=2, col="cyan4");
     abline(h=parameters[7], col="red", lwd=0.8, lty="dashed");
