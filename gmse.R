@@ -53,7 +53,7 @@ starting_resources <- make_resource( model              = pop_model,
 AGENTS   <- make_agents( model        = pop_model,
                          agent_number = 2,
                          type_counts  = c(1,1),
-                         vision       = 1,
+                         vision       = 10,
                          rows         = land_dim_1,
                          cols         = land_dim_2,
                          move         = 50 # Make sure <= landscape dims

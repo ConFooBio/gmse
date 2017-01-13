@@ -77,12 +77,12 @@ void res_mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
                 break;
         }
         new_pos  = res_moving[res_num][xloc] + (move_dir * move_len); 
-        if(new_pos > land_x || new_pos < 0){ /* If off the edge */
+        if(new_pos >= land_x || new_pos < 0){ /* If off the edge */
             switch(edge){
                 case 0: /* Nothing happens (effectively, no edge) */
                     break;
                 case 1: /* Corresponds to a torus landscape */
-                    while(new_pos > land_x){
+                    while(new_pos >= land_x){
                         new_pos = new_pos - land_x; 
                     }
                     while(new_pos < 0){
@@ -140,12 +140,12 @@ void res_mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
                 break;
         }
         new_pos  = res_moving[res_num][yloc] + (move_dir * move_len); 
-        if(new_pos > land_y || new_pos < 0){ /* If off the edge */
+        if(new_pos >= land_y || new_pos < 0){ /* If off the edge */
             switch(edge){
                 case 0: /* Nothing happens (effectively, no edge) */
                     break;
                 case 1: /* Corresponds to a torus landscape */
-                    while(new_pos > land_y){
+                    while(new_pos >= land_y){
                         new_pos = new_pos - land_y;  
                     }
                     while(new_pos < 0){
@@ -239,12 +239,12 @@ void a_mover(double **agent_moving, int xloc, int yloc, int move_para, int edge,
             break;
     }
     new_pos  = agent_moving[a_row][xloc] + (move_dir * move_len); 
-    if(new_pos > land_x || new_pos < 0){ /* If off the edge */
+    if(new_pos >= land_x || new_pos < 0){ /* If off the edge */
         switch(edge){
             case 0: /* Nothing happens (effectively, no edge) */
                 break;
             case 1: /* Corresponds to a torus landscape */
-                if(new_pos > land_x){
+                if(new_pos >= land_x){
                     new_pos = new_pos - land_x;   
                 }
                 if(new_pos < 0){
@@ -302,12 +302,12 @@ void a_mover(double **agent_moving, int xloc, int yloc, int move_para, int edge,
             break;
     }
     new_pos  = agent_moving[a_row][yloc] + (move_dir * move_len); 
-    if(new_pos > land_y || new_pos < 0){ /* If off the edge */
+    if(new_pos >= land_y || new_pos < 0){ /* If off the edge */
         switch(edge){
             case 0: /* Nothing happens (effectively, no edge) */
                 break;
             case 1: /* Corresponds to a torus landscape */
-                if(new_pos > land_y){
+                if(new_pos >= land_y){
                     new_pos = new_pos - land_y;  
                 }
                 if(new_pos < 0){
@@ -742,7 +742,6 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     for(xloc = 0; xloc < land_x; xloc++){
         land[xloc] = malloc(land_y * sizeof(double));   
     } /* LANDSCAPE is now stored as land */
-    
     /* Code below remakes the AGENT matrix for easier use */
     agent_number        = dim_AGENT[0];
     agent_traits        = dim_AGENT[1];
@@ -818,6 +817,45 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
                 }
             }
             break;
+        case 2: /* Sample in blocks of landscape (view by view chunks) */
+            transect_len = 0;
+            for(agent = 0; agent < agent_number; agent++){
+                if(agent_array[agent][by_type] == a_type){
+                    transect_len += (int) agent_array[agent][8]; 
+                }
+            }
+            if(transect_len < 1){
+                transect_len = 1;
+                printf("ERROR: Transect length was < 1; changing to 1");
+            }
+            obs_iter     = 0;
+            tx0          = 0;
+            tx1          = transect_len;
+            ty0          = 0;
+            ty1          = transect_len;
+            while(tx0 < land_x && ty0 < land_y){
+                transect(resource_array, paras, tx0, ty0, tx1, ty1, res_number, 
+                         res_type, obs_iter);
+                obs_iter++;
+                tx0 =  tx1;
+                tx1 += transect_len;
+                if(tx0 > land_x){
+                    tx0 =  0;
+                    tx1 =  transect_len;
+                    ty0 =  ty1;
+                    ty1 += transect_len;
+                }
+                if(move_res == 1){
+                    res_mover(resource_array, 4, 5, 6, res_number, edge_type, 
+                              land, land_x, land_y, move_type); 
+                }
+                if( obs_iter > (land_x * land_y) ){
+                    printf("ERROR: Too many samples (Inf loop possible)");
+                    break;   
+                }
+                printf("x0: %d x1: %d y0: %d y1: %d\n",tx0,tx1,ty0,ty1);
+            }
+            break;            
         default:
             printf("ERROR: No observation method set: marking all in view \n");
             obs_iter = trait_number + 1; /* The 1 skips over the agent type */
