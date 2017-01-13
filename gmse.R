@@ -112,8 +112,8 @@ while(time < time_max){
                                     samp_age   = 1,      # Minimum resource age
                                     agent_type = 0,      # Agent type
                                     type_cat   = 1,      # Type category (row)
-                                    obs_method = 1,      # How res are observed
-                                    move_res   = TRUE   # Do resources move
+                                    obs_method = 2,      # How res are observed
+                                    move_res   = FALSE   # Do resources move
                                     );
    
    # anecdotal is a bit useless right now, but included here anyway. 

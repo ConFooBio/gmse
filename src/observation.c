@@ -839,7 +839,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
                 obs_iter++;
                 tx0 =  tx1;
                 tx1 += transect_len;
-                if(tx0 > land_x){
+                if(tx0 >= land_x){
                     tx0 =  0;
                     tx1 =  transect_len;
                     ty0 =  ty1;
@@ -853,7 +853,6 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
                     printf("ERROR: Too many samples (Inf loop possible)");
                     break;   
                 }
-                printf("x0: %d x1: %d y0: %d y1: %d\n",tx0,tx1,ty0,ty1);
             }
             break;            
         default:
