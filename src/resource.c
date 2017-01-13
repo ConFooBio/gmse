@@ -352,6 +352,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     int vec_pos;             /* Vector position for making arrays */
     int time_para;           /* Time in the simulation the function called */
     int edge_type;           /* The type of edge on the landscape */
+    int move_type;           /* How resources move on the landscape */
     int birthtype;           /* The type of birth of resources */
     int birth_K;             /* Carrying capacity affecting birth rate */
     int deathtype;           /* The type of death of resources */
@@ -421,6 +422,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     
     time_para = (int) paras[0];
     edge_type = (int) paras[1];
+    move_type = (int) paras[2];
     birthtype = (int) paras[3];
     deathtype = (int) paras[4];
     birth_K   = (int) paras[5];
@@ -431,7 +433,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     
     /* Resources move according to move function and parameter) */
     mover(res_old, 4, 5, 6, res_number, edge_type, land, land_x, land_y, 
-          paras[2]); 
+          move_type); 
 
     /* Identify, and calculate the number of, added individuals */
     res_add(res_old, res_number, 9, birthtype, birth_K);
@@ -497,7 +499,6 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
         }
     }            
         
-        
     UNPROTECT(protected_n);
     
     /* Free all of the allocated memory used in arrays */
@@ -517,7 +518,4 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     return(RESOURCE_NEW); 
 }
 /* ===========================================================================*/
-          
-          
-          
           
