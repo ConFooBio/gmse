@@ -709,14 +709,14 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
 
     method    = (int) paras[8];  /* Specifies method of estimation used      */
     times_obs = (int) paras[11]; /* Number of times observation conducted    */
-    if(method == 1){
-        times_obs = 1;   
-    }
     
     /* Code below remakes the RESOURCE matrix, with extra columns for obs */
     res_number        = dim_RESOURCE[0];
     trait_number      = dim_RESOURCE[1]; 
-    obs_columns       = trait_number + times_obs;
+    obs_columns       = trait_number + 1;
+    if(method == 0){ /* If method 0, make column for each time observing */
+        obs_columns += times_obs;
+    }
     resource_array    = malloc(res_number * sizeof(double *));
     for(resource = 0; resource < res_number; resource++){
         resource_array[resource] = malloc(obs_columns * sizeof(double));   
@@ -781,12 +781,12 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
             while(times_obs > 0){
                 mark_res(resource_array, agent_array, land, paras, res_number, 
                          agent_number, res_type, obs_iter, a_type, by_type);
-                times_obs--; /* Then move resources if need be for new sample */
-                if(move_res == 1){
+                if(move_res == 1){ /* Move resources if need for new sample */
                     res_mover(resource_array, 4, 5, 6, res_number, edge_type, 
                               land, land_x, land_y, move_type); 
                 }
                 obs_iter++;
+                times_obs--;
             }
             break;
         case 1: /* Sample along a linear (y-axis) transect of all rows */
@@ -844,7 +844,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
                     tx1 =  transect_len;
                     ty0 =  ty1;
                     ty1 += transect_len;
-                }
+                } 
                 if(move_res == 1){
                     res_mover(resource_array, 4, 5, 6, res_number, edge_type, 
                               land, land_x, land_y, move_type); 
@@ -861,12 +861,12 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
             while(times_obs > 0){
                 mark_res(resource_array, agent_array, land, paras, res_number, 
                          agent_number, res_type, obs_iter, a_type, by_type);
-                times_obs--; /* Then move agents if need be for new sample */
                 if(move_res == 1){
                     res_mover(resource_array, 4, 5, 6, res_number, edge_type, 
                               land, land_x, land_y, move_type); 
                 }
                 obs_iter++;
+                times_obs--; /* Then move agents if need be for new sample */                
             }
         break;
     }

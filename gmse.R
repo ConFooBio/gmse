@@ -73,7 +73,7 @@ parameters <- c(time,    # 0. The dynamic time step for each function to use
                 cells,   # 5. Carrying capacity for birth (-1 = unregulated)
                 400,     # 6. Carrying capacity for death (-1 = unregulated)
                 0,       # 7. The type of AGENT doing the observations
-                2,       # 8. The type of observing done for estimating pop.
+                0,       # 8. The type of observing done for estimating pop.
                 1,       # 9. The type of resource observed (note: dynamic)
                 0,       # 10. Fix mark? Do observers mark exactly n resources?
                 0,       # 11. Times resources observed during one time step
@@ -107,7 +107,7 @@ while(time < time_max){
                                     paras      = parameters,
                                     agent      = AGENTS,
                                     res_type   = 1,      # Resource(s) observed
-                                    fix_mark   = 0,      # Fixed or view-based
+                                    fix_mark   = 3,      # Fixed or view-based
                                     times      = 1,      # Times observed
                                     samp_age   = 1,      # Minimum resource age
                                     agent_type = 0,      # Agent type
