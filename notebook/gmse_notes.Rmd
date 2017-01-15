@@ -39,6 +39,7 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - [15 JAN 2017](#u-15-JAN-2017)
  - [13 JAN 2017](#u-13-JAN-2017)
  - [11 JAN 2017](#u-11-JAN-2017)
  - [10 JAN 2017](#u-10-JAN-2017)
@@ -64,6 +65,26 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-15-JAN-2017">Update: 15 JAN 2017</a>
+
+**A couple updates that have been made, or need to be fixed. I'll do these tomorrow, as they probably won't require much more than a few hours in the morning**
+
+I've created a new temporary branch, `fix_home_bug`, after noticing a crash from my home laptop. It seems that I hadn't initialised the `added` variable at zero in the `res_add` function of the `resources.c` file. At the office computer, it seemed to initialise it at zero automatically (or I'd not played with the right parameters to get it to crash), but at home, it was often getting initialised to very high values and crashing. I've fixed the issue on the new branch, but it needs to be merged.
+
+**NEW UNRESOLVED ISSUE #8:  Clear up method sampling type in observation model** The `method` sampling for `case 0` is too confusing. Sometimes it means randomly sampled `fix_mark` individuals from the population, and sometimes it means sample within a particular range of view. Change this so that the `switch` functions have four clear cases:
+
+ 0. Sampling with a range of view (i.e., don't rely on the fix_mark > 0 for switching methods)
+ 1. Linear transect
+ 2. Square transect
+ 3. Sampling `fix_mark` times randomly on the landscape.
+
+This will avoid a lot of hassle, even if the code for cases 0 and 3 end up looking the same, or very similar. It's just very confusing to manage as it is now.
+
+**ISSUE #6 STILL NEEDS RESOLVING** I was working on this when I found the bug resolved on the new branch. It didn't take too long, and it should be an easy fix while I take care of issue 8.
+
+**TIME ISSUES**: While the simulations run quickly in the office computer, 100 time steps now take about 8 seconds for the loop on my Lenovo Thinkpad X201 -- something to be aware of as the coding continues.
+
 
 > <a name="u-13-JAN-2017">Update: 13 JAN 2017</a>
 
