@@ -85,6 +85,14 @@ This will avoid a lot of hassle, even if the code for cases 0 and 3 end up looki
 
 **TIME ISSUES**: While the simulations run quickly in the office computer, 100 time steps now take about 8 seconds for the loop on my Lenovo Thinkpad X201 -- something to be aware of as the coding continues.
 
+**FOR TOMORROW:** Make a summary that includes an example of all 4 types of observation models and their appropriate analyses (quickly fix the plotting to do the correct analyses automatically): 
+
+ `case 0` View-based sampling in which the density is sampled and applied to the whole size of the landscape [as in @Nuno2013]
+ `case 1` Mark-recapture sampling where there is some fixed number marked at each time and estimates show Chapman style analysis 
+ `case 2` Sampling along a linear transect as resources move, and 
+ `case 3` Sampling using blocks as resources move.
+ 
+Some updated code is on the `fix_home_bug` branch, which can be merged into the `dev` branch once it's done and is stable after some testing in the office (i.e., try to crash it).
 
 > <a name="u-13-JAN-2017">Update: 13 JAN 2017</a>
 
