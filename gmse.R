@@ -107,12 +107,12 @@ while(time < time_max){
                                     paras      = parameters,
                                     agent      = AGENTS,
                                     res_type   = 1,      # Resource(s) observed
-                                    fix_mark   = 0,      # Fixed or view-based
+                                    fix_mark   = 20,      # Fixed or view-based
                                     times      = 12,     # Times observed
                                     samp_age   = 1,      # Minimum resource age
                                     agent_type = 0,      # Agent type
                                     type_cat   = 1,      # Type category (row)
-                                    obs_method = 0,      # How res are observed
+                                    obs_method = 3,      # How res are observed
                                     move_res   = TRUE    # Do resources move
                                     );
    

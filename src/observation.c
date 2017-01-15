@@ -439,7 +439,6 @@ void field_work(double **resource_array, double **agent_array, double *paras,
     edge  = (int) paras[1];
     ldx   = (int) paras[12];
     ldy   = (int) paras[13];
-    fixn  = (int) paras[10];
     
     min_age = paras[16];
     
@@ -458,6 +457,7 @@ void field_work(double **resource_array, double **agent_array, double *paras,
             }
             break;
         case 1: /* Alternative (only one now) is to sample fixed number */
+            fixn     = (int) paras[10];
             type_num = 0;
             for(resource = 0; resource < res_rows; resource++){
                 if(resource_array[resource][1]  == res_type &&
@@ -466,7 +466,7 @@ void field_work(double **resource_array, double **agent_array, double *paras,
                 }
             }
             if(type_num > fixn){ /* If more resources than the sample number */
-               /* Temp tallies are used here to sample without replacement */
+                /* Temp tallies are used here to sample without replacement */
                 for(resource = 0; resource < res_rows; resource++){
                     if(resource_array[resource][1] == res_type){
                         resource_array[resource][13] = 0; /* Start untallied */
@@ -532,18 +532,17 @@ void field_work(double **resource_array, double **agent_array, double *paras,
  *     obs_col: The number of columns in the observational array
  *     a_type: The type of agent that is doing the marking
  *     by_type: The type column that is being used
+ *     find_type: The type of finding that observers do (view-based or rand)
  * Output:
  *     Accumlated markings of resources by agents
  * ========================================================================== */
 void mark_res(double **resource_array, double **agent_array, double **land,
               double *paras, int res_rows, int a_row, int res_type, 
-              int obs_col, int a_type, int by_type){
+              int obs_col, int a_type, int by_type, int find_type){
     
     int resource;
     int agent;
     int count;
-    int is_fixed;
-    int find_type;   /* Find type -- fixed number of observations? */
     int edge;        /* How does edge work? (Effects agent vision & movement) */
     int samp_res;    /* A randomly sampled resource */
     int ldx, ldy;
@@ -556,11 +555,6 @@ void mark_res(double **resource_array, double **agent_array, double **land,
     ldy        = (int) paras[13];
     move_t     = (int) paras[14]; /* Type of movement being used  */
 
-    find_type  = (int) paras[10]; /* Conversion to int type with type caster */
-    if(find_type > 0){
-        find_type = 1;
-    }
-    
     for(agent = 0; agent < a_row; agent++){
         if(agent_array[agent][by_type] == a_type){ 
             field_work(resource_array, agent_array, paras, res_rows, agent, 
@@ -663,6 +657,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int edge_type;           /* The type of edge on the landscape */
     int move_type;           /* How resources move on the landscape */
     int move_res;            /* Should the resources move between obs */
+    int fixed_sample;        /* The fixed number of resources sampled */
     int tx0, tx1, ty0, ty1;  /* Variables that define a transect sampled */
     int transect_len;        /* The length of a transect sampled */
     int *add_resource;       /* Vector of added resources */
@@ -714,7 +709,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     res_number        = dim_RESOURCE[0];
     trait_number      = dim_RESOURCE[1]; 
     obs_columns       = trait_number + 1;
-    if(method == 0){ /* If method 0, make column for each time observing */
+    if(method < 2){ /* If method 0, make column for each time observing */
         obs_columns += times_obs;
     }
     resource_array    = malloc(res_number * sizeof(double *));
@@ -776,11 +771,11 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
 
     /* This switch function calls a method of population size estimation */
     switch(method){
-        case 0: /* Start of obs column, the +1 skips a_type col added later */
-            obs_iter = trait_number + 1; 
+        case 0: /* Simple view-based method of sampling */
+            obs_iter = trait_number + 1; /* Skips a_type col added later */
             while(times_obs > 0){
                 mark_res(resource_array, agent_array, land, paras, res_number, 
-                         agent_number, res_type, obs_iter, a_type, by_type);
+                         agent_number, res_type, obs_iter, a_type, by_type, 0);
                 if(move_res == 1){ /* Move resources if need for new sample */
                     res_mover(resource_array, 4, 5, 6, res_number, edge_type, 
                               land, land_x, land_y, move_type); 
@@ -789,7 +784,26 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
                 times_obs--;
             }
             break;
-        case 1: /* Sample along a linear (y-axis) transect of all rows */
+        case 1: /* Sample fixed_sample resources randomly on landscape */
+            fixed_sample = (int) paras[10];
+            if(fixed_sample < 1){
+                printf("ERROR: Fixed sample must be >= 1 \n ... Making = 1 \n");
+                paras[10] = 1;
+                break;
+            }
+            obs_iter = trait_number + 1; 
+            while(times_obs > 0){
+                mark_res(resource_array, agent_array, land, paras, res_number, 
+                         agent_number, res_type, obs_iter, a_type, by_type, 1);
+                if(move_res == 1){ /* Move resources if need for new sample */
+                    res_mover(resource_array, 4, 5, 6, res_number, edge_type, 
+                              land, land_x, land_y, move_type); 
+                }
+                obs_iter++;
+                times_obs--;
+            }
+            break;            
+        case 2: /* Sample along a linear (y-axis) transect of all rows */
             transect_len = 0;
             for(agent = 0; agent < agent_number; agent++){
                 if(agent_array[agent][by_type] == a_type){
@@ -817,7 +831,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
                 }
             }
             break;
-        case 2: /* Sample in blocks of landscape (view by view chunks) */
+        case 3: /* Sample in blocks of landscape (view by view chunks) */
             transect_len = 0;
             for(agent = 0; agent < agent_number; agent++){
                 if(agent_array[agent][by_type] == a_type){
@@ -860,7 +874,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
             obs_iter = trait_number + 1; /* The 1 skips over the agent type */
             while(times_obs > 0){
                 mark_res(resource_array, agent_array, land, paras, res_number, 
-                         agent_number, res_type, obs_iter, a_type, by_type);
+                         agent_number, res_type, obs_iter, a_type, by_type, 0);
                 if(move_res == 1){
                     res_mover(resource_array, 4, 5, 6, res_number, edge_type, 
                               land, land_x, land_y, move_type); 
