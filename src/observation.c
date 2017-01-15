@@ -659,7 +659,9 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int move_res;            /* Should the resources move between obs */
     int fixed_sample;        /* The fixed number of resources sampled */
     int tx0, tx1, ty0, ty1;  /* Variables that define a transect sampled */
+    int working_agents;      /* How many agents are helping out? */
     int transect_len;        /* The length of a transect sampled */
+    int transect_eff;        /* Transect efficiency: How many observers help */
     int *add_resource;       /* Vector of added resources */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
@@ -804,12 +806,15 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
             }
             break;            
         case 2: /* Sample along a linear (y-axis) transect of all rows */
-            transect_len = 0;
+            transect_len   = 0;
+            working_agents = 0; 
             for(agent = 0; agent < agent_number; agent++){
                 if(agent_array[agent][by_type] == a_type){
-                    transect_len += (int) agent_array[agent][8]; 
+                    transect_len += (int) agent_array[agent][8];
+                    working_agents++;
                 }
             }
+            transect_len *= working_agents;
             if(transect_len < 1){
                 transect_len = 1;
                 printf("ERROR: Transect length was < 1; changing to 1");
@@ -832,12 +837,15 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
             }
             break;
         case 3: /* Sample in blocks of landscape (view by view chunks) */
-            transect_len = 0;
+            transect_len   = 0;
+            working_agents = 0; 
             for(agent = 0; agent < agent_number; agent++){
                 if(agent_array[agent][by_type] == a_type){
-                    transect_len += (int) agent_array[agent][8]; 
+                    transect_len += (int) agent_array[agent][8];
+                    working_agents++;
                 }
             }
+            transect_eff = working_agents;
             if(transect_len < 1){
                 transect_len = 1;
                 printf("ERROR: Transect length was < 1; changing to 1");
@@ -859,9 +867,11 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
                     ty0 =  ty1;
                     ty1 += transect_len;
                 } 
-                if(move_res == 1){
+                transect_eff--;
+                if(move_res == 1 && transect_eff == 0){
                     res_mover(resource_array, 4, 5, 6, res_number, edge_type, 
                               land, land_x, land_y, move_type); 
+                    transect_eff = working_agents;
                 }
                 if( obs_iter > (land_x * land_y) ){
                     printf("ERROR: Too many samples (Inf loop possible)");
