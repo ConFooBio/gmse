@@ -198,7 +198,7 @@ void res_add(double **res_adding, int rows, int add, int type, int K_add){
         case 1:
             break; /* Add in a different type of birth here */
         case 2:
-            added = 0; /* THE FIX ??? */
+            added = 0; 
             for(resource = 0; resource < rows; resource++){
                 res_adding[resource][realised] = 0;
                 rand_pois = rpois(res_adding[resource][add]);
@@ -207,6 +207,7 @@ void res_add(double **res_adding, int rows, int add, int type, int K_add){
             }
             break;
         default:
+            printf("ERROR: Resource growth/birth type set incorrectly \n"); 
             break;
     }
     if(K_add > 0){ /* If there is a carrying capacity applied to adding */

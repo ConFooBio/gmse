@@ -73,7 +73,7 @@ parameters <- c(time,    # 0. The dynamic time step for each function to use
                 cells,   # 5. Carrying capacity for birth (-1 = unregulated)
                 400,     # 6. Carrying capacity for death (-1 = unregulated)
                 0,       # 7. The type of AGENT doing the observations
-                1,       # 8. The type of observing done for estimating pop.
+                2,       # 8. The type of observing done for estimating pop.
                 1,       # 9. The type of resource observed (note: dynamic)
                 0,       # 10. Fix mark? Do observers mark exactly n resources?
                 0,       # 11. Times resources observed during one time step
@@ -138,6 +138,7 @@ while(time < time_max){
 
 proc_end <- proc.time();
 
+print(proc_end - proc_start);
 
 res_columns <- c("Resource_ID",
                  "Resource_type_1",
