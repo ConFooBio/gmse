@@ -26,10 +26,10 @@ time_max        <- 100;
 time            <- 0;
 land_dim_1      <- 100;
 land_dim_2      <- 100;
-movement        <- 4;
+movement        <- 1;
 res_types_ini   <- 1;
 remove_pr       <- 0.0;
-lambda          <- 0.6;
+lambda          <- 0.9;
 
 # Set the landscape
 LANDSCAPE_r  <- make_landscape( model      = pop_model, 
@@ -53,7 +53,7 @@ starting_resources <- make_resource( model              = pop_model,
 AGENTS   <- make_agents( model        = pop_model,
                          agent_number = 2,
                          type_counts  = c(1,1),
-                         vision       = 10,
+                         vision       = 20,
                          rows         = land_dim_1,
                          cols         = land_dim_2,
                          move         = 50 # Make sure <= landscape dims
@@ -73,7 +73,7 @@ parameters <- c(time,    # 0. The dynamic time step for each function to use
                 cells,   # 5. Carrying capacity for birth (-1 = unregulated)
                 400,     # 6. Carrying capacity for death (-1 = unregulated)
                 0,       # 7. The type of AGENT doing the observations
-                0,       # 8. The type of observing done for estimating pop.
+                2,       # 8. The type of observing done for estimating pop.
                 1,       # 9. The type of resource observed (note: dynamic)
                 0,       # 10. Fix mark? Do observers mark exactly n resources?
                 0,       # 11. Times resources observed during one time step
@@ -112,7 +112,7 @@ while(time < time_max){
                                     samp_age   = 1,      # Minimum resource age
                                     agent_type = 0,      # Agent type
                                     type_cat   = 1,      # Type category (row)
-                                    obs_method = 2,      # How res are observed
+                                    obs_method = 0,      # How res are observed
                                     move_res   = TRUE    # Do resources move
                                     );
    
@@ -138,6 +138,7 @@ while(time < time_max){
 
 proc_end <- proc.time();
 
+print(proc_end - proc_start);
 
 res_columns <- c("Resource_ID",
                  "Resource_type_1",
