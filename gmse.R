@@ -112,7 +112,7 @@ while(time < time_max){
                                     samp_age   = 1,      # Minimum resource age
                                     agent_type = 0,      # Agent type
                                     type_cat   = 1,      # Type category (row)
-                                    obs_method = 3,      # How res are observed
+                                    obs_method = 0,      # How res are observed
                                     move_res   = TRUE    # Do resources move
                                     );
    

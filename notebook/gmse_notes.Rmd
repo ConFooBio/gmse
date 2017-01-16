@@ -39,6 +39,7 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - [16 JAN 2017](#u-16-JAN-2017)
  - [15 JAN 2017](#u-15-JAN-2017)
  - [13 JAN 2017](#u-13-JAN-2017)
  - [11 JAN 2017](#u-11-JAN-2017)
@@ -65,6 +66,23 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-16-JAN-2017">Update: 16 JAN 2017</a>
+
+**RESOLVED ISSUE 6: Sampling ability with agent number** This issue has been resolved to my satisfaction. I did this using the second option of addressing it. Now for `case 3` in which blocks of the landscape are iteratively sampled (and resources potentially move in between iterations), a `transect_eff` defining transect efficiency is set as equal to the number of observing agents (`working_agents`). The `transect_eff` is a counter, which, after it has counted down to zero, will permit resource movement. Hence, if there is only one agent observing, `transect_eff` hits zero and movement happens after every iteration; if there are two agents observing, then `transect_eff` hits zero after two iterations, then movement occurs and `transect_eff` is reset to `working_agents`.
+
+
+**RESOLVED ISSUE 8: Clear up method sampling type in observation model** This issue has been resolved, albeit with cases in a different order than suggested (the original suggestion, it turns out, was not ideal). Cases are now:
+
+ 0: Sampling with a range of view (i.e., don't rely on the fix_mark > 0 for switching methods)
+ 1. Sampling `fix_mark` times randomly on the landscape.
+ 2. Linear transect
+ 3. Square transect
+
+Of course, there is always room for more, but these are now four clear observation methods. Separating `case 0` from `case 1` is especially useful now. Now the variable `fix_mark` is just ignored for all cases except 1. In the code, both `case 0` and `case 1` still look similar, and both dig deep through `mark_res` and `field_work` functions to differentiate between observation methods, but I don't think that this is necessarily a bad thing -- a different argument to `mark_res` differentiates them now, at least, in the `observation` function, so it's not too difficult to trace through what is going on. Note that both cases 0 and 1 add a new column for each `times_obs`, which isn't done for the transect methods.
+
+**The specially created branch `fix_home_bug` has been merged. I will keep it alive for a while before removing it entirely.**
+
 
 > <a name="u-15-JAN-2017">Update: 15 JAN 2017</a>
 
