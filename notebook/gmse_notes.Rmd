@@ -83,6 +83,8 @@ Of course, there is always room for more, but these are now four clear observati
 
 **The specially created branch `fix_home_bug` has been merged. I will keep it alive for a while before removing it entirely.**
 
+**Update -- 14:33**, after rewriting the `gmse.R` code to make an easier catch-all function, with appropriate analysis, I've noticed that the `binos` function in `observation.c` is defining distance in a way that is no longer *really* compatible with the ponit of `case 0` (i.e., sample a small area and extrapolate based on the density). The `binos` function was looking at the *Euclidean* distance, making, e.g., 3 cells away diagonally farther than 3 cells away left or right (or up or down). This might be useful later, so I'm going to keep it in as an option, but I'm also going to make the default now as *within `view` cells in any direction*, such that a block forms around the focal individual, and diagonal distances are not assumed to be longer than length and width. This is the more common way of simulating things, and it makes movement and observation estimates easier -- I think the only reason to change it back to Euclidean distance would be if we had an actual map and really needed to be precise with the distance of things on it.
+
 
 > <a name="u-15-JAN-2017">Update: 15 JAN 2017</a>
 
