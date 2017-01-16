@@ -26,7 +26,7 @@ time_max        <- 100;
 time            <- 0;
 land_dim_1      <- 100;
 land_dim_2      <- 100;
-movement        <- 1;
+movement        <- 5;
 res_types_ini   <- 1;
 remove_pr       <- 0.0;
 lambda          <- 0.9;
@@ -53,7 +53,7 @@ starting_resources <- make_resource( model              = pop_model,
 AGENTS   <- make_agents( model        = pop_model,
                          agent_number = 2,
                          type_counts  = c(1,1),
-                         vision       = 20,
+                         vision       = 10,
                          rows         = land_dim_1,
                          cols         = land_dim_2,
                          move         = 50 # Make sure <= landscape dims
@@ -73,7 +73,7 @@ parameters <- c(time,    # 0. The dynamic time step for each function to use
                 cells,   # 5. Carrying capacity for birth (-1 = unregulated)
                 400,     # 6. Carrying capacity for death (-1 = unregulated)
                 0,       # 7. The type of AGENT doing the observations
-                2,       # 8. The type of observing done for estimating pop.
+                0,       # 8. The type of observing done for estimating pop.
                 1,       # 9. The type of resource observed (note: dynamic)
                 0,       # 10. Fix mark? Do observers mark exactly n resources?
                 0,       # 11. Times resources observed during one time step
@@ -107,12 +107,12 @@ while(time < time_max){
                                     paras      = parameters,
                                     agent      = AGENTS,
                                     res_type   = 1,      # Resource(s) observed
-                                    fix_mark   = 0,      # Fixed or view-based
-                                    times      = 1,      # Times observed
+                                    fix_mark   = 20,     # Fixed or view-based
+                                    times      = 12,     # Times observed
                                     samp_age   = 1,      # Minimum resource age
                                     agent_type = 0,      # Agent type
                                     type_cat   = 1,      # Type category (row)
-                                    obs_method = 0,      # How res are observed
+                                    obs_method = 3,      # How res are observed
                                     move_res   = TRUE    # Do resources move
                                     );
    
@@ -167,7 +167,7 @@ cmr_estimate <- function(obs, year){
 }
 
 chapman_est <- function(observation, marks = 1, recaptures = 1){
-    mcols  <- seq(from = 15, to = 15 + (marks-1), by = 1);
+    mcols  <- seq(from = 16, to = 16 + (marks-1), by = 1);
     rcols  <- seq(from = max(mcols+1), to = max(mcols+1)+(recaptures-1), by=1);
     if(marks > 1){
         mrked <- apply(X=observation[,mcols], MARGIN = 1, FUN = sum);
