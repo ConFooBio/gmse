@@ -333,11 +333,13 @@ void a_mover(double **agent_moving, int xloc, int yloc, int move_para, int edge,
  *     view:  Distance that an agent can view a resource
  *     xdim:  Dimension of the landscape on the x-axis
  *     ydim:  Dimension of the landscape on the y-axis
+ *     Euc:   Is the distance calculation Euclidean (1) or cells away (0)
  * ========================================================================== */
 int binos(int obs_x, int obs_y, int res_x, int res_y, int edge, int view,
-          int xdim, int ydim){
+          int xdim, int ydim, int Euc){
     
     int see_it;
+    int sq_view;
     double sq_xdist;
     double sq_ydist;
     double min_sq_x;
@@ -347,14 +349,24 @@ int binos(int obs_x, int obs_y, int res_x, int res_y, int edge, int view,
     double distance;
     
     see_it  = 0;
+    sq_view = view * view;
     
     switch(edge){
         case 0:
             sq_xdist = (obs_x - res_x) * (obs_x - res_x);
             sq_ydist = (obs_y - res_y) * (obs_y - res_y);
-            distance = sqrt(sq_xdist + sq_ydist);
-            if(distance <= view){
-                see_it = 1;   
+            switch(Euc){
+                case 1: /* If using Euclidean distance */
+                    distance = sqrt(sq_xdist + sq_ydist);
+                    if(distance <= view){
+                        see_it = 1;    
+                    }
+                    break;
+                default:
+                    if(sq_xdist < sq_view && sq_ydist < sq_view){
+                        see_it = 1;    
+                    }
+                    break;
             }
             break;    
         case 1: /* There's a cleverer way, but probably not a clearer one */
@@ -380,19 +392,27 @@ int binos(int obs_x, int obs_y, int res_x, int res_y, int edge, int view,
                 min_sq_y = y_test;   
             }    
             sq_ydist = min_sq_y; /* Now have the squared x distance on torus */
-            distance = sqrt(sq_xdist + sq_ydist);
-            if(distance <= view){
-                see_it = 1;   
-            }            
+            switch(Euc){
+                case 1: /* If using Euclidean distance */
+                    distance = sqrt(sq_xdist + sq_ydist);
+                    if(distance <= view){
+                        see_it = 1;
+                    }        
+                    break;
+                default:  /* If using the default cells-away distance */
+                    if(sq_xdist <= sq_view && sq_ydist <= sq_view){
+                        see_it = 1;    
+                    }
+                    break;
+            }
             break;
-        default: /* Default assumes no torus */
+        default: /* Default assumes no torus and non-Euclidean */
             sq_xdist = (obs_x - res_x) * (obs_x - res_x);
             sq_ydist = (obs_y - res_y) * (obs_y - res_y);
-            distance = sqrt(sq_xdist + sq_ydist);
-            if(distance <= view){
-                see_it = 1;   
+            if(sq_xdist < sq_view && sq_ydist < sq_view){
+                see_it = 1;    
             }
-            break;    
+            break;      
     }
     
     return see_it;
@@ -430,6 +450,7 @@ void field_work(double **resource_array, double **agent_array, double *paras,
     int count;        /* Index for sampling a fixed number of resource */
     int sampled;      /* The resource randomly sampled */
     int type_num;     /* Number of the type of resource to be fixed sampled */
+    int EucD;         /* Is vision based on Euclidean distance? */
     double sampl;     /* Random uniform sampling of a resource */
     double min_age;   /* Minimum at which sampling can occur */
     
@@ -439,6 +460,7 @@ void field_work(double **resource_array, double **agent_array, double *paras,
     edge  = (int) paras[1];
     ldx   = (int) paras[12];
     ldy   = (int) paras[13];
+    EucD  = (int) paras[20];
     
     min_age = paras[16];
     
@@ -449,7 +471,8 @@ void field_work(double **resource_array, double **agent_array, double *paras,
                    resource_array[resource][11] >= min_age){
                     r_x   = resource_array[resource][4];
                     r_y   = resource_array[resource][5];
-                    seeme = binos(xloc, yloc, r_x, r_y, edge, view, ldx, ldy);
+                    seeme = binos(xloc, yloc, r_x, r_y, edge, view, ldx, ldy, 
+                                  EucD);
                     agent_array[worker][10]           += seeme;
                     resource_array[resource][obs_col] += seeme;
                     resource_array[resource][12]      += seeme;
@@ -507,7 +530,8 @@ void field_work(double **resource_array, double **agent_array, double *paras,
                    resource_array[resource][11] >= min_age){
                     r_x = resource_array[resource][4];
                     r_y = resource_array[resource][5];
-                    seeme = binos(xloc, yloc, r_x, r_y, edge, view, ldx, ldy);
+                    seeme = binos(xloc, yloc, r_x, r_y, edge, view, ldx, ldy,
+                                  EucD);
                     agent_array[worker][10]           += seeme;
                     resource_array[resource][12]      += seeme;
                     resource_array[resource][obs_col] += seeme;
@@ -778,12 +802,12 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
             while(times_obs > 0){
                 mark_res(resource_array, agent_array, land, paras, res_number, 
                          agent_number, res_type, obs_iter, a_type, by_type, 0);
+                obs_iter++;
+                times_obs--;
                 if(move_res == 1){ /* Move resources if need for new sample */
                     res_mover(resource_array, 4, 5, 6, res_number, edge_type, 
                               land, land_x, land_y, move_type); 
                 }
-                obs_iter++;
-                times_obs--;
             }
             break;
         case 1: /* Sample fixed_sample resources randomly on landscape */
@@ -797,12 +821,12 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
             while(times_obs > 0){
                 mark_res(resource_array, agent_array, land, paras, res_number, 
                          agent_number, res_type, obs_iter, a_type, by_type, 1);
+                obs_iter++;
+                times_obs--;
                 if(move_res == 1){ /* Move resources if need for new sample */
                     res_mover(resource_array, 4, 5, 6, res_number, edge_type, 
                               land, land_x, land_y, move_type); 
                 }
-                obs_iter++;
-                times_obs--;
             }
             break;            
         case 2: /* Sample along a linear (y-axis) transect of all rows */
@@ -885,12 +909,12 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
             while(times_obs > 0){
                 mark_res(resource_array, agent_array, land, paras, res_number, 
                          agent_number, res_type, obs_iter, a_type, by_type, 0);
+                obs_iter++;
+                times_obs--; /* Then move agents if need be for new sample */ 
                 if(move_res == 1){
                     res_mover(resource_array, 4, 5, 6, res_number, edge_type, 
                               land, land_x, land_y, move_type); 
                 }
-                obs_iter++;
-                times_obs--; /* Then move agents if need be for new sample */                
             }
         break;
     }
@@ -1005,6 +1029,7 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int min_age;             /* Minimum age of resources viewed (default = 1) */
     int view;                /* How far an agent views resources (dynamic) */
     int edge;                /* Type of edge modelled on the landscape */
+    int EucD;                /* Is an agent viewing by Euclidean distance */
     int a_x;                 /* Agent's x location */
     int a_y;                 /* Agent's y location */
     int r_x;                 /* Resource x location */
@@ -1102,6 +1127,7 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     min_age      = (int) paras[16]; /* Minimum age of resources viewed        */
     by_type_a    = (int) paras[17]; /* Category (column) of agent type loc    */
     rec_col      = (int) paras[18]; /* Column where viewed resources recorded */
+    EucD         = (int) paras[20]; /* Do individuals view by Euclidean dist  */
     
     for(agent = 0; agent < agent_number; agent++){
         seeit    = 0;     /* Start with an agent not seeing anything */
@@ -1119,7 +1145,8 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
                 r_x   = (int) resource_array[resource][4];
                 r_y   = (int) resource_array[resource][5];
                 view  = (int) agent_array[agent][8];
-                seeit += binos(a_x, a_y, r_x, r_y, edge, view, land_x, land_y);
+                seeit += binos(a_x, a_y, r_x, r_y, edge, view, land_x, land_y,
+                               EucD);
                 agent_array[agent][rec_col] = seeit;
             }
         }
