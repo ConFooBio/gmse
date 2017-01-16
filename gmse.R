@@ -17,32 +17,41 @@ source("R/resource.R");
 source("R/observation.R");
 source("R/anecdotal.R");
 
+
+################################################################################
+
+gmse( observe_type = 3,
+      agent_view   = 10,
+      res_death_K  = 800,
+      plotting     = TRUE
+);
+
 ################################################################################
 # PRIMARY FUNCTION (gmse) FOR RUNNING A SIMULATION
 # NOTE: RELIES ON SOME OTHER FUNCTIONS BELOW: MIGHT WANT TO READ WHOLE FILE
 ################################################################################
-gmse <- function( time_max       = 100,
-                  land_dim_1     = 100,
-                  land_dim_2     = 100,
-                  res_movement   = 5,
-                  remove_pr      = 0.0,
-                  lambda         = 0.9,
-                  agent_view     = 10,
-                  agent_move     = 50,
-                  res_birth_K    = 10000,
-                  res_death_K    = 400,
-                  edge_effect    = 1,
-                  res_move_type  = 2,
-                  res_birth_type = 2,
-                  res_death_type = 2,
-                  observe_type   = 0,
-                  fixed_observe  = 1,
-                  times_observe  = 1,
-                  obs_move_type  = 1,
-                  res_min_age    = 1,
-                  res_move_obs   = TRUE,
-                  Euclidean_dist = FALSE
-                  
+gmse <- function( time_max       = 100,   # Max number of time steps in sim
+                  land_dim_1     = 100,   # x dimension of the landscape
+                  land_dim_2     = 100,   # y dimension of the landscape
+                  res_movement   = 1,     # How far do resources move
+                  remove_pr      = 0.0,   # Density independent resource death
+                  lambda         = 0.9,   # Resource growth rate
+                  agent_view     = 10,    # Number cells agent view around them
+                  agent_move     = 50,    # Number cells agent can move
+                  res_birth_K    = 10000, # Carrying capacity applied to birth
+                  res_death_K    = 400,   # Carrying capacity applied to death
+                  edge_effect    = 1,     # What type of edge on the landscape
+                  res_move_type  = 2,     # What type of movement for resources
+                  res_birth_type = 2,     # What type of birth for resources
+                  res_death_type = 2,     # What type of death for resources
+                  observe_type   = 0,     # Type of observation used
+                  fixed_observe  = 1,     # How many obs (if type = 1)
+                  times_observe  = 1,     # How many times obs (if type = 0)
+                  obs_move_type  = 1,     # Type of movement for agents
+                  res_min_age    = 1,     # Minimum age recorded and observed
+                  res_move_obs   = TRUE,  # Move resources while observing
+                  Euclidean_dist = FALSE, # Use Euclidean distance in view
+                  plotting       = TRUE   # Plot the results
 ){
     pop_model       <- "IBM";
     RESOURCE_ini    <- 100;
@@ -196,6 +205,35 @@ gmse <- function( time_max       = 100,
                         agents      = AGENTS
                         );
     
+    if(plotting == TRUE){
+        if(obt == 0){
+            case01plot(res   = RESOURCE_REC, 
+                       obs   = OBSERVATION_REC, 
+                       land  = LANDSCAPE_r, 
+                       paras = paras, 
+                       view  = agent_view);
+        }
+        if(obt == 1){
+            case01plot(res   = RESOURCE_REC, 
+                       obs   = OBSERVATION_REC, 
+                       land  = LANDSCAPE_r, 
+                       paras = paras);
+        }
+        if(obt == 2){
+            case23plot(res   = RESOURCE_REC, 
+                       obs   = OBSERVATION_REC, 
+                       land  = LANDSCAPE_r, 
+                       paras = paras);
+        }
+        if(obt == 3){
+            case23plot(res   = RESOURCE_REC, 
+                       obs   = OBSERVATION_REC, 
+                       land  = LANDSCAPE_r, 
+                       paras = paras);
+        }
+    }
+
+    
     return(sim_results);
 }
 ################################################################################
@@ -323,7 +361,7 @@ case01plot <- function(res, obs, land, paras, view = NULL){
     gens <- NULL;
     abun <- NULL;
     est  <- NULL;
-    lci  <- NULL;observation
+    lci  <- NULL;
     uci  <- NULL;
     land_cols <- c("#F2F2F2FF", "#ECB176FF", "#000000"); 
     
