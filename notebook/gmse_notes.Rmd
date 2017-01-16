@@ -39,6 +39,7 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - [16 JAN 2017](#u-16-JAN-2017)
  - [15 JAN 2017](#u-15-JAN-2017)
  - [13 JAN 2017](#u-13-JAN-2017)
  - [11 JAN 2017](#u-11-JAN-2017)
@@ -65,6 +66,98 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-16-JAN-2017">Update: 16 JAN 2017</a>
+
+**RESOLVED ISSUE 6: Sampling ability with agent number** This issue has been resolved to my satisfaction. I did this using the second option of addressing it. Now for `case 3` in which blocks of the landscape are iteratively sampled (and resources potentially move in between iterations), a `transect_eff` defining transect efficiency is set as equal to the number of observing agents (`working_agents`). The `transect_eff` is a counter, which, after it has counted down to zero, will permit resource movement. Hence, if there is only one agent observing, `transect_eff` hits zero and movement happens after every iteration; if there are two agents observing, then `transect_eff` hits zero after two iterations, then movement occurs and `transect_eff` is reset to `working_agents`.
+
+**RESOLVED ISSUE 8: Clear up method sampling type in observation model** This issue has been resolved, albeit with cases in a different order than suggested (the original suggestion, it turns out, was not ideal). Cases are now:
+
+ 0: Sampling with a range of view (i.e., don't rely on the fix_mark > 0 for switching methods)
+ 1. Sampling `fix_mark` times randomly on the landscape.
+ 2. Linear transect
+ 3. Square transect
+
+Of course, there is always room for more, but these are now four clear observation methods. Separating `case 0` from `case 1` is especially useful now. Now the variable `fix_mark` is just ignored for all cases except 1. In the code, both `case 0` and `case 1` still look similar, and both dig deep through `mark_res` and `field_work` functions to differentiate between observation methods, but I don't think that this is necessarily a bad thing -- a different argument to `mark_res` differentiates them now, at least, in the `observation` function, so it's not too difficult to trace through what is going on. Note that both cases 0 and 1 add a new column for each `times_obs`, which isn't done for the transect methods.
+
+**The specially created branch `fix_home_bug` has been merged. I will keep it alive for a while before removing it entirely.**
+
+**Update -- 14:33**, after rewriting the `gmse.R` code to make an easier catch-all function, with appropriate analysis, I've noticed that the `binos` function in `observation.c` is defining distance in a way that is no longer *really* compatible with the ponit of `case 0` (i.e., sample a small area and extrapolate based on the density). The `binos` function was looking at the *Euclidean* distance, making, e.g., 3 cells away diagonally farther than 3 cells away left or right (or up or down). This might be useful later, so I'm going to keep it in as an option, but I'm also going to make the default now as *within `view` cells in any direction*, such that a block forms around the focal individual, and diagonal distances are not assumed to be longer than length and width. This is the more common way of simulating things, and it makes movement and observation estimates easier -- I think the only reason to change it back to Euclidean distance would be if we had an actual map and really needed to be precise with the distance of things on it.
+
+**I have also simplified the master R file `gmse.R` to allow for one function to do all of the work, using several default options for simulations.** Below, the main `gmse()` function is shown with its default values.
+
+```
+################################################################################
+# PRIMARY FUNCTION (gmse) FOR RUNNING A SIMULATION
+# NOTE: RELIES ON SOME OTHER FUNCTIONS BELOW: MIGHT WANT TO READ WHOLE FILE
+################################################################################
+gmse <- function( time_max       = 100,   # Max number of time steps in sim
+                  land_dim_1     = 100,   # x dimension of the landscape
+                  land_dim_2     = 100,   # y dimension of the landscape
+                  res_movement   = 1,     # How far do resources move
+                  remove_pr      = 0.0,   # Density independent resource death
+                  lambda         = 0.9,   # Resource growth rate
+                  agent_view     = 10,    # Number cells agent view around them
+                  agent_move     = 50,    # Number cells agent can move
+                  res_birth_K    = 10000, # Carrying capacity applied to birth
+                  res_death_K    = 400,   # Carrying capacity applied to death
+                  edge_effect    = 1,     # What type of edge on the landscape
+                  res_move_type  = 2,     # What type of movement for resources
+                  res_birth_type = 2,     # What type of birth for resources
+                  res_death_type = 2,     # What type of death for resources
+                  observe_type   = 0,     # Type of observation used
+                  fixed_observe  = 1,     # How many obs (if type = 1)
+                  times_observe  = 1,     # How many times obs (if type = 0)
+                  obs_move_type  = 1,     # Type of movement for agents
+                  res_min_age    = 1,     # Minimum age recorded and observed
+                  res_move_obs   = TRUE,  # Move resources while observing
+                  Euclidean_dist = FALSE, # Use Euclidean distance in view
+                  plotting       = TRUE   # Plot the results
+){}
+```
+
+Using the function defined above, with most parameters set to default values, I looked at the four different observation types below given the following parameters.
+
+```
+# A: Sample of a 10 by 10 region to estimate density
+# Simulation time: 1.8 seconds
+gmse( observe_type = 0,
+      agent_view   = 10,
+      res_death_K  = 800,
+      plotting     = TRUE
+    );
+
+# B: Mark 30 resources 4 times, recapture 30 4 times
+# Simulation time: 2.1 seconds
+gmse( observe_type  = 1,
+      fixed_observe = 30,
+      times_observe = 8,
+      res_death_K   = 800,
+      plotting      = TRUE
+    );
+
+# C: Sample agent_view rows at a time -- all across
+# Simulation time: 2.3 seconds
+gmse( observe_type = 2,
+      agent_view   = 10,
+      res_death_K  = 800,
+      plotting     = TRUE
+);
+
+# D: Sample agent_view rows at a time -- all across
+# Simulation time: 6.5 seconds
+gmse( observe_type = 3,
+      agent_view   = 10,
+      res_death_K  = 800,
+      plotting     = TRUE
+);
+```
+
+These four simulations A-D, which had identical populations models and similar observation modes, produced the four graphs below.
+
+![*Figure above shows four different observation types as applied to the same population model: (A) observation type 0 (sample a random region and then extrapolate population size by calculating density), (B) Mark and recapture individuals and estimate population size using a Chapman estimator, (C) sample along a linear transect while resources can move while sampling, and (D) sample blocks where resources can move while sampling*](images/16-01-2017_obs_types.png)
+
+**Overall, these simulations have been stable throughout testing, and I am (finally) merging the `dev` branch to `master`, pushing to GitHub, and declaring this `v0.0.5`.**
 
 > <a name="u-15-JAN-2017">Update: 15 JAN 2017</a>
 
