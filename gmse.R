@@ -26,7 +26,7 @@ time_max        <- 100;
 time            <- 0;
 land_dim_1      <- 100;
 land_dim_2      <- 100;
-movement        <- 1;
+movement        <- 5;
 res_types_ini   <- 1;
 remove_pr       <- 0.0;
 lambda          <- 0.9;
@@ -53,7 +53,7 @@ starting_resources <- make_resource( model              = pop_model,
 AGENTS   <- make_agents( model        = pop_model,
                          agent_number = 2,
                          type_counts  = c(1,1),
-                         vision       = 20,
+                         vision       = 10,
                          rows         = land_dim_1,
                          cols         = land_dim_2,
                          move         = 50 # Make sure <= landscape dims
@@ -107,7 +107,7 @@ while(time < time_max){
                                     paras      = parameters,
                                     agent      = AGENTS,
                                     res_type   = 1,      # Resource(s) observed
-                                    fix_mark   = 20,      # Fixed or view-based
+                                    fix_mark   = 20,     # Fixed or view-based
                                     times      = 12,     # Times observed
                                     samp_age   = 1,      # Minimum resource age
                                     agent_type = 0,      # Agent type
