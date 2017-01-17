@@ -39,6 +39,7 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - [17 JAN 2017](#u-17-JAN-2017)
  - [16 JAN 2017](#u-16-JAN-2017)
  - [15 JAN 2017](#u-15-JAN-2017)
  - [13 JAN 2017](#u-13-JAN-2017)
@@ -66,6 +67,152 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-17-JAN-2017">Update: 17 JAN 2017</a>
+
+**NEW ISSUE 9: Observation Error** It would be useful to incorporate observation error into the simulations more directly. This could be affected by one or more variables attached to each agent, which would potentially cause the mis-identification (e.g., incorrect return of `seeme`) or mis-labelling (incorrect traits read into the observation array) of resources. This could be done in either of two ways:
+
+ 1. Cause the errors to happen in 'real time' -- that is, while the observations are happening in the simulation. This would probably be slightly inefficient, but have the benefit of being able to assign errors specifically to agents more directly.
+
+ 2. Wait until the `resource_array` is marked in the `observation` function, then introduce errors to the array itself, including errors to whether or not resources are recorded and what their trait values are. These errors would then be read into the `obs_array`, which is returned by the function.
+ 
+**NEW ISSUE 10: Multiple resource**
+ 
+The resource-wide parameter values (e.g., carrying capacities, movement types) will need to be either:
+
+ 1. Defined at the individual scale so that each individual resource has it's own value which can then be called in the `resource` function as necessary, and/or
+ 2. Input as vector in the base `gmse` function, the length of which could determine how many times `resource` is called in one time step (one for each type of resource, potentially, if carrying capacity is type specific -- or carrying capacity could be applied within a type in c -- perhaps more efficient, but would require to read in multiple `K` somehow, either through the `paras` vector or in the `resources` array -- or something else. How to do this best will need to consider both computational efficiency and clarity/ease of coding.
+
+Note that:
+
+ - `res_remove` can already be called in a type-specific way by `resource`, so it might just be better to call `resource` once and somehow input variable numbers of `K` into c. I'll need to think more about this, but it could be something like assigning each individual a competition coefficient `alpha` for how it is affected by each other type of individual. Intra-type competition could then be modelled generally, with `K` defined by its inverse. Meanwhile, inter-type competition coefficients could also be useful. 
+
+ - Along these lines, it's also worth considering an option allowing only one resource per cell (equating to a local `alpha` and `K` of one). This might be worth making its own issue later.
+
+ - If we were to call `resource` multiple times, we would also need to `paste` arrays together in `R`. This wouldn't be terrible, but it could lose some efficiency unnecessarily, and I don't see the benefit.
+ 
+**MEMORY LEAK CHECK OF R CODE**
+
+I have tried running simulations at very high population sizes (>100000) to see how the simulation would react. Upon seeing quite a bit of memory being used up, I ran the following `valgrind` command:
+
+```
+R -d "valgrind --tool=memcheck --leak-check=yes" --vanilla < gmse.R
+```
+
+The program `valgrind` found a lot of large memory allocations and deallocations (as expected):
+
+```
+Warning: set address range perms: large range
+```
+
+The leak summary was as follows:
+
+```
+==14507== LEAK SUMMARY:
+==14507==    definitely lost: 133,373,728 bytes in 469 blocks
+==14507==    indirectly lost: 11,472,512 bytes in 55 blocks
+==14507==      possibly lost: 120,863,992 bytes in 563 blocks
+==14507==    still reachable: 2,319,742,586 bytes in 12,127 blocks
+==14507==         suppressed: 0 bytes in 0 blocks
+==14507== Reachable blocks (those to which a pointer was found) are not shown.
+==14507== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==14507== 
+==14507== For counts of detected and suppressed errors, rerun with: -v
+```
+
+If we shift to look only at one run of the `resource` model, which is run in the new script `scratch.R`, we get:
+
+```
+==14689== LEAK SUMMARY:
+==14689==    definitely lost: 3,584 bytes in 4 blocks
+==14689==    indirectly lost: 0 bytes in 0 blocks
+==14689==      possibly lost: 0 bytes in 0 blocks
+==14689==    still reachable: 28,837,506 bytes in 13,346 blocks
+==14689==         suppressed: 0 bytes in 0 blocks
+==14689== Reachable blocks (those to which a pointer was found) are not shown.
+==14689== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+```
+ 
+And if we include one run of the observation model too, we get:
+
+```
+==14721== LEAK SUMMARY:
+==14721==    definitely lost: 6,296 bytes in 8 blocks
+==14721==    indirectly lost: 0 bytes in 0 blocks
+==14721==      possibly lost: 0 bytes in 0 blocks
+==14721==    still reachable: 28,948,434 bytes in 13,355 blocks
+==14721==         suppressed: 0 bytes in 0 blocks
+==14721== Reachable blocks (those to which a pointer was found) are not shown.
+==14721== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+```
+ 
+A bit more worrisome, if I run an old R script (a [simple individual-based model](https://github.com/bradduthie/EcoEdu/blob/master/Eco_Mod_IBM.R)), I get the following
+
+```
+==15050== LEAK SUMMARY:
+==15050==    definitely lost: 0 bytes in 0 blocks
+==15050==    indirectly lost: 0 bytes in 0 blocks
+==15050==      possibly lost: 0 bytes in 0 blocks
+==15050==    still reachable: 36,846,063 bytes in 15,996 blocks
+==15050==         suppressed: 0 bytes in 0 blocks
+==15050== Reachable blocks (those to which a pointer was found) are not shown.
+```
+
+Originally, I feared that this might suggest a problem with my c code, or its call to R. All the memory allocated appears to be freed though. Some [searching online](http://kevinushey.github.io/blog/2015/04/05/debugging-with-valgrind/) suggests that `valgrind` is not always perfect on this front.
+ 
+> ''You may be surprised to see that valgrind believes that R has leaked memory - unfortunately, it is not perfect, and in this particular case the memory is not so much 'leaked' as it is 'cached for the duration of that R session', and valgrind fails to detect that 'ownership' of a particular block of memory is transfered.''
+
+This is likely what happened (given the original warning). In fact, if we run `valgrind` and try to track the origin of the leak with `--track-origins=yes`, it complains in exactly the this way -- about memory that is allocated but definitely freed:
+
+```
+R -d "valgrind --tool=memcheck --leak-check=yes --track-origins=yes" --vanilla < scratch.R
+```
+
+Below, for example, `valgrind` is complaining about line 468 in the `resource.c` file:
+
+```
+==15171== 1,560 bytes in 1 blocks are definitely lost in loss record 165 of 1,867
+==15171==    at 0x4C2DB8F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==15171==    by 0xC2959DE: resource (resource.c:468)
+==15171==    by 0x4F0A57F: ??? (in /usr/lib/R/lib/libR.so)
+==15171==    by 0x4F4272E: Rf_eval (in /usr/lib/R/lib/libR.so)
+==15171==    by 0x4F44E47: ??? (in /usr/lib/R/lib/libR.so)
+==15171==    by 0x4F42520: Rf_eval (in /usr/lib/R/lib/libR.so)
+==15171==    by 0x4F43DDC: Rf_applyClosure (in /usr/lib/R/lib/libR.so)
+==15171==    by 0x4F422FC: Rf_eval (in /usr/lib/R/lib/libR.so)
+==15171==    by 0x4F45FB5: ??? (in /usr/lib/R/lib/libR.so)
+==15171==    by 0x4F42520: Rf_eval (in /usr/lib/R/lib/libR.so)
+==15171==    by 0x4F44E47: ??? (in /usr/lib/R/lib/libR.so)
+==15171==    by 0x4F42520: Rf_eval (in /usr/lib/R/lib/libR.so)
+```
+
+This line allocates memory for the `res_new` array:
+
+```
+res_new = malloc(res_num_total * sizeof(double *));
+for(resource = 0; resource < res_num_total; resource++){
+    res_new[resource] = malloc(trait_number * sizeof(double));   
+}    
+```
+
+**This appeared to be have been freed correctly, but on inspection, each `malloc` to an array was missing a correspondnig free** I have fixed this (with thanks to [this](http://stackoverflow.com/questions/1733881/c-correctly-freeing-memory-of-a-multi-dimensional-array) StackOverflow thread), and now the entire `gmse.R` program produces the follow `valgrind` output:
+
+```
+==15405== LEAK SUMMARY:
+==15405==    definitely lost: 0 bytes in 0 blocks
+==15405==    indirectly lost: 0 bytes in 0 blocks
+==15405==      possibly lost: 0 bytes in 0 blocks
+==15405==    still reachable: 1,544,824,322 bytes in 12,119 blocks
+==15405==         suppressed: 0 bytes in 0 blocks
+```
+
+> **CONCLUSION** MEMORY LEAK HAS BEEN IDENTIFIED AND FIXED
+
+While this wasn't a huge deal for small scale simulations, for simulations with huge arrays caused by large population sizes, this would have made a difference. The code has therefore been corrected and pushed to `dev`. 
+
+With all of this in mind, it is worth thinking about the R side of memory management as it becomes more relevant (see [R memory management advice](http://adv-r.had.co.nz/memory.html)). It might be worth switching to a list structure for input and output so that entire frames are not copied for each operation (which I assume R is doing for the `rbind()` function). It might also be worth thinking about running `rm()` and `gc()` in tandem to release memory during the major loop -- or also getting rid of some components of the data frame on the fly. The `gmse.R` program could potentially switch from a `list` to an `array` after the major simulation loop finishes and plotting or returning the array is necessary.
+
+It appears that [I'm correct](http://biostat.mc.vanderbilt.edu/wiki/pub/Main/SvetlanaEdenRFiles/handouts.pdf) regarding the use of `rbind()` (or `c()` or `cbind()`) -- these are terribly inefficient with respect to what's happening under the hood when R calls C (or C++). I've downloaded [Svetlana Eden's](http://biostat.mc.vanderbilt.edu/wiki/Main/SvetlanaEden) [Efficiency tips for basic R loop](http://biostat.mc.vanderbilt.edu/wiki/pub/Main/SvetlanaEdenRFiles/handouts.pdf), which might be a useful reference when working on the R side of optimisation. The `rbinds` really show be avoided, if possible. One way to do this, if nothing else, would be to write to a file instead of `cbind` (not sure if this would be helpful for a shiny app). [StackOverflow](http://stackoverflow.com/questions/15673550/why-is-rbindlist-better-than-rbind) suggests using `rbindlist`, but this would introduce dependencies that I'd prefer to avoid. **In the end, it might be worth it to just write a quick `add_data.c` script in c for the sole purpose of joining old and new arrays.** Alteratively, this might not be so important -- in the end, it might not even be necessary to record the entire observation history; at least, not in the way it's currently being done. The history might instead only record a few key things from each time period.
 
 > <a name="u-16-JAN-2017">Update: 16 JAN 2017</a>
 
