@@ -39,6 +39,7 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - [17 JAN 2017](#u-17-JAN-2017)
  - [16 JAN 2017](#u-16-JAN-2017)
  - [15 JAN 2017](#u-15-JAN-2017)
  - [13 JAN 2017](#u-13-JAN-2017)
@@ -66,6 +67,30 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-17-JAN-2017">Update: 16 JAN 2017</a>
+
+**NEW ISSUE 9: Observation Error** It would be useful to incorporate observation error into the simulations more directly. This could be affected by one or more variables attached to each agent, which would potentially cause the mis-identification (e.g., incorrect return of `seeme`) or mis-labelling (incorrect traits read into the observation array) of resources. This could be done in either of two ways:
+
+ 1. Cause the errors to happen in 'real time' -- that is, while the observations are happening in the simulation. This would probably be slightly inefficient, but have the benefit of being able to assign errors specifically to agents more directly.
+
+ 2. Wait until the `resource_array` is marked in the `observation` function, then introduce errors to the array itself, including errors to whether or not resources are recorded and what their trait values are. These errors would then be read into the `obs_array`, which is returned by the function.
+ 
+**NEW ISSUE 10: Multiple resource**
+ 
+The resource-wide parameter values (e.g., carrying capacities, movement types) will need to be either:
+
+ 1. Defined at the individual scale so that each individual resource has it's own value which can then be called in the `resource` function as necessary, and/or
+ 2. Input as vector in the base `gmse` function, the length of which could determine how many times `resource` is called in one time step (one for each type of resource, potentially, if carrying capacity is type specific -- or carrying capacity could be applied within a type in c -- perhaps more efficient, but would require to read in multiple `K` somehow, either through the `paras` vector or in the `resources` array -- or something else. How to do this best will need to consider both computational efficiency and clarity/ease of coding.
+
+Note that:
+
+ - `res_remove` can already be called in a type-specific way by `resource`, so it might just be better to call `resource` once and somehow input variable numbers of `K` into c. I'll need to think more about this, but it could be something like assigning each individual a competition coefficient `alpha` for how it is affected by each other type of individual. Intra-type competition could then be modelled generally, with `K` defined by its inverse. Meanwhile, inter-type competition coefficients could also be useful. 
+
+ - Along these lines, it's also worth considering an option allowing only one resource per cell (equating to a local `alpha` and `K` of one). This might be worth making its own issue later.
+
+ - If we were to call `resource` multiple times, we would also need to `paste` arrays together in `R`. This wouldn't be terrible, but it could lose some efficiency unnecessarily, and I don't see the benefit.
+ 
 
 > <a name="u-16-JAN-2017">Update: 16 JAN 2017</a>
 
@@ -302,7 +327,7 @@ The function `field_work` simulates the process of an agent looking for and tagg
 There are multiple ways to interpret the observation results. Examples of this are as follows (for now, I'm assuming that there is one observer, but we can substitute the below with any number of observers):
 
  - Have the observer tag every resource within their range of vision some number of times; take the average of number of resources tagged per time as an estimate of population density.
- - Have the observer tag every resource within their range of vision some fixed number of times, but then interpret some of those times as *marks* and others as *recaptures*. Uneven times for marking and recapturing could be interpreted as different investment in each procedure (e.g., go out and mark at 3 different locations, then recapture at 9 locations). Unique marked and recaptured individuals can be summed to estimate population size using capture-mark-recapture techniques. Currently, there is some code in R simulating a [Lincoln-Petersen](https://en.wikipedia.org/wiki/Mark_and_recapture#Lincoln.E2.80.93Petersen_estimator) estimator of mark-recapture with a [Chapman correction](https://en.wikipedia.org/wiki/Mark_and_recapture#Chapman_estimator) for small sample size [see @Pollock1990]. It would be useful to add some other estimatores (e.g., Bayesian).
+ - Have the observer tag every resource within their range of vision some fixed number of times, but then interpret some of those times as *marks* and others as *recaptures*. Uneven times for marking and recapturing could be interpreted as different investment in each procedure (e.g., go out and mark at 3 different locations, then recapture at 9 locations). Unique marked and recaptured individuals can be summed to estimate population size using capture-mark-recapture techniques. Currently, there is some code in R simulating a [Lincoln-Petersen](https://en.wikipedia.org/wiki/Mark_and_recapture#Lincoln.E2.80.93Petersen_estimator) estimator of mark-recapture with a [Chapman correction](https://en.wikipedia.org/wiki/Mark_and_recapture#Chapman_estimator) for small sample size [see @Pollock2016]. It would be useful to add some other estimatores (e.g., Bayesian).
  - Have the observer sample a fixed number of resources on the landscape some number of times (*not spatial -- resources are just randomly taken*). Interpret one or more of these samples as markings, and one or more as recaptures. Then, use these data to estimate population size using some technique such as mark-recapture estimation. This is the technique used in the [figure](#u-10-JAN-2017) shown above.
  - Note, because observation arrays are stored by R, population size estimation can span multiple time steps (e.g., mark one year, recapture the next -- though some individuals might die in the intervening period)
  
