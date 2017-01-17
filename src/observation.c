@@ -972,16 +972,20 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     /* Free all of the allocated memory used in arrays */
     for(resource = 0; resource < new_obs; resource++){
         free(obs_array[resource]);
-    }    
+    }
+    free(obs_array);
     for(agent = 0; agent < agent_number; agent++){
         free(agent_array[agent]);
-    }    
+    }
+    free(agent_array);
     for(xloc = 0; xloc < land_x; xloc++){
         free(land[xloc]);        
     }
+    free(land);
     for(resource = 0; resource < res_number; resource++){
         free(resource_array[resource]);
-    } 
+    }
+    free(resource_array);
 
     return(NEW_OBSERVATIONS); 
 }
@@ -1174,13 +1178,16 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     /* Free all of the allocated memory used in arrays */
     for(agent = 0; agent < agent_number; agent++){
         free(agent_array[agent]);
-    }    
+    }
+    free(agent_array);
     for(xloc = 0; xloc < land_x; xloc++){
         free(land[xloc]);        
     }
+    free(land);
     for(resource = 0; resource < res_number; resource++){
         free(resource_array[resource]);
-    } 
+    }
+    free(resource_array);
     
     return(NEW_AGENT); 
 }

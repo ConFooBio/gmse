@@ -20,11 +20,12 @@ source("R/anecdotal.R");
 
 ################################################################################
 
-gmse( observe_type = 3,
-      agent_view   = 10,
-      res_death_K  = 800,
-      plotting     = TRUE
-);
+# gmse( observe_type = 0,
+#       agent_view   = 10,
+#       res_birth_K  = 100000,
+#       res_death_K  = 8000,
+#       plotting     = FALSE
+# );
 
 ################################################################################
 # PRIMARY FUNCTION (gmse) FOR RUNNING A SIMULATION
@@ -413,3 +414,13 @@ case01plot <- function(res, obs, land, paras, view = NULL){
 }
 
 
+
+################################################################################
+
+gmse( observe_type = 0,
+      agent_view   = 10,
+      res_death_K  = 400,
+      plotting     = FALSE
+);
+
+################################################################################

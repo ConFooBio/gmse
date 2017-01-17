@@ -507,18 +507,22 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     UNPROTECT(protected_n);
     
     /* Free all of the allocated memory used in arrays */
-    for(resource = 0; resource < res_nums_added; resource++){
-        free(res_make[resource]);
-    }
     for(resource = 0; resource < res_num_total; resource++){
         free(res_new[resource]);
     }
+    free(res_new);
+    for(resource = 0; resource < res_nums_added; resource++){
+        free(res_make[resource]);
+    }
+    free(res_make);
     for(xloc = 0; xloc < land_x; xloc++){
         free(land[xloc]);        
-    }    
+    }
+    free(land);
     for(resource = 0; resource < res_number; resource++){
         free(res_old[resource]);
-    }     
+    }
+    free(res_old);
 
     return(RESOURCE_NEW); 
 }
