@@ -39,6 +39,7 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - [18 JAN 2017](#u-18-JAN-2017)
  - [17 JAN 2017](#u-17-JAN-2017)
  - [16 JAN 2017](#u-16-JAN-2017)
  - [15 JAN 2017](#u-15-JAN-2017)
@@ -61,12 +62,30 @@ library(rhandsontable)
 
 [Some side-notes that might be of use](#side)
 
+[Potentially relevant conferences and workshops](#meetings)
+
 [References consulted and annotated (Mendeley)](#ref)
 
 ********************************************************************************
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-18-JAN-2017">Update: 18 JAN 2017</a>
+
+**Some thoughts on the application of game theory**
+
+I'm trying to step back a bit to consider the manager and user models, which will both affect and/or be affected by the game-theoretic component of the model. I've considered how the game-theoretic component will fit into G-MSE [more generally](#soft), and also a bit of how it might be [implemented](#game) and [applied](#gamemod) in the context of stake-holder actions. Overall, this will require three c files to be closely integrated, but the application (perhaps even development, if necessary) of game theory requires a lot of thought. 
+
+The model will be more general if we allow agents to take any number of actions. but the number of games that are possible increases exponentially with the number of different actions that agents can take [@Zeeman1980]. If only two actions are possible (e.g., cooperate and defect), then there are only four types of games that can be played (Prisoner's dilemma, Snowdrift, Anti-coordination, and Harmony). The number of games increases to 20 for three actions and 228 for four actions [@Adami2016]. If we want the software to somehow identify the *type* of game being played -- rather -- if game type identification is to be an essential part of the program, then agent actions will probably need to be limited (there is of course, always the option to identify games iff there are sufficiently few actions). If most conflicts can be described by a small number of types of agents with a small number of types of actions (and this seems reasonable, perhaps, especially if we think of actions qualitatively), then constraining the software to such cases might be preferable (at least, as a starting point). The benefit is that we might then make clearer predictions for management, e.g.: *Right now, stake-holders are playing a Snowdrift game, but by adopting an alternative management decision, they will transition to playing Harmony*. 
+
+This is appealing, but I think it also relies on payoff matrices being [symmetric](https://en.wikipedia.org/wiki/Symmetric_game), meaning that players are distinguished by their strategies and nothing else [@McAvoy2015]. In the types of games that interest us, this almost certainly won't be true. The games we're interested in at ConfooBio will typically be characterised by [uncorrelated asymmetry](https://en.wikipedia.org/wiki/Uncorrelated_asymmetry); that is, situations in which agents know that they are of a certain type and will receive payoffs associated with that type of agent. Hence, the payoff structure might look like a Prisoner's dilemma to one stake-holder, but Harmony to another (i.e., the optimal strategy is always cooperate for one, but always defect for another *because each knows the type of agent that they are and how payoffs differ between types*).
+
+I'm starting to work through these ideas with an initial focus on evolutionary games, as this is the application of game theory with which I'm most familiar, and because I think some of the general developments of evolutionary game theory are probably applicable for our purposes. I'll also need to read more widely into economics and the social sciences, but some recent work by @Adami2016 and @McAvoy2015 seems relevant.
+
+@Adami2016 argue that the optimal strategies predicted by simple mathematical games are unlikely to be very useful for predicting agent actions given the complexities associated with decisions of real-world; such complexity notably includes stochasticity, which applies to games among all kinds of agents from ''microbes to day traders'' [@Adami2016]. Stochasticity can affect the stability of strategies [see also @Adami2013]. If strategies are conditional or based on memory of previous encounters, then the number of `traits` [@Adami2016 assume loci, modelling genetics, but the same applies to agents making decisions] required to model decisions increases rapidly -- 21 total traits are needed for conditional expression of strategy when agents can remember the previous two games. In practice, I suspect that there is some helpful way to simplify this -- perhaps not every detail of the history of interactions and possible conditions really is needed to (or even would be expected to) model stake-holder behaviour. Instead, I suspect that game history could be boiled down into one or two representative variables that, among other things, are likely to influence agent behaviour. Agents are perhaps better to be thought of as modelling stake-holders guided primarily by heuristics rather than optimally rational behaviour? Hence the `agent_array` might better be thought of as containing variables underlying human values and traits *in the context of games* rather than *as solutions to games*. A couple recent and potentially relevant papers on decision rules in complex environments include @Fawcett2014 and @McNamara2014. @Adami2016 conclude that **''[w]hile evolutionary games can be described succinctly in mathematical terms, they can only be solved exactly for the simplest of cases''**. @Adami2016 were specifically considering games in an evolutionary context, but I don't think that their conclusion is limited to evolutionary game theory. In the case of decision making stake-holders, the complexity associated with stochasticity and uncertainty, the possibility of more than two actions and payoffs, and the asymmetry of payoff matrices would all seem to conrtribute to the difficulty or impossibility of solving for exact solutions. Hence, when scenarios are complex in G-MSE (as we probably need them to be), it is unlikely that analytic solutions will be of much use. However, stake-holders won't evolve in the same sense as biological organisms, so some techniques used in evolutionary game theory will be unavailable -- or have to be modified. *It might be worth thinking more about identifying the consequences of practical or observed strategies, or types of strategies, rather than trying to somehow solve for the best strategies*. The [Axelrod experiments](https://en.wikipedia.org/wiki/The_Evolution_of_Cooperation#Axelrod.27s_tournaments) kind of did this before a lot of complex techniques became available to analyse evolutionary games. Users proposed strategies, which were put into a tournament -- the point wasn't so much to *solve* the [iterated Prisoner's dilemma](https://en.wikipedia.org/wiki/Prisoner's_dilemma#The_iterated_prisoner.27s_dilemma) so much as to explore different strategies for playing the game. 
+
+In [this browser app](http://www.iterated-prisoners-dilemma.net/), you can play the iterated prisoner's dilemma against 'Lucifer', an automated agent that response to your decisions.
 
 > <a name="u-17-JAN-2017">Update: 17 JAN 2017</a>
 
@@ -1148,16 +1167,48 @@ legend(x=2.5, y=max(track[,4:5]+15), horiz=TRUE,
 
 We can re-run the code at any point and essentially recreate a run of [Nilsen's MSE](https://github.com/ErlendNilsen/MSEtools) model. The hard work is now to come up with a G-MSE, which will allow for much more individual complexity through an agent-based approach.
 
-
-
 <a name="side">Some side-notes that might be of use</a>
 --------------------------------------------------------------------------------
 
 The [function](https://stat.ethz.ch/R-manual/R-patched/library/base/html/do.call.html) `do.call` in R [apparently](https://www.stat.berkeley.edu/~s133/Docall.html) calls a function and passes the arguments for the function from a list (e.g., if `A` is in a list form, or put in a list form with `list(A)`, then `do.call("f", list(A))` calls the function `f` for every list element in `A`, where individual list elements can be vectors with function arguments). This is a base R function.
 
+<a name="meetings">Potentially relevant conferences and workshops</a>
+--------------------------------------------------------------------------------
+
+**Modelling Biological Evolution 2017: Developing Novel Approaches**
+(topics include: Evolutionary Game Theory and Solving Social Dilemmas)
+http://www.math.le.ac.uk/people/ag153/homepage/MBE_2017/MBE_2017_1.htm
+University of Leicester: 4-5 APR 2017
+1 FEB 2017 register and abstract submission deadline.
+
+**Workshop on behavioural game theory**
+(topic is Pyschological Game Theory)
+https://www.uea.ac.uk/economics/news-and-events/workshop-on-behavioural-game-theory-2017
+University of East Anglia (Norwich): 5-6 JUL 2017
+28 FEB 2017 submission deadline (no workshop fee)
+
+**Game theory and management**
+(topics include: Game theory and management applications, cooperative games and 
+applications, dynamic games and applications, stochastic games and appications)
+http://gsom.spbu.ru/en/gsom/research/conferences/gtm/
+Saint Petersburg University: 28-30 JUN 2017
+
+**6th workshop on stochastic methods in game theory**
+( ''Many decision problems involve elements of uncertainty and of strategy. Most often the two elements cannot be easily disentangled. The aim of this workshop is to examine several aspects of the interaction between strategy and stochastics. Various game theoretic models will be presented, where stochastic elements are particularly relevant either in the formulation of the model itself or in the computation of its solutions.'' Example topics include: Large games and stochastic and dynamic games)
+https://sites.google.com/site/ericegametheory2017/home
+Sicily, Italy: 5-13 MAY 2017
+
+**13 European Meeting on Game Theory (SING13)**
+(topics include: cooperative games and their applications, dynamic games, stochastic games, learning and experimentation in games, computational game theory, game theory applications in fields such as management).
+http://www.lamsade.dauphine.fr/sing13/
+Paris, France: 5-7 JUL 2017
+28 FEB abstract submission deadline
+
 
 <a name="ref">References consulted and annotated (Mendeley)</a>
 -----------------------------------------
+
+Adami, C., Schossau, J., & Hintze, A. (2016). Evolutionary game theory using agent-based methods. Physics of Life Reviews, 19, 1–26. https://doi.org/10.1016/j.plrev.2016.08.015
 
 Bautista, C., Naves, J., Revilla, E., Fernández, N., Albrecht, J., Scharf, A. K., ... Selva, N. (2016). Patterns and correlates of claims for brown bear damage on a continental scale. Journal of Applied Ecology. http://doi.org/10.1111/1365-2664.12708
 
