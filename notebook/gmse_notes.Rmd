@@ -39,6 +39,7 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - [18 JAN 2017](#u-18-JAN-2017)
  - [17 JAN 2017](#u-17-JAN-2017)
  - [16 JAN 2017](#u-16-JAN-2017)
  - [15 JAN 2017](#u-15-JAN-2017)
@@ -67,6 +68,17 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-18-JAN-2017">Update: 18 JAN 2017</a>
+
+I'm trying to step back a bit to consider the manager and user models, which will both affect and/or be affected by the game-theoretic component of the model. I've considered how the game-theoretic component will fit into G-MSE [more generally](#soft), and also a bit of how it might be [implemented](#game) and [applied](#gamemod) in the context of stake-holder actions. Overall, this will require three c files to be closely integrated, but the application (perhaps even development, if necessary) of game theory requires a lot of thought. 
+
+The model will be more general if we allow agents to take any number of actions. but the number of games that are possible increases exponentially with the number of different actions that agents can take [@Zeeman1980]. If only two actions are possible (e.g., cooperate and defect), then there are only four types of games that can be played (Prisoner's dilemma, Snowdrift, Anti-coordination, and Harmony). The number of games increases to 20 for three actions and 228 for four actions [@Adami2016]. If we want the software to somehow identify the *type* of game being played -- rather -- if game type identification is to be an essential part of the program, then agent actions will probably need to be limited (there is of course, always the option to identify games iff there are sufficiently few actions). If most conflicts can be described by a small number of types of agents with a small number of types of actions (and this seems reasonable, perhaps, especially if we think of actions qualitatively), then constraining the software to such cases might be preferable (at least, as a starting point). The benefit is that we might then make clearer predictions for management, e.g.: *Right now, stake-holders are playing a Snowdrift game, but by adopting an alternative management decision, they will transition to playing Harmony*. 
+
+This is appealing, but I think it also relies on payoff matrices being [symmetric](https://en.wikipedia.org/wiki/Symmetric_game), meaning that players are distinguished by their strategies and nothing else [@McAvoy2015]. In the types of games that interest us, this almost certainly won't be true. The games we're interested in at ConfooBio will typically be characterised by [uncorrelated asymmetry](https://en.wikipedia.org/wiki/Uncorrelated_asymmetry); that is, situations in which agents know that they are of a certain type and will receive payoffs associated with that type of agent. Hence, the payoff structure might look like a Prisoner's dilemma to one stake-holder, but Harmony to another (i.e., the optimal strategy is always cooperate for one, but always defect for another *because each knows the type of agent that they are and how payoffs differ between types*).
+
+I'm starting to work through these ideas with an initial focus on evolutionary games, as this is the application of game theory with which I'm most familiar, and because I think some of the general developments of evolutionary game theory are probably applicable for our purposes. I'll also need to read more widely into economics and the social sciences, but some recent work by @Adami2016 and @McAvoy2015 seems relevant.
+
 
 > <a name="u-17-JAN-2017">Update: 17 JAN 2017</a>
 
