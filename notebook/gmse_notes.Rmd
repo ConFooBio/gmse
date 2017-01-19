@@ -72,13 +72,23 @@ library(rhandsontable)
 <a name="updates">Project updates:</a>
 ================================================================================
 
-> <a name="u-19-JAN-2017">Update: 18 JAN 2017</a>
+> <a name="u-19-JAN-2017">Update: 19 JAN 2017</a>
 
 **Some notes on the asymmetric nature of stake-holder games**
 
 Games between stake-holders, modelled by `agents` in G-MSE, are typically, if not always, going to be *asymmatric*. This means that the stake-holders are distinguished by more than their strategies -- they are likely to have their own unique payoffs defined by their identities (e.g., as a conservationist, a farmer, etc.). It would seem as though the only way around this -- if it's even possible -- might be to make identity *part of the game itself*. In other words, let agents attempt to maximise some general payoff *by deciding to take on a particular role*, and then a strategy given their chosen role. It's an interesting thought, but I don't think it makes much sense for the practical application of G-MSE. In the context of the games that we're interested in, stake-holders effectively **are** conservationists, farmers, hunters, etc. (or some mixture of these roles). Hence, I think we need to work with the idea that the games our stake-holders play and that G-MSE will model are going to be asymmetric.
 
-@McAvoy2015 recently pointed out the importance of asymmetry in evolutionary games, noting that **''cooperation may be tied to individual energy or strength, which is, in turn, determined by a player's role''**. This would seem to apply to social-ecological conflicts as well -- cooperation might reasonably tied to the power (economic, political, etc.) of stake-holders, meaning that it might be important to take this into account in G-MSE modelling. For something like Prisoner's dilemma, we can represent an asymmetry using subscripts, so the standard game would be represented by a payoff matrix,
+@MaynardSmith1976 outlined three specfic ways that games might be asymmetric (they were thinking about animal contests, but the general principles apply):
+
+ 1. **Pay-offs asymmetry**: Different players might stand to gain different amounts in the game -- e.g., perhaps mutual cooperation returns a higher benefit for one player than another, or defection on the part of one player has a more negative effect on its opponent than vice versa. 
+ 
+ 2. **Resource asymmetry** Intrinsic difference between players might give one player an inherent advantage, allowing them to dominate in an interaction (i.e., there might not be much of a conflict because one side can always win).
+ 
+ 3. **Uncorrelated asymmetry** Discussed [earlier](#u-18-JAN-2017): @MaynardSmith1976 define this as asymmetries that ''do not affect either the payoffs or the'' resources that might given one player an intrinsic advantage.
+
+The authors offer some general conclusions about asymmetric gains with unequal payoffs, but these are really more about encounters of conflict, and perhaps not so applicabl to G-MSE. They state that, where payoffs are unequal but all parties have access to information, it is best to ''play high when you have more to gain and zero when you have less to gain''. In other words, if there is a lot to gain by sticking it out and fighting hard in an interaction, do it -- if there's not much to gain, then back off. Such contests are the central focus of @MaynardSmith1976, but the general conclusion that ''mixed strategies will be the exception'' when contests are asymmetrical would seem to apply more broadly. Given the many ways that a game can be asymmetrical -- rather, that a symmetrical game could be changed to asymmetrical -- it would seem likely that there are more ways that cause a strategy to become pure than not pure because there are more ways of adjusting payoffs to making one strategy the clear winner. This could simplify the game theory in G-MSE, in a sense, if mixed strategies do not require much consideration.
+
+@McAvoy2015 recently emphasised the importance of asymmetry in evolutionary games, noting that **''cooperation may be tied to individual energy or strength, which is, in turn, determined by a player's role''**. This would seem to apply to social-ecological conflicts as well -- cooperation might reasonably tied to the power (economic, political, etc.) of stake-holders, meaning that it might be important to take this into account in G-MSE modelling. For something like Prisoner's dilemma, we can represent an asymmetry using subscripts, so the standard game would be represented by a payoff matrix,
 
 $$
 \left( \begin{array}{ccc}
@@ -98,6 +108,18 @@ $$
 
 The above is for two different types of players, $i$ and $j$. Note that I tried working through the [same basic concept](#game) with a bit different notation earlier on, with each matrix element being defined by a utility function that is unique to each agent type. In the code, this will all be defined by agent types and their respective traits (columns in the `agent_array`), but it's good to link this up with theory and the general properties of asymmetric games.
 
+@McAvoy2015 go into the Prisoner's Dilemma and Snowdrift gamse given environmental and genotypic asymmetry
+
+ - *Environmental asymmetry* refers to asymmetry in payoff matrices caused by differences in individual location.
+ - *Genotypic asymetry* refers to asymmetry in payoff matrices caused by differences in individual genotype, which we can probably think about as differences in type that are intrinsic to the individuals and are not spatial (e.g., stake-holder roles).
+ 
+Such asymmetries can complicate evolution of strategies, and, perhaps more relevant for G-MSE, can cause different types of agents to experience **different types of games** as a result of asymmetry:
+
+> ''[...] Thus, based on the social dilemma implied by the ranking of the payoffs, a player who incurs a cost of $c_{1}$ for cooperating is always playing a Snowdrift Game while a player who incurs a cost of $c_{2}$ is always playing a Prisoner's Dilemma. It follows that ecological asymmetry can account for multiple social dilemmas being played within a single population, even if the players all use the same set of strategies'' [@McAvoy2015 p. 9].
+
+The above quote is respect to asymmetry payoffs caused by space, but the point is that the asymmetry of the payoff matrix can lead to different players experiencing different games and therefore having different -- potentially conflicting -- strategies. 
+
+We might also apply the concept of genotypic asymmetry with the process of **cultural updating**, which occurs when the 'genotypes' (perhaps stake-holder types) do not change, but the strategies of players can be updated over time. Note that genetic asymmetry can be reduced to a broader symmetric game given genetic updating (i.e., births and deaths of players of particular types), this is probably not applicable to G-MSE.
 
 > <a name="u-18-JAN-2017">Update: 18 JAN 2017</a>
 
@@ -1282,6 +1304,8 @@ Liu, Y., Diserud, O. H., Hindar, K., & Skonhoft, A. (2013). An ecological-econom
 Manfredo, M. J., Bruskotter, J. T., Teel, T. L., Fulton, D., Schwartz, S. H., Arlinghaus, R., ... Sullivan, L. (2016). Why social values cannot be changed for the sake of conservation. Conservation Biology. Accepted. https://doi.org/10.1111/cobi.12855.This
 
 Mansson, J., Nilsson, L., & Hake, M. (2013). Territory size and habitat selection of breeding Common Cranes (Grus grus) in a boreal landscape. Ornis Fennica, 90(2), 65–72.
+
+McAvoy, A., & Hauert, C. (2015). Asymmetric evolutionary games. PLoS Computational Biology, 11(8), e1004349. https://doi.org/10.1371/journal.pcbi.1004349
 
 Mccann, R. K., Marcot, B. G., & Ellis, R. (2006). Bayesian belief networks: applications in ecology and natural resource. Canadian Journal of Forest Research, 36, 3053–3062.
 
