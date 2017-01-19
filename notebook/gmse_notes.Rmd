@@ -1175,6 +1175,11 @@ The [function](https://stat.ethz.ch/R-manual/R-patched/library/base/html/do.call
 <a name="meetings">Potentially relevant conferences and workshops</a>
 --------------------------------------------------------------------------------
 
+**Scottish Ecology, Environment, and Conservation Conference**
+(''The conference aims to bring together researchers in ecology, conservation, and environmental sciences across Scotland'' -- **''The conference is primarily for PhD, Masters and advanced undergraduate students''**)
+University of Aberdeen: 3-4 APR 2017
+6 FEB abstract submission deadline
+
 **Modelling Biological Evolution 2017: Developing Novel Approaches**
 (topics include: Evolutionary Game Theory and Solving Social Dilemmas)
 http://www.math.le.ac.uk/people/ag153/homepage/MBE_2017/MBE_2017_1.htm
