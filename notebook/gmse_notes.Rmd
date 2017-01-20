@@ -39,6 +39,7 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - [20 JAN 2017](#u-20-JAN-2017)
  - [19 JAN 2017](#u-19-JAN-2017)
  - [18 JAN 2017](#u-18-JAN-2017)
  - [17 JAN 2017](#u-17-JAN-2017)
@@ -71,6 +72,58 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-20-JAN-2017">Update: 20 JAN 2017</a>
+
+**Side note about computation efficiency**
+
+Note that it would really be faster to convert to a list type in R if anything computationally intense needs to be done (e.g., binding rows). C will not appear to let me read in a list via `.Call`, only a vector, so it's worth thinking later about whether doing some things on the R side will be faster:
+
+ 1. Using the returned arrays from C
+ 2. Changing arrays to lists and then using them in R
+ 3. Making new C functions to do some standard R tasks faster (unlikely to work well)
+ 
+Updated scratch.R to show how option 2 could work, though the change itself might be more inefficient than binding or other operations.
+
+**Issues related to agent-based complex modelling of human decisions**
+
+@An2012 reviewes humans as agents in agent-based models of social-ecological systems. @An2012 ties this in with complexity theory, and distinguishes *agent-based* from *indidual-based* models in a useful way -- with agent-based models beign defined more by attention to decision making processes (as in models of human behaviour). @An2012 asks,
+
+> (a) What methods, in what manner, have been used to model human decision-making and behavior?
+> (b) What are the potential strengths and caveats of these methods? 
+> (c) What improvements can be made to better model human decisions in coupled human and natural systmes?
+
+@An2012 reviews nine different types of decision models, and notes that different types of decision models can be mixed and matched, as we'll likely need to do for G-MSE. I'm not sure that we can assume that stake-holders are the same types of decision-makers. For example, I suspect that farmers might be better represented by a microeconomic model of decision making, with a focus on maximising some sort of revenue or yield. @An2012 notes the use of utility functions here (seeming to link with some of my [earlier thoughts](#game)), including one in which ecological indicators are included in place of just money [@Nautiyal2009]. Apparently, econometric work by @McFadden1973 is foundational to looking at decisions based on utility, modelling decisions as a probability of an agent choosing an option. @An2012 notes that decisions are unlikely to be completely rational, and humans will tend to seek ''satisfatory rather than optimal utility''. 
+
+A second of the nine types of decision models includes the *psychosocial and cognitive models*, which attempt to model individual's thoughts based on beliefs and goals -- institutions can also be modelled this way, though we might think of institutions as collections of the same type of individual for the purposes of G-MSE coding.
+
+**One type of modelling that could be especially interesting** is what @An2012 defines as ''participatory agent-based modelling'', wherein real stake-holders tell the modeller what they would do under some set of conditions conditions, then the model runs with those decisions. This has been used, apparently, in an agricultural setting [@Naivinit2010], and would be a very interesting addition to G-MSE. If we could have an option for letting a user *take over* the role of an agent in the model and play against a computer, it could be interesting -- though I'd tend to still want to develop some game-theoretic algorithm that grounds predictions of stake-holder behaviour, rather than relying solely on empirically derived data (i.e., asking people what they would do). This could be accomplished in a couple ways, in principle -- one being throught he use of a C standalone program (i.e., not linking with R) that prompts the user for input using the `scanf` function and repeatedly updates the simulation with information in every cycle of the G-MSE loop. The same effect can be accomplished in R with the following code as an example of the concept:
+
+```{r}
+act_agent <- function(times){
+    while(times > 0){
+        cat("\n\n\n How many geese do you shoot? \n\n");
+        shot_char   <- readLines(con=stdin(),1);
+        shot_num    <- as.numeric(shot_char);
+        gross_prod  <- rpois(n=1, lambda=100);
+        net_prod    <- gross_prod - (2 * shot_num);
+        cat("\n");
+        output      <- paste("Net production = ", net_prod);
+        print(output);
+        times       <- times - 1;
+    }
+}
+```
+
+If you read the function into R, then run it (e.g., `act_agent(times = 2)`, it will ask for input `times` iterations, prompting once per iteration of the `while` loop. An option in G-MSE would be nice to allow:
+
+ 1. Users to let the program run with stake-holders simulated by well thought out utility functions applied to a game.
+ 2. Users allowed to interact with the program in each time step such that every time an agent needs to make a decision, the user is prompted to doing so for one type of agent
+ 3. Multiple users prompted to enter in decisions, simulating a long history of real-world actors making choices in a simulated game.
+ 
+All of these would be fun, and @An2012 notes that they are often quite sueful. Ideally it would be nice to make the program more user-friendly than a command line interface, but that seems like a concern for a version 2.0, after an initial version has been released. More helpfully, using some sort of loop could make for easy input of the R options in the `gmse` function -- it could ask, in plain language, for users to insert the numbers that are currently only input within `gmse()` itself (e.g., `gmse(time_max = 100)`). 
+
+It's possible that we could develop a type of rudimentary artificial intelligence by collecting data of user decisions (i.e., make a 'bot' that *mimics* human decisions). For example, we could have 100 people act as agents in G-MSE, collect data on the decisions that they make when trying to act like a stake-holder, then construct an algorithm based on real user decision in different situations (alternativley, or in addition, we could also look at *actual* past decisions from the case studies to make an algorithm). This could be an interesting, approach, albeit a somewhat atheoretical one -- it doesn't excite me quite as much, but it might be worth considering because the end result might predict human behaviour better than theory-driven approaches (as humans don't always act rationally or think things through carefully -- *I don't think a citation is needed for this; it's 20 JAN 2017, and the current time is 17:00 GMT, or 12:00 EST*). It could also be interesting to compare different types of approaches (i.e., have a *theory-based approach* and a *empirically-based approach* option). @An2012 warns though that ''Even though also based on data, researchers usually have to go through relatively complex data compiling, computation, and/or statistical analysis to obtain such rules'' @An2012 also notes that this kind of data collection does not necessarily identify *why* decisions are being made. Hence, I do think game-theory will be absolutely important, with agents using underlying utility functions to maximise their own utilities as a consequence of games.
 
 > <a name="u-19-JAN-2017">Update: 19 JAN 2017</a>
 
@@ -1263,6 +1316,8 @@ Paris, France: 5-7 JUL 2017
 <a name="ref">References consulted and annotated (Mendeley)</a>
 -----------------------------------------
 
+An, L. (2012). Modeling human decisions in coupled human and natural systems: Review of agent-based models. Ecological Modelling, 229, 25–36. https://doi.org/10.1016/j.ecolmodel.2011.07.010
+
 Adami, C., Schossau, J., & Hintze, A. (2016). Evolutionary game theory using agent-based methods. Physics of Life Reviews, 19, 1–26. https://doi.org/10.1016/j.plrev.2016.08.015
 
 Bautista, C., Naves, J., Revilla, E., Fernández, N., Albrecht, J., Scharf, A. K., ... Selva, N. (2016). Patterns and correlates of claims for brown bear damage on a continental scale. Journal of Applied Ecology. http://doi.org/10.1111/1365-2664.12708
@@ -1310,7 +1365,7 @@ McAvoy, A., & Hauert, C. (2015). Asymmetric evolutionary games. PLoS Computation
 Mccann, R. K., Marcot, B. G., & Ellis, R. (2006). Bayesian belief networks: applications in ecology and natural resource. Canadian Journal of Forest Research, 36, 3053–3062.
 
 Nellemann, C., Jordhoy, P., Stoen, O. G., & Strand, O. (2000). Cumulative impacts of tourist resorts on wild reindeer (Rangifer tarandus tarandus) during winter. Arctic, 53(1), 9–17. https://doi.org/10.14430/arctic829
-
+An, L. (2012). Modeling human decisions in coupled human and natural systems: Review of agent-based models. Ecological Modelling, 229, 25–36. https://doi.org/10.1016/j.ecolmodel.2011.07.010
 Nellemann, C., Vistnes, I., Jordhoy, P., Strand, O., & Newton, A. (2003). Progressive impact of piecemeal infrastructure development on wild reindeer. Biological Conservation, 113(2), 307–317. https://doi.org/10.1016/S0006-3207(03)00048-X
 
 Olaussen, J. O., & Skonhoft, A. (2008). On the economics of biological invasion: An application to recreational fishing. Natural Resource Modeling, 21(4), 625–653. https://doi.org/10.1111/j.1939-7445.2008.00026.x
