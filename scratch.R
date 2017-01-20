@@ -105,6 +105,13 @@ paras <- c(time,    # 0. The dynamic time step for each function to use
 RESOURCE_REC    <- NULL;
 RESOURCES       <- starting_resources;
 
+
+
+
+
+RESOURCES <- split(RESOURCES, rep(1:ncol(RESOURCES), each = nrow(RESOURCES)))
+
+
 RESOURCE_NEW      <- resource(resource   = RESOURCES,
                               landscape  = LANDSCAPE_r,
                               paras      = paras,
