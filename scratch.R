@@ -192,8 +192,19 @@ make_resource <- function(model              = "IBM",
 
 
 
-
-
+act_agent <- function(times){
+    while(times > 0){
+        cat("\n\n\n How many geese do you shoot? \n\n");
+        shot_char   <- readLines(con=stdin(),1);
+        shot_num    <- as.numeric(shot_char);
+        gross_prod  <- rpois(n=1, lambda=100);
+        net_prod    <- gross_prod - (2 * shot_num);
+        cat("\n");
+        output      <- paste("Net production = ", net_prod);
+        print(output);
+        times       <- times - 1;
+    }
+}
 
 
 
