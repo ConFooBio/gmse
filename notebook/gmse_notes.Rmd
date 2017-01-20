@@ -1322,9 +1322,9 @@ Paris, France: 5-7 JUL 2017
 <a name="ref">References consulted and annotated (Mendeley)</a>
 -----------------------------------------
 
-Adami, C., Schossau, J., & Hintze, A. (2016). Evolutionary game theory using agent-based methods. Physics of Life Reviews, 19, 1–26. https://doi.org/10.1016/j.plrev.2016.08.015
-
 An, L. (2012). Modeling human decisions in coupled human and natural systems: Review of agent-based models. Ecological Modelling, 229, 25–36. https://doi.org/10.1016/j.ecolmodel.2011.07.010
+
+Adami, C., Schossau, J., & Hintze, A. (2016). Evolutionary game theory using agent-based methods. Physics of Life Reviews, 19, 1–26. https://doi.org/10.1016/j.plrev.2016.08.015
 
 Bautista, C., Naves, J., Revilla, E., Fernández, N., Albrecht, J., Scharf, A. K., ... Selva, N. (2016). Patterns and correlates of claims for brown bear damage on a continental scale. Journal of Applied Ecology. http://doi.org/10.1111/1365-2664.12708
 
