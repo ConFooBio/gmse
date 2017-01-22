@@ -39,6 +39,7 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - [22 JAN 2017](#u-22-JAN-2017)
  - [20 JAN 2017](#u-20-JAN-2017)
  - [19 JAN 2017](#u-19-JAN-2017)
  - [18 JAN 2017](#u-18-JAN-2017)
@@ -72,6 +73,21 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+
+> <a name="u-22-JAN-2017">Update: 22 JAN 2017</a>
+
+For coauthors, add the G-MSE files onto a public Dropbox so that they can be [sourced](http://stackoverflow.com/questions/7715723/sourcing-r-script-over-https) and run remotely. There are also some useful resources for [embedding](http://fabian-kostadinov.github.io/2015/09/21/embedding-r-in-a-website/) R in a website. This might be faster than using Shiny, at least at first, so it could be useful for initial demonstrations. It might be useful to show a prototype of G-MSE, or what it might be:
+
+```{r, echo=FALSE}
+print("Managers estimate the population size is 4230");
+print("You encounter 35 animals around your farm");
+print("Estimated loss of yield is at 5%");
+print("Enter how many animals you intend to hunt");
+```
+
+Demonstrating this (and it would be quick to implement) might be useful for showing how management and games work.
+
 
 > <a name="u-20-JAN-2017">Update: 20 JAN 2017</a>
 
