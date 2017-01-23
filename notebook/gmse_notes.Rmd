@@ -39,6 +39,7 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - [23 JAN 2017](#u-23-JAN-2017)
  - [22 JAN 2017](#u-22-JAN-2017)
  - [20 JAN 2017](#u-20-JAN-2017)
  - [19 JAN 2017](#u-19-JAN-2017)
@@ -74,6 +75,58 @@ library(rhandsontable)
 <a name="updates">Project updates:</a>
 ================================================================================
 
+> <a name="u-23-JAN-2017">Update: 23 JAN 2017</a>
+
+**Proof of concept: Interactive user input as a stake-holder**
+
+The code below runs the `gmse` program in a way that is interactive. I have run time steps, and specified that the hunting begins in time step 95.
+
+```
+> sim <- gmse( observe_type  = 0,
++              agent_view    = 10,
++              res_death_K   = 400,
++              plotting      = TRUE,
++              hunt          = TRUE,
++              start_hunting = 95
++ );
+```
+
+This produces the following output. When prompted by the line ''`Enter the number of animals to shoot`'', I have typed in a number and hit enter accordingly.
+
+```
+Year:  95
+The manager says the population size is  181
+You observe  11  animals on the farm
+Enter the number of animals to shoot
+10
+
+Year:  96
+The manager says the population size is  408
+You observe  11  animals on the farm
+Enter the number of animals to shoot
+10
+
+Year:  97
+The manager says the population size is  272
+You observe  6  animals on the farm
+Enter the number of animals to shoot
+10
+You can't shoot animals that you can't see
+6  animals shot
+Year:  98
+The manager says the population size is  226
+You observe  10  animals on the farm
+Enter the number of animals to shoot
+0
+
+Year:  99
+The manager says the population size is  294
+You observe  9  animals on the farm
+Enter the number of animals to shoot
+5
+```
+
+The output of this also shows the spatial distribution of resources and a population graph over time. My hope was that allow the `gmse.so` file to be sourced directly from a link so that it could be run by anyone remotely, but I think that this will take a bit more work -- worth keeping in mind for later.
 
 > <a name="u-22-JAN-2017">Update: 22 JAN 2017</a>
 
@@ -586,7 +639,7 @@ The function `field_work` simulates the process of an agent looking for and tagg
 There are multiple ways to interpret the observation results. Examples of this are as follows (for now, I'm assuming that there is one observer, but we can substitute the below with any number of observers):
 
  - Have the observer tag every resource within their range of vision some number of times; take the average of number of resources tagged per time as an estimate of population density.
- - Have the observer tag every resource within their range of vision some fixed number of times, but then interpret some of those times as *marks* and others as *recaptures*. Uneven times for marking and recapturing could be interpreted as different investment in each procedure (e.g., go out and mark at 3 different locations, then recapture at 9 locations). Unique marked and recaptured individuals can be summed to estimate population size using capture-mark-recapture techniques. Currently, there is some code in R simulating a [Lincoln-Petersen](https://en.wikipedia.org/wiki/Mark_and_recapture#Lincoln.E2.80.93Petersen_estimator) estimator of mark-recapture with a [Chapman correction](https://en.wikipedia.org/wiki/Mark_and_recapture#Chapman_estimator) for small sample size [see @Pollock1990]. It would be useful to add some other estimatores (e.g., Bayesian).
+ - Have the observer tag every resource within their range of vision some fixed number of times, but then interpret some of those times as *marks* and others as *recaptures*. Uneven times for marking and recapturing could be interpreted as different investment in each procedure (e.g., go out and mark at 3 different locations, then recapture at 9 locations). Unique marked and recaptured individuals can be summed to estimate population size using capture-mark-recapture techniques. Currently, there is some code in R simulating a [Lincoln-Petersen](https://en.wikipedia.org/wiki/Mark_and_recapture#Lincoln.E2.80.93Petersen_estimator) estimator of mark-recapture with a [Chapman correction](https://en.wikipedia.org/wiki/Mark_and_recapture#Chapman_estimator) for small sample size [see @Pollock2016]. It would be useful to add some other estimatores (e.g., Bayesian).
  - Have the observer sample a fixed number of resources on the landscape some number of times (*not spatial -- resources are just randomly taken*). Interpret one or more of these samples as markings, and one or more as recaptures. Then, use these data to estimate population size using some technique such as mark-recapture estimation. This is the technique used in the [figure](#u-10-JAN-2017) shown above.
  - Note, because observation arrays are stored by R, population size estimation can span multiple time steps (e.g., mark one year, recapture the next -- though some individuals might die in the intervening period)
  
