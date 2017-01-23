@@ -113,6 +113,7 @@ Enter the number of animals to shoot
 10
 You can't shoot animals that you can't see
 6  animals shot
+
 Year:  98
 The manager says the population size is  226
 You observe  10  animals on the farm
@@ -128,6 +129,7 @@ Enter the number of animals to shoot
 
 The output of this also shows the spatial distribution of resources and a population graph over time. My hope was that allow the `gmse.so` file to be sourced directly from a link so that it could be run by anyone remotely, but I think that this will take a bit more work -- worth keeping in mind for later.
 
+![*Population dynanics (black line) and manager estimate of population size (blue line) over time in a simulation in which the user can act as a stake-holder and shoot animals*](images/23-JAN-proof-of-concept.png)
 
 > <a name="u-22-JAN-2017">Update: 22 JAN 2017</a>
 
