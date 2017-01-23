@@ -450,6 +450,7 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, agent_view){
         cat("\n");
         response <- paste(seeit," animals shot");
         cat(response);
+        cat("\n");
     }
     if(shooting > 0){
         ress <- dim(RESOURCES)[1];
