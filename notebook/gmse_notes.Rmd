@@ -113,6 +113,7 @@ Enter the number of animals to shoot
 10
 You can't shoot animals that you can't see
 6  animals shot
+
 Year:  98
 The manager says the population size is  226
 You observe  10  animals on the farm
