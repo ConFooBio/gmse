@@ -128,6 +128,8 @@ Enter the number of animals to shoot
 
 The output of this also shows the spatial distribution of resources and a population graph over time. My hope was that allow the `gmse.so` file to be sourced directly from a link so that it could be run by anyone remotely, but I think that this will take a bit more work -- worth keeping in mind for later.
 
+![*Population dynanics (black line) and manager estimate of population size (blue line) over time in a simulation in which the user can act as a stake-holder and shoot animals*](images/23-JAN-proof-of-concept.png)
+
 > <a name="u-22-JAN-2017">Update: 22 JAN 2017</a>
 
 For coauthors, add the G-MSE files onto a public Dropbox so that they can be [sourced](http://stackoverflow.com/questions/7715723/sourcing-r-script-over-https) and run remotely. There are also some useful resources for [embedding](http://fabian-kostadinov.github.io/2015/09/21/embedding-r-in-a-website/) R in a website. This might be faster than using Shiny, at least at first, so it could be useful for initial demonstrations. It might be useful to show a prototype of G-MSE, or what it might be:
