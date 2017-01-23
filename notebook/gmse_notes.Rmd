@@ -131,6 +131,8 @@ The output of this also shows the spatial distribution of resources and a popula
 
 ![*Population dynanics (black line) and manager estimate of population size (blue line) over time in a simulation in which the user can act as a stake-holder and shoot animals*](images/23-JAN-proof-of-concept.png)
 
+I am still trying to get a clear picture on how to incorporate management, user, and game-theoretic modelling components. Given uncertainty in all of these components, some unified approach would seem beneficial. @Franco2016 has recently introduced a comprehensive approach to evaluate effects of disurbance on coral reefs using a Bayesian Belief Network (BBN) approach. This approach ''offers a methodological framework to address uncertanty.'' This approach requires some defined outcome state, the probabilities of realisation of which are calculated. Use of BBNs requires an acyclic graph and conditional probability tables.  It's not entirely clear to me how BBNs would be incorporated into the G-MSE simulations, except maybe as a type of observation model? With the simulation, we can look at causality directly and thereby quantify direct and indirect effects, and measurement error. It could, however, be useful to know how well BBNs perform using simulated populations, simulated observational data, and appropriate analysis based on BBNs, as would be used on empirically derived data.
+
 > <a name="u-22-JAN-2017">Update: 22 JAN 2017</a>
 
 For coauthors, add the G-MSE files onto a public Dropbox so that they can be [sourced](http://stackoverflow.com/questions/7715723/sourcing-r-script-over-https) and run remotely. There are also some useful resources for [embedding](http://fabian-kostadinov.github.io/2015/09/21/embedding-r-in-a-website/) R in a website. This might be faster than using Shiny, at least at first, so it could be useful for initial demonstrations. It might be useful to show a prototype of G-MSE, or what it might be:
@@ -1421,6 +1423,8 @@ Elston, D. A., Spezia, L., Baines, D., & Redpath, S. M. (2014). Working with sta
 
 Farmer, J. D., & Foley, D. (2009). The economy needs agent-based modelling. Nature, 460(August), 685--686. https://doi.org/10.1038/460685a
 
+Franco, C., Hepburn, L. A., Smith, D. J., Nimrod, S., & Tucker, A. (2016). A Bayesian Belief Network to assess rate of changes in coral reef ecosystems. Environmental Modelling and Software, 80, 132–142. https://doi.org/10.1016/j.envsoft.2016.02.029
+
 Hake, M., Mansson, J., & Wiberg, A. (2010). A working model for preventing crop damage caused by increasing goose populations in Sweden. Ornis Svecica, 20(3-4), 225–233.
 
 Heinonen, J. P. M., Palmer, S. C. F., Redpath, S. M., & Travis, J. M. J. (2014). Modelling hen harrier dynamics to inform human-wildlife conflict resolution: A spatially-realistic, individual-based approach. PLoS ONE, 9(11). http://doi.org/10.1371/journal.pone.0112492
@@ -1456,6 +1460,8 @@ Tilman, A. R., Watson, J. R., & Levin, S. (2016). Maintaining cooperation in soc
 Wam, H. K., Bunnefeld, N., Clarke, N., & Hofstad, O. (2016). Conflicting interests of ecosystem services: Multi-criteria modelling and indirect evaluation to trade off monetary and non-monetary measures. Ecosystem Services.
 
 Wang, P., Poe, G. L., & Wolf, S. A. (2017). Payments for ecosystem services and wealth distribution. Ecological Economics, 132, 63–68. https://doi.org/10.1016/j.ecolecon.2016.10.009
+
+Whitacre, J. M. (2010). Degeneracy: a link between evolvability, robustness and complexity in biological systems. Theoretical Biology and Medical Modelling, 7, 6. https://doi.org/10.1186/1742-4682-7-6
 
 Wright, G. D., Andersson, K. P., Gibson, C. C., & Evans, T. P. (2016). Decentralization can help reduce deforestation when user groups engage with local government. Proceedings of the National Academy of Sciences, 201610650. https://doi.org/10.1073/pnas.1610650114
 
