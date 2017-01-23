@@ -3,7 +3,13 @@
 #' Function to run G-MSE model
 #'
 #'@export
-rm(list=ls(all=TRUE))
+rm(list=ls(all=TRUE));
+
+
+################################################################################
+
+
+################################################################################
 
 setwd("~/Dropbox/projects/gmse");
 
@@ -16,6 +22,8 @@ source("R/landscape.R");
 source("R/resource.R");
 source("R/observation.R");
 source("R/anecdotal.R");
+
+################################################################################
 
 ################################################################################
 # PRIMARY FUNCTION (gmse) FOR RUNNING A SIMULATION
@@ -42,7 +50,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   res_min_age    = 1,     # Minimum age recorded and observed
                   res_move_obs   = TRUE,  # Move resources while observing
                   Euclidean_dist = FALSE, # Use Euclidean distance in view
-                  plotting       = TRUE   # Plot the results
+                  plotting       = TRUE,  # Plot the results
+                  hunt           = FALSE, # Does the user hunt resources?
+                  start_hunting  = 0      # What generation hunting starts
 ){
     pop_model       <- "IBM";
     RESOURCE_ini    <- 100;
@@ -165,6 +175,12 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
             print("Extinction has occurred");
             break;
         }
+        
+        if(hunt == TRUE & time > start_hunting){
+            RESOURCES <- be_hunter(OBSERVATION_NEW, AGENTS, RESOURCES, 
+                                   LANDSCAPE_r, agent_view);   
+        }
+        
     }
     
     res_columns <- c("Resource_ID",
@@ -315,7 +331,7 @@ case23plot <- function(res, obs, land, paras){
     abun <- NULL;
     est  <- NULL;
     lci  <- NULL;
-    uci  <- NULL;
+    uci  <- NULL;    cat("\n\n");
     land_cols <- c("#F2F2F2FF", "#ECB176FF", "#000000"); 
 
     aged_res <- res[res[,12] > 0,];
@@ -404,13 +420,51 @@ case01plot <- function(res, obs, land, paras, view = NULL){
 }
 
 
+####################################################################
+## A bit of code to read out and allow input to the observation
+####################################################################
+be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, agent_view){
+    seeit    <- AGENT[2,13];
+    view     <- agent_view;
+    count    <- dens_est(OBSERVATION, agent_view, LAND)$Nc;
+    count    <- floor(count);
+    line1 <- paste("The manager says the population size is ",count);
+    line2 <- paste("You observe ",seeit," animals on the farm");
+    line3 <- paste("Enter the number of animals to shoot");
+    cat("\n");
+    print(line1);
+    cat("\n");
+    print(line2);
+    cat("\n");
+    print(line3);
+    cat("\n");
+    shot_char   <- readLines(con=stdin(),1);
+    shooting    <- as.numeric(shot_char);
+    while(is.na(shooting)){
+        print("Need to shoot a natural number -- try again");
+        shot_char   <- readLines(con=stdin(),1);
+        shooting    <- as.numeric(shot_char);
+    }
+    if(shooting > seeit){
+        shooting <- seeit;
+        print("You can't shoot animals that you can't see");
+        cat("\n");
+        response <- paste(seeit," animals shot");
+        print(response);
+    }
+    hunted <- sample(x=1:dim(RESOURCES)[1], size = shooting, replace = FALSE);
+    RESOURCES <- RESOURCES[-hunted,];
+    return(RESOURCES);
+}
 
 ################################################################################
 
-gmse( observe_type = 0,
-      agent_view   = 10,
-      res_death_K  = 400,
-      plotting     = TRUE
+gmse( observe_type  = 0,
+      agent_view    = 10,
+      res_death_K   = 400,
+      plotting      = TRUE,
+      hunt          = FALSE,
+      start_hunting = 95
 );
 
 ################################################################################
