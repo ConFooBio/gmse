@@ -424,32 +424,38 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, agent_view){
     view     <- agent_view;
     count    <- dens_est(OBSERVATION, agent_view, LAND)$Nc;
     count    <- floor(count);
-    line1 <- paste("The manager says the population size is ",count);
-    line2 <- paste("You observe ",seeit," animals on the farm");
-    line3 <- paste("Enter the number of animals to shoot");
+    line0    <- paste("Year: ", RESOURCES[1,8]);
+    line1    <- paste("The manager says the population size is ",count);
+    line2    <- paste("You observe ",seeit," animals on the farm");
+    line3    <- paste("Enter the number of animals to shoot");
     cat("\n");
-    print(line1);
+    cat(line0);
     cat("\n");
-    print(line2);
+    cat(line1);
     cat("\n");
-    print(line3);
+    cat(line2);
+    cat("\n");
+    cat(line3);
     cat("\n");
     shot_char   <- readLines(con=stdin(),1);
     shooting    <- as.numeric(shot_char);
     while(is.na(shooting)){
-        print("Need to shoot a natural number -- try again");
+        cat("Need to shoot a natural number -- try again");
         shot_char   <- readLines(con=stdin(),1);
         shooting    <- as.numeric(shot_char);
     }
     if(shooting > seeit){
         shooting <- seeit;
-        print("You can't shoot animals that you can't see");
+        cat("You can't shoot animals that you can't see");
         cat("\n");
         response <- paste(seeit," animals shot");
-        print(response);
+        cat(response);
     }
-    hunted <- sample(x=1:dim(RESOURCES)[1], size = shooting, replace = FALSE);
-    RESOURCES <- RESOURCES[-hunted,];
+    if(shooting > 0){
+        ress <- dim(RESOURCES)[1];
+        hunted <- sample(x=1:ress, size = shooting, replace = FALSE);
+        RESOURCES <- RESOURCES[-hunted,];
+    }
     return(RESOURCES);
 }
 

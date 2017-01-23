@@ -39,6 +39,7 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - [23 JAN 2017](#u-23-JAN-2017)
  - [22 JAN 2017](#u-22-JAN-2017)
  - [20 JAN 2017](#u-20-JAN-2017)
  - [19 JAN 2017](#u-19-JAN-2017)
@@ -73,6 +74,60 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-23-JAN-2017">Update: 23 JAN 2017</a>
+
+**Proof of concept: Interactive user input as a stake-holder**
+
+The code below runs the `gmse` program in a way that is interactive. I have run time steps, and specified that the hunting begins in time step 95.
+
+```
+> sim <- gmse( observe_type  = 0,
++              agent_view    = 10,
++              res_death_K   = 400,
++              plotting      = TRUE,
++              hunt          = TRUE,
++              start_hunting = 95
++ );
+```
+
+This produces the following output. When prompted by the line ''`Enter the number of animals to shoot`'', I have typed in a number and hit enter accordingly.
+
+```
+Year:  95
+The manager says the population size is  181
+You observe  11  animals on the farm
+Enter the number of animals to shoot
+10
+
+Year:  96
+The manager says the population size is  408
+You observe  11  animals on the farm
+Enter the number of animals to shoot
+10
+
+Year:  97
+The manager says the population size is  272
+You observe  6  animals on the farm
+Enter the number of animals to shoot
+10
+You can't shoot animals that you can't see
+6  animals shot
+Year:  98
+The manager says the population size is  226
+You observe  10  animals on the farm
+Enter the number of animals to shoot
+0
+
+Year:  99
+The manager says the population size is  294
+You observe  9  animals on the farm
+Enter the number of animals to shoot
+5
+```
+
+The output of this also shows the spatial distribution of resources and a population graph over time. My hope was that allow the `gmse.so` file to be sourced directly from a link so that it could be run by anyone remotely, but I think that this will take a bit more work -- worth keeping in mind for later.
+
 
 > <a name="u-22-JAN-2017">Update: 22 JAN 2017</a>
 
