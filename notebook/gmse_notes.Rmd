@@ -1418,6 +1418,8 @@ Elston, D. A., Spezia, L., Baines, D., & Redpath, S. M. (2014). Working with sta
 
 Farmer, J. D., & Foley, D. (2009). The economy needs agent-based modelling. Nature, 460(August), 685--686. https://doi.org/10.1038/460685a
 
+Franco, C., Hepburn, L. A., Smith, D. J., Nimrod, S., & Tucker, A. (2016). A Bayesian Belief Network to assess rate of changes in coral reef ecosystems. Environmental Modelling and Software, 80, 132–142. https://doi.org/10.1016/j.envsoft.2016.02.029
+
 Hake, M., Mansson, J., & Wiberg, A. (2010). A working model for preventing crop damage caused by increasing goose populations in Sweden. Ornis Svecica, 20(3-4), 225–233.
 
 Heinonen, J. P. M., Palmer, S. C. F., Redpath, S. M., & Travis, J. M. J. (2014). Modelling hen harrier dynamics to inform human-wildlife conflict resolution: A spatially-realistic, individual-based approach. PLoS ONE, 9(11). http://doi.org/10.1371/journal.pone.0112492
