@@ -78,6 +78,15 @@ library(rhandsontable)
 
 > <a name="u-24-JAN-2017">Update: 24 JAN 2017</a>
 
+**A general summary of G-MSE as it exists at the moment**
+
+ - We have a working population model that is individual-based and allows for multiple types individual movement, birth, and death.
+ - We have an observation model with four types of possible observation
+ - We have a working option to allow end-user dynamic inputs while the simulation is going on, 'playing' as a manager/stake-holder
+ - The code is flexible enough that we should be able to add to it as need be without restructuring everything.
+ - The code appears to be bug-free; it doesn't crash when used correctly (though some error messages could be added)
+ - The code is efficient: computationally intense tasks are passed to C, while tasks done in R are now coded with proper memory management in mind
+
 **A summary of some of the challenges of putting the 'G' in G-MSE**
 
  1. The possible number of game categories increases exponentially with the number of actions, meaning that game solutions are [only available for simple cases](#u-18-JAN-2017) [@Adami2016]. How this affects G-MSE will depend on how many options are available to agents.
