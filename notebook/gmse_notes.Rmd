@@ -39,6 +39,7 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - [24 JAN 2017](#u-24-JAN-2017)
  - [23 JAN 2017](#u-23-JAN-2017)
  - [22 JAN 2017](#u-22-JAN-2017)
  - [20 JAN 2017](#u-20-JAN-2017)
@@ -75,7 +76,7 @@ library(rhandsontable)
 <a name="updates">Project updates:</a>
 ================================================================================
 
-> <a name="u-24-JAN-2017">Update: 23 JAN 2017</a>
+> <a name="u-24-JAN-2017">Update: 24 JAN 2017</a>
 
 **A summary of some of the challenges of putting the 'G' in G-MSE**
 
