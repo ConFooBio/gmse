@@ -210,4 +210,61 @@ act_agent <- function(times){
 
 
 
+################################################################################
+################################################################################
+################################################################################
+# Testing list versus array efficiency
+
+# ARRAY FIRST:
+sam <- sample(x = 1:100, size = 14000, replace = TRUE);
+dat <- matrix(data=sam, ncol=14);
+
+obs <- NULL;
+
+proc_start <- proc.time();
+
+time <- 1000;
+while(time > 0){
+   obs   <- rbind(obs, dat);
+   time  <- time - 1;
+}
+
+proc_end   <- proc.time();
+time_taken <- proc_end - proc_start;
+# TIME TAKEN: 14.09 seconds
+
+# NOW LIST:
+sam <- sample(x = 1:100, size = 14000, replace = TRUE);
+dat <- matrix(data=sam, ncol=14);
+
+obs <- list();
+
+proc_start <- proc.time();
+
+time <- 1000;
+elem <- 1;
+i    <- 1;
+while(time > 0){
+    obs[[i]] <- dat;
+    i        <- i + 1;
+    time     <- time - 1;
+}
+
+proc_end   <- proc.time();
+time_taken <- proc_end - proc_start;
+# TIME TAKEN: 0.005 seconds
+
+################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
 
