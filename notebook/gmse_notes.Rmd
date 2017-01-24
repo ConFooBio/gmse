@@ -39,6 +39,7 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - [24 JAN 2017](#u-24-JAN-2017)
  - [23 JAN 2017](#u-23-JAN-2017)
  - [22 JAN 2017](#u-22-JAN-2017)
  - [20 JAN 2017](#u-20-JAN-2017)
@@ -74,6 +75,27 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-24-JAN-2017">Update: 24 JAN 2017</a>
+
+**A summary of some of the challenges of putting the 'G' in G-MSE**
+
+ 1. The possible number of game categories increases exponentially with the number of actions, meaning that game solutions are [only available for simple cases](#u-18-JAN-2017) [@Adami2016]. How this affects G-MSE will depend on how many options are available to agents.
+ 2. Payoffs in G-MSE will [almost certainly](#u-18-JAN-2017) be [asymmetric](https://en.wikipedia.org/wiki/Symmetric_game), meaning that different agents might perceive themselves to be playing different games. This is a consequence of what evolutionary game theorists would refer to as ''genotype asymmetry'' -- as in, asymmetric caused by something that is inherent to the agent itself (as opposed to its location).
+ 3. Resources in G-MSE [might be](#u-19-JAN-2017) asymmetric, meaning that some agents (stake-holders) have an inherent advantage over others, allowing them to dominate interactions.
+ 4. Payoffs are expected to be stochastic -- or, rather -- there will be some variation around *expected payoffs* that might affect agent decision making and management outcomes.
+ 
+**A summary of some ideas for moving forward with G-MSE**
+
+ 1. As an option, write up the model to allow for [*participatory agent-based modelling*](#u-20-JAN-2017). This would be beneficial in allowing experimentation and therefore having some empirical data on how stake-holders might make decisions, which could then parameterise a decision-making agent in the model. The downside is that decisions would not be well-grounded in theory -- we wouldn't have a clear idea of why they were being made based on game theory. Hence, some sort of game-theoretic derivation of decision rules is needed.
+ 2. [Evolutionary game theory](https://en.wikipedia.org/wiki/Evolutionary_game_theory) might be useful in deriving strategies for agents to play. I can imagine borrowing from the game-theoretic or [adaptive dynamics](https://en.wikipedia.org/wiki/Evolutionary_invasion_analysis) literature to allow strategies to optimise over time to maximise agent payoffs. This might be challenging if optimal strategies depend on game history (i.e.,  if we allow for strategies based on [extensive-form games](https://en.wikipedia.org/wiki/Extensive-form_game). Perhaps what we want instead is something more like a [chess engine](https://en.wikipedia.org/wiki/Chess_engine) (e.g., [Stockfish](https://github.com/official-stockfish/Stockfish), which is publicly available though written in C++, though [some engines](https://github.com/search?l=C&q=chess+engine&type=Repositories&utf8=%E2%9C%93) are written in C -- the general idea of these engines is to consider the rules and look forward to evaluate options, *pruning* branches of moves that are evaluated as bad, as *solving* for the best move is impossible given the sheer number of possible positions).
+ 3. Incorporate [economic game theory](https://en.wikipedia.org/wiki/Game_theory#Economics_and_business), and more specifically [agent-based computational economics](https://en.wikipedia.org/wiki/Agent-based_computational_economics), which incorporate [utility functions](https://en.wikipedia.org/wiki/Utility#Functions) to allow agents to make decisions. This would link nicely to the more social part of the social-ecological modelling, and is a bit away from my comfort zone, so it's probably good to consider in more detail. Perhaps some game-theoretic model that cleverly incorporates both evolutionary and economic applications of game theory could be good.
+ 4. Of slightly lesser concern, but worth mentioning, maybe consider the potential scope for applying complexity theory to management. I've been particularly thinking about how [biological degeneracy](https://en.wikipedia.org/wiki/Degeneracy_(biology)) might apply to social-ecological modelling (among other things), leading to more robust management decisions by explicitly considering the possibility of multiple components of management fulfilling overlapping functions, hence leading to greater stability or robustness. Degeneracy is defined by dissimilar components of a system performing similar functions (note, different from *redundancy*, which implies complete interchangeability). Degeneracy is ubiquitous in complex systems, but its importance has been largely overlooked -- I wonder if there is a case for thinking about it here, particularly with multiple agents and scales.
+ 
+**Short-term plan**
+
+I'm going to finish developing thoughts on evolutionary game theory, then move onto looking at game theory from an economic perspective. I think the biggest thing to consider on the immediate horizon is **what kind of approach will be used to simulate agents (stake-holders) playing games and making decisions**. Once this is clear, the details can follow. Some sort of utility function will be used. Of particular consideration is **how much complexity should be incorporated -- or, perhaps -- how much mechanistic detail**.
+
 
 > <a name="u-23-JAN-2017">Update: 23 JAN 2017</a>
 
