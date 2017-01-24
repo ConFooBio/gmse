@@ -148,8 +148,11 @@ time_taken <- proc_end - proc_start;
 ################################################################################
 ```
 
-The output being deposited into a list is much, much faster. Enough to make me want to fix this immediately. 
+The output being deposited into a list is much, much faster. Enough to make me want to fix this immediately. Doing so was trivial -- it was just a matter of replacing `RESOURCE_REC <- rbind(RESOURCE_REC, RESOURCES)` with `RESOURCE_REC[[time]]  <- RESOURCES`, then editing the plotting functions accordingly given the new data type. The result is that simulations are now *much* faster, especially when `time` is high, simulating many time steps. One hundred time steps used to take 10-12 seconds for some observation times -- they now all take under a second. For more time steps, the efficiency difference would increase exponentially. The massively increased efficiency occurs because R now no longer allocates a whole new massive chunk of memory for each new recorded data frame -- it just appends data to a list where the memory has already been allocated.
 
+> **CONCLUSION** THE TIME IT TAKES TO RUN 100 TIME STEPS HAS DECREASED BY AN ORDER OF MAGNITUDE BY SWITCHING FROM DATA FRAMES TO LISTS IN R **(NOW LESS THAN 1 SECOND)**
+
+Note that plotting still happens slowly, deliberately, because we're putting the system to sleep for a tenth of a second in each time step to make the animation smooth. When plotting is turned off, this no longer happens.
 
 > <a name="u-23-JAN-2017">Update: 23 JAN 2017</a>
 
