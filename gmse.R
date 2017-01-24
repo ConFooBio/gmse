@@ -50,6 +50,11 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   hunt           = FALSE, # Does the user hunt resources?
                   start_hunting  = 0      # What generation hunting starts
 ){
+    
+    if(observe_type == 1 & times_observe < 2){
+        stop("Need to observe at least twice for mark-recapture");   
+    }
+    
     pop_model       <- "IBM";
     RESOURCE_ini    <- 100;
     movement        <- res_movement;
@@ -136,8 +141,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                       move_res   = TRUE,
                                       model      = "IBM"
         );
-        RESOURCES         <- RESOURCE_NEW;
-        RESOURCE_REC      <- rbind(RESOURCE_REC, RESOURCES);
+        RESOURCES             <- RESOURCE_NEW;
+        RESOURCE_REC[[time]]  <- RESOURCES
         
         OBSERVATION_NEW   <- observation(resource   = RESOURCES,
                                          landscape  = LANDSCAPE_r,
@@ -164,7 +169,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                        type_cat   = 1
         );
         
-        OBSERVATION_REC   <- rbind(OBSERVATION_REC, OBSERVATION_NEW);
+        OBSERVATION_REC[[time]]  <- OBSERVATION_NEW;
+        
         time              <- time + 1;
         paras[1]          <- time;
         if(dim(RESOURCES)[1] < 10){
@@ -194,7 +200,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                      "Resource_marked",
                      "Resource_tally"
     );
-    colnames(RESOURCE_REC)    <- res_columns;
+    colnames(RESOURCES)    <- res_columns;
     
     proc_end   <- proc.time();
     time_taken <- proc_end - proc_start;
@@ -330,14 +336,15 @@ case23plot <- function(res, obs, land, paras){
     uci  <- NULL;    cat("\n\n");
     land_cols <- c("#F2F2F2FF", "#ECB176FF", "#000000"); 
 
-    aged_res <- res[res[,12] > 0,];
-    ymaxi    <- max(tapply(aged_res[,8],aged_res[,8],length)) + 325;
-    time_max <- max(res[,8]);
+    minK <- min(paras[6:7]);
+    
+    ymaxi    <- 2 * minK;
+    time_max <- length(res);
     for(i in 1:(time_max-1)){
-        res_t <- res[res[,8]==i,];
-        obs_t <- obs[obs[,8]==i,];
+        res_t    <- res[[i]];
+        obs_t    <- obs[[i]];
         if(i > 1){
-            res_t <- res_t[res_t[,12] > 0,]; # Only look at res not just added
+            res_t <- res_t[res_t[,12] >= paras[17],];
         }
         gens  <- c(gens, i);
         abun  <- c(abun, dim(res_t)[1]);
@@ -347,7 +354,7 @@ case23plot <- function(res, obs, land, paras){
         par(mar=c(4,4,1,1));
         plot(x=gens, y=abun, pch=20, type="l", lwd=2, ylim=c(0, ymaxi),
              xlim=c(0,time_max), xlab="Time Step", ylab="Abundance");
-        new_est   <- sum(obs[obs[,8]==i,13]);
+        new_est   <- sum(obs_t[,13]);
         est       <- c(est, new_est);
         points(x=gens, y=est, pch=20, type="l", lwd=2, col="cyan4");
         abline(h=paras[7], col="red", lwd=0.8, lty="dashed");
@@ -375,15 +382,16 @@ case01plot <- function(res, obs, land, paras, view = NULL){
     }
     mrk <- floor(tiobs / 2);
     rcp <- tiobs - mrk;
+    
+    minK <- min(paras[6:7]);
 
-    aged_res <- res[res[,12] > 0,];
-    ymaxi    <- max(tapply(aged_res[,8],aged_res[,8],length)) + 325;
-    time_max <- max(res[,8]);
+    ymaxi    <- 2 * minK;
+    time_max <- length(res);
     for(i in 1:(time_max-1)){
-        res_t <- res[res[,8]==i,];
-        obs_t <- obs[obs[,8]==i,];
+        res_t    <- res[[i]];
+        obs_t    <- obs[[i]];
         if(i > 1){
-            res_t <- res_t[res_t[,12] > 0,]; # Only look at res not just added
+            res_t <- res_t[res_t[,12] >= paras[17],];
         }
         gens  <- c(gens, i);
         abun  <- c(abun, dim(res_t)[1]);
@@ -462,12 +470,12 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, agent_view){
 
 ################################################################################
 
-gmse( observe_type  = 0,
-      agent_view    = 10,
-      res_death_K   = 400,
-      plotting      = TRUE,
-      hunt          = FALSE,
-      start_hunting = 95
+sim <- gmse( observe_type  = 0,
+             agent_view    = 20,
+             res_death_K   = 400,
+             plotting      = TRUE,
+             hunt          = FALSE,
+             start_hunting = 95
 );
 
 ################################################################################
