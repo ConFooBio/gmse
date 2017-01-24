@@ -96,6 +96,7 @@ library(rhandsontable)
 
 I'm going to finish developing thoughts on evolutionary game theory, then move onto looking at game theory from an economic perspective. I think the biggest thing to consider on the immediate horizon is **what kind of approach will be used to simulate agents (stake-holders) playing games and making decisions**. Once this is clear, the details can follow. Some sort of utility function will be used. Of particular consideration is **how much complexity should be incorporated -- or, perhaps -- how much mechanistic detail**.
 
+@Leombruni2005 makes some interesting points regarding use of mathematical versus agent based models, noting the tractability issues with mathematical (and game-theoretic) models as things become more complex due to unique individuals needing to be represented.
 
 > <a name="u-23-JAN-2017">Update: 23 JAN 2017</a>
 
