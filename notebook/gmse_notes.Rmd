@@ -75,6 +75,14 @@ library(rhandsontable)
 <a name="updates">Project updates:</a>
 ================================================================================
 
+> <a name="u-24-JAN-2017">Update: 23 JAN 2017</a>
+
+**A summary of some of the challenges of putting the 'G' in **G-MSE**
+
+ 1. The possible number of game categories increases exponentially with the number of actions, meaning that game solutions are [only available for simple cases](#u-18-JAN-2017) [@Adami2016]. How this affects G-MSE will depend on how many options are available to agents.
+ 2. Payoffs in G-MSE will [almost certainly](#u-18-JAN-2017) be [asymmetric](https://en.wikipedia.org/wiki/Symmetric_game), meaning that different agents might perceive themselves to be playing different games. This is a consequence of what evolutionary game theorists would refer to as ''genotype asymmetry'' -- as in, asymmetric caused by something that is inherent to the agent itself (as opposed to its location).
+ 3. Resources in G-MSE [might be](#u-19-JAN-2017) asymmetric, meaning that some agents (stake-holders) have an inherent advantage over others, allowing them to dominate interactions. 
+
 > <a name="u-23-JAN-2017">Update: 23 JAN 2017</a>
 
 **Proof of concept: Interactive user input as a stake-holder**
@@ -160,7 +168,7 @@ Updated scratch.R to show how option 2 could work, though the change itself migh
 
 **Issues related to agent-based complex modelling of human decisions**
 
-@An2012 reviewes humans as agents in agent-based models of social-ecological systems. @An2012 ties this in with complexity theory, and distinguishes *agent-based* from *indidual-based* models in a useful way -- with agent-based models beign defined more by attention to decision making processes (as in models of human behaviour). @An2012 asks,
+@An2012 reviewes humans as agents in agent-based models of social-ecological systems. @An2012 ties this in with complexity theory, and distinguishes *agent-based* from *individual-based* models in a useful way -- with agent-based models being defined more by attention to decision making processes (as in models of human behaviour). @An2012 asks,
 
 > (a) What methods, in what manner, have been used to model human decision-making and behavior?
 > (b) What are the potential strengths and caveats of these methods? 
