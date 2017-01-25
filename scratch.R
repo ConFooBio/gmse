@@ -265,7 +265,7 @@ sim <- gmse( observe_type  = 0,
              hunt          = FALSE,
              start_hunting = 95,
              time_max      = 100,
-             times_observe = 4
+             times_observe = 1
 );
 
 
