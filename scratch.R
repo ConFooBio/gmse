@@ -257,7 +257,16 @@ time_taken <- proc_end - proc_start;
 ################################################################################
 
 
-
+sim <- gmse( observe_type  = 0,
+             agent_view    = 20,
+             res_death_K   = 400,
+             res_birth_K   = 100000,
+             plotting      = TRUE,
+             hunt          = FALSE,
+             start_hunting = 95,
+             time_max      = 100,
+             times_observe = 4
+);
 
 
 

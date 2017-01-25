@@ -39,6 +39,7 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - [25 JAN 2017](#u-25-JAN-2017)
  - [24 JAN 2017](#u-24-JAN-2017)
  - [23 JAN 2017](#u-23-JAN-2017)
  - [22 JAN 2017](#u-22-JAN-2017)
@@ -75,6 +76,22 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-25-JAN-2017">Update: 25 JAN 2017</a>
+
+**NEW ISSUE 12: Observe multiple times for density estimator**
+
+Currently, estimating total population size using a sub-sample of observed area and assuming that the density of this sub-sample reflects global density (`method = case 0`) only works when one sub-sample is taken. There are multiple ways of fixing this so that the population size estimate takes into account multiple sub-samples. It would be a good idea to think about the most efficient way to do this and program it into R (perhaps with `tapply` to start, but eventually in the `manager.c` function, maybe).
+
+**NEW ISSUE 11: Permanently move agents**
+
+Allow agents to move in each time step, permanently, in some way. This might be best done through the `anecdotal` function. As of now, they go back to their original place at the end of each time step, and it would be good to have an option to let them move all around the landscape.
+
+**Agent-based modelling in economics -- potentially useful ideas**
+
+@Phan2003 briefly summarises the emerging (at least, at the time emerging) field of Agent-based Computational Economics, noting that agent-based models can complement mathematical theory in economics especially when equilibrium conditions cannot be easily computed or attained by agents. Relating agent-based models to cognitive economics, @Phan2003 notes that the latter ''is an attempt to take into account the incompleteness of information in the individual decision making process'', which seems especially relevant to G-MSE. The program [SWARM](https://en.wikipedia.org/wiki/Swarm_(simulation)) might be useful to explore -- written in java though. Software like SWARM, [MODULECO](http://www.gemass.fr/dphan/moduleco/english/moduleco12.htm), and [CORMAS](http://cormas.cirad.fr/en/outil/presentation/) appear to have a similar interface as G-MSE has (or will have), but I think that writing G-MSE from the ground up was definitely the right choice. This makes G-MSE more targeted to a specific social-ecological problem, allowing it to be written in a way that is computationally efficient, but can also be accessible through a browser by end users without proficiency in R (regarding efficiency, current simulation times for the model itself are: 100 time steps = `0.241` seconds, 1000 time steps = `3.179` seconds, and 10000 time steps = `27.740` seconds; I can't imagine anyone would want simulations longer than 1000 time steps, but the efficiency allows many replicate simulations in a time frame that will not be an issue for serious research -- especially if run in parallel. Things do slow a bit when more individuals are needed, but I've simulated 100 time steps with over 100000 individuals and found the simulation to take only `22.8` seconds. Memory might be an issue, but I'm currently storing entire resource and observation histories -- an option to not do this would cut back massively).
+
+
 
 > <a name="u-24-JAN-2017">Update: 24 JAN 2017</a>
 
@@ -1538,6 +1555,8 @@ Nellemann, C., Jordhoy, P., Stoen, O. G., & Strand, O. (2000). Cumulative impact
 Nellemann, C., Vistnes, I., Jordhoy, P., Strand, O., & Newton, A. (2003). Progressive impact of piecemeal infrastructure development on wild reindeer. Biological Conservation, 113(2), 307–317. https://doi.org/10.1016/S0006-3207(03)00048-X
 
 Olaussen, J. O., & Skonhoft, A. (2008). On the economics of biological invasion: An application to recreational fishing. Natural Resource Modeling, 21(4), 625–653. https://doi.org/10.1111/j.1939-7445.2008.00026.x
+
+Phan, D. (2003). From agent-based computational economics toward cognitive economics. In P. Bourgine & J.-P. Nadal (Eds.), Cognitive Economics: An Interdisciplinary Approach (pp. 369–396). London: Springer. https://doi.org/10.1016/j.joep.2004.12.002
 
 Rumpff, L., Duncan, D. H., Vesk, P. A., Keith, D. A., & Wintle, B. A. (2011). State-and-transition modelling for Adaptive Management of native woodlands. Biological Conservation, 144(4), 1244–1235. http://doi.org/10.1016/j.biocon.2010.10.026
 
