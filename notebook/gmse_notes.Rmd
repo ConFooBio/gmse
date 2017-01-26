@@ -39,6 +39,7 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - [26 JAN 2017](#u-26-JAN-2017)
  - [25 JAN 2017](#u-25-JAN-2017)
  - [24 JAN 2017](#u-24-JAN-2017)
  - [23 JAN 2017](#u-23-JAN-2017)
@@ -76,6 +77,48 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-26-JAN-2017">Update: 26 JAN 2017</a>
+
+**Fleshing out the use of Genetic Algorithms for G-MSE**
+
+I'm becoming more convinced that some sort of genetic algorithm is the best way to model the strategies of **all** agents, including managers and stake-holders. Here is a rough overview of how I see the next step of the software development process:
+
+ - Insert columns into the `AGENT` data frame that represent utility values associated with each type of resource. This will effectively quantify how much of each resource managers and stake-holders *want*. For example, while managers might prefer a balance of resources (perhaps the average of stake-holders?), stake-holders might prefer to maximise only one resource with little or no concern for another (or to actually prefer some resource quantities to be minimised). The utility values of each agent will be used as variables in a *utility function*, which will calculate agents' *satisfaction* (or *happiness* or *contentness*) with a current situation of resource quantities (note: this utility function need not be linear -- for some stake-holders, I'd expected it to be more log-linear, but it might be good to try different functions and ask real stake-holders what they think). Hence, a function `calc_utility` will be needed.
+ 
+ - Insert another set of columns into `AGENT` that influences agent *actions* -- how managers and stake-holders will do *something* in their environment. This can be thought of as analagous to genes affecting an organisms phenotype in an evolutionary model, but will have different types of effects for agents:
+    - Column values will directly affect manager decisions, establishing rules (i.e., the game) for stake-holders. A `manager` function will therefor be needed.
+    - Column values will directly affect stake-holder actions -- i.e., how they will play the game. A `user` function will therefore be needed.
+  
+ - The second set of `AGENT` columns affecting manager and stake-holder actions will be updated before every decision using a [genetic algorithm](https://en.wikipedia.org/wiki/Genetic_algorithm). This will require a separate `opt_utility` function. This general function will work as follows:
+    - Read in an agent (or a type of agent) and identify their utility values associated with each resource type (first new columns) and their actions (second new columns).
+    - Read in the resources.
+    - Read in the most recent observer estimates.
+    - Read in the most recent game rules.
+    - Use the `calc_utility` to calculate the utility of the agent of interest.
+    - Use the agent of interest to produce a new data array of 10 pseudo-agents of the same type with randomised *action* variables. Next:
+        1. For 20 generations
+        2. Have each pseudo-agent produce 100 offspring with random recombination among pseudo-agents, and random mutation, for each *action* variable.
+        3. Use the `manager` or `user` function for managers or stake-holders (perhaps need an R and C version of these functions -- c for here, R for later), respectively, to temporarily simulate each offspring's decision if used in one or more previous time steps (e.g., by using the current `AGENT` values)
+        4. Use `calc_util` to find the utility associated with the simulated decision in 2 -- this effectively tests each pseudo-agent to see if their *action* variables are good at maximising utility.
+        5. Grab the 10 pseudo-agents with the highest utility values and go back to step 2.
+        6. If after 20 generations, mean utility values have not gotten sufficiently larger, stop and grab the pseudo-agent with the highest value -- its *action* variable values then replace those of the original agent.
+    - The above could be speeded up by making one of the original pseudo-agents be the actual agent -- assuming strategies won't change much over time.
+    
+ - The above genetic algorithm can be used both for maangers maximising utility through establishing game rules and for stake-holders maximising utility by affecting resources. The idea is to have the general `opt_utility` to optimise what an agent does to maximise their utility through the use of a general genetic algorithm (perhaps simulating human planning, if it were as good as adaptation by natural selection, which I don't think it is).
+ 
+ - This entire process will need to go into one `c` function for reasons of efficiency -- we're going to add some time onto these simulations, but I think it will be worth it provided we:
+    - Consider some tricks for optimisation, such as using previous time step values as seeds in later time steps.
+    - Make this process optional, with alternatives of specifying strategies *a priori* (perhaps empirically derived ones) and allowing the end user to input decisions as the simulation proceeds.
+    - Are not too strict about convergence in optimisation -- I don't think we need to be, as we're not really trying to model **perfectly rational** agents so much as **intelligent** agents.
+
+ - So, **perhaps**, the `manager.r` function will take in all of the necessary information and send it to c, and then c will go through the entire process of potentially automating manager interpretation of observation data and decision of making game rules based on manager utility values. Other management options will of course be available. 
+ 
+ - Then, the `user.r` function will likewise take all of the necessary information and send it to c to go through the entire process of automating stake-holder interpretation of the manager's rules and updated actions based on stake-holder utility valuse. Other user options will of course be available.
+ 
+ - This removes the need for a specific game arena, `games.R`, because the game is defined by `manager.r` and effectively played by users in `user.r`. The novelty is that we're using evolutionary game theory under the hood in both management and stake-holder actions to infer broader patterns about how cooperation and conflict might arise when all parties are acting according to their own interest.
+
+I think this is getting on the right track, and I am starting to see how the code will look and run. We also might want to include a spatial component to all of this, affecting both manager and user actions. For example, perhaps some stake-holders can only have their utility functions affected by or act in resources within certain areas of the landscape.
 
 > <a name="u-25-JAN-2017">Update: 25 JAN 2017</a>
 
