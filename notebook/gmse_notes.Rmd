@@ -1571,6 +1571,8 @@ Manfredo, M. J., Bruskotter, J. T., Teel, T. L., Fulton, D., Schwartz, S. H., Ar
 
 Mansson, J., Nilsson, L., & Hake, M. (2013). Territory size and habitat selection of breeding Common Cranes (Grus grus) in a boreal landscape. Ornis Fennica, 90(2), 65–72.
 
+Marks, R. E. (1992). Breeding hybrid strategies: optimal behaviour for oligopolists. Journal of Evolutionary Economics, 2(1), 17–38. https://doi.org/10.1007/BF01196459
+
 McAvoy, A., & Hauert, C. (2015). Asymmetric evolutionary games. PLoS Computational Biology, 11(8), e1004349. https://doi.org/10.1371/journal.pcbi.1004349
 
 Mccann, R. K., Marcot, B. G., & Ellis, R. (2006). Bayesian belief networks: applications in ecology and natural resource. Canadian Journal of Forest Research, 36, 3053–3062.
