@@ -39,6 +39,7 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - [27 JAN 2017](#u-27-JAN-2017)
  - [26 JAN 2017](#u-26-JAN-2017)
  - [25 JAN 2017](#u-25-JAN-2017)
  - [24 JAN 2017](#u-24-JAN-2017)
@@ -77,6 +78,26 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-27-JAN-2017">Update: 27 JAN 2017</a>
+
+I've been doing a bit more literature review on the subject of genetic algorithms, particularly as applied to economic and social-ecological questions [e.g., @Balmann2000; @Ascough2008]. Given the need to keep things computationally efficient while also repeatedly updating agent strategies, I think it's worth defining `AGENTS` as an `integer` array (I'm not sure why `RESOURCES` can't also be one, actually, so it might be worth checking on this) instead of a `double`. Supporting this:
+
+ - There is really nothing currently in the `AGENT` array that *needs* to be a non-integer. the closest thing is a parameter affecting movement, but this can be made into an `int`, I should think. It might also help if the parameter affecting `error` was continuous, though I'm not yet convinced it *must* be -- `error` could just be the probability of error from zero to 100, interpreted as 0 to 1.0 by increments of 0.01.
+ - Similarly, there really isn't anything in `RESOURCES` that *needs* to be a non-integer either. The probabilities of removal (i.e., death) and growth (i.e., birth) are the closest, but I don't know if there's any good reason to have these be especially precise -- i.e., why not just have an `int` value from zero to 100, corresponding to a 0.01 to 1.0 probability of mortality later? That way, the whole array could be `int`. I suspect the same can be done for the birth parameter, though the case is certainly less convincing than for the agent array.
+ 
+**NEW ISSUE 13: Switch agent array to type int** 
+ 
+In light of the above reasoning, I think I'll plan to switch `AGENTS` to an `int` type, then see how this affects things. Using integers to define 'genotypes' that affect agent strategies would permit the use of [bitwise operators](http://graphics.stanford.edu/~seander/bithacks.html) to increase speed at a very computationally intense part of the model (genetic algorithm mutation and selection). The size of an `int` [must be](https://en.wikipedia.org/w/index.php?title=C_data_types&oldid=376652910#Size) at least 16 bits in c, so a signed `int` could correspond to $2^{15} - 1 = 32,767$ unique values -- plenty, I would think, for coding a sufficient number of strategies. I'll want to do a bit more digging to see how much this could be expected to speed up the genetic algorithm (see [here](http://softwareengineering.stackexchange.com/questions/207408/is-it-necessary-to-map-integers-to-bits-in-a-genetic-algorithm) ). Of course, if it's trivial, then using `double` and columns affecting behaviour is probably just fine. But if speed is an issue, a vector of `int` values could really be better than several columns of `double` values; I'm just not sure what would have to be sacrificed yet. Quick random number sampling will be needed.
+
+**Having second thoughts about binary encoding**
+
+I'm not entirely convinced yet, actually that [binary instead of real](http://www.obitko.com/tutorials/genetic-algorithms/encoding.php) encoding is needed. One advantage of real encoding, besides that it fits a bit more easily into the current data structure I'm using, is that it might converge on optimal strategies sooner even if the bitwise calculations are faster [@Salomon1996]. Note that phenotypes in bitwise encoding are affected by both the position and value of bytes, whereas phenotypes in real encoding are only affected by the value of real numbers [@Kumar2013]. There are some techniques to [map binary values to real numbers](http://webpages.iust.ac.ir/yaghini/Courses/AOR_872/Genetic%20Algorithms_03.pdf), though I've not yet found anything comparing the efficiency of binary versus real encoding, but @Salomon1996 argued that real encoding was the best choice of applying genetic algorithms to optimisation -- I think this might be the way to go, though I'll want to think about how crossing over and mutation will work efficiently. **I'm not entirely sure I do want to finish issue 13.** In the end, using `int` instead of `double` could cut the memory in half, but this would be almost useless for the `AGENT` array -- if it could be done for the `RESOURCES` array, it might be more useful, but R doesn't differentiate, so it really won't matter that much, if at all.
+
+**REMOVING ISSUE 13: Convinced myself that this was a bad idea**
+
+Note that @Balmann2000 writes that ''population size usually ranges between 10 to 50'', though from population-genetics perspective, this seems too small to me.
+
 
 > <a name="u-26-JAN-2017">Update: 26 JAN 2017</a>
 
