@@ -39,6 +39,7 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - [29 JAN 2017](#u-29-JAN-2017)
  - [27 JAN 2017](#u-27-JAN-2017)
  - [26 JAN 2017](#u-26-JAN-2017)
  - [25 JAN 2017](#u-25-JAN-2017)
@@ -78,6 +79,12 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-29-JAN-2017">Update: 29 JAN 2017</a>
+
+**Sunday musings**
+
+As a bit of an aside, I'm thinking about how [biological degeneracy](https://en.wikipedia.org/wiki/Degeneracy_(biology)) might fit in to the efficacy of management policies, given that multiple independent agents might affect a biological system in different ways. I think that degeneracy is interesting and probably greatly under-considered across all biological scales, but it appears entirely absent as a theoretical or practical consideration in conservation and the maintenance of ecosystem function. @Man2016 very recently developed the theory to quantify *degeneracy*, doing so while simulating networks of complex neoronal systems characterised by non-linearity -- specifically comparing degeneracy to *redundancy* and *complexity*, which were also defined mathematically. I think there's a lot of room for theoretical development on degeneracy, and a lot of scope for the application of degeneracy theory to big questions in evolutionary ecology, community ecology, and conservation biology. The modelling in G-MSE is general enough to be potentially able to address these kinds of questions, perhaps using the mathematical definitions introduced by @Man2016 for analysis of simulation results.
 
 > <a name="u-27-JAN-2017">Update: 27 JAN 2017</a>
 
@@ -1626,6 +1633,8 @@ Janssen, M. A., Holahan, R., Lee, A., & Ostrom, E. (2010). Lab experiments for t
 Karlsson, S., Diserud, O. H., Fiske, P., & Hindar, K. (2016). Widespread genetic introgression of escaped farmed Atlantic salmon in wild salmon populations. ICES Journal of Marine Science, 0, fsw121. https://doi.org/10.1093/icesjms/fsw121
 
 Liu, Y., Diserud, O. H., Hindar, K., & Skonhoft, A. (2013). An ecological-economic model on the effects of interactions between escaped farmed and wild salmon (Salmo salar). Fish and Fisheries, 14(2), 158–173. http://doi.org/10.1111/j.1467-2979.2012.00457.x
+
+Man, M., Zhang, Y., Ma, G., Friston, K., & Liu, S. (2016). Quantification of degeneracy in Hodgkin-Huxley neurons on Newman-Watts small world network. Journal of Theoretical Biology, 402, 62–74. http://doi.org/10.1016/j.jtbi.2016.05.004
 
 Manfredo, M. J., Bruskotter, J. T., Teel, T. L., Fulton, D., Schwartz, S. H., Arlinghaus, R., ... Sullivan, L. (2016). Why social values cannot be changed for the sake of conservation. Conservation Biology. Accepted. https://doi.org/10.1111/cobi.12855.This
 
