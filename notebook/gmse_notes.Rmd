@@ -65,6 +65,8 @@ library(rhandsontable)
 
 [References consulted and annotated (Mendeley)](#ref)
 
+[References cited](#cited)
+
 ********************************************************************************
 
 <a name="updates">Project updates:</a>
@@ -1737,5 +1739,5 @@ Whitacre, J. M. (2010). Degeneracy: a link between evolvability, robustness and 
 Wright, G. D., Andersson, K. P., Gibson, C. C., & Evans, T. P. (2016). Decentralization can help reduce deforestation when user groups engage with local government. Proceedings of the National Academy of Sciences, 201610650. https://doi.org/10.1073/pnas.1610650114
 
 
-References Cited
+<a name="cited">References cited</a>
 -----------------------------------------
