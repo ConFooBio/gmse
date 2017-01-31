@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **JAN** [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
+     - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
  
  - **2016**
 
@@ -69,6 +69,32 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-31-JAN-2017">Update: 31 JAN 2017</a>
+
+**Implementation of agent strategies**
+
+More needs to be planned for the input and output of agent strategies. That is, what variables should and should not be available to managers and stake-holders when optimising strategies through the genetic algorithm, and how should these variables be incorporated into a strategy that causes agents to take one or more actions? Note, there are plenty of resourecs for incorporating multiple objectives into genetic algorithms [e.g., @Fonseca1998; @Fonseca1993; @ReyHorn1993; @Jaszkiewicz2002], so agents can be complex in their utility functions. What I'm talking more about is *what do agents get to consider when optimising to maximise their own utility functions*? And *what kinds of actions do stake-holders engage in upon formulating a strategy?* **Once the answers to these questions are clear, it will possible to start the process of coding `manager` and `user` functions**. Some potential things to consider as variables affecting manager and stake-holder strategies:
+
+ - Observed density of resources produced by manager reports. This could as reported from the observation function (or as statistics from an analysis on these observations), or perhaps something directly from the `RESOURCE` array if resources are meant to be known (e.g., if hunting licenses or crop yields are modelled as resources). 
+ - Direct knowledge of and interest in some spatially restricted area, perhaps representing a stake-holder's farm or other property -- or their common hunting grounds. Stake-holders utility functions might therefore be particularly affected by the *distribution* of resources and any management policy that explicitly considers geography. I've not seen models that do anything like this, but given the importance of local interests and therefore spatial dynamics in ConFooBio case studies, and in conservation more generally, I think spatial distribution needs to be included.
+ - History of resource abundance distributions, perhaps placing diminishing weight on older resource abundances and distributions.
+ - History of previous management policies and stake-holder actions.
+ - Uncertainty associated with any of the previous bullet points.
+ 
+Some things to consider as potential actions (outputs) of `manager` and `user` functions:
+
+ - A general approach to management; i.e., will the manager allow users to hunt resources? Will they protect areas of landscape so that some resources cannot move into these areas? Will they cull resources themselves, or castrate them (`birth_rate = 0`), perhaps at some cost that should be considered explicitly? There are probably some high-level decisions to consider here, and it would be ideal to have many possibilities to choose from.
+ - Will manager decisions be biased by resource age or type (e.g., sex), or by resource location? This could get very complex, but space is going to be important.
+ - How are stake-holder agents going to respond to management decisions? Will they simply act to maximise their own utility within the rules set by management, or are these rules break-able if the cost to doing so is sufficiently low?
+ - Can stake-holders 'lobby' managers, or other stake-holders, affecting their utility values and therefore their utility functions?
+ - Are stake-holders limited by time or costs in some way? Should each be given some sort of budget (or should mangers?) that allows them to take certain actions, hence imposing a trade-off on things that they can do? Should this budget be affected by resources (e.g., crop yield)?
+
+Neither of these lists are exhaustive, and the input and output options could get very complex. I think that this is okay as long as it doesn't cause the program to be too inefficient, intractable, or unrealistic. We want the options available to managers and stake-holders to reflect those of real systems as much as possible, but it is also worth thinking about whether some options can be safely pruned out of the software, or at least tabled for a later time.
+
+**Note**, it *might* be that for most stake-holders, the strategy is really obvious -- always act in such a way as to maximise the resources that you're interested in -- no need to optimise much then because the action to take is clear. For managers, however, I can imagine that the decision will always be a bit more challenging, requiring trade-offs between the interests of different stake-holders in determining policy.
+
+**Also Note**, there should be no need to tell managers what kind of approach to take with respect to policy (though this should be an option, of course). The genetic algorithm should be able to handle this sort of thing -- indeed, we might just see very different approaches come out of this model organically as a consequence of different resource abundances and distributions and stake-holder interactions. For example, between time steps, we might see managers switch from establishing a global hunting quota to prohibiting hunting and constructing fences (protected areas of landscape) instead; all we need to do is allow some sort of `switch` to affect manager's general approach, then incorporate this `switch` variable into the genetic algorithm.
 
 > <a name="u-30-JAN-2017">Update: 30 JAN 2017</a>
 
