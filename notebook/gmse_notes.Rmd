@@ -1676,6 +1676,8 @@ Bunnefeld, N., Hoshino, E., & Milner-Gulland, E. J. (2011). Management strategy 
 
 Chollett, I., Garavelli, L., O’Farrell, S., Cherubin, L., Matthews, T. R., Mumby, P. J., & Box, S. J. (2016). A Genuine Win-Win: Resolving the ``Conserve or Catch’’ Conflict in Marine Reserve Network Design. Conservation Letters, 0(0), 1–9. https://doi.org/10.1111/conl.12318
 
+Cobano, J. A., Conde, R., Alejo, D., & Ollero, A. (2011). Path planning method based on Genetic Algorithms and the Monte-Carlo method to avoid aerial vehicle collisions under uncertainties. In Proceedings of the IEEE International Conference on Robotics and Automation (pp. 4429–4434). https://doi.org/10.1109/ICRA.2011.5980246
+
 Colyvan, M., Justus, J., & Regan, H. M. (2011). The conservation game. Biological Conservation, 144(4), 1246–1253. http://doi.org/10.1016/j.biocon.2010.10.028
 
 Duffy, R., St John, F. A. V, Büscher, B., & Brockington, D. (2016). Toward a new understanding of the links between poverty and illegal wildlife hunting. Conservation Biology, 30(1), 14–22. https://doi.org/10.1111/cobi.12622
