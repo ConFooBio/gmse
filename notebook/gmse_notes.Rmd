@@ -41,6 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
+     - **FEB** [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
  
  - **2016**
@@ -71,6 +72,26 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-31-FEB-2017">Update: 1 FEB 2017</a>
+
+**More thinking about agent fitness functions**
+
+While I have a general idea of how to implement the genetic algorithm now, how agents make decisions and act on them is still not clear from a modelling perspective, so more critical thinking needs to be done here before any coding. Unlike the `resource` and `observation` models, I also think it might be better, given the complexity, to write a prototype of the code in R to show proof of concept before optimising the code in c. One thing that I think every agent needs will be some sort of *total budget* (note, this budget is not necessarily currency -- at the moment, I'm thinking about it more like a time budget; it's also possible we'll need two budgets, giving the option of one used explicitly for time and the other for currency, but I'm keeping it simple for now). This will give us the option of constraining agents' behaviours if desired so that agents cannot take unrealistic actions to increase their utility, and instead might have to consider trade-offs between different actions. For example, a farmer might be able to either tend crops, scare or kill organisms, build fence, or lobby the manager to increase utility, even though the *best* thing to do would be all four. A utility function would then determine how a combination of actions maps to utility, and a genetic algorithm could find the optimal behaviour to get the highest utility. We might consider different stake-holders, or different types of stake-holders, to have different total budgets from which to make decisions -- these budgets could also be affected by, and affect, `RESOURCES`. 
+
+In the software, what this might look like is each `AGENT` having the opportunity to modify the following:
+
+  - Other agents' *utility values* (lobbying)
+  - Other agents' *actions* (harassment or intimidation)
+  - Resource mortality (hunting)
+  - Resource birth rate (castration)
+  - Resource location (scaring)
+  - Landscape movement ease (fencing)
+  - Landscape productivity (farming)
+
+Note that this way of conceptualising the implementation of actions is broad enough to include managers (who might lobby stake-holders, or intimidate them through laws to not do something). There might be other things to consider, but this suggests to me at least seven potential variables that an agent could affect, and agents will need to maximise their utility using a genetic algorithm that tweaks all of these parameter values -- ideally it would also take into account past actions of other agents to predict utility.
+
+Agents might also be spatially restricted in their ability to perform any of these actions, thus making strategy dependent upon location (e.g., a farmer might not be able to hunt in certain areas). Here the option to define `type2` agents could come in hand -- one agent might be represented by multiple rows of the `AGENT` array with actions for each type `type2`, but each row having a unique `xloc` and `yloc`, thereby representing land owned. Managers could *own* all land, or just public land if they cannot do anything on stake-holder land. Some agents might have locations of -1 (or lower), meaning that they cannot do anything that requires control of land.
 
 > <a name="u-31-JAN-2017">Update: 31 JAN 2017</a>
 
