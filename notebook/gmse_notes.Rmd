@@ -73,7 +73,7 @@ library(rhandsontable)
 <a name="updates">Project updates:</a>
 ================================================================================
 
-> <a name="u-31-FEB-2017">Update: 1 FEB 2017</a>
+> <a name="u-1-FEB-2017">Update: 1 FEB 2017</a>
 
 **More thinking about agent fitness functions**
 
