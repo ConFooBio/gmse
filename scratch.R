@@ -348,3 +348,148 @@ arrows(x0=139, x1=122, y0=69, y1=62, lwd=2, length=0.15);
 arrows(x0=121, x1=138, y0=16, y1=54, lwd=2, length=0.15);
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+par(mar=c(0,0,0,0),mfrow=c(2,1));
+plot(x=0, y=0, type="n", xlim=c(0,100), ylim=c(0,100), xaxt="n", yaxt="n",
+     xlab="",ylab="");
+# ------- G-MSE logo below:
+text(x=0,y=97,pos=4,family="mono",labels="  ____       __  __ ____  _____ ");
+text(x=0,y=90,pos=4,family="mono",labels=" / ___|     |  \\/  / ___|| ____|");
+text(x=0,y=83,pos=4,family="mono",labels="| |  _ ____ | |\\/| \\___ \\|  _|  ");
+text(x=0,y=76,pos=4,family="mono",labels="| |_| |____|| |  | |___) | |___ ");
+text(x=0,y=69,pos=4,family="mono",labels=" \\____|     |_|  |_|____/|_____|");
+lines(x=1:100,y=rep(99,100),lwd=3,col="red");
+lines(x=1:100,y=rep(64,100),lwd=3,col="blue");
+lines(x=rep(0,36),y=64:99,lwd=3,col="yellow");
+lines(x=rep(100,36),y=99:64,lwd=3,col="orange");
+polygon(x=c(rep(14,16),14:40,rep(40,16),40:14), # box
+        y=c(40:55,rep(40,27),55:40,rep(55,27)),
+        lwd=3,border="black");
+text(x=27,y=50,labels="Long-term data", cex=0.65);
+text(x=27,y=45,labels="input as CSV file", cex=0.65);
+polygon(x=c(rep(45,16),45:90,rep(90,16),90:45), # box
+        y=c(40:55,rep(40,46),55:40,rep(55,46)),
+        lwd=3,border="black");
+text(x=65,y=50,labels="Set key parameters using", cex=0.65);
+text(x=65,y=45,labels="any of the below", cex=0.65);
+arrows(x0=65, x1=1, y0=40, y1=31, lwd=2, length=0.00);
+arrows(x0=65, x1=100, y0=40, y1=31, lwd=2, length=0.00);
+
+polygon(x=c(rep(1,20),1:15,rep(15,20),15:1), # box
+        y=c(11:30,rep(30,15),30:11,rep(11,15)),
+        lwd=3,border="black");
+text(x=8,y=25,labels="Browser", cex=0.65);
+text(x=8,y=20,labels="Interface", cex=0.65);
+
+polygon(x=c(rep(21,20),21:35,rep(35,20),35:21), # box
+        y=c(11:30,rep(30,15),30:11,rep(11,15)),
+        lwd=3,border="black");
+text(x=28,y=25,labels="R", cex=0.65);
+text(x=28,y=20,labels="Interface", cex=0.65);
+
+polygon(x=c(rep(41,20),41:100,rep(100,20),100:41), # box
+        y=c(11:30,rep(30,60),30:11,rep(11,60)),
+        lwd=3,border="black");
+text(x=68,y=25,labels="Separate calls to high-level R files", cex=0.65);
+text(x=68,y=20,labels="R files call from C independently", cex=0.65);
+
+arrows(x0=15, x1=20, y0=20, y1=20, lwd=2, length=0.08);
+arrows(x0=35, x1=41, y0=20, y1=20, lwd=2, length=0.08);
+arrows(x0=68, x1=1, y0=11, y1=2, lwd=2, length=0.00);
+arrows(x0=65, x1=100, y0=11, y1=2, lwd=2, length=0.00);
+
+text(x=56, y=0, cex=0.60,
+     labels="(Use long-term data in Natural Resource Model before MSE)"
+);
+
+# ===============================================================
+plot(x=0, y=0, type="n", xlim=c(0,100), ylim=c(0,100), xaxt="n", yaxt="n",
+     xlab="",ylab="");
+# Manager model box
+polygon(x=c(rep(1,30),1:30,rep(30,30),30:1), # box
+        y=c(70:99,rep(99,30),99:70,rep(70,30)),
+        lwd=3,border="red");
+# User model box
+polygon(x=c(rep(70,30),70:99,rep(99,30),99:70), # box
+        y=c(70:99,rep(99,30),99:70,rep(70,30)),
+        lwd=3,border="orange");
+# Obeservation model box
+polygon(x=c(rep(1,30),1:30,rep(30,30),30:1), # box
+        y=c(1:30,rep(30,30),30:1,rep(1,30)),
+        lwd=3,border="yellow");
+# Natural resources model
+polygon(x=c(rep(70,30),70:99,rep(99,30),99:70), # box
+        y=c(1:30,rep(30,30),30:1,rep(1,30)),
+        lwd=3,border="blue");
+# Natural resources model
+polygon(x=c(rep(36,30),36:65,rep(65,30),65:36), # box
+        y=c(36:65,rep(65,30),65:36,rep(36,30)),
+        lwd=3,border="green");
+arrows(x0=15, x1=35, y0=30, y1=45, lwd=2, length=0.15);
+arrows(x0=30, x1=45, y0=85, y1=67, lwd=2, length=0.15);
+arrows(x0=85, x1=85, y0=70, y1=30, lwd=2, length=0.15);
+arrows(x0=70, x1=30, y0=15, y1=15, lwd=2, length=0.15);
+arrows(x0=36, x1=23, y0=50, y1=69, lwd=2, length=0.15);
+arrows(x0=52, x1=69, y0=66, y1=80, lwd=2, length=0.15);
+text(x=38, y=80, labels="Policy", srt=-38);
+text(x=50, y=20, labels="Monitoring");
+text(x=22, y=40, labels="Indicators", srt=28);
+text(x=90, y=52, labels="Off-take", srt=-90);
+# Manager model details: 
+text(x=15, y=95, cex=0.75,labels="Manager model");
+text(x=15, y=90, cex=0.75,labels="file: manager.c");
+text(x=15, y=85, cex=0.75,labels="In: Obs. Data");
+text(x=15, y=80, cex=0.75,labels="Out: Game para.");
+# Bayesion priors details: 
+text(x=50, y=60, labels="Genetic algorithm", cex=0.8, col="darkgreen");
+text(x=50, y=50, cex=0.75,labels="Update manager");
+text(x=50, y=45, cex=0.75,labels="or user strategy");
+text(x=50, y=40, cex=0.75,labels="file: game.c");
+# Manager model details: 
+text(x=85, y=95, cex=0.75,labels="User model");
+text(x=85, y=90, cex=0.75,labels="file: user.c");
+# Natural resources model details: 
+text(x=85, y=25, cex=0.75,labels="Natural");
+text(x=85, y=20, cex=0.75,labels="resources model");
+text(x=85, y=15, cex=0.75,labels="file: resources.c");
+# Natural resources model details: 
+text(x=15, y=25, cex=0.75,labels="Observ. model");
+text(x=15, y=20, cex=0.75,labels="file: observe.c");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
