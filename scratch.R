@@ -345,7 +345,15 @@ text(x=167, y=20, labels="replace", col="black");
 text(x=167, y=8, labels="converge?", col="black");
 arrows(x0=46, x1=138, y0=85, y1=85, lwd=2, length=0.15);
 arrows(x0=139, x1=122, y0=69, y1=62, lwd=2, length=0.15);
-arrows(x0=121, x1=138, y0=16, y1=54, lwd=2, length=0.15);
+#arrows(x0=121, x1=138, y0=16, y1=54, lwd=2, length=0.15);
+arrows(x0=139, x1=14.75, y0=5, y1=5, lwd=2, length=0.0);
+arrows(x0=15, x1=15, y0=5, y1=70, lwd=2, length=0.15);
+arrows(x0=55, x1=55, y0=5, y1=85, lwd=2, length=0.15);
+text(x=10, y=35, labels="Yes", col="black", srt=90);
+text(x=50, y=35, labels="No", col="black", srt=90);
+arrows(x0=121, x1=128.75, y0=16, y1=16, lwd=2, length=0);
+arrows(x0=128, x1=128, y0=16, y1=55, lwd=2, length=0);
+arrows(x0=128.75, x1=138, y0=55, y1=55, lwd=2, length=0.15);
 
 
 
