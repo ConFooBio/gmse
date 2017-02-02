@@ -192,6 +192,122 @@ Perhaps what we really want to do is tidy up the observational data? The `manage
 
 There is a bit of fuzziness here that should perhaps be better cleared out with planning. Currently the `observation.R` function requires a type and category type to be specified. In other words, the observation function has been constructed (deliberately) to look at one type at a time. This is probably good -- no need to change it, but for a simulation where multiple resources are being managed, `observation()` will need to be run multiple times. I think that the best thing to do in this case is to store observation data frames in a list, such that `OBSERVATION[[1]]` stores type 1 and `OBSERVATION[[2]]` type 2. This will keep the high-level resource types separate; within the list elements, other types (e.g. sex) and age can be managed, and we can pass each list element to the manager model separately to produce some output. The output can also be stored as a list `MANAGED[[1]]`, with all list elements subsequently being merged into one data frame -- *ideally in c*, but possibly before in R -- to go into the genetic algorithm. Again, a lot of the time all of this will just end up as one vector, with really just one number being of interest, but we want the model to stay flexible so that we can deal with eventual demands. The end result will be all of the information the manager is actually going to *use* to make decisions -- which may then be separated by resource type(s) and ages.
 
+> G-MSE will run an independent observation model for each type of resource of interest. The output of observations will be respresented by a list of arrays in R. Each array in the list will then independently be run by the manager model, each run of which will return an array of summary statistics that will be added to a new list. The list (or an array of concatenated elements -- merged data frames) will then be read into the genetic algorithm. Additionally, the manager model should also affect the landscape list/array too -- this will give the option of using resource distribution in making decisions; a simple increment for each time a resource is observed on an x y location should do.
+
+**Difficulties remain with the genetic algorithm**
+
+This brings us to the genetic algorithm itself. Once the ''managed'' data has been finalised by the manager model (or after the manager model has been run for each reasource), then the **genetic algorithm will take the managed data, the agent array, the landscape, and the parameter vector and output a new agent array in which elements of the manager's row have potentially been changed**. This models the process of the manager potentially receiving summary statistics, information about stake-holders, distributions of resources and stake-holders on the landscape (along with other landscape-level properties), and other globally relevant parameters and potentially adjusting their policy and even interests accordingly. Actions, interests, and costs are encoded in the agent's rows:
+
+ - Actions are things that managers can do themselves -- acting like a stake-holder, essentially.
+ - Utility amount is what the manager values and form the bases of action and cost decisions
+ - Costs affect how much of a user's budget needs to be spent to do some action (**Note that this should probably fit into the lobby idea from yesterday, as a specific instance of the more general idea**). The manager can, for example, effectively ban hunting by making it extremely costly -- or just coerce stake-holders not to hunt by increasing its cost. The manager can also encourage fences or scaring by decreasing their cost; a cost of zero is essentially the manager offering to do this for free, as if it benefits the stake-holder, the genetic algorithm will find it. A negative cost means that the manager pays the stake-holder to do it.
+ 
+I'm not sure if we *need* managers to be able to have their own actions given the point about zero costs, but I think leaving this option open is easy, even if it's rarely used. Having three blocks of column types (actions, utilities, and costs) also mght allow stake-holders to affect each others costs, potentially, so it's worth planning this way. I think the best way to do this is to probably have the dimensions of `AGENTS` be adjustable, based on how many columns are needed. Four columns would actionally be needed to optimse
+
+All of these values can be optimised as a consequence of data or other agents (for example, a high population size might cause the manager to allow more resources to be hunted or scared -- but more or angrier stake-holders might also causes this to happen). The interests of managers, obviously, should change before the actions, as how they act will depend on what they are interested in.
+
+The *actions* of managers, as changed through the genetic algorithm will be directly interpreted by users as policy. Hence the relevant row(s) of the agent array will feed into the user model. These rows will affect the *costs* of stake-holder actions (recall that each stake-holder has a total budget). The stake-holders react to these policies and simultaneously adjust their own actions (and potentially utility). 
+
+**A major challenge here is the sheer number of things that an agent could potentially do, and getting all of those options into the `AGENTS` array. Things that a set of columns is going to have to specify for an agent include:**
+
+ - The utility associated with each type of resource
+ - An action to directly affect each type of resource
+ - The cost of taking a *particular* action on a resource
+
+It seems as though there should be an action to directly affect the landscape in some way. E.g., fencing -- though I suppose a fence could just be a type of resource in the `RESOURCE` array. The problem is that if we allow users to directly affect resources *or* the landscape, then there has to be some sort of switch in the code to allow this. **If**, however, things like *fence* or *crop* is a resource, and therefore in the resource array, then agent actions could be restricted to subtracting or adding resources by adjusting the resource array. Then again, if a particular resource (e.g., a fence) is *not* in the resource array, then there is nothing to adjust. Of course, code-wise, is there really a difference between a fence and scaring? They both adjust the x y location of a resource. Maybe we really don't need much to do with the landscape -- just work with a *displacement* cost, leaving *how* resources are displaced to be abstract and interpreted by the end user of the software. 
+
+Just working with the idea that *displacement* is all the same (maybe leave some hooks in the code for adjusting the landscape), what we *really* need to know then is the following:
+
+ - How much utility each agent gives to each resource
+ - What columns can be tweaked in the agent and resource arrays
+ - How much does each tweak of a column cost?
+
+Complicating things *even more*, costs might be different when adding or subtracting values from resources -- e.g., it might be not so costly to greatly decrease the birth rate of an organism, but increasing it by the same amount should be near impossible. **I'm not yet sure the best way to structure the arrays, or anything else, to handle all of these complications, so this will be a major project in the near future** (added to GitHub projects).
+
+**Internal structure of the genetic algorithm**
+
+Once I resolve the issue of how to structure the data so that the appropriate values on `AGENTS`, `RESOURCES`, and possibly even `LAND` arrays can be tweaked through the genetic algorithm, the internal structure will look something like the below.
+
+```{r, echo=FALSE, fig.height=5.5, fig.width=6}
+mbox <- function(x0, x1, y0, y1){
+    xx <- seq(from=x0, to=x1, length.out = 100);
+    yy <- seq(from=y0, to=y1, length.out = 100);
+    xd <- c(rep(x0, 100), xx, rep(x1,100), rev(xx));
+    yd <- c(yy, rep(y1,100), rev(yy), rep(y0, 100));
+    return(list(x=xd, y=yd));
+}
+
+par(mar=c(0,0,0,0));
+# ===============================================================
+plot(x=0, y=0, type="n", xlim=c(0,200), ylim=c(0,100), xaxt="n", yaxt="n",
+     xlab="",ylab="");
+# Manager model box
+text(x=22, y=95, labels="Data Frame", col="red");
+text(x=90, y=75, labels="Fitness function", col="blue");
+text(x=165, y=95, labels="Genetic algorithm", col="goldenrod4");
+abox <- mbox(x0 = 0, x1 = 45, y0 = 70, y1 = 90);
+polygon(x=abox$x, y=abox$y, lwd=3, border="red", col="rosybrown1");
+bbox <- mbox(x0 = 65, x1 = 120, y0 = 10, y1 = 70);
+polygon(x=bbox$x, y=bbox$y, lwd=3, border="blue", col="lightsteelblue1");
+cbox <- mbox(x0 = 140, x1 = 195, y0 = 0, y1 = 90);
+polygon(x=cbox$x, y=cbox$y, lwd=3, border="goldenrod4", col="gold3");
+dbox <- mbox(x0 = 142, x1 = 193, y0 = 75, y1 = 88);
+polygon(x=dbox$x, y=dbox$y, lwd=3, border="goldenrod4", col="white");
+ebox <- mbox(x0 = 142, x1 = 193, y0 = 63, y1 = 73);
+polygon(x=ebox$x, y=ebox$y, lwd=3, border="goldenrod4", col="white");
+fbox <- mbox(x0 = 142, x1 = 193, y0 = 51, y1 = 61);
+polygon(x=fbox$x, y=fbox$y, lwd=3, border="goldenrod4", col="white");
+gbox <- mbox(x0 = 142, x1 = 193, y0 = 39, y1 = 49);
+polygon(x=gbox$x, y=gbox$y, lwd=3, border="goldenrod4", col="white");
+hbox <- mbox(x0 = 142, x1 = 193, y0 = 27, y1 = 37);
+polygon(x=hbox$x, y=hbox$y, lwd=3, border="goldenrod4", col="white");
+ibox <- mbox(x0 = 142, x1 = 193, y0 = 15, y1 = 25);
+polygon(x=ibox$x, y=ibox$y, lwd=3, border="goldenrod4", col="white");
+jbox <- mbox(x0 = 142, x1 = 193, y0 = 3, y1 = 13);
+polygon(x=jbox$x, y=jbox$y, lwd=3, border="goldenrod4", col="white");
+box1 <-  mbox(x0 = 67, x1 = 118, y0 = 48, y1 = 68);
+polygon(x=box1$x, y=box1$y, lwd=3, border="blue", col="white");
+box2 <-  mbox(x0 = 67, x1 = 118, y0 = 36, y1 = 46);
+polygon(x=box2$x, y=box2$y, lwd=3, border="blue", col="white");
+box3 <-  mbox(x0 = 67, x1 = 118, y0 = 24, y1 = 34);
+polygon(x=box3$x, y=box3$y, lwd=3, border="blue", col="white");
+box4 <-  mbox(x0 = 67, x1 = 118, y0 = 12, y1 = 22);
+polygon(x=box4$x, y=box4$y, lwd=3, border="blue", col="white");
+text(x=22, y=80, labels="AGENTS", col="black");
+text(x=92, y=62, labels="Adj RES", col="black");
+text(x=92, y=57, labels="and AGENT", col="black");
+text(x=92, y=52, labels="values", col="black");
+text(x=92, y=42, labels="E[t+1] RES", col="black");
+text(x=92, y=29, labels="E[t+1] AGTs", col="black");
+text(x=92, y=16, labels="E[t+1] LAND", col="black");
+text(x=167, y=84, labels="add row 10X", col="black");
+text(x=167, y=79, labels="to 90 rand", col="black");
+text(x=167, y=69, labels="check fitness", col="black");
+text(x=167, y=57, labels="tournament", col="black");
+text(x=167, y=44, labels="crossover", col="black");
+text(x=167, y=32, labels="mutation", col="black");
+text(x=167, y=20, labels="replace", col="black");
+text(x=167, y=8, labels="converge?", col="black");
+arrows(x0=46, x1=138, y0=85, y1=85, lwd=2, length=0.15);
+arrows(x0=139, x1=122, y0=69, y1=62, lwd=2, length=0.15);
+arrows(x0=139, x1=14.75, y0=5, y1=5, lwd=2, length=0.0);
+arrows(x0=15, x1=15, y0=5, y1=70, lwd=2, length=0.15);
+arrows(x0=55, x1=55, y0=5, y1=85, lwd=2, length=0.15);
+text(x=10, y=35, labels="Yes", col="black", srt=90);
+text(x=50, y=35, labels="No", col="black", srt=90);
+arrows(x0=121, x1=128.75, y0=16, y1=16, lwd=2, length=0);
+arrows(x0=128, x1=128, y0=16, y1=55, lwd=2, length=0);
+arrows(x0=128.75, x1=138, y0=55, y1=55, lwd=2, length=0.15);
+```
+
+Essentially, the relevant row from `AGENTS` will be brought into the genetic algorithm; ten copies of the row will be added to 90 copies with random numbers. The fitness of all 100 copies will be checked in the fitness function -- the fitness function will adjust the resource and agent values according to the copy being assessed, and then some function needs to be called to predict what will happen to resouces and (possibly) agents and the landscape. Originally, I thought that this might be accomplished using the resource function itself, but I don't think this is best anymore -- mainly because it misses an error step (i.e., agents shouldn't be able to perfectly predict effects on resources). Perhaps it should just loop back through the observation data? Or the resources within view? It could then consider the effect of resources being removed on the agents own utility. It could be something as simple instead as: directly scare or remove resources from location -- does this decrease undesired resources from the location? Then lobby the manager: does the change in manager policy affected undesired resources form the location? In other words, should we just have agents look at the direct and immediate effects of what they're doing on a particular location. In the case of the manager, the location could be the entire landscape, perhaps incorporating birth and death rates into the fitness function?
+
+For tomorrow, it might be worth just working through some of the things that will definitely need to be coded. Alternatively, there are two definite challenges that remain for using the genetic algorithm:
+
+ 1. How will agents actually have their strategies tweaked -- what is the structure of the array that will identify parts of the resource and agent arrays that can be change, and at what cost?
+ 2. How will agents estimate their own fitness, especially given that such judgements will come with error and be limited in scope.
+
+
 > <a name="u-1-FEB-2017">Update: 1 FEB 2017</a>
 
 **More thinking about agent fitness functions**
