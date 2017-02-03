@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **FEB** [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
+     - **FEB** [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
  
  - **2016**
@@ -72,6 +72,28 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-3-FEB-2017">Update: 3 FEB 2017</a>
+
+**Late night (or early morning) idea**
+
+One way to solve the first major concern at the end of [yesterday's](#u-2-FEB-2017) notes could be to do the following: Create a new list `strategy` in which each element of the list corresponds to an individual agent, `strategy[[agent_i]]`. The element itself would be a data frame that is eight columns wide and 1000 (ish) rows down. The first six of eight columns would identify a particular *kind* of individual -- an agent or a resource. The columns would indicate a type as follows:
+
+  0. Agent versus Resource (which array)
+  1. IDs
+  2. type1
+  3. type2
+  4. type3
+  5. xloc (perhaps +/- view?)
+  6. yloc (perhaps +/- view?)
+  
+In the above, any negative values would indicate **all** individuals (i.e., disregard ID if 1 is -2) In all cases, some value The remain columns would define:
+
+  7. The column to affect of the particular type identified in the first six columns (7+ of the resouce or agent array)
+  8. The amount to affect it by
+  
+It could be a messy optimisation procedure, but this would ensure that agents could pinpoint which individuals to target, what to target, and by how much. The cost of doing so could be factored in perhaps by either: only enacting rows until actions are below the cost or constraining all actions to have an effect that is lower than the cost (e.g., by normalisation). There would need to be some error checks in it, but this could be the most flexible way to handle the search algorithm. The new structure would be either a list of data frames or (perhaps interpreted in c) a 3D array that is $1000 \times 8 \times agent_{number}$.
+
 
 > <a name="u-2-FEB-2017">Update: 2 FEB 2017</a>
 
