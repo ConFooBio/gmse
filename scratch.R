@@ -279,6 +279,13 @@ sim <- gmse( observe_type  = 0,
 
 
 
+
+
+
+
+
+
+
 ################################################################################
 ################################################################################
 ################################################################################
@@ -296,13 +303,12 @@ par(mar=c(0,0,0,0));
 # ===============================================================
 plot(x=0, y=0, type="n", xlim=c(0,200), ylim=c(0,100), xaxt="n", yaxt="n",
      xlab="",ylab="");
-# Manager model box
 text(x=22, y=95, labels="Data Frame", col="red");
-text(x=90, y=75, labels="Fitness function", col="blue");
+text(x=90, y=45, labels="Fitness function", col="blue");
 text(x=165, y=95, labels="Genetic algorithm", col="goldenrod4");
 abox <- mbox(x0 = 0, x1 = 45, y0 = 70, y1 = 90);
 polygon(x=abox$x, y=abox$y, lwd=3, border="red", col="rosybrown1");
-bbox <- mbox(x0 = 65, x1 = 120, y0 = 10, y1 = 70);
+bbox <- mbox(x0 = 65, x1 = 120, y0 = 10, y1 = 40);
 polygon(x=bbox$x, y=bbox$y, lwd=3, border="blue", col="lightsteelblue1");
 cbox <- mbox(x0 = 140, x1 = 195, y0 = 0, y1 = 90);
 polygon(x=cbox$x, y=cbox$y, lwd=3, border="goldenrod4", col="gold3");
@@ -320,42 +326,38 @@ ibox <- mbox(x0 = 142, x1 = 193, y0 = 15, y1 = 25);
 polygon(x=ibox$x, y=ibox$y, lwd=3, border="goldenrod4", col="white");
 jbox <- mbox(x0 = 142, x1 = 193, y0 = 3, y1 = 13);
 polygon(x=jbox$x, y=jbox$y, lwd=3, border="goldenrod4", col="white");
-box1 <-  mbox(x0 = 67, x1 = 118, y0 = 48, y1 = 68);
+box1 <-  mbox(x0 = 67, x1 = 118, y0 = 22, y1 = 38);
 polygon(x=box1$x, y=box1$y, lwd=3, border="blue", col="white");
-box2 <-  mbox(x0 = 67, x1 = 118, y0 = 36, y1 = 46);
+box2 <-  mbox(x0 = 67, x1 = 118, y0 = 12, y1 = 20);
 polygon(x=box2$x, y=box2$y, lwd=3, border="blue", col="white");
-box3 <-  mbox(x0 = 67, x1 = 118, y0 = 24, y1 = 34);
-polygon(x=box3$x, y=box3$y, lwd=3, border="blue", col="white");
-box4 <-  mbox(x0 = 67, x1 = 118, y0 = 12, y1 = 22);
-polygon(x=box4$x, y=box4$y, lwd=3, border="blue", col="white");
-text(x=22, y=80, labels="AGENTS", col="black");
-text(x=92, y=62, labels="Adj RES", col="black");
-text(x=92, y=57, labels="and AGENT", col="black");
-text(x=92, y=52, labels="values", col="black");
-text(x=92, y=42, labels="E[t+1] RES", col="black");
-text(x=92, y=29, labels="E[t+1] AGTs", col="black");
-text(x=92, y=16, labels="E[t+1] LAND", col="black");
+text(x=22, y=80, labels="UTILITY", col="black");
+text(x=92, y=32, labels="Adj RES", col="black");
+text(x=92, y=27, labels="values", col="black");
+text(x=92, y=16, labels="E[t+1] RES", col="black");
 text(x=167, y=84, labels="add row 10X", col="black");
 text(x=167, y=79, labels="to 90 rand", col="black");
-text(x=167, y=69, labels="check fitness", col="black");
-text(x=167, y=57, labels="tournament", col="black");
-text(x=167, y=44, labels="crossover", col="black");
-text(x=167, y=32, labels="mutation", col="black");
+text(x=167, y=69, labels="crossover", col="black");
+text(x=167, y=57, labels="mutation", col="black");
+text(x=167, y=44, labels="check fitness", col="black");
+text(x=167, y=32, labels="tournament", col="black");
 text(x=167, y=20, labels="replace", col="black");
 text(x=167, y=8, labels="converge?", col="black");
 arrows(x0=46, x1=138, y0=85, y1=85, lwd=2, length=0.15);
-arrows(x0=139, x1=122, y0=69, y1=62, lwd=2, length=0.15);
-#arrows(x0=121, x1=138, y0=16, y1=54, lwd=2, length=0.15);
+arrows(x0=139, x1=122, y0=44, y1=36, lwd=2, length=0.15);
 arrows(x0=139, x1=14.75, y0=5, y1=5, lwd=2, length=0.0);
 arrows(x0=15, x1=15, y0=5, y1=70, lwd=2, length=0.15);
-arrows(x0=55, x1=55, y0=5, y1=85, lwd=2, length=0.15);
+arrows(x0=55, x1=55, y0=5, y1=67, lwd=2, length=0.0);
+arrows(x0=55, x1=138, y0=67, y1=67, lwd=2, length=0.15);
 text(x=10, y=35, labels="Yes", col="black", srt=90);
 text(x=50, y=35, labels="No", col="black", srt=90);
 arrows(x0=121, x1=128.75, y0=16, y1=16, lwd=2, length=0);
-arrows(x0=128, x1=128, y0=16, y1=55, lwd=2, length=0);
-arrows(x0=128.75, x1=138, y0=55, y1=55, lwd=2, length=0.15);
+arrows(x0=128, x1=128, y0=16, y1=31, lwd=2, length=0);
+arrows(x0=128.75, x1=138, y0=31, y1=31, lwd=2, length=0.15);
 
-
+################################################################################
+################################################################################
+################################################################################
+################################################################################
 
 
 

@@ -157,7 +157,133 @@ Now in the above, only resources are actually considered in the `UTILITY`  array
  4. Feeding by affecting the birthrate parameter (`feedem`)
  5. Or helping by affecting offspring parameter (`helpem`)
  
-I'm not sure how this last one will work yet. This sacrifices some of the generality of the code, but in the context of what G-MSE is for, I don't think that we lose much, and it's easy to see how we could add columns to `UTILITY` later as necessary. Then, following the diagram from [yesterday](#u-2-FEB-2017), when mangers use the genetic algorithm, they could affect their own cost columns *and everyone elses* as a function of their own utilities and the population sizes of each resource. The costs would then be update for the stake-holders, who could adjust their own parameters accordingly to maximise their utility.
+I'm not sure how this last one will work yet. This sacrifices some of the generality of the code, but in the context of what G-MSE is for, I don't think that we lose much, and it's easy to see how we could add columns to `UTILITY` later as necessary. Then, following the diagram from [yesterday](#u-2-FEB-2017), when mangers use the genetic algorithm, they could affect their own cost columns *and everyone elses* as a function of their own utilities and the population sizes of each resource. The costs would then be updated for the stake-holders, who could adjust their own parameters accordingly to maximise their utility.
+
+Note that the index of each array in the list `UTILITY` will correspond to the ID in the `AGENT` array. This could be useful, if we want, for example, to eventually let stake-holders affect one another. The first agent is also always the manager (and it's hard to see a situation where we have more than one, but even if so, we can always have one *head manager*), so stake-holders can lobby the manager by indexing the zero index of `UTILITY` with ease.
+
+**Focusing first on the stake-holder genetic algorithm**
+
+The genetic algorithm can be fairly straightforward, and (I think), fairly efficient given the data structure above. All of the five aforementioned columns can be mutated by any integer value, and unlike the case in which types were random, the numbers are ordinal so that the following code isn't too much of a problem:
+
+```
+mutate = rbinom(0,1);
+if(mutate < 0.05){
+    value--;
+}
+if(mutate > 0.95){
+    value++;
+}
+```
+
+So the the code would do the following in c for a single agent:
+
+  1. `malloc` a 3D array that is 100 deep, and copy the agent's entirey `UTILITY` data frame each time.
+  2. For 90 of those copies, randomise (-cost to cost, perhaps?) all of the five aforemened values.
+  3. Loop through the 100 deep indices, looking at each of the five columns and swap a column with that of another randomly chosen index with a certain probability.
+  4. *While still looping* also check to see if any mutation occurs and if so, then increment or decrement the value -- actually, it might make more sense to mutate first then decide whether or not to swap. Note that this might cause a situation where the mutation rates among loci differ (one might get mutated, swapped, then mutated again), but since we're not trying to faithfully replicate a biological process, I don't think this is a problem -- it might even add more desirable variation.
+  5. Check the fitness of each of the 100 indices, store them in a vector.
+  6. Tournament selection on indices using the fitness.
+  7. Replace the array so that 100 of the most fit offspring are in it.
+  8. Go back to 3 -- Do this at least 20 times before checking to see if the mean fitness increase has increased by some amount, if not, repeat 20 more times.
+  9. If 500 times have happened, just use the highest-fitness index as the new agent.
+  
+Given the above, we need to update the internal structure of the genetic algorithm to the below:
+
+```{r, echo=FALSE, fig.height=5.5, fig.width=6}
+mbox <- function(x0, x1, y0, y1){
+    xx <- seq(from=x0, to=x1, length.out = 100);
+    yy <- seq(from=y0, to=y1, length.out = 100);
+    xd <- c(rep(x0, 100), xx, rep(x1,100), rev(xx));
+    yd <- c(yy, rep(y1,100), rev(yy), rep(y0, 100));
+    return(list(x=xd, y=yd));
+}
+par(mar=c(0,0,0,0));
+# ===============================================================
+plot(x=0, y=0, type="n", xlim=c(0,200), ylim=c(0,100), xaxt="n", yaxt="n",
+     xlab="",ylab="");
+text(x=22, y=95, labels="Data Frame", col="red");
+text(x=90, y=45, labels="Fitness function", col="blue");
+text(x=165, y=95, labels="Genetic algorithm", col="goldenrod4");
+abox <- mbox(x0 = 0, x1 = 45, y0 = 70, y1 = 90);
+polygon(x=abox$x, y=abox$y, lwd=3, border="red", col="rosybrown1");
+bbox <- mbox(x0 = 65, x1 = 120, y0 = 10, y1 = 40);
+polygon(x=bbox$x, y=bbox$y, lwd=3, border="blue", col="lightsteelblue1");
+cbox <- mbox(x0 = 140, x1 = 195, y0 = 0, y1 = 90);
+polygon(x=cbox$x, y=cbox$y, lwd=3, border="goldenrod4", col="gold3");
+dbox <- mbox(x0 = 142, x1 = 193, y0 = 75, y1 = 88);
+polygon(x=dbox$x, y=dbox$y, lwd=3, border="goldenrod4", col="white");
+ebox <- mbox(x0 = 142, x1 = 193, y0 = 63, y1 = 73);
+polygon(x=ebox$x, y=ebox$y, lwd=3, border="goldenrod4", col="white");
+fbox <- mbox(x0 = 142, x1 = 193, y0 = 51, y1 = 61);
+polygon(x=fbox$x, y=fbox$y, lwd=3, border="goldenrod4", col="white");
+gbox <- mbox(x0 = 142, x1 = 193, y0 = 39, y1 = 49);
+polygon(x=gbox$x, y=gbox$y, lwd=3, border="goldenrod4", col="white");
+hbox <- mbox(x0 = 142, x1 = 193, y0 = 27, y1 = 37);
+polygon(x=hbox$x, y=hbox$y, lwd=3, border="goldenrod4", col="white");
+ibox <- mbox(x0 = 142, x1 = 193, y0 = 15, y1 = 25);
+polygon(x=ibox$x, y=ibox$y, lwd=3, border="goldenrod4", col="white");
+jbox <- mbox(x0 = 142, x1 = 193, y0 = 3, y1 = 13);
+polygon(x=jbox$x, y=jbox$y, lwd=3, border="goldenrod4", col="white");
+box1 <-  mbox(x0 = 67, x1 = 118, y0 = 22, y1 = 38);
+polygon(x=box1$x, y=box1$y, lwd=3, border="blue", col="white");
+box2 <-  mbox(x0 = 67, x1 = 118, y0 = 12, y1 = 20);
+polygon(x=box2$x, y=box2$y, lwd=3, border="blue", col="white");
+text(x=22, y=80, labels="UTILITY", col="black");
+text(x=92, y=32, labels="Adj RES", col="black");
+text(x=92, y=27, labels="values", col="black");
+text(x=92, y=16, labels="E[t+1] RES", col="black");
+text(x=167, y=84, labels="add row 10X", col="black");
+text(x=167, y=79, labels="to 90 rand", col="black");
+text(x=167, y=69, labels="crossover", col="black");
+text(x=167, y=57, labels="mutation", col="black");
+text(x=167, y=44, labels="check fitness", col="black");
+text(x=167, y=32, labels="tournament", col="black");
+text(x=167, y=20, labels="replace", col="black");
+text(x=167, y=8, labels="converge?", col="black");
+arrows(x0=46, x1=138, y0=85, y1=85, lwd=2, length=0.15);
+arrows(x0=139, x1=122, y0=44, y1=36, lwd=2, length=0.15);
+arrows(x0=139, x1=14.75, y0=5, y1=5, lwd=2, length=0.0);
+arrows(x0=15, x1=15, y0=5, y1=70, lwd=2, length=0.15);
+arrows(x0=55, x1=55, y0=5, y1=67, lwd=2, length=0.0);
+arrows(x0=55, x1=138, y0=67, y1=67, lwd=2, length=0.15);
+text(x=10, y=35, labels="Yes", col="black", srt=90);
+text(x=50, y=35, labels="No", col="black", srt=90);
+arrows(x0=121, x1=128.75, y0=16, y1=16, lwd=2, length=0);
+arrows(x0=128, x1=128, y0=16, y1=31, lwd=2, length=0);
+arrows(x0=128.75, x1=138, y0=31, y1=31, lwd=2, length=0.15);
+```
+
+The result is simpler, and therefore it should be faster and easier to implement. I'm hoping that it will be possible to code this to be as flexible as possible -- enough to really allow for some complex interactions with agents affecting agents in different ways, but I think this will have to be addressed when I actually start writing the code. For the moment, I think the above is a good balance for stake-holder genetic algorithms. I also think that the spatial effects will also better emerge organically through restricting stake-holders to affecting only their own cell (or the view around their cell). If we let the genetic algorithm try to evolve to *find* the locations *where* an agent should do something, I think it would slow down considerably. We can always use `view = 100`, or turn off spatial implementation, to have stake-holders affect across the whole region, and it's hard to see why we would want stake-holders to arbitrarily pick out parts of the map to care about (if it's caused by the presence of another resource, then the algorithm should find the right actions based on the resource's utility).
+
+**Looking specifically at the fitness function**
+
+Let's assume that costs ('policy' in the [updated figure](#u-2-FEB-2017)) are fixed for now, and the genetic algorithm takes these as a given. Then, instead of accounting for every other agents actions (like the manager might have to do -- figure this one out later), each stake-holder could just check to see how their actions affect the abundance or local density of each resource. In fact, why don't we add another column:
+
+| type1 | type2 | type3 | util | u_loc | cost_m | movem | cost_c | castem | cost_k | killem | cost_f | feedem | cost_h | helpem |
+|-------|-------|-------|------|-------|--------|-------|--------|--------|--------|--------|--------|--------|--------|--------|
+|  1    |  0    | 0     | 2    | 0     | 8      | 5     |    30  |  0     |  20    |  0     |   10   |  0     |   10   |  0     |
+|  2    |  0    | 0     | -1   | 1     | 0      | 0     |    50  |  0     |  0     |  1     |   1    |  2     |   2    |  1     |
+
+For space, `utility` has been shortened to `util`, but I've also added a column `u_loc`, which codes for whether or not the utility of the resource depends on that resource being 'local', in whatever sense this could be relevant. For example, a zero could be a simple `FALSE`, while a 1 could be `TRUE` in the sense that resource do not affect utility or therefore fitness unless they are on the same cell as the agent, or within `view`. Better, values within this column might correspond to different definitions of 'local' -- It could mean utility is important when the resource is on any cell of the same type of agent, or on a cell with a particular landscape property.
+
+Now, to implement this, we can't really just use the `RESOURCE` array, because neither managers nor stake-holders should have access to it. We have to use either the observation array (or summary statistics from it) or the agent array. When stake-holders have an estimate of how many resources there are, their utility is affected and they can act in a certain way. Note that I've placed some odd utility values in the rows above, but maybe they should actually be much different, reflecting the ideal *number* of resources -- perhaps more utility values are needed too:
+
+> I wonder if a second utility parameter is needed so that utility doesn't not need to increase or decrease *linearly* with utility. Perhaps up to 3-5 `util` and `u_loc` values are needed -- unneeded ones can be ignored later.
+
+The above could see stake-holders switch strategies when satisfied. It might also be worth having some sort of a dummy resource, or a reluctance to spend `cost` if not necessary -- stake-holders have other things to do, and if everything is working fine, then they don't need to *do* anything in the model, including use up costs, and perhaps there should be some pressure against it anyway.
+
+In any case, I could see two types of information about resources being most relevant for stake-holders decisions, thereby affecting the fitness function:
+
+ 1. How many resources of each type does the manager claim there are globally?
+ 2. How many resources do **you** see locally (e.g., through `anecdotal`).
+ 
+I can't, offhand, thinking of why anything else would be absolutely necessary -- not as a starting point, at least. Stake-holders could use one or both estimates to make their decisions, so those values and `UTILITY` could be read into the fitness function. The fitness function would then estimate how resource abundances would change as a consequence of the stake-holder's action, with higher fitness being awarded to actions that match utility values.
+
+To make things even more complicated, it might be necessary to record the `UTILITY` actions over time -- eventually, stake-holders should be able to correlate them with changes in utility (both as a consequence of their own actions and other stake-holder responses) and use this in the genetic algorithm. For now, I think establishing a record-keeping method is enough. I'll worry about *how* to incorporate the game history into decision making after I have a simpler working model.
+
+**Additional thoughts**
+
+While this is going on, I'll want to keep in mind the four categories of @Tu2000, which I mentioned on [30 JAN 2017](#u-30-JAN-2017). These define conflict by different utility functions. This might be especially relevant because next I'll need to figure out how the *manager* is going to strategise given both stake-holders and resources.
 
 > <a name="u-2-FEB-2017">Update: 2 FEB 2017</a>
 
