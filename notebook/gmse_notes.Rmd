@@ -285,6 +285,8 @@ To make things even more complicated, it might be necessary to record the `UTILI
 
 While this is going on, I'll want to keep in mind the four categories of @Tu2000, which I mentioned on [30 JAN 2017](#u-30-JAN-2017). These define conflict by different utility functions. This might be especially relevant because next I'll need to figure out how the *manager* is going to strategise given both stake-holders and resources.
 
+**For next week: Consider writing a proto-type for the genetic algorithm in R. Make sure that it works and trouble-shoot any unforseen issues before trying to write the whole thing in c**
+
 > <a name="u-2-FEB-2017">Update: 2 FEB 2017</a>
 
 I have now started using [GitHub projects]() to better organise G-MSE development. This appears to improve the workflow a bit better, which is good because the workflow is probably going to get more complicated once I starting coding the genetic algorithm and integrating it into G-MSE. Below is an updated overview of how I expected G-MSE to work in light of the genetic algorithm approach.
