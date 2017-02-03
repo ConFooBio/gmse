@@ -94,6 +94,70 @@ In the above, any negative values would indicate **all** individuals (i.e., disr
   
 It could be a messy optimisation procedure, but this would ensure that agents could pinpoint which individuals to target, what to target, and by how much. The cost of doing so could be factored in perhaps by either: only enacting rows until actions are below the cost or constraining all actions to have an effect that is lower than the cost (e.g., by normalisation). There would need to be some error checks in it, but this could be the most flexible way to handle the search algorithm. The new structure would be either a list of data frames or (perhaps interpreted in c) a 3D array that is $1000 \times 8 \times agent_{number}$.
 
+**Another look at the search algorithm**
+
+The above proposal seems reasonable, though I now need to think a bit more about the implementation. If doing *something* is the consequence of an `if` statement in the code, then inapplicable values (e.g., non-existent types or locations) simply don't add to the actions (or cost) -- they would just be junk. Alternatively, they could add to the cost, and therefore be selected out in favour of better actions. I kind of like the latter more, for now, because I suspect it would cause convergence to happen more quickly and make the 'genome' more readable. 
+
+I also think that the entire `strategy` array should probably be an `int`, with random sampling during a mutation -- note that this is a change from my earlier notes (anything before yesterday) in which I was planning to use `double` values *within the `AGENTS` array*. The previous plan would have just been a mess to implement, and this way we have a separate structure that acts as a 'genome' for strategies (I've not decided on how the utilities of strategies will be held yet -- probably a separate `UTILITY` array). The first seven columns will always be integers anyway, and it will be faster and more easy to understand if mutation just causes an integer change -- just sample with `new_mutation = floor( rbinom(0,1) * maxcol)`. Or, because we don't have to do this biologically, maybe we come up with something like the pseudocode below:
+
+```
+mutate = rbinom(0,1);
+if(mutate < 0.05){
+    effect =  floor( rbinom(0,1) * maxcol);
+    value  -= effect;
+}
+if(mutate > 0.95){
+    effect =  floor( rbinom(0,1) * maxcol);
+    value  += effect;
+}
+```
+
+Note that the above avoids calling rbinom more than necesary, and it is fairly agressive in searching. My other thought was to just have mutation cause either `value--` or `value++`. My fear is that this could result in local maxima issues because 'jumping over' a type would be impossible. This could be fixed by something like the below:
+
+```
+mutate = rbinom(0,1);
+if(mutate < 0.05){
+    effect =  floor(mutate * 100);
+    value  -= effect;
+}
+if(mutate > 0.95){
+    effect =  floor( (1 - mutate) * 100);
+    value  += effect;
+}
+```
+
+This avoids calling `rbinom` more than necessary, and avoids local maxima by letting mutations *jump* over types. It should also result in a mutation rate of 0.1, with equal probably of incrementing from 1 to 5 or decrementing from 1 to 5. But I'm still not terribly excited about the idea of making it add or subtract from `value` above, as types are not ordinal.
+
+Here's another idea, maybe start with the aforementioned utility list/array. This array could be a list of arrays `UTILITY[[agent]][row][col]` in R and a `UTILITY[agent][row][col]` 3D array in c in which each `agent` is a list element or dimension. Rows could exhaust all possible types with their utilities in the final column such that the element corresponding to one agent, e.g., could be:
+
+| type0 | type1 | type2 | type3 | utility | cost |
+|-------|-------|-------|-------|---------|------|
+| 0     |  0    |  0    | 0     | 0       | 1000 |
+| 0     |  1    |  0    | 0     | 0       | 1000 |
+| 0     |  2    |  0    | 0     | 0       | 1000 |
+| 1     |  1    |  0    | 0     | 2       | 8    |
+| 1     |  2    |  0    | 0     | -1      | 12   |
+
+In the above, there are three types of agents (`type0 = 0`), which includes the manager (`type1 = 0`) and two stake-holders (`type1 = 1 & type1 = 2`). There are also two different types of resoures (`type0 = 1`), which include `type1 = 1` and `type1 = 2`. Types 2 and 3 are unused for both agents and resources. Each type has a `utility` -- how much the particular agent values the identified agent or resource (though I'm not sure how this will be interpreted for agents, particularly when the identity becomes self-referential). The `cost` identifies how much expenditure is required to affect the agent or resource -- **Note that this already creates the problem that different attributes of resources and agents should cost different amounts to affect**. At the very least, we don't want the cost of culling versus scaring to **have to be** the same. At the same time, we don't want the ouput of this software to be so messy that end users won't be able to interpret what is going on -- the possibilities should correspond to clear management options, I think (though we also don't want to constrain the model to force it to do what we presume is best; we want it to find novel solutions, where possible).
+
+Ideally, it would be nice if both managers and stake-holders to potentially affect each other's costs, but this creates a kind of infinite regress problem -- the need for meta-costs for how much it costs to affect another agent's cost; *this is probably too much*. Instead, maybe costs are a function of the *manager's* `utility`, and that all lobbying occurs on `utility`. This avoids the 'cost of costs' problem -- the only thing we lose is that one stake-holder might not be able to directly affect how easy it is to hunt or scare, or do anything else -- though they might still affect each other's utilities? Even this seems to get a bit too complex. 
+
+Maybe theres a starting point that gets the model working but also leaves remove for further development. What if the `UTILITY` array looked more like this:
+
+| type1 | type2 | type3 | utility | cost_m | movem | cost_c | castem | cost_k | killem | cost_f | feedem | cost_h | helpem |
+|-------|-------|-------|---------|--------|-------|--------|--------|--------|--------|--------|--------|--------|--------|
+|  1    |  0    | 0     | 2       | 8      | 5     |    30  |  0     |  20    |  0     |   10   |  0     |   10   |  0     |
+|  2    |  0    | 0     | -1      | 0      | 0     |    50  |  0     |  0     |  1     |   1    |  2     |   2    |  1     |
+
+Now in the above, only resources are actually considered in the `UTILITY`  array. There are five basic things that an agent can *do* to a resource -- two ways to benefit it and three ways to have a negative affect on it. Agents can move resources (`movem`), castrate resources (`castem`), or kill resources (`killem`). And agents can feed resources (`feedem`) or help resources (`feedem`). Doing each of these things comes with an associated cost. It's important not to take these categories too literally, but for now they could loosely correspond to:
+ 
+ 1. Scaring by affecting `xloc` and `yloc` (`movem`), 
+ 2. Castrating by affecting birthrate parameter (`castem`)
+ 3. Killing by affecting the mortality parameter (`killem`)
+ 4. Feeding by affecting the birthrate parameter (`feedem`)
+ 5. Or helping by affecting offspring parameter (`helpem`)
+ 
+I'm not sure how this last one will work yet. This sacrifices some of the generality of the code, but in the context of what G-MSE is for, I don't think that we lose much, and it's easy to see how we could add columns to `UTILITY` later as necessary. Then, following the diagram from [yesterday](#u-2-FEB-2017), when mangers use the genetic algorithm, they could affect their own cost columns *and everyone elses* as a function of their own utilities and the population sizes of each resource. The costs would then be update for the stake-holders, who could adjust their own parameters accordingly to maximise their utility.
 
 > <a name="u-2-FEB-2017">Update: 2 FEB 2017</a>
 
