@@ -100,6 +100,10 @@ Crop yield could therefore affect utility -- in that some utility value is assig
 
 The column `util` could just be the direct effect that resources of `type1` have on the agent, u_loc could be whether or not utility is affected by location, and if it is, then u_land could be its effect on the landscape layer (for now, there is only one layer of landscape values, but another column should probably be added to specify). Hence, representing a goose to a farmer that doesn't care about geese at all but wants high crop yield could be `util = 0`, `u_loc = 0`, and `u_land = -1`. A farmer that kind of likes geese but also crop yeld could be something like `util = 1`, `u_loc = 0`, and `u_land = -1`. Note that the last farmer likes geese, but does not care where the geese are (`u_loc = 0`), but does not want their effects on the farmer's land (`u_land = -1`). I think that this is probably the right way to go, though optimising fitness given these multiple interests will be a challenge.
 
+**It might also be useful to have a `compensation` column, which managers could affect, though this could be done in other ways too. Also, I think I have interprted `util` in a couple different ways throughout the notes, so it might be worth having a different column -- perhaps `target`, or something that identifies the target value that affects `util` in some way. If a resource is at carrying capacity, for example, we might want some mechanism in the model by which stake-holders no longer want it to increase.**
+
+Given Saro's notes, it might also be worth just allowing an option for a traditional $2 \times 2$ payoff matrix too. This would allow another use of a genetic algorithm -- to simulate the barganing process as in @Tu2000.
+
 > <a name="u-3-FEB-2017">Update: 3 FEB 2017</a>
 
 **Late night (or early morning) idea**
