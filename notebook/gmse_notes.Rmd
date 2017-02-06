@@ -104,6 +104,10 @@ The column `util` could just be the direct effect that resources of `type1` have
 
 Given Saro's notes, it might also be worth just allowing an option for a traditional $2 \times 2$ payoff matrix too. This would allow another use of a genetic algorithm -- to simulate the barganing process as in @Tu2000.
 
+**Minor error correction**
+
+At 12:50, I have corrected a typo in the function `ind_to_land()`, which was making it impossible to plot non-square landscapes correctly.
+
 > <a name="u-3-FEB-2017">Update: 3 FEB 2017</a>
 
 **Late night (or early morning) idea**
