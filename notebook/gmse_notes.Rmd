@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **FEB** [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
+     - **FEB** [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
  
  - **2016**
@@ -72,6 +72,33 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-6-FEB-2017">Update: 6 FEB 2017</a>
+
+**Modelling crop yields and compensation**
+
+The compensation scheme and importance of government funding that Saro has noted in her summary of geese and farming conflicts leads me to believe that some direct form of compensation needs to be included in the genetic algorithm. Adjust the government funding is simple enough -- we can just change the `budget` of the manager. How compensation -- and farming more generally -- will work is a bit more complicated. Here are three ways that I see could work:
+
+ - Use a natural number on the `LANDSCAPE` to represent maximum farm yield. Reduce this yield for each organism on the land -- assign one type of stake-holder to a patch of land using `type` as an index of an individual farmer (note that the extra rows in the `AGENTS` array might need to be ignored for determining agent actions).
+    - Good: Conceptually easy, easy to code, low memory
+    - Bad: Might be less flexible in interacting with other resources
+ - Make crop land a `RESOURCE`, thereby allowing it to interact more directly with other resources.
+    - Good: Flexible -- could have multiple crops in the same location and interaction with other resources would be straightforward
+    - Bad: High memory; the `RESOURCE` array could get quite big, and more loops would probably be required to manage it.
+ - Just **directly** simulate compensation and crop growth by affecting the `utility` and `cost` columns in the `UTILITY` array. 
+    - Good: Very easy to implement, fast
+    - Bad: Not very flexible -- crop production and management is not concrete; probably some hidden assumptions.
+    
+Of course, there's no reason that *all* of these options can't be implemented depending on the situation; they aren't mutually exclusive in the code. I'm inclind to try the first option as a default. Adding a real number to each landscape cell could represent expected crop yield, and this number could change depending on the presence of resources and the actions of farmers. Note that the landscape cells are already initialised with a real number that was meant to represent types of landscape -- this can just be changed to a real number that represents crop yield. The files `resource.c` and `observation.c` already read in c as an array of type `double`; it's really just a matter of *using* the landscape that is already available.
+
+Crop yield could therefore affect utility -- in that some utility value is assigned to (and multiplied by) the value of each cell. Presence of an organism could decrease this value (*sidenote*: we'll need to think about order of operations in the model). Compensation could directly off-set the loss of utility. So we could take the data frame from [Friday](#u-3-FEB-2017):
+
+| type1 | type2 | type3 | util | u_loc | u_land | cost_m | movem | cost_c | castem | cost_k | killem | cost_f | feedem | cost_h | helpem |
+|-------|-------|-------|------|-------|--------|--------|-------|--------|--------|--------|--------|--------|--------|--------|--------|
+|  1    |  0    | 0     | 2    | 0     | 0      | 8      | 5     |    30  |  0     |  20    |  0     |   10   |  0     |   10   |  0     |
+|  2    |  0    | 0     | -1   | 1     | 1      | 0      | 0     |    50  |  0     |  0     |  1     |   1    |  2     |   2    |  1     |
+
+The column `util` could just be the direct effect that resources of `type1` have on the agent, u_loc could be whether or not utility is affected by location, and if it is, then u_land could be its effect on the landscape layer (for now, there is only one layer of landscape values, but another column should probably be added to specify). Hence, representing a goose to a farmer that doesn't care about geese at all but wants high crop yield could be `util = 0`, `u_loc = 0`, and `u_land = -1`. A farmer that kind of likes geese but also crop yeld could be something like `util = 1`, `u_loc = 0`, and `u_land = -1`. Note that the last farmer likes geese, but does not care where the geese are (`u_loc = 0`), but does not want their effects on the farmer's land (`u_land = -1`). I think that this is probably the right way to go, though optimising fitness given these multiple interests will be a challenge.
 
 > <a name="u-3-FEB-2017">Update: 3 FEB 2017</a>
 
