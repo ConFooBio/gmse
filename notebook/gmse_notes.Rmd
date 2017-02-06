@@ -108,6 +108,12 @@ Given Saro's notes, it might also be worth just allowing an option for a traditi
 
 At 12:50, I have corrected a typo in the function `ind_to_land()`, which was making it impossible to plot non-square landscapes correctly.
 
+**Some additional thoughts**
+
+Following up on Saro's notes, I think it is worth thinking about how stake-holders are expected to respond to policy and events, especially with respect to stochasticity. Given the ordinal payoff values, policy error would seem to be low; whereas if if values are continuous, then it would seem like there would be room for stake-holders to be sensitive to small changes in payoffs. I'm not sure which is more realistic -- leading me to question, **are individuals' realised payoffs relevant for their willingness to cooperate (or change or sustain their behaviour, more generally), or is it only the policy that actually matters?**
+
+In other words, assume that some management strategy $M_{1}$ is made that appears fair and favourable to both farmers and conservationists. But also assume that there is a lot of error around the implementation of this policy such that it often results in low payoffs for both stake-holders. What I'm getting at is, I think, *how do the ordinal preferences of policy options map to the real interests of stake-holders?* The most baseline interest of farmers, for example, I suspect would be net income -- the rank order of preferences *only* reflects an accurate payoff matrix insofar as it reflects the order of expected net income from farming. If this mapping of income to rank order changes, so will the payoff matrix.
+
 > <a name="u-3-FEB-2017">Update: 3 FEB 2017</a>
 
 **Late night (or early morning) idea**
