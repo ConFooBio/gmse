@@ -487,7 +487,13 @@ text(x=15, y=20, cex=0.75,labels="file: observe.c");
 
 
 
-
+sim <- gmse( observe_type  = 0,
+             agent_view    = 20,
+             res_death_K   = 400,
+             plotting      = TRUE,
+             hunt          = FALSE,
+             land_dim_1    = 40
+);
 
 
 

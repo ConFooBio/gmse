@@ -298,8 +298,8 @@ ind_to_land <- function(inds, landscape){
     ind_rep <- max(landscape) + 1;
 
     for(i in 1:dim(inds)[1]){
-        x <- as.numeric(inds[i,5]);
-        y <- as.numeric(inds[i,6]);
+        x <- as.numeric(inds[i,6]);
+        y <- as.numeric(inds[i,5]);
         landscape[y,x] <- ind_rep;
     }
     
