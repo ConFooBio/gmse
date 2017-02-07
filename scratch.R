@@ -243,6 +243,9 @@ tournament <- function(population, fitness){
 # Combined genetic algorithm:
 ################################################################################
 ################################################################################
+proc_start <- proc.time();
+
+
 mean_fitness <- NULL;
 clone_seed   <- 11;
 budget_total <- 100;
@@ -272,7 +275,8 @@ while(iterations > 0){
     iterations <- iterations - 1;
 }
 
-
+proc_end   <- proc.time();
+time_taken <- proc_end - proc_start;
 
 
 plot(x=1:length(mean_fit), y=mean_fit, pch=20, cex=1.5, type="b",
