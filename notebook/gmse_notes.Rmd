@@ -366,6 +366,46 @@ plot(x=1:length(mean_fit), y=mean_fit, pch=20, cex=1.5, type="b",
 
 Note that a strategy fitness of 10 is the highest possible because agents have a total budget of 100 and each `helpem` costs 10 from this total budget. The rapid convergence is encouraging -- the time taken from start to finish for this genetic algorithm is only 0.182 seconds in R (note also, that it found the solution in half the time), and will of course be much, much faster in c. Things will get slower as fitness functions become more complicated, and convergence might take a while given optimisation of multiple things.
 
+Also note that the genetic algorithm will need to be run for multiple agents, slowing the processes down.
+
+**Re-structuring the UTILITY array**
+
+**I'm now noticing that there is an error in the genetic algorithm as applied to G-MSE. While the algorithm shows a proof-of-concept well, agents aren't actually individual rows in `UTILITY`, they're list elements made up of data frames. Hence, The code that I just constructed needs to be applied not to an individual row, but to lists.**
+
+I think that the above point might be a good excuse to improve upon the data frame itself, and specifically to incorporate costs in a more effective way, then improve upon the algorithm. It's always important to keep in mind that **the goal of the genetic algorithm is to teach agents to learn to maximise their own utility.** Different agents will do this in different ways, so we need to keep everything broad -- one idea might be to incorporate *everyone's* UTILITY in the utility list; this could help out with the manager too. So now the data frame would like like the below.
+
+| agent | type1 | type2 | type3 | util | cost_util | ... | cost_h | helpem |
+|-------|-------|-------|-------|------|-----------|-----|--------|--------|
+|  0    |  1    |  0    | 0     | 2    | 101       | ... |   101  |  0     |
+|  0    |  2    |  0    | 0     | 0    | 101       | ... |   101  |  0     |
+|  1    |  1    |  0    | 0     | 2    | 0         | ... |   10   |  0     |
+|  1    |  2    |  0    | 0     | -1   | 1         | ... |   2    |  1     |
+|  2    |  1    |  0    | 0     | 0    | 101       | ... |   101  |  0     |
+|  2    |  2    |  0    | 0     | 1    | 101       | ... |   101  |  0     |
+
+Something is still not quite perfect yet. Note that I've added a `cost_util`, which could be the cost of lobbying another stake-holder, or manager. We could then see stake-holders using some of their `budget` to affect manager utilities. Each agent has its own array too -- so the costs need to be uniquely reflecting the cost of agent `index` on affecting another agent's action or utility.
+
+Maybe this is the wrong way to go -- first two columns might be the *utility then costs of the focal agent (as partially imposed by other agents)*, where subsequent rows could just be *costs* for imposing on all other agents? The array could then look something like the below. Note that values of `Inf`, in the code, should just be some value that is higher than the cost of any agent, making it impossible that such values can be altered.
+
+| agent | type1 | type2 | type3 | util | u_loc | u_land | movem  | castem | killem | feedem | helpem |
+|-------|-------|-------|-------|------|-------|--------|--------|--------|--------|--------|--------|
+| -2    |  1    |  0    | 0     | 2    | 1     | 0      | 0      |  0     |  0     |  0     |  0     |
+| -2    |  2    |  0    | 0     | 0    | 1     | 0      | 0      |  0     |  0     |  0     |  0     |
+| -1    |  1    |  0    | 0     | 2    | 1     | 0      | 1      |  1     |  2     |  3     |  3     |
+| -1    |  2    |  0    | 0     | 0    | 1     | 0      | 5      |  20    |  12    |  5     |  10    |
+|  0    |  1    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+|  0    |  2    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+|  1    |  1    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+|  1    |  2    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+|  2    |  1    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+|  2    |  2    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+
+**Note the agent number -2** refers to the *utility* values of the focal agent -- in its rawest form, what does the agent *want* or *value*. This is defined for each type of resource (`type1`). In the above, for example, if we consider resources where `type1 = 1` to be crops and `type1 = 2` to be geese, then we might have a farmer represented (note -- the farmer likes crops, but is neutral on geese *per se* -- I'm just assuming that geese are fine as long as they don't affect crop production). The farmer can also specify whether the utility of each resource is dependent upon its location `u_loc` being within its `view`, or some other range -- I'm a bit nervous about this column as I fear that it might constrain the kinds of questions that can be addressed. It might be good actually make this any natural number, rather than a `TRUE` or `FALSE`, then have utility attached to a natural number on some layer of the landscape, so that one layer of `LANDSCAPE` can be the number of who owns it (zero for manager); a -1 could always just code for within `view`. The `u_land` specifies whether or not utility is attached to the value of some landscape layer (e.g., perhaps representing quality of land, or production in some cases). And finally the variables `movem`, `castem`, `killem`, `feedem`, and `helpem` are all *actions* -- what the focal agent *does* (initialised at zero above).
+
+**The agent number -1** is identical for all but the last five rows, which refer to the *cost* values for affecting each of the actions; cost is drawn from some total budget. Finally, the remaining rows are the **costs for changing all other agents' costs with respect to all resource types** (note that before now, we've effectively only had the first four rows -- this adds to things). This means that the focal agent might, potentially, increase or decrease the cost of a different stake-holder performing an action -- this will mostly be applied when the manager is the focal agent, changing, for example, how much it costs for stake-holders to scare or hunt resources. But the model allows stake-holders to affect each other's costs too, if this is useful. Focal agents might also try affect others utility values; for example, a stake-holder might pay some cost to try to close the gap between their utility value for a particular resource and the manager's (or rival stake-holder's) value (i.e. 'lobbying'). Note that a focal agent's costs are represented twice, once where `agent = -1`, and once where `agent` equals the agent's natural number. However, the latter represents the 'cost' of changing its own cost which I've outlawd by setting it to `Inf`. There are potentially some other uses for this redundancy. It might be useful in the future if we want to simulate negotiations, so an agent has their original cost/utility values, and a copy of what they are after they have been altered in some way. 
+
+The data frame above is therefore one of three data frames (one for each agent), each of which is an element in a list. The data frame above shows the utilities, actions, and costs of a focal agent, and the costs of affecting *other* agents' costs. In the above, affecting other agents costs is always forbidden, so these values are all `Inf`. A manager should be able to adjust these costs to enact policy -- for example, by outlawing killing of resources.
+
 > <a name="u-6-FEB-2017">Update: 6 FEB 2017</a>
 
 **Modelling crop yields and compensation**
