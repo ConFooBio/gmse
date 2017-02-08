@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **FEB** [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
+     - **FEB** [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
  
  - **2016**
@@ -72,6 +72,266 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+
+> <a name="u-8-FEB-2017">Update: 8 FEB 2017</a>
+
+********************************************************************************
+
+Project Summary: G-MSE v0.0.52
+--------------------------------------------------------------------------------
+
+A central purpose of G-MSE software will be to provide a user-friendly yet flexible tool for simulating the management of populations, with particular emphasis on a mechanistic simulation of uncertainty and interactions among managers and stake-holders. Hence, the software will be able to address key  questions concerning conflict in all of the specific ConFooBio case studies, but also provide a general framework for developing social-ecological theory. My hope is to introduce v1.0 by the end of the year, which will take advantage of [shiny](https://shiny.rstudio.com/) to let users [run simulations and view results within a browser](https://tomhopper.shinyapps.io/TB_Cases_shiny/), giving as many users as possible access to the key features of G-MSE. Because shiny is called directly from R, users who are familiar with R will be able to use functions within a `gmse` package (the name is not yet taken on the [CRAN list](https://cran.r-project.org/web/packages/available_packages_by_name.html)). All of the code underlying G-MSE, and its complete development history, will be [available on GitHub](https://github.com/bradduthie/gmse) for maintenance, further development, and collaboration (currently, the repository is private, meaning it is viewable by invite only, but I've no qualms with making it public). **My goal now is to summarise what aspects of G-MSE have already been developed, and to outline my plans for future development. Feedback at this stage is very welcome, particularly concerning what features of the software are most (or least) important**. *The figure below illustrates a general overview of G-MSE. The left panel represents how users will interact with the software, and the right panel represents the model itself, which uses the G-MSE concept proposed in the ConFooBio ERC proposal*. 
+
+```{r, echo=FALSE, fig.height=3.8, fig.width=8}
+par(mar=c(0,0,0,0),mfrow=c(1,2));
+plot(x=0, y=0, type="n", xlim=c(0,100), ylim=c(0,100), xaxt="n", yaxt="n",
+     xlab="",ylab="");
+# ------- G-MSE logo below:
+text(x=0,y=97,pos=4,family="mono",labels="  ____       __  __ ____  _____ ");
+text(x=0,y=90,pos=4,family="mono",labels=" / ___|     |  \\/  / ___|| ____|");
+text(x=0,y=83,pos=4,family="mono",labels="| |  _ ____ | |\\/| \\___ \\|  _|  ");
+text(x=0,y=76,pos=4,family="mono",labels="| |_| |____|| |  | |___) | |___ ");
+text(x=0,y=69,pos=4,family="mono",labels=" \\____|     |_|  |_|____/|_____|");
+lines(x=1:100,y=rep(99,100),lwd=3,col="red");
+lines(x=1:100,y=rep(64,100),lwd=3,col="blue");
+lines(x=rep(0,36),y=64:99,lwd=3,col="yellow");
+lines(x=rep(100,36),y=99:64,lwd=3,col="orange");
+polygon(x=c(rep(14,16),14:40,rep(40,16),40:14), # box
+        y=c(40:55,rep(40,27),55:40,rep(55,27)),
+        lwd=3,border="black");
+text(x=27,y=50,labels="Long-term data", cex=0.65);
+text(x=27,y=45,labels="input as CSV file", cex=0.65);
+polygon(x=c(rep(45,16),45:90,rep(90,16),90:45), # box
+        y=c(40:55,rep(40,46),55:40,rep(55,46)),
+        lwd=3,border="black");
+text(x=65,y=50,labels="Set key parameters using", cex=0.65);
+text(x=65,y=45,labels="any of the below", cex=0.65);
+arrows(x0=65, x1=1, y0=40, y1=31, lwd=2, length=0.00);
+arrows(x0=65, x1=100, y0=40, y1=31, lwd=2, length=0.00);
+
+polygon(x=c(rep(1,20),1:15,rep(15,20),15:1), # box
+        y=c(11:30,rep(30,15),30:11,rep(11,15)),
+        lwd=3,border="black");
+text(x=8,y=25,labels="Browser", cex=0.65);
+text(x=8,y=20,labels="Interface", cex=0.65);
+
+polygon(x=c(rep(21,20),21:35,rep(35,20),35:21), # box
+        y=c(11:30,rep(30,15),30:11,rep(11,15)),
+        lwd=3,border="black");
+text(x=28,y=25,labels="R", cex=0.65);
+text(x=28,y=20,labels="Interface", cex=0.65);
+
+polygon(x=c(rep(41,20),41:100,rep(100,20),100:41), # box
+        y=c(11:30,rep(30,60),30:11,rep(11,60)),
+        lwd=3,border="black");
+text(x=68,y=25,labels="Separate calls to high-level R files", cex=0.65);
+text(x=68,y=20,labels="R files call from C independently", cex=0.65);
+
+arrows(x0=15, x1=20, y0=20, y1=20, lwd=2, length=0.08);
+arrows(x0=35, x1=41, y0=20, y1=20, lwd=2, length=0.08);
+
+# ===============================================================
+plot(x=0, y=0, type="n", xlim=c(0,100), ylim=c(0,100), xaxt="n", yaxt="n",
+     xlab="",ylab="");
+# Manager model box
+polygon(x=c(rep(1,30),1:30,rep(30,30),30:1), # box
+        y=c(70:99,rep(99,30),99:70,rep(70,30)),
+        lwd=3,border="red");
+# User model box
+polygon(x=c(rep(70,30),70:99,rep(99,30),99:70), # box
+        y=c(70:99,rep(99,30),99:70,rep(70,30)),
+        lwd=3,border="orange");
+# Obeservation model box
+polygon(x=c(rep(1,30),1:30,rep(30,30),30:1), # box
+        y=c(1:30,rep(30,30),30:1,rep(1,30)),
+        lwd=3,border="yellow");
+# Natural resources model
+polygon(x=c(rep(70,30),70:99,rep(99,30),99:70), # box
+        y=c(1:30,rep(30,30),30:1,rep(1,30)),
+        lwd=3,border="blue");
+# Natural resources model
+polygon(x=c(rep(36,30),36:65,rep(65,30),65:36), # box
+        y=c(36:65,rep(65,30),65:36,rep(36,30)),
+        lwd=3,border="green");
+arrows(x0=15, x1=15, y0=30, y1=70, lwd=2, length=0.15);
+arrows(x0=30, x1=70, y0=85, y1=85, lwd=2, length=0.15);
+arrows(x0=85, x1=85, y0=70, y1=30, lwd=2, length=0.15);
+arrows(x0=70, x1=30, y0=15, y1=15, lwd=2, length=0.15);
+arrows(x0=30, x1=36, y0=70, y1=65, lwd=2, length=0.075, code=3);
+arrows(x0=65, x1=70, y0=65, y1=70, lwd=2, length=0.075, code=3);
+text(x=50, y=90, labels="Policy");
+text(x=50, y=20, labels="Monitoring");
+text(x=10, y=48, labels="Indicators", srt=90);
+text(x=90, y=52, labels="Off-take", srt=-90);
+text(x=50, y=70, labels="Genetic algorithm", cex=0.8, col="darkgreen");
+# Manager model details: 
+text(x=15, y=95, cex=0.75,labels="Manager model");
+text(x=15, y=90, cex=0.75,labels="file: manager.c");
+# Bayesion priors details: 
+text(x=50, y=55, cex=0.75,labels="Update manager");
+text(x=50, y=50, cex=0.75,labels="or user strategy");
+text(x=50, y=45, cex=0.75,labels="file: game.c");
+# Manager model details: 
+text(x=85, y=95, cex=0.75,labels="User model");
+text(x=85, y=90, cex=0.75,labels="file: user.c");
+# Natural resources model details: 
+text(x=85, y=25, cex=0.75,labels="Natural");
+text(x=85, y=20, cex=0.75,labels="resources model");
+text(x=85, y=15, cex=0.75,labels="file: resources.c");
+# Natural resources model details: 
+text(x=15, y=25, cex=0.75,labels="Observ. model");
+text(x=15, y=20, cex=0.75,labels="file: observe.c");
+```
+
+What I've done so far
+--------------------------------------------------------------------------------
+
+We now have a working, stable (i.e., bug-free, as far as I can tell), resource model (blue box above) and observation model (yellow box above). Details of how these models are coded and used can be found in the notes below, and I am happy to summarise them. For now, I will avoid the technical details and focus on what these models can **do**; the code is written with future development in mind, meaning that if there is a feature that is not in either of these models that should be, adding it will almost certainly be a matter of inserting a bit of additional code rather than re-coding major chunks of the model. I'll start by talking about the resource model.
+
+**The resource model** is, by default, individual-based. What this means is that each resource is represented as a discrete entity with a number of different attributes. I use 'resource' as a general term because these resources can really be anything that we want them to be; potential resources include grouse, hen harriers, geese, fish, elephants, crops, hunting licenses, etc. Basically, anything that we want to represent discretely that is *not* an agent (a manager or stake-holder) can be considered a resource. Each resoure has its own ID, and can take an natural number of types in three type categories (i.e., `type1` can take any natural number to group resources in some way, as can `type2` and `type3`). Types could be used for different populations of resources within the same simulation (e.g., hen harriers and grouse; wild and farmed salmon), or further define life-history stages, sex, or something else. 
+
+Resources occupy some `x` `y` location on a landscape. The landscape can be of any length and width combination, and has a [torus](https://en.wikipedia.org/wiki/Torus) edge whereby opposite edges are joined so that resource moving off of one side appear on the other (I can easily add a hard boundary, or a reflecting edge if desired). Currently, the landscape has one layer (more could be added), with cells on the landscape taking any real number. I'm not using cell values at the moment, but these could represent anything from terrain types to environmental variables. During one iteration of the `resource()` function, resources move according to one of four pre-specified rules:
+
+ 1. No movement
+ 2. Random movement in any `x` and `y` direction selected from a uniform distribution.
+ 3. Random movement in any `x` and `y` direction selected from a Poisson distribution.
+ 4. Movement a Poisson selected number of times, each time moving randonly in any `x` and `y` direction selected from a uniform distribution [@Duthie2013]
+
+After movement, each resource can potentially reproduce according to a `growth` parameter. The number of offspring that a resource produces is determined by using this as the rate parameter in sampling from a poisson distribution. A carrying capacity can be applied to birth such that if too many offspring are born, then offspring are randomly removed until carrying capacity is reached. Offspring resources have identical traits to their parent resources. It is also possible to not allow any birth for some resources. 
+
+After birth, resources *that were not just born* can be removed (i.e., death) in one of three ways:
+
+ 1. No removal possible
+ 2. Removal with some universal, individual-specific probability determined by an individual's `remove` trait.
+ 3. Removal probability determined by a carrying capacity (potentially different from the carrying capacity affecting birth), where probability of removal for any individual resource increases as the population increases above carrying capacity.
+ 
+The resource model then returns the new set of individuals; we therefore have the basic processes of **movement**, **birth**, and **death**. These processes could be made more complex (e.g., sexual reproduction, more complex movement rules -- toward or away from other resources, perhaps), and any number of other processes might be added into the resource model, including interactions between resources, if desired. I'm considering what we have now as a starting point.
+
+**The observation model** simulates the process of data collection (but *not* data analysis, which is done elsewhere -- eventually probably in the manager model). It basically generates an uncertain snapshot of the real population(s) by sampling from it in one of four ways (A-D):
+
+ A. Sampling resources from a subset of the landscape, inferring population size from the density of the subset [@Nuno2013].
+ B. Marking a random number of resources in the population, then recapturing them for [MRM analysis](https://en.wikipedia.org/wiki/Mark_and_recapture#Chapman_estimator).
+ C. Sweeping down a linear transect of the landscape -- checking every cell *while resources are potentially moving* (and therefore generating double-counted and missed resources).
+ D. Sweeping along blocks of the landscape, one at a time, and checking every cell, again *while resources are potentially moving*.
+ 
+The figure below shows the dynamics of a real population (black line) with a carrying capacity on death of 800 (dotted red line), as estimated by each method (blue lines, panels A-D).
+
+![*Figure above shows four different observation types as applied to the same population model: (A) observation type 0 (sample a random region and then extrapolate population size by calculating density), (B) Mark and recapture individuals and estimate population size using a Chapman estimator, (C) sample along a linear transect while resources can move while sampling, and (D) sample blocks where resources can move while sampling*](images/16-01-2017_obs_types.png)
+
+We can run 100 time steps of 800 resources in a trivial amount of time (less than half a second) using any observation method. Of course, things slow down when adding more resources or generations, but even hundreds of thousands of resources can be simulated over 100 time steps can be simulated in under a minute.
+
+**In addition to the resource and observation models**, I have played around with a few more minor things that can be called on when desired. This includes a function called `anecdotal` that allows `agents` (managers and stake-holders) to see any resources within their local `view` -- essential mimicking anecdotal observation through seeing how many resources are around them at any given time (this might later affect stake-holder attitudes or decisions). 
+
+The most interesting other thing that I've added is a prompt for user input. Basically, after a certain number of time steps (or right from the start of the simulation), an option in the program allows the user to act like a stake-holder or manager. After a time step has finished, the user is prompted with a message like the following on the R command line:
+
+```
+Year:  95
+The manager says the population size is  181
+You observe  11  animals on the farm
+Enter the number of animals to shoot
+```
+
+The user then types in how many animals that they wish to shoot, and these animals are removed from the population.
+
+What I'm going to do in the future
+--------------------------------------------------------------------------------
+
+A detailed journal of recent development history is [below](#u-7-FEB-2017). Here I will summarise how I plan to complete the software, and the rationale behind some (tentative) decisions. Right now, I am focused on getting through the main engine of G-MSE (red, green, and orange boxes from the first figure [above](#u-8-FEB-2017)), with the primary challenge of **integrating game theory** into G-MSE. The manager and users models are unique in that both require agents to make decisions that potentially affect each other and the resources. I am simulating agents as discrete individuals, but unlike resources, agents have different traits and are represented by different data structures in the code. Like resources, however, agents can take on any number of three different category types. Category `type1` is the type of most importance, which is used primarily from distinguishing among managers and different types of stake-holders. The manager(s) is always of `type1 = 0`, and plays a special role in observing the population, and will make policy decisions based on the observational model and (eventually) the numbers and past behaviour of stake-holders through the manager model. Other `type1` agents act as stake-holders instead of managers, and act through the user model. 
+
+I've spent some time trying to decide how to incorporate game theory into the G-MSE software. There is more than one way to do it. My first thought was to model games using the traditional $2 \times 2$ payoff structure, with managers setting the payoffs and two stake-holders acting as players trying to maximise their gains. Given this sort of structure, solving for optimal strategies can be easily accomplished, and we can certainly add this type of mathematical solution as an option in G-MSE. The utility of this kind of mathematical approach starts to unravel, however, when games become more complex (discussion and references all below, mostly from late January). In particular, *solving* for optimal strategies and equilibria (of which there can be multiple) can become increasing difficult to intractable given any of the following:
+
+ - **Asymmetric payoffs**: In other words, when the payoffs of choices such as 'cooperate' or 'defect' are not the same for each player, but depend instead on player type.
+ - **More than two strategies**: If players are not constrained to doing one of two things, but could do three or more things instead, then the number of possible payoff structures and therefore optimal strategies increases exponentially.
+ - **More than two players**: If there are many different players and types of players that affect payoffs (e.g., as Saro noted by including managers in the payoff structure), then finding optimal strategies quickly becomes intractable.
+ - **Iterated interactions**: If players are able to access interaction histories (previous instances of games played; i.e., an [extensive-form game](https://en.wikipedia.org/wiki/Extensive-form_game)), then the number of *possible* strategies becomes extremely high -- **too high to enumerate in a lifetime** -- after even a few rounds of Prisoner's dilemma. 
+ 
+Any realistic social-ecological conflict is probably going to include one or more more of the above complications. While I **really** like simple mathematical and conceptual models (particularly those that provide unifying explanations), and believe that they are especially useful in developing theory, I don't believe that the case studies that we are interested in will be tractable if we exclude the above bulleted possibilities. Nor will the software be very flexible if we confine users to very simple games. **Hence, I think a different approach is needed to model the strategies of rational agents.**
+
+An increasingly used method of simulating complex, goal-oriented strategies, is through the use of [machine learning](https://en.wikipedia.org/wiki/Machine_learning). The idea behind the machine learning approach is to teach a program to learn, so the program can figure out how to solve a problem (e.g., find the best strategy) without actually being told the solution; figuring out the *best* solution would be effectively impossible because there are too many possible solutions to explore and compare. One technique for narrowing down the possibilities and arriving at a very good (though possibly not *best*) solution is to simulate the process of natural selection using a [genetic algorithm](https://en.wikipedia.org/wiki/Genetic_algorithm). The genetic algorithm starts of with a random set of simulated genomes (genotype), each of which maps to a random strategy (phenotype). It then allows for recombination between genomes, and mutation, and checks each strategy to see how good each is at solving the problem at hand (e.g., maximising the payoff in a game). The most fit strategies reproduce, and more generations are simulated until some criteria is filled (e.g., the mean fitness of strategies is no longer improving, or 100 generations have passed). Once this criteria is met, the evolved strategies have been selected to solve the problem. 
+
+Additionally, a machine learning approach can use data to learn how to behave in a particular scenario. Google [uses this](https://medium.com/@DonDodge/how-is-google-using-machine-learning-adff7bfdc333#.ts4gwjnfa) in some of their software, perhaps most familiarly in gmail [sorting incoming emails](http://mikhailian.mova.org/node/256) into different categories. Most timely, and perhaps **most excitingly** for those of us who are interested in games, a machine learning algorithm has been very recently developed that can [consistently beat professional poker players](https://www.technologyreview.com/s/603342/poker-is-the-latest-game-to-fold-against-artificial-intelligence/). From the linked article in MIT Technology Review,
+
+> ''DeepStack learned to play poker by playing hands against itself. After each game, it revisits and refines its strategy, resulting in a more optimized approach. Due to the complexity of no-limit poker, this approach normally involves practicing with a more limited version of the game. The DeepStack team coped with this complexity by applying a fast approximation technique that they refined by feeding previous poker situations into a deep-learning algorithm.''
+
+My goal is to apply a genetic algorithm to G-MSE, which will allow manager and stake-holder behaviour to be modelled for *any potential objectives* (e.g., maximise crop yield, keep populations near carrying capacity, keep all stake-holders happy, etc.) and allowing for multiple types of actions (e.g., hunt, scare, plant crops, protect offspring, pester the manager, forbid stake-holders). I'm not yet sure if this is realistic [or not](https://blog.codinghorror.com/and-a-pony/), but I think the genetic algorithm approach will at least get us further than anything else (save for some sort of brilliant new conceptual theory that shows how we can avoid the aforementioned complications). I've drafted a [prototype](#u-7-FEB-2017) genetic algorithm in R, which conceptually looks like the following figure.
+
+```{r, echo=FALSE, fig.height=5.5, fig.width=6}
+mbox <- function(x0, x1, y0, y1){
+    xx <- seq(from=x0, to=x1, length.out = 100);
+    yy <- seq(from=y0, to=y1, length.out = 100);
+    xd <- c(rep(x0, 100), xx, rep(x1,100), rev(xx));
+    yd <- c(yy, rep(y1,100), rev(yy), rep(y0, 100));
+    return(list(x=xd, y=yd));
+}
+par(mar=c(0,0,0,0));
+# ===============================================================
+plot(x=0, y=0, type="n", xlim=c(0,200), ylim=c(0,100), xaxt="n", yaxt="n",
+     xlab="",ylab="");
+text(x=22, y=95, labels="Data Frame", col="red");
+text(x=90, y=45, labels="Fitness function", col="blue");
+text(x=165, y=95, labels="Genetic algorithm", col="goldenrod4");
+abox <- mbox(x0 = 0, x1 = 45, y0 = 70, y1 = 90);
+polygon(x=abox$x, y=abox$y, lwd=3, border="red", col="rosybrown1");
+bbox <- mbox(x0 = 65, x1 = 120, y0 = 10, y1 = 40);
+polygon(x=bbox$x, y=bbox$y, lwd=3, border="blue", col="lightsteelblue1");
+cbox <- mbox(x0 = 140, x1 = 195, y0 = 0, y1 = 90);
+polygon(x=cbox$x, y=cbox$y, lwd=3, border="goldenrod4", col="gold3");
+dbox <- mbox(x0 = 142, x1 = 193, y0 = 75, y1 = 88);
+polygon(x=dbox$x, y=dbox$y, lwd=3, border="goldenrod4", col="white");
+ebox <- mbox(x0 = 142, x1 = 193, y0 = 63, y1 = 73);
+polygon(x=ebox$x, y=ebox$y, lwd=3, border="goldenrod4", col="white");
+fbox <- mbox(x0 = 142, x1 = 193, y0 = 51, y1 = 61);
+polygon(x=fbox$x, y=fbox$y, lwd=3, border="goldenrod4", col="white");
+gbox <- mbox(x0 = 142, x1 = 193, y0 = 39, y1 = 49);
+polygon(x=gbox$x, y=gbox$y, lwd=3, border="goldenrod4", col="white");
+hbox <- mbox(x0 = 142, x1 = 193, y0 = 27, y1 = 37);
+polygon(x=hbox$x, y=hbox$y, lwd=3, border="goldenrod4", col="white");
+ibox <- mbox(x0 = 142, x1 = 193, y0 = 15, y1 = 25);
+polygon(x=ibox$x, y=ibox$y, lwd=3, border="goldenrod4", col="white");
+jbox <- mbox(x0 = 142, x1 = 193, y0 = 3, y1 = 13);
+polygon(x=jbox$x, y=jbox$y, lwd=3, border="goldenrod4", col="white");
+box1 <-  mbox(x0 = 67, x1 = 118, y0 = 22, y1 = 38);
+polygon(x=box1$x, y=box1$y, lwd=3, border="blue", col="white");
+box2 <-  mbox(x0 = 67, x1 = 118, y0 = 12, y1 = 20);
+polygon(x=box2$x, y=box2$y, lwd=3, border="blue", col="white");
+text(x=22, y=80, labels="UTILITY", col="black");
+text(x=92, y=32, labels="Adj RES", col="black");
+text(x=92, y=27, labels="values", col="black");
+text(x=92, y=16, labels="E[t+1] RES", col="black");
+text(x=167, y=84, labels="add row 10X", col="black");
+text(x=167, y=79, labels="to 90 rand", col="black");
+text(x=167, y=69, labels="crossover", col="black");
+text(x=167, y=57, labels="mutation", col="black");
+text(x=167, y=44, labels="check fitness", col="black");
+text(x=167, y=32, labels="tournament", col="black");
+text(x=167, y=20, labels="replace", col="black");
+text(x=167, y=8, labels="converge?", col="black");
+arrows(x0=46, x1=138, y0=85, y1=85, lwd=2, length=0.15);
+arrows(x0=139, x1=122, y0=44, y1=36, lwd=2, length=0.15);
+arrows(x0=139, x1=14.75, y0=5, y1=5, lwd=2, length=0.0);
+arrows(x0=15, x1=15, y0=5, y1=70, lwd=2, length=0.15);
+arrows(x0=55, x1=55, y0=5, y1=67, lwd=2, length=0.0);
+arrows(x0=55, x1=138, y0=67, y1=67, lwd=2, length=0.15);
+text(x=10, y=35, labels="Yes", col="black", srt=90);
+text(x=50, y=35, labels="No", col="black", srt=90);
+arrows(x0=121, x1=128.75, y0=16, y1=16, lwd=2, length=0);
+arrows(x0=128, x1=128, y0=16, y1=31, lwd=2, length=0);
+arrows(x0=128.75, x1=138, y0=31, y1=31, lwd=2, length=0.15);
+```
+
+The end result of this kind of implementation of G-MSE could allow us to:
+
+ - Simulate many different kinds of social-ecological conflict (real and hypothetical) and predict how rational managers and stake-holders are likely to act given novel scenarios (i.e., perform *in silico* tests of new scenarios or new policies).
+ - Compare model predictions to observations in the field.
+ - Compare, more specifically, how the *strategies* of real people diverge from those predicted by a model, allowing us to identify stake-holder motivations that we might not otherwise have considered.
+ - Build strategy algorithms based on empirically-derived data on people's behaviour and apply them to new scenarios of conflict.
+ - Estimate the uncertainty of model predictions by multiple simulations with identical starting conditions.
+ - Explore how uncertainty within the model affects agent strategies.
+
+**This concludes the summary.** There are a lot of challenges to implementing the genetic algorithm, but a very initial [prototype](#u-7-FEB-2017) below shows the idea. My hope is to have a beta version of G-MSE up and running sometime in the summer (with a polished version later in the year), and to continue to build upon the model as needed to allow for new scenarios and improved genetic algorithms. **I am very open to feedback on what is and is not important for initial versions of G-MSE**.
+
+********************************************************************************
 
 > <a name="u-7-FEB-2017">Update: 7 FEB 2017</a>
 
