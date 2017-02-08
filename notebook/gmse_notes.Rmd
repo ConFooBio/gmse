@@ -209,10 +209,10 @@ The resource model then returns the new set of individuals; we therefore have th
 
 **The observation model** simulates the process of data collection (but *not* data analysis, which is done elsewhere -- eventually probably in the manager model). It basically generates an uncertain snapshot of the real population(s) by sampling from it in one of four ways (A-D):
 
- A. Sampling resources from a subset of the landscape, inferring population size from the density of the subset [@Nuno2013].
- B. Marking a random number of resources in the population, then recapturing them for [MRM analysis](https://en.wikipedia.org/wiki/Mark_and_recapture#Chapman_estimator).
- C. Sweeping down a linear transect of the landscape -- checking every cell *while resources are potentially moving* (and therefore generating double-counted and missed resources).
- D. Sweeping along blocks of the landscape, one at a time, and checking every cell, again *while resources are potentially moving*.
+ - **(A)** Sampling resources from a subset of the landscape, inferring population size from the density of the subset [@Nuno2013].
+ - **(B)** Marking a random number of resources in the population, then recapturing them for [MRM analysis](https://en.wikipedia.org/wiki/Mark_and_recapture#Chapman_estimator).
+ - **(C)** Sweeping down a linear transect of the landscape -- checking every cell *while resources are potentially moving* (and therefore generating double-counted and missed resources).
+ - **(D)** Sweeping along blocks of the landscape, one at a time, and checking every cell, again *while resources are potentially moving*.
  
 The figure below shows the dynamics of a real population (black line) with a carrying capacity on death of 800 (dotted red line), as estimated by each method (blue lines, panels A-D).
 
