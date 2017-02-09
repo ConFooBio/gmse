@@ -243,44 +243,302 @@ tournament <- function(population, fitness){
 # Combined genetic algorithm:
 ################################################################################
 ################################################################################
-proc_start <- proc.time();
+#proc_start <- proc.time();
 
 
-mean_fitness <- NULL;
-clone_seed   <- 11;
-budget_total <- 100;
-focal_agent  <- 2;
+#mean_fitness <- NULL;
+#clone_seed   <- 11;
+#budget_total <- 100;
+#focal_agent  <- 2;
 
 # Add three agents, representing three stake-holders, to the utility array
-a0 <- c(0, 0, 0,  0, 0, 0, 0, 0,  0, 0,  0, 0,  0, 0,  0, 0);
-a1 <- c(1, 0, 0,  2, 0, 0, 8, 5, 30, 0, 20, 0, 10, 0, 10, 0);
-a2 <- c(2, 0, 0, -1, 1, 1, 0, 0, 50, 0,  0, 1,  1, 2,  2, 1);
+#a0 <- c(0, 0, 0,  0, 0, 0, 0, 0,  0, 0,  0, 0,  0, 0,  0, 0);
+#a1 <- c(1, 0, 0,  2, 0, 0, 8, 5, 30, 0, 20, 0, 10, 0, 10, 0);
+#a2 <- c(2, 0, 0, -1, 1, 1, 0, 0, 50, 0,  0, 1,  1, 2,  2, 1);
 
-UTILITY <- rbind(a0, a1, a2);
+#UTILITY <- rbind(a0, a1, a2);
 
-population <- matrix(data = 0, ncol = 16, nrow = 100);
+#population <- matrix(data = 0, ncol = 16, nrow = 100);
 
-population <- initialise_pop(UTILITY = UTILITY, focal_agent = 2, 
-                             population = population);
+#population <- initialise_pop(UTILITY = UTILITY, focal_agent = 2, 
+ #                            population = population);
 
-mean_fit   <- NULL;
-iterations <- 30;
-while(iterations > 0){
-    population <- crossover(population = population);
-    population <- mutation(population = population, mutation_prob = 0.2);
-    population <- constrain_cost(population = population);
-    fitness    <- strat_fitness(population);
-    population <- tournament(population = population, fitness = fitness);
-    mean_fit   <- c(mean_fit, mean(fitness));
-    iterations <- iterations - 1;
+#mean_fit   <- NULL;
+#iterations <- 30;
+#while(iterations > 0){
+#    population <- crossover(population = population);
+#    population <- mutation(population = population, mutation_prob = 0.2);
+#    population <- constrain_cost(population = population);
+#    fitness    <- strat_fitness(population);
+#    population <- tournament(population = population, fitness = fitness);
+#    mean_fit   <- c(mean_fit, mean(fitness));
+#    iterations <- iterations - 1;
+#}
+
+#proc_end   <- proc.time();
+#time_taken <- proc_end - proc_start;
+
+
+#plot(x=1:length(mean_fit), y=mean_fit, pch=20, cex=1.5, type="b",
+#     xlab="Iterations of genetic algorithm", ylab="Mean strategy fitness");
+
+
+
+
+
+
+
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+# GENETIC ALGORITHM FOR A 2 BY 2 GAME, sequential
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+
+
+agents <- NULL;
+
+history_vec <- c(0,0,0,0,0,1,0,1,0,1,0,0,0,1,1,1,0,1,1,1,0,1,1,1);
+history     <- matrix(data = history_vec, ncol = 3, byrow = TRUE);
+
+CC <- c(2, 2);
+CD <- c(0, 3);
+DC <- c(3, 0);
+DD <- c(1, 1);
+
+for(i in 1:100){
+    agents[[i]] <- rbinom(n=8, size=1, prob=0.5);
 }
 
-proc_end   <- proc.time();
-time_taken <- proc_end - proc_start;
+
+PD <- function(a1_play, a2_play){
+    points <- 0;
+    if(a1_play == 0 & a2_play == 0){
+        points <- 2;
+    }
+    if(a1_play == 0 & a2_play == 1){
+        points <- 0;
+    }
+    if(a1_play == 1 & a2_play == 0){
+        points <- 3;
+    }
+    if(a1_play == 1 & a2_play == 1){
+        points <- 1;
+    }
+    return(points);
+}
 
 
-plot(x=1:length(mean_fit), y=mean_fit, pch=20, cex=1.5, type="b",
-     xlab="Iterations of genetic algorithm", ylab="Mean strategy fitness");
+#for(foc in 1:100){
+
+    opps    <- sample(x=1:100, size=10, replace=TRUE);
+
+    agent_1 <- rep(0, 100);
+    agent_2 <- rep(0, 100);
+    payoff1 <- rep(0, 100);
+    payoff2 <- rep(0, 100);
+
+    foc <- 1;
+    opp <- 2;
+    
+    # Special round 1 (not enough history);
+    use        <- 1:8;
+    agent_1[1] <- sample(x=agents[[foc]][use], size=1);
+    agent_2[1] <- sample(x=agents[[opp]][use], size=1);
+    payoff1[1] <- PD(agent_1[1], agent_2[1]);
+    payoff2[1] <- PD(agent_2[1], agent_1[1]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # Special round 2 (not enough history);
+    use1       <- c(1, 3, 4, 7);
+    use2       <- c(2, 5, 6, 8);
+    if(payoffs[1] == 2){
+        agent_1[2] <- sample(x=agents[[foc]][use1], size=1);
+        agent_2[2] <- sample(x=agents[[opp]][use1], size=1);
+        payoffs[2] <- PD(agent_1[2], agent_2[2]);
+    }
+    if(payoffs[1] == 0){
+        agent_1[2] <- sample(x=agents[[foc]][use2], size=1);
+        agent_2[2] <- sample(x=agents[[opp]][use1], size=1);
+        payoffs[2] <- PD(agent_1[2], agent_2[2]);
+    }
+    if(payoffs[1] == 3){
+        agent_1[2] <- sample(x=agents[[foc]][use1], size=1);
+        agent_2[2] <- sample(x=agents[[opp]][use2], size=1);
+        payoffs[2] <- PD(agent_1[2], agent_2[2]);
+    }
+    if(payoffs[1] == 1){
+        agent_1[2] <- sample(x=agents[[foc]][use2], size=1);
+        agent_2[2] <- sample(x=agents[[opp]][use2], size=1);
+        payoffs[2] <- PD(agent_1[2], agent_2[2]);
+    }
+    
+    # Special round 3 (still not enough history);
+    use1       <- c(1, 4);
+    use2       <- c(2, 6);
+    use3       <- c(3, 7);
+    use4       <- c(5, 8);
+    # ---------------------------------  Last was CC
+    if(payoffs[1] == 2 & payoffs[2] == 2){ # CC then CC
+        agent_1[3] <- sample(x=agents[[foc]][use1], size=1);
+        agent_2[3] <- sample(x=agents[[opp]][use1], size=1);
+        payoffs[3] <- PD(agent_1[3], agent_2[3]);
+    }
+    if(payoffs[1] == 0 & payoffs[2] == 2){ # CD then CC
+        agent_1[3] <- sample(x=agents[[foc]][use3], size=1);
+        agent_2[3] <- sample(x=agents[[opp]][use1], size=1);
+        payoffs[3] <- PD(agent_1[3], agent_2[3]);
+    }
+    if(payoffs[1] == 3 & payoffs[2] == 2){ # DC then CC
+        agent_1[3] <- sample(x=agents[[foc]][use1], size=1);
+        agent_2[3] <- sample(x=agents[[opp]][use3], size=1);
+        payoffs[3] <- PD(agent_1[3], agent_2[3]);
+    }
+    if(payoffs[1] == 1 & payoffs[2] == 2){ # DD then CC
+        agent_1[3] <- sample(x=agents[[foc]][use3], size=1);
+        agent_2[3] <- sample(x=agents[[opp]][use3], size=1);
+        payoffs[3] <- PD(agent_1[3], agent_2[3]);
+    }
+    # ---------------------------------  Last was CD
+    if(payoffs[1] == 2 & payoffs[2] == 0){ # CC then CD
+        agent_1[3] <- sample(x=agents[[foc]][use2], size=1);
+        agent_2[3] <- sample(x=agents[[opp]][use1], size=1);
+        payoffs[3] <- PD(agent_1[3], agent_2[3]);
+    }
+    if(payoffs[1] == 0 & payoffs[2] == 0){ # CD then CD
+        agent_1[3] <- sample(x=agents[[foc]][use4], size=1);
+        agent_2[3] <- sample(x=agents[[opp]][use1], size=1);
+        payoffs[3] <- PD(agent_1[3], agent_2[3]);
+    }
+    if(payoffs[1] == 3 & payoffs[2] == 0){ # DC then CD
+        agent_1[3] <- sample(x=agents[[foc]][use2], size=1);
+        agent_2[3] <- sample(x=agents[[opp]][use3], size=1);
+        payoffs[3] <- PD(agent_1[3], agent_2[3]);
+    }
+    if(payoffs[1] == 1 & payoffs[2] == 0){ # DD then CD
+        agent_1[3] <- sample(x=agents[[foc]][use3], size=1);
+        agent_2[3] <- sample(x=agents[[opp]][use2], size=1);
+        payoffs[3] <- PD(agent_1[3], agent_2[3]);
+    }
+    # ---------------------------------  Last was DC
+    if(payoffs[1] == 2 & payoffs[2] == 3){ # CC then DC
+        agent_1[3] <- sample(x=agents[[foc]][use1], size=1);
+        agent_2[3] <- sample(x=agents[[opp]][use2], size=1);
+        payoffs[3] <- PD(agent_1[3], agent_2[3]);
+    }
+    if(payoffs[1] == 0 & payoffs[2] == 3){ # CD then DC
+        agent_1[3] <- sample(x=agents[[foc]][use3], size=1);
+        agent_2[3] <- sample(x=agents[[opp]][use2], size=1);
+        payoffs[3] <- PD(agent_1[3], agent_2[3]);
+    }
+    if(payoffs[1] == 3 & payoffs[2] == 3){ # DC then DC
+        agent_1[3] <- sample(x=agents[[foc]][use1], size=1);
+        agent_2[3] <- sample(x=agents[[opp]][use4], size=1);
+        payoffs[3] <- PD(agent_1[3], agent_2[3]);
+    }
+    if(payoffs[1] == 1 & payoffs[2] == 3){ # DD then DC
+        agent_1[3] <- sample(x=agents[[foc]][use3], size=1);
+        agent_2[3] <- sample(x=agents[[opp]][use4], size=1);
+        payoffs[3] <- PD(agent_1[3], agent_2[3]);
+    }
+    # ---------------------------------  Last was DD
+    if(payoffs[1] == 2 & payoffs[2] == 3){ # CC then DD
+        agent_1[3] <- sample(x=agents[[foc]][use2], size=1);
+        agent_2[3] <- sample(x=agents[[opp]][use2], size=1);
+        payoffs[3] <- PD(agent_1[3], agent_2[3]);
+    }
+    if(payoffs[1] == 0 & payoffs[2] == 3){ # CD then DD
+        agent_1[3] <- sample(x=agents[[foc]][use4], size=1);
+        agent_2[3] <- sample(x=agents[[opp]][use2], size=1);
+        payoffs[3] <- PD(agent_1[3], agent_2[3]);
+    }
+    if(payoffs[1] == 3 & payoffs[2] == 3){ # DC then DD
+        agent_1[3] <- sample(x=agents[[foc]][use2], size=1);
+        agent_2[3] <- sample(x=agents[[opp]][use4], size=1);
+        payoffs[3] <- PD(agent_1[3], agent_2[3]);
+    }
+    if(payoffs[1] == 1 & payoffs[2] == 3){ # DD then DD
+        agent_1[3] <- sample(x=agents[[foc]][use4], size=1);
+        agent_2[3] <- sample(x=agents[[opp]][use4], size=1);
+        payoffs[3] <- PD(agent_1[3], agent_2[3]);
+    }
+
+
+
+
+
+#}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
