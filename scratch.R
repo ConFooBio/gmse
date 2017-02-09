@@ -300,21 +300,14 @@ tournament <- function(population, fitness){
 ################################################################################
 ################################################################################
 
-
 agents <- NULL;
 
-history_vec <- c(0,0,0,0,0,1,0,1,0,1,0,0,0,1,1,1,0,1,1,1,0,1,1,1);
+history_vec <- c(0,0,0,0,0,1,0,1,0,0,1,1,1,0,0,1,0,1,1,1,0,1,1,1);
 history     <- matrix(data = history_vec, ncol = 3, byrow = TRUE);
-
-CC <- c(2, 2);
-CD <- c(0, 3);
-DC <- c(3, 0);
-DD <- c(1, 1);
 
 for(i in 1:100){
     agents[[i]] <- rbinom(n=8, size=1, prob=0.5);
 }
-
 
 PD <- function(a1_play, a2_play){
     points <- 0;
@@ -334,185 +327,78 @@ PD <- function(a1_play, a2_play){
 }
 
 
-#for(foc in 1:100){
 
-    opps    <- sample(x=1:100, size=10, replace=TRUE);
+tournament <- function(history, agents){
 
-    agent_1 <- rep(0, 100);
-    agent_2 <- rep(0, 100);
-    payoff1 <- rep(0, 100);
-    payoff2 <- rep(0, 100);
+    fitness <- NULL;
 
-    foc <- 1;
-    opp <- 2;
+    for(foc in 1:100){
+
+        opponents <- sample(x=1:100, size=10, replace=TRUE);
+        foc_score <- rep(0, length(opps));
     
-    # Special round 1 (not enough history);
-    use        <- 1:8;
-    agent_1[1] <- sample(x=agents[[foc]][use], size=1);
-    agent_2[1] <- sample(x=agents[[opp]][use], size=1);
-    payoff1[1] <- PD(agent_1[1], agent_2[1]);
-    payoff2[1] <- PD(agent_2[1], agent_1[1]);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # Special round 2 (not enough history);
-    use1       <- c(1, 3, 4, 7);
-    use2       <- c(2, 5, 6, 8);
-    if(payoffs[1] == 2){
-        agent_1[2] <- sample(x=agents[[foc]][use1], size=1);
-        agent_2[2] <- sample(x=agents[[opp]][use1], size=1);
-        payoffs[2] <- PD(agent_1[2], agent_2[2]);
-    }
-    if(payoffs[1] == 0){
-        agent_1[2] <- sample(x=agents[[foc]][use2], size=1);
-        agent_2[2] <- sample(x=agents[[opp]][use1], size=1);
-        payoffs[2] <- PD(agent_1[2], agent_2[2]);
-    }
-    if(payoffs[1] == 3){
-        agent_1[2] <- sample(x=agents[[foc]][use1], size=1);
-        agent_2[2] <- sample(x=agents[[opp]][use2], size=1);
-        payoffs[2] <- PD(agent_1[2], agent_2[2]);
-    }
-    if(payoffs[1] == 1){
-        agent_1[2] <- sample(x=agents[[foc]][use2], size=1);
-        agent_2[2] <- sample(x=agents[[opp]][use2], size=1);
-        payoffs[2] <- PD(agent_1[2], agent_2[2]);
-    }
+        for(opps in 1:length(opponents)){
+            opp     <- opponents[opps];
+            agent_1 <- rep(0, 100);
+            agent_2 <- rep(0, 100);
+            payoff1 <- rep(0, 100);
+            payoff2 <- rep(0, 100);
     
-    # Special round 3 (still not enough history);
-    use1       <- c(1, 4);
-    use2       <- c(2, 6);
-    use3       <- c(3, 7);
-    use4       <- c(5, 8);
-    # ---------------------------------  Last was CC
-    if(payoffs[1] == 2 & payoffs[2] == 2){ # CC then CC
-        agent_1[3] <- sample(x=agents[[foc]][use1], size=1);
-        agent_2[3] <- sample(x=agents[[opp]][use1], size=1);
-        payoffs[3] <- PD(agent_1[3], agent_2[3]);
+            # Special round 1 (not enough history);
+            agent_1[1] <- agents[[foc]][1];
+            agent_2[1] <- agents[[opp]][1];
+            payoff1[1] <- PD(agent_1[1], agent_2[1]);
+            payoff2[1] <- PD(agent_2[1], agent_1[1]);
+
+            # Special round 2 (not enough history);
+            resp_1     <- which(history[1:2,3] == agent_2[1]);
+            resp_2     <- which(history[1:2,3] == agent_1[1]);
+            agent_1[2] <- agents[[foc]][resp_1];
+            agent_2[2] <- agents[[opp]][resp_2];
+            payoff1[2] <- PD(agent_1[2], agent_2[2]);
+            payoff2[2] <- PD(agent_1[2], agent_2[2]);
+
+            # Special round 3 (not enough history);
+            resp_1     <- which( history[1:4,3] == agent_2[1] & 
+                                 history[1:4,2] == agent_2[2]
+                               );
+            resp_2     <- which( history[1:4,3] == agent_1[1] & 
+                                 history[1:4,2] == agent_1[2]
+                               );
+            agent_1[3] <- agents[[foc]][resp_1];
+            agent_2[3] <- agents[[opp]][resp_2];
+            payoff1[3] <- PD(agent_1[3], agent_2[3]);
+            payoff2[3] <- PD(agent_1[3], agent_2[3]);
+
+            # Special round 3 (not enough history);
+            for(round in 4:100){
+                mem1 <- round - 3;
+                mem2 <- round - 2;
+                mem3 <- round - 1;
+                resp_1     <- which( history[,3] == agent_2[mem1] & 
+                                     history[,2] == agent_2[mem2] &
+                                     history[,1] == agent_2[mem3]
+                                   );
+                resp_2     <- which( history[,3] == agent_1[mem1] & 
+                                     history[,2] == agent_1[mem2] &
+                                     history[,1] == agent_1[mem3]
+                                   );        
+                agent_1[round] <- agents[[foc]][resp_1];
+                agent_2[round] <- agents[[foc]][resp_2];
+                payoff1[round] <- PD(agent_1[round], agent_2[round]);
+                payoff2[round] <- PD(agent_2[round], agent_1[round]);
+            }
+
+            foc_score[opps] <- sum(payoff1);
+        }
+    
+        fitness[foc] <- sum(foc_score);
     }
-    if(payoffs[1] == 0 & payoffs[2] == 2){ # CD then CC
-        agent_1[3] <- sample(x=agents[[foc]][use3], size=1);
-        agent_2[3] <- sample(x=agents[[opp]][use1], size=1);
-        payoffs[3] <- PD(agent_1[3], agent_2[3]);
-    }
-    if(payoffs[1] == 3 & payoffs[2] == 2){ # DC then CC
-        agent_1[3] <- sample(x=agents[[foc]][use1], size=1);
-        agent_2[3] <- sample(x=agents[[opp]][use3], size=1);
-        payoffs[3] <- PD(agent_1[3], agent_2[3]);
-    }
-    if(payoffs[1] == 1 & payoffs[2] == 2){ # DD then CC
-        agent_1[3] <- sample(x=agents[[foc]][use3], size=1);
-        agent_2[3] <- sample(x=agents[[opp]][use3], size=1);
-        payoffs[3] <- PD(agent_1[3], agent_2[3]);
-    }
-    # ---------------------------------  Last was CD
-    if(payoffs[1] == 2 & payoffs[2] == 0){ # CC then CD
-        agent_1[3] <- sample(x=agents[[foc]][use2], size=1);
-        agent_2[3] <- sample(x=agents[[opp]][use1], size=1);
-        payoffs[3] <- PD(agent_1[3], agent_2[3]);
-    }
-    if(payoffs[1] == 0 & payoffs[2] == 0){ # CD then CD
-        agent_1[3] <- sample(x=agents[[foc]][use4], size=1);
-        agent_2[3] <- sample(x=agents[[opp]][use1], size=1);
-        payoffs[3] <- PD(agent_1[3], agent_2[3]);
-    }
-    if(payoffs[1] == 3 & payoffs[2] == 0){ # DC then CD
-        agent_1[3] <- sample(x=agents[[foc]][use2], size=1);
-        agent_2[3] <- sample(x=agents[[opp]][use3], size=1);
-        payoffs[3] <- PD(agent_1[3], agent_2[3]);
-    }
-    if(payoffs[1] == 1 & payoffs[2] == 0){ # DD then CD
-        agent_1[3] <- sample(x=agents[[foc]][use3], size=1);
-        agent_2[3] <- sample(x=agents[[opp]][use2], size=1);
-        payoffs[3] <- PD(agent_1[3], agent_2[3]);
-    }
-    # ---------------------------------  Last was DC
-    if(payoffs[1] == 2 & payoffs[2] == 3){ # CC then DC
-        agent_1[3] <- sample(x=agents[[foc]][use1], size=1);
-        agent_2[3] <- sample(x=agents[[opp]][use2], size=1);
-        payoffs[3] <- PD(agent_1[3], agent_2[3]);
-    }
-    if(payoffs[1] == 0 & payoffs[2] == 3){ # CD then DC
-        agent_1[3] <- sample(x=agents[[foc]][use3], size=1);
-        agent_2[3] <- sample(x=agents[[opp]][use2], size=1);
-        payoffs[3] <- PD(agent_1[3], agent_2[3]);
-    }
-    if(payoffs[1] == 3 & payoffs[2] == 3){ # DC then DC
-        agent_1[3] <- sample(x=agents[[foc]][use1], size=1);
-        agent_2[3] <- sample(x=agents[[opp]][use4], size=1);
-        payoffs[3] <- PD(agent_1[3], agent_2[3]);
-    }
-    if(payoffs[1] == 1 & payoffs[2] == 3){ # DD then DC
-        agent_1[3] <- sample(x=agents[[foc]][use3], size=1);
-        agent_2[3] <- sample(x=agents[[opp]][use4], size=1);
-        payoffs[3] <- PD(agent_1[3], agent_2[3]);
-    }
-    # ---------------------------------  Last was DD
-    if(payoffs[1] == 2 & payoffs[2] == 3){ # CC then DD
-        agent_1[3] <- sample(x=agents[[foc]][use2], size=1);
-        agent_2[3] <- sample(x=agents[[opp]][use2], size=1);
-        payoffs[3] <- PD(agent_1[3], agent_2[3]);
-    }
-    if(payoffs[1] == 0 & payoffs[2] == 3){ # CD then DD
-        agent_1[3] <- sample(x=agents[[foc]][use4], size=1);
-        agent_2[3] <- sample(x=agents[[opp]][use2], size=1);
-        payoffs[3] <- PD(agent_1[3], agent_2[3]);
-    }
-    if(payoffs[1] == 3 & payoffs[2] == 3){ # DC then DD
-        agent_1[3] <- sample(x=agents[[foc]][use2], size=1);
-        agent_2[3] <- sample(x=agents[[opp]][use4], size=1);
-        payoffs[3] <- PD(agent_1[3], agent_2[3]);
-    }
-    if(payoffs[1] == 1 & payoffs[2] == 3){ # DD then DD
-        agent_1[3] <- sample(x=agents[[foc]][use4], size=1);
-        agent_2[3] <- sample(x=agents[[opp]][use4], size=1);
-        payoffs[3] <- PD(agent_1[3], agent_2[3]);
-    }
+    return(fitness);
+}
 
 
 
-
-
-#}
 
 
 
