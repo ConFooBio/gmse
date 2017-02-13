@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **FEB** [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
+     - **FEB** [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
  
  - **2016**
@@ -72,6 +72,15 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-13-FEB-2017">Update: 13 FEB 2017</a>
+
+**gameGA: [a new R package](https://github.com/bradduthie/gamesGA) that also can be [run from a browser](https://bradduthie.shinyapps.io/gameGA_browser/)**
+
+In preparation for two upcoming workshop talks, I have developed a [new R package](https://github.com/bradduthie/gamesGA) to demonstrate the potential of machine learning and genetic algorithms in understanding human conflicts between food security and biodiversity. Package [installation instructions](https://github.com/bradduthie/gamesGA ) are available on the GitHub repository, and the program can also be run directly [from a browser](https://bradduthie.shinyapps.io/gameGA_browser/) courtesy of [shiny](https://shiny.rstudio.com/). This package is mostly to serve as a proof of concept; while limited in its applications (though it could later be incorporated into `gmse`, if desired), it demonstrates a relevant and flexible application of machine learning to games theory. Further, the fact that the processing time of simulations is very rapid -- not even noticeable even when run from a browswer (note, the fitness function is coded in c; had it been coded in R, most simulations would take up to a minute), shows that it is realistic to simulate multiple genetic algorithms (underlying multiple agent strategies) within a program. I have no desire to upload `gameGA` onto the [CRAN Repository](https://cran.r-project.org/), unless it is requested.
+
+In the coming days, I will continue to put together a forward-looking talk that outlines how management strategy evaluation can be combined with game theory (making use of genetic algorithms to understand behaviour) to better understand *and potentially help resolve* conflicts over food security and biodiversity. I think that it will be reasonable to argue that the [range of strategies](https://bradduthie.shinyapps.io/gameGA_browser/) predicted by even a simple iterated Prisoner's dilemma (or any other two player two decision symmetric payoff scenario) **probably reflect, reasonably well, the kind of variation in human behaviour that might be predicted in real systems.** Most humans will not act completely rationally, therefore we might expect a lot of **uncertainty** in human behavoiur where conflict arises; most strategies will be aligned with the interests of individual stake-holders, even if they are not perfect at maximising stake-holder interests.
+
 
 > <a name="u-8-FEB-2017">Update: 8 FEB 2017</a>
 
