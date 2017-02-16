@@ -86,7 +86,7 @@ Finishing the [gameGA](https://github.com/bradduthie/gamesGA) R package has give
 
 Typical evolution of strategies given the above payoff matrix and a three-move memory history with 100 rounds per opponent looks like the below. Periods of low fitness show areas where most strategies have evolved to defect, while periods of high fitness show areas where most strategies cooperate.
 
-![Typical evolution of cooperation in gamesGA simulation of Prisoner's dilemma](images/gamesGA_samp.png)
+![*Typical evolution of cooperation in gamesGA simulation of Prisoner's dilemma*](images/gamesGA_samp.png)
 
 This simple example highlights something that is potentially important for understanding conflict in conservation scenarios, **cooperation (and conflict) might be fragile, with rapid shifts from one strategy dominating to another taking over without much external pressure**.
 
@@ -97,7 +97,54 @@ The fragility or robustness of conflict in conservation could have major influen
 
 I'm wondering whether a couple papers could be especially useful to the conservation literature -- one could be a perspective piece just on the application of game theory to understanding conflict and management, and things that will need to be taken into account (more on this later -- but would include time lags, interactions among stake-holders, degeneracy of effects, etc.); the idea of applying game theory to management questions and conflict is now familiar to ConFooBio, but a lot of the thinking we've done could risk being lost if not published as a lead-in to more complex modelling, behavioural games, or time-series analyses. A second paper could be a basic starting point for addressing how robust cooperation and conflict are predicted to be -- this might be answerable without the full power of a complex `gmse` software, focusing instead on modelling some simplified scenarios (using a version of `gmse` with a more samplified 'g'), then (probably) concluding that additional work will be needed to really get at complex real-world case studies (which we'll do with `gmse`).
 
+**Other thoughts on strategy**
 
+It's also worth noting that `gamesGA` does not allow for some strategies that might be relevant, such as the 'win-stay' and 'lose-shift' strategy [@Nowak1995]. There is also considerable work on the *robustness* of cooperation in games such as Prisoner's dilemma -- a lot of which consider spatial effects (local networks, grid-based cooperation) explicitly. I've not found anything that looks at this in the context of conservation though, so I think there could well be scope for a high-level perspective paper here. It could also be worth considering other types of games, such as the snowdrift (chicken, hawk-dove) game, which cooperation and conflict are potential outcomes.
+
+|                         | Opponent cooperates | Opponent defects |
+|-------------------------|---------------------|------------------|
+| Focal player cooperates |   **2, 2**          |  **3, 1**        |
+| Focal player defects    |   **1, 3**          |  **0, 0**        |
+
+The above payoff matrix produces even more fragile results (shown below).
+
+![*Typical evolution of cooperation in gamesGA simulation of the snowdrift game*](images/gamesGA_samp_hd.png).
+
+
+The robustness of these results gets stronger though when the payoff differences get more severe so that mutual defection is much worse. For example, consider the following payoff matrix.
+
+|                         | Opponent cooperates | Opponent defects |
+|-------------------------|---------------------|------------------|
+| Focal player cooperates |   **12, 12**        |  **13, 11**      |
+| Focal player defects    |   **11, 13**        |  **0, 0**        |
+
+Defection given the payoffs below has a much more difficult time getting a foothold because anytime defectors become sufficiently frequent in a population, their fitness drops dramatically compared to cooperators.
+
+![*Typical evolution of cooperation in gamesGA simulation of the snowdrift game with a major penalty for mutual defection*](images/gamesGA_samp_hd_big.png).
+
+The point is that the differences between payof values will matter by increasing the risk associated defection (or cooperation). *Note that values near zero in the first plot implied a population of mostly defectors, whereas equal magnitude of change in mean fitness does not correspond to as great a difference in the proportion of cooperators and defectors in the second figure.*
+
+**A perspective paper on theory of conflict and cooperation in conservation?**
+
+Given that there is little to nothing on application of game theory to conflict and cooperation in conservation, it strikes me that a forward-looking paper could be useful for establishing some things -- perhaps making use of the [`gamesGA` R package](https://github.com/bradduthie/gamesGA) as a conceptual tool for demonstrating some key points. Relevant topics include:
+
+ 1. Background on conflict and cooperation in the context of conservation, particularly biodiversity and food security
+ 2. Background on game theory, and its use in understanding the logic of conflict and cooperation in both biological and social systems
+ 3. Key questions in applying game theory to conflict and cooperation in conservation social-ecological systems.
+ 
+     - At what scale(s) should we model conflict -- at the individual or institutional level, or both?
+     - How robust will sustained cooperation and conflict be in social-ecological systems, as affected by both internal and external pressures? Here is a place to insert `gamesGA` point about robustness.
+     - How much complexity do we need to build into models before it becomes possible to predict the outcomes of management policies with any degree of confidence, especially given the inherent biological and social uncertainties involved?
+     
+  4. Specific points regarding the *complexity* inherent to predicting social-ecological conflict: how to address these in a way that can be beneficial for management recommendations
+  
+    - [Machine learning](https://en.wikipedia.org/wiki/Machine_learning) and [genetic algorithms](https://en.wikipedia.org/wiki/Genetic_algorithm): flexible tools for understanding and predicting complex strategies. Discuss how these tools are already used successfully in other contexts.
+    - [Agent-based modelling](https://en.wikipedia.org/wiki/Agent-based_model) as an approach to simulating realistic scenarios of cooperation and conflict
+    - Explicit consideration of [degeneracy](https://en.wikipedia.org/wiki/Degeneracy_(biology)) as a potential management strategy for increasing the robustness of cooperation [see recent work by @Man2016]
+    
+  5. The ultimate goal: towards a modelling framework that simulates adaptive management of populations under the influence of conflicting stake-holders, and is capable of simulating management options *in silico* to predict the efficacy of policy.
+  
+I'm not sure if this is the best structure or not, but I think I could see a paper like this succeeding in setting up the importance for future work.
 
 <!--- A useful possiblility might be some sort of statistical analysis during simulations that correlates history and actions into some --->
 
