@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **FEB** [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
+     - **FEB** [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
  
  - **2016**
@@ -72,6 +72,34 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-16-FEB-2017">Update: 16 FEB 2017</a>
+
+**New considerations for machine learning in gmse**
+
+Finishing the [gameGA](https://github.com/bradduthie/gamesGA) R package has given me a bit more perspective on the eventual structure of the genetic algorithm of `gmse`. Taking into account the history of interations between two agents was straightforward in the case of Prisoner's dilemma, or any symmetrical $2 \times 2$ payoff matrix. Because there were only two options to consider ('cooperate' and 'defect'), every locus of each agent's strategy just represented a response to a different interaction history. By changing the default parameters, I was also able to recreate the results of @Darwen1995, who found that strategy evolution under the following payoff values tended to result in long periods of defection or cooperation punctuated by rapid transitions from one to the other.
+
+|                         | Opponent cooperates | Opponent defects |
+|-------------------------|---------------------|------------------|
+| Focal player cooperates |   **3, 3**          |  **0, 5**        |
+| Focal player defects    |   **5, 0**          |  **1, 1**        |
+
+Typical evolution of strategies given the above payoff matrix and a three-move memory history with 100 rounds per opponent looks like the below. Periods of low fitness show areas where most strategies have evolved to defect, while periods of high fitness show areas where most strategies cooperate.
+
+![Typical evolution of cooperation in gamesGA simulation of Prisoner's dilemma](images/gamesGA_samp.png)
+
+This simple example highlights something that is potentially important for understanding conflict in conservation scenarios, **cooperation (and conflict) might be fragile, with rapid shifts from one strategy dominating to another taking over without much external pressure**.
+
+The fragility or robustness of conflict in conservation could have major influences on policy, particularly where we're interested in coming up with long-term sustainable solutions. **Two key questions immediately come to mind:**
+
+  1. **How does the (lack of) robustness of cooperation in the simplified model of `gamesGA` scale up with complexity?** That is, real-world conflicts are much more complex than this simplified model, so will this complexity make existing cooperation and conflict more robust, or more fragile? We can draw a comparison here, perhaps, with the community ecology literature, where the questions have long been posed, *are more complex communities more stable and more productive?* There is a lot of recent literature on this, both from theoretical and empirical studies, and stretching all the way back to the early works of [Elton](https://en.wikipedia.org/wiki/Charles_Sutherland_Elton) and [May](https://en.wikipedia.org/wiki/Robert_May,_Baron_May_of_Oxford). Applying similar ideas to social-ecological systems could be useful -- it could be that, like community ecology, there are qualities of such systems that make cooperation or conflict more robust (I've been particularly interested in degeneracy). I'll revisit some of the community ecology literature to remind myself what the key points are.
+  2. **How do external influences, including management actions, affect the robustness of cooperation?** If we find that cooperation is fragile in social-ecological systems, are there some kinds of managment options that tend to reduce that fragility, or at least slow down what might otherwise be a rapid shift from cooperation to conflict (or hasten a rapid shift from conflict to cooperation)? This is one area in which a machine learning and game-theoretic approach could really shine, producing a general framework for exploring the *robustness* of cooperation and conflict to changing conditions.
+
+I'm wondering whether a couple papers could be especially useful to the conservation literature -- one could be a perspective piece just on the application of game theory to understanding conflict and management, and things that will need to be taken into account (more on this later -- but would include time lags, interactions among stake-holders, degeneracy of effects, etc.); the idea of applying game theory to management questions and conflict is now familiar to ConFooBio, but a lot of the thinking we've done could risk being lost if not published as a lead-in to more complex modelling, behavioural games, or time-series analyses. A second paper could be a basic starting point for addressing how robust cooperation and conflict are predicted to be -- this might be answerable without the full power of a complex `gmse` software, focusing instead on modelling some simplified scenarios (using a version of `gmse` with a more samplified 'g'), then (probably) concluding that additional work will be needed to really get at complex real-world case studies (which we'll do with `gmse`).
+
+
+
+<!--- A useful possiblility might be some sort of statistical analysis during simulations that correlates history and actions into some --->
 
 > <a name="u-13-FEB-2017">Update: 13 FEB 2017</a>
 
@@ -2810,6 +2838,8 @@ Chollett, I., Garavelli, L., O’Farrell, S., Cherubin, L., Matthews, T. R., Mum
 Cobano, J. A., Conde, R., Alejo, D., & Ollero, A. (2011). Path planning method based on Genetic Algorithms and the Monte-Carlo method to avoid aerial vehicle collisions under uncertainties. In Proceedings of the IEEE International Conference on Robotics and Automation (pp. 4429–4434). https://doi.org/10.1109/ICRA.2011.5980246
 
 Colyvan, M., Justus, J., & Regan, H. M. (2011). The conservation game. Biological Conservation, 144(4), 1246–1253. http://doi.org/10.1016/j.biocon.2010.10.028
+
+Darwen, P. J., & Yao, X. (1995). On evolving robust strategies for iterated prisoner’s dilemma. In Progress in Evolutionary Computation (Vol. 956, pp. 276–292). http://doi.org/10.1007/3-540-60154-6_61
 
 Duffy, R., St John, F. A. V, Büscher, B., & Brockington, D. (2016). Toward a new understanding of the links between poverty and illegal wildlife hunting. Conservation Biology, 30(1), 14–22. https://doi.org/10.1111/cobi.12622
 
