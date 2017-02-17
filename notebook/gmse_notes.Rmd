@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **FEB** [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
+     - **FEB** [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
  
  - **2016**
@@ -72,6 +72,17 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-17-FEB-2017">Update: 17 FEB 2017</a>
+
+**Big picture notes regarding G-MSE presentation**
+
+In presenting G-MSE, I think it is important to emphasise that game-theory is *the* standard, formal, tool for understanding conflict between rational agents. Hence, it is the natural tool for addressing issues of cooperation and conflict in conservation **[@Colyvan2011; @Lee2012; @Kark2015; @Adami2016; @Tilman2016]**. It's important to also recognise that game theory is broader in scope than the application of standard pay-off matrices, and includes extensions such as [adaptive dynamics](https://en.wikipedia.org/wiki/Evolutionary_invasion_analysis). Where strategies are complex, machine learning techniques such as the use of genetic algorithms can be used to find adaptive strategies for games **[e.g., @Balmann2000; @Tu2000]**. And a game-theoretic framework is entirely compatible with agent-based modelling **[@An2012, @Tesfatsion2017]**. @Bonabeau2002, citing Axelrod, argues strongly for an agent-based approach to game theory. Hence, a good summary of the key concepts of G-MSE is shown below.
+
+![*G-MSE flowchart*](images/gmse_overview_sm.png)
+
+The big green circle is the engine that drives the decision-making of rational agents (i.e., managers and stake-holders) under complex choices and payoffs. 
+
 
 > <a name="u-16-FEB-2017">Update: 16 FEB 2017</a>
 
@@ -145,6 +156,21 @@ Given that there is little to nothing on application of game theory to conflict 
   5. The ultimate goal: towards a modelling framework that simulates adaptive management of populations under the influence of conflicting stake-holders, and is capable of simulating management options *in silico* to predict the efficacy of policy.
   
 I'm not sure if this is the best structure or not, but I think I could see a paper like this succeeding in setting up the importance for future work.
+
+**Two forward-looking talks**
+
+Within the next six weeks, I will deliver one 10-12 minute talk and one 15-20 miinute talk. Topics of discussion will include key pieces of the potential perspective outlined above, with a long-term focus toward point 5. Several slides are already prepared with key goals of each slide including:
+
+ - A series of slides showing the logic of genetic algorithms, dynamically simulating one round of a genetic algorithm and its output at each time step (2 minutes, maybe?). 
+ - A demonstration of iterated prisoner's dilemma (or any payoff matrix), output including evolved strategies and mean fitness tracked over generations (2 minutes?), dynamically simulated.
+ - A sample scenario showing how empirical data for parameterising strategies might be obtained and the used to compare evolved (rational) strategies with real-world decisions (2 minutes?). 
+ 
+I think the above sets of slides are engaging, and useful for the intended audience, and that they fit into a general story that leads to the conclusion that a game-theoretic method of understanding conflict and cooperation in social-ecological systems will be useful, but how to pitch the whole idea in 10-20 minutes needs a bit more fleshing out. The overall goal is to go from the *need to understand conflict and cooperation in conservation* $\to$ *application of game theory, through the use of genetic algorithms, will address this need*, and will **ultimately allow us to simulate management *in silico* in social-ecological systems**. A presentation structure could be as follows:
+
+ - Introduce the idea that conservation conflicts are complex (conflict itself needs no lengthy introduction, as it's the focus of both workshops) -- often it's difficult to understand what the interests of stake-holders are, and how those stake-holders might be expected to make decisions in response to uncertainty and changes in policy (perhaps emphasise examples from earlier talks).
+ - Point out that there is no general theory or modelling that is applied to these kinds of conservation conflicts; a common framework for understanding and predicting conflict is needed.
+ - Fortunately, there **is** a general theory for understanding conflict and cooperation in other contexts -- namely, evolutionary biology, political science, sport, and economics. Game theory has been the key to addressing the logic of interactions in these fields for decades!
+
 
 <!--- A useful possiblility might be some sort of statistical analysis during simulations that correlates history and actions into some --->
 
