@@ -109,18 +109,20 @@ print(landscape);
 Where, above, the first element (i.e., layer) is terrain type (already in G-MSE), the second element is the production potential of crops, and the third element is the stake-holder that owns the land (a zero could be included for public land). It would make sense if the land was contiguous -- I don't see a good algorithm for this, so it might be necessary to make one. I could imagine something that breaks down the map into equal segements (e.g., like programs created to avoid gerrymandering, but easier because we don't have to worry about population size -- at the moment). Of course, if the number of cells does not evenly divide by the number of simulated farmers, then some farmers are going to have bigger farms than others, but perhaps we want this to be the case? It would be nice to be able to specify the variation in farm size. In fact, it would probably be good to use this to also incorporate the total amount of farm space. Something like the below
 
 ```{r, echo=TRUE}
-farmers     <- 10;
-total_cells <- dim(landscape[[3]])[1] * dim(landscape[[3]])[2]
-pr_farmland <- 0.9;
-farm_cells  <- floor( pr_farmland * total_cells );
-extras      <- farm_cells - farmers; # Every farmer needs at least one cell
-farm_prp    <- rep(x = extras / farmers, times = farmers); # Vec can change
-farm_cells  <- sample(x = farmers, size = extras, 
-                      prob = farm_prp, replace = TRUE);
-farm_cells  <- c(farm_cells, 1:farmers);
-cell_table  <- table(farm_cells);
-print(cell_table);
+#farmers     <- 10;
+#total_cells <- dim(landscape[[3]])[1] * dim(landscape[[3]])[2]
+#pr_farmland <- 0.9;
+#farm_cells  <- floor( pr_farmland * total_cells );
+#extras      <- farm_cells - farmers; # Every farmer needs at least one cell
+#farm_prp    <- rep(x = extras / farmers, times = farmers); # Vec can change
+#farm_cells  <- sample(x = farmers, size = extras, 
+#                      prob = farm_prp, replace = TRUE);
+#farm_cells  <- c(farm_cells, 1:farmers);
+#cell_table  <- table(farm_cells);
+#print(cell_table);
 ```
+
+**NOTE: The above has been commented out due to errors in making the page, for some reason.**
 
 The above `cell_table` therefore shows how many cells each farmer gets. Some sort of (simple) cluster algorithm is needed to distribute each farmer's allocated cells to an area of the landscape. Remaining cells will be `0` cells, indicating other land. Note that the `pr_farmland` could also be a function of the number of cell types in `landscape[[1]]`. I haven't decided if this should be done in R (as above) or C. I'm leaning toward C (or, at least, kicking things to C when then get complicated) because I can imagine the need to specify some detail in these landscapes.
 
