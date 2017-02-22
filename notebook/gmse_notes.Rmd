@@ -79,6 +79,53 @@ library(rhandsontable)
 
 Having now completed a new [R package](https://github.com/bradduthie/gamesGA) modelling a genetic algorithm for iterated games played on  $2 \times 2$ symmetric payoff matrices, and applied this package to an [upcoming presentation](https://bradduthie.shinyapps.io/GRIMSO/#1) on the future of G-MSE, I now turn back to coming up with a functional genetic algorithm for G-MSE software.
 
+**Additional issues**
+
+Currently, there are five [outstanding issues](https://github.com/bradduthie/gmse/issues) in G-MSE. Issues [9](https://github.com/bradduthie/gmse/issues/9), [11](https://github.com/bradduthie/gmse/issues/11), and [12](https://github.com/bradduthie/gmse/issues/12) are rather trivial and easy to implement. Issues [10](https://github.com/bradduthie/gmse/issues/10) (dealing with the implementation of multiple resources) and [14](https://github.com/bradduthie/gmse/issues/14) (dealing with multiple landscape dimensions) require more serious consideration. Perhaps partly because of the recent ConFooBio focus on geese and the sizeable [special issue in Ambio](http://link.springer.com/journal/13280/46/2/suppl/page/1) that just came out, I am thinking about first coding in multiple layers to `LANDSCAPE`. As noted in [issue 10](https://github.com/bradduthie/gmse/issues/10), this can be done fairly straightforwardly in R and C -- the different layers can simply be list elements in R (so `LANDSCAPE[[i]]` is one layer that is actually a matrix of real values) and read in as a three dimensional array in C. I was able to do this while making the [gamesGA](https://github.com/bradduthie/gamesGA) package, with the `agents` array being set [in R](https://github.com/bradduthie/gamesGA/blob/master/R/games_ga.R), then being unlisted with `unlist()` before being changed into array form and read into C in [fitness.R](https://github.com/bradduthie/gamesGA/blob/master/R/fitness.R). This isn't a particularly elegant solution, but it's one that could work with code such as the following:
+
+```
+land_r_vec <- unlist(LANDSCAPE_r);
+land_r_arr <- matrix(data = land_r_vec, nrow = dim(LANDSCAPE_r)[2]);
+```
+
+Alternatively, and probably better in the long run for efficiency (though I doubt that the above call would lose much) if the lists were directly read into C and returned as lists. I'm not sure if this is possible, but if it is, I'll have to make use of [C data structures](http://adv-r.had.co.nz/C-interface.html) that are read in from R's C interface.
+
+The reason that I'm keen to start with the landscape layer implementation is that I think this might be the best way to initially model crop production. The more flexible way to do it would be to put crops in the `RESOURCE` array, but this would require much more memory and computation time than I really think is necessary for what, in all cases that I can currently concieve, really comes down to just a real number at a location. By adding this real number to the landscape and letting it be increased or decreased by agents and resources, we can have the most straight-forwad method of modelling crop production as affected by farmers, managers, and animals. Another layer, however, is potentially needed mapping `x` and `y` locations to ownership of a particular stake-holder. Thus, I can imagine a landscape with three layers, the combination of which will let us address some basic questions concerning conflict between farmers and conservationists:
+
+```{r, echo=FALSE}
+landscape <- NULL;
+terr_vals <- sample(x = 4, size = 100, replace = TRUE);
+crop_prod <- runif(n = 100, min = 0, max = 1);
+landowner <- sample(x = 2, size = 100, replace = TRUE);
+mat_terr  <- matrix(data = terr_vals, nrow = 10);
+mat_prod  <- matrix(data = crop_prod, nrow = 10);
+mat_own   <- matrix(dat = landowner, nrow = 10);
+landscape[[1]] <- mat_terr;
+landscape[[2]] <- mat_prod;
+landscape[[3]] <- mat_own;
+print(landscape);
+```
+
+Where, above, the first element (i.e., layer) is terrain type (already in G-MSE), the second element is the production potential of crops, and the third element is the stake-holder that owns the land (a zero could be included for public land). It would make sense if the land was contiguous -- I don't see a good algorithm for this, so it might be necessary to make one. I could imagine something that breaks down the map into equal segements (e.g., like programs created to avoid gerrymandering, but easier because we don't have to worry about population size -- at the moment). Of course, if the number of cells does not evenly divide by the number of simulated farmers, then some farmers are going to have bigger farms than others, but perhaps we want this to be the case? It would be nice to be able to specify the variation in farm size. In fact, it would probably be good to use this to also incorporate the total amount of farm space. Something like the below
+
+```{r, echo=TRUE}
+farmers     <- 10;
+total_cells <- dim(landscape[[3]])[1] * dim(landscape[[3]])[2]
+pr_farmland <- 0.9;
+farm_cells  <- floor( pr_farmland * total_cells );
+extras      <- farm_cells - farmers; # Every farmer needs at least one cell
+farm_prp    <- rep(x = extras / farmers, times = farmers); # Vec can change
+farm_cells  <- sample(x = farmers, size = extras, 
+                      prob = farm_prp, replace = TRUE);
+farm_cells  <- c(farm_cells, 1:farmers);
+cell_table  <- table(farm_cells);
+print(cell_table);
+```
+
+The above `cell_table` therefore shows how many cells each farmer gets. Some sort of (simple) cluster algorithm is needed to distribute each farmer's allocated cells to an area of the landscape. Remaining cells will be `0` cells, indicating other land. Note that the `pr_farmland` could also be a function of the number of cell types in `landscape[[1]]`. I haven't decided if this should be done in R (as above) or C. I'm leaning toward C (or, at least, kicking things to C when then get complicated) because I can imagine the need to specify some detail in these landscapes.
+
+
+
 > <a name="u-17-FEB-2017">Update: 17 FEB 2017</a>
 
 **Big picture notes regarding G-MSE presentation**
@@ -88,7 +135,6 @@ In presenting G-MSE, I think it is important to emphasise that game-theory is *t
 ![*G-MSE flowchart*](images/gmse_overview_sm.png)
 
 The big green circle is the engine that drives the decision-making of rational agents (i.e., managers and stake-holders) under complex choices and payoffs. 
-
 
 > <a name="u-16-FEB-2017">Update: 16 FEB 2017</a>
 
@@ -103,7 +149,7 @@ Finishing the [gameGA](https://github.com/bradduthie/gamesGA) R package has give
 
 Typical evolution of strategies given the above payoff matrix and a three-move memory history with 100 rounds per opponent looks like the below. Periods of low fitness show areas where most strategies have evolved to defect, while periods of high fitness show areas where most strategies cooperate.
 
-![*Typical evolution of cooperation in gamesGA simulation of Prisoner's dilemma*](images/gamesGA_samp.png)
+![Typical evolution of cooperation in gamesGA simulation of Prisoner's dilemma](images/gamesGA_samp.png)
 
 This simple example highlights something that is potentially important for understanding conflict in conservation scenarios, **cooperation (and conflict) might be fragile, with rapid shifts from one strategy dominating to another taking over without much external pressure**.
 
@@ -162,23 +208,6 @@ Given that there is little to nothing on application of game theory to conflict 
   5. The ultimate goal: towards a modelling framework that simulates adaptive management of populations under the influence of conflicting stake-holders, and is capable of simulating management options *in silico* to predict the efficacy of policy.
   
 I'm not sure if this is the best structure or not, but I think I could see a paper like this succeeding in setting up the importance for future work.
-
-**Two forward-looking talks**
-
-Within the next six weeks, I will deliver one 10-12 minute talk and one 15-20 miinute talk. Topics of discussion will include key pieces of the potential perspective outlined above, with a long-term focus toward point 5. Several slides are already prepared with key goals of each slide including:
-
- - A series of slides showing the logic of genetic algorithms, dynamically simulating one round of a genetic algorithm and its output at each time step (2 minutes, maybe?). 
- - A demonstration of iterated prisoner's dilemma (or any payoff matrix), output including evolved strategies and mean fitness tracked over generations (2 minutes?), dynamically simulated.
- - A sample scenario showing how empirical data for parameterising strategies might be obtained and the used to compare evolved (rational) strategies with real-world decisions (2 minutes?). 
- 
-I think the above sets of slides are engaging, and useful for the intended audience, and that they fit into a general story that leads to the conclusion that a game-theoretic method of understanding conflict and cooperation in social-ecological systems will be useful, but how to pitch the whole idea in 10-20 minutes needs a bit more fleshing out. The overall goal is to go from the *need to understand conflict and cooperation in conservation* $\to$ *application of game theory, through the use of genetic algorithms, will address this need*, and will **ultimately allow us to simulate management *in silico* in social-ecological systems**. A presentation structure could be as follows:
-
- - Introduce the idea that conservation conflicts are complex (conflict itself needs no lengthy introduction, as it's the focus of both workshops) -- often it's difficult to understand what the interests of stake-holders are, and how those stake-holders might be expected to make decisions in response to uncertainty and changes in policy (perhaps emphasise examples from earlier talks).
- - Point out that there is no general theory or modelling that is applied to these kinds of conservation conflicts; a common framework for understanding and predicting conflict is needed.
- - Fortunately, there **is** a general theory for understanding conflict and cooperation in other contexts -- namely, evolutionary biology, political science, sport, and economics. Game theory has been the key to addressing the logic of interactions in these fields for decades!
-
-
-<!--- A useful possiblility might be some sort of statistical analysis during simulations that correlates history and actions into some --->
 
 > <a name="u-13-FEB-2017">Update: 13 FEB 2017</a>
 
@@ -806,7 +835,7 @@ Crop yield could therefore affect utility -- in that some utility value is assig
 |  1    |  0    | 0     | 2    | 0     | 0      | 8      | 5     |    30  |  0     |  20    |  0     |   10   |  0     |   10   |  0     |
 |  2    |  0    | 0     | -1   | 1     | 1      | 0      | 0     |    50  |  0     |  0     |  1     |   1    |  2     |   2    |  1     |
 
-The column `util` could just be the direct effect that resources of `type1` have on the agent, u_loc could be whether or not utility is affected by location, and if it is, then u_land could be its effect on the landscape layer (for now, there is only one layer of landscape values, but another column should probably be added to specify). Hence, representing a goose to a farmer that doesn't care about geese at all but wants high crop yield could be `util = 0`, `u_loc = 0`, and `u_land = -1`. A farmer that kind of likes geese but also crop yeld could be something like `util = 1`, `u_loc = 0`, and `u_land = -1`. Note that the last farmer likes geese, but does not care where the geese are (`u_loc = 0`), but does not want their effects on the farmer's land (`u_land = -1`). I think that this is probably the right way to go, though optimising fitness given these multiple interests will be a challenge. 
+The column `util` could just be the direct effect that resources of `type1` have on the agent, u_loc could be whether or not utility is affected by location, and if it is, then u_land could be its effect on the landscape layer (for now, there is only one layer of landscape values, but another column should probably be added to specify). Hence, representing a goose to a farmer that doesn't care about geese at all but wants high crop yield could be `util = 0`, `u_loc = 0`, and `u_land = -1`. A farmer that kind of likes geese but also crop yeld could be something like `util = 1`, `u_loc = 0`, and `u_land = -1`. Note that the last farmer likes geese, but does not care where the geese are (`u_loc = 0`), but does not want their effects on the farmer's land (`u_land = -1`). I think that this is probably the right way to go, though optimising fitness given these multiple interests will be a challenge.
 
 **It might also be useful to have a `compensation` column, which managers could affect, though this could be done in other ways too. Also, I think I have interprted `util` in a couple different ways throughout the notes, so it might be worth having a different column -- perhaps `target`, or something that identifies the target value that affects `util` in some way. If a resource is at carrying capacity, for example, we might want some mechanism in the model by which stake-holders no longer want it to increase.**
 
@@ -815,12 +844,6 @@ Given Saro's notes, it might also be worth just allowing an option for a traditi
 **Minor error correction**
 
 At 12:50, I have corrected a typo in the function `ind_to_land()`, which was making it impossible to plot non-square landscapes correctly.
-
-**Some additional thoughts**
-
-Following up on Saro's notes, I think it is worth thinking about how stake-holders are expected to respond to policy and events, especially with respect to stochasticity. Given the ordinal payoff values, policy error would seem to be low; whereas if if values are continuous, then it would seem like there would be room for stake-holders to be sensitive to small changes in payoffs. I'm not sure which is more realistic -- leading me to question, **are individuals' realised payoffs relevant for their willingness to cooperate (or change or sustain their behaviour, more generally), or is it only the policy that actually matters?**
-
-In other words, assume that some management strategy $M_{1}$ is made that appears fair and favourable to both farmers and conservationists. But also assume that there is a lot of error around the implementation of this policy such that it often results in low payoffs for both stake-holders. What I'm getting at is, I think, *how do the ordinal preferences of policy options map to the real interests of stake-holders?* The most baseline interest of farmers, for example, I suspect would be net income -- the rank order of preferences *only* reflects an accurate payoff matrix insofar as it reflects the order of expected net income from farming. If this mapping of income to rank order changes, so will the payoff matrix.
 
 > <a name="u-3-FEB-2017">Update: 3 FEB 2017</a>
 
@@ -906,7 +929,7 @@ Now in the above, only resources are actually considered in the `UTILITY`  array
  4. Feeding by affecting the birthrate parameter (`feedem`)
  5. Or helping by affecting offspring parameter (`helpem`)
  
-I'm not sure how this last one will work yet. This sacrifices some of the generality of the code, but in the context of what G-MSE is for, I don't think that we lose much, and it's easy to see how we could add columns to `UTILITY` later as necessary. Then, following the diagram from [yesterday](#u-2-FEB-2017), when mangers use the genetic algorithm, they could affect their own cost columns *and everyone elses* as a function of their own utilities and the population sizes of each resource. The costs would then be updated for the stake-holders, who could adjust their own parameters accordingly to maximise their utility.
+I'm not sure how this last one will work yet. This sacrifices some of the generality of the code, but in the context of what G-MSE is for, I don't think that we lose much, and it's easy to see how we could add columns to `UTILITY` later as necessary. Then, following the diagram from [yesterday](#u-2-FEB-2017), when mangers use the genetic algorithm, they could affect their own cost columns *and everyone elses* as a function of their own utilities and the population sizes of each resource. The costs would then be update for the stake-holders, who could adjust their own parameters accordingly to maximise their utility.
 
 Note that the index of each array in the list `UTILITY` will correspond to the ID in the `AGENT` array. This could be useful, if we want, for example, to eventually let stake-holders affect one another. The first agent is also always the manager (and it's hard to see a situation where we have more than one, but even if so, we can always have one *head manager*), so stake-holders can lobby the manager by indexing the zero index of `UTILITY` with ease.
 
@@ -1038,8 +1061,6 @@ While this is going on, I'll want to keep in mind the four categories of @Tu2000
 
 > <a name="u-2-FEB-2017">Update: 2 FEB 2017</a>
 
-**Now using GitHub projects in development**
-
 I have now started using [GitHub projects]() to better organise G-MSE development. This appears to improve the workflow a bit better, which is good because the workflow is probably going to get more complicated once I starting coding the genetic algorithm and integrating it into G-MSE. Below is an updated overview of how I expected G-MSE to work in light of the genetic algorithm approach.
 
 ```{r, echo=FALSE, fig.height=6.5, fig.width=3.8}
@@ -1133,6 +1154,8 @@ text(x=50, y=70, labels="Genetic algorithm", cex=0.8, col="darkgreen");
 # Manager model details: 
 text(x=15, y=95, cex=0.75,labels="Manager model");
 text(x=15, y=90, cex=0.75,labels="file: manager.c");
+text(x=15, y=85, cex=0.75,labels="In: Obs. Data");
+text(x=15, y=80, cex=0.75,labels="Out: Game para.");
 # Bayesion priors details: 
 text(x=50, y=55, cex=0.75,labels="Update manager");
 text(x=50, y=50, cex=0.75,labels="or user strategy");
@@ -1153,7 +1176,7 @@ Note that the Genetic algorithm (in green above) is being used twice, once by ma
 
 Perhaps what we really want to do is tidy up the observational data? The `manager.c` function could serve as a special type of `apply` or `tapply` R function, which takes in different column arguments and then calculates summary statistics for the specified column. So, if no column is specified, then `manager.c` just estimates the population size or density of the entire population based on the observed data provided (using the mark-recapture or density procedures currently implemented by the `chapman_est()` and `dens_est()` R functions written in `gmse.R`). Whereas, instead, if we specify a type column, then the estimate is done for all estimates of that type. If a type and an age column, for example, are specified, then estimates for all unique combinations of type and age are performed. The output is then an array with fewer rows -- each row corresponds to an averaged out resource array where some columns don't mean anything (e.g., ID). This will require a lot of error checking, as bad user input could cause the manager to do odd things -- in fact, I think only column types and age (4 columns total) should be allowed to be uniquely estimated; even that is a bit much. The zero column of the array could then stand for an estimate instead of an ID in the output. For the simplest of cases where only one resource is being estimated, therefore, the relevant array `manage` would have a zero index `manage[0][0]`.
 
-There is a bit of fuzziness here that should perhaps be better cleared out with planning. Currently the `observation.R` function requires a type and category type to be specified. In other words, the observation function has been constructed (deliberately) to look at one type at a time. This is probably good -- no need to change it, but for a simulation where multiple resources are being managed, `observation()` will need to be run multiple times. I think that the best thing to do in this case is to store observation data frames in a list, such that `OBSERVATION[[1]]` stores type 1 and `OBSERVATION[[2]]` type 2. This will keep the high-level resource types separate; within the list elements, other types (e.g. sex) and age can be managed, and we can pass each list element to the manager model separately to produce some output. The output can also be stored as a list `MANAGED[[1]]`, with all list elements subsequently being merged into one data frame -- *ideally in c*, but possibly before in R -- to go into the genetic algorithm. Again, a lot of the time all of this will just end up as one vector, with really just one number being of utility, but we want the model to stay flexible so that we can deal with eventual demands. The end result will be all of the information the manager is actually going to *use* to make decisions -- which may then be separated by resource type(s) and ages.
+There is a bit of fuzziness here that should perhaps be better cleared out with planning. Currently the `observation.R` function requires a type and category type to be specified. In other words, the observation function has been constructed (deliberately) to look at one type at a time. This is probably good -- no need to change it, but for a simulation where multiple resources are being managed, `observation()` will need to be run multiple times. I think that the best thing to do in this case is to store observation data frames in a list, such that `OBSERVATION[[1]]` stores type 1 and `OBSERVATION[[2]]` type 2. This will keep the high-level resource types separate; within the list elements, other types (e.g. sex) and age can be managed, and we can pass each list element to the manager model separately to produce some output. The output can also be stored as a list `MANAGED[[1]]`, with all list elements subsequently being merged into one data frame -- *ideally in c*, but possibly before in R -- to go into the genetic algorithm. Again, a lot of the time all of this will just end up as one vector, with really just one number being of interest, but we want the model to stay flexible so that we can deal with eventual demands. The end result will be all of the information the manager is actually going to *use* to make decisions -- which may then be separated by resource type(s) and ages.
 
 > G-MSE will run an independent observation model for each type of resource of interest. The output of observations will be respresented by a list of arrays in R. Each array in the list will then independently be run by the manager model, each run of which will return an array of summary statistics that will be added to a new list. The list (or an array of concatenated elements -- merged data frames) will then be read into the genetic algorithm. Additionally, the manager model should also affect the landscape list/array too -- this will give the option of using resource distribution in making decisions; a simple increment for each time a resource is observed on an x y location should do.
 
@@ -1427,7 +1450,7 @@ I'm becoming more convinced that some sort of genetic algorithm is the best way 
         3. Use the `manager` or `user` function for managers or stake-holders (perhaps need an R and C version of these functions -- c for here, R for later), respectively, to temporarily simulate each offspring's decision if used in one or more previous time steps (e.g., by using the current `AGENT` values)
         4. Use `calc_util` to find the utility associated with the simulated decision in 2 -- this effectively tests each pseudo-agent to see if their *action* variables are good at maximising utility.
         5. Grab the 10 pseudo-agents with the highest utility values and go back to step 2.
-        6. If after 20 generations, mean utility values have not gotten sufficiently larger, stop and grab the pseudo-agent with the highest value -- its *action* variable values then replace those of the original agent.
+        6. If after 20 generations, mean utility values have not gotten sufficiently larger, stop and grab the pseudo-agent with the highest value -- its *action* variable values then replace those of the original agent.
     - The above could be speeded up by making one of the original pseudo-agents be the actual agent -- assuming strategies won't change much over time.
     
  - The above genetic algorithm can be used both for maangers maximising utility through establishing game rules and for stake-holders maximising utility by affecting resources. The idea is to have the general `opt_utility` to optimise what an agent does to maximise their utility through the use of a general genetic algorithm (perhaps simulating human planning, if it were as good as adaptation by natural selection, which I don't think it is).
@@ -1483,7 +1506,6 @@ Perhaps one c function (e.g., `adaptive.c`) could go through a learning process 
 Where the table above is the data frame of `AGENTS` as it currently exists with additional columns `G1` to `Gn` that could hold real numbers that affect agent behaviour. A dummy data frame could be created that allows for `evo_time` generations of reproduction with mutation and selection for minimising a cost function in attempt to find appropriate values affecting components of an agent's strategy. I'm not sure how long such an algorithm would take, but I suspect that it could be optimised to not be painfully long -- different criteria could be set, e.g., to allow for a maximum number of evolving generations (the [aforementioned](https://www.burakkanber.com/blog/machine-learning-genetic-algorithms-part-1-javascript/) instructor suggests 1000) or some convergence criteria. **Essentially, each agent or type of agent would go through a process of *learning* an optimal strategy by creating a lineage of strategies, the descendants of which would be selected by strategy performance.** Note that given a convergence criteria, strategies might not *need* to evolve much in each time step of G-MSE -- the best strategy might be stable over time in some situations (and if we don't want strategies to change over time steps, the question of optimal strategy could be solved when *initialising* agents -- still the idea of allowing dynamic strategies seems interesting, and might be important if management is also changing).
 
 While for some simulations, we'll want to take the time to allow evolution of optimal strategies, in others we might even embrace an imperfect strategies evolving as a consequence of short evolution times -- this might mimic the limited time that stake-holders have to consider a particular problem.
-
 
 
 > <a name="u-24-JAN-2017">Update: 24 JAN 2017</a>
@@ -1644,6 +1666,7 @@ print("Enter how many animals you intend to hunt");
 
 Demonstrating this (and it would be quick to implement) might be useful for showing how management and games work.
 
+
 > <a name="u-20-JAN-2017">Update: 20 JAN 2017</a>
 
 **Side note about computation efficiency**
@@ -1692,7 +1715,7 @@ If you read the function into R, then run it (e.g., `act_agent(times = 2)`, it w
  2. Users allowed to interact with the program in each time step such that every time an agent needs to make a decision, the user is prompted to doing so for one type of agent
  3. Multiple users prompted to enter in decisions, simulating a long history of real-world actors making choices in a simulated game.
  
-All of these would be fun, and @An2012 notes that they are often quite useful Ideally it would be nice to make the program more user-friendly than a command line interface, but that seems like a concern for a version 2.0, after an initial version has been released. More helpfully, using some sort of loop could make for easy input of the R options in the `gmse` function -- it could ask, in plain language, for users to insert the numbers that are currently only input within `gmse()` itself (e.g., `gmse(time_max = 100)`). 
+All of these would be fun, and @An2012 notes that they are often quite sueful. Ideally it would be nice to make the program more user-friendly than a command line interface, but that seems like a concern for a version 2.0, after an initial version has been released. More helpfully, using some sort of loop could make for easy input of the R options in the `gmse` function -- it could ask, in plain language, for users to insert the numbers that are currently only input within `gmse()` itself (e.g., `gmse(time_max = 100)`). 
 
 It's possible that we could develop a type of rudimentary artificial intelligence by collecting data of user decisions (i.e., make a 'bot' that *mimics* human decisions). For example, we could have 100 people act as agents in G-MSE, collect data on the decisions that they make when trying to act like a stake-holder, then construct an algorithm based on real user decision in different situations (alternativley, or in addition, we could also look at *actual* past decisions from the case studies to make an algorithm). This could be an interesting, approach, albeit a somewhat atheoretical one -- it doesn't excite me quite as much, but it might be worth considering because the end result might predict human behaviour better than theory-driven approaches (as humans don't always act rationally or think things through carefully -- *I don't think a citation is needed for this; it's 20 JAN 2017, and the current time is 17:00 GMT, or 12:00 EST*). It could also be interesting to compare different types of approaches (i.e., have a *theory-based approach* and a *empirically-based approach* option). @An2012 warns though that ''Even though also based on data, researchers usually have to go through relatively complex data compiling, computation, and/or statistical analysis to obtain such rules'' @An2012 also notes that this kind of data collection does not necessarily identify *why* decisions are being made. Hence, I do think game-theory will be absolutely important, with agents using underlying utility functions to maximise their own utilities as a consequence of games.
 
@@ -1760,7 +1783,6 @@ I'm starting to work through these ideas with an initial focus on evolutionary g
 @Adami2016 argue that the optimal strategies predicted by simple mathematical games are unlikely to be very useful for predicting agent actions given the complexities associated with decisions of real-world; such complexity notably includes stochasticity, which applies to games among all kinds of agents from ''microbes to day traders'' [@Adami2016]. Stochasticity can affect the stability of strategies [see also @Adami2013]. If strategies are conditional or based on memory of previous encounters, then the number of `traits` [@Adami2016 assume loci, modelling genetics, but the same applies to agents making decisions] required to model decisions increases rapidly -- 21 total traits are needed for conditional expression of strategy when agents can remember the previous two games. In practice, I suspect that there is some helpful way to simplify this -- perhaps not every detail of the history of interactions and possible conditions really is needed to (or even would be expected to) model stake-holder behaviour. Instead, I suspect that game history could be boiled down into one or two representative variables that, among other things, are likely to influence agent behaviour. Agents are perhaps better to be thought of as modelling stake-holders guided primarily by heuristics rather than optimally rational behaviour? Hence the `agent_array` might better be thought of as containing variables underlying human values and traits *in the context of games* rather than *as solutions to games*. A couple recent and potentially relevant papers on decision rules in complex environments include @Fawcett2014 and @McNamara2014. @Adami2016 conclude that **''[w]hile evolutionary games can be described succinctly in mathematical terms, they can only be solved exactly for the simplest of cases''**. @Adami2016 were specifically considering games in an evolutionary context, but I don't think that their conclusion is limited to evolutionary game theory. In the case of decision making stake-holders, the complexity associated with stochasticity and uncertainty, the possibility of more than two actions and payoffs, and the asymmetry of payoff matrices would all seem to conrtribute to the difficulty or impossibility of solving for exact solutions. Hence, when scenarios are complex in G-MSE (as we probably need them to be), it is unlikely that analytic solutions will be of much use. However, stake-holders won't evolve in the same sense as biological organisms, so some techniques used in evolutionary game theory will be unavailable -- or have to be modified. *It might be worth thinking more about identifying the consequences of practical or observed strategies, or types of strategies, rather than trying to somehow solve for the best strategies*. The [Axelrod experiments](https://en.wikipedia.org/wiki/The_Evolution_of_Cooperation#Axelrod.27s_tournaments) kind of did this before a lot of complex techniques became available to analyse evolutionary games. Users proposed strategies, which were put into a tournament -- the point wasn't so much to *solve* the [iterated Prisoner's dilemma](https://en.wikipedia.org/wiki/Prisoner's_dilemma#The_iterated_prisoner.27s_dilemma) so much as to explore different strategies for playing the game. 
 
 In [this browser app](http://www.iterated-prisoners-dilemma.net/), you can play the iterated prisoner's dilemma against 'Lucifer', an automated agent that response to your decisions.
-
 
 > <a name="u-17-JAN-2017">Update: 17 JAN 2017</a>
 
@@ -1908,11 +1930,9 @@ With all of this in mind, it is worth thinking about the R side of memory manage
 
 It appears that [I'm correct](http://biostat.mc.vanderbilt.edu/wiki/pub/Main/SvetlanaEdenRFiles/handouts.pdf) regarding the use of `rbind()` (or `c()` or `cbind()`) -- these are terribly inefficient with respect to what's happening under the hood when R calls C (or C++). I've downloaded [Svetlana Eden's](http://biostat.mc.vanderbilt.edu/wiki/Main/SvetlanaEden) [Efficiency tips for basic R loop](http://biostat.mc.vanderbilt.edu/wiki/pub/Main/SvetlanaEdenRFiles/handouts.pdf), which might be a useful reference when working on the R side of optimisation. The `rbinds` really show be avoided, if possible. One way to do this, if nothing else, would be to write to a file instead of `cbind` (not sure if this would be helpful for a shiny app). [StackOverflow](http://stackoverflow.com/questions/15673550/why-is-rbindlist-better-than-rbind) suggests using `rbindlist`, but this would introduce dependencies that I'd prefer to avoid. **In the end, it might be worth it to just write a quick `add_data.c` script in c for the sole purpose of joining old and new arrays.** Alteratively, this might not be so important -- in the end, it might not even be necessary to record the entire observation history; at least, not in the way it's currently being done. The history might instead only record a few key things from each time period.
 
-
 > <a name="u-16-JAN-2017">Update: 16 JAN 2017</a>
 
 **RESOLVED ISSUE 6: Sampling ability with agent number** This issue has been resolved to my satisfaction. I did this using the second option of addressing it. Now for `case 3` in which blocks of the landscape are iteratively sampled (and resources potentially move in between iterations), a `transect_eff` defining transect efficiency is set as equal to the number of observing agents (`working_agents`). The `transect_eff` is a counter, which, after it has counted down to zero, will permit resource movement. Hence, if there is only one agent observing, `transect_eff` hits zero and movement happens after every iteration; if there are two agents observing, then `transect_eff` hits zero after two iterations, then movement occurs and `transect_eff` is reset to `working_agents`.
-
 
 **RESOLVED ISSUE 8: Clear up method sampling type in observation model** This issue has been resolved, albeit with cases in a different order than suggested (the original suggestion, it turns out, was not ideal). Cases are now:
 
@@ -2163,7 +2183,6 @@ For now, it's time to take another step back and take stock of what needs to be 
 <a name="#10-JAN-2017-other-obs">It's worth noting</a> that the flexibility of the `observation` function might be used to address social questions that interest us. I've been mainly conceptualising the observation model as something done by a disinterested third party -- a manager rather than a stake-holder per se. The manager would make some decision that then affected payoffs in a game among stake-holders. We can do this of course, but we can also allow the stake-holders themselves to observe, perhaps less thoroughly and with more potential for bias (as we assume that they have less time and expertise). For example, we might imagine some stake-holders to estimate population size or change over time for themselves by observing all of the resources within a short distance around their location -- perhaps (incorrectly) biased by large population changes (e.g., way more geese around my location this year than last -- estimate a lot of total geese this year overall). These observations could feed into the game and user models.
  
 Also -- and this might require some tweaking -- the flexibility of the type columns (type1, type2, type3) means that observing can be flexible too. We could allow each individual to observe, or groups of individuals of the same type to observe. **NEW:** *We can also specify the type of individuals doing the observing by any category, including individual ID*. This means that we can tell a specific agents (assuming they are represented by rows) to observe, or loop through the function with specific agents. The agent's type (or ID) is stored in the observation output, indicating which agent did the observing if data frames get amalgamated from looping the `observation` function.
- 
 
 > <a name="u-22-DEC-2016">Update: 22 DEC 2016</a>
 
@@ -2791,6 +2810,7 @@ Impl1 <- function(TAC=10, ModType="A", p=0.7){
 **Hence, we can put four of these functions together to simulate a very simple MSE model:**
 
 ```{r}
+
 pop_abund      <- 100;
 harvest        <- 20;
 growth_rate    <- 1;
@@ -2844,12 +2864,10 @@ legend(x=2.5, y=max(track[,4:5]+15), horiz=TRUE,
 
 We can re-run the code at any point and essentially recreate a run of [Nilsen's MSE](https://github.com/ErlendNilsen/MSEtools) model. The hard work is now to come up with a G-MSE, which will allow for much more individual complexity through an agent-based approach.
 
-
 <a name="side">Some side-notes that might be of use</a>
 --------------------------------------------------------------------------------
 
 The [function](https://stat.ethz.ch/R-manual/R-patched/library/base/html/do.call.html) `do.call` in R [apparently](https://www.stat.berkeley.edu/~s133/Docall.html) calls a function and passes the arguments for the function from a list (e.g., if `A` is in a list form, or put in a list form with `list(A)`, then `do.call("f", list(A))` calls the function `f` for every list element in `A`, where individual list elements can be vectors with function arguments). This is a base R function.
-
 
 <a name="meetings">Potentially relevant conferences and workshops</a>
 --------------------------------------------------------------------------------
@@ -2892,15 +2910,15 @@ Paris, France: 5-7 JUL 2017
 <a name="ref">References consulted and annotated (Mendeley)</a>
 -----------------------------------------
 
-An, L. (2012). Modeling human decisions in coupled human and natural systems: Review of agent-based models. Ecological Modelling, 229, 25–36. https://doi.org/10.1016/j.ecolmodel.2011.07.010
-
 Adami, C., Schossau, J., & Hintze, A. (2016). Evolutionary game theory using agent-based methods. Physics of Life Reviews, 19, 1–26. https://doi.org/10.1016/j.plrev.2016.08.015
+
+An, L. (2012). Modeling human decisions in coupled human and natural systems: Review of agent-based models. Ecological Modelling, 229, 25–36. https://doi.org/10.1016/j.ecolmodel.2011.07.010
 
 Ascough, J. C., Maier, H. R., Ravalico, J. K., & Strudley, M. W. (2008). Future research challenges for incorporation of uncertainty in environmental and ecological decision-making. Ecological Modelling, 219(3–4), 383–399. https://doi.org/10.1016/j.ecolmodel.2008.07.015
 
 Bautista, C., Naves, J., Revilla, E., Fernández, N., Albrecht, J., Scharf, A. K., ... Selva, N. (2016). Patterns and correlates of claims for brown bear damage on a continental scale. Journal of Applied Ecology. http://doi.org/10.1111/1365-2664.12708
 
-Bennett, E. M. (2017). Changing the agriculture and environment conversation. Nature Ecology and Evolution, 1(January), 1-2. https://doi.org/10.1038/s41559-016-0018
+Bennett, E. M. (2017). Changing the agriculture and environment conversation. Nature Ecology and Evolution, 1(January), 1–2. https://doi.org/10.1038/s41559-016-0018
 
 Bischof, R., Nilsen, E. B., Brøseth, H., Männil, P., Ozoliņš, J., & Linnell, J. D. C. (2012). Implementation uncertainty when using recreational hunting to manage carnivores. Journal of Applied Ecology, 49(4), 824–832. https://doi.org/10.1111/j.1365-2664.2012.02167.x
 
@@ -2917,8 +2935,6 @@ Chollett, I., Garavelli, L., O’Farrell, S., Cherubin, L., Matthews, T. R., Mum
 Cobano, J. A., Conde, R., Alejo, D., & Ollero, A. (2011). Path planning method based on Genetic Algorithms and the Monte-Carlo method to avoid aerial vehicle collisions under uncertainties. In Proceedings of the IEEE International Conference on Robotics and Automation (pp. 4429–4434). https://doi.org/10.1109/ICRA.2011.5980246
 
 Colyvan, M., Justus, J., & Regan, H. M. (2011). The conservation game. Biological Conservation, 144(4), 1246–1253. http://doi.org/10.1016/j.biocon.2010.10.028
-
-Darwen, P. J., & Yao, X. (1995). On evolving robust strategies for iterated prisoner’s dilemma. In Progress in Evolutionary Computation (Vol. 956, pp. 276–292). http://doi.org/10.1007/3-540-60154-6_61
 
 Duffy, R., St John, F. A. V, Büscher, B., & Brockington, D. (2016). Toward a new understanding of the links between poverty and illegal wildlife hunting. Conservation Biology, 30(1), 14–22. https://doi.org/10.1111/cobi.12622
 
@@ -2957,12 +2973,10 @@ McAvoy, A., & Hauert, C. (2015). Asymmetric evolutionary games. PLoS Computation
 Mccann, R. K., Marcot, B. G., & Ellis, R. (2006). Bayesian belief networks: applications in ecology and natural resource. Canadian Journal of Forest Research, 36, 3053–3062.
 
 Nellemann, C., Jordhoy, P., Stoen, O. G., & Strand, O. (2000). Cumulative impacts of tourist resorts on wild reindeer (Rangifer tarandus tarandus) during winter. Arctic, 53(1), 9–17. https://doi.org/10.14430/arctic829
-
+An, L. (2012). Modeling human decisions in coupled human and natural systems: Review of agent-based models. Ecological Modelling, 229, 25–36. https://doi.org/10.1016/j.ecolmodel.2011.07.010
 Nellemann, C., Vistnes, I., Jordhoy, P., Strand, O., & Newton, A. (2003). Progressive impact of piecemeal infrastructure development on wild reindeer. Biological Conservation, 113(2), 307–317. https://doi.org/10.1016/S0006-3207(03)00048-X
 
 Olaussen, J. O., & Skonhoft, A. (2008). On the economics of biological invasion: An application to recreational fishing. Natural Resource Modeling, 21(4), 625–653. https://doi.org/10.1111/j.1939-7445.2008.00026.x
-
-Phan, D. (2003). From agent-based computational economics toward cognitive economics. In P. Bourgine & J.-P. Nadal (Eds.), Cognitive Economics: An Interdisciplinary Approach (pp. 369–396). London: Springer. https://doi.org/10.1016/j.joep.2004.12.002
 
 Rumpff, L., Duncan, D. H., Vesk, P. A., Keith, D. A., & Wintle, B. A. (2011). State-and-transition modelling for Adaptive Management of native woodlands. Biological Conservation, 144(4), 1244–1235. http://doi.org/10.1016/j.biocon.2010.10.026
 
@@ -2975,8 +2989,6 @@ Tu, M. T., Wolff, E., & Lamersdorf, W. (2000). Genetic algorithms for automated 
 Wam, H. K., Bunnefeld, N., Clarke, N., & Hofstad, O. (2016). Conflicting interests of ecosystem services: Multi-criteria modelling and indirect evaluation to trade off monetary and non-monetary measures. Ecosystem Services.
 
 Wang, P., Poe, G. L., & Wolf, S. A. (2017). Payments for ecosystem services and wealth distribution. Ecological Economics, 132, 63–68. https://doi.org/10.1016/j.ecolecon.2016.10.009
-
-Whitacre, J. M. (2010). Degeneracy: a link between evolvability, robustness and complexity in biological systems. Theoretical Biology and Medical Modelling, 7, 6. https://doi.org/10.1186/1742-4682-7-6
 
 Wright, G. D., Andersson, K. P., Gibson, C. C., & Evans, T. P. (2016). Decentralization can help reduce deforestation when user groups engage with local government. Proceedings of the National Academy of Sciences, 201610650. https://doi.org/10.1073/pnas.1610650114
 
