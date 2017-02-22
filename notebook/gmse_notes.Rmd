@@ -124,6 +124,12 @@ print(cell_table);
 
 The above `cell_table` therefore shows how many cells each farmer gets. Some sort of (simple) cluster algorithm is needed to distribute each farmer's allocated cells to an area of the landscape. Remaining cells will be `0` cells, indicating other land. Note that the `pr_farmland` could also be a function of the number of cell types in `landscape[[1]]`. I haven't decided if this should be done in R (as above) or C. I'm leaning toward C (or, at least, kicking things to C when then get complicated) because I can imagine the need to specify some detail in these landscapes.
 
+**Landscape connections to birth rate**
+
+Given the above proposed additions to the landscape, it's worth perhaps considering an option in the `resource` function to link resource birth rate to properties of the landscape. As of now, carrying capacity is just assumed to be a parameter of the model that is static, but it would be particularly interesting if the parameter value could change based on properties of the landscape. For example, all of the values of `landscape[[2]]` could be summed up (perhaps multiplied by a scalar) to determine number of offspring produced on any given cell. If instead of random uniforms between zero and one, `landscape[[2]]` instead represented something more concrete such as *kilograms of edible biomass produced* (or whatever), this could be directly translated to offspring reared. Of course, with the geese, this opens up some issues -- mainly that breeding is done somewhere else; perhaps the `landscape[[2]]` should instead affect survival instead of birth rate? 
+
+It's important to think about the scale here too -- as a habit, I've been thinking of cells as kind of mid-sized things, perhaps a square kilometer at most, but it might be better to think of them as much larger, so each cell could be its own farm with potentially many geese. Of course, we'll want the *option* to do both, but given the scale of the geese scenario, I'm thinking bigger might be better. It also would be useful to have managers be able to allocate refuge space from their budgets.
+
 > <a name="u-17-FEB-2017">Update: 17 FEB 2017</a>
 
 **Big picture notes regarding G-MSE presentation**
@@ -2937,6 +2943,8 @@ Colyvan, M., Justus, J., & Regan, H. M. (2011). The conservation game. Biologica
 Duffy, R., St John, F. A. V, Büscher, B., & Brockington, D. (2016). Toward a new understanding of the links between poverty and illegal wildlife hunting. Conservation Biology, 30(1), 14–22. https://doi.org/10.1111/cobi.12622
 
 Elston, D. A., Spezia, L., Baines, D., & Redpath, S. M. (2014). Working with stakeholders to reduce conflict-modelling the impact of varying hen harrier Circus cyaneus densities on red grouse Lagopus lagopus populations. Journal of Applied Ecology, 51(5), 1236–1245. http://doi.org/10.1111/1365-2664.12315
+
+Eythórsson, E., Tombre, I. M., & Madsen, J. (2017). Goose management schemes to resolve conflicts with agriculture: Theory, practice and effects. Ambio, 46(S2), 231–240. https://doi.org/10.1007/s13280-016-0884-4
 
 Farmer, J. D., & Foley, D. (2009). The economy needs agent-based modelling. Nature, 460(August), 685--686. https://doi.org/10.1038/460685a
 
