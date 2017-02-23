@@ -84,7 +84,15 @@ A recent paper by @Miyasaka2017 looks at land use in a social-ecological system 
 1. Break down move functions into easier to digest pieces by creating functions:
     - `movement_dir`: Causes movement in the `x` or `y` direction
     - `edge_effect`: Does something at the edge when encountered
-2. Initialise landscape layers
+2. Initialise landscape layer
+
+**Further progress**
+
+Goal 1 has been completed, and, as I've been tempted to do before, I have added a new `utilities.c` file for holding functions that need to be called by other c files (e.g., moving resources). 
+
+**The next thing I have done** (on an unpushed branch, now merged) is to tweak the `observation` function in C to return a list with two elements. The first element is the set of observations in array form (as before), and the second element is the `AGENTS` array. With the new c code, I can now return multiple things from C to R with the same function, which opens up some new possibilities, in particular allowing the landscape to change along with the resource and observation arrays within the same C function. It also **potentially makes the anecdotal function obsolete**, as the change in the `AGENTS` array can just be made within `observation` instead of calling a new R function. 
+
+The next challenge is to get a multi-layered landscape in and out of C from R. I'm not sure how many ways there are to do this, exactly, but the simplist might actually be to write a three dimensional array to read in the same way as the two dimensional arrays. This will require a very nasty set of loops allocating *pointers of pointers of pointers* (i.e., ***land), but the idea should be easy enough.
 
 > <a name="u-22-FEB-2017">Update: 22 FEB 2017</a>
 
