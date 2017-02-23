@@ -134,6 +134,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
     OBSERVATION_REC <- NULL;
+    
     while(time < time_max){
         RESOURCE_NEW      <- resource(resource   = RESOURCES,
                                       landscape  = LANDSCAPE_r,
