@@ -156,7 +156,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                          type_cat   = 1,
                                          obs_method = obt,
                                          move_res   = rmo
-        );
+        )[[1]];
         
         # anecdotal is a bit useless right now, but included here anyway. 
         AGENTS            <- anecdotal(resource   = RESOURCES,
@@ -475,7 +475,8 @@ sim <- gmse( observe_type  = 0,
              res_death_K   = 400,
              plotting      = TRUE,
              hunt          = FALSE,
-             start_hunting = 95
+             start_hunting = 95,
+             time_max = 10
 );
 
 ################################################################################

@@ -532,6 +532,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
     double *paras;           /* Pointer to PARAMETER (interface R and C) */
     double *agent_ptr;       /* Pointer to AGENT (interface R and C) */
+    double *new_agent_ptr;   /* Pointer to new agents that are returned */
     double *data_ptr;        /* Pointer to DATA (interface R and C) */
     double **resource_array; /* Array to store the old RESOURCE in C */
     double **land;           /* Array to store the landscape in C*/
@@ -805,6 +806,26 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
         }
     }   
 
+    SEXP NEW_AGENTS;
+    PROTECT( NEW_AGENTS = allocMatrix(REALSXP, agent_number, agent_traits) );
+    protected_n++;
+    
+    new_agent_ptr = REAL(NEW_AGENTS);
+    
+    vec_pos = 0;
+    for(agent_trait = 0; agent_trait < agent_traits; agent_trait++){
+        for(agent = 0; agent < agent_number; agent++){
+            new_agent_ptr[vec_pos] = agent_array[agent][agent_trait];
+            vec_pos++;
+        }
+    }
+    
+    SEXP EVERYTHING;
+    EVERYTHING = PROTECT( allocVector(VECSXP, 2) );
+    protected_n++;
+    SET_VECTOR_ELT(EVERYTHING, 0, NEW_OBSERVATIONS);
+    SET_VECTOR_ELT(EVERYTHING, 1, NEW_AGENTS);    
+    
     UNPROTECT(protected_n);
     
     /* Free all of the allocated memory used in arrays */
@@ -825,7 +846,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     }
     free(resource_array);
 
-    return(NEW_OBSERVATIONS); 
+    return(EVERYTHING); 
 }
 /* ===========================================================================*/
 
@@ -1032,3 +1053,241 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
 /* ===========================================================================*/
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =============================================================================
+* MAIN ANECDOTAL FUNCTION:
+* ===========================================================================*/
+
+/* =============================================================================
+*  ****     This is the main function for the observation model     ****
+*  This function reads resource, landscape, and agent arrays, and a parameter 
+*  vector from R, runs other functions in the observation.c file, then returns 
+*  the the observer array with a column identifying the number of resources
+*  within each agents view. Much of the code is replicated from the
+*  observation function, but this function is separate to allow for future
+*  development that might further specialise it.
+*  Inputs include:
+*      RESOURCE:   An array of *row resources and *col traits for each resource
+*      LANDSCAPE:  An array of *row by *col size that makes up the landscape
+*      PARAMETERS: Parameters read into the function for population processes
+*      AGENT:      An array of *row agents and *col traits for each agent
+* ===========================================================================*/
+SEXP anecdotal2(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
+    
+    /* SOME STANDARD DECLARATIONS OF KEY VARIABLES AND POINTERS               */
+    /* ====================================================================== */
+    int xloc;                /* Index of x location on the landscape */ 
+    int land_x, land_y;      /* x and y maximum location given LANDSCAPE */
+    int resource;            /* Index for resource (rows of RESOURCE) */
+    int res_trait;           /* Index for resource traits (cols of RESOURCE) */
+    int agent;               /* Index for agent in the array (rows) */
+    int agent_trait;         /* Index for agent traits (cols of agent_array) */
+    int res_number;          /* Number of resources included (default = 1) */
+    int trait_number;        /* Number of traits included in the resource */
+    int agent_number;        /* Number of agents that can potentially observe */
+    int agent_traits;        /* Number of traits that each agent has */
+    int protected_n;         /* Number of protected R objects */
+    int vec_pos;             /* Vector position for making arrays */
+    int res_type;            /* Types of resources that are being observed */
+    int a_type;              /* Type of agent doing observing (manager = 0) */
+    int by_type_r;           /* Res type category for observing (default = 1) */
+    int by_type_a;           /* Agent type category for observing */
+    int min_age;             /* Minimum age of resources viewed (default = 1) */
+    int view;                /* How far an agent views resources (dynamic) */
+    int edge;                /* Type of edge modelled on the landscape */
+    int EucD;                /* Is an agent viewing by Euclidean distance */
+    int a_x;                 /* Agent's x location */
+    int a_y;                 /* Agent's y location */
+    int r_x;                 /* Resource x location */
+    int r_y;                 /* Resource y location */
+    int seeit;               /* Index summing number of seen resources */
+    int rec_col;             /* Agent col where seen resources are recorded */
+    int a_check;             /* Check agent to see if they view (dynamic) */
+    int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
+    int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
+    int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
+    double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
+    double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
+    double *paras;           /* Pointer to PARAMETER (interface R and C) */
+    double *agent_ptr;       /* Pointer to AGENT (interface R and C) */
+    double *data_ptr;        /* Pointer to DATA (interface R and C) */
+    double **resource_array; /* Array to store the old RESOURCE in C */
+    double **land;           /* Array to store the landscape in C*/
+    double **agent_array;    /* Array to store the agents in C */
+    
+    /* First take care of all the reading in of code from R to C */
+    /* ====================================================================== */
+    
+    protected_n = 0;
+    
+    PROTECT( RESOURCE = AS_NUMERIC(RESOURCE) );
+    protected_n++;
+    R_ptr = REAL(RESOURCE);
+    
+    PROTECT( LANDSCAPE = AS_NUMERIC(LANDSCAPE) );
+    protected_n++;
+    land_ptr = REAL(LANDSCAPE);
+    
+    PROTECT( AGENT = AS_NUMERIC(AGENT) );
+    protected_n++;
+    agent_ptr = REAL(AGENT);    
+    
+    PROTECT( PARAMETERS = AS_NUMERIC(PARAMETERS) );
+    protected_n++;
+    paras = REAL(PARAMETERS);
+    
+    dim_RESOURCE   = INTEGER( GET_DIM(RESOURCE)  );
+    dim_LANDSCAPE  = INTEGER( GET_DIM(LANDSCAPE) );
+    dim_AGENT      = INTEGER( GET_DIM(AGENT) );
+    
+    /* The C code for the model itself falls under here */
+    /* ====================================================================== */
+    
+    /* Code below remakes the RESOURCE matrix */
+    res_number        = dim_RESOURCE[0];
+    trait_number      = dim_RESOURCE[1]; 
+    resource_array    = malloc(res_number * sizeof(double *));
+    for(resource = 0; resource < res_number; resource++){
+        resource_array[resource] = malloc(trait_number * sizeof(double));   
+    } 
+    vec_pos = 0;
+    for(res_trait = 0; res_trait < trait_number; res_trait++){
+        for(resource = 0; resource < res_number; resource++){
+            resource_array[resource][res_trait] = R_ptr[vec_pos];
+            vec_pos++;
+        }
+    }
+    /* RESOURCE is now stored as resource_array (discrete resources) */
+    
+    /* Code below reads in the LANDSCAPE for easy of use */
+    land_y = dim_LANDSCAPE[1];
+    land_x = dim_LANDSCAPE[0];
+    land   = malloc(land_x * sizeof(double *));
+    for(xloc = 0; xloc < land_x; xloc++){
+        land[xloc] = malloc(land_y * sizeof(double));   
+    } /* LANDSCAPE is now stored as land */
+    
+    /* Code below remakes the AGENT matrix for easier use */
+    agent_number        = dim_AGENT[0];
+    agent_traits        = dim_AGENT[1];
+    agent_array         = malloc(agent_number * sizeof(double *));
+    for(agent = 0; agent < agent_number; agent++){
+        agent_array[agent] = malloc(agent_traits * sizeof(double));   
+    } 
+    vec_pos = 0;
+    for(agent_trait = 0; agent_trait < agent_traits; agent_trait++){
+        for(agent = 0; agent < agent_number; agent++){
+            agent_array[agent][agent_trait] = agent_ptr[vec_pos];
+            vec_pos++;
+        }
+    }
+    /* RESOURCE is now stored as resource_array (discrete resources) */    
+    
+    /* Do the biology here now */
+    /* ====================================================================== */
+    
+    edge         = (int) paras[1];  /* What kind of edge is on the landscape  */ 
+    a_type       = (int) paras[7];  /* What type of agent is observing        */
+    res_type     = (int) paras[9];  /* What type of resources are observed    */
+    by_type_r    = (int) paras[15]; /* Category (column) of res type loc      */
+    min_age      = (int) paras[16]; /* Minimum age of resources viewed        */
+    by_type_a    = (int) paras[17]; /* Category (column) of agent type loc    */
+    rec_col      = (int) paras[18]; /* Column where viewed resources recorded */
+    EucD         = (int) paras[20]; /* Do individuals view by Euclidean dist  */
+    
+    for(agent = 0; agent < agent_number; agent++){
+        seeit    = 0;     /* Start with an agent not seeing anything */
+    a_check  = 0;     /* Start assuming the agent won't be checking */
+    if( a_type < 0 || agent_array[agent][by_type_a] == a_type){
+        a_check = 1;    
+    }
+    for(resource = 0; resource < res_number; resource++){
+        if( a_check                             == 1        &&
+            resource_array[resource][by_type_r] == res_type &&
+            resource_array[resource][11]        >= min_age
+        ){
+            a_x   = (int) agent_array[agent][4];
+            a_y   = (int) agent_array[agent][5];
+            r_x   = (int) resource_array[resource][4];
+            r_y   = (int) resource_array[resource][5];
+            view  = (int) agent_array[agent][8];
+            seeit += binos(a_x, a_y, r_x, r_y, edge, view, land_x, land_y,
+                           EucD);
+            agent_array[agent][rec_col] = seeit;
+        }
+    }
+    }
+    
+    /* This code switches from C back to R */
+    /* ====================================================================== */        
+    
+    SEXP NEW_AGENT;
+    PROTECT( NEW_AGENT = allocMatrix(REALSXP, agent_number, agent_traits) );
+    protected_n++;
+    
+    data_ptr = REAL(NEW_AGENT);
+    
+    vec_pos = 0;
+    for(agent_trait = 0; agent_trait < agent_traits; agent_trait++){
+        for(agent = 0; agent < agent_number; agent++){
+            data_ptr[vec_pos] = agent_array[agent][agent_trait];
+            vec_pos++;
+        }
+    }   
+
+    SEXP EVERYTHING;
+    EVERYTHING = PROTECT( allocVector(VECSXP, 2) );
+    protected_n++;
+    SET_VECTOR_ELT(EVERYTHING, 0, NEW_AGENT);
+    SET_VECTOR_ELT(EVERYTHING, 1, ScalarInteger(1) );    
+        
+    UNPROTECT(protected_n);
+    
+    /* Free all of the allocated memory used in arrays */
+    for(agent = 0; agent < agent_number; agent++){
+        free(agent_array[agent]);
+    }
+    free(agent_array);
+    for(xloc = 0; xloc < land_x; xloc++){
+        free(land[xloc]);        
+    }
+    free(land);
+    for(resource = 0; resource < res_number; resource++){
+        free(resource_array[resource]);
+    }
+    free(resource_array);
+    
+    return(EVERYTHING); 
+}
+/* ===========================================================================*/

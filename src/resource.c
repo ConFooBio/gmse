@@ -370,4 +370,3 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     return(RESOURCE_NEW); 
 }
 /* ===========================================================================*/
-          
