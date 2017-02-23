@@ -477,7 +477,6 @@ sim <- gmse( observe_type  = 0,
              plotting      = TRUE,
              hunt          = FALSE,
              start_hunting = 95,
-             time_max = 10
 );
 
 ################################################################################
