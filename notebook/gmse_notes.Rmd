@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **FEB** [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
+     - **FEB** [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
  
  - **2016**
@@ -72,6 +72,19 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-23-FEB-2017">Update: 23 FEB 2017</a>
+
+**Future decision-making algorithm**
+
+A recent paper by @Miyasaka2017 looks at land use in a social-ecological system using an agent-based model and some interesting decision-making rules. Individuals calculate utility ''(expressed in terms of probability) for all land-use and location options [...] and select the option with the highest utility''. Basically, agents in this model rank probabilities of all land-use options, then try the one with highest probability, then go down the line if the first is not successful (I assume that the payoffs after success are identical, though this isn't entirely clear to me). Agents also shift decisions and labour allocation based on similar households (imitation).
+
+**Coding goals for the day**
+   
+1. Break down move functions into easier to digest pieces by creating functions:
+    - `movement_dir`: Causes movement in the `x` or `y` direction
+    - `edge_effect`: Does something at the edge when encountered
+2. Initialise landscape layers
 
 > <a name="u-22-FEB-2017">Update: 22 FEB 2017</a>
 
@@ -2980,8 +2993,10 @@ McAvoy, A., & Hauert, C. (2015). Asymmetric evolutionary games. PLoS Computation
 
 Mccann, R. K., Marcot, B. G., & Ellis, R. (2006). Bayesian belief networks: applications in ecology and natural resource. Canadian Journal of Forest Research, 36, 3053–3062.
 
+Miyasaka, T., Le, Q. B., Okuro, T., Zhao, X., & Takeuchi, K. (2017). Agent-based modeling of complex social–ecological feedback loops to assess multi-dimensional trade-offs in dryland ecosystem services. Landscape Ecology. https://doi.org/10.1007/s10980-017-0495-x
+
 Nellemann, C., Jordhoy, P., Stoen, O. G., & Strand, O. (2000). Cumulative impacts of tourist resorts on wild reindeer (Rangifer tarandus tarandus) during winter. Arctic, 53(1), 9–17. https://doi.org/10.14430/arctic829
-An, L. (2012). Modeling human decisions in coupled human and natural systems: Review of agent-based models. Ecological Modelling, 229, 25–36. https://doi.org/10.1016/j.ecolmodel.2011.07.010
+
 Nellemann, C., Vistnes, I., Jordhoy, P., Strand, O., & Newton, A. (2003). Progressive impact of piecemeal infrastructure development on wild reindeer. Biological Conservation, 113(2), 307–317. https://doi.org/10.1016/S0006-3207(03)00048-X
 
 Olaussen, J. O., & Skonhoft, A. (2008). On the economics of biological invasion: An application to recreational fishing. Natural Resource Modeling, 21(4), 625–653. https://doi.org/10.1111/j.1939-7445.2008.00026.x
