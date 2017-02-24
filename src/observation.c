@@ -21,7 +21,7 @@
  *     2: Movement is poisson(move_para) in any direction
  * ========================================================================== */
 void a_mover(double **agent_moving, int xloc, int yloc, int move_para, int edge,
-             int a_row, double **landscape, int land_x, int land_y, int type){
+             int a_row, double ***landscape, int land_x, int land_y, int type){
     
     int move_len;     /* Length of a move                            */
     int move_dir;     /* Move direction (-1 or 1)                    */
@@ -398,7 +398,7 @@ void field_work(double **resource_array, double **agent_array, double *paras,
  * Output:
  *     Accumlated markings of resources by agents
  * ========================================================================== */
-void mark_res(double **resource_array, double **agent_array, double **land,
+void mark_res(double **resource_array, double **agent_array, double ***land,
               double *paras, int res_rows, int a_row, int res_type, 
               int obs_col, int a_type, int by_type, int find_type){
     
@@ -493,8 +493,9 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
  
     /* SOME STANDARD DECLARATIONS OF KEY VARIABLES AND POINTERS               */
     /* ====================================================================== */
-    int xloc;                /* Index of x location on the landscape */ 
+    int xloc, yloc;          /* Index of x & y locations on the landscape */ 
     int land_x, land_y;      /* x and y maximum location given LANDSCAPE */
+    int zloc, land_z;        /* z locations */
     int resource;            /* Index for resource (rows of RESOURCE) */
     int res_trait;           /* Index for resource traits (cols of RESOURCE) */
     int agent;               /* Index for agent in the array (rows) */
@@ -535,7 +536,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     double *new_agent_ptr;   /* Pointer to new agents that are returned */
     double *data_ptr;        /* Pointer to DATA (interface R and C) */
     double **resource_array; /* Array to store the old RESOURCE in C */
-    double **land;           /* Array to store the landscape in C*/
+    double ***land;          /* Array to store the landscape in C*/
     double **agent_array;    /* Array to store the agents in C */
     double **obs_array;      /* Array to store the observations made in C */
 
@@ -596,12 +597,27 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     /* RESOURCE is now stored as resource_array (discrete resources) */
 
     /* Code below reads in the LANDSCAPE for easy of use */
+    /* Code below reads in the LANDSCAPE for easy of use */
+    land_z = dim_LANDSCAPE[2];
     land_y = dim_LANDSCAPE[1];
     land_x = dim_LANDSCAPE[0];
     land   = malloc(land_x * sizeof(double *));
     for(xloc = 0; xloc < land_x; xloc++){
-        land[xloc] = malloc(land_y * sizeof(double));   
-    } /* LANDSCAPE is now stored as land */
+        land[xloc] = malloc(land_y * sizeof(double *));
+        for(yloc = 0; yloc < land_y; yloc++){
+            land[xloc][yloc] = malloc(land_z * sizeof(double));   
+        }
+    } 
+    vec_pos = 0;
+    for(xloc = 0; xloc < land_x; xloc++){
+        for(yloc = 0; yloc < land_y; yloc++){
+            for(zloc = 0; zloc < land_z; zloc++){
+                land[xloc][yloc][zloc] = land_ptr[vec_pos];
+                vec_pos++;
+            }
+        }
+    }  /* LANDSCAPE is now stored as land */    
+    
     /* Code below remakes the AGENT matrix for easier use */
     agent_number        = dim_AGENT[0];
     agent_traits        = dim_AGENT[1];
@@ -838,9 +854,12 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     }
     free(agent_array);
     for(xloc = 0; xloc < land_x; xloc++){
+        for(yloc = 0; yloc < land_y; yloc++){
+            free(land[xloc][yloc]);   
+        }
         free(land[xloc]);        
     }
-    free(land);
+    free(land); 
     for(resource = 0; resource < res_number; resource++){
         free(resource_array[resource]);
     }

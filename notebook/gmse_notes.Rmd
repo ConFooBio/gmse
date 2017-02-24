@@ -116,7 +116,7 @@ It all appears to be freed successfully, with no memory leaks picked up.
 
 ```
 
-Hence, I have merged from a local branch to branch dev.
+Hence, I have merged from a local branch to branch dev. I have also read in the new landscape into the observation function.
 
 > <a name="u-23-FEB-2017">Update: 23 FEB 2017</a>
 
