@@ -183,6 +183,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     /* ====================================================================== */
     int xloc, yloc;          /* x and y locations in the RESOURCE array */ 
     int land_x, land_y;      /* x and y maximum location given LANDSCAPE */
+    int zloc, land_z;        /* z locations */
     int resource;            /* Index for resource (rows of RESOURCE) */
     int resource_new;        /* Index for resource in new array */
     int trait;               /* Index for resource traits (cols of RESOURCE) */
@@ -209,11 +210,12 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
     double *R_ptr_new;       /* Pointer to RESOURCE_NEW (interface R and C) */
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
+    double *land_ptr_new;    /* Pointer to LAND_NEW (interface R and C) */
     double *paras;           /* Pointer to PARAMETER (interface R and C) */
     double **res_old;        /* Array to store the old RESOURCE in C */
     double **res_make;       /* Array of newly made resources */
     double **res_new;        /* Array to store the new RESOURCE in C */
-    double **land;           /* Array to store the landscape in C*/
+    double ***land;          /* Array to store the landscape in C*/
 
     /* First take care of all the reading in of code from R to C */
     /* ====================================================================== */
@@ -254,13 +256,29 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     }
     /* RESOURCE is now stored as res_old (discrete resources) */
 
+    
     /* Code below reads in the LANDSCAPE for easy of use */
+    land_z = dim_LANDSCAPE[2];
     land_y = dim_LANDSCAPE[1];
     land_x = dim_LANDSCAPE[0];
+
     land   = malloc(land_x * sizeof(double *));
     for(xloc = 0; xloc < land_x; xloc++){
-        land[xloc] = malloc(land_y * sizeof(double));   
-    } /* LANDSCAPE is now stored as land */
+        land[xloc] = malloc(land_y * sizeof(double *));
+        for(yloc = 0; yloc < land_y; yloc++){
+            land[xloc][yloc] = malloc(land_z * sizeof(double));   
+        }
+    } 
+    vec_pos = 0;
+    for(xloc = 0; xloc < land_x; xloc++){
+        for(yloc = 0; yloc < land_y; yloc++){
+            for(zloc = 0; zloc < land_z; zloc++){
+                land[xloc][yloc][zloc] = land_ptr[vec_pos];
+                vec_pos++;
+            }
+        }
+    }  /* LANDSCAPE is now stored as land */    
+
 
     /* Do the biology here now */
     /* ====================================================================== */
@@ -346,7 +364,29 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
             vec_pos++;
         }
     }            
-        
+    
+    SEXP LAND_NEW;
+    PROTECT( LAND_NEW = alloc3DArray(REALSXP, land_x, land_y, land_z) );
+    protected_n++;
+    
+    land_ptr_new = REAL(LAND_NEW);
+    
+    vec_pos = 0;
+    for(xloc=0; xloc<land_x; xloc++){
+        for(yloc=0; yloc<land_y; yloc++){
+            for(zloc=0; zloc<land_z; zloc++){
+                land_ptr_new[vec_pos] = land[xloc][yloc][zloc];
+                vec_pos++;
+            }
+        }
+    }
+    
+    SEXP EVERYTHING;
+    EVERYTHING = PROTECT( allocVector(VECSXP, 2) );
+    protected_n++;
+    SET_VECTOR_ELT(EVERYTHING, 0, RESOURCE_NEW);
+    SET_VECTOR_ELT(EVERYTHING, 1, LAND_NEW);    
+    
     UNPROTECT(protected_n);
     
     /* Free all of the allocated memory used in arrays */
@@ -359,15 +399,18 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     }
     free(res_make);
     for(xloc = 0; xloc < land_x; xloc++){
+        for(yloc = 0; yloc < land_y; yloc++){
+            free(land[xloc][yloc]);   
+        }
         free(land[xloc]);        
     }
-    free(land);
+    free(land); 
     for(resource = 0; resource < res_number; resource++){
         free(res_old[resource]);
     }
     free(res_old);
 
-    return(RESOURCE_NEW); 
+    return(EVERYTHING); 
 }
 /* ===========================================================================*/
 

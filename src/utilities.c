@@ -39,7 +39,8 @@ int edge_effect(int pos, int edge_1, int edge_2, int edge_type){
  *     3: Movement length is poisson(move_para) in any direction
  * ========================================================================== */
 void res_mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
-           int edge_eff, double **landscape, int land_x, int land_y, int type){
+           int edge_eff, double ***landscape, int land_x, int land_y, 
+           int type){
     
     int res_num;      /* Resource number index                        */
     int move_len;     /* Length of a move                             */

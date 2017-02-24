@@ -10,7 +10,7 @@ rm(list=ls(all=TRUE));
 setwd("~/Dropbox/projects/gmse");
 
 # Compiled using the following
-# R CMD SHLIB -o gmse.so resource.c observation.c
+# R CMD SHLIB -o gmse.so resource.c observation.c utilities.c
 dyn.load('src/gmse.so') # Just keep this here for now.
 
 source("R/initialise.R");
@@ -142,7 +142,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                       move_res   = TRUE,
                                       model      = "IBM"
         );
-        RESOURCES             <- RESOURCE_NEW;
+        RESOURCES             <- RESOURCE_NEW[[1]];
         RESOURCE_REC[[time]]  <- RESOURCES
         
         OBSERVATION_NEW   <- observation(resource   = RESOURCES,
@@ -157,7 +157,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                          type_cat   = 1,
                                          obs_method = obt,
                                          move_res   = rmo
-        )[[1]];
+        );
         
         # anecdotal is a bit useless right now, but included here anyway. 
         AGENTS            <- anecdotal(resource   = RESOURCES,
@@ -170,7 +170,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                        type_cat   = 1
         );
         
-        OBSERVATION_REC[[time]]  <- OBSERVATION_NEW;
+        OBSERVATION_REC[[time]]  <- OBSERVATION_NEW[[1]];
         
         time              <- time + 1;
         paras[1]          <- time;
@@ -219,26 +219,26 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         if(obt == 0){
             case01plot(res   = RESOURCE_REC, 
                        obs   = OBSERVATION_REC, 
-                       land  = LANDSCAPE_r, 
+                       land  = LANDSCAPE_r[,,1], 
                        paras = paras, 
                        view  = agent_view);
         }
         if(obt == 1){
             case01plot(res   = RESOURCE_REC, 
                        obs   = OBSERVATION_REC, 
-                       land  = LANDSCAPE_r, 
+                       land  = LANDSCAPE_r[,,1], 
                        paras = paras);
         }
         if(obt == 2){
             case23plot(res   = RESOURCE_REC, 
                        obs   = OBSERVATION_REC, 
-                       land  = LANDSCAPE_r, 
+                       land  = LANDSCAPE_r[[1]], 
                        paras = paras);
         }
         if(obt == 3){
             case23plot(res   = RESOURCE_REC, 
                        obs   = OBSERVATION_REC, 
-                       land  = LANDSCAPE_r, 
+                       land  = LANDSCAPE_r[[1]], 
                        paras = paras);
         }
     }
@@ -476,7 +476,8 @@ sim <- gmse( observe_type  = 0,
              res_death_K   = 400,
              plotting      = TRUE,
              hunt          = FALSE,
-             start_hunting = 95,
+             start_hunting = 95
 );
 
 ################################################################################
+

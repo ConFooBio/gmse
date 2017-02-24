@@ -21,7 +21,10 @@ make_landscape <- function(model, rows, cols, cell_types){
         cell_count     <- cols * rows;
         the_terrain    <- sample(x = cell_types, size = cell_count, 
                                  replace = TRUE);
-        the_land       <- matrix(data = the_terrain, ncol = cols, nrow = rows);
+        the_terrain2   <- sample(x = cell_types, size = cell_count, 
+                                 replace = TRUE);
+        alldata        <- c(the_terrain, the_terrain2);
+        the_land       <- array(data = alldata, dim = c(rows, cols, 2));
     }
     if( is.null(the_land) ){
         stop("Invalid model selected (Must be 'IBM')");
