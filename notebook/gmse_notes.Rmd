@@ -75,7 +75,7 @@ library(rhandsontable)
 
 > <a name="u-24-FEB-2017">Update: 24 FEB 2017</a>
 
-**Success on multi-layered landscapes**
+**RESOLVED ISSUE #14: Success on multi-layered landscapes**
 
 Initial testing suggests that I have successfully coded landscapes into G-MSE that have more than one layer. The G-MSE program now initialises (for the moment) landscapes that have depth of two layers, such as the below.
 
