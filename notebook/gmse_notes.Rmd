@@ -118,6 +118,10 @@ It all appears to be freed successfully, with no memory leaks picked up.
 
 Hence, I have merged from a local branch to branch dev. I have also read in the new landscape into the observation function.
 
+**Where all of this is going now**
+
+Now that I have the hang of returning multiple elements from C to R simultaneously (which is accomplished basically by making a structure `SEXP` allocating to a list `VECSXP`, each element of which can be an array), it will be easier to think about the code more holistically -- each part of the model can potentially take in and return every type of object, hence there are no restrictions on what one model can affect. To model geese, which is probably the first type of conflict I'm tempted to look at, I can use the population model to allow landscape layers to affect probability of geese mortality and for geese (`RESOURCE` array) in turn to affect the landscape, and hence crop output. Next week, I'm hoping to get the required code for doing this in place, and to also get some feedback regarding how utility functions of agents should be modelled at the upcoming workshop after [my presentation](https://bradduthie.shinyapps.io/GRIMSO/). The game-theoretic component can probably be a work in progress though, and it should be possible to model geese without adding these complexities until after receiving feedback, though thinking about the game-theoretic algorithm and data structures continues to be a high priority of mine.
+
 > <a name="u-23-FEB-2017">Update: 23 FEB 2017</a>
 
 **Future decision-making algorithm**
