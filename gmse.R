@@ -232,13 +232,13 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         if(obt == 2){
             case23plot(res   = RESOURCE_REC, 
                        obs   = OBSERVATION_REC, 
-                       land  = LANDSCAPE_r[[1]], 
+                       land  = LANDSCAPE_r[,,1], 
                        paras = paras);
         }
         if(obt == 3){
             case23plot(res   = RESOURCE_REC, 
                        obs   = OBSERVATION_REC, 
-                       land  = LANDSCAPE_r[[1]], 
+                       land  = LANDSCAPE_r[,,1], 
                        paras = paras);
         }
     }
