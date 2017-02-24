@@ -426,12 +426,13 @@ SEXP readland(SEXP LANDSCAPE){
     /* ====================================================================== */
     int xloc, yloc;          /* x and y locations in the RESOURCE array */ 
     int land_x, land_y;      /* x and y maximum location given LANDSCAPE */
+    int zloc, land_z;        /* z locations */
     int protected_n;         /* Number of protected R objects */
     int vec_pos;             /* Vector position for making arrays */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     double *R_ptr_new;       /* Pointer to RESOURCE_NEW (interface R and C) */
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
-    double **land;           /* Array to store the landscape in C*/
+    double ***land;           /* Array to store the landscape in C*/
     
     /* First take care of all the reading in of code from R to C */
     /* ====================================================================== */
@@ -445,17 +446,23 @@ SEXP readland(SEXP LANDSCAPE){
     dim_LANDSCAPE  = INTEGER( GET_DIM(LANDSCAPE) );
     
     /* Code below reads in the LANDSCAPE for easy of use */
+    land_z = dim_LANDSCAPE[2];
     land_y = dim_LANDSCAPE[1];
     land_x = dim_LANDSCAPE[0];
     land   = malloc(land_x * sizeof(double *));
     for(xloc = 0; xloc < land_x; xloc++){
-        land[xloc] = malloc(land_y * sizeof(double));   
+        land[xloc] = malloc(land_y * sizeof(double *));
+        for(yloc = 0; yloc < land_y; yloc++){
+            land[xloc][yloc] = malloc(land_z * sizeof(double));   
+        }
     } 
     vec_pos = 0;
     for(xloc = 0; xloc < land_x; xloc++){
         for(yloc = 0; yloc < land_y; yloc++){
-            land[xloc][yloc] = land_ptr[vec_pos];
-            vec_pos++;
+            for(zloc = 0; zloc < land_z; zloc++){
+                land[xloc][yloc][zloc] = land_ptr[vec_pos];
+                vec_pos++;
+            }
         }
     }
     /* LANDSCAPE is now stored as land */
@@ -465,7 +472,9 @@ SEXP readland(SEXP LANDSCAPE){
     
     for(xloc = 0; xloc < land_x; xloc++){
         for(yloc = 0; yloc < land_y; yloc++){
-            land[xloc][yloc] = 2 * land[xloc][yloc];    
+            for(zloc = 0; zloc < land_z; zloc++){
+                land[xloc][yloc][zloc] = 2 * land[xloc][yloc][zloc];
+            }
         }
     }
     
@@ -473,7 +482,7 @@ SEXP readland(SEXP LANDSCAPE){
     /* ====================================================================== */        
     
     SEXP LAND_NEW;
-    PROTECT( LAND_NEW = allocMatrix(REALSXP, land_x, land_y) );
+    PROTECT( LAND_NEW = alloc3DArray(REALSXP, land_x, land_y, land_z) );
     protected_n++;
     
     R_ptr_new = REAL(LAND_NEW);
@@ -481,14 +490,19 @@ SEXP readland(SEXP LANDSCAPE){
     vec_pos = 0;
     for(xloc=0; xloc<land_x; xloc++){
         for(yloc=0; yloc<land_y; yloc++){
-            R_ptr_new[vec_pos] = land[xloc][yloc];
-            vec_pos++;
+            for(zloc=0; zloc<land_z; zloc++){
+                R_ptr_new[vec_pos] = land[xloc][yloc][zloc];
+                vec_pos++;
+            }
         }
     }            
     
     UNPROTECT(protected_n);
     
     for(xloc = 0; xloc < land_x; xloc++){
+        for(yloc = 0; yloc < land_y; yloc++){
+            free(land[xloc][yloc]);   
+        }
         free(land[xloc]);        
     }
     free(land);
