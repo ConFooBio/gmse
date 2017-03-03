@@ -98,7 +98,7 @@ To incorporate the above, a new function in c is going to be needed that models 
  - Some sort of value (or maybe even a completely different and independent function) that maps a trait to its effect on a landscape, and back. This could be something as simple as decreasing one trait or landscape value by a uniform increment, or it could be more complex, affected by resource density or other variables.
  
 I will program this in a flexible way within c, and use some default features that will probably decrease a trait and landscape value by a uniform *proportion* each time (which seems intuitively more reasonable than a uniform value if we're thinking about probabilities of mortality and proportion of food on a landsdcape eaten). Key options will be called from R.
- 
+
 
 > <a name="u-24-FEB-2017">Update: 24 FEB 2017</a>
 
