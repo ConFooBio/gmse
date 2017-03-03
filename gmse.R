@@ -65,10 +65,12 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     proc_start <- proc.time();
     
     # Set the landscape
-    LANDSCAPE_r  <- make_landscape( model      = pop_model, 
-                                    rows       = land_dim_1, 
-                                    cols       = land_dim_2, 
-                                    cell_types = 2
+    LANDSCAPE_r  <- make_landscape( model       = pop_model, 
+                                    rows        = land_dim_1, 
+                                    cols        = land_dim_2, 
+                                    cell_types  = 2,
+                                    cell_val_mn = 100,
+                                    cell_val_sd = 0
     );
     # Set the starting conditions for one resource
     starting_resources <- make_resource( model              = pop_model, 
