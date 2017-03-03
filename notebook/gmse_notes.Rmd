@@ -41,6 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
+     - **MAR** [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
  
@@ -72,6 +73,31 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-3-MAR-2017">Update: 3 MAR 2017</a>
+
+**Resource-landscape interactions**
+
+Having now resolved the issue concerning [multi-layered landscapes](#u-24-FEB-2017), it's time to actually *use* one of these layers in the model. The goal here is to do the following:
+
+1. Allow resources of any given type (e.g., individuals in a population of conservation interest) to affect values on the landscape (e.g., representing possible crop yield).
+2. Have values on the landscape affect resources, potentially in one or all of the ways below.
+    - Affect individual death rate
+    - Affect individual birth rate
+    - Affect individual movement
+    
+It would be nice if, for example, individuals could have their probability of death decrease if they are on a cell of high value (modelling increased food consumption), or their probability of giving birth (or number of offspring) increase. Movement rules could also allow individuals to gravitate towards high value cells (or stop when landing on one), thereby modelling behavioural change to move toward areas where opportunities for foraging (or nesting, or something else) are high. This could affect consumption of food on different landscape types (e.g., cropland) and hence make it possible to also model management strategies of diversionary feeding.
+
+To incorporate the above, a new function in c is going to be needed that models interaction beween resources and landscapes. This function will require input of:
+
+ - The `resource` array
+ - The `landscape` array
+ - What layer of the array is having an affect or being affected
+ - What type of resources are having an affect or being affected
+ - What trait or traits of the resource is having an affect or being affected
+ - Some sort of value (or maybe even a completely different and independent function) that maps a trait to its effect on a landscape, and back. This could be something as simple as decreasing one trait or landscape value by a uniform increment, or it could be more complex, affected by resource density or other variables.
+ 
+I will program this in a flexible way within c, and use some default features that will probably decrease a trait and landscape value by a uniform *proportion* each time (which seems intuitively more reasonable than a uniform value if we're thinking about probabilities of mortality and proportion of food on a landsdcape eaten). Key options will be called from R.
 
 > <a name="u-24-FEB-2017">Update: 24 FEB 2017</a>
 
