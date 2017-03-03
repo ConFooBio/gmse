@@ -99,6 +99,54 @@ To incorporate the above, a new function in c is going to be needed that models 
  
 I will program this in a flexible way within c, and use some default features that will probably decrease a trait and landscape value by a uniform *proportion* each time (which seems intuitively more reasonable than a uniform value if we're thinking about probabilities of mortality and proportion of food on a landsdcape eaten). Key options will be called from R.
 
+**Progress on resource-landscape interactions**
+
+The initial code to allow interaction is written in the form of the following function, locating on a local branch (not pushed on GitHub).
+
+```
+/* =============================================================================
+ * This function reads in resources and landscape values, then determines how
+ * each should affect the other based on resource position and trait values
+ * Inputs include:
+ *     resource_array: resource array of individuals to interact
+ *     resource_type_col: which type column defines the type of resource
+ *     resource_type: type of resources to do the interacting
+ *     resource_col: the column of the resources that affects or is affected
+ *     rows: the number of resources (represented by rows) in the array
+ *     resource_effect: the column of the resources of landscape effect size
+ *     landscape: landscape array of cell values that affect individuals
+ *     landscape_layer: layer of the landscape that is affected
+ * ========================================================================== */
+void res_landscape_interaction(double **resource_array, int resource_type_col,
+                               int resource_type, int resource_col, int rows,
+                               int resource_effect, double ***landscape, 
+                               int landscape_layer){
+    
+    int resource;
+    int x_pos, y_pos;
+    double c_rate;
+    double current_val;
+    double esize;
+    
+    for(resource = 0; resource < rows; resource++){
+        if(resource_array[resource][resource_type_col] == resource_type){
+            x_pos  = resource_array[resource][4];
+            y_pos  = resource_array[resource][5];
+            c_rate = resource_array[resource][14];
+        
+            landscape[x_pos][y_pos][landscape_layer] *= (1 - c_rate);
+
+            current_val = resource_array[resource][resource_col];
+            esize       = resource_array[resource][resource_effect];
+            resource_array[resource][resource_col] += (1 - current_val) * esize;
+ 
+        }                
+    }
+}
+```
+
+This needs to be tested more carefully -- for some reason both layers are being affected, and I need to make sure that the landscape is being read in correctly.
+
 > <a name="u-24-FEB-2017">Update: 24 FEB 2017</a>
 
 **RESOLVED ISSUE #14: Success on multi-layered landscapes**
