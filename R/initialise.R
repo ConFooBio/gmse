@@ -19,7 +19,7 @@ make_resource <- function(model              = "IBM",
                           move               = 1, 
                           rm_pr              = 0,
                           lambda             = 0,
-                          consumption_rate   = 0
+                          consumption_rate   = 0.1
                           ){
     the_resource   <- NULL;
     if(model == "IBM"){

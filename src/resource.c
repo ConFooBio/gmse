@@ -309,16 +309,15 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
         }
     } 
     vec_pos = 0;
-    for(xloc = 0; xloc < land_x; xloc++){
+    for(zloc = 0; zloc < land_z; zloc++){
         for(yloc = 0; yloc < land_y; yloc++){
-            for(zloc = 0; zloc < land_z; zloc++){
+            for(xloc = 0; xloc < land_x; xloc++){
                 land[xloc][yloc][zloc] = land_ptr[vec_pos];
                 vec_pos++;
             }
         }
     }  /* LANDSCAPE is now stored as land */    
-
-
+    
     /* Do the biology here now */
     /* ====================================================================== */
     
@@ -414,9 +413,9 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     land_ptr_new = REAL(LAND_NEW);
     
     vec_pos = 0;
-    for(xloc=0; xloc<land_x; xloc++){
+    for(zloc=0; zloc<land_z; zloc++){
         for(yloc=0; yloc<land_y; yloc++){
-            for(zloc=0; zloc<land_z; zloc++){
+            for(xloc=0; xloc<land_x; xloc++){
                 land_ptr_new[vec_pos] = land[xloc][yloc][zloc];
                 vec_pos++;
             }
