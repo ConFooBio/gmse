@@ -197,6 +197,36 @@ When reading in the landscape, this got confusing beause the same thing had to b
 
 The biological interactions (i.e., the function from [3 MAR](#u-3-MAR-2017)) now does what it is supposed to do, and I will move on to make the landscape interactions more interesting.
 
+**Allow layers to change by themselves each generation**
+
+Given that some resources will affect layers of the landscape, modelling consumption of biomass on cells, it is necessary to also include a function that changes the landscape cell values without any input from resources. This can model the growth of biomass on cells between time steps. I've therefore written a new function that does this in R (I don't think this will be complex enough to require it in C).
+
+```{r}
+update_landscape <- function(model = "IBM", landscape, layer, mean_change,
+                             sd_change = 0, max_val = 1, min_val = 0){
+    the_land <- NULL;
+    if(model == "IBM"){
+        xlength   <- dim(landscape[,,layer])[1];
+        ylength   <- dim(landscape[,,layer])[2];
+        lsize     <- xlength * ylength;
+        adj_vals  <- rnorm(n = lsize, mean = mean_change, sd = sd_change);
+        adj_layer <- matrix(data = adj_vals, nrow = xlength, ncol = ylength);
+        new_layer <- landscape[,,layer] + adj_layer;
+        
+        new_layer[new_layer > max_val] <- max_val;
+        new_layer[new_layer < min_val] <- min_val;
+        landscape[,,layer]             <- new_layer;
+        the_land                       <- landscape;
+    }else{
+        stop("Invalid model selected (Must be 'IBM')");
+    }
+    return(the_land);
+}
+```
+
+One feature of the G-MSE model is now that, in addition to a hard imposed carrying capacity on resource types, it is also possible to make the carrying capacity a natural function of the landscape. For example, we might force individuals on the landscape to consume a certain amount of resources on the landscape to survive or reproduce. Hence, as landscape cell values decrease modelling the consumption of biomass, fewer individual resources can survive or reproduce.
+
+**Ideally**, it will then be possible to parameterise the model using data for, e.g., how much damage to biomass a goose can do to a patch of land. As of now, by default, I'm just assuming that it decreases crop yield by 10%, and increases its own survival probability by the same when it lands on a cell.
 
 > <a name="u-3-MAR-2017">Update: 3 MAR 2017</a>
 
