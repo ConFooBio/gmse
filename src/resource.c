@@ -162,6 +162,46 @@ void res_remove(double **res_removing, int rows, int rm_row, int type, int K){
 }
 /* ===========================================================================*/
 
+/* =============================================================================
+ * This function reads in resources and landscape values, then determines how
+ * each should affect the other based on resource position and trait values
+ * Inputs include:
+ *     resource_array: resource array of individuals to interact
+ *     resource_type_col: which type column defines the type of resource
+ *     resource_type: type of resources to do the interacting
+ *     resource_col: the column of the resources that affects or is affected
+ *     rows: the number of resources (represented by rows) in the array
+ *     resource_effect: the column of the resources of landscape effect size
+ *     landscape: landscape array of cell values that affect individuals
+ *     landscape_layer: layer of the landscape that is affected
+ * ========================================================================== */
+void res_landscape_interaction(double **resource_array, int resource_type_col,
+                               int resource_type, int resource_col, int rows,
+                               int resource_effect, double ***landscape, 
+                               int landscape_layer){
+    
+    int resource;
+    int x_pos, y_pos;
+    double c_rate;
+    double current_val;
+    double esize;
+    
+    for(resource = 0; resource < rows; resource++){
+        if(resource_array[resource][resource_type_col] == resource_type){
+            x_pos  = resource_array[resource][4];
+            y_pos  = resource_array[resource][5];
+            c_rate = resource_array[resource][14];
+        
+            landscape[x_pos][y_pos][landscape_layer] *= (1 - c_rate);
+
+            current_val = resource_array[resource][resource_col];
+            esize       = resource_array[resource][resource_effect];
+            resource_array[resource][resource_col] += (1 - current_val) * esize;
+ 
+        }                
+    }
+}
+
 
 /* =============================================================================
  * MAIN RESOURCE FUNCTION:
@@ -269,16 +309,15 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
         }
     } 
     vec_pos = 0;
-    for(xloc = 0; xloc < land_x; xloc++){
+    for(zloc = 0; zloc < land_z; zloc++){
         for(yloc = 0; yloc < land_y; yloc++){
-            for(zloc = 0; zloc < land_z; zloc++){
+            for(xloc = 0; xloc < land_x; xloc++){
                 land[xloc][yloc][zloc] = land_ptr[vec_pos];
                 vec_pos++;
             }
         }
     }  /* LANDSCAPE is now stored as land */    
-
-
+    
     /* Do the biology here now */
     /* ====================================================================== */
     
@@ -300,6 +339,9 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
               move_type);
     }
 
+    /* Resoureces affect the landscape (note the **ORDER** of this -- change? */
+    res_landscape_interaction(res_old, 1, 1, 8, res_number, 14, land, 1);
+  
     /* Identify, and calculate the number of, added individuals */
     res_add(res_old, res_number, 9, birthtype, birth_K);
     res_nums_added      = 0; 
@@ -371,9 +413,9 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     land_ptr_new = REAL(LAND_NEW);
     
     vec_pos = 0;
-    for(xloc=0; xloc<land_x; xloc++){
+    for(zloc=0; zloc<land_z; zloc++){
         for(yloc=0; yloc<land_y; yloc++){
-            for(zloc=0; zloc<land_z; zloc++){
+            for(xloc=0; xloc<land_x; xloc++){
                 land_ptr_new[vec_pos] = land[xloc][yloc][zloc];
                 vec_pos++;
             }

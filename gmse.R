@@ -69,8 +69,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                     rows        = land_dim_1, 
                                     cols        = land_dim_2, 
                                     cell_types  = 2,
-                                    cell_val_mn = 100,
-                                    cell_val_sd = 0
+                                    cell_val_mn = 1,
+                                    cell_val_sd = 1
     );
     # Set the starting conditions for one resource
     starting_resources <- make_resource( model              = pop_model, 
@@ -145,7 +145,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                       model      = "IBM"
         );
         RESOURCES             <- RESOURCE_NEW[[1]];
-        RESOURCE_REC[[time]]  <- RESOURCES
+        RESOURCE_REC[[time]]  <- RESOURCES;
+        
+        LANDSCAPE_r           <- RESOURCE_NEW[[2]];
         
         OBSERVATION_NEW   <- observation(resource   = RESOURCES,
                                          landscape  = LANDSCAPE_r,
@@ -201,7 +203,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                      "Resource_grown",
                      "Resource_age",
                      "Resource_marked",
-                     "Resource_tally"
+                     "Resource_tally",
+                     "Consumption_rate"
     );
     colnames(RESOURCES)    <- res_columns;
     
@@ -417,7 +420,7 @@ case01plot <- function(res, obs, land, paras, view = NULL){
             lci      <- c(lci, analysis$lci);
             uci      <- c(uci, analysis$uci);
         }
-        polygon(y=c(lci,rev(uci)),x=c(gens,rev(gens)),border=NA,
+        polygon(y=c(lci,rev(uci)),x=c(gens,rev(gens)), border=NA,
                 col="lightblue");
         points(x=gens, y=est, pch=20, type="l", lwd=2, col="cyan4");
         abline(h=paras[7], col="red", lwd=0.8, lty="dashed");

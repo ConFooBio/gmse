@@ -18,7 +18,8 @@ make_resource <- function(model              = "IBM",
                           cols               = 100, 
                           move               = 1, 
                           rm_pr              = 0,
-                          lambda             = 0
+                          lambda             = 0,
+                          consumption_rate   = 0.1
                           ){
     the_resource   <- NULL;
     if(model == "IBM"){
@@ -38,9 +39,11 @@ make_resource <- function(model              = "IBM",
         offspr   <- rep(x = 0, times = resource_quantity); # None at init
         age      <- rep(x = 0, times = resource_quantity); # Start age zero
         mark     <- rep(x = 0, times = resource_quantity); # Can be marked
-        tally    <- rep(x = 0, times = resource_quantity); 
+        tally    <- rep(x = 0, times = resource_quantity);
+        consume  <- rep(x = consumption_rate, times = resource_quantity);
         the_resource <- cbind(IDs, type1, type2, type3, xloc, yloc, mover, time, 
-                              remov_pr, growth, offspr, age, mark, tally);
+                              remov_pr, growth, offspr, age, mark, tally,
+                              consume);
     }
     if( is.null(the_resource) ){
         stop("Invalid model selected (Must be 'IBM')");

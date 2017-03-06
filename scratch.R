@@ -1,3 +1,28 @@
+time_max       = 100;   # Max number of time steps in sim
+land_dim_1     = 100;   # x dimension of the landscape
+land_dim_2     = 100;   # y dimension of the landscape
+res_movement   = 1;     # How far do resources move
+remove_pr      = 0.0;   # Density independent resource death
+lambda         = 0.9;   # Resource growth rate
+agent_view     = 10;    # Number cells agent view around them
+agent_move     = 50;    # Number cells agent can move
+res_birth_K    = 10000; # Carrying capacity applied to birth
+res_death_K    = 400;   # Carrying capacity applied to death
+edge_effect    = 1;     # What type of edge on the landscape
+res_move_type  = 2;     # What type of movement for resources
+res_birth_type = 2;     # What type of birth for resources
+res_death_type = 2;     # What type of death for resources
+observe_type   = 0;     # Type of observation used
+fixed_observe  = 1;     # How many obs (if type = 1)
+times_observe  = 1;     # How many times obs (if type = 0)
+obs_move_type  = 1;     # Type of movement for agents
+res_min_age    = 1;     # Minimum age recorded and observed
+res_move_obs   = TRUE;  # Move resources while observing
+Euclidean_dist = FALSE; # Use Euclidean distance in view
+plotting       = TRUE;  # Plot the results
+hunt           = FALSE; # Does the user hunt resources?
+start_hunting  = 0;     # What generation hunting starts
+
 sim <- gmse( observe_type  = 0,
              agent_view    = 20,
              res_death_K   = 400,
@@ -5,3 +30,5 @@ sim <- gmse( observe_type  = 0,
              hunt          = FALSE,
              start_hunting = 95
 );
+
+
