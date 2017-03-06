@@ -22,6 +22,9 @@ make_resource <- function(model              = "IBM",
                           consumption_rate   = 0.1
                           ){
     the_resource   <- NULL;
+    if(length(consumption_rate) != resource_types){
+        stop("Need consumption_rate for each resource_type")
+    }
     if(model == "IBM"){
         IDs      <- seq(from = 1, to = resource_quantity, by = 1);
         type1    <- sample(x = 1:resource_types, size = resource_quantity,
@@ -40,7 +43,7 @@ make_resource <- function(model              = "IBM",
         age      <- rep(x = 0, times = resource_quantity); # Start age zero
         mark     <- rep(x = 0, times = resource_quantity); # Can be marked
         tally    <- rep(x = 0, times = resource_quantity);
-        consume  <- rep(x = consumption_rate, times = resource_quantity);
+        consume  <- consumption_rate[type1];
         the_resource <- cbind(IDs, type1, type2, type3, xloc, yloc, mover, time, 
                               remov_pr, growth, offspr, age, mark, tally,
                               consume);
