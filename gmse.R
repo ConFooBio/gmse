@@ -48,7 +48,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   Euclidean_dist = FALSE, # Use Euclidean distance in view
                   plotting       = TRUE,  # Plot the results
                   hunt           = FALSE, # Does the user hunt resources?
-                  start_hunting  = 0      # What generation hunting starts
+                  start_hunting  = 0,     # What generation hunting starts
+                  res_consume    = 0.1    # Pr. landscape cell consumed by res
 ){
     
     if(observe_type == 1 & times_observe < 2){
@@ -80,7 +81,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                          cols               = land_dim_2,
                                          move               = movement,
                                          rm_pr              = remove_pr,
-                                         lambda             = lambda
+                                         lambda             = lambda,
+                                         consumption_rate   = res_consume
     );
     # This will obviously need to be changed -- new function in initialise.R
     AGENTS   <- make_agents( model        = pop_model,
@@ -110,6 +112,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     rma <- res_min_age;
     rmo <- res_move_obs;
     Euc <- Euclidean_dist;
+    prc <- res_consume;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
