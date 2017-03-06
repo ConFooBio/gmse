@@ -49,7 +49,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   plotting       = TRUE,  # Plot the results
                   hunt           = FALSE, # Does the user hunt resources?
                   start_hunting  = 0,     # What generation hunting starts
-                  res_consume    = 0.1    # Pr. landscape cell consumed by res
+                  res_consume    = 0.1,   # Pr. landscape cell consumed by res
+                  cell_val_add   = 1      # How much to add to layer 2 cells yr
 ){
     
     if(observe_type == 1 & times_observe < 2){
@@ -70,8 +71,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                     rows        = land_dim_1, 
                                     cols        = land_dim_2, 
                                     cell_types  = 2,
+                                    layers      = 2,
                                     cell_val_mn = 1,
-                                    cell_val_sd = 1
+                                    cell_val_sd = 0
     );
     # Set the starting conditions for one resource
     starting_resources <- make_resource( model              = pop_model, 
@@ -178,7 +180,12 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         );
         
         OBSERVATION_REC[[time]]  <- OBSERVATION_NEW[[1]];
-        
+
+        LANDSCAPE_r <- update_landscape(landscape    = LANDSCAPE_r, 
+                         layer        = 2, 
+                         mean_change  = cell_val_add
+        );
+
         time              <- time + 1;
         paras[1]          <- time;
         if(dim(RESOURCES)[1] < 10){
