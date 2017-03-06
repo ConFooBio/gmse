@@ -47,28 +47,11 @@ make_landscape <- function(model, rows, cols, cell_types, layers, cell_val_mn,
 #' -- i.e., 'agent-based' -- models are allowed)
 #'@param landscape The name of the landscape being changed
 #'@param layer The layer that is being affected on the landscape
-#'@param mean_change The mean change on the landscape
-#'@param sd_change The standard deviation of change among cells
-#'@param max_val The maximum value of a cell
-#'@param min_val The minimum value of a cell
+#'@param backto The value that cells on the landscape should revert to
 #'@export
-update_landscape <- function(model = "IBM", landscape, layer, mean_change,
-                             sd_change = 0, max_val = 1, min_val = 0){
-    the_land <- NULL;
-    if(model == "IBM"){
-        xlength   <- dim(landscape[,,layer])[1];
-        ylength   <- dim(landscape[,,layer])[2];
-        lsize     <- xlength * ylength;
-        adj_vals  <- rnorm(n = lsize, mean = mean_change, sd = sd_change);
-        adj_layer <- matrix(data = adj_vals, nrow = xlength, ncol = ylength);
-        new_layer <- landscape[,,layer] + adj_layer;
-        
-        new_layer[new_layer > max_val] <- max_val;
-        new_layer[new_layer < min_val] <- min_val;
-        landscape[,,layer]             <- new_layer;
-        the_land                       <- landscape;
-    }else{
-        stop("Invalid model selected (Must be 'IBM')");
-    }
-    return(the_land);
+age_land <- function(landscape, layer, backto = 1){
+
+    landscape[,,layer] <- backto;
+    
+    return(landscape);
 }

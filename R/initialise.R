@@ -44,8 +44,7 @@ make_resource <- function(model              = "IBM",
         mark     <- rep(x = 0, times = resource_quantity); # Can be marked
         tally    <- rep(x = 0, times = resource_quantity);
         consume  <- consumption_rate[type1];
-        the_resource <- cbind(IDs, type1, type2, type3, xloc, yloc, mover, time, 
-                              remov_pr, growth, offspr, age, mark, tally,
+        the_resource <- cbind(IDs, type1, type2, type3, xloc, yloc, mover, time,                               remov_pr, growth, offspr, age, mark, tally,
                               consume);
     }
     if( is.null(the_resource) ){

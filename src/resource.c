@@ -339,7 +339,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
               move_type);
     }
 
-    /* Resoureces affect the landscape (note the **ORDER** of this -- change? */
+    /* Resources affect the landscape (note the **ORDER** of this -- change? */
     res_landscape_interaction(res_old, 1, 1, 8, res_number, 14, land, 1);
   
     /* Identify, and calculate the number of, added individuals */

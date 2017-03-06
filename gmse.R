@@ -49,7 +49,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   plotting       = TRUE,  # Plot the results
                   hunt           = FALSE, # Does the user hunt resources?
                   start_hunting  = 0,     # What generation hunting starts
-                  res_consume    = 0.1,   # Pr. landscape cell consumed by res
+                  res_consume    = 0,   # Pr. landscape cell consumed by res
                   cell_val_add   = 1      # How much to add to layer 2 cells yr
 ){
     
@@ -141,6 +141,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
     OBSERVATION_REC <- NULL;
+    LANDSCAPE_REC   <- NULL;
     
     while(time < time_max){
         RESOURCE_NEW      <- resource(resource   = RESOURCES,
@@ -180,12 +181,11 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         );
         
         OBSERVATION_REC[[time]]  <- OBSERVATION_NEW[[1]];
+        
+        LANDSCAPE_REC[[time]]    <- LANDSCAPE_r[,,2];
 
-        LANDSCAPE_r <- update_landscape(landscape    = LANDSCAPE_r, 
-                         layer        = 2, 
-                         mean_change  = cell_val_add
-        );
-
+        LANDSCAPE_r <- age_land(landscape = LANDSCAPE_r, layer = 2, backto = 1);
+        
         time              <- time + 1;
         paras[1]          <- time;
         if(dim(RESOURCES)[1] < 10){
@@ -225,7 +225,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     sim_results <- list(resource    = RESOURCE_REC,
                         observation = OBSERVATION_REC,
                         paras       = paras,
-                        land        = LANDSCAPE_r,
+                        land        = LANDSCAPE_REC,
                         time_taken  = time_taken,
                         agents      = AGENTS
                         );
@@ -486,13 +486,18 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, agent_view){
 
 ################################################################################
 
-sim <- gmse( observe_type  = 0,
+sim <- gmse( observe_type  = 1,
              agent_view    = 20,
              res_death_K   = 400,
              plotting      = TRUE,
              hunt          = FALSE,
-             start_hunting = 95
+             start_hunting = 95,
+             fixed_observe = 10,
+             times_observe = 20,
+             land_dim_1    = 100,
+             land_dim_2    = 100
 );
 
 ################################################################################
+
 
