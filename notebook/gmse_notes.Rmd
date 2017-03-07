@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **MAR** [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
+     - **MAR** [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
  
@@ -73,6 +73,16 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-7-MAR-2017">Update: 7 MAR 2017</a>
+
+**Tracking crop yield over time**
+
+Given that resources now can affect the second layer of the landscape, which can model the percent crop yield (or anything else), we can now plot the mean percent yield per cell (orange) over time along with resource abundance (black) and its estimate (blue). The figure below shows this for an example in which each independent visit by a resource reduces crop yield by 50% (e.g., the individual consumes half of the resources on a cell if it arrives there at a time step).
+
+![*Updated G-MSE output with mean landscape yield over time*](images/gmse_with_yield.png)
+
+This has now only been coded for the mark-recapture plot, so the next task is to fill this out for all of the plot types, then *add a new layer* of the landscape that will designate each cell with a number that identifies the owner of the land, or if the land is public (type 0). This will allow me to link crop yield to a specific agent.
 
 > <a name="u-6-MAR-2017">Update: 6 MAR 2017</a>
 
