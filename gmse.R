@@ -49,8 +49,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   plotting       = TRUE,  # Plot the results
                   hunt           = FALSE, # Does the user hunt resources?
                   start_hunting  = 0,     # What generation hunting starts
-                  res_consume    = 0,   # Pr. landscape cell consumed by res
-                  cell_val_add   = 1      # How much to add to layer 2 cells yr
+                  res_consume    = 0      # Pr. landscape cell consumed by res
 ){
     
     if(observe_type == 1 & times_observe < 2){
@@ -236,14 +235,16 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         if(obt == 0){
             case01plot(res   = RESOURCE_REC, 
                        obs   = OBSERVATION_REC, 
-                       land  = LANDSCAPE_r[,,1], 
+                       land1 = LANDSCAPE_r[,,1], 
+                       land2 = LANDSCAPE_REC,
                        paras = paras, 
                        view  = agent_view);
         }
         if(obt == 1){
             case01plot(res   = RESOURCE_REC, 
                        obs   = OBSERVATION_REC, 
-                       land  = LANDSCAPE_r[,,1], 
+                       land1 = LANDSCAPE_r[,,1],
+                       land2 = LANDSCAPE_REC,
                        paras = paras);
         }
         if(obt == 2){
@@ -385,12 +386,13 @@ case23plot <- function(res, obs, land, paras){
 ####################################################################
 ## Plot this way when looking at view or mark-recapture sampling
 ####################################################################
-case01plot <- function(res, obs, land, paras, view = NULL){
+case01plot <- function(res, obs, land1, land2, paras, view = NULL){
     gens <- NULL;
     abun <- NULL;
     est  <- NULL;
     lci  <- NULL;
     uci  <- NULL;
+    lnds <- NULL;
     land_cols <- c("#F2F2F2FF", "#ECB176FF", "#000000"); 
     
     case  <- paras[9];
@@ -408,15 +410,17 @@ case01plot <- function(res, obs, land, paras, view = NULL){
     for(i in 1:(time_max-1)){
         res_t    <- res[[i]];
         obs_t    <- obs[[i]];
+        lnd_t    <- land2[[i]] * 100;
         if(i > 1){
             res_t <- res_t[res_t[,12] >= paras[17],];
         }
         gens  <- c(gens, i);
         abun  <- c(abun, dim(res_t)[1]);
+        lnds  <- c(lnds, mean(lnd_t));
         par(mfrow=c(2,1),mar=c(0,0,0,0));
-        indis  <- ind_to_land(inds=res_t, landscape=land);
+        indis  <- ind_to_land(inds=res_t, landscape=land1);
         image(indis, col=land_cols, xaxt="n", yaxt="n");
-        par(mar=c(4,4,1,1));
+        par(mar=c(4,4,1,4));
         plot(x=gens, y=abun, pch=20, type="l", lwd=2, ylim=c(0, ymaxi),
              xlim=c(0,time_max), xlab="Time Step", ylab="Abundance");
         if(!is.null(obs_t) & case == 1){
@@ -427,7 +431,7 @@ case01plot <- function(res, obs, land, paras, view = NULL){
             uci      <- c(uci, analysis$uci);
         }
         if(!is.null(obs_t) & !is.null(view) & case == 0){
-            analysis <- dens_est(observation=obs_t, view=view, land=land);
+            analysis <- dens_est(observation=obs_t, view=view, land=land1);
             est      <- c(est, analysis$Nc);
             lci      <- c(lci, analysis$lci);
             uci      <- c(uci, analysis$uci);
@@ -437,6 +441,12 @@ case01plot <- function(res, obs, land, paras, view = NULL){
         points(x=gens, y=est, pch=20, type="l", lwd=2, col="cyan4");
         abline(h=paras[7], col="red", lwd=0.8, lty="dashed");
         points(x=gens, y=abun, pch=20, type="l", lwd=3, col="black");
+        par(new=TRUE);
+        plot(x=gens, y=lnds, pch=20, type="l", lwd=3, col="orange", xlab = "",
+             xlim=c(0, time_max), ylim = c(0, 100), xaxt="n", yaxt="n", 
+             ylab = "");
+        axis(side=4, at=c(0, 25, 50, 75, 100));
+        mtext("Mean % Yield", side = 4, line = 2.4);
         Sys.sleep(0.1);
     }
 }
@@ -497,7 +507,8 @@ sim <- gmse( observe_type  = 1,
              fixed_observe = 10,
              times_observe = 20,
              land_dim_1    = 100,
-             land_dim_2    = 100
+             land_dim_2    = 100,
+             res_consume   = 0.5
 );
 
 ################################################################################
