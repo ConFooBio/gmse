@@ -250,13 +250,15 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         if(obt == 2){
             case23plot(res   = RESOURCE_REC, 
                        obs   = OBSERVATION_REC, 
-                       land  = LANDSCAPE_r[,,1], 
+                       land1 = LANDSCAPE_r[,,1], 
+                       land2 = LANDSCAPE_REC,
                        paras = paras);
         }
         if(obt == 3){
             case23plot(res   = RESOURCE_REC, 
                        obs   = OBSERVATION_REC, 
-                       land  = LANDSCAPE_r[,,1], 
+                       land1 = LANDSCAPE_r[,,1], 
+                       land2 = LANDSCAPE_REC,
                        paras = paras);
         }
     }
@@ -347,12 +349,13 @@ dens_est <- function(observation = obs_t, view = view, land = land){
 ###########################################################
 ## Plot this way when looking at transect type sampling
 ###########################################################
-case23plot <- function(res, obs, land, paras){
+case23plot <- function(res, obs, land1, land2, paras){
     gens <- NULL;
     abun <- NULL;
     est  <- NULL;
     lci  <- NULL;
-    uci  <- NULL;    cat("\n\n");
+    uci  <- NULL; 
+    lnds <- NULL;
     land_cols <- c("#F2F2F2FF", "#ECB176FF", "#000000"); 
 
     minK <- min(paras[6:7]);
@@ -362,15 +365,17 @@ case23plot <- function(res, obs, land, paras){
     for(i in 1:(time_max-1)){
         res_t    <- res[[i]];
         obs_t    <- obs[[i]];
+        lnd_t    <- land2[[i]] * 100;
         if(i > 1){
             res_t <- res_t[res_t[,12] >= paras[17],];
         }
         gens  <- c(gens, i);
         abun  <- c(abun, dim(res_t)[1]);
+        lnds  <- c(lnds, mean(lnd_t));
         par(mfrow=c(2,1),mar=c(0,0,0,0));
-        indis  <- ind_to_land(inds=res_t, landscape=land);
+        indis  <- ind_to_land(inds=res_t, landscape=land1);
         image(indis, col=land_cols, xaxt="n", yaxt="n");
-        par(mar=c(4,4,1,1));
+        par(mar=c(4,4,1,4));
         plot(x=gens, y=abun, pch=20, type="l", lwd=2, ylim=c(0, ymaxi),
              xlim=c(0,time_max), xlab="Time Step", ylab="Abundance");
         new_est   <- sum(obs_t[,13]);
@@ -378,6 +383,12 @@ case23plot <- function(res, obs, land, paras){
         points(x=gens, y=est, pch=20, type="l", lwd=2, col="cyan4");
         abline(h=paras[7], col="red", lwd=0.8, lty="dashed");
         points(x=gens, y=abun, pch=20, type="l", lwd=3, col="black");
+        par(new=TRUE);
+        plot(x=gens, y=lnds, pch=20, type="l", lwd=3, col="orange", xlab = "",
+             xlim=c(0, time_max), ylim = c(0, 100), xaxt="n", yaxt="n", 
+             ylab = "");
+        axis(side=4, at=c(0, 25, 50, 75, 100));
+        mtext("Mean % Yield", side = 4, line = 2.4);
         Sys.sleep(0.1);
     }
 }
@@ -498,14 +509,14 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, agent_view){
 
 ################################################################################
 
-sim <- gmse( observe_type  = 1,
+sim <- gmse( observe_type  = 0,
              agent_view    = 20,
              res_death_K   = 400,
              plotting      = TRUE,
              hunt          = FALSE,
              start_hunting = 95,
-             fixed_observe = 10,
-             times_observe = 20,
+             fixed_observe = 1,
+             times_observe = 1,
              land_dim_1    = 100,
              land_dim_2    = 100,
              res_consume   = 0.5
