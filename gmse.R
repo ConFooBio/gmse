@@ -141,6 +141,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
     OBSERVATION_REC <- NULL;
+    LANDSCAPE_INI   <- LANDSCAPE_r;
     LANDSCAPE_REC   <- NULL;
     
     while(time < time_max){
@@ -184,7 +185,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         
         LANDSCAPE_REC[[time]]    <- LANDSCAPE_r[,,2];
 
-        LANDSCAPE_r <- age_land(landscape = LANDSCAPE_r, layer = 2, backto = 1);
+        LANDSCAPE_r <- age_land(landscape = LANDSCAPE_r, 
+                                landscape_ini = LANDSCAPE_INI, layer = 2);
         
         time              <- time + 1;
         paras[1]          <- time;

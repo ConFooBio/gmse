@@ -39,19 +39,20 @@ make_landscape <- function(model, rows, cols, cell_types, layers, cell_val_mn,
     return(the_land);
 }
 
-#' Landscape change
+#' Age landscape
 #'
-#' How does the landscape change on its own over generations
+#' How does the landscape change on its own over generations?
+#' For now, simply reverts a specified layer back to its original values
 #'
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
 #'@param landscape The name of the landscape being changed
+#'@param landscape_ini The name of the original landscape replacing
 #'@param layer The layer that is being affected on the landscape
-#'@param backto The value that cells on the landscape should revert to
 #'@export
-age_land <- function(landscape, layer, backto = 1){
+age_land <- function(landscape, landscape_ini, layer){
 
-    landscape[,,layer] <- backto;
+    landscape[,,layer] <- landscape_ini[,,layer];
     
     return(landscape);
 }
