@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **MAR** [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
+     - **MAR** [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
  
@@ -73,6 +73,58 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-8-MAR-2017">Update: 8 MAR 2017</a>
+
+**New landscape layer identifying land ownership**
+
+There is now a new layer of landscape, and I have tweaked things to make the current default three layers. These layers include:
+
+1. A layer of terrain type (not currently in use)
+2. A layer of values that can be used to model cell productivity
+3. A layer identifying the owner of each cell (corresponds to agent ID)
+
+When the cell owner is 0, this effectively means the land is under manager (e.g., public) control. The new initialise landscape function now allows the user to explicitly set the proportion of cells that should go to each owner (vector input).
+
+```{r}
+make_landscape <- function(model, rows, cols, cell_types, cell_val_mn, 
+                           cell_val_sd, cell_val_max = 1, cell_val_min = 0,
+                           layers = 3, ownership = 0, owner_pr = NULL){
+    the_land  <- NULL;
+    if(model == "IBM"){
+        if(rows < 2){
+            stop("Landscape dimensions in IBM must be 2 by 2 or greater");   
+        }         
+        if(cols < 2){ # Check to make sure the landcape is big enough
+            stop("Landscape dimensions in IBM must be 2 by 2 or greater");   
+        }
+        cell_count     <- cols * rows;
+        the_terrain    <- sample(x = cell_types, size = cell_count, 
+                                 replace = TRUE);
+        the_terrain2   <- rnorm(n = cell_count, mean = cell_val_mn,
+                                sd = cell_val_sd);
+        if( length(ownership) == 1 ){
+            who_owns     <- sample(x = 0:ownership, size = cell_count, 
+                                   replace = TRUE);
+            the_terrain3 <- sort(who_owns); # Make contiguous for now
+        }else{
+            who_owns     <- sample(x = ownership, size = cell_count, 
+                                   replace = TRUE, prob = owner_pr);
+            the_terrain3 <- sort(who_owns); 
+        }
+        the_terrain2[the_terrain2 > cell_val_max] <- cell_val_max;
+        the_terrain2[the_terrain2 < cell_val_min] <- cell_val_min;
+        alldata        <- c(the_terrain, the_terrain2, the_terrain3);
+        the_land       <- array(data = alldata, dim = c(rows, cols, layers));
+    }
+    if( is.null(the_land) ){
+        stop("Invalid model selected (Must be 'IBM')");
+    }
+    return(the_land);
+}
+```
+
+Hence in the above, if `ownership = 0`, then the layer is effectively ignored, or if it is a scalar, then ownership of landscape cells is divided equally among integer values from zero to the scalar. However, the most thorough way to set ownership will be by setting `ownership` to a vector of possible owners and `owner_pr` to their relative proportions of cells owned. Addition of this landscape layer has been tested and runs without error.
 
 > <a name="u-7-MAR-2017">Update: 7 MAR 2017</a>
 
