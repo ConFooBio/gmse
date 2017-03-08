@@ -17,6 +17,7 @@ source("R/initialise.R");
 source("R/landscape.R");
 source("R/resource.R");
 source("R/observation.R");
+source("R/user.R");
 source("R/anecdotal.R");
 
 ################################################################################
@@ -181,10 +182,18 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                        type_cat   = 1
         );
         
+        USERS <- user(resource  = RESOURCES,
+                      agent     = AGENTS,
+                      landscape = LANDSCAPE_r, 
+                      paras     = paras,
+                      model     = "IBM"
+        );
+        AGENTS <- USERS[[3]];
+
         OBSERVATION_REC[[time]]  <- OBSERVATION_NEW[[1]];
         
         LANDSCAPE_REC[[time]]    <- LANDSCAPE_r[,,2];
-
+        
         LANDSCAPE_r <- age_land(landscape = LANDSCAPE_r, 
                                 landscape_ini = LANDSCAPE_INI, layer = 2);
         
