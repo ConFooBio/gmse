@@ -49,7 +49,6 @@ user <- function(resource   = NULL,
             } # Place the agent somewhere on its own landscape
             
             
-            
         }
         
         #======================================================================
