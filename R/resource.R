@@ -45,13 +45,3 @@ resource <- function(resource  = NULL,
 run_resource_a <- function(RESOURCE_c, LANDSCAPE_c, PARAMETERS_c){
     .Call("resource", RESOURCE_c, LANDSCAPE_c, PARAMETERS_c);
 }
-
-
-land_check <- function(landscape){
-    NEW_LANDSCAPE <- run_land(landscape);
-    return(NEW_LANDSCAPE);   
-}
-
-run_land <- function(LANDSCAPE){
-    .Call("readland", LANDSCAPE);
-}
