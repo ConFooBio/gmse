@@ -8,6 +8,7 @@
 #'@param paras Vector of parameter values to read into the model
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
+#'@param move_res Determining whether or not resources should move
 #'@return Data frame of Resource 2 at the end of the time step
 #'@export
 resource <- function(resource  = NULL, 
