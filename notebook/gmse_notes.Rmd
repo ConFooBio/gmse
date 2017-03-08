@@ -199,6 +199,14 @@ user <- function(resource   = NULL,
 
 It might be useful to also have a column in the `AGENTS` array that records percent capacity of yield for stake-holders, perhaps by saving the original landscape (before resources remove yield) and calculating a proportion. **A couple notes**, the indicated code above will need to be put into C -- it's much to slow for R already. Also, for some reason, if I don't store `a_xloc` and `a_yloc` back into the appropriate `agent[agent_ID, 5]` and `agent[agent_ID, 6]`, respectively, a weird bug appears. The actual resource population (but not its estimate) flatlines after 20 or so generations at some value. This is very weird because the file `gmse.R` doesn't even return the resource or landscape arrays -- not yet. I'm not sure why a bug in this the code affects population demographics, but fixing it also appears to correct the problem completely. **This is something to watch out for, however.**
 
+**Plotting owned landscape and stake-holder yield**
+
+The figure below shows some new output for G-MSE. The left column of the figure [is familiar](#u-7-MAR-2017), but the right column now provides some feedback for five simulated stake-holders that own roughly equal amounts of land. The actual plots of land are shown in the upper right, while the individual yields for each stake-holder's plots are shown over time in the lower right.
+
+![*Updated G-MSE output showing stake-holder yields from landscape*](images/stake_image.png)
+
+As of now, this image is only produced for the first two observation functions (case 0 and 1), so I need to replicate it in the other two observation functions. Eventually, it would be better to just have one function for plotting so that any changes made would really be global.
+
 > <a name="u-7-MAR-2017">Update: 7 MAR 2017</a>
 
 **Tracking crop yield over time**
