@@ -60,7 +60,7 @@ user <- function(resource   = NULL,
                     }
                 }
             }
-            agent[agent_ID, 15] <- agent_yield
+            agent[agent_ID, 16] <- agent_yield
         }
         USER_OUT <- list(resource, landscape, agent);
         # TODO: User actions are next...

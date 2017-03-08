@@ -73,8 +73,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                     cell_types  = 2,
                                     cell_val_mn = 1,
                                     cell_val_sd = 0,
-                                    ownership   = 1:2,
-                                    owner_pr    = c(0.5, 0.5)
+                                    ownership   = 1:5,
+                                    owner_pr    = rep(0.2, 5)
     );
     # Set the starting conditions for one resource
     starting_resources <- make_resource( model              = pop_model, 
@@ -89,8 +89,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     );
     # This will obviously need to be changed -- new function in initialise.R
     AGENTS   <- make_agents( model        = pop_model,
-                             agent_number = 2,
-                             type_counts  = c(1,1),
+                             agent_number = 5,
+                             type_counts  = c(1,1,1,1,1),
                              vision       = agent_view,
                              rows         = land_dim_1,
                              cols         = land_dim_2,
@@ -142,6 +142,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
     OBSERVATION_REC <- NULL;
+    AGENT_REC       <- NULL;
     LANDSCAPE_INI   <- LANDSCAPE_r;
     LANDSCAPE_REC   <- NULL;
     
@@ -191,7 +192,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         AGENTS <- USERS[[3]];
 
         OBSERVATION_REC[[time]]  <- OBSERVATION_NEW[[1]];
-        
+        AGENT_REC[[time]]        <- AGENTS;
         LANDSCAPE_REC[[time]]    <- LANDSCAPE_r[,,2];
         
         LANDSCAPE_r <- age_land(landscape = LANDSCAPE_r, 
@@ -243,19 +244,23 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     
     if(plotting == TRUE){
         if(obt == 0){
-            case01plot(res   = RESOURCE_REC, 
-                       obs   = OBSERVATION_REC, 
-                       land1 = LANDSCAPE_r[,,1], 
-                       land2 = LANDSCAPE_REC,
-                       paras = paras, 
-                       view  = agent_view);
+            case01plot(res    = RESOURCE_REC, 
+                       obs    = OBSERVATION_REC, 
+                       land1  = LANDSCAPE_r[,,1], 
+                       land2  = LANDSCAPE_REC,
+                       land3  = LANDSCAPE_r[,,3],
+                       agents = AGENT_REC,
+                       paras  = paras, 
+                       view   = agent_view);
         }
         if(obt == 1){
-            case01plot(res   = RESOURCE_REC, 
-                       obs   = OBSERVATION_REC, 
-                       land1 = LANDSCAPE_r[,,1],
-                       land2 = LANDSCAPE_REC,
-                       paras = paras);
+            case01plot(res    = RESOURCE_REC, 
+                       obs    = OBSERVATION_REC, 
+                       land1  = LANDSCAPE_r[,,1],
+                       land2  = LANDSCAPE_REC,
+                       land3  = LANDSCAPE_r[,,3],
+                       agents = AGENT_REC,
+                       paras  = paras);
         }
         if(obt == 2){
             case23plot(res   = RESOURCE_REC, 
@@ -407,13 +412,15 @@ case23plot <- function(res, obs, land1, land2, paras){
 ####################################################################
 ## Plot this way when looking at view or mark-recapture sampling
 ####################################################################
-case01plot <- function(res, obs, land1, land2, paras, view = NULL){
+case01plot <- function(res, obs, land1, land2, land3, agents, paras, 
+                       view = NULL){
     gens <- NULL;
     abun <- NULL;
     est  <- NULL;
     lci  <- NULL;
     uci  <- NULL;
     lnds <- NULL;
+    ages <- NULL;
     land_cols <- c("#F2F2F2FF", "#ECB176FF", "#000000"); 
     
     case  <- paras[9];
@@ -432,18 +439,26 @@ case01plot <- function(res, obs, land1, land2, paras, view = NULL){
         res_t    <- res[[i]];
         obs_t    <- obs[[i]];
         lnd_t    <- land2[[i]] * 100;
+        age_t    <- agents[[i]];
         if(i > 1){
             res_t <- res_t[res_t[,12] >= paras[17],];
         }
         gens  <- c(gens, i);
         abun  <- c(abun, dim(res_t)[1]);
         lnds  <- c(lnds, mean(lnd_t));
-        par(mfrow=c(2,1),mar=c(0,0,0,0));
+        ages  <- rbind(ages, age_t[,16]);
+        par(mfrow=c(2,2),mar=c(0,0,0,0));
+        # ------------- Panel 1 (upper left)
         indis  <- ind_to_land(inds=res_t, landscape=land1);
         image(indis, col=land_cols, xaxt="n", yaxt="n");
-        par(mar=c(4,4,1,4));
+        # ------------- Panel 2 (upper right)
+        col_num <- max(land3);
+        image(land3, col=topo.colors(col_num), xaxt="n", yaxt="n");
+        # ------------- Panel 3 (lower left)
+        par(mar=c(4,5,1,4));
         plot(x=gens, y=abun, pch=20, type="l", lwd=2, ylim=c(0, ymaxi),
-             xlim=c(0,time_max), xlab="Time Step", ylab="Abundance");
+             xlim=c(0,time_max), xlab="Time Step", ylab="Abundance",
+             cex.lab=1.25);
         if(!is.null(obs_t) & case == 1){
             analysis <- chapman_est(observation=obs_t, marks=mrk, 
                                     recaptures=rcp);
@@ -468,6 +483,18 @@ case01plot <- function(res, obs, land1, land2, paras, view = NULL){
              ylab = "");
         axis(side=4, at=c(0, 25, 50, 75, 100));
         mtext("Mean % Yield", side = 4, line = 2.4);
+        # ------------ Panel 4 (lower right);
+        par(mar=c(4,6,1,1));
+        cell_number <- dim(land3)[1] * dim(land3)[2]
+        max_yield   <- floor( cell_number / (dim(age_t)[1]) )
+        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, max_yield),
+             xlim=c(0,time_max), xlab="Time Step", ylab="Stake-holder yield",
+             cex.lab=1.25);
+        stake_colors <- topo.colors( dim(age_t)[1] );
+        for(stakeholder in 1:dim(ages)[2]){
+            points(x=gens, y=ages[,stakeholder], type="l", lwd=2, 
+                   col = stake_colors[stakeholder]);
+        }
         Sys.sleep(0.1);
     }
 }
@@ -519,14 +546,14 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, agent_view){
 
 ################################################################################
 
-sim <- gmse( observe_type  = 0,
+sim <- gmse( observe_type  = 1,
              agent_view    = 20,
              res_death_K   = 400,
              plotting      = TRUE,
              hunt          = FALSE,
              start_hunting = 95,
-             fixed_observe = 1,
-             times_observe = 1,
+             fixed_observe = 10,
+             times_observe = 20,
              land_dim_1    = 100,
              land_dim_2    = 100,
              res_consume   = 0.5
