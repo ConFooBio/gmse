@@ -22,6 +22,7 @@ Euclidean_dist = FALSE; # Use Euclidean distance in view
 plotting       = TRUE;  # Plot the results
 hunt           = FALSE; # Does the user hunt resources?
 start_hunting  = 0;     # What generation hunting starts
+res_consume    = 0;
 
 sim <- gmse( observe_type  = 0,
              agent_view    = 20,

@@ -13,8 +13,9 @@
 #'@param cell_val_min The minimum value of a cell
 #'@return the_land A cols by rows landscape with randomly distributed cell types
 #'@export
-make_landscape <- function(model, rows, cols, cell_types, layers, cell_val_mn,
-                           cell_val_sd, cell_val_max = 1, cell_val_min = 0){
+make_landscape <- function(model, rows, cols, cell_types, cell_val_mn, 
+                           cell_val_sd, cell_val_max = 1, cell_val_min = 0,
+                           layers = 3, ownership = 0, owner_pr = NULL){
     the_land  <- NULL;
     if(model == "IBM"){
         if(rows < 2){
@@ -28,9 +29,18 @@ make_landscape <- function(model, rows, cols, cell_types, layers, cell_val_mn,
                                  replace = TRUE);
         the_terrain2   <- rnorm(n = cell_count, mean = cell_val_mn,
                                 sd = cell_val_sd);
+        if( length(ownership) == 1 ){
+            who_owns     <- sample(x = 0:ownership, size = cell_count, 
+                                   replace = TRUE);
+            the_terrain3 <- sort(who_owns); # Make contiguous for now
+        }else{
+            who_owns     <- sample(x = ownership, size = cell_count, 
+                                   replace = TRUE, prob = owner_pr);
+            the_terrain3 <- sort(who_owns); 
+        }
         the_terrain2[the_terrain2 > cell_val_max] <- cell_val_max;
         the_terrain2[the_terrain2 < cell_val_min] <- cell_val_min;
-        alldata        <- c(the_terrain, the_terrain2);
+        alldata        <- c(the_terrain, the_terrain2, the_terrain3);
         the_land       <- array(data = alldata, dim = c(rows, cols, layers));
     }
     if( is.null(the_land) ){

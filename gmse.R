@@ -70,9 +70,10 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                     rows        = land_dim_1, 
                                     cols        = land_dim_2, 
                                     cell_types  = 2,
-                                    layers      = 2,
                                     cell_val_mn = 1,
-                                    cell_val_sd = 0
+                                    cell_val_sd = 0,
+                                    ownership   = 0:2,
+                                    owner_pr    = c(0.5, 0, 0.5)
     );
     # Set the starting conditions for one resource
     starting_resources <- make_resource( model              = pop_model, 
