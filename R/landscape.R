@@ -30,7 +30,7 @@ make_landscape <- function(model, rows, cols, cell_types, cell_val_mn,
         the_terrain2   <- rnorm(n = cell_count, mean = cell_val_mn,
                                 sd = cell_val_sd);
         if( length(ownership) == 1 ){
-            who_owns     <- sample(x = 0:ownership, size = cell_count, 
+            who_owns     <- sample(x = 1:ownership, size = cell_count, 
                                    replace = TRUE);
             the_terrain3 <- sort(who_owns); # Make contiguous for now
         }else{
