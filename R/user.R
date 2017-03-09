@@ -36,6 +36,12 @@ user <- function(resource   = NULL,
         # TEMPORARY R CODE TO DO USER ACTIONS (WILL BE RUN FROM C EVENTUALLY)
         #======================================================================
         
+        checkme <- run_user( RESOURCE_c    = resource,
+                             LANDSCAPE_c   = landscape,
+                             PARAMETERS_c  = paras,
+                             AGENT_c       = agent
+        );
+        
         for(agent_ID in 1:dim(agent)[1]){
             owned_cells <- sum(landscape[,,3] == agent_ID);
             # --- Put the agent on its own land
@@ -74,8 +80,7 @@ user <- function(resource   = NULL,
     return(USER_OUT);
 }
 
-# Below is to be included later
-
-#run_user <- function(RESOURCE_c, AGENT_c, LANDSCAPE_c, PARAMETERS_c){
-#    .Call("resource", RESOURCE_c, LANDSCAPE_c, PARAMETERS_c);
-#}
+# Below calls the user function from c
+run_user <- function(RESOURCE_c, LANDSCAPE_c, PARAMETERS_c, AGENT_c){
+    .Call("user", RESOURCE_c, LANDSCAPE_c, PARAMETERS_c, AGENT_c);
+}

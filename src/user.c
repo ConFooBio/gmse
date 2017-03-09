@@ -16,7 +16,7 @@
  *      PARAMETERS: Parameters read into the function for population processes
  *      AGENT:      An array of *row agents and *col traits for each agent
  * ===========================================================================*/
-SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
+SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
  
     /* SOME STANDARD DECLARATIONS OF KEY VARIABLES AND POINTERS               */
     /* ====================================================================== */
@@ -29,30 +29,10 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int agent_trait;         /* Index for agent traits (cols of agent_array) */
     int res_number;          /* Number of resources included (default = 1) */
     int trait_number;        /* Number of traits included in the resource */
-    int obs_columns;         /* Columns for the observation array */
     int agent_number;        /* Number of agents that can potentially observe */
     int agent_traits;        /* Number of traits that each agent has */
-    int para_number;         /* Number of parameters included */
     int protected_n;         /* Number of protected R objects */
     int vec_pos;             /* Vector position for making arrays */
-    int new_obs;             /* New observations made */
-    int add_obs;             /* Index for adding observations */
-    int method;              /* Type of method used to estimate pop size */
-    int times_obs;           /* Number of times observation is conducted */
-    int obs_iter;            /* To count up -- which observation iteration */
-    int res_type;            /* Types of resources that are being observed */
-    int a_type;              /* Type of agent doing observing (manager = 0) */
-    int by_type;             /* Type category for observing (default = 1)*/
-    int time_para;           /* Time in the simulation the function called */
-    int edge_type;           /* The type of edge on the landscape */
-    int move_type;           /* How resources move on the landscape */
-    int move_res;            /* Should the resources move between obs */
-    int fixed_sample;        /* The fixed number of resources sampled */
-    int tx0, tx1, ty0, ty1;  /* Variables that define a transect sampled */
-    int working_agents;      /* How many agents are helping out? */
-    int transect_len;        /* The length of a transect sampled */
-    int transect_eff;        /* Transect efficiency: How many observers help */
-    int *add_resource;       /* Vector of added resources */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
@@ -66,7 +46,6 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     double **resource_array; /* Array to store the old RESOURCE in C */
     double ***land;          /* Array to store the landscape in C*/
     double **agent_array;    /* Array to store the agents in C */
-    double **obs_array;      /* Array to store the observations made in C */
 
     /* First take care of all the reading in of code from R to C */
     /* ====================================================================== */
@@ -166,7 +145,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     vec_pos = 0;
     for(res_trait = 0; res_trait < trait_number; res_trait++){
         for(resource = 0; resource < res_number; resource++){
-            data_ptr[vec_pos] = obs_array[resource][res_trait];
+            data_ptr[vec_pos] = resource_array[resource][res_trait];
             vec_pos++;
         }
     }   
