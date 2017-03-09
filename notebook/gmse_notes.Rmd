@@ -78,6 +78,39 @@ library(rhandsontable)
 
 The plotting of $2 \times 2$ figures that include maps of land ownership and individual stake-holder yields is now complete for observation types 2 and 3. With this complete, I will now turn to writing [yesterday's](#u-8-MAR-2017) R function in C (which needs to happen anyway -- may as well do it now to keep things fast). Once this is complete, then it will be easier to start building a genetic algorithm for maximising the utility of one stake-holder. Ignoring manager decision-making and conflicting stake-holders for the time being, I will focus on a stake-holder type with a relatively clear goal: maximise crop yield. Using the [utility matrices and genetic algorithm](#u-7-FEB-2017) notes from earlier, I'll be able to write a general function in c that affects user behaviour.
 
+**User function now written in C**
+
+The user function that was written [originally in R](#R-yield-to-agents) has now been coded in c. This makes it much faster to first place agents on their own land (if they own land), then count up their yield from the landscape. Testing of this function finds that everything appears to work normally for all observation types and different land dimensions.
+
+I have run valgrind to check for memory leaks again (since it's been a while).
+
+```
+ R -d "valgrind --tool=memcheck --leak-check=yes --track-origins=yes" --vanilla < gmse.R
+```
+
+No memory leaks were reported.
+
+```
+==26147== HEAP SUMMARY:
+==26147==     in use at exit: 104,719,416 bytes in 18,583 blocks
+==26147==   total heap usage: 5,168,708 allocs, 5,150,125 frees, 953,760,506 bytes allocated
+==26147== 
+==26147== LEAK SUMMARY:
+==26147==    definitely lost: 0 bytes in 0 blocks
+==26147==    indirectly lost: 0 bytes in 0 blocks
+==26147==      possibly lost: 0 bytes in 0 blocks
+==26147==    still reachable: 104,719,416 bytes in 18,583 blocks
+==26147==         suppressed: 0 bytes in 0 blocks
+==26147== Reachable blocks (those to which a pointer was found) are not shown.
+==26147== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==26147== 
+==26147== For counts of detected and suppressed errors, rerun with: -v
+==26147== ERROR SUMMARY: 196884 errors from 2 contexts (suppressed: 0 from 0)
+```
+
+Next, I can start to make the users actually do things that might maximise their own yield (e.g., shoot resources or farm cells more effectively). I play to write a flexible genetic algorithm function in c. The function itself could be called from a higher-level function so as to be used directly in R (though I don't plan to do this for normal G-MSE operations, but it might be useful to include direct R call optoins once the package is complete).
+
+
 > <a name="u-8-MAR-2017">Update: 8 MAR 2017</a>
 
 **New landscape layer identifying land ownership**
@@ -130,7 +163,7 @@ make_landscape <- function(model, rows, cols, cell_types, cell_val_mn,
 
 Hence in the above, if `ownership = 0`, then the layer is effectively ignored, or if it is a scalar, then ownership of landscape cells is divided equally among integer values from zero to the scalar. However, the most thorough way to set ownership will be by setting `ownership` to a vector of possible owners and `owner_pr` to their relative proportions of cells owned. Addition of this landscape layer has been tested and runs without error.
 
-**Linking cell yield with agents**
+<a name="R-yield-to-agents">**Linking cell yield with agents**</a>
 
 I have now begun a `user` R function, which currently (1) moves agents to somehwere on their owned landscape (if not already there) and (2) calculates the amount of their total yield from the landscape and stores this total amount in the `AGENTS` array.
 
