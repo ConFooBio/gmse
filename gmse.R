@@ -183,13 +183,13 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                        type_cat   = 1
         );
         
-        #USERS <- user(resource  = RESOURCES,
-        #              agent     = AGENTS,
-        #              landscape = LANDSCAPE_r, 
-        #              paras     = paras,
-        #              model     = "IBM"
-        #);
-        #AGENTS <- USERS[[3]];
+        USERS <- user(resource  = RESOURCES,
+                      agent     = AGENTS,
+                      landscape = LANDSCAPE_r, 
+                      paras     = paras,
+                      model     = "IBM"
+        );
+        AGENTS <- USERS[[3]];
 
         OBSERVATION_REC[[time]]  <- OBSERVATION_NEW[[1]];
         AGENT_REC[[time]]        <- AGENTS;
@@ -394,7 +394,7 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras){
         abun  <- c(abun, dim(res_t)[1]);
         lnds  <- c(lnds, mean(lnd_t));
         ages  <- rbind(ages, age_t[,16]);
-        par(mfrow=c(4,1),mar=c(0,0,0,0));
+        par(mfrow=c(2,2),mar=c(0,0,0,0));
         # ------------- Panel 1 (upper left)
         indis  <- ind_to_land(inds=res_t, landscape=land1);
         image(indis, col=land_cols, xaxt="n", yaxt="n");
@@ -404,7 +404,8 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras){
         # ------------- Panel 3 (lower left)
         par(mar=c(4,4,1,4));
         plot(x=gens, y=abun, pch=20, type="l", lwd=2, ylim=c(0, ymaxi),
-             xlim=c(0,time_max), xlab="Time Step", ylab="Abundance");
+             xlim=c(0,time_max), xlab="Time Step", ylab="Abundance",
+             cex.lab=1.25);
         new_est   <- sum(obs_t[,13]);
         est       <- c(est, new_est);
         points(x=gens, y=est, pch=20, type="l", lwd=2, col="cyan4");
@@ -417,6 +418,17 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras){
         axis(side=4, at=c(0, 25, 50, 75, 100));
         mtext("Mean % Yield", side = 4, line = 2.4);
         # ------------ Panel 4 (lower right);
+        par(mar=c(4,6,1,1));
+        cell_number <- dim(land3)[1] * dim(land3)[2]
+        max_yield   <- floor( cell_number / (dim(age_t)[1]) )
+        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, max_yield),
+             xlim=c(0,time_max), xlab="Time Step", ylab="Stake-holder yield",
+             cex.lab=1.25);
+        stake_colors <- topo.colors( dim(age_t)[1] );
+        for(stakeholder in 1:dim(ages)[2]){
+            points(x=gens, y=ages[,stakeholder], type="l", lwd=2, 
+                   col = stake_colors[stakeholder]);
+        }
         Sys.sleep(0.1);
     }
 }
@@ -559,14 +571,14 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, agent_view){
 
 ################################################################################
 
-sim <- gmse( observe_type  = 1,
+sim <- gmse( observe_type  = 2,
              agent_view    = 20,
              res_death_K   = 400,
              plotting      = TRUE,
              hunt          = FALSE,
              start_hunting = 95,
-             fixed_observe = 10,
-             times_observe = 20,
+             fixed_observe = 1,
+             times_observe = 1,
              land_dim_1    = 100,
              land_dim_2    = 100,
              res_consume   = 0.5
