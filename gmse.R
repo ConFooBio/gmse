@@ -73,8 +73,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                     cell_types  = 2,
                                     cell_val_mn = 1,
                                     cell_val_sd = 0,
-                                    ownership   = 1:5,
-                                    owner_pr    = rep(0.2, 5)
+                                    ownership   = 1:2,
+                                    owner_pr    = c(0.5, 0.5)
     );
     # Set the starting conditions for one resource
     starting_resources <- make_resource( model              = pop_model, 
@@ -89,8 +89,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     );
     # This will obviously need to be changed -- new function in initialise.R
     AGENTS   <- make_agents( model        = pop_model,
-                             agent_number = 5,
-                             type_counts  = c(1,1,1,1,1),
+                             agent_number = 2,
+                             type_counts  = c(1,1),
                              vision       = agent_view,
                              rows         = land_dim_1,
                              cols         = land_dim_2,
@@ -388,8 +388,11 @@ case23plot <- function(res, obs, land1, land2, paras){
         abun  <- c(abun, dim(res_t)[1]);
         lnds  <- c(lnds, mean(lnd_t));
         par(mfrow=c(2,1),mar=c(0,0,0,0));
+        # ------------- Panel 1 (upper left)
         indis  <- ind_to_land(inds=res_t, landscape=land1);
         image(indis, col=land_cols, xaxt="n", yaxt="n");
+        # ------------- Panel 2 (upper right)
+        # ------------- Panel 3 (lower left)
         par(mar=c(4,4,1,4));
         plot(x=gens, y=abun, pch=20, type="l", lwd=2, ylim=c(0, ymaxi),
              xlim=c(0,time_max), xlab="Time Step", ylab="Abundance");
@@ -404,6 +407,7 @@ case23plot <- function(res, obs, land1, land2, paras){
              ylab = "");
         axis(side=4, at=c(0, 25, 50, 75, 100));
         mtext("Mean % Yield", side = 4, line = 2.4);
+        # ------------ Panel 4 (lower right);
         Sys.sleep(0.1);
     }
 }
