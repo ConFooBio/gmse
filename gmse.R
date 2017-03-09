@@ -263,18 +263,22 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                        paras  = paras);
         }
         if(obt == 2){
-            case23plot(res   = RESOURCE_REC, 
-                       obs   = OBSERVATION_REC, 
-                       land1 = LANDSCAPE_r[,,1], 
-                       land2 = LANDSCAPE_REC,
-                       paras = paras);
+            case23plot(res    = RESOURCE_REC, 
+                       obs    = OBSERVATION_REC, 
+                       land1  = LANDSCAPE_r[,,1], 
+                       land2  = LANDSCAPE_REC,
+                       land3  = LANDSCAPE_r[,,3],
+                       agents = AGENT_REC,                       
+                       paras  = paras);
         }
         if(obt == 3){
-            case23plot(res   = RESOURCE_REC, 
-                       obs   = OBSERVATION_REC, 
-                       land1 = LANDSCAPE_r[,,1], 
-                       land2 = LANDSCAPE_REC,
-                       paras = paras);
+            case23plot(res    = RESOURCE_REC, 
+                       obs    = OBSERVATION_REC, 
+                       land1  = LANDSCAPE_r[,,1], 
+                       land2  = LANDSCAPE_REC,
+                       land3  = LANDSCAPE_r[,,3],
+                       agents = AGENT_REC,                       
+                       paras  = paras);
         }
     }
 
@@ -364,13 +368,14 @@ dens_est <- function(observation = obs_t, view = view, land = land){
 ###########################################################
 ## Plot this way when looking at transect type sampling
 ###########################################################
-case23plot <- function(res, obs, land1, land2, paras){
+case23plot <- function(res, obs, land1, land2, land3, agents, paras){
     gens <- NULL;
     abun <- NULL;
     est  <- NULL;
     lci  <- NULL;
     uci  <- NULL; 
     lnds <- NULL;
+    ages <- NULL;
     land_cols <- c("#F2F2F2FF", "#ECB176FF", "#000000"); 
 
     minK <- min(paras[6:7]);
@@ -381,17 +386,21 @@ case23plot <- function(res, obs, land1, land2, paras){
         res_t    <- res[[i]];
         obs_t    <- obs[[i]];
         lnd_t    <- land2[[i]] * 100;
+        age_t    <- agents[[i]];
         if(i > 1){
             res_t <- res_t[res_t[,12] >= paras[17],];
         }
         gens  <- c(gens, i);
         abun  <- c(abun, dim(res_t)[1]);
         lnds  <- c(lnds, mean(lnd_t));
-        par(mfrow=c(2,1),mar=c(0,0,0,0));
+        ages  <- rbind(ages, age_t[,16]);
+        par(mfrow=c(4,1),mar=c(0,0,0,0));
         # ------------- Panel 1 (upper left)
         indis  <- ind_to_land(inds=res_t, landscape=land1);
         image(indis, col=land_cols, xaxt="n", yaxt="n");
         # ------------- Panel 2 (upper right)
+        col_num <- max(land3);
+        image(land3, col=topo.colors(col_num), xaxt="n", yaxt="n");    
         # ------------- Panel 3 (lower left)
         par(mar=c(4,4,1,4));
         plot(x=gens, y=abun, pch=20, type="l", lwd=2, ylim=c(0, ymaxi),
@@ -550,7 +559,7 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, agent_view){
 
 ################################################################################
 
-sim <- gmse( observe_type  = 1,
+sim <- gmse( observe_type  = 2,
              agent_view    = 20,
              res_death_K   = 400,
              plotting      = TRUE,
