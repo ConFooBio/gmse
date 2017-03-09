@@ -103,9 +103,9 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
         }
     } 
     vec_pos = 0;
-    for(xloc = 0; xloc < land_x; xloc++){
+    for(zloc = 0; zloc < land_z; zloc++){
         for(yloc = 0; yloc < land_y; yloc++){
-            for(zloc = 0; zloc < land_z; zloc++){
+            for(xloc = 0; xloc < land_x; xloc++){
                 land[xloc][yloc][zloc] = land_ptr[vec_pos];
                 vec_pos++;
             }
