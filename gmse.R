@@ -189,7 +189,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                       paras     = paras,
                       model     = "IBM"
         );
-        AGENTS <- USERS[[3]];
+        AGENTS <- USERS[[2]];
 
         OBSERVATION_REC[[time]]  <- OBSERVATION_NEW[[1]];
         AGENT_REC[[time]]        <- AGENTS;
@@ -571,7 +571,7 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, agent_view){
 
 ################################################################################
 
-sim <- gmse( observe_type  = 2,
+sim <- gmse( observe_type  = 0,
              agent_view    = 20,
              res_death_K   = 400,
              plotting      = TRUE,

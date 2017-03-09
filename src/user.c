@@ -1,6 +1,110 @@
 #include "utilities.h"
 
 /* =============================================================================
+ * This function checks a landscape layer to see if there is a particular number
+ * on that layer
+ * Inputs include:
+ *     LANDSCAPE: The landscape array
+ *     layer: The layer own which ownership is defined (should be 2)
+ *     number: The number the function is looking for on the landscape (agentID)
+ *     xdim: The length of the x dimension of the landscape
+ *     ydim: The length of the y dimension of the landscape 
+ * ========================================================================== */
+int is_number_on_landscape(double ***landscape, int layer, int number, int xdim,
+                           int ydim){
+    int xval, yval;
+
+    for(xval = 0; xval < xdim; xval++){
+        for(yval = 0; yval < ydim; yval++){
+            if(landscape[xval][yval][layer] == number){
+                return 1;   
+            }
+        }
+    }
+    
+    return 0;
+}
+
+/* =============================================================================
+ * This function puts an agent somewhere (a random cell) on its own landscape,
+ * but  only if the agent does in fact own some land
+ * Inputs include:
+ *     AGENTS: The array of agents
+ *     LANDSCAPE: The landscape array
+ *     xdim: The length of the x dimension of the landscape
+ *     ydim: The length of the y dimension of the landscape
+ *     agent_number: The total number of agents in the agent array
+ *     layer: The layer on which ownership is defined (should be 2)
+ * ========================================================================== */
+void send_agents_home(double **agent_array, double ***landscape, int xdim,
+                      int ydim, int agent_number, int layer){
+    int agent;
+    int owned;
+    int agent_xloc;
+    int agent_yloc;
+    int agent_ID;
+    int landowner;
+    
+    for(agent = 0; agent < agent_number; agent++){
+        agent_ID  = agent_array[agent][0];
+        owned     = is_number_on_landscape(landscape, 3, agent_ID, xdim, ydim);
+        if(owned > 0){
+            agent_xloc = agent_array[agent][4];
+            agent_yloc = agent_array[agent][5];
+            landowner  = landscape[agent_xloc][agent_yloc][layer];
+            while(agent_ID != landowner){
+                do{
+                    agent_xloc = floor( runif(0, 1) * xdim ); 
+                }while(agent_xloc == xdim);
+                do{
+                    agent_yloc = floor( runif(0, 1) * ydim ); 
+                }while(agent_yloc == ydim);
+                landowner = landscape[agent_xloc][agent_yloc][layer];
+            }
+            agent_array[agent][4] = agent_xloc;
+            agent_array[agent][5] = agent_yloc;
+        }
+    }
+}
+
+
+/* =============================================================================
+ * This function puts an agent somewhere (a random cell) on its own landscape,
+ * but  only if the agent does in fact own some land
+ * Inputs include:
+ *     AGENTS: The array of agents
+ *     LANDSCAPE: The landscape array
+ *     xdim: The length of the x dimension of the landscape
+ *     ydim: The length of the y dimension of the landscape
+ *     agent_number: The total number of agents in the agent array
+ *     yield_layer: The layer on which cell yield is defined (should be 1)
+ *     own_layer: The layer on which cell ownership is defined (should be 2)
+ *     yield_column: The colum of agent_array used for putting the yield
+ * ========================================================================== */
+void count_cell_yield(double **agent_array, double ***landscape, int xdim,
+                      int ydim, int agent_number, int yield_layer,
+                      int own_layer, int yield_column){
+
+    int xpos, ypos;
+    int agent;
+    int agent_ID;
+    double agent_yield;
+
+    for(agent = 0; agent < agent_number; agent++){
+        agent_ID    = agent_array[agent][0];
+        agent_yield = 0.0; 
+        for(xpos = 0; xpos < xdim; xpos++){
+            for(ypos = 0; ypos < ydim; ypos++){
+                if(landscape[xpos][ypos][own_layer] == agent_ID){
+                    agent_yield += landscape[xpos][ypos][yield_layer];    
+                }
+            }
+        }
+        agent_array[agent][yield_column] = agent_yield; 
+    }
+}
+
+/* =============================================================================
  * MAIN OBSERVATION FUNCTION:
  * ===========================================================================*/
 
@@ -131,8 +235,10 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     /* Do the biology here now */
     /* ====================================================================== */
 
-    printf("Do I work? \n");
-    
+    send_agents_home(agent_array, land, land_x, land_y, agent_number, 2);
+        
+    count_cell_yield(agent_array, land, land_x, land_y, agent_number, 1, 2, 15);
+
     /* This code switches from C back to R */
     /* ====================================================================== */        
     
