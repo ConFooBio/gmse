@@ -183,13 +183,13 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                        type_cat   = 1
         );
         
-        USERS <- user(resource  = RESOURCES,
-                      agent     = AGENTS,
-                      landscape = LANDSCAPE_r, 
-                      paras     = paras,
-                      model     = "IBM"
-        );
-        AGENTS <- USERS[[3]];
+        #USERS <- user(resource  = RESOURCES,
+        #              agent     = AGENTS,
+        #              landscape = LANDSCAPE_r, 
+        #              paras     = paras,
+        #              model     = "IBM"
+        #);
+        #AGENTS <- USERS[[3]];
 
         OBSERVATION_REC[[time]]  <- OBSERVATION_NEW[[1]];
         AGENT_REC[[time]]        <- AGENTS;
