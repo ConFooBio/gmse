@@ -114,3 +114,23 @@ make_agents <- function(model        = "IBM",
     }
     return( the_agents );
 }
+
+#' Utility initialisation
+#'
+#' Function to initialise the utilities of the G-MSE model
+#'
+#'@param AGENTS The agent array 
+#'@param RESOURCES The resource array
+#'@export
+make_utilities <- function(AGENTS, RESOURCES){
+    UTILITY <- NULL;
+    
+    
+    
+    return( UTILITY );
+}
+
+
+
+
+
