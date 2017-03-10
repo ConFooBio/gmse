@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **MAR** [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
+     - **MAR** [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
  
@@ -73,6 +73,28 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-10-MAR-2017">Update: 10 MAR 2017</a>
+
+**Regrouping and finding a way forward on the utility functions**
+
+Reviewing my [old thoughts](#u-7-FEB-2017) on getting the genetic algorithm to work and get agents to do something to maximise thier own utilities. The first thing to do is to initialise a `UTILITY` array. I don't see anyway around this -- what is needed is a three dimensional array where each dimension `z` is an agent. A single agent's utility and decision-making process is therefore represented in a matrix like the one below. 
+
+| agent | type1 | type2 | type3 | util | u_loc | u_land | movem  | castem | killem | feedem | helpem |
+|-------|-------|-------|-------|------|-------|--------|--------|--------|--------|--------|--------|
+| -2    |  1    |  0    | 0     | 2    | 1     | 0      | 0      |  0     |  0     |  0     |  0     |
+| -2    |  2    |  0    | 0     | 0    | 1     | 0      | 0      |  0     |  0     |  0     |  0     |
+| -1    |  1    |  0    | 0     | 2    | 1     | 0      | 1      |  1     |  2     |  3     |  3     |
+| -1    |  2    |  0    | 0     | 0    | 1     | 0      | 5      |  20    |  12    |  5     |  10    |
+|  0    |  1    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+|  0    |  2    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+|  1    |  1    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+|  1    |  2    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+|  2    |  1    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+|  2    |  2    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+
+Each agent will need to have a total cost budget, which will be specified in the `AGENT` array in its own column. In the `UTILITY ARRAY` above, the rows where `agent = -2` (column 1) identify the *actions* of an agent -- these are the things that an agent *can do to resources*. In the above example, the agent is not doing anything to resources (all are zeros). The rows where `agent = -1` indicate the *costs of doing things that affect the resources* (i.e., the columns where `agent = -2`. The agent represented by this `z` layer of the 3D array can therefore spend from their total budget where `agent = -1` to add actions where `agent = -2`, which in turn affects resources in one way or another. All of the remaining rows (`agent = 0` to `agent = 2`) define actions that would affect the *costs of other agents*. Esseentially, values (all currently `Inf`) represent the cost of changing another agent's cost by 1. So if we imagine a manager that wants to change the cost of `movem` for a stake-holder from 5 to 10, and their cost value in the table is 0.5, then it will cost 2.5 from their budget to increase this amount (or decrease). Note that there is also the opportunity for stake-holders to directly affect the utilities of other stake-holders -- *for a cost*. **I'm not going to play around with these options yet because it will get very complicated**. Instead, I will now write a function for inialising this array in R. Once the simple case of a genetic algorith for affecting resources based on utilities and budgets is up and running, then I will start doing more complex things like having stake-holders affect one another's utilities and costs.
+
 
 > <a name="u-9-MAR-2017">Update: 9 MAR 2017</a>
 
