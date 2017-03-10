@@ -86,14 +86,55 @@ Reviewing my [old thoughts](#u-7-FEB-2017) on getting the genetic algorithm to w
 | -2    |  2    |  0    | 0     | 0    | 1     | 0      | 0      |  0     |  0     |  0     |  0     |
 | -1    |  1    |  0    | 0     | 2    | 1     | 0      | 1      |  1     |  2     |  3     |  3     |
 | -1    |  2    |  0    | 0     | 0    | 1     | 0      | 5      |  20    |  12    |  5     |  10    |
-|  0    |  1    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
-|  0    |  2    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
 |  1    |  1    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
 |  1    |  2    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
 |  2    |  1    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
 |  2    |  2    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+|  3    |  1    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+|  3    |  2    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
 
 Each agent will need to have a total cost budget, which will be specified in the `AGENT` array in its own column. In the `UTILITY ARRAY` above, the rows where `agent = -2` (column 1) identify the *actions* of an agent -- these are the things that an agent *can do to resources*. In the above example, the agent is not doing anything to resources (all are zeros). The rows where `agent = -1` indicate the *costs of doing things that affect the resources* (i.e., the columns where `agent = -2`. The agent represented by this `z` layer of the 3D array can therefore spend from their total budget where `agent = -1` to add actions where `agent = -2`, which in turn affects resources in one way or another. All of the remaining rows (`agent = 0` to `agent = 2`) define actions that would affect the *costs of other agents*. Esseentially, values (all currently `Inf`) represent the cost of changing another agent's cost by 1. So if we imagine a manager that wants to change the cost of `movem` for a stake-holder from 5 to 10, and their cost value in the table is 0.5, then it will cost 2.5 from their budget to increase this amount (or decrease). Note that there is also the opportunity for stake-holders to directly affect the utilities of other stake-holders -- *for a cost*. **I'm not going to play around with these options yet because it will get very complicated**. Instead, I will now write a function for inialising this array in R. Once the simple case of a genetic algorith for affecting resources based on utilities and budgets is up and running, then I will start doing more complex things like having stake-holders affect one another's utilities and costs.
+
+**Note that column 1 refers to the agent ID, not the agent type. Hence, `agent = 1` will be a manager, not a stake-holder. It's possible that there could be other managers too, but the status of an agent can be accessed with the AGENT array.**
+
+**Initial function making utility array**
+
+A function below returns all of the necessary information for the table above, but with random numbers placed for all columns after `type3`. 
+
+```{r}
+make_utilities <- function(AGENTS, RESOURCES){
+    UTILITY <- NULL;
+    
+    agent_IDs     <- c(-2, -1, unique(AGENTS[,1]) );
+    agent_number  <- length(agent_IDs);
+    res_types     <- unique(RESOURCES[,2:4]);
+    unique_types  <- dim(res_types)[1];
+    types_data    <- lapply(X   = 1:agent_number, 
+                           FUN = function(quick_rep_list) res_types);
+    
+    column_1      <- sort( rep(x = agent_IDs, times = unique_types) );
+    columns_2_4   <- do.call(what = rbind, args = types_data);
+    static_types  <- cbind(column_1, columns_2_4);
+
+    dynamic_types <- matrix(data = 0, nrow = dim(static_types)[1], ncol = 8);
+    
+    dynamic_vals  <- sample(x = 1:10, size = length(dynamic_types), 
+                            replace = TRUE);    
+    
+    dynamic_types <- matrix(data = dynamic_vals, nrow = dim(static_types)[1], 
+                            ncol = 8);
+    
+    colnames(static_types)  <- c("agent", "type1", "type2", "type3");
+    colnames(dynamic_types) <- c("util", "u_loc", "u_land", "movem", "castem",
+                                 "killem", "feedem", "helpem");
+    
+    UTILITY <- cbind(static_types, dynamic_types);
+    
+    return( UTILITY );
+}
+```
+
+I'm not sure the best way to add the currently random numbers in a function, except that it these values might need to be put into the array by the user, who will want to specify which agents care about which resources and how much it will cost to change things. Better, the user could just perhaps, eventually, just specify *the utilities of each stake-holder with each type* (this is less to input). Then, once the genetic algorithm for the manager is up and running, all of the costs will be *initialised by the manager*, somehow -- with default costs *for the manager* to affect stake-holder costs. This scheme would minimise user input and have the costs arise organically from the model and management system, while the utilities would be specified by the user. For now though, I'll have to input the cost values by hand.
 
 
 > <a name="u-9-MAR-2017">Update: 9 MAR 2017</a>
