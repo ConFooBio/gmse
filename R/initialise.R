@@ -123,23 +123,51 @@ make_agents <- function(model        = "IBM",
 #'@param RESOURCES The resource array
 #'@export
 make_utilities <- function(AGENTS, RESOURCES){
-    UTILITY <- NULL;
-    
+
     agent_IDs     <- c(-2, -1, unique(AGENTS[,1]) );
     agent_number  <- length(agent_IDs);
     res_types     <- unique(RESOURCES[,2:4]);
+    
+    UTIL_LIST <- NULL;
+    
+    agent  <- 1;
+    agents <- agent_number - 2;
+    while(agent <= agents){
+        UTIL_LIST[[agent]] <- utility_layer(agent_IDs, agent_number, res_types);
+        agent            <- agent + 1;
+    }
+    
+    dim_u <- c( dim(UTIL_LIST[[1]]), length(UTIL_LIST) );
+    
+    UTILITY <- array(data = unlist(UTIL_LIST), dim = dim_u);
+    
+    return( UTILITY );
+}
+
+#' Utility layer for initialisation
+#'
+#' Function to initialise a layer of the UTILITY array of the G-MSE model
+#'
+#'@param agent_IDs Vector of agent IDs to use (including -1 and -2)
+#'@param agent_number The number of agents to use (length of agent_IDs)
+#'@param res_types The number of unique resource types (cols 2-4 of RESOURCES)
+#'@export
+utility_layer <- function(agent_IDs, agent_number, res_types){
+ 
+    LAYER <- NULL;
+    
     unique_types  <- dim(res_types)[1];
     types_data    <- lapply(X   = 1:agent_number, 
-                           FUN = function(quick_rep_list) res_types);
+                            FUN = function(quick_rep_list) res_types);
     
     column_1      <- sort( rep(x = agent_IDs, times = unique_types) );
     columns_2_4   <- do.call(what = rbind, args = types_data);
     static_types  <- cbind(column_1, columns_2_4);
-
+    
     dynamic_types <- matrix(data = 0, nrow = dim(static_types)[1], ncol = 8);
     
     dynamic_vals  <- sample(x = 1:10, size = length(dynamic_types), 
-                            replace = TRUE);    
+                            replace = TRUE); # TODO: Change me?
     
     dynamic_types <- matrix(data = dynamic_vals, nrow = dim(static_types)[1], 
                             ncol = 8);
@@ -148,12 +176,10 @@ make_utilities <- function(AGENTS, RESOURCES){
     colnames(dynamic_types) <- c("util", "u_loc", "u_land", "movem", "castem",
                                  "killem", "feedem", "helpem");
     
-    UTILITY <- cbind(static_types, dynamic_types);
+    LAYER <- cbind(static_types, dynamic_types);
     
-    return( UTILITY );
+    return( LAYER ); 
 }
-
-
 
 
 

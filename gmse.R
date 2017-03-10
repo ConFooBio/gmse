@@ -97,6 +97,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                              move         = agent_move
     );  
     
+    UTILITY <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
+    
     time       <- time + 1;  # Ready for the initial time step.
     cells      <- land_dim_1 * land_dim_2; # Number of cells in the landscape
     
@@ -145,6 +147,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     AGENT_REC       <- NULL;
     LANDSCAPE_INI   <- LANDSCAPE_r;
     LANDSCAPE_REC   <- NULL;
+    UTILITY_REC     <- NULL;
     
     while(time < time_max){
         RESOURCE_NEW      <- resource(resource   = RESOURCES,
@@ -194,6 +197,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         OBSERVATION_REC[[time]]  <- OBSERVATION_NEW[[1]];
         AGENT_REC[[time]]        <- AGENTS;
         LANDSCAPE_REC[[time]]    <- LANDSCAPE_r[,,2];
+        UTILITY_REC[[time]]      <- UTILITY
         
         LANDSCAPE_r <- age_land(landscape = LANDSCAPE_r, 
                                 landscape_ini = LANDSCAPE_INI, layer = 2);
@@ -239,7 +243,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                         paras       = paras,
                         land        = LANDSCAPE_REC,
                         time_taken  = time_taken,
-                        agents      = AGENTS
+                        agents      = AGENTS,
+                        utility     = UTILITY_REC
                         );
     
     if(plotting == TRUE){
