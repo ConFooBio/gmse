@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **MAR** [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
+     - **MAR** [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
  
@@ -73,6 +73,25 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-13-MAR-2017">Update: 13 MAR 2017</a>
+
+**Begin working on the genetic algorithm**
+
+I have now initialised the file `game.c`, which will hold everything related to the genetic algorithm, including multiple functions for running each individual process. The file will include a high-level function that brings in five arrays.
+
+1. The `UTILITY` array. The whole thing will need to be read in because agents need to have the option to affect one another's arrays (e.g., the potential to affect the cost of each others actions). **I'll need to be careful, eventually, regarding the *order* of agent actions** to make sure that the order in which stake-holders are put through the genetic algorithm doesn't affect resulting agent strategies (or, if this is inevitable, then stake-holder order should be randomised).
+2. The `AGENTS` array will be necessary for agents to look up one anothers (and their own) locations, yield, etc.
+3. The `RESOURES` array will be needed for agents to look up how many resources there are of each type, where they are located, and what consequences of these agents might be expected.
+4. The `para` array of parameter values will be needed for any specifications of the genetic algorithm (e.g., mutation and crossover rate) we might want to implement from R.
+5. The `LANDCAPE` array needs to be read in to identify both the owners of cells and the yield from cells, and anything else that might be of interest.
+
+A couple other challenges that I need to keep in mind (but do not want to implement yet).
+
+- **Eventually the *histories* of all of the above arrays (excepting `parameters`, for now)** will need to be included. Or, at least, the histories back to some arbitrary point in time. The reason for this is that we'll eventually want agents to be able to look back on past decisions and adjust their behaviours to maximise their own utilities. This will get nasty, and I think the best thing to do might be to read in histories as separate arrays (e.g., have a `UTILITY` and a `UTILITY_REC`), or at least immediately separate them after reading them into the `ga` function. Nevertheless, doing so will be a challenge, in the case of `UTILITY` requiring a 4D array that agents will search through. **I will build the framework of the genetic algorithm with this in mind, making it flexible enough to expand into histories**. This needs to be done in C, else it will be extremely slow, and it might take some time even with good coding in C.
+- **I'll want the `ga` function to be able to call from R and C.** This isn't actually difficult, but worth mentioning because I think it will be helpful for users of the G-MSE R package. Really, the `ga` function will be called by default within `user.c` and `manager.c`, being linked to each in compiling -- keeping the genetic algorithm code in its own file seems like a good idea.
+
+I think it will be best to force `ga` to specify a single agent whose fitness will be maximised (as this agent will need to be [replicated 100ish times](#internal-structure-of-the-genetic-algorithm) for the evolution of a single agent to be simulated). If nothing else, this will make the code easier to follow. Hence, the main functions of both `manager.c` and `user.c` will call `ga` (linked with the game header file `#include "game.c"`), reading in all of the five arrays above and specifying for which agent it is running the genetic algorithm. In `manager.c`, for example, only `type1 = 0` agents will be run, while these agents will be exclused in `user.c`.
 
 > <a name="u-10-MAR-2017">Update: 10 MAR 2017</a>
 
@@ -1874,7 +1893,7 @@ Just working with the idea that *displacement* is all the same (maybe leave some
 
 Complicating things *even more*, costs might be different when adding or subtracting values from resources -- e.g., it might be not so costly to greatly decrease the birth rate of an organism, but increasing it by the same amount should be near impossible. **I'm not yet sure the best way to structure the arrays, or anything else, to handle all of these complications, so this will be a major project in the near future** (added to GitHub projects).
 
-**Internal structure of the genetic algorithm**
+> <a name="internal-structure-of-the-genetic-algorithm">Internal structure of the genetic algorithm</a>
 
 Once I resolve the issue of how to structure the data so that the appropriate values on `AGENTS`, `RESOURCES`, and possibly even `LAND` arrays can be tweaked through the genetic algorithm, the internal structure will look something like the below.
 
