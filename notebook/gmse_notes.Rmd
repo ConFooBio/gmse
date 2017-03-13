@@ -93,6 +93,38 @@ A couple other challenges that I need to keep in mind (but do not want to implem
 
 I think it will be best to force `ga` to specify a single agent whose fitness will be maximised (as this agent will need to be [replicated 100ish times](#internal-structure-of-the-genetic-algorithm) for the evolution of a single agent to be simulated). If nothing else, this will make the code easier to follow. Hence, the main functions of both `manager.c` and `user.c` will call `ga` (linked with the game header file `#include "game.c"`), reading in all of the five arrays above and specifying for which agent it is running the genetic algorithm. In `manager.c`, for example, only `type1 = 0` agents will be run, while these agents will be exclused in `user.c`.
 
+**Progess while coding the initialisation of a population**
+
+I think it makes sense to keep these functions generaly and very explicit about what can and cannot be tweaked. For example, given a 2D array, I am using `x0`, `x1`, `y0` and `y1` as indices that determine where to start and stop in terms of changing things. For example, this function that will be called from the `initialise_pop` function specifies all points in *where* to search the `UTILITY` layer for the lowest possible cost (needed for later).
+
+```
+/* =============================================================================
+ * This function will find the minimum cost of an action in the UTILITY array
+ * for a particular agent (layer). Inputs include:
+ *     UTILITY: A full 3D utility array
+ *     layer: The layer on which the minimum is going to be found
+ *     budget: The total budget that the agent has to work with (initliases)
+ * ========================================================================== */
+int min_cost(double ***UTILITY, int layer, double budget, int x0, int x1,
+             int y0, int y1){
+    int i, j;
+    double the_min;
+    
+    the_min = budget;
+    for(i = x0; i < x1; i++){
+        for(j = y0; j < y1; j++){
+            if(UTILITY[i][j][layer] < the_min){
+                the_min = UTILITY[i][j][layer];
+            }
+        }
+    }
+
+    return the_min; 
+}
+```
+
+This requires more input, but I think it's also clearer what is meant to happen. The above function compiles without error.
+
 > <a name="u-10-MAR-2017">Update: 10 MAR 2017</a>
 
 **Regrouping and finding a way forward on the utility functions**
