@@ -7,3 +7,39 @@
  * file will link with the user.c file to run a genetic algorithm for each
  * unique individual agent.
  * ========================================================================== */
+
+/* =============================================================================
+ * This function will find the minimum cost of an action in the UTILITY array
+ * for a particular agent (layer). Inputs include:
+ *     UTILITY: A full 3D utility array
+ *     layer: The layer on which the minimum is going to be found
+ *     budget: The total budget that the agent has to work with (initliases)
+ * ========================================================================== */
+int min_cost(double ***UTILITY, int layer, double budget, int x0, int x1,
+             int y0, int y1){
+    int i, j;
+    double the_min;
+    
+    the_min = budget;
+    for(i = x0; i < x1; i++){
+        for(j = y0; j < y1; j++){
+            if(UTILITY[i][j][layer] < the_min){
+                the_min = UTILITY[i][j][layer];
+            }
+        }
+    }
+
+    return the_min; 
+}
+    
+/* =============================================================================
+ * This function will initialise a population from the UTILITY array , a
+ * particular focal agent, and specification of how many times an agent should
+ * be exactly replicated versus how many times random values shoudl be used.
+ * Necessary variable inputs include:
+ *     UTILITY: A 3D array of utility values
+ *     layer: The 'z' layer of the UTILITY array to be initialised
+ *     pop_size: The size of the total population
+ *     carbon_copies: The number of identical agents used as seeds
+ *     budget: The budget that random agents have to work with
+ * ========================================================================== */
