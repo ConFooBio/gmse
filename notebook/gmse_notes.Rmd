@@ -125,6 +125,64 @@ int min_cost(double ***UTILITY, int layer, double budget, int x0, int x1,
 
 This requires more input, but I think it's also clearer what is meant to happen. The above function compiles without error.
 
+**Change to the UTILITY array**
+
+Having started coding in C, I've decided that it will be much easier to code if I switch what is represented in the first four rows of the a layer of the `UTILITY` array. Now, the first two rows in which `agent = -2` will be the focal agent's *cost*, while rows 3 and 4 will be the focal agents *actions*. This will make it easier to code for the manager's actions later. 
+
+| agent | type1 | type2 | type3 | util | u_loc | u_land | movem  | castem | killem | feedem | helpem |
+|-------|-------|-------|-------|------|-------|--------|--------|--------|--------|--------|--------|
+| -2    |  1    |  0    | 0     | 2    | 1     | 0      | 1      |  1     |  2     |  3     |  3     |
+| -2    |  2    |  0    | 0     | 0    | 1     | 0      | 5      |  20    |  12    |  5     |  10    |
+| -1    |  1    |  0    | 0     | 2    | 1     | 0      | 0      |  0     |  0     |  0     |  0     |
+| -1    |  2    |  0    | 0     | 0    | 1     | 0      | 0      |  0     |  0     |  0     |  0     |
+|  1    |  1    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+|  1    |  2    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+|  2    |  1    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+|  2    |  2    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+|  3    |  1    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+|  3    |  2    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+
+The reason this is easier is because now I can just randomise elements in the genetic algorithm *below* some value of rows. Agents should never be able to change their own costs, but can always change their own actions (`agent = -1`), and potentially the actions of other agents (`agent` > -1). Fortunately, this doesn't require any extra coding of the initialisation of `UTILITY` -- I just need to note that I'm doing it this way from now on.
+
+**Scrap the above idea completely**
+
+It was better the way it was -- I confused myself with the 3 dimensions. The only actions on resources are in the focal agents first two rows. The second two rows will always be the costs of the focal agent for performing the first two rows of actions, and every other row is a cost associated with adjusting the cost of each other agent -- but the actual *change* that is made where these costs are not infinite (i.e., for the managers) will be made in *other layers* of the UTILITY function. 
+
+**Here's how it will work:** Agents can **do** things to resources `movem`, `castem`, `killem`, `feedem`, `helpem` at a cost. What they do is specified by the first two rows of their `UTILITY` layer (`agent = -2`). The cost of doing each of these is specified in the second two rows (`agent = -2`). They can also potentially **change the cost of other agents doing things** to resources; this is determined by other remaining rows. But the tricky bit is that **their actions need to take effect in the *other* layers of `UTILITY`**. Hence, we need to somehow hold the actions as they apply to `UTILITY` without affecting the `UTILITY` array itself throughout the process of the genetic algorithm (if we start changing `UTILITY`, then we need some way to test changes with respect to agent fitness and then put the array back as it was -- actions therefore need to be recorded).
+
+I didn't want to do this, but I think it might actually be necessary to have two arrays instead of one `UTILITY` array. These two arrays would include:
+
+1. A `COST` array, which would be a 3D array (layers are agents) that identifies the cost of each agent changing *something* that affects agent actions.
+
+| agent | type1 | type2 | type3 | util | u_loc | u_land | movem  | castem | killem | feedem | helpem |
+|-------|-------|-------|-------|------|-------|--------|--------|--------|--------|--------|--------|
+| -1    |  1    |  0    | 0     | 2    | 1     | 0      | 1      |  1     |  2     |  3     |  3     |
+| -1    |  2    |  0    | 0     | 0    | 1     | 0      | 5      |  20    |  12    |  5     |  10    |
+|  1    |  1    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+|  1    |  2    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+|  2    |  1    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+|  2    |  2    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+|  3    |  1    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+|  3    |  2    |  0    | 0     |`Inf` | `Inf` | `Inf`  | `Inf`  |  `Inf` | `Inf`  | `Inf`  |  `Inf` |
+
+The `agent = -1` here would just be the direct cost of the focal agent in the layer affecting resources. 
+
+2. An `ACTION` array, which would be a 3D array of dimenions identical to that of `COST` that would determine what an agent actually does.
+
+| agent | type1 | type2 | type3 | util | u_loc | u_land | movem  | castem | killem | feedem | helpem |
+|-------|-------|-------|-------|------|-------|--------|--------|--------|--------|--------|--------|
+| -1    |  1    |  0    | 0     | 2    | 1     | 0      | 0      |  0     |  0     |  0     |  0     |
+| -1    |  2    |  0    | 0     | 0    | 1     | 0      | 0      |  0     |  2     |  0     |  0     |
+|  1    |  1    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |
+|  1    |  2    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |
+|  2    |  1    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |
+|  2    |  2    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |
+|  3    |  1    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |
+|  3    |  2    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |
+
+The benefit here is that the elements would line up completely so that it would be easy to keep track of actions and costs, and the `ACTION` array would be all that needs to be tweaked for the genetic algorithm.
+
+It would be nice to specify a new `struct` in C for all of this, but that wouldn't change the fact that everything needs to read in and out seemlessly with R, so I don't think that this is possible.
 
 > <a name="u-10-MAR-2017">Update: 10 MAR 2017</a>
 
