@@ -302,6 +302,13 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
         
     count_cell_yield(agent_array, land, land_x, land_y, agent_number, 1, 2, 15);
 
+    /*------------------------------------------------------------------------*/
+    /* Temporary call to genetic algorithm below for ONE agent -- testing */
+    /*------------------------------------------------------------------------*/
+    ga(actions, costs, agent_array, resource_array);
+    /*------------------------------------------------------------------------*/
+    
+    
     /* This code switches from C back to R */
     /* ====================================================================== */        
     

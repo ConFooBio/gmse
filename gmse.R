@@ -98,6 +98,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     );  
     
     COST   <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
+    COST[COST < 1] <- 1; # Need this until a proper make_cost function is made
     ACTION <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
     
     time       <- time + 1;  # Ready for the initial time step.

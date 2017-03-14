@@ -77,13 +77,17 @@ void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
         }
         lowest_cost  =  min_cost(COST, layer, budget, ROWS, COLS);
         budget_count =  budget;
+        if(lowest_cost <= 0){
+            printf("Lowest cost is too low (must be positive) \n");
+            break;
+        }
         while(budget_count > lowest_cost){
             do{
                 xpos = floor( runif(0,ROWS) );
                 ypos = floor( runif(4,COLS) );
-            }while(COST[xpos][ypos][agent] > budget_count);
-            ACTION[xpos][ypos][agent]++;
-            budget_count -= COST[xpos][ypos][agent];
+            }while(COST[xpos][ypos][layer] > budget_count);
+            population[xpos][ypos][agent]++;
+            budget_count -= COST[xpos][ypos][layer];
         } /* Should now make random actions allowed by budget */
     }
 }
@@ -92,3 +96,46 @@ void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
 
 
 
+/* 
+ * This function will eventually call all of the other functions used in the
+ * genetic algorithm. For now, it is being used just to call the other functions
+ * and therefore test out whether or not they work.
+ */
+void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES){
+    
+    int row, col, layer;
+    int xdim, ydim;
+    double ***NEW_ACTION;
+    
+    ydim = 12;
+    xdim = 4;
+    
+    NEW_ACTION = malloc(xdim * sizeof(double *));
+    for(row = 0; row < xdim; row++){
+        NEW_ACTION[row] = malloc(ydim * sizeof(double *));
+        for(col = 0; col < ydim; col++){
+            NEW_ACTION[row][col] = malloc(100 * sizeof(double));
+        }
+    }
+    for(layer = 0; layer < 100; layer++){
+        for(col = 0; col < ydim; col++){
+            for(row = 0; row < xdim; row++){
+                NEW_ACTION[row][col][layer] = 0;
+            }
+        }
+    }  
+    
+    initialise_pop(ACTION, COST, 0, 100, 100, 10, xdim, ydim, NEW_ACTION);
+
+    printf("\n");
+    printf("%f\t",NEW_ACTION[0][0][0]);
+    printf("%f\t",NEW_ACTION[0][1][0]);
+    printf("%f\n",NEW_ACTION[1][0][0]);
+    printf("%f\n",NEW_ACTION[1][1][0]);
+
+}
+    
+    
+    
+    
+    
