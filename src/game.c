@@ -29,7 +29,6 @@ int min_cost(double ***COST, int layer, double budget, int rows, int cols){
             }
         }
     }
-
     return the_min; 
 }
     
@@ -50,12 +49,14 @@ int min_cost(double ***COST, int layer, double budget, int rows, int cols){
  * ========================================================================== */
 void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
                     int budget, int carbon_copies, int ROWS, int COLS,
-                    double ***population, int x0, int x1, int y0, int y1){
+                    double ***population){
     
+    int xpos, ypos;
     int agent;
     int row, col;
     double lowest_cost;
     double budget_count;
+    double check_cost;
 
     /* First read in pop_size copies of the ACTION layer of interest */
     for(agent = 0; agent < pop_size; agent++){
@@ -72,24 +73,22 @@ void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
                 for(col = 4; col < COLS; col++){
                     population[row][col][agent] = 0;
                 }
-                lowest_cost  =  min_cost(COST, layer, budget, ROWS, COLS);
-                budget_count = budget;
-                while(budget_count > lowest_cost){
-                    /* LEFT OFF HERE -- ADD RANDOM IN UNTIL FILLED */   
-                }
             }
-            
         }
-        /* Re-assign values where it is necessary */
-        if(agent >= carbon_copies){
-            for(row = x0; row < x1; row++){
-                for(col = y0; col < y1; col++){
-                    population[row][col][agent] = 0;
-                }
-            }
-            lowest_cost =  min_cost(COST, layer, budget, ROWS, COLS);
-        }
+        lowest_cost  =  min_cost(COST, layer, budget, ROWS, COLS);
+        budget_count =  budget;
+        while(budget_count > lowest_cost){
+            do{
+                xpos = floor( runif(0,ROWS) );
+                ypos = floor( runif(4,COLS) );
+            }while(COST[xpos][ypos][agent] > budget_count);
+            ACTION[xpos][ypos][agent]++;
+            budget_count -= COST[xpos][ypos][agent];
+        } /* Should now make random actions allowed by budget */
     }
-    
-    
 }
+
+
+
+
+
