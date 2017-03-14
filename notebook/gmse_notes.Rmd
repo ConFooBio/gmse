@@ -82,6 +82,10 @@ I've now made separate the arrays that affect an agent's *actions* and the agent
 
 **This is much more comprehensivle in another respect**; the genetic algorithm only needs to deal with the `ACTION` array, using the `COST` array as a reference. This readability of the code alone will probably be worthwhile. **As another bonus**, while re-writing the code, it is now obvious that it is unecessary to mutate, crossover, etc., *only a select few rows*; in the `ACTION` array, they are all fair game as determined by `COST` (columns 0-3 cannot be changed, but this is easy to remember).
 
+**Working call to `game.c`, but bad action return**
+
+There is now a working `game.c` file that `user.c` functions call, with proper header files to link. For some reason, the action arrays returned right now are incorrect, so this is the next thing that needs to be done. In general, I think it will be a good idea to make sure that calls from `gmse.R` are maintained without crash.
+
 > <a name="u-13-MAR-2017">Update: 13 MAR 2017</a>
 
 **Begin working on the genetic algorithm**
