@@ -1,4 +1,4 @@
-#include "utilities.h"
+#include "game.h"
 
 /* =============================================================================
  * This function checks a landscape layer to see if there is a particular number

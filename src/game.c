@@ -31,7 +31,7 @@ int min_cost(double ***COST, int layer, double budget, int rows, int cols){
     }
     return the_min; 
 }
-    
+
 /* =============================================================================
  * This function will initialise a population from the ACTION and COST arrays, a
  * particular focal agent, and specification of how many times an agent should
