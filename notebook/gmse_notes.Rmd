@@ -80,6 +80,8 @@ library(rhandsontable)
 
 I've now made separate the arrays that affect an agent's *actions* and the agents *costs* (from a total budget) for performing things actions. The indices of these arrays will match at all times, such that `COST[i][j][k]` will be the cost of an agent `k` performing `ACTION[i][j][k]` Each agent will therefore have its own 2D layer that will include rows of other agents and columns of utilities and actions. This adds an extra array to a considerable number of things that we already need to keep track of, but I think it is less confusing than what I was doing before, and in the end separating costs from actions will be worth it. Ideally, all of this would just be some special `struct` in C, but, as mentioned [yesterday](#u-13-MAR-2017), this won't work because R and C need to work seemlessely.
 
+**This is much more comprehensivle in another respect**; the genetic algorithm only needs to deal with the `ACTION` array, using the `COST` array as a reference. This readability of the code alone will probably be worthwhile. **As another bonus**, while re-writing the code, it is now obvious that it is unecessary to mutate, crossover, etc., *only a select few rows*; in the `ACTION` array, they are all fair game as determined by `COST` (columns 0-3 cannot be changed, but this is easy to remember).
+
 > <a name="u-13-MAR-2017">Update: 13 MAR 2017</a>
 
 **Begin working on the genetic algorithm**
