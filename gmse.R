@@ -159,9 +159,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                       model      = "IBM"
         );
         RESOURCES             <- RESOURCE_NEW[[1]];
-        RESOURCE_REC[[time]]  <- RESOURCES;
-        
         LANDSCAPE_r           <- RESOURCE_NEW[[2]];
+        
+        RESOURCE_REC[[time]]  <- RESOURCES;
         
         OBSERVATION_NEW   <- observation(resource   = RESOURCES,
                                          landscape  = LANDSCAPE_r,
@@ -192,10 +192,16 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                       agent     = AGENTS,
                       landscape = LANDSCAPE_r, 
                       paras     = paras,
+                      cost      = COST,
+                      action    = ACTION,
                       model     = "IBM"
         );
-        AGENTS <- USERS[[2]];
-
+        RESOURCES    <- USERS[[1]];
+        AGENTS       <- USERS[[2]];
+        LANDSCAPE_r  <- USERS[[3]];
+        ACTION       <- USERS[[4]];
+        COST         <- USERS[[5]];
+        
         OBSERVATION_REC[[time]]  <- OBSERVATION_NEW[[1]];
         AGENT_REC[[time]]        <- AGENTS;
         LANDSCAPE_REC[[time]]    <- LANDSCAPE_r[,,2];
@@ -239,7 +245,6 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     
     proc_end   <- proc.time();
     time_taken <- proc_end - proc_start;
-    
     
     sim_results <- list(resource    = RESOURCE_REC,
                         observation = OBSERVATION_REC,

@@ -56,7 +56,7 @@ void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
     int row, col;
     double lowest_cost;
 
-    /* First read in pop_size copies of the UTILITY layer of interest */
+    /* First read in pop_size copies of the ACTION layer of interest */
     for(agent = 0; agent < pop_size; agent++){
         for(row = 0; row < ROWS; row++){
             for(col = 0; col < COLS; col++){
@@ -70,7 +70,7 @@ void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
                     population[row][col][agent] = 0;
                 }
             }
-            lowest_cost =  min_cost(UTILITY, layer
+            lowest_cost =  min_cost(COST, layer, budget, ROWS, COLS);
         }
     }
     

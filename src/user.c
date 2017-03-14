@@ -120,13 +120,17 @@ void count_cell_yield(double **agent_array, double ***landscape, int xdim,
  *      PARAMETERS: Parameters read into the function for population processes
  *      AGENT:      An array of *row agents and *col traits for each agent
  * ===========================================================================*/
-SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
+SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
+          SEXP ACTION){
  
     /* SOME STANDARD DECLARATIONS OF KEY VARIABLES AND POINTERS               */
     /* ====================================================================== */
     int xloc, yloc;          /* Index of x & y locations on the landscape */ 
     int land_x, land_y;      /* x and y maximum location given LANDSCAPE */
     int zloc, land_z;        /* z locations */
+    int c_x, c_y, c_z;       /* Dimensions of cost array */
+    int a_x, a_y, a_z;       /* Dimensions of action array */
+    int row, col, layer;     /* Indices for utility (COST & ACTION) arrays */
     int resource;            /* Index for resource (rows of RESOURCE) */
     int res_trait;           /* Index for resource traits (cols of RESOURCE) */
     int agent;               /* Index for agent in the array (rows) */
@@ -140,16 +144,24 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
+    int *dim_COST;           /* Dimensions of the COST array incoming */
+    int *dim_ACTION;         /* Dimensions of the ACTION array incoming */
     double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
     double *paras;           /* Pointer to PARAMETER (interface R and C) */
     double *agent_ptr;       /* Pointer to AGENT (interface R and C) */
+    double *cost_ptr;        /* Pointer to COST (interface R and C) */
+    double *action_ptr;      /* Pointer to ACTION (interface R and C) */
     double *new_agent_ptr;   /* Pointer to new agents that are returned */
+    double *new_action_ptr;  /* Pointer to new action array that is returned */
+    double *new_cost_ptr;    /* Pointer to new cost array that is returned */
     double *data_ptr;        /* Pointer to DATA (interface R and C) */
     double *land_ptr_new;    /* Pointer to a new landscape */
     double **resource_array; /* Array to store the old RESOURCE in C */
     double ***land;          /* Array to store the landscape in C*/
     double **agent_array;    /* Array to store the agents in C */
+    double ***costs;         /* Array of the costs of user actions */
+    double ***actions;       /* Array of user actions */
 
     /* First take care of all the reading in of code from R to C */
     /* ====================================================================== */
@@ -166,7 +178,15 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     
     PROTECT( AGENT = AS_NUMERIC(AGENT) );
     protected_n++;
-    agent_ptr = REAL(AGENT);    
+    agent_ptr = REAL(AGENT);
+    
+    PROTECT( COST = AS_NUMERIC(COST) );
+    protected_n++;
+    cost_ptr = REAL(COST);
+    
+    PROTECT( ACTION = AS_NUMERIC(ACTION) );
+    protected_n++;
+    action_ptr = REAL(ACTION);
     
     PROTECT( PARAMETERS = AS_NUMERIC(PARAMETERS) );
     protected_n++;
@@ -175,6 +195,8 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     dim_RESOURCE   = INTEGER( GET_DIM(RESOURCE)  );
     dim_LANDSCAPE  = INTEGER( GET_DIM(LANDSCAPE) );
     dim_AGENT      = INTEGER( GET_DIM(AGENT) );
+    dim_COST       = INTEGER( GET_DIM(COST) );
+    dim_ACTION     = INTEGER( GET_DIM(ACTION) );
 
     /* The C code for the model itself falls under here */
     /* ====================================================================== */
@@ -214,7 +236,48 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
                 vec_pos++;
             }
         }
-    }  /* LANDSCAPE is now stored as land */    
+    }  /* LANDSCAPE is now stored as land */
+    
+    /* Code below reads in the COST array for ease of use */
+    c_z   = dim_COST[2];
+    c_y   = dim_COST[1];
+    c_x   = dim_COST[0];
+    costs = malloc(c_x * sizeof(double *));
+    for(row = 0; row < c_x; row++){
+        costs[row] = malloc(c_y * sizeof(double *));
+        for(col = 0; col < c_y; col++){
+            costs[row][col] = malloc(c_z * sizeof(double));
+        }
+    }
+    vec_pos = 0;
+    for(layer = 0; layer < c_z; layer++){
+        for(col = 0; col < c_y; col++){
+            for(row = 0; row < c_x; row++){
+                costs[row][col][layer] = cost_ptr[vec_pos];
+            }
+        }
+    } /* COST is now stored as costs */
+    
+    
+    /* Code below reads in the ACTION array for ease of use */
+    a_z     = dim_ACTION[2];
+    a_y     = dim_ACTION[1];
+    a_x     = dim_ACTION[0];
+    actions = malloc(a_x * sizeof(double *));
+    for(row = 0; row < a_x; row++){
+        actions[row] = malloc(a_y * sizeof(double *));
+        for(col = 0; col < a_y; col++){
+            actions[row][col] = malloc(a_z * sizeof(double));
+        }
+    }
+    vec_pos = 0;
+    for(layer = 0; layer < a_z; layer++){
+        for(col = 0; col < a_y; col++){
+            for(row = 0; row < a_x; row++){
+                actions[row][col][layer] = action_ptr[vec_pos];
+            }
+        }
+    } /* ACTION is now stored as costs */
     
     /* Code below remakes the AGENT matrix for easier use */
     agent_number        = dim_AGENT[0];
@@ -286,28 +349,85 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
         }
     }
     
+    SEXP NEW_ACTIONS;
+    PROTECT( NEW_ACTIONS = alloc3DArray(REALSXP, a_x, a_y, a_z) );
+    protected_n++;
+    
+    new_action_ptr = REAL(NEW_ACTIONS);
+    
+    vec_pos = 0;
+    for(layer=0; layer<a_z; layer++){
+        for(col=0; col<a_y; col++){
+            for(row=0; row<a_x; row++){
+                new_action_ptr[vec_pos] = actions[row][col][layer];
+                vec_pos++;
+            }
+        }
+    }
+    
+    SEXP NEW_COSTS;
+    PROTECT( NEW_COSTS = alloc3DArray(REALSXP, c_x, c_y, c_z) );
+    protected_n++;
+    
+    new_cost_ptr = REAL(NEW_COSTS);
+    
+    vec_pos = 0;
+    for(layer=0; layer<c_z; layer++){
+        for(col=0; col<c_y; col++){
+            for(row=0; row<c_x; row++){
+                new_cost_ptr[vec_pos] = costs[row][col][layer];
+                vec_pos++;
+            }
+        }
+    }
     
     SEXP EVERYTHING;
-    EVERYTHING = PROTECT( allocVector(VECSXP, 3) );
+    EVERYTHING = PROTECT( allocVector(VECSXP, 5) );
     protected_n++;
     SET_VECTOR_ELT(EVERYTHING, 0, NEW_RESOURCES);
     SET_VECTOR_ELT(EVERYTHING, 1, NEW_AGENTS);
     SET_VECTOR_ELT(EVERYTHING, 2, NEW_LANDSCAPE);
+    SET_VECTOR_ELT(EVERYTHING, 3, NEW_ACTIONS);
+    SET_VECTOR_ELT(EVERYTHING, 4, NEW_COSTS);
     
     UNPROTECT(protected_n);
     
-    /* Free all of the allocated memory used in arrays */
+    /* Free all of the allocated memory used in agent array */
     for(agent = 0; agent < agent_number; agent++){
         free(agent_array[agent]);
     }
     free(agent_array);
+    /* Free all of the allocated memory used in action array */
+    a_z   = dim_ACTION[2];
+    a_y   = dim_ACTION[1];
+    a_x   = dim_ACTION[0];
+    for(row = 0; row < a_x; row++){
+        for(col = 0; col < a_y; col++){
+            free(actions[row][col]);   
+        }
+        free(actions[row]); 
+    }
+    free(actions);
+    /* Free all of the allocated memory used in cost array */
+    c_z   = dim_COST[2];
+    c_y   = dim_COST[1];
+    c_x   = dim_COST[0];
+    for(row = 0; row < c_x; row++){
+        for(col = 0; col < c_y; col++){
+            free(costs[row][col]);   
+        }
+        free(costs[row]); 
+    }
+    free(costs);
+    /* Free all of the allocated memory used in land array */
     for(xloc = 0; xloc < land_x; xloc++){
         for(yloc = 0; yloc < land_y; yloc++){
             free(land[xloc][yloc]);   
         }
         free(land[xloc]);        
     }
-    free(land); 
+    free(land);
+    /* Free all of the allocated memory used in resource array */
     for(resource = 0; resource < res_number; resource++){
         free(resource_array[resource]);
     }

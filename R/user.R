@@ -13,6 +13,8 @@ user <- function(resource   = NULL,
                  agent      = NULL,
                  landscape  = NULL, 
                  paras      = NULL,
+                 cost       = NULL,
+                 action     = NULL,
                  model      = "IBM"
 ) {
     check_model <- 0;
@@ -35,7 +37,9 @@ user <- function(resource   = NULL,
         USER_OUT <- run_user(RESOURCE_c    = resource,
                              LANDSCAPE_c   = landscape,
                              PARAMETERS_c  = paras,
-                             AGENT_c       = agent
+                             AGENT_c       = agent,
+                             COST_c        = cost,
+                             ACTION_c      = action
         );
    
         check_model <- 1;
@@ -47,6 +51,8 @@ user <- function(resource   = NULL,
 }
 
 # Below calls the user function from c
-run_user <- function(RESOURCE_c, LANDSCAPE_c, PARAMETERS_c, AGENT_c){
-    .Call("user", RESOURCE_c, LANDSCAPE_c, PARAMETERS_c, AGENT_c);
+run_user <- function(RESOURCE_c, LANDSCAPE_c, PARAMETERS_c, AGENT_c, COST_c,
+                     ACTION_c){
+    .Call("user", RESOURCE_c, LANDSCAPE_c, PARAMETERS_c, AGENT_c, COST_c,
+          ACTION_c);
 }
