@@ -9,26 +9,23 @@
  * ========================================================================== */
 
 /* =============================================================================
- * This function will find the minimum cost of an action in the UTILITY array
+ * This function will find the minimum cost of an action in the COST array
  * for a particular agent (layer). Inputs include:
- *     UTILITY: A full 3D utility array
+ *     COST: A full 3D COST array
  *     layer: The layer on which the minimum is going to be found
  *     budget: The total budget that the agent has to work with (initliases)
- *     x0: Row to start randomising values
- *     x1: Row to stop randomising values
- *     y0: Column to start randomising values
- *     y1: Column to stop randomising values
+ *     rows: The total number of rows in the COST array
+ *     cols: The total number of cols in the COST array
  * ========================================================================== */
-int min_cost(double ***UTILITY, int layer, double budget, int x0, int x1,
-             int y0, int y1){
+int min_cost(double ***COST, int layer, double budget, int rows, int cols){
     int i, j;
     double the_min;
     
     the_min = budget;
-    for(i = x0; i < x1; i++){
-        for(j = y0; j < y1; j++){
-            if(UTILITY[i][j][layer] < the_min){
-                the_min = UTILITY[i][j][layer];
+    for(i = 0; i < rows; i++){
+        for(j = 0; j < cols; j++){
+            if(COST[i][j][layer] < the_min){
+                the_min = COST[i][j][layer];
             }
         }
     }
@@ -37,25 +34,22 @@ int min_cost(double ***UTILITY, int layer, double budget, int x0, int x1,
 }
     
 /* =============================================================================
- * This function will initialise a population from the UTILITY array , a
+ * This function will initialise a population from the ACTION and COST arrays, a
  * particular focal agent, and specification of how many times an agent should
  * be exactly replicated versus how many times random values shoudl be used.
  * Necessary variable inputs include:
- *     UTILITY: A 3D array of utility values
- *     layer: The 'z' layer of the UTILITY array to be initialised
+ *     ACTION: A 3D array of action values
+ *     COST: A 3D array of costs of performing actions
+ *     layer: The 'z' layer of the COST and ACTION arrays to be initialised
  *     pop_size: The size of the total population (layers to population)
  *     carbon_copies: The number of identical agents used as seeds
  *     budget: The budget that random agents have to work with
- *     UTILITY_rows: Number of rows in the UTILITY array
- *     UTILITY_cols: Number of columns in the UTILITY array 
+ *     ROWS: Number of rows in the COST and ACTION arrays
+ *     COLS: Number of columns in the COST and ACTION arrays
  *     population: array of the population that is made (malloc needed earlier)
- *     x0: Row to start randomising values
- *     x1: Row to stop randomising values
- *     y0: Column to start randomising values
- *     y1: Column to stop randomising values
  * ========================================================================== */
-void initialise_pop(double ***UTILITY, int layer, int pop_size, int budget,
-                    int carbon_copies, int UTILITY_rows, int UTILITY_cols,
+void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
+                    int budget, int carbon_copies, int ROWS, int COLS,
                     double ***population, int x0, int x1, int y0, int y1){
     
     int agent;
@@ -64,9 +58,9 @@ void initialise_pop(double ***UTILITY, int layer, int pop_size, int budget,
 
     /* First read in pop_size copies of the UTILITY layer of interest */
     for(agent = 0; agent < pop_size; agent++){
-        for(row = 0; row < UTILITY_rows; row++){
-            for(col = 0; col < UTILITY_cols; col++){
-                population[row][col][agent] = UTILITY[row][col][layer];
+        for(row = 0; row < ROWS; row++){
+            for(col = 0; col < COLS; col++){
+                population[row][col][agent] = ACTION[row][col][layer];
             }
         }
         /* Re-assign values where it is necessary */
