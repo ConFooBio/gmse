@@ -55,13 +55,30 @@ void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
     int agent;
     int row, col;
     double lowest_cost;
+    double budget_count;
 
     /* First read in pop_size copies of the ACTION layer of interest */
     for(agent = 0; agent < pop_size; agent++){
         for(row = 0; row < ROWS; row++){
-            for(col = 0; col < COLS; col++){
-                population[row][col][agent] = ACTION[row][col][layer];
+            population[row][0][agent] = ACTION[row][0][agent];
+            population[row][1][agent] = ACTION[row][1][agent];
+            population[row][2][agent] = ACTION[row][2][agent];
+            population[row][3][agent] = ACTION[row][3][agent];
+            if(agent < carbon_copies){
+                for(col = 4; col < COLS; col++){
+                    population[row][col][agent] = ACTION[row][col][agent];
+                }
+            }else{
+                for(col = 4; col < COLS; col++){
+                    population[row][col][agent] = 0;
+                }
+                lowest_cost  =  min_cost(COST, layer, budget, ROWS, COLS);
+                budget_count = budget;
+                while(budget_count > lowest_cost){
+                    /* LEFT OFF HERE -- ADD RANDOM IN UNTIL FILLED */   
+                }
             }
+            
         }
         /* Re-assign values where it is necessary */
         if(agent >= carbon_copies){
