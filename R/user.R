@@ -32,7 +32,7 @@ user <- function(resource   = NULL,
         }
         # If all checks out, then run the user model
         
-        USER_OUT <- run_user( RESOURCE_c    = resource,
+        USER_OUT <- run_user(RESOURCE_c    = resource,
                              LANDSCAPE_c   = landscape,
                              PARAMETERS_c  = paras,
                              AGENT_c       = agent
