@@ -106,8 +106,10 @@ make_agents <- function(model        = "IBM",
         see2    <- rep(x = 0, times = agent_number);
         see3    <- rep(x = 0, times = agent_number);
         yield   <- rep(x = 0, times = agent_number);
+        budget  <- rep(x = 0, times = agent_number);
         the_agents <- cbind(IDs, type1, type2, type3, xloc, yloc, mover, time,
-                            view, error, mark, tally, see1, see2, see3, yield);
+                            view, error, mark, tally, see1, see2, see3, yield,
+                            budget);
     }
     if( is.null(the_agents) ){
         stop("Invalid model selected (Must be 'IBM')");
