@@ -254,11 +254,11 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
         for(col = 0; col < c_y; col++){
             for(row = 0; row < c_x; row++){
                 costs[row][col][layer] = cost_ptr[vec_pos];
+                vec_pos++;
             }
         }
     } /* COST is now stored as costs */
-    
-    
+
     /* Code below reads in the ACTION array for ease of use */
     a_z     = dim_ACTION[2];
     a_y     = dim_ACTION[1];
@@ -275,6 +275,7 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
         for(col = 0; col < a_y; col++){
             for(row = 0; row < a_x; row++){
                 actions[row][col][layer] = action_ptr[vec_pos];
+                vec_pos++;
             }
         }
     } /* ACTION is now stored as costs */
@@ -377,7 +378,7 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     protected_n++;
     
     new_cost_ptr = REAL(NEW_COSTS);
-    
+
     vec_pos = 0;
     for(layer=0; layer<c_z; layer++){
         for(col=0; col<c_y; col++){
@@ -405,9 +406,6 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     }
     free(agent_array);
     /* Free all of the allocated memory used in action array */
-    a_z   = dim_ACTION[2];
-    a_y   = dim_ACTION[1];
-    a_x   = dim_ACTION[0];
     for(row = 0; row < a_x; row++){
         for(col = 0; col < a_y; col++){
             free(actions[row][col]);   
@@ -416,9 +414,6 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     }
     free(actions);
     /* Free all of the allocated memory used in cost array */
-    c_z   = dim_COST[2];
-    c_y   = dim_COST[1];
-    c_x   = dim_COST[0];
     for(row = 0; row < c_x; row++){
         for(col = 0; col < c_y; col++){
             free(costs[row][col]);   
