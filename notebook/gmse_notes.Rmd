@@ -180,6 +180,53 @@ We now have a functioning way to initialise a population of agents that will lat
 
 I have added a new action `bankem` onto the `COST` and `ACTION` arrays, which was not too difficult at all in practice. I envision this category of actions as (probably) always having a cost equal to one. Essentially, it's a way to shift unspent costs to a category, which might or might not affect the agent's overall utility.
 
+**Initialise a new crossover function**
+
+I have written a crossover function that, for each individual in the population, assigns a crossover partner (e.g., as would occur in sexual reproduction). With the partner assigned, the function then swaps `ACTION` array elements with some fixed probability (uniform crossover method). I don't see any reason to consider multiple types of crossover at this point, so I believe this method will be sufficient.
+
+```
+/* =============================================================================
+ * This function will use the initialised population from intialise_pop to make
+ * the population array undergo crossing over and random locations for 
+ * individuals in the population. Note that we'll later keep things in budget
+ * Necessary variable inputs include:
+ *     population: array of the population that is made (malloc needed earlier)
+ *     pop_size: The size of the total population (layers to population)
+ *     ROWS: Number of rows in the COST and ACTION arrays
+ *     COLS: Number of columns in the COST and ACTION arrays
+ *     pr: Probability of a crossover site occurring at an element.
+ * ========================================================================== */
+void crossover(double ***population, int pop_size, int ROWS, int COLS, 
+               double pr){
+    
+    int agent, row, col;
+    int cross_partner;
+    double do_cross;
+    double agent_val, partner_val;
+    
+    for(agent = 0; agent < pop_size; agent++){
+        do{
+            cross_partner = floor( runif(0, pop_size) );
+        }while(cross_partner == agent || cross_partner == pop_size);
+        for(row = 0; row < ROWS; row++){
+            for(col = 4; col < COLS; col++){
+                do_cross = runif(0,1);
+                if(do_cross < pr){
+                    agent_val   = population[row][col][agent];
+                    partner_val = population[row][col][cross_partner];
+                    population[row][col][agent]         = partner_val;
+                    population[row][col][cross_partner] = agent_val;
+                }
+            }
+        }
+    }
+}
+```
+
+Originally, I was going to use a swap function to swap agent and partner values. The swap function is still in the `utilities.c` file, but I think the above code is more readable.
+
+**I think it will make more sense to deal with the budget after mutation**. That is, as a result of crossover and mutation, some individuals might go overbudget on their actions. I think randomly removing actions in the event of being over budget is best solved after mutation to prevent redundancy; this was a `constrain_cost` command [originally written in R](#u-7-FEB-2017), so I can use this as a template.
+
 > <a name="u-14-MAR-2017">Update: 14 MAR 2017</a>
 
 **Separate `ACTION` and `COST` arrays**
