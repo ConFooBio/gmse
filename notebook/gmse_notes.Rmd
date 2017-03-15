@@ -227,6 +227,55 @@ Originally, I was going to use a swap function to swap agent and partner values.
 
 **I think it will make more sense to deal with the budget after mutation**. That is, as a result of crossover and mutation, some individuals might go overbudget on their actions. I think randomly removing actions in the event of being over budget is best solved after mutation to prevent redundancy; this was a `constrain_cost` command [originally written in R](#u-7-FEB-2017), so I can use this as a template.
 
+**Mutation function created**
+
+I have written a function to cause random mutations in the population array during the genetic algorithm.
+
+```
+/* =============================================================================
+ * This function will use the initialised population from intialise_pop to make
+ * the population array undergo mutations at random elements in their array
+ * Necessary variable inputs include:
+ *     population: array of the population that is made (malloc needed earlier)
+ *     pop_size: The size of the total population (layers to population)
+ *     ROWS: Number of rows in the COST and ACTION arrays
+ *     COLS: Number of columns in the COST and ACTION arrays
+ *     pr: Probability of a mutation occurring at an element.
+ * ========================================================================== */
+void mutation(double ***population, int pop_size, int ROWS, int COLS, 
+               double pr){
+    
+    int agent, row, col;
+    double do_mutation;
+    double agent_val;
+    double half_pr;
+    
+    half_pr = 0.5 * pr;
+    
+    /* First do the crossovers */
+    for(agent = 0; agent < pop_size; agent++){
+        for(row = 0; row < ROWS; row++){
+            for(col = 4; col < COLS; col++){
+                do_mutation = runif(0,1);
+                if( do_mutation < half_pr ){
+                    population[row][col][agent]--;
+                }
+                if( do_mutation > (1 - half_pr) ){
+                    population[row][col][agent]++;
+                }
+                if( population[row][col][agent] < 0 ){
+                    population[row][col][agent] *= -1;    
+                } /* Change sign if mutates to a negative value */
+            }
+        }
+    }
+}
+```
+
+I might or might not want to tweak this later on because I'm not sure if the type of mutation is agressive enough to search for adaptive strategies. This issue will be greatly mitigated by the seeding of random action arrays and crossover, but I might want to come back to allow mutation to a wider range of numbers later. For now, there is simply a probability of a mutation occurring at each element, then, if a mutation occurs, the action value will either increase by one or decrease by one (if the original value was zero, it will increase to one). It's tempting to allow for bigger jumps, but if they are too big then they will regularly go over budget and hence cause the whole array to reshuffle again (essentially creating a random array and removing a potential opportunity for increased fitness. 
+
+The next function that needs to be written is one that constrains the costs to be at or under budget after crossover and mutation, then a fitness function is needed (which will probably require several sub-functions to keep the code readable).
+
 > <a name="u-14-MAR-2017">Update: 14 MAR 2017</a>
 
 **Separate `ACTION` and `COST` arrays**
