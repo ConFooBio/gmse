@@ -96,8 +96,43 @@ void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
     }
 }
 
-
-
+/* =============================================================================
+ * This function will use the initialised population from intialise_pop to make
+ * the population array undergo crossing over and random locations for 
+ * individuals in the population. Note that we'll later keep things in budget
+ * Necessary variable inputs include:
+ *     population: array of the population that is made (malloc needed earlier)
+ *     pop_size: The size of the total population (layers to population)
+ *     ROWS: Number of rows in the COST and ACTION arrays
+ *     COLS: Number of columns in the COST and ACTION arrays
+ *     pr: Probability of a crossover site occurring at an element.
+ * ========================================================================== */
+void crossover(double ***population, int pop_size, int ROWS, int COLS, 
+               double pr){
+    
+    int agent, row, col;
+    int cross_partner;
+    double do_cross;
+    double agent_val, partner_val;
+    
+    /* First do the crossovers */
+    for(agent = 0; agent < pop_size; agent++){
+        do{
+            cross_partner = floor( runif(0, pop_size) );
+        }while(cross_partner == agent || cross_partner == pop_size);
+        for(row = 0; row < ROWS; row++){
+            for(col = 4; col < COLS; col++){
+                do_cross = runif(0,1);
+                if(do_cross < pr){
+                    agent_val   = population[row][col][agent];
+                    partner_val = population[row][col][cross_partner];
+                    population[row][col][agent]         = partner_val;
+                    population[row][col][cross_partner] = agent_val;
+                }
+            }
+        }
+    }
+}
 
 
 /* 
@@ -109,44 +144,58 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES){
     
     int row, col, layer;
     int xdim, ydim;
-    double ***NEW_ACTION;
+    double ***POPULATION;
     
     ydim = 13;
     xdim = 4;
     
-    NEW_ACTION = malloc(xdim * sizeof(double *));
+    POPULATION = malloc(xdim * sizeof(double *));
     for(row = 0; row < xdim; row++){
-        NEW_ACTION[row] = malloc(ydim * sizeof(double *));
+        POPULATION[row] = malloc(ydim * sizeof(double *));
         for(col = 0; col < ydim; col++){
-            NEW_ACTION[row][col] = malloc(100 * sizeof(double));
+            POPULATION[row][col] = malloc(100 * sizeof(double));
         }
     }
     for(layer = 0; layer < 100; layer++){
         for(col = 0; col < ydim; col++){
             for(row = 0; row < xdim; row++){
-                NEW_ACTION[row][col][layer] = 0;
+                POPULATION[row][col][layer] = 0;
             }
         }
     }  
     
-    initialise_pop(ACTION, COST, 0, 100, 100, 10, xdim, ydim, NEW_ACTION);
+    initialise_pop(ACTION, COST, 0, 100, 100, 10, xdim, ydim, POPULATION);
     
-    printf("\n");
+    /*
+    printf("1 ------------------------------- \n");
     for(row = 0; row < xdim; row++){
         for(col = 0; col < ydim; col++){
-            printf("%f ", NEW_ACTION[row][col][20]);
+            printf("%f ", POPULATION[row][col][20]);
+        }
+        printf("\n");
+    } 
+    */
+    
+    crossover(POPULATION, 100, xdim, ydim, 0.1);
+    
+    /*
+    printf("2 ------------------------------- \n");
+    for(row = 0; row < xdim; row++){
+        for(col = 0; col < ydim; col++){
+            printf("%f ", POPULATION[row][col][20]);
         }
         printf("\n");
     }
+     */
     
 
     for(row = 0; row < xdim; row++){
         for(col = 0; col < ydim; col++){
-            free(NEW_ACTION[row][col]);   
+            free(POPULATION[row][col]);   
         }
-        free(NEW_ACTION[row]); 
+        free(POPULATION[row]); 
     }
-    free(NEW_ACTION);
+    free(POPULATION);
     
 }
     
