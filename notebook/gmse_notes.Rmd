@@ -176,6 +176,10 @@ int min_cost(double ***COST, int layer, double budget, int rows, int cols){
 
 We now have a functioning way to initialise a population of agents that will later go through a genetic algoirthm to select the best actions. In working through this, I've seen that an earlier idea of mine (not sure if I wrote this down below) might be useful -- have a column in both `COST` and `ACTION` that is simply `bankem` -- essentially stashing costs in a way that doesn't **do** anything. This might be important for situations in which an agent actually benefits by doing nothing, or when we want some general way to consider the benefits of stake-holder actions that affect utility but have no effect on resources or other stake-holders (e.g., holiday time).
 
+**Add new `bankem` action on `COST` and `ACTION` arrays**
+
+I have added a new action `bankem` onto the `COST` and `ACTION` arrays, which was not too difficult at all in practice. I envision this category of actions as (probably) always having a cost equal to one. Essentially, it's a way to shift unspent costs to a category, which might or might not affect the agent's overall utility.
+
 > <a name="u-14-MAR-2017">Update: 14 MAR 2017</a>
 
 **Separate `ACTION` and `COST` arrays**
