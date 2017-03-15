@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **MAR** [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
+     - **MAR** [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
  
@@ -73,6 +73,108 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-15-MAR-2017">Update: 15 MAR 2017</a>
+
+**Initialisation of action populations**
+
+A new function has been written to initialise a population of agents, duplicated from a single agent in the larger G-MSE model and to be used for the genetic algorithm. Initial testing of this function shows that it returns appropriate arrays, in which actions are selected appropriately based on their cost values in the `COST` array.
+
+```
+/* =============================================================================
+ * This function will initialise a population from the ACTION and COST arrays, a
+ * particular focal agent, and specification of how many times an agent should
+ * be exactly replicated versus how many times random values shoudl be used.
+ * Necessary variable inputs include:
+ *     ACTION: A 3D array of action values
+ *     COST: A 3D array of costs of performing actions
+ *     layer: The 'z' layer of the COST and ACTION arrays to be initialised
+ *     pop_size: The size of the total population (layers to population)
+ *     carbon_copies: The number of identical agents used as seeds
+ *     budget: The budget that random agents have to work with
+ *     ROWS: Number of rows in the COST and ACTION arrays
+ *     COLS: Number of columns in the COST and ACTION arrays
+ *     population: array of the population that is made (malloc needed earlier)
+ * ========================================================================== */
+void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
+                    int budget, int carbon_copies, int ROWS, int COLS,
+                    double ***population){
+    
+    int xpos, ypos;
+    int agent;
+    int row, col;
+    double lowest_cost;
+    double budget_count;
+    double check_cost;
+
+    /* First read in pop_size copies of the ACTION layer of interest */
+    for(agent = 0; agent < pop_size; agent++){
+        for(row = 0; row < ROWS; row++){
+            population[row][0][agent] = ACTION[row][0][layer];
+            population[row][1][agent] = ACTION[row][1][layer];
+            population[row][2][agent] = ACTION[row][2][layer];
+            population[row][3][agent] = ACTION[row][3][layer];
+            if(agent < carbon_copies){
+                for(col = 4; col < COLS; col++){
+                    population[row][col][agent] = ACTION[row][col][layer];
+                }
+            }else{
+                for(col = 4; col < COLS; col++){
+                    population[row][col][agent] = 0;
+                }
+            }
+        }
+        lowest_cost  =  min_cost(COST, layer, budget, ROWS, COLS);
+        budget_count =  budget;
+        if(lowest_cost <= 0){
+            printf("Lowest cost is too low (must be positive) \n");
+            break;
+        }
+        while(budget_count > lowest_cost){
+            do{
+                do{ /* This do assures xpos never equals ROWS (unlikely) */
+                    xpos = floor( runif(0,ROWS) );
+                }while(xpos == ROWS);
+                do{
+                    ypos = floor( runif(4,COLS) );
+                }while(ypos == COLS);
+            }while(COST[xpos][ypos][layer] > budget_count);
+            population[xpos][ypos][agent]++;
+            budget_count -= COST[xpos][ypos][layer];
+        } /* Should now make random actions allowed by budget */
+    }
+}
+```
+
+The above function cals the `min_cost` function, which simply examines the `COST` array to find the lowest cost action. It keeps filling up actions in the `ACTION` array until it's full.
+
+```
+/* =============================================================================
+ * This function will find the minimum cost of an action in the COST array
+ * for a particular agent (layer). Inputs include:
+ *     COST: A full 3D COST array
+ *     layer: The layer on which the minimum is going to be found
+ *     budget: The total budget that the agent has to work with (initliases)
+ *     rows: The total number of rows in the COST array
+ *     cols: The total number of cols in the COST array
+ * ========================================================================== */
+int min_cost(double ***COST, int layer, double budget, int rows, int cols){
+    int i, j;
+    double the_min;
+    
+    the_min = budget;
+    for(i = 0; i < rows; i++){
+        for(j = 0; j < cols; j++){
+            if(COST[i][j][layer] < the_min){
+                the_min = COST[i][j][layer];
+            }
+        }
+    }
+    return the_min; 
+}
+```
+
+We now have a functioning way to initialise a population of agents that will later go through a genetic algoirthm to select the best actions. In working through this, I've seen that an earlier idea of mine (not sure if I wrote this down below) might be useful -- have a column in both `COST` and `ACTION` that is simply `bankem` -- essentially stashing costs in a way that doesn't **do** anything. This might be important for situations in which an agent actually benefits by doing nothing, or when we want some general way to consider the benefits of stake-holder actions that affect utility but have no effect on resources or other stake-holders (e.g., holiday time).
 
 > <a name="u-14-MAR-2017">Update: 14 MAR 2017</a>
 
