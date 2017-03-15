@@ -83,8 +83,12 @@ void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
         }
         while(budget_count > lowest_cost){
             do{
-                xpos = floor( runif(0,ROWS) );
-                ypos = floor( runif(4,COLS) );
+                do{ /* This do assures xpos never equals ROWS (unlikely) */
+                    xpos = floor( runif(0,ROWS) );
+                }while(xpos == ROWS);
+                do{
+                    ypos = floor( runif(4,COLS) );
+                }while(ypos == COLS);
             }while(COST[xpos][ypos][layer] > budget_count);
             population[xpos][ypos][agent]++;
             budget_count -= COST[xpos][ypos][layer];
