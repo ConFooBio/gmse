@@ -61,13 +61,13 @@ void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
     /* First read in pop_size copies of the ACTION layer of interest */
     for(agent = 0; agent < pop_size; agent++){
         for(row = 0; row < ROWS; row++){
-            population[row][0][agent] = ACTION[row][0][agent];
-            population[row][1][agent] = ACTION[row][1][agent];
-            population[row][2][agent] = ACTION[row][2][agent];
-            population[row][3][agent] = ACTION[row][3][agent];
+            population[row][0][agent] = ACTION[row][0][layer];
+            population[row][1][agent] = ACTION[row][1][layer];
+            population[row][2][agent] = ACTION[row][2][layer];
+            population[row][3][agent] = ACTION[row][3][layer];
             if(agent < carbon_copies){
                 for(col = 4; col < COLS; col++){
-                    population[row][col][agent] = ACTION[row][col][agent];
+                    population[row][col][agent] = ACTION[row][col][layer];
                 }
             }else{
                 for(col = 4; col < COLS; col++){
@@ -126,15 +126,22 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES){
     }  
     
     initialise_pop(ACTION, COST, 0, 100, 100, 10, xdim, ydim, NEW_ACTION);
-
+    
     printf("\n");
     printf("%f\t",NEW_ACTION[0][0][0]);
-    printf("%f\t",NEW_ACTION[0][1][0]);
-    printf("%f\n",NEW_ACTION[1][0][0]);
+    printf("%f\n",NEW_ACTION[0][1][0]);
+    printf("%f\t",NEW_ACTION[1][0][0]);
     printf("%f\n",NEW_ACTION[1][1][0]);
 
-}
+    for(row = 0; row < xdim; row++){
+        for(col = 0; col < ydim; col++){
+            free(NEW_ACTION[row][col]);   
+        }
+        free(NEW_ACTION[row]); 
+    }
+    free(NEW_ACTION);
     
+}
     
     
     
