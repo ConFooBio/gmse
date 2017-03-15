@@ -3,6 +3,8 @@
 #include <Rinternals.h>
 #include <Rmath.h>
 
+void swap_double(double *a, double *b);
+
 int edge_effect(int pos, int edge_1, int edge_2, int edge_type);
 
 void res_mover(double **res_moving, int xloc, int yloc, int move_para, int rows,

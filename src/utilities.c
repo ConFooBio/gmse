@@ -4,6 +4,17 @@
 #include <Rmath.h>
 
 /* =============================================================================
+ * Swap two values (avoiding the XOR trick deliberately here)
+ * ========================================================================== */
+void swap_double(double *a, double *b){
+    double temp; 
+    
+    temp = *a;
+    *a   = *b;
+    *b   = temp;
+}
+
+/* =============================================================================
  * This function applies the edge effect during movement
  * ========================================================================== */
 int edge_effect(int pos, int edge_1, int edge_2, int edge_type){
