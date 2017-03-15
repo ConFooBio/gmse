@@ -111,7 +111,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES){
     int xdim, ydim;
     double ***NEW_ACTION;
     
-    ydim = 12;
+    ydim = 13;
     xdim = 4;
     
     NEW_ACTION = malloc(xdim * sizeof(double *));
