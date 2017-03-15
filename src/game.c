@@ -134,6 +134,45 @@ void crossover(double ***population, int pop_size, int ROWS, int COLS,
     }
 }
 
+/* =============================================================================
+ * This function will use the initialised population from intialise_pop to make
+ * the population array undergo mutations at random elements in their array
+ * Necessary variable inputs include:
+ *     population: array of the population that is made (malloc needed earlier)
+ *     pop_size: The size of the total population (layers to population)
+ *     ROWS: Number of rows in the COST and ACTION arrays
+ *     COLS: Number of columns in the COST and ACTION arrays
+ *     pr: Probability of a mutation occurring at an element.
+ * ========================================================================== */
+void mutation(double ***population, int pop_size, int ROWS, int COLS, 
+               double pr){
+    
+    int agent, row, col;
+    double do_mutation;
+    double agent_val;
+    double half_pr;
+    
+    half_pr = 0.5 * pr;
+    
+    /* First do the crossovers */
+    for(agent = 0; agent < pop_size; agent++){
+        for(row = 0; row < ROWS; row++){
+            for(col = 4; col < COLS; col++){
+                do_mutation = runif(0,1);
+                if( do_mutation < half_pr ){
+                    population[row][col][agent]--;
+                }
+                if( do_mutation > (1 - half_pr) ){
+                    population[row][col][agent]++;
+                }
+                if( population[row][col][agent] < 0 ){
+                    population[row][col][agent] *= -1;    
+                } /* Change sign if mutates to a negative value */
+            }
+        }
+    }
+}
+
 
 /* 
  * This function will eventually call all of the other functions used in the
@@ -166,6 +205,8 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES){
     
     initialise_pop(ACTION, COST, 0, 100, 100, 10, xdim, ydim, POPULATION);
     
+    crossover(POPULATION, 100, xdim, ydim, 0.1);
+    
     /*
     printf("1 ------------------------------- \n");
     for(row = 0; row < xdim; row++){
@@ -176,7 +217,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES){
     } 
     */
     
-    crossover(POPULATION, 100, xdim, ydim, 0.1);
+    mutation(POPULATION, 100, xdim, ydim, 0.1);
     
     /*
     printf("2 ------------------------------- \n");
@@ -186,7 +227,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES){
         }
         printf("\n");
     }
-     */
+    */
     
 
     for(row = 0; row < xdim; row++){

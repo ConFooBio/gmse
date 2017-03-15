@@ -6,4 +6,10 @@ void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
                     int budget, int carbon_copies, int ROWS, int COLS,
                     double ***population);
 
+void crossover(double ***population, int pop_size, int ROWS, int COLS, 
+          double pr);
+
+void mutation(double ***population, int pop_size, int ROWS, int COLS, 
+         double pr);
+
 void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES);
