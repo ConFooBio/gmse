@@ -128,10 +128,13 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES){
     initialise_pop(ACTION, COST, 0, 100, 100, 10, xdim, ydim, NEW_ACTION);
     
     printf("\n");
-    printf("%f\t",NEW_ACTION[0][0][0]);
-    printf("%f\n",NEW_ACTION[0][1][0]);
-    printf("%f\t",NEW_ACTION[1][0][0]);
-    printf("%f\n",NEW_ACTION[1][1][0]);
+    for(row = 0; row < xdim; row++){
+        for(col = 0; col < ydim; col++){
+            printf("%f ", NEW_ACTION[row][col][20]);
+        }
+        printf("\n");
+    }
+    
 
     for(row = 0; row < xdim; row++){
         for(col = 0; col < ydim; col++){
