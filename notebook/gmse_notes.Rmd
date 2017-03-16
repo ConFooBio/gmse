@@ -195,6 +195,59 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
 
 The above function therefore simply returns the last column (`bankem`) as the individual's fitness. I'm now going to maximise this using a tournament approach to fitness, as suggested by @Hamblin2013.
 
+**Functioning tournament function**
+
+After some toiling with swaps and pointers, I've managed to come up with a somewhat concise and clear function that randomly samples `sampleK` individuals from the population and selects the `chooseK` individuals with highest fitness.
+
+```
+/* =============================================================================
+ * This function takes an array of fitnesses and returns an equal size array of
+ * indices, the values of which will define which new individuals will make it
+ * into the next population array, and in what proportions.
+ *     fitnesses: Array to order fitnesses of the agents in the population
+ *     winners: Array of the winners of the tournament
+ *     pop_size: The size of the total population (layers to population)
+ *     sampleK: The size of the subset of fitnesses sampled to compete
+ *     chooseK: The number of individuals selected from the sample
+ * ========================================================================== */
+void tournament(double *fitnesses, int *winners, int pop_size, 
+                      int sampleK, int chooseK){
+    int samp;
+    int *samples;
+    int left_to_place, placed;
+    int rand_samp;
+    double *samp_fit;
+    
+    samples  = malloc(sampleK * sizeof(int));
+    samp_fit = malloc(sampleK * sizeof(double));
+    placed   = 0;
+    
+    while(placed < pop_size){ /* Note sampling is done with replacement */
+        for(samp = 0; samp < sampleK; samp++){
+            do{
+                rand_samp      = floor( runif(0, pop_size) );
+                samples[samp]  = rand_samp;
+                samp_fit[samp] = fitnesses[rand_samp];
+            }while(rand_samp == pop_size);
+        }
+        sort_vector_by(samples, samp_fit, sampleK);
+        if( (chooseK + placed) >= pop_size){
+            chooseK = pop_size - placed;    
+        }
+        samp = 0;
+        while(samp < chooseK && placed < pop_size){
+            winners[placed] = samples[samp];
+            placed++;
+            samp++;
+        }
+    }
+    free(samp_fit);
+    free(samples);
+}
+```
+
+Note that in writing the above, I had to write a simple sort (`sort_vector_by`) and swap function in `utilities.c`. I also need to write some error messages into the above (or in `ga` itself); `chooseK` cannot be larger than `sampleK`. Next up will be to iterate the `ga` functions and make sure that fitnesses asymptote to high fitness. The framework for the genetic algorithm will then be in place, and it will be time to switch to the complex part of more interesting fitness functions.
+
 > <a name="u-15-MAR-2017">Update: 15 MAR 2017</a>
 
 **Initialisation of action populations**
