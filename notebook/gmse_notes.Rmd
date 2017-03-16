@@ -127,6 +127,40 @@ void constrain_costs(double ***population, double ***COST, int layer,
 
 The function has been tested, and works as intended. When the sum of the action elements of an individual multiplied by the cost of each action (`tot_cost` in the above function) are higher than the allowable `budget`, actions are randomly removed until the total costis at or under budget. Note that lower-cost actions are not removed preferentially so as not to bias evolution toward low-cost actions.
 
+**Initial thoughts on the fitness function**
+
+Having now completed functions modelling crossover, mutation, and cost-constraints in C, there are two functions left in the genetic algorithm that are needed. The **second** is a tournament function modelling selection -- this will be relatively easy to code once I have individual fitnesses in the population. The **first** is the fitness function, which be very complex -- so much so that I'm planning to write a very quick simplified version of the fitness function before expanding it out to deal with more difficult questions. What has to happen with the fitness function is that each simulated individual in the popuation has to use whatever information is available to an agent (e.g., manager observations, anecdotal surveys, past decisions of other agents, landscape status, etc.) to predict what the future status of the resources and landscape will be, then assign a fitness to that prediction. Utilities of each resource are in the (truncated) action and cost arrays, as below. 
+
+| agent | type1 | type2 | type3 | util | u_loc | u_land | movem  | castem | killem | feedem | helpem | bankem |
+|-------|-------|-------|-------|------|-------|--------|--------|--------|--------|--------|--------|--------|
+| -1    |  1    |  0    | 0     | 2    | 1     | 0      | 0      |  0     |  0     |  0     |  0     |  1     |
+| -1    |  2    |  0    | 0     | 0    | 1     | 0      | 0      |  0     |  2     |  0     |  0     |  1     |
+|  1    |  1    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |  1     |
+|  1    |  2    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |  1     |
+|  2    |  1    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |  1     |
+|  2    |  2    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |  1     |
+|  3    |  1    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |  1     |
+|  3    |  2    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |  1     |
+
+Above we have the utilities of each resource type (`type1`), but I'm just realising that the **utilities of the landscape** are absent. **There isn't really anything in the above table, for example to say that a stake-holder assigns a utility to the value of a given landscape cell.**. But this needs to be the case if we want something like crop yield (perhaps I should more generally be calling it ''food security'') to be modelled as part of the landscape. **I think the best solution** for this is to include the landscape in `type1` as a negative integer. The landscape layer identifying crop yield is 1 in C (2 in R) -- if I placed a new row of `type1 = -1` in the `COST` and `ACTION` arrays for each agent, then the negative could simply indicate that we are looking at the `LANDSCAPE` array instead of the `RESOURCE` array. I also don't think more than one layer of landscape will ever be used, so I'm not seeing a confusing mess of negative and positive types. The corresponding action columns (`movem`, `castem`, etc.) could have interpretations for landscape, some of them such as `feedem` are obvoius, while others could just be ignored because they don't really apply. In the end the arrays would then look something like the below.
+
+| agent | type1 | type2 | type3 | util | u_loc | u_land | movem  | castem | killem | feedem | helpem | bankem |
+|-------|-------|-------|-------|------|-------|--------|--------|--------|--------|--------|--------|--------|
+| -1    |  -1   |  0    | 0     | 1    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |  1     |
+| -1    |  1    |  0    | 0     | 2    | 1     | 0      | 0      |  0     |  0     |  0     |  0     |  1     |
+| -1    |  2    |  0    | 0     | 0    | 1     | 0      | 0      |  0     |  2     |  0     |  0     |  1     |
+|  1    |  -1   |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |  1     |
+|  1    |  1    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |  1     |
+|  1    |  2    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |  1     |
+|  2    |  -1   |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |  1     |
+|  2    |  1    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |  1     |
+|  2    |  2    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |  1     |
+|  3    |  -1   |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |  1     |
+|  3    |  1    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |  1     |
+|  3    |  2    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |  1     |
+
+Maybe not the most elegant solution, but it keeps everything on a single array and the interpretations of types are fairly straightforward. I'll implement this next as new array initialisations, then build a prototype fitness function that attempts to maximise crop yield through `feedem` (not sure if this should actually be an action in the model).
+
 > <a name="u-15-MAR-2017">Update: 15 MAR 2017</a>
 
 **Initialisation of action populations**
