@@ -19,5 +19,8 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
                  int ROWS, int COLS, double ***landscape,  
                  double **resources, double **agent_array);
 
+tournament(double *fitnesses, int *winners, int pop_size, 
+           int sampleK, int chooseK);
+
 void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE);

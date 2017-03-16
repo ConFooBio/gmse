@@ -242,6 +242,51 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
     }
 }
 
+/* =============================================================================
+ * This function takes an array of fitnesses and returns an equal size array of
+ * indices, the values of which will define which new individuals will make it
+ * into the next population array, and in what proportions.
+ *     fitnesses: Array to order fitnesses of the agents in the population
+ *     winners: Array of the winners of the tournament
+ *     pop_size: The size of the total population (layers to population)
+ *     sampleK: The size of the subset of fitnesses sampled to compete
+ *     chooseK: The number of individuals selected from the sample
+ * ========================================================================== */
+void tournament(double *fitnesses, int *winners, int pop_size, 
+                      int sampleK, int chooseK){
+    int samp;
+    int *samples;
+    int left_to_place, placed;
+    int rand_samp;
+    double *samp_fit;
+    
+    samples  = malloc(sampleK * sizeof(int));
+    samp_fit = malloc(sampleK * sizeof(double));
+    placed   = 0;
+    
+    while(placed < pop_size){ /* Note sampling is done with replacement */
+        for(samp = 0; samp < sampleK; samp++){
+            do{
+                rand_samp      = floor( runif(0, pop_size) );
+                samples[samp]  = rand_samp;
+                samp_fit[samp] = fitnesses[rand_samp];
+            }while(rand_samp == pop_size);
+        }
+        sort_vector_by(samples, samp_fit, sampleK);
+        if( (chooseK + placed) >= pop_size){
+            chooseK = pop_size - placed;    
+        }
+        samp = 0;
+        while(samp < chooseK && placed < pop_size){
+            winners[placed] = samples[samp];
+            placed++;
+            samp++;
+        }
+    }
+    free(samp_fit);
+    free(samples);
+}
+
 /* 
  * This function will eventually call all of the other functions used in the
  * genetic algorithm. For now, it is being used just to call the other functions
@@ -252,20 +297,28 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     
     int row, col, layer;
     int xdim, ydim;
+    int sampleK, chooseK;
+    int popsize;
     double ***POPULATION;
     double *fitnesses;
+    int *winners;
+    
+    popsize = 100;
+    sampleK = 10;
+    chooseK = 4;
     
     ydim = 13;
     xdim = 4;
+
     
     POPULATION = malloc(xdim * sizeof(double *));
     for(row = 0; row < xdim; row++){
         POPULATION[row] = malloc(ydim * sizeof(double *));
         for(col = 0; col < ydim; col++){
-            POPULATION[row][col] = malloc(100 * sizeof(double));
+            POPULATION[row][col] = malloc(popsize * sizeof(double));
         }
     }
-    for(layer = 0; layer < 100; layer++){
+    for(layer = 0; layer < popsize; layer++){
         for(col = 0; col < ydim; col++){
             for(row = 0; row < xdim; row++){
                 POPULATION[row][col][layer] = 0;
@@ -273,31 +326,24 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         }
     }  
     
-    fitnesses = malloc(100 * sizeof(double));
+    fitnesses = malloc(popsize * sizeof(double));
+    winners   = malloc(popsize * sizeof(int));
     
     
-    initialise_pop(ACTION, COST, 0, 100, 100, 10, xdim, ydim, POPULATION);
+    initialise_pop(ACTION, COST, 0, popsize, 100, 10, xdim, ydim, POPULATION);
     
-    crossover(POPULATION, 100, xdim, ydim, 0.1);
+    crossover(POPULATION, popsize, xdim, ydim, 0.1);
 
-    mutation(POPULATION, 100, xdim, ydim, 0.1);
+    mutation(POPULATION, popsize, xdim, ydim, 0.1);
     
-    constrain_costs(POPULATION, COST, 0, 100, xdim, ydim, 100);
+    constrain_costs(POPULATION, COST, 0, popsize, xdim, ydim, 100);
     
-    for(row = 0; row < 10; row++){
-        printf("%f ", fitnesses[row]);
-    }
-    
-    strategy_fitness(fitnesses, POPULATION, 100, xdim, ydim, LANDSCAPE, 
+    strategy_fitness(fitnesses, POPULATION, popsize, xdim, ydim, LANDSCAPE, 
                      RESOURCES, AGENT);
-    
-    printf("\n");
-    for(row = 0; row < 10; row++){
-        printf("%f ", fitnesses[row]);
-    }
-    printf("\n");
-    printf("\n");
-    
+
+    tournament(fitnesses, winners, popsize, sampleK, chooseK);
+
+    free(winners);
     free(fitnesses);
     for(row = 0; row < xdim; row++){
         for(col = 0; col < ydim; col++){
