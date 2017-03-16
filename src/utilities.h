@@ -3,7 +3,13 @@
 #include <Rinternals.h>
 #include <Rmath.h>
 
+void swap_int(int *a, int *b);
+
 void swap_double(double *a, double *b);
+
+void sort_vector(int *vector, int vector_length);
+
+void sort_vector_by(int *vector, double *by, int vector_length);
 
 int edge_effect(int pos, int edge_1, int edge_2, int edge_type);
 

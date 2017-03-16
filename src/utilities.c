@@ -6,12 +6,54 @@
 /* =============================================================================
  * Swap two values (avoiding the XOR trick deliberately here)
  * ========================================================================== */
+void swap_int(int *a, int *b){
+    int temp; 
+    
+    temp   = *a;
+    *a     = *b;
+    *b     = temp;
+}
+
+/* =============================================================================
+ * Swap two values (avoiding the XOR trick deliberately here)
+ * ========================================================================== */
 void swap_double(double *a, double *b){
     double temp; 
     
     temp   = *a;
     *a     = *b;
     *b     = temp;
+}
+
+/* =============================================================================
+ * Sort a vector of integers
+ * ========================================================================== */
+void sort_vector(int *vector, int vector_length){
+    int i, j, temp;
+    
+    for(i = 0; i < vector_length; i++){
+        for(j = i + 1; j < vector_length; j++){
+            if(vector[i] < vector[j]){
+                swap_int(&vector[i], &vector[j]);
+            }
+        }
+    }
+}
+
+/* =============================================================================
+ * Sort a vector of integers by another vector
+ * ========================================================================== */
+void sort_vector_by(int *vector, double *by, int vector_length){
+    int i, j;
+    
+    for(i = 0; i < vector_length; i++){
+        for(j = i + 1; j < vector_length; j++){
+            if(by[i] < by[j]){
+                swap_int(&vector[i], &vector[j]);
+                swap_double(&by[i], &by[j]);
+            }
+        }
+    }
 }
 
 /* =============================================================================
