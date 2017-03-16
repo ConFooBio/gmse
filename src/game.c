@@ -173,6 +173,49 @@ void mutation(double ***population, int pop_size, int ROWS, int COLS,
     }
 }
 
+/* =============================================================================
+ * This function will ensure that the actions of individuals in the population
+ * are within the cost budget after crossover and mutation has taken place
+ * Necessary variable inputs include:
+ *     population: array of the population that is made (malloc needed earlier)
+ *     COST: A 3D array of costs of performing actions
+ *     layer: The 'z' layer of the COST and ACTION arrays to be initialised
+ *     pop_size: The size of the total population (layers to population)
+ *     ROWS: Number of rows in the COST and ACTION arrays
+ *     COLS: Number of columns in the COST and ACTION arrays
+ *     budget: The budget that random agents have to work with
+ * ========================================================================== */
+void constrain_costs(double ***population, double ***COST, int layer, 
+                     int pop_size, int ROWS, int COLS, double budget){
+    
+    int xpos, ypos;
+    int agent, row, col;
+    double tot_cost, action_val, action_cost;
+    double temp_test;
+    
+    for(agent = 0; agent < pop_size; agent++){
+        tot_cost = 0;
+        for(row = 0; row < ROWS; row++){
+            for(col = 4; col < COLS; col++){
+                action_val  = population[row][col][agent];
+                action_cost = COST[row][col][layer];
+                tot_cost   += (action_val * action_cost);
+            }
+        }
+        while(tot_cost > budget){
+            do{ /* This do assures xpos never equals ROWS (unlikely) */
+                xpos = floor( runif(0,ROWS) );
+            }while(xpos == ROWS);
+            do{
+                ypos = floor( runif(4,COLS) );
+            }while(ypos == COLS);
+            if(population[xpos][ypos][agent] > 0){
+                population[xpos][ypos][agent]--;
+                tot_cost -= COST[xpos][ypos][layer];
+            }
+        }
+    }
+}
 
 /* 
  * This function will eventually call all of the other functions used in the
@@ -206,6 +249,8 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES){
     initialise_pop(ACTION, COST, 0, 100, 100, 10, xdim, ydim, POPULATION);
     
     crossover(POPULATION, 100, xdim, ydim, 0.1);
+
+    mutation(POPULATION, 100, xdim, ydim, 0.1);
     
     /*
     printf("1 ------------------------------- \n");
@@ -217,7 +262,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES){
     } 
     */
     
-    mutation(POPULATION, 100, xdim, ydim, 0.1);
+    constrain_costs(POPULATION, COST, 0, 100, xdim, ydim, 100);
     
     /*
     printf("2 ------------------------------- \n");
@@ -228,7 +273,6 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES){
         printf("\n");
     }
     */
-    
 
     for(row = 0; row < xdim; row++){
         for(col = 0; col < ydim; col++){

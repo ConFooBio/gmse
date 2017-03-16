@@ -12,4 +12,7 @@ void crossover(double ***population, int pop_size, int ROWS, int COLS,
 void mutation(double ***population, int pop_size, int ROWS, int COLS, 
          double pr);
 
+void constrain_costs(double ***population, double ***COST, int layer, 
+                int pop_size, int ROWS, int COLS, double budget);
+
 void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES);
