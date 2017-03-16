@@ -191,8 +191,7 @@ void constrain_costs(double ***population, double ***COST, int layer,
     int xpos, ypos;
     int agent, row, col;
     double tot_cost, action_val, action_cost;
-    double temp_test;
-    
+
     for(agent = 0; agent < pop_size; agent++){
         tot_cost = 0;
         for(row = 0; row < ROWS; row++){
@@ -252,7 +251,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES){
 
     mutation(POPULATION, 100, xdim, ydim, 0.1);
     
-    /*
+    
     printf("1 ------------------------------- \n");
     for(row = 0; row < xdim; row++){
         for(col = 0; col < ydim; col++){
@@ -260,11 +259,11 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES){
         }
         printf("\n");
     } 
-    */
+    
     
     constrain_costs(POPULATION, COST, 0, 100, xdim, ydim, 100);
     
-    /*
+    
     printf("2 ------------------------------- \n");
     for(row = 0; row < xdim; row++){
         for(col = 0; col < ydim; col++){
@@ -272,7 +271,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES){
         }
         printf("\n");
     }
-    */
+    
 
     for(row = 0; row < xdim; row++){
         for(col = 0; col < ydim; col++){
