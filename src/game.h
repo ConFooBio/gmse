@@ -15,4 +15,9 @@ void mutation(double ***population, int pop_size, int ROWS, int COLS,
 void constrain_costs(double ***population, double ***COST, int layer, 
                 int pop_size, int ROWS, int COLS, double budget);
 
-void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES);
+void strategy_fitness(double *fitnesses, double ***population, int pop_size, 
+                 int ROWS, int COLS, double ***landscape,  
+                 double **resources, double **agent_array);
+
+void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
+        double ***LANDSCAPE);

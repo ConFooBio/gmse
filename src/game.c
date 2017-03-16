@@ -173,6 +173,7 @@ void mutation(double ***population, int pop_size, int ROWS, int COLS,
     }
 }
 
+
 /* =============================================================================
  * This function will ensure that the actions of individuals in the population
  * are within the cost budget after crossover and mutation has taken place
@@ -216,16 +217,43 @@ void constrain_costs(double ***population, double ***COST, int layer,
     }
 }
 
+/* =============================================================================
+ * This is a preliminary function that checks the fitness of each agent -- as of
+ * now, fitness is just defined by how much action is placed into savem (last
+ * column). Things will get much more complex in a bit, but there needs to be
+ * some sort of framework in place to first check to see that everything else is
+ * working so that I can isolate the fitness function's effect later.
+ *     fitnesses: Array to order fitnesses of the agents in the population
+ *     population: array of the population that is made (malloc needed earlier)
+ *     pop_size: The size of the total population (layers to population)
+ *     ROWS: Number of rows in the COST and ACTION arrays
+ *     COLS: Number of columns in the COST and ACTION arrays
+ *     landscape: The landscape array
+ *     resources: The resource array
+ *     agent_array: The agent array
+ * ========================================================================== */
+void strategy_fitness(double *fitnesses, double ***population, int pop_size, 
+                      int ROWS, int COLS, double ***landscape,  
+                      double **resources, double **agent_array){
+    int agent;
+    
+    for(agent = 0; agent < pop_size; agent++){
+        fitnesses[agent] += population[0][12][agent];
+    }
+}
+
 /* 
  * This function will eventually call all of the other functions used in the
  * genetic algorithm. For now, it is being used just to call the other functions
  * and therefore test out whether or not they work.
  */
-void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES){
+void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
+        double ***LANDSCAPE){
     
     int row, col, layer;
     int xdim, ydim;
     double ***POPULATION;
+    double *fitnesses;
     
     ydim = 13;
     xdim = 4;
@@ -245,34 +273,32 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES){
         }
     }  
     
+    fitnesses = malloc(100 * sizeof(double));
+    
+    
     initialise_pop(ACTION, COST, 0, 100, 100, 10, xdim, ydim, POPULATION);
     
     crossover(POPULATION, 100, xdim, ydim, 0.1);
 
     mutation(POPULATION, 100, xdim, ydim, 0.1);
     
-    
-    printf("1 ------------------------------- \n");
-    for(row = 0; row < xdim; row++){
-        for(col = 0; col < ydim; col++){
-            printf("%f ", POPULATION[row][col][20]);
-        }
-        printf("\n");
-    } 
-    
-    
     constrain_costs(POPULATION, COST, 0, 100, xdim, ydim, 100);
     
-    
-    printf("2 ------------------------------- \n");
-    for(row = 0; row < xdim; row++){
-        for(col = 0; col < ydim; col++){
-            printf("%f ", POPULATION[row][col][20]);
-        }
-        printf("\n");
+    for(row = 0; row < 10; row++){
+        printf("%f ", fitnesses[row]);
     }
     
-
+    strategy_fitness(fitnesses, POPULATION, 100, xdim, ydim, LANDSCAPE, 
+                     RESOURCES, AGENT);
+    
+    printf("\n");
+    for(row = 0; row < 10; row++){
+        printf("%f ", fitnesses[row]);
+    }
+    printf("\n");
+    printf("\n");
+    
+    free(fitnesses);
     for(row = 0; row < xdim; row++){
         for(col = 0; col < ydim; col++){
             free(POPULATION[row][col]);   
@@ -280,7 +306,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES){
         free(POPULATION[row]); 
     }
     free(POPULATION);
-    
+
 }
     
     
