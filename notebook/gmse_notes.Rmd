@@ -161,6 +161,40 @@ Above we have the utilities of each resource type (`type1`), but I'm just realis
 
 Maybe not the most elegant solution, but it keeps everything on a single array and the interpretations of types are fairly straightforward. I'll implement this next as new array initialisations, then build a prototype fitness function that attempts to maximise crop yield through `feedem` (not sure if this should actually be an action in the model).
 
+**Manager summary missing**
+
+In working with the fitness function in the user model, I realised that the manager information was obviously missing, so this will have to be added in later (should be easy to do so). One reason for doing the user model first is because the manager model (particularly the genetic algorithm) is going to get much more complicated. Nevertheless, the manager model's use of the genetic algorithm necessitates that the genetic algorithm be able to use both the `OBSERVATION` array and the manager's `OBS_SUMMARY` of the array. Different users will have access to do different information, but I'm starting small to make sure everything is built clearly. 
+
+```
+/* =============================================================================
+ * This is a preliminary function that checks the fitness of each agent -- as of
+ * now, fitness is just defined by how much action is placed into savem (last
+ * column). Things will get much more complex in a bit, but there needs to be
+ * some sort of framework in place to first check to see that everything else is
+ * working so that I can isolate the fitness function's effect later.
+ *     fitnesses: Array to order fitnesses of the agents in the population
+ *     population: array of the population that is made (malloc needed earlier)
+ *     pop_size: The size of the total population (layers to population)
+ *     ROWS: Number of rows in the COST and ACTION arrays
+ *     COLS: Number of columns in the COST and ACTION arrays
+ *     landscape: The landscape array
+ *     resources: The resource array
+ *     agent_array: The agent array
+ * ========================================================================== */
+void strategy_fitness(double *fitnesses, double ***population, int pop_size, 
+                      int ROWS, int COLS, double ***landscape,  
+                      double **resources, double **agent_array){
+    int agent;
+    
+    for(agent = 0; agent < pop_size; agent++){
+        fitnesses[agent] += population[0][12][agent];
+    }
+    
+}
+```
+
+The above function therefore simply returns the last column (`bankem`) as the individual's fitness. I'm now going to maximise this using a tournament approach to fitness, as suggested by @Hamblin2013.
+
 > <a name="u-15-MAR-2017">Update: 15 MAR 2017</a>
 
 **Initialisation of action populations**
