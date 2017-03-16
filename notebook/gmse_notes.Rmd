@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **MAR** [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
+     - **MAR** [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
  
@@ -73,6 +73,59 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-16-MAR-2017">Update: 16 MAR 2017</a>
+
+**Initialise new function to constrain costs in the genetic algorithm**
+
+A new function has been written to constrain costs in the genetic algorithm when they go over budget as a consequence of crossover and mutation.
+
+```
+/* =============================================================================
+ * This function will ensure that the actions of individuals in the population
+ * are within the cost budget after crossover and mutation has taken place
+ * Necessary variable inputs include:
+ *     population: array of the population that is made (malloc needed earlier)
+ *     COST: A 3D array of costs of performing actions
+ *     layer: The 'z' layer of the COST and ACTION arrays to be initialised
+ *     pop_size: The size of the total population (layers to population)
+ *     ROWS: Number of rows in the COST and ACTION arrays
+ *     COLS: Number of columns in the COST and ACTION arrays
+ *     budget: The budget that random agents have to work with
+ * ========================================================================== */
+void constrain_costs(double ***population, double ***COST, int layer, 
+                     int pop_size, int ROWS, int COLS, double budget){
+    
+    int xpos, ypos;
+    int agent, row, col;
+    double tot_cost, action_val, action_cost;
+
+    for(agent = 0; agent < pop_size; agent++){
+        tot_cost = 0;
+        for(row = 0; row < ROWS; row++){
+            for(col = 4; col < COLS; col++){
+                action_val  = population[row][col][agent];
+                action_cost = COST[row][col][layer];
+                tot_cost   += (action_val * action_cost);
+            }
+        }
+        while(tot_cost > budget){
+            do{ /* This do assures xpos never equals ROWS (unlikely) */
+                xpos = floor( runif(0,ROWS) );
+            }while(xpos == ROWS);
+            do{
+                ypos = floor( runif(4,COLS) );
+            }while(ypos == COLS);
+            if(population[xpos][ypos][agent] > 0){
+                population[xpos][ypos][agent]--;
+                tot_cost -= COST[xpos][ypos][layer];
+            }
+        }
+    }
+}
+```
+
+The function has been tested, and works as intended. When the sum of the action elements of an individual multiplied by the cost of each action (`tot_cost` in the above function) are higher than the allowable `budget`, actions are randomly removed until the total costis at or under budget. Note that lower-cost actions are not removed preferentially so as not to bias evolution toward low-cost actions.
 
 > <a name="u-15-MAR-2017">Update: 15 MAR 2017</a>
 
