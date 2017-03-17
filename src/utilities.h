@@ -3,6 +3,8 @@
 #include <Rinternals.h>
 #include <Rmath.h>
 
+void swap_arrays(void **ARRAY_A, void **ARRAY_B);
+
 void swap_int(int *a, int *b);
 
 void swap_double(double *a, double *b);

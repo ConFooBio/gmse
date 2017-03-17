@@ -4,6 +4,18 @@
 #include <Rmath.h>
 
 /* =============================================================================
+ * Swap pointers to rewrite ARRAY_B into ARRAY_A for a an array of any dimension
+ * ========================================================================== */
+void swap_arrays(void **ARRAY_A, void **ARRAY_B){
+
+    void *TEMP_ARRAY;
+
+    TEMP_ARRAY = *ARRAY_A;
+    *ARRAY_A   = *ARRAY_B;
+    *ARRAY_B   = TEMP_ARRAY;
+}
+
+/* =============================================================================
  * Swap two values (avoiding the XOR trick deliberately here)
  * ========================================================================== */
 void swap_int(int *a, int *b){

@@ -264,6 +264,11 @@ void tournament(double *fitnesses, int *winners, int pop_size,
     samp_fit = malloc(sampleK * sizeof(double));
     placed   = 0;
     
+    if(chooseK > sampleK){
+        printf("ERROR: Can't choose more winners than sampled in tournament\n");
+        printf("Defaulting to sampleK = chooseK \n");
+        chooseK = sampleK;
+    }
     while(placed < pop_size){ /* Note sampling is done with replacement */
         for(samp = 0; samp < sampleK; samp++){
             do{
@@ -287,6 +292,51 @@ void tournament(double *fitnesses, int *winners, int pop_size,
     free(samples);
 }
 
+
+/* =============================================================================
+ * This function takes winners from the tournament function and replicates them
+ * in a new population array. 
+ *     population: array of the population
+ *     winners: Array of the winners of the tournament
+ *     pop_size: The size of the total population (layers to population)
+ *     new_pop: Array of the new population to be made
+ *     ROWS: Number of rows in the COST and ACTION arrays
+ *     COLS: Number of columns in the COST and ACTION arrays
+ * ========================================================================== */
+void place_winners(double ***population, int *winners, int pop_size, 
+                   double ***new_pop, int ROWS, int COLS){
+
+    int i, row, col, layer, winner;
+    double ***NEW_POP;
+    
+    NEW_POP    = malloc(ROWS * sizeof(double *));
+    for(row = 0; row < ROWS; row++){
+        NEW_POP[row]    = malloc(COLS * sizeof(double *));
+        for(col = 0; col < COLS; col++){
+            NEW_POP[row][col]    = malloc(pop_size * sizeof(double));
+        }
+    }
+
+    for(i = 0; i < pop_size; i++){
+        winner = winners[i];
+        for(row = 0; row < ROWS; row++){
+            for(col = 0; col < COLS; col++){
+                NEW_POP[row][col][i] = population[row][col][winner];
+            }
+        }
+    }
+    
+    /* swap_arrays((void*)&MAT1, (void*)&MAT2); */
+    
+    for(row = 0; row < ROWS; row++){
+        for(col = 0; col < COLS; col++){
+            free(NEW_POP[row][col]);   
+        }
+        free(NEW_POP[row]); 
+    }
+    free(NEW_POP);
+}
+
 /* 
  * This function will eventually call all of the other functions used in the
  * genetic algorithm. For now, it is being used just to call the other functions
@@ -302,14 +352,107 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     double ***POPULATION;
     double *fitnesses;
     int *winners;
+    int ***MAT1, ***MAT2;
     
     popsize = 100;
-    sampleK = 10;
-    chooseK = 4;
+    sampleK = 5;
+    chooseK = 2;
     
     ydim = 13;
     xdim = 4;
 
+    /* ********************************************************************** */
+    MAT1 = malloc(3 * sizeof(int *));
+    for(row = 0; row < 3; row++){
+        MAT1[row] = malloc(3 * sizeof(int *));
+        for(col = 0; col < 3; col++){
+            MAT1[row][col] = malloc(2 * sizeof(int));
+        }
+    }
+    MAT2 = malloc(3 * sizeof(int *));
+    for(row = 0; row < 3; row++){
+        MAT2[row] = malloc(3 * sizeof(int *));
+        for(col = 0; col < 3; col++){
+            MAT2[row][col] = malloc(2 * sizeof(int));
+        }
+    }
+
+    for(row = 0; row < 3; row++){
+        for(col = 0; col < 3; col++){
+            for(layer = 0; layer < 2; layer++){
+                MAT1[row][col][layer] = (int) floor( runif(0, 10) );
+                MAT2[row][col][layer] = (int) floor( runif(0, 10) );
+            }
+        }
+    }
+    
+    printf("\n\n ========================================= \n\n");
+    
+    printf("---------------- Pre-swap MAT 1 ------------ \n");
+    for(row = 0; row < 3; row++){
+        for(col = 0; col < 3; col++){
+            printf("%d\t", MAT1[row][col][0]);    
+        }
+        printf("  |  ");
+        for(col = 0; col < 3; col++){
+            printf("%d\t", MAT1[row][col][1]);    
+        }
+        printf("\n");
+    }
+   
+    printf("---------------- Pre-swap MAT 2 ------------ \n");
+    for(row = 0; row < 3; row++){
+        for(col = 0; col < 3; col++){
+            printf("%d\t", MAT2[row][col][0]);    
+        }
+        printf("  |  ");
+        for(col = 0; col < 3; col++){
+            printf("%d\t", MAT2[row][col][1]);    
+        }
+        printf("\n");
+    }
+
+    swap_arrays((void*)&MAT1, (void*)&MAT2); 
+
+    printf("---------------- Post-swap MAT 1 ------------ \n");
+    for(row = 0; row < 3; row++){
+        for(col = 0; col < 3; col++){
+            printf("%d\t", MAT1[row][col][0]);    
+        }
+        printf("  |  ");
+        for(col = 0; col < 3; col++){
+            printf("%d\t", MAT1[row][col][1]);    
+        }
+        printf("\n");
+    }
+    
+    printf("---------------- Post-swap MAT 2 ------------ \n");
+    for(row = 0; row < 3; row++){
+        for(col = 0; col < 3; col++){
+            printf("%d\t", MAT2[row][col][0]);    
+        }
+        printf("  |  ");
+        for(col = 0; col < 3; col++){
+            printf("%d\t", MAT2[row][col][1]);    
+        }
+        printf("\n");
+    }       
+  
+    for(row = 0; row < 3; row++){
+        for(col = 0; col < 3; col++){
+            free(MAT2[row][col]);   
+        }
+        free(MAT2[row]); 
+    }
+    free(MAT2);
+    for(row = 0; row < 3; row++){
+        for(col = 0; col < 3; col++){
+            free(MAT1[row][col]);   
+        }
+        free(MAT1[row]); 
+    }
+    free(MAT1);
+    /* ********************************************************************** */
     
     POPULATION = malloc(xdim * sizeof(double *));
     for(row = 0; row < xdim; row++){
