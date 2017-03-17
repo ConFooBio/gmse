@@ -74,7 +74,7 @@ library(rhandsontable)
 <a name="updates">Project updates:</a>
 ================================================================================
 
-> <a name="u-16-MAR-2017">Update: 16 MAR 2017</a>
+> <a name="u-17-MAR-2017">Update: 17 MAR 2017</a>
 
 **Placing tournament winners into a new array**
 
