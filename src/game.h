@@ -22,8 +22,8 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
 void tournament(double *fitnesses, int *winners, int pop_size, 
                 int sampleK, int chooseK);
 
-void place_winners(double ***population, int *winners, int pop_size, 
-                   int ROWS, int COLS);
+void place_winners(double ****population, int *winners, int pop_size, int ROWS, 
+                   int COLS);
 
 void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE);

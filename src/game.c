@@ -84,10 +84,10 @@ void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
         while(budget_count > lowest_cost){
             do{
                 do{ /* This do assures xpos never equals ROWS (unlikely) */
-                    xpos = floor( runif(0,ROWS) );
+                    xpos = (int) floor( runif(0,ROWS) );
                 }while(xpos == ROWS);
                 do{
-                    ypos = floor( runif(4,COLS) );
+                    ypos = (int) floor( runif(4,COLS) );
                 }while(ypos == COLS);
             }while(COST[xpos][ypos][layer] > budget_count);
             population[xpos][ypos][agent]++;
@@ -118,7 +118,7 @@ void crossover(double ***population, int pop_size, int ROWS, int COLS,
     /* First do the crossovers */
     for(agent = 0; agent < pop_size; agent++){
         do{
-            cross_partner = floor( runif(0, pop_size) );
+            cross_partner = (int) floor( runif(0, pop_size) );
         }while(cross_partner == agent || cross_partner == pop_size);
         for(row = 0; row < ROWS; row++){
             for(col = 4; col < COLS; col++){
@@ -204,10 +204,10 @@ void constrain_costs(double ***population, double ***COST, int layer,
         }
         while(tot_cost > budget){
             do{ /* This do assures xpos never equals ROWS (unlikely) */
-                xpos = floor( runif(0,ROWS) );
+                xpos = (int) floor( runif(0,ROWS) );
             }while(xpos == ROWS);
             do{
-                ypos = floor( runif(4,COLS) );
+                ypos = (int) floor( runif(4,COLS) );
             }while(ypos == COLS);
             if(population[xpos][ypos][agent] > 0){
                 population[xpos][ypos][agent]--;
@@ -272,7 +272,7 @@ void tournament(double *fitnesses, int *winners, int pop_size, int sampleK,
     while(placed < pop_size){ /* Note sampling is done with replacement */
         for(samp = 0; samp < sampleK; samp++){
             do{
-                rand_samp      = floor( runif(0, pop_size) );
+                rand_samp      = (int) floor( runif(0, pop_size) );
                 samples[samp]  = rand_samp;
                 samp_fit[samp] = fitnesses[rand_samp];
             }while(rand_samp == pop_size);
@@ -303,10 +303,11 @@ void tournament(double *fitnesses, int *winners, int pop_size, int sampleK,
  *     ROWS: Number of rows in the COST and ACTION arrays
  *     COLS: Number of columns in the COST and ACTION arrays
  * ========================================================================== */
-void place_winners(double ***population, int *winners, int pop_size, 
-                   int ROWS, int COLS){
+void place_winners(double ****population, int *winners, int pop_size, int ROWS, 
+                   int COLS){
 
     int i, row, col, layer, winner;
+    double a_value;
     double ***NEW_POP;
     
     NEW_POP    = malloc(ROWS * sizeof(double *));
@@ -316,111 +317,18 @@ void place_winners(double ***population, int *winners, int pop_size,
             NEW_POP[row][col]    = malloc(pop_size * sizeof(double));
         }
     }
-
+    
     for(i = 0; i < pop_size; i++){
         winner = winners[i];
         for(row = 0; row < ROWS; row++){
             for(col = 0; col < COLS; col++){
-                NEW_POP[row][col][i] = population[row][col][winner];
+                a_value              = (*population)[row][col][winner];
+                NEW_POP[row][col][i] = a_value;
             }
         }
     }
     
-    /* ********************************************************************** */
-    double ***MAT1, ***MAT2;
-    MAT1 = malloc(ROWS * sizeof(double *));
-    for(row = 0; row < ROWS; row++){
-        MAT1[row] = malloc(ROWS * sizeof(double *));
-        for(col = 0; col < ROWS; col++){
-            MAT1[row][col] = malloc(ROWS * sizeof(double));
-        }
-    }
-    MAT2 = malloc(ROWS * sizeof(double *));
-    for(row = 0; row < ROWS; row++){
-        MAT2[row] = malloc(ROWS * sizeof(double *));
-        for(col = 0; col < ROWS; col++){
-            MAT2[row][col] = malloc(ROWS * sizeof(double));
-        }
-    }
-    
-    for(row = 0; row < ROWS; row++){
-        for(col = 0; col < ROWS; col++){
-            for(layer = 0; layer < ROWS; layer++){
-                MAT1[row][col][layer] = (double) floor( runif(0, 10) );
-                MAT2[row][col][layer] = (double) floor( runif(0, 10) );
-            }
-        }
-    }
-    
-    printf("\n\n ========================================= \n\n");
-    
-    printf("---------------- Pre-swap MAT 1 ------------ \n");
-    for(row = 0; row < 3; row++){
-        for(col = 0; col < 3; col++){
-            printf("%f\t", MAT1[row][col][0]);    
-        }
-        printf("  |  ");
-        for(col = 0; col < 3; col++){
-            printf("%f\t", MAT1[row][col][1]);    
-        }
-        printf("\n");
-    }
-    
-    printf("---------------- Pre-swap MAT 2 ------------ \n");
-    for(row = 0; row < 3; row++){
-        for(col = 0; col < 3; col++){
-            printf("%f\t", MAT2[row][col][0]);    
-        }
-        printf("  |  ");
-        for(col = 0; col < 3; col++){
-            printf("%f\t", MAT2[row][col][1]);    
-        }
-        printf("\n");
-    }
-    
-    swap_arrays((void*)&MAT1, (void*)&MAT2); 
-    
-    printf("---------------- Post-swap MAT 1 ------------ \n");
-    for(row = 0; row < 3; row++){
-        for(col = 0; col < 3; col++){
-            printf("%f\t", MAT1[row][col][0]);    
-        }
-        printf("  |  ");
-        for(col = 0; col < 3; col++){
-            printf("%f\t", MAT1[row][col][1]);    
-        }
-        printf("\n");
-    }
-    
-    printf("---------------- Post-swap MAT 2 ------------ \n");
-    for(row = 0; row < 3; row++){
-        for(col = 0; col < 3; col++){
-            printf("%f\t", MAT2[row][col][0]);    
-        }
-        printf("  |  ");
-        for(col = 0; col < 3; col++){
-            printf("%f\t", MAT2[row][col][1]);    
-        }
-        printf("\n");
-    }       
-    
-    for(row = 0; row < ROWS; row++){
-        for(col = 0; col < ROWS; col++){
-            free(MAT2[row][col]);   
-        }
-        free(MAT2[row]); 
-    }
-    free(MAT2);
-    for(row = 0; row < ROWS; row++){
-        for(col = 0; col < ROWS; col++){
-            free(MAT1[row][col]);   
-        }
-        free(MAT1[row]); 
-    }
-    free(MAT1);
-    /* ********************************************************************** */
-    
-    /* swap_arrays((void*)&population, (void*)&NEW_POP); */
+    swap_arrays((void*)&(*population), (void*)&NEW_POP);
     
     for(row = 0; row < ROWS; row++){
         for(col = 0; col < COLS; col++){
@@ -430,6 +338,12 @@ void place_winners(double ***population, int *winners, int pop_size,
     }
     free(NEW_POP);
 }
+
+
+
+
+
+
 
 /* 
  * This function will eventually call all of the other functions used in the
@@ -445,6 +359,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     int popsize;
     int generations;
     double ***POPULATION;
+    double ***NEW_POP;
     double *fitnesses;
     int *winners;
     double mean_fitness;
@@ -498,11 +413,13 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
                          RESOURCES, AGENT);
 
         tournament(fitnesses, winners, popsize, sampleK, chooseK);
+
+        place_winners(&POPULATION, winners, popsize, xdim, ydim);
         
-        place_winners(POPULATION, winners, popsize, xdim, ydim);
         
     /*}*/
 
+    
     /*
     mean_fitness = 0;
     for(row = 0; row < popsize; row++){
