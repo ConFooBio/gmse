@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **MAR** [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
+     - **MAR** [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
  
@@ -73,6 +73,61 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-17-MAR-2017">Update: 17 MAR 2017</a>
+
+**Placing tournament winners into a new array**
+
+At the end of the tournament function, we have a vector of winners with high fitness. These winners represent the array layers that need to comprise the *new* 3D array, which will be the start of the next generation of the genetic algorithm. Hence the need for a `place_winners` function to make a new `POPULATION` array to replace the old one. This could be done by individually replacing elements of a `NEW_POPULATION` into the old array `POPULATION`, but a handy swapping of pointers can do this without the multiple loops.
+
+```
+/* =============================================================================
+ * Swap pointers to rewrite ARRAY_B into ARRAY_A for a an array of any dimension
+ * ========================================================================== */
+void swap_arrays(void **ARRAY_A, void **ARRAY_B){
+
+    void *TEMP_ARRAY;
+
+    TEMP_ARRAY = *ARRAY_A;
+    *ARRAY_A   = *ARRAY_B;
+    *ARRAY_B   = TEMP_ARRAY;
+}
+```
+
+The above function works for 2D and 3D arrays by running the below.
+
+```
+swap_arrays((void*)&MAT1, (void*)&MAT2); 
+```
+
+We can see the arrays swapped in the output (the first 3 columns before the "|" partition denotes layer 1, and after denotes layer 2, so the array is $3 \times 3 \times 2$ dimensions).
+
+```
+========================================= 
+
+---------------- Pre-swap MAT 1 ------------ 
+0	0	1	  |  6	5	0	
+2	8	6	  |  9	2	4	
+1	2	1	  |  9	2	5	
+
+---------------- Pre-swap MAT 2 ------------ 
+1	4	3	  |  8	8	6	
+1	5	8	  |  3	2	4	
+3	9	2	  |  8	3	8	
+
+
+---------------- Post-swap MAT 1 ------------ 
+1	4	3	  |  8	8	6	
+1	5	8	  |  3	2	4	
+3	9	2	  |  8	3	8	
+
+---------------- Post-swap MAT 2 ------------ 
+0	0	1	  |  6	5	0	
+2	8	6	  |  9	2	4	
+1	2	1	  |  9	2	5
+```
+
+Since this works, we can use `swap_arrays` to write a concise function for placing the new individuals.
 
 > <a name="u-16-MAR-2017">Update: 16 MAR 2017</a>
 
