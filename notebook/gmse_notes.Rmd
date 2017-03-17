@@ -130,6 +130,112 @@ We can see the arrays swapped in the output (the first 3 columns before the "|" 
 Since this works, we can use `swap_arrays` to write a concise function for placing the new individuals.
 
 
+**Potential bug: In `user.c`**
+
+I can't tell if I'm just overloading R by running the simulation too many times too quickly (clicking to fast), or if there's actually a bug here. But when I comment out the below lines of code in the `send_agents_home` function of `user.c`, things seem fine.
+
+```
+while(agent_ID != landowner){
+    do{
+        agent_xloc = (int) floor( runif(0, xdim) ); 
+    }while(agent_xloc == xdim);
+    do{
+        agent_yloc = (int) floor( runif(0, ydim) ); 
+    }while(agent_yloc == ydim);
+    landowner = (int) landscape[agent_xloc][agent_yloc][layer];
+}
+```
+
+When I re-run the code quickly in succession, the above (I think) will very rarely crash the G-MSE program. I can't figure out why yet. It's logged as an issue now. Valgrind report below.
+
+```
+==15500== Invalid read of size 8
+==15500==    at 0xC298756: is_number_on_landscape (user.c:19)
+==15500==    by 0xC298811: send_agents_home (user.c:50)
+==15500==    by 0xC299166: user (user.c:303)
+
+```
+
+Valgrind doesn't appear to like the comparing of a landscape value (`double`) with an `int`, so I'm going to change this now. So the function `is_number_on_landscape` now defines `land_num = (int) landscape[xval][yval][layer];` instead of calling the landscape value directly. I have also gotten rid of the sub-function `is_number_on_landscape`, but the crash still sometimes happens. It's possible that this was actually two bugs though, one affecting the `ga`. From Valgrind below now (invalid read is gone).
+
+```
+==16758== Conditional jump or move depends on uninitialised value(s)
+==16758==    at 0xC29819E: sort_vector_by (utilities.c:63)
+==16758==    by 0xC29A1E1: tournament (game.c:280)
+==16758==    by 0xC29A66D: ga (game.c:415)
+==16758==    by 0xC29914F: user (user.c:294)
+==16758==    by 0x4F0A57F: ??? (in /usr/lib/R/lib/libR.so)
+==16758==    by 0x4F4272E: Rf_eval (in /usr/lib/R/lib/libR.so)
+==16758==    by 0x4F44E47: ??? (in /usr/lib/R/lib/libR.so)
+==16758==    by 0x4F42520: Rf_eval (in /usr/lib/R/lib/libR.so)
+==16758==    by 0x4F43DDC: Rf_applyClosure (in /usr/lib/R/lib/libR.so)
+==16758==    by 0x4F422FC: Rf_eval (in /usr/lib/R/lib/libR.so)
+==16758==    by 0x4F45FB5: ??? (in /usr/lib/R/lib/libR.so)
+==16758==    by 0x4F42520: Rf_eval (in /usr/lib/R/lib/libR.so)
+==16758==  Uninitialised value was created by a heap allocation
+==16758==    at 0x4C2DB8F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16758==    by 0xC29A583: ga (game.c:390)
+==16758==    by 0xC29914F: user (user.c:294)
+==16758==    by 0x4F0A57F: ??? (in /usr/lib/R/lib/libR.so)
+==16758==    by 0x4F4272E: Rf_eval (in /usr/lib/R/lib/libR.so)
+==16758==    by 0x4F44E47: ??? (in /usr/lib/R/lib/libR.so)
+==16758==    by 0x4F42520: Rf_eval (in /usr/lib/R/lib/libR.so)
+==16758==    by 0x4F43DDC: Rf_applyClosure (in /usr/lib/R/lib/libR.so)
+==16758==    by 0x4F422FC: Rf_eval (in /usr/lib/R/lib/libR.so)
+==16758==    by 0x4F45FB5: ??? (in /usr/lib/R/lib/libR.so)
+==16758==    by 0x4F42520: Rf_eval (in /usr/lib/R/lib/libR.so)
+==16758==    by 0x4F44E47: ??? (in /usr/lib/R/lib/libR.so)
+==16758== 
+
+```
+
+This all goes back to the `sort_vector_by`, which I should probably look at a potentially rewrite. The sort function is called by the `tournament` function.
+
+**Some progress on the genetic algorithm**
+
+Despite this, there has been progress on the genetic algorithm. Enough that I want to merge the local branch to dev and rev, but not master yet. The `place_winners` function appears to work fine.
+
+```
+void place_winners(double ****population, int *winners, int pop_size, int ROWS, 
+                   int COLS){
+
+    int i, row, col, layer, winner;
+    double a_value;
+    double ***NEW_POP;
+    
+    NEW_POP    = malloc(ROWS * sizeof(double *));
+    for(row = 0; row < ROWS; row++){
+        NEW_POP[row]    = malloc(COLS * sizeof(double *));
+        for(col = 0; col < COLS; col++){
+            NEW_POP[row][col]    = malloc(pop_size * sizeof(double));
+        }
+    }
+    
+    for(i = 0; i < pop_size; i++){
+        winner = winners[i];
+        for(row = 0; row < ROWS; row++){
+            for(col = 0; col < COLS; col++){
+                a_value              = (*population)[row][col][winner];
+                NEW_POP[row][col][i] = a_value;
+            }
+        }
+    }
+    
+    swap_arrays((void*)&(*population), (void*)&NEW_POP);
+    
+    for(row = 0; row < ROWS; row++){
+        for(col = 0; col < COLS; col++){
+            free(NEW_POP[row][col]);
+        }
+        free(NEW_POP[row]); 
+    }
+    free(NEW_POP);
+}
+```
+
+Once I get the bugs worked out of it, the genetic algorithm should start to work. Then a fitness function needs to be made that is more realistic. Fortunately, all of the bugs now appear to be isolated in the genetic algorithm, but I might need to keep testing to be sure.
+
+
 > <a name="u-16-MAR-2017">Update: 16 MAR 2017</a>
 
 **Initialise new function to constrain costs in the genetic algorithm**
