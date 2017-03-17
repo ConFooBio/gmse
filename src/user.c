@@ -1,31 +1,6 @@
 #include "game.h"
 
 /* =============================================================================
- * This function checks a landscape layer to see if there is a particular number
- * on that layer
- * Inputs include:
- *     LANDSCAPE: The landscape array
- *     layer: The layer own which ownership is defined (should be 2)
- *     number: The number the function is looking for on the landscape (agentID)
- *     xdim: The length of the x dimension of the landscape
- *     ydim: The length of the y dimension of the landscape 
- * ========================================================================== */
-int is_number_on_landscape(double ***landscape, int layer, int number, int xdim,
-                           int ydim){
-    int xval, yval;
-
-    for(xval = 0; xval < xdim; xval++){
-        for(yval = 0; yval < ydim; yval++){
-            if(landscape[xval][yval][layer] == number){
-                return 1;   
-            }
-        }
-    }
-    
-    return 0;
-}
-
-/* =============================================================================
  * This function puts an agent somewhere (a random cell) on its own landscape,
  * but  only if the agent does in fact own some land
  * Inputs include:
@@ -44,25 +19,34 @@ void send_agents_home(double **agent_array, double ***landscape, int xdim,
     int agent_yloc;
     int agent_ID;
     int landowner;
+    int xval, yval, land_num;
     
     for(agent = 0; agent < agent_number; agent++){
-        agent_ID  = agent_array[agent][0];
-        owned     = is_number_on_landscape(landscape, 3, agent_ID, xdim, ydim);
+        agent_ID  = (int) agent_array[agent][0];
+        owned = 0;
+        for(xval = 0; xval < xdim; xval++){
+            for(yval = 0; yval < ydim; yval++){
+                land_num = (int) landscape[xval][yval][layer];
+                if(land_num == agent){
+                    owned++;   
+                }
+            }
+        }        
         if(owned > 0){
-            agent_xloc = agent_array[agent][4];
-            agent_yloc = agent_array[agent][5];
-            landowner  = landscape[agent_xloc][agent_yloc][layer];
+            agent_xloc = (int) agent_array[agent][4];
+            agent_yloc = (int) agent_array[agent][5];
+            landowner  = (int) landscape[agent_xloc][agent_yloc][layer];
             while(agent_ID != landowner){
                 do{
-                    agent_xloc = floor( runif(0, 1) * xdim ); 
+                    agent_xloc = (int) floor( runif(0, xdim) ); 
                 }while(agent_xloc == xdim);
                 do{
-                    agent_yloc = floor( runif(0, 1) * ydim ); 
+                    agent_yloc = (int) floor( runif(0, ydim) ); 
                 }while(agent_yloc == ydim);
-                landowner = landscape[agent_xloc][agent_yloc][layer];
+                landowner = (int) landscape[agent_xloc][agent_yloc][layer];
             }
-            agent_array[agent][4] = agent_xloc;
-            agent_array[agent][5] = agent_yloc;
+            agent_array[agent][4] = (double) agent_xloc;
+            agent_array[agent][5] = (double) agent_yloc;
         }
     }
 }
@@ -299,11 +283,11 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
 
     /* Do the biology here now */
     /* ====================================================================== */
-
+    
     send_agents_home(agent_array, land, land_x, land_y, agent_number, 2);
         
     count_cell_yield(agent_array, land, land_x, land_y, agent_number, 1, 2, 15);
-
+    
     /*------------------------------------------------------------------------*/
     /* Temporary call to genetic algorithm below for ONE agent -- testing */
     /*------------------------------------------------------------------------*/
