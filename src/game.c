@@ -252,8 +252,8 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
  *     sampleK: The size of the subset of fitnesses sampled to compete
  *     chooseK: The number of individuals selected from the sample
  * ========================================================================== */
-void tournament(double *fitnesses, int *winners, int pop_size, 
-                      int sampleK, int chooseK){
+void tournament(double *fitnesses, int *winners, int pop_size, int sampleK, 
+                int chooseK){
     int samp;
     int *samples;
     int left_to_place, placed;
@@ -304,7 +304,7 @@ void tournament(double *fitnesses, int *winners, int pop_size,
  *     COLS: Number of columns in the COST and ACTION arrays
  * ========================================================================== */
 void place_winners(double ***population, int *winners, int pop_size, 
-                   double ***new_pop, int ROWS, int COLS){
+                   int ROWS, int COLS){
 
     int i, row, col, layer, winner;
     double ***NEW_POP;
@@ -326,11 +326,105 @@ void place_winners(double ***population, int *winners, int pop_size,
         }
     }
     
-    /* swap_arrays((void*)&MAT1, (void*)&MAT2); */
+    /* ********************************************************************** */
+    double ***MAT1, ***MAT2;
+    MAT1 = malloc(ROWS * sizeof(double *));
+    for(row = 0; row < ROWS; row++){
+        MAT1[row] = malloc(ROWS * sizeof(double *));
+        for(col = 0; col < ROWS; col++){
+            MAT1[row][col] = malloc(ROWS * sizeof(double));
+        }
+    }
+    MAT2 = malloc(ROWS * sizeof(double *));
+    for(row = 0; row < ROWS; row++){
+        MAT2[row] = malloc(ROWS * sizeof(double *));
+        for(col = 0; col < ROWS; col++){
+            MAT2[row][col] = malloc(ROWS * sizeof(double));
+        }
+    }
+    
+    for(row = 0; row < ROWS; row++){
+        for(col = 0; col < ROWS; col++){
+            for(layer = 0; layer < ROWS; layer++){
+                MAT1[row][col][layer] = (double) floor( runif(0, 10) );
+                MAT2[row][col][layer] = (double) floor( runif(0, 10) );
+            }
+        }
+    }
+    
+    printf("\n\n ========================================= \n\n");
+    
+    printf("---------------- Pre-swap MAT 1 ------------ \n");
+    for(row = 0; row < 3; row++){
+        for(col = 0; col < 3; col++){
+            printf("%f\t", MAT1[row][col][0]);    
+        }
+        printf("  |  ");
+        for(col = 0; col < 3; col++){
+            printf("%f\t", MAT1[row][col][1]);    
+        }
+        printf("\n");
+    }
+    
+    printf("---------------- Pre-swap MAT 2 ------------ \n");
+    for(row = 0; row < 3; row++){
+        for(col = 0; col < 3; col++){
+            printf("%f\t", MAT2[row][col][0]);    
+        }
+        printf("  |  ");
+        for(col = 0; col < 3; col++){
+            printf("%f\t", MAT2[row][col][1]);    
+        }
+        printf("\n");
+    }
+    
+    swap_arrays((void*)&MAT1, (void*)&MAT2); 
+    
+    printf("---------------- Post-swap MAT 1 ------------ \n");
+    for(row = 0; row < 3; row++){
+        for(col = 0; col < 3; col++){
+            printf("%f\t", MAT1[row][col][0]);    
+        }
+        printf("  |  ");
+        for(col = 0; col < 3; col++){
+            printf("%f\t", MAT1[row][col][1]);    
+        }
+        printf("\n");
+    }
+    
+    printf("---------------- Post-swap MAT 2 ------------ \n");
+    for(row = 0; row < 3; row++){
+        for(col = 0; col < 3; col++){
+            printf("%f\t", MAT2[row][col][0]);    
+        }
+        printf("  |  ");
+        for(col = 0; col < 3; col++){
+            printf("%f\t", MAT2[row][col][1]);    
+        }
+        printf("\n");
+    }       
+    
+    for(row = 0; row < ROWS; row++){
+        for(col = 0; col < ROWS; col++){
+            free(MAT2[row][col]);   
+        }
+        free(MAT2[row]); 
+    }
+    free(MAT2);
+    for(row = 0; row < ROWS; row++){
+        for(col = 0; col < ROWS; col++){
+            free(MAT1[row][col]);   
+        }
+        free(MAT1[row]); 
+    }
+    free(MAT1);
+    /* ********************************************************************** */
+    
+    /* swap_arrays((void*)&population, (void*)&NEW_POP); */
     
     for(row = 0; row < ROWS; row++){
         for(col = 0; col < COLS; col++){
-            free(NEW_POP[row][col]);   
+            free(NEW_POP[row][col]);
         }
         free(NEW_POP[row]); 
     }
@@ -345,15 +439,17 @@ void place_winners(double ***population, int *winners, int pop_size,
 void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE){
     
-    int row, col, layer;
+    int row, col, gen, layer;
     int xdim, ydim;
     int sampleK, chooseK;
     int popsize;
+    int generations;
     double ***POPULATION;
     double *fitnesses;
     int *winners;
-    int ***MAT1, ***MAT2;
+    double mean_fitness;
     
+    generations = 5;
     popsize = 100;
     sampleK = 5;
     chooseK = 2;
@@ -379,20 +475,42 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     fitnesses = malloc(popsize * sizeof(double));
     winners   = malloc(popsize * sizeof(int));
     
+    /*
+    mean_fitness = 0;
+    for(row = 0; row < popsize; row++){
+        mean_fitness += fitnesses[row];
+    }
+    printf("%f\n",mean_fitness);
+    */
     
-    initialise_pop(ACTION, COST, 0, popsize, 100, 10, xdim, ydim, POPULATION);
+    /*while(gen < generations){ */
+        
+        initialise_pop(ACTION, COST, 0, popsize, 100, 10, xdim, ydim, 
+                       POPULATION);
     
-    crossover(POPULATION, popsize, xdim, ydim, 0.1);
+        crossover(POPULATION, popsize, xdim, ydim, 0.1);
 
-    mutation(POPULATION, popsize, xdim, ydim, 0.1);
+        mutation(POPULATION, popsize, xdim, ydim, 0.1);
     
-    constrain_costs(POPULATION, COST, 0, popsize, xdim, ydim, 100);
+        constrain_costs(POPULATION, COST, 0, popsize, xdim, ydim, 100);
     
-    strategy_fitness(fitnesses, POPULATION, popsize, xdim, ydim, LANDSCAPE, 
-                     RESOURCES, AGENT);
+        strategy_fitness(fitnesses, POPULATION, popsize, xdim, ydim, LANDSCAPE, 
+                         RESOURCES, AGENT);
 
-    tournament(fitnesses, winners, popsize, sampleK, chooseK);
+        tournament(fitnesses, winners, popsize, sampleK, chooseK);
+        
+        place_winners(POPULATION, winners, popsize, xdim, ydim);
+        
+    /*}*/
 
+    /*
+    mean_fitness = 0;
+    for(row = 0; row < popsize; row++){
+        mean_fitness += fitnesses[row];
+    }
+    printf("%f\n",mean_fitness);
+    */
+    
     free(winners);
     free(fitnesses);
     for(row = 0; row < xdim; row++){
