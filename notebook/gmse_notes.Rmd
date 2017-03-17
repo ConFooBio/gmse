@@ -129,7 +129,6 @@ We can see the arrays swapped in the output (the first 3 columns before the "|" 
 
 Since this works, we can use `swap_arrays` to write a concise function for placing the new individuals.
 
-
 **Potential bug: In `user.c`**
 
 I can't tell if I'm just overloading R by running the simulation too many times too quickly (clicking to fast), or if there's actually a bug here. But when I comment out the below lines of code in the `send_agents_home` function of `user.c`, things seem fine.
@@ -234,7 +233,6 @@ void place_winners(double ****population, int *winners, int pop_size, int ROWS,
 ```
 
 Once I get the bugs worked out of it, the genetic algorithm should start to work. Then a fitness function needs to be made that is more realistic. Fortunately, all of the bugs now appear to be isolated in the genetic algorithm, but I might need to keep testing to be sure.
-
 
 > <a name="u-16-MAR-2017">Update: 16 MAR 2017</a>
 
