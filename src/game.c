@@ -254,13 +254,13 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
  * ========================================================================== */
 void tournament(double *fitnesses, int *winners, int pop_size, int sampleK, 
                 int chooseK){
-    int samp;
+    int samp, i;
     int *samples;
     int left_to_place, placed;
     int rand_samp;
     double *samp_fit;
     
-    samples  = malloc(sampleK * sizeof(int));
+    samples  = malloc(sampleK * sizeof(double));
     samp_fit = malloc(sampleK * sizeof(double));
     placed   = 0;
     
@@ -277,7 +277,30 @@ void tournament(double *fitnesses, int *winners, int pop_size, int sampleK,
                 samp_fit[samp] = fitnesses[rand_samp];
             }while(rand_samp == pop_size);
         }
-        sort_vector_by(samples, samp_fit, sampleK);
+        
+        
+        printf("\n======================================================\n");
+        for(samp = 0; samp < sampleK; samp++){
+            printf("%f\t",fitnesses[samp]);
+        }
+        printf("\n");
+        for(samp = 0; samp < sampleK; samp++){
+            printf("%d\t",samples[samp]);
+        }
+        printf("\n ---------------------------------------------------- \n");        
+        find_descending_order(samples, samp_fit, sampleK);
+        
+        for(samp = 0; samp < sampleK; samp++){
+            printf("%f\t",fitnesses[samp]);
+        }
+        printf("\n");
+        for(samp = 0; samp < sampleK; samp++){
+            printf("%d\t",samples[samp]);
+        }
+        printf("\n======================================================\n");
+        printf("\n\n");   
+                
+        
         if( (chooseK + placed) >= pop_size){
             chooseK = pop_size - placed;    
         }
@@ -408,18 +431,24 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         mutation(POPULATION, popsize, xdim, ydim, 0.1);
     
         constrain_costs(POPULATION, COST, 0, popsize, xdim, ydim, 100);
-    
+        
         strategy_fitness(fitnesses, POPULATION, popsize, xdim, ydim, LANDSCAPE, 
                          RESOURCES, AGENT);
-
+   
         tournament(fitnesses, winners, popsize, sampleK, chooseK);
-
-        place_winners(&POPULATION, winners, popsize, xdim, ydim);
+   
         
+/*        
+        place_winners(&POPULATION, winners, popsize, xdim, ydim);
+*/      
         
     /*}*/
 
-    
+
+
+
+
+
     /*
     mean_fitness = 0;
     for(row = 0; row < popsize; row++){

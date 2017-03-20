@@ -6,6 +6,35 @@
 /* =============================================================================
  * Swap pointers to rewrite ARRAY_B into ARRAY_A for a an array of any dimension
  * ========================================================================== */
+void find_descending_order(int *order_array, double *by_array, int length){
+    int i, k, max_index;
+    double max_val, min_val;
+    
+    k = 0;
+    min_val = 0;
+    for(i = 0; i < length; i++){
+        if(by_array[i] < min_val){
+            min_val = by_array[i];
+        }
+    }
+    while(k < length){
+        max_val   = min_val - 1;
+        max_index = 0;
+        for(i = 0; i < length; i++){
+            if(by_array[i] > max_val){
+                max_index = i;
+                max_val   = by_array[i];
+            }
+        }
+        by_array[max_index] = min_val - 1;
+        order_array[k]      = max_index; 
+        k++;   
+    }
+}
+
+/* =============================================================================
+ * Swap pointers to rewrite ARRAY_B into ARRAY_A for a an array of any dimension
+ * ========================================================================== */
 void swap_arrays(void **ARRAY_A, void **ARRAY_B){
 
     void *TEMP_ARRAY;
@@ -55,6 +84,7 @@ void sort_vector(int *vector, int vector_length){
 /* =============================================================================
  * Sort a vector of integers by another vector
  * ========================================================================== */
+/*
 void sort_vector_by(int *vector, double *by, int vector_length){
     int i, j;
     
@@ -67,6 +97,7 @@ void sort_vector_by(int *vector, double *by, int vector_length){
         }
     }
 }
+*/
 
 /* =============================================================================
  * This function applies the edge effect during movement
