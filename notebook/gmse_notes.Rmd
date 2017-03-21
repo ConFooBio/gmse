@@ -123,6 +123,22 @@ Unfortunately, the above crashed in the first loop upon running. Then in the sec
 
 Except that now the crash occurs when the `ga` is commented out. The issue actually appears to be somewhere else in `user.c` because I can run the above for `i in 1:1000` and not get an error if I don't call `user.c` from R at all. Now I need to try to really examine `user.c` and see what's happening. I'm going to start by not calling `send_agents_home` or `count_cell_yield` within the user function (while still calling the genetic algorithm) to see if a crash occurs.
 
+The problem, as it turns out, was in the function `send_agents_home`. After much hassle and multiple times running Valgrind, I found that  initialising `agent_xloc` or `agent_yloc` to the agent's array values would occaisionally produce a segfault because the values were not always within the landscape. This was corrected by initialising these values to zero before ''sending agents home'', but I'm not sure why it arose at all in the first place. Where the agents are has never been a focus, except for when manager agents (`type1 = 0`) are observing (the code for which is stable). To solve the problem more flexibly, I've replaced a straight assignment with the below code.
+
+```
+agent_xloc = agent_array[agent][4];
+agent_yloc = agent_array[agent][5];            
+if(agent_xloc < 0 || agent_xloc >= xdim){
+    agent_xloc = 0;
+}
+if(agent_yloc < 0 || agent_yloc >= ydim){
+    agent_yloc = 0;
+}
+```
+
+Now in the very rare cases where agent locations are off the map (and it might be worth figuring out why -- perhaps they're getting moved somewhere arbitrarily and not moved back?), they will be placed on a cell that they own. This was the point of the function anyway, so it's not a huge deal. It's still a bit odd though, and I'm not sure why it was affecting only about one in thirty simulations. I'll consider **Issue #16: Potential bug: In `user.c`** closed now, and move on to the genetic algorithm again.
+
+
 > <a name="u-17-MAR-2017">Update: 17 MAR 2017</a>
 
 **Placing tournament winners into a new array**
