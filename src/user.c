@@ -20,28 +20,35 @@ void send_agents_home(double **agent_array, double ***landscape, int xdim,
     int agent_ID;
     int landowner;
     int xval, yval, land_num;
-    
+
     for(agent = 0; agent < agent_number; agent++){
         agent_ID  = (int) agent_array[agent][0];
-        owned = 0;
+        owned     = 0;
         for(xval = 0; xval < xdim; xval++){
             for(yval = 0; yval < ydim; yval++){
                 land_num = (int) landscape[xval][yval][layer];
-                if(land_num == agent){
+                if(land_num == agent_ID){
                     owned++;   
                 }
             }
-        }        
+        }  
+        
         if(owned > 0){
-            agent_xloc = (int) agent_array[agent][4];
-            agent_yloc = (int) agent_array[agent][5];
+            agent_xloc = agent_array[agent][4];
+            agent_yloc = agent_array[agent][5];            
+            if(agent_xloc < 0 || agent_xloc >= xdim){
+                agent_xloc = 0;
+            }
+            if(agent_yloc < 0 || agent_yloc >= ydim){
+                agent_yloc = 0;
+            }
             landowner  = (int) landscape[agent_xloc][agent_yloc][layer];
             while(agent_ID != landowner){
                 do{
-                    agent_xloc = (int) floor( runif(0, xdim) ); 
+                    agent_xloc = (int) floor( runif(0, xdim) );
                 }while(agent_xloc == xdim);
                 do{
-                    agent_yloc = (int) floor( runif(0, ydim) ); 
+                    agent_yloc = (int) floor( runif(0, ydim) );
                 }while(agent_yloc == ydim);
                 landowner = (int) landscape[agent_xloc][agent_yloc][layer];
             }
@@ -68,12 +75,12 @@ void send_agents_home(double **agent_array, double ***landscape, int xdim,
 void count_cell_yield(double **agent_array, double ***landscape, int xdim,
                       int ydim, int agent_number, int yield_layer,
                       int own_layer, int yield_column){
-
     int xpos, ypos;
     int agent;
     int agent_ID;
     double agent_yield;
 
+    
     for(agent = 0; agent < agent_number; agent++){
         agent_ID    = agent_array[agent][0];
         agent_yield = 0.0; 
@@ -86,6 +93,7 @@ void count_cell_yield(double **agent_array, double ***landscape, int xdim,
         }
         agent_array[agent][yield_column] = agent_yield; 
     }
+    
 }
 
 /* =============================================================================
@@ -284,14 +292,15 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     /* Do the biology here now */
     /* ====================================================================== */
     
+    
     send_agents_home(agent_array, land, land_x, land_y, agent_number, 2);
-        
-    count_cell_yield(agent_array, land, land_x, land_y, agent_number, 1, 2, 15);
+      
+    count_cell_yield(agent_array, land, land_x, land_y, agent_number, 1, 2, 15);    
     
     /*------------------------------------------------------------------------*/
     /* Temporary call to genetic algorithm below for ONE agent -- testing */
     /*------------------------------------------------------------------------*/
-    /* ga(actions, costs, agent_array, resource_array, land); */
+    ga(actions, costs, agent_array, resource_array, land);
     /*------------------------------------------------------------------------*/
     
     

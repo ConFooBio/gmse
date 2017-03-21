@@ -600,23 +600,3 @@ sim <- gmse( observe_type  = 0,
 );
 
 ################################################################################
-
-test <- NULL;
-for(i in 1:100){
-   test <- gmse( observe_type  = 0,
-                 agent_view    = 20,
-                 res_death_K   = 400,
-                 plotting      = FALSE,
-                 hunt          = FALSE,
-                 start_hunting = 95,
-                 fixed_observe = 1,
-                 times_observe = 1,
-                 land_dim_1    = 100,
-                 land_dim_2    = 100,
-                 res_consume   = 0.5
-    )
-   print(i);
-}
-
-
-
