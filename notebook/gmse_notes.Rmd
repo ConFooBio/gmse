@@ -121,6 +121,8 @@ for(i in 1:100){
 
 Unfortunately, the above crashed in the first loop upon running. Then in the second attempt, it crashed on the 11th loop. When I stop running the genetic algorithm, it never crashes though, so I can at least start to isolate the problem. I have a feeling it's in the `utilites.c` file.
 
+Except that now the crash occurs when the `ga` is commented out. The issue actually appears to be somewhere else in `user.c` because I can run the above for `i in 1:1000` and not get an error if I don't call `user.c` from R at all. Now I need to try to really examine `user.c` and see what's happening. I'm going to start by not calling `send_agents_home` or `count_cell_yield` within the user function (while still calling the genetic algorithm) to see if a crash occurs.
+
 > <a name="u-17-MAR-2017">Update: 17 MAR 2017</a>
 
 **Placing tournament winners into a new array**
