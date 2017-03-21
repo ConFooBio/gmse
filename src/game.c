@@ -277,29 +277,8 @@ void tournament(double *fitnesses, int *winners, int pop_size, int sampleK,
                 samp_fit[samp] = fitnesses[rand_samp];
             }while(rand_samp == pop_size);
         }
-        
-        
-        printf("\n======================================================\n");
-        for(samp = 0; samp < sampleK; samp++){
-            printf("%f\t",fitnesses[samp]);
-        }
-        printf("\n");
-        for(samp = 0; samp < sampleK; samp++){
-            printf("%d\t",samples[samp]);
-        }
-        printf("\n ---------------------------------------------------- \n");        
+      
         find_descending_order(samples, samp_fit, sampleK);
-        
-        for(samp = 0; samp < sampleK; samp++){
-            printf("%f\t",fitnesses[samp]);
-        }
-        printf("\n");
-        for(samp = 0; samp < sampleK; samp++){
-            printf("%d\t",samples[samp]);
-        }
-        printf("\n======================================================\n");
-        printf("\n\n");   
-                
         
         if( (chooseK + placed) >= pop_size){
             chooseK = pop_size - placed;    
@@ -413,6 +392,11 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     fitnesses = malloc(popsize * sizeof(double));
     winners   = malloc(popsize * sizeof(int));
     
+    for(row = 0; row < popsize; row++){ /* Need to initialise to some values */
+        fitnesses[row] = 0;
+        winners[row]   = 0;
+    }
+    
     /*
     mean_fitness = 0;
     for(row = 0; row < popsize; row++){
@@ -434,13 +418,11 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         
         strategy_fitness(fitnesses, POPULATION, popsize, xdim, ydim, LANDSCAPE, 
                          RESOURCES, AGENT);
-   
+   /*
         tournament(fitnesses, winners, popsize, sampleK, chooseK);
    
-        
-/*        
         place_winners(&POPULATION, winners, popsize, xdim, ydim);
-*/      
+   */
         
     /*}*/
 
