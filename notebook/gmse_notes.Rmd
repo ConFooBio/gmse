@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **MAR** [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
+     - **MAR** [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
  
@@ -73,6 +73,53 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-21-MAR-2017">Update: 21 MAR 2017</a>
+
+Part of the problem from [last Friday](#u-17-MAR-2017) was that the arrays `fitnesses` and `winners` were uninitialised in the genetic algorithm before being used. Fixing this and running Valgrind returns no errors and no memory leaks.
+
+```
+==32451== 
+==32451== HEAP SUMMARY:
+==32451==     in use at exit: 89,001,346 bytes in 13,024 blocks
+==32451==   total heap usage: 5,218,764 allocs, 5,205,740 frees, 621,820,827 bytes allocated
+==32451== 
+==32451== LEAK SUMMARY:
+==32451==    definitely lost: 0 bytes in 0 blocks
+==32451==    indirectly lost: 0 bytes in 0 blocks
+==32451==      possibly lost: 0 bytes in 0 blocks
+==32451==    still reachable: 89,001,346 bytes in 13,024 blocks
+==32451==         suppressed: 0 bytes in 0 blocks
+==32451== Reachable blocks (those to which a pointer was found) are not shown.
+==32451== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==32451== 
+==32451== For counts of detected and suppressed errors, rerun with: -v
+==32451== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+```
+
+So we have an error that Valgrind can't figure out for some reason. It's worth noting that the crash never occurs on the first simulation; it always takes a couple re-runs of `gmse` in success for it to crash. It could just be overloading Rstudio, but I want to keep pushing to figure it out. I'm now going to test by simply running 100 times in succession.
+
+```
+test <- NULL;
+for(i in 1:100){
+   test <- gmse( observe_type  = 0,
+                 agent_view    = 20,
+                 res_death_K   = 400,
+                 plotting      = FALSE,
+                 hunt          = FALSE,
+                 start_hunting = 95,
+                 fixed_observe = 1,
+                 times_observe = 1,
+                 land_dim_1    = 100,
+                 land_dim_2    = 100,
+                 res_consume   = 0.5
+    )
+   print(i);
+}
+```
+
+Unfortunately, the above crashed in the first loop upon running. Then in the second attempt, it crashed on the 11th loop. When I stop running the genetic algorithm, it never crashes though, so I can at least start to isolate the problem. I have a feeling it's in the `utilites.c` file.
 
 > <a name="u-17-MAR-2017">Update: 17 MAR 2017</a>
 
