@@ -27,7 +27,7 @@ void find_descending_order(int *order_array, double *by_array, int length){
             }
         }
         by_array[max_index] = min_val - 1;
-        order_array[k]      = max_index; 
+        order_array[k]      = order_array[max_index]; 
         k++;   
     }
 }
@@ -80,24 +80,6 @@ void sort_vector(int *vector, int vector_length){
         }
     }
 }
-
-/* =============================================================================
- * Sort a vector of integers by another vector
- * ========================================================================== */
-/*
-void sort_vector_by(int *vector, double *by, int vector_length){
-    int i, j;
-    
-    for(i = 0; i < vector_length; i++){
-        for(j = i + 1; j < vector_length; j++){
-            if(by[i] < by[j]){
-                swap_int(&vector[i], &vector[j]);
-                swap_double(&by[i], &by[j]);
-            }
-        }
-    }
-}
-*/
 
 /* =============================================================================
  * This function applies the edge effect during movement
