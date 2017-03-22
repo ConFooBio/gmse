@@ -238,7 +238,7 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
     int agent;
     
     for(agent = 0; agent < pop_size; agent++){
-        fitnesses[agent] += population[0][12][agent];
+        fitnesses[agent] = population[0][12][agent];
     }
 }
 
@@ -279,7 +279,7 @@ void tournament(double *fitnesses, int *winners, int pop_size, int sampleK,
         }
       
         find_descending_order(samples, samp_fit, sampleK);
-        
+
         if( (chooseK + placed) >= pop_size){
             chooseK = pop_size - placed;    
         }
@@ -366,7 +366,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     int *winners;
     double mean_fitness;
     
-    generations = 5;
+    generations = 20;
     popsize = 100;
     sampleK = 5;
     chooseK = 2;
@@ -397,47 +397,45 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         winners[row]   = 0;
     }
     
-    /*
-    mean_fitness = 0;
-    for(row = 0; row < popsize; row++){
-        mean_fitness += fitnesses[row];
-    }
-    printf("%f\n",mean_fitness);
-    */
     
-    /*while(gen < generations){ */
-        
-        initialise_pop(ACTION, COST, 0, popsize, 100, 10, xdim, ydim, 
-                       POPULATION);
+    initialise_pop(ACTION, COST, 0, popsize, 100, 10, xdim, ydim, 
+                   POPULATION);
     
-        crossover(POPULATION, popsize, xdim, ydim, 0.1);
+    gen = 0;
+    while(gen < generations){
 
+        crossover(POPULATION, popsize, xdim, ydim, 0.1);
+        
         mutation(POPULATION, popsize, xdim, ydim, 0.1);
     
         constrain_costs(POPULATION, COST, 0, popsize, xdim, ydim, 100);
-        
+  
         strategy_fitness(fitnesses, POPULATION, popsize, xdim, ydim, LANDSCAPE, 
                          RESOURCES, AGENT);
-   /*
+  
         tournament(fitnesses, winners, popsize, sampleK, chooseK);
    
         place_winners(&POPULATION, winners, popsize, xdim, ydim);
-   */
+   
+        gen++;
         
-    /*}*/
-
-
-
-
-
-
-    /*
-    mean_fitness = 0;
-    for(row = 0; row < popsize; row++){
-        mean_fitness += fitnesses[row];
+        
+        mean_fitness = 0;
+        for(row = 0; row < popsize; row++){
+            mean_fitness += fitnesses[row];
+        }
+        mean_fitness *= 0.01;
+        printf("%f\t",mean_fitness);
+    
     }
-    printf("%f\n",mean_fitness);
-    */
+    
+    for(row = 0; row < xdim; row++){
+        for(col = 0; col < ydim; col++){
+            ACTION[row][col][0] = POPULATION[row][col][0];
+        }
+    }
+
+    printf("\n\n");
     
     free(winners);
     free(fitnesses);
@@ -452,5 +450,5 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
 }
     
     
-    
+
     
