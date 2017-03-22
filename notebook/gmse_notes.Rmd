@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **MAR** [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
+     - **MAR** [22](#u-22-MAR-2017), [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
  
@@ -73,6 +73,43 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-22-MAR-2017">Update: 22 MAR 2017</a>
+
+After some additional debugging of the `find_descending_order` in `utilities.c` (which was returning the incorrect index and therefore not selecting for high fitness strategies), I have a working genetic algorithm with a very simple fitness function.
+
+```
+void strategy_fitness(double *fitnesses, double ***population, int pop_size, 
+                      int ROWS, int COLS, double ***landscape,  
+                      double **resources, double **agent_array){
+    int agent;
+    
+    for(agent = 0; agent < pop_size; agent++){
+        fitnesses[agent] = population[0][12][agent];
+    }
+}
+```
+
+Essentially, the above function checks row zero and column 12 in an agent's action array, and defines fitness as whatever value is in this array element. Fitness cannot increase indefinitely because of the cost constraints from the `COST` array. Hence the genetic algorithm should increase fitness up to the point where it can't any longer because it is constrained by costs. We can see this over 20 generations of the genetic alogrithm (*note*, this is different than *simulation* time steps -- each simulated time step of G-MSE includes, in this example, a genetic algorithm where strategies updated over 20 generations). The plot below therefore represents an agent ''evolving'' the best strategy for one G-MSE time step
+
+
+```{r, echo=FALSE}
+fitnesses <- c(1.280000, 2.930000, 5.950000, 8.370000, 8.870000, 9.090000, 9.420000, 9.650000, 9.840000, 9.930000, 10.050000, 10.310000, 10.430000, 10.560000, 10.460000, 10.600000, 10.510000, 10.560000, 10.540000, 10.590000);
+plot(x=1:length(fitnesses), y=fitnesses, pch=20, cex=1.5, type="b", ylim=c(0,12),
+     xlab="Iterations of genetic algorithm", ylab="Mean strategy fitness");
+```
+
+The `ACTION` array for the zero agent (the only one run for a genetic algorithm in test simulations) showed a corresponding change in each simulated G-MSE time step, with agents having the actions below (or very similar actions).
+
+```
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]
+[1,]   -2    1    0    0    0    0    0    0    0     0     0     0    12
+[2,]   -1    1    0    0    0    0    0    0    0     0     0     0     0
+[3,]    1    1    0    0    0    0    0    0    0     0     0     0     0
+[4,]    2    1    0    0    0    0    0    0    0     0     0     0     0
+```
+
+In the above, the agent's only action is to invest all of their energy to doing the action in `ACTION[1,13]` (`bankem`), as predicted given the simple fitness function assigned *a priori*. Hence, with a working genetic algorithm for agents, what is necessary now is to clarify the fitness function to reflect agent utilities. Some clean-up is also necessary to call genetic algorithm specific parameters from the main `gmse.R` file -- right now there are some hard-coded values in the `ga` function, and `user.c` doesn't loop through multiple agents (or check and use only stake-holders).
 
 > <a name="u-21-MAR-2017">Update: 21 MAR 2017</a>
 
