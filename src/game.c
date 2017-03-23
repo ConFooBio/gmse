@@ -344,9 +344,6 @@ void place_winners(double ****population, int *winners, int pop_size, int ROWS,
 
 
 
-
-
-
 /* 
  * This function will eventually call all of the other functions used in the
  * genetic algorithm. For now, it is being used just to call the other functions
@@ -360,12 +357,11 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     int sampleK, chooseK;
     int popsize;
     int generations;
+    int *winners;
     double ***POPULATION;
     double ***NEW_POP;
     double *fitnesses;
-    int *winners;
-    double mean_fitness;
-    
+
     generations = 20;
     popsize = 100;
     sampleK = 5;
@@ -418,14 +414,6 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         place_winners(&POPULATION, winners, popsize, xdim, ydim);
    
         gen++;
-        
-        
-        mean_fitness = 0;
-        for(row = 0; row < popsize; row++){
-            mean_fitness += fitnesses[row];
-        }
-        mean_fitness *= 0.01;
-        printf("%f\t",mean_fitness);
     
     }
     
@@ -435,8 +423,6 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         }
     }
 
-    printf("\n\n");
-    
     free(winners);
     free(fitnesses);
     for(row = 0; row < xdim; row++){
