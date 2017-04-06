@@ -48,7 +48,7 @@ int min_cost(double ***COST, int layer, double budget, int rows, int cols){
  *     population: array of the population that is made (malloc needed earlier)
  * ========================================================================== */
 void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
-                    int budget, int carbon_copies, int ROWS, int COLS,
+                    double budget, int carbon_copies, int ROWS, int COLS,
                     double ***population){
     
     int xpos, ypos;
@@ -350,26 +350,28 @@ void place_winners(double ****population, int *winners, int pop_size, int ROWS,
  * and therefore test out whether or not they work.
  */
 void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
-        double ***LANDSCAPE, int agent){
+        double ***LANDSCAPE, double *paras, int xdim, int ydim, int agent){
     
     int row, col, gen, layer;
-    int xdim, ydim;
     int sampleK, chooseK;
-    int popsize;
+    int popsize, agent_seed;
+    int budget;
     int generations;
     int *winners;
+    double mutation_rate, crossover_rate;
     double ***POPULATION;
     double ***NEW_POP;
     double *fitnesses;
 
-    generations = 20;
-    popsize = 100;
-    sampleK = 5;
-    chooseK = 2;
-    
-    ydim = 13;
-    xdim = 4;
-    
+    popsize        = (int) paras[21];
+    generations    = (int) paras[22];
+    agent_seed     = (int) paras[23];
+    sampleK        = (int) paras[24];
+    chooseK        = (int) paras[25];
+    mutation_rate  = paras[26];
+    crossover_rate = paras[27];
+    budget         = AGENT[agent][16];
+
     POPULATION = malloc(xdim * sizeof(double *));
     for(row = 0; row < xdim; row++){
         POPULATION[row] = malloc(ydim * sizeof(double *));
@@ -393,18 +395,17 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         winners[row]   = 0;
     }
     
-    
-    initialise_pop(ACTION, COST, agent, popsize, 100, 10, xdim, ydim, 
+    initialise_pop(ACTION, COST, agent, popsize, budget, agent_seed, xdim, ydim, 
                    POPULATION);
     
     gen = 0;
     while(gen < generations){
 
-        crossover(POPULATION, popsize, xdim, ydim, 0.1);
+        crossover(POPULATION, popsize, xdim, ydim, crossover_rate);
         
-        mutation(POPULATION, popsize, xdim, ydim, 0.1);
+        mutation(POPULATION, popsize, xdim, ydim, mutation_rate);
     
-        constrain_costs(POPULATION, COST, agent, popsize, xdim, ydim, 100);
+        constrain_costs(POPULATION, COST, agent, popsize, xdim, ydim, budget);
   
         strategy_fitness(fitnesses, POPULATION, popsize, xdim, ydim, LANDSCAPE, 
                          RESOURCES, AGENT);

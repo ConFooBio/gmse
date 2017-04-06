@@ -50,7 +50,14 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   plotting       = TRUE,  # Plot the results
                   hunt           = FALSE, # Does the user hunt resources?
                   start_hunting  = 0,     # What generation hunting starts
-                  res_consume    = 0      # Pr. landscape cell consumed by res
+                  res_consume    = 0,     # Pr. landscape cell consumed by res
+                  ga_popsize     = 100,   # Pop size in genetic algorithm
+                  ga_mingen      = 20,    # Minimum generations in a ga run
+                  ga_seedrep     = 10,    # How many copies to seed a ga with
+                  ga_sampleK     = 5,     # Random sample size in ga tournament
+                  ga_chooseK     = 2,     # Select from sample in ga tournament
+                  ga_mutation    = 0.1,   # Mutation rate in genetic algorithm
+                  ga_crossover   = 0.1    # Crossover rate in genetic algorithm
 ){
     
     if(observe_type == 1 & times_observe < 2){
@@ -120,6 +127,13 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     rmo <- res_move_obs;
     Euc <- Euclidean_dist;
     prc <- res_consume;
+    gap <- ga_popsize;
+    gam <- ga_mingen;
+    gas <- ga_seedrep;
+    gal <- ga_sampleK;
+    gac <- ga_chooseK;
+    gmu <- ga_mutation;
+    gcr <- ga_crossover;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -141,7 +155,14 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                1,       # 17. Type category for agent observation (default = 1)
                12,      # 18. Column where res seen recorded in agent array
                rmo,     # 19. Move resources while observing (0/1 = N/Y)
-               Euc      # 20. Distance is Euclidean (1) or within-cell (0)
+               Euc,     # 20. Distance is Euclidean (1) or within-cell (0)
+               gap,     # 21. Population size set in the genetic algorithm
+               gam,     # 22. Minimum number of generations to run a ga
+               gas,     # 23. Number of replicate agents to seed a ga with
+               gal,     # 24. The number of sample agents for tournament in ga
+               gac,     # 25. The number of selected agents in a ga tournament
+               gmu,     # 26. The mutation rate of loci in the genetic algorithm
+               gcr      # 27. The crossover rate in the genetic algorithm
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;

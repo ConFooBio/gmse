@@ -26,4 +26,4 @@ void place_winners(double ****population, int *winners, int pop_size, int ROWS,
                    int COLS);
 
 void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
-        double ***LANDSCAPE, int agent);
+        double ***LANDSCAPE, double *paras, int xdim, int ydim, int agent);
