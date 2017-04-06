@@ -350,7 +350,7 @@ void place_winners(double ****population, int *winners, int pop_size, int ROWS,
  * and therefore test out whether or not they work.
  */
 void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
-        double ***LANDSCAPE){
+        double ***LANDSCAPE, int agent){
     
     int row, col, gen, layer;
     int xdim, ydim;
@@ -394,7 +394,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     }
     
     
-    initialise_pop(ACTION, COST, 0, popsize, 100, 10, xdim, ydim, 
+    initialise_pop(ACTION, COST, agent, popsize, 100, 10, xdim, ydim, 
                    POPULATION);
     
     gen = 0;
@@ -404,7 +404,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         
         mutation(POPULATION, popsize, xdim, ydim, 0.1);
     
-        constrain_costs(POPULATION, COST, 0, popsize, xdim, ydim, 100);
+        constrain_costs(POPULATION, COST, agent, popsize, xdim, ydim, 100);
   
         strategy_fitness(fitnesses, POPULATION, popsize, xdim, ydim, LANDSCAPE, 
                          RESOURCES, AGENT);
@@ -419,7 +419,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     
     for(row = 0; row < xdim; row++){
         for(col = 0; col < ydim; col++){
-            ACTION[row][col][0] = POPULATION[row][col][0];
+            ACTION[row][col][agent] = POPULATION[row][col][agent];
         }
     }
 

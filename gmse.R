@@ -10,7 +10,7 @@ rm(list=ls(all=TRUE));
 setwd("~/Dropbox/projects/gmse");
 
 # Compiled using the following
-# R CMD SHLIB -o gmse.so resource.c observation.c game.c utilities.c
+# R CMD SHLIB -o gmse.so resource.c observation.c user.c game.c utilities.c
 dyn.load('src/gmse.so') # Just keep this here for now.
 
 source("R/initialise.R");

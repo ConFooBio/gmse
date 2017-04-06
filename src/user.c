@@ -302,7 +302,7 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     /*------------------------------------------------------------------------*/
     /* Temporary call to genetic algorithm below for ONE agent -- testing */
     /*------------------------------------------------------------------------*/
-    ga(actions, costs, agent_array, resource_array, land);
+    ga(actions, costs, agent_array, resource_array, land, 1);
     /*------------------------------------------------------------------------*/
     
     
