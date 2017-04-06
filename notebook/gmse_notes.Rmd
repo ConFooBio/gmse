@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
  
-     - **APR** [5](#u-5-APR-2017)
+     - **APR** [6](#u-6-APR-2017), [5](#u-5-APR-2017)
      - **MAR** [23](#u-23-MAR-2017), [22](#u-22-MAR-2017), [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
@@ -74,6 +74,17 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-6-APR-2017">Update: 6 APR 2017</a>
+
+
+**Quick check on neural networks**
+
+I want to make sure I understand neural networks well enough to be able to explain why I'm not using them (yet). [Daniel Shiffman's](https://github.com/shiffman) book [chapter](http://natureofcode.com/book/chapter-10-neural-networks/) in *The Nature of Code* helps out here. Because the simulated agents aren't trying to recognise a particular pattern, I don't think a neural network is how I would describe the `COST` and `ACTION` arrays -- nor would a more explicit network structure going from input (e.g., costs and resources abundances) to output (actions) be terribly useful for current purposes. Nevertheless, **a neural network will be useful if combined with empirical data to mimic human behaviour**. For example, if we want to make an agent that predicts stake-holders' actions based off of empirically collected data from behavioural games, then a neural network could be fed input and then callobrated to the 'correct' behaviour observed by humans through correlations with specific conditions. This would, in effect, create an artifical bot that does what a human would do based on correlating situations with actions. I'm not sure how much data it would require to parameterise effectively, but I suspect more than would be a lot -- we would probably need to have dozens of people [act as stake-holders or managers within G-MSE](#u-23-JAN-2017) and collect their actions.
+
+**Back to fitness functions**
+
+I now need to complete the genetic algorithm with a useful fitness function. The fitness function should calculate the change in resources caused by a stake-holder's actions, then match them to utility. Note that this doesn't require all resources to be calculated to figure out what total utility is before and after an agent has acted -- only how the agent's actions have increased or decreased resources, and the weight (utility) assigned to each.
 
 > <a name="u-5-APR-2017">Update: 5 APR 2017</a>
 
