@@ -111,6 +111,8 @@ void count_cell_yield(double **agent_array, double ***landscape, int xdim,
  *      LANDSCAPE:  An array of *row by *col size that makes up the landscape
  *      PARAMETERS: Parameters read into the function for population processes
  *      AGENT:      An array of *row agents and *col traits for each agent
+ *      COST:       An array of the cost of actions for each agent
+ *      ACTION:     An array of the action of agents
  * ===========================================================================*/
 SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
           SEXP ACTION){

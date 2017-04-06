@@ -3,8 +3,11 @@
 #' A model of user decisions for a single time step
 #'
 #'@param resource Resource data frame at the start of the time step
-#'@param landscape Data frame at the start of the time step
+#'@param agent Agent array at the start of the the time step
+#'@param landscape Landscape array at the start of the time step
 #'@param paras Vector of parameter values to read into the model
+#'@param cost Array of the costs associated with each agent actions
+#'@param action Array of each agents actions
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
 #'@return Data frames of user output at the end of the time step
