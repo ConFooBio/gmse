@@ -88,6 +88,26 @@ I now need to complete the genetic algorithm with a useful fitness function. The
 
 A starting point is to do some clean-up. There are several values hard coded in to the `ga()` function that need to be assigned variables to be set in `gmse.R`. Once I have the `ga()` function a bit more readable, then I can move on to the specifics of the fitness function.
 
+Having done the clean-up, I now note again that the utility from an action isn't always direct -- e.g., killing one resource might increase crop yield. Somehow, the action of removing an individual from the population must therefore be recognised by the agent as increasing yield by a particular amount. There are a few ways that I could think to do this:
+
+1. Have stake-holders correlate resources with crop production on cells. This would be the most complex way of doing things -- probably the most flexible too, but I'm not sure if it would actually be the most realistic. Not for farmers watching their crops being eaten at least; the cause and effect is something I think stake-holders could probably observe pretty clearly.
+
+2. Give stake-holders complete access to the resouce array and have them figure out exactly how much damage their land is going to sustain by seeing the number of resources on it and the amount of damage that each reosurce reduces per cell (column 14 in C, 15 in R). Maybe this is the best starting point, though it does seem to be a bit too exact; no farmer is going to know exactly how many animals are on their farm and exactly how much damage they will do. Still, perhaps we assume this and add in error later.
+
+3. Give stake-holders access to the resource array column in which crop damage is specified, then have them associate mean damage per cell with each resource type. Do not, however, give them access to resource locations, and require that they instead estimate the density of resources on their landscape in the same way that managers might in an observation model `type 0` (i.e., look at a few cells on their property, then infer the total number of resources and how much damage they'll do). I like this because it seams reasonable that a farmer could know roughly how much damage an animal does to their crop in the area, but probably doesn't have the time or ability to sample every corner of their land to find exactly the number of animals on it. It also doesn't give stake-holders a superior ability to estimate local population size.
+
+4. Ignore the resource array -- just have the stake-holders act some way (e.g., invest in killing stuff on the land or feeding stuff), then run a sub-routine mimicking the population landscape interaction (e.g., call `res_landscape_interaction` from `resource.c` directly). If some resources are created or destroyed, then this would need to be accounted for by making a dummy resource array. Perhaps the following:
+    - Count the number of resources (of any type) in the `RESOURCE` array on the stake-holder's land
+    - Initialise a dummy resource array `RESOURCE_LOCAL` with only resources on the stake-holder's land
+    - Have a stake-holders actions affect the `RESOURCE_LOCAL` array in relevant columns (e.g., `birth`, `remove_pr`, etc.)
+    - Use key bits of `res_add` and `res_remove` to get the *number* of individuals being added or removed.
+    - Use the `res_landscape_interaction` function to find the effect of the added and removed individuals on landscape
+    - End with changed resource amounts and changed landscape production as a consequence for *one* strategy
+    - Calculate fitness by summing the utilities of resources and local landscape cells
+    - **Note**, no need to worry if a stake-holder is, e.g., trying to kill 10 resources when there are only 6 on their land -- this just results in 6 kills and wasted energy (perhaps should also add probability of success later)
+  
+Although I initially thought option 3 was pretty good, I'm now leaning toward option 4 as being the best one to try out first; it seems more flexible. Eventually, of course, we can specify options for different ways of calculating fitness, but I think it's best to pick one option first and go with it. I think option 4 will be slightly slower than option 3, but I'm curious as to exactly how much slower. Hence, I'll try number 4 first, then potentially move to 3 as a default if it's too clunky. I have to keep in mind as well that managers are probably going to need to run the `user` functions to set policy eventually (unless I can find a work-around that gets managers to anticipate stake-holder actions in making policy), and this will likely slow things down exponentially. Time isn't much of an issue now, and I want to keep things efficient as possible. **Also important,** I need to make sure that there is some `if` statement that only deals with the landscape if the stake-holder owns land. If they don't own any, then their actions need to be restricted accordingly -- maybe to lobbying the manager or only doing things on public land?. **As a next step,** I will attempt to write the code for option 4 above, perhaps excluding (for now) stake-holders that own no land.
+  
 
 > <a name="u-5-APR-2017">Update: 5 APR 2017</a>
 
