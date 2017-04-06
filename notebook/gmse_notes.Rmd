@@ -80,8 +80,11 @@ library(rhandsontable)
 
 **Quick check on neural networks**
 
-I want to make sure I understand neural networks well enough to be able to explain why I'm not using them (yet). [Daniel Shiffman's chapter](http://natureofcode.com/book/chapter-10-neural-networks/) in *The Nature of Code* helps out here.
+I want to make sure I understand neural networks well enough to be able to explain why I'm not using them (yet). [Daniel Shiffman's](https://github.com/shiffman) book [chapter](http://natureofcode.com/book/chapter-10-neural-networks/) in *The Nature of Code* helps out here. Because the simulated agents aren't trying to recognise a particular pattern, I don't think a neural network is how I would describe the `COST` and `ACTION` arrays -- nor would a more explicit network structure going from input (e.g., costs and resources abundances) to output (actions) be terribly useful for current purposes. Nevertheless, **a neural network will be useful if combined with empirical data to mimic human behaviour**. For example, if we want to make an agent that predicts stake-holders' actions based off of empirically collected data from behavioural games, then a neural network could be fed input and then callobrated to the 'correct' behaviour observed by humans through correlations with specific conditions. This would, in effect, create an artifical bot that does what a human would do based on correlating situations with actions. I'm not sure how much data it would require to parameterise effectively, but I suspect more than would be a lot -- we would probably need to have dozens of people [act as stake-holders or managers within G-MSE](#u-23-JAN-2017) and collect their actions.
 
+**Back to fitness functions**
+
+I now need to complete the genetic algorithm with a useful fitness function. The fitness function should calculate the change in resources caused by a stake-holder's actions, then match them to utility. Note that this doesn't require all resources to be calculated to figure out what total utility is before and after an agent has acted -- only how the agent's actions have increased or decreased resources, and the weight (utility) assigned to each.
 
 > <a name="u-5-APR-2017">Update: 5 APR 2017</a>
 
