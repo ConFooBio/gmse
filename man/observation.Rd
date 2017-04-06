@@ -5,7 +5,9 @@
 \title{Observation model}
 \usage{
 observation(resource = NULL, landscape = NULL, paras = NULL,
-  agent = NULL, type = 0, fix_mark = FALSE, model = "IBM")
+  agent = NULL, res_type = 1, fix_mark = FALSE, times = 1,
+  samp_age = 1, agent_type = 0, type_cat = 1, obs_method = 0,
+  move_res = FALSE, model = "IBM")
 }
 \arguments{
 \item{resource}{Resource data frame at the start of the time step}
@@ -15,6 +17,20 @@ observation(resource = NULL, landscape = NULL, paras = NULL,
 \item{paras}{Vector of parameter values to read into the model}
 
 \item{agent}{Agent data frame at the start of the time step}
+
+\item{fix_mark}{Fixed number of individuals marked? (A number, or FALSE)}
+
+\item{times}{Number of times that the observations are made}
+
+\item{samp_age}{Minimum age of the resource being sampled (default = 1)}
+
+\item{agent_type}{The type of agent doing the observing (default = 0)}
+
+\item{type_cat}{The category of agent type (first 4 columns) doing observing}
+
+\item{obs_method}{The type of method used to do the observing}
+
+\item{move_res}{Should resources be moved during observation (default = FALSE)}
 
 \item{model}{The type of model being applied (Currently only individual-based
 -- i.e., 'agent-based' -- models are allowed)}
@@ -28,4 +44,3 @@ Data frame observations at the end of the time step
 A simulation of techniques (e.g., capture-mark-recapture) for estimating
 population size and poperties.
 }
-

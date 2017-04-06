@@ -34,4 +34,3 @@ the_agents Initialised data frame of agents being modelled
 \description{
 Function to initialise the agents of the G-MSE model
 }
-

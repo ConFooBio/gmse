@@ -4,7 +4,9 @@
 \alias{make_landscape}
 \title{Landscape initialisation}
 \usage{
-make_landscape(model, rows, cols, cell_types)
+make_landscape(model, rows, cols, cell_types, cell_val_mn, cell_val_sd,
+  cell_val_max = 1, cell_val_min = 0, layers = 3, ownership = 0,
+  owner_pr = NULL)
 }
 \arguments{
 \item{model}{The type of model being applied (Currently only individual-based
@@ -15,6 +17,14 @@ make_landscape(model, rows, cols, cell_types)
 \item{cols}{The dimension of one side of the landscape (e.g., Latitude)}
 
 \item{cell_types}{Scalar or vector of all possible types of landscape cells}
+
+\item{cell_val_mn}{Mean cell value (e.g., defining crop output on a cell)}
+
+\item{cell_val_sd}{Standard devation of cell values on a landscape}
+
+\item{cell_val_max}{The maximum value of a cell}
+
+\item{cell_val_min}{The minimum value of a cell}
 }
 \value{
 the_land A cols by rows landscape with randomly distributed cell types
@@ -22,4 +32,3 @@ the_land A cols by rows landscape with randomly distributed cell types
 \description{
 Function to initialise the landscape of the G-MSE model
 }
-

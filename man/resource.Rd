@@ -4,7 +4,8 @@
 \alias{resource}
 \title{Resource model}
 \usage{
-resource(resource = NULL, landscape = NULL, paras = NULL, model = "IBM")
+resource(resource = NULL, landscape = NULL, paras = NULL,
+  move_res = TRUE, model = "IBM")
 }
 \arguments{
 \item{resource}{Resource data frame at the start of the time step}
@@ -12,6 +13,8 @@ resource(resource = NULL, landscape = NULL, paras = NULL, model = "IBM")
 \item{landscape}{Data frame at the start of the time step}
 
 \item{paras}{Vector of parameter values to read into the model}
+
+\item{move_res}{Determining whether or not resources should move}
 
 \item{model}{The type of model being applied (Currently only individual-based
 -- i.e., 'agent-based' -- models are allowed)}
@@ -23,4 +26,3 @@ Data frame of Resource 2 at the end of the time step
 A population model of resource (including population) dynamics for 
 a single time step.
 }
-
