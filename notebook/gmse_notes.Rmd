@@ -86,6 +86,8 @@ I want to make sure I understand neural networks well enough to be able to expla
 
 I now need to complete the genetic algorithm with a useful fitness function. The fitness function should calculate the change in resources caused by a stake-holder's actions, then match them to utility. Note that this doesn't require all resources to be calculated to figure out what total utility is before and after an agent has acted -- only how the agent's actions have increased or decreased resources, and the weight (utility) assigned to each.
 
+A starting point is to do some clean-up. There are several values hard coded in to the `ga()` function that need to be assigned variables to be set in `gmse.R`. Once I have the `ga()` function a bit more readable, then I can move on to the specifics of the fitness function.
+
 > <a name="u-5-APR-2017">Update: 5 APR 2017</a>
 
 **More thoughts on genetic algorithms**
