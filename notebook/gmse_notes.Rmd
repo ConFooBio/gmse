@@ -115,6 +115,30 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
 }
 ```
 
+<a name="cost_action_arrays">**Definitions of the `COST` and `ACTION` arrays**</a>
+
+A quick reminder to myself what's going on in the `COST` and `ACTION` arrays, as it is most relevant for fitness functions. In the example `COST` array there are two agents (very simple -- just a manager and a stake-holder) and one resource. The table below is *one layer of a 3D 2-layer array* where each layer identifies actions for each unique agent. 
+
+| agent | type1 | type2 | type3 | util | u_loc | u_land | movem  | castem | killem | feedem | helpem | bankem |
+|-------|-------|-------|-------|------|-------|--------|--------|--------|--------|--------|--------|--------|
+| -2    |  1    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  2     |  0     |  0     |  0     |
+| -1    |  1    |  0    | 0     | 2    | 1     | 0      | 0      |  0     |  0     |  0     |  0     |  0     |
+|  1    |  1    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |  0     |
+|  2    |  1    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |  0     |
+
+The way to read the above in the code is as follows. All of the actions are for the one stake-holder (i.e., assume we're looking at the second layer in the 3D array). The first row of actions is special because it represents the degree to which a stake-holder themselves *values* and things they will **do** to a resource of `type1 = 1`, `type2 = 0`, and `type3 = 0`. Value is indicated by `util`, whether or not that value is 'visible' to the agent (which may be implemented in different ways, but for now is within some distance of their location) is indicated by `u_loc`, and whether or not that value is tied to it being on land that the stake-holder owns is indicated by `u_land`. Actions are indicated by the remaining columns, and if `u_land = TRUE`, then we assuem that actions are restricted to resources on the agent's owned land -- though I am tempted to change `u_loc` to mean whether or not actions are (`1`) or are not (`0`) restricted in this way.
+
+So the **first row** where `agent = -2` represents values and actions of the focal agent (indicated by this layer of the 3D array) for a particular type of resource (note that more rows where `agent = -2` would be needed for more resources). The **second row** where `agent = -1` refers specifically to the values and actions of a particular layer of the landscape, which is indicated in the `type1` column (making `type2` and `type3` effectively useless in this row, for now). Right now this is `type1 = 1`, which is the index (for C -- R is of course 2) where the values of crop production are stored; I'm not sure if it's worth adding more rows for additional layers later, but this framework at least allows the possibility for other landscape properties to be valued. Of course, whenever `agent = -1` and we're looking at the landscape, actions such as `movem` and `castem` will need to have different meanings -- or no meaning, but `feedem` and `killem` could be fairly straightforward. The **third** row is action taken to the agent whose ID is `1` with reference to resource `type1 = 1`, `type2 = 0`, and `type3 = 0`. Any nonzero values here in `util`, `u_loc`, and `u_land` cause the focal agent to change the *value* of another agent, while any nonzero values in `movem`, `castem`, ..., `bankem` cause the focal agent to change the *cost* of another agent taking a particular action (i.e., it affects the other agent's layer at `agent = -2`), increasing it or decreasing it (**NOTE: I just noticed that I really need to set up these tables with values for `type1 = -1` or something here -- to allow agents to affect other agents costs of actions affecting the landscape**). So in theory the agent in the above table could change the manager's values (e.g., modelling lobbying) or the cost of them performing actions (e.g., modelling something like protesting or lobbying third parties?). The could also *in theory* change their own values and costs of perfoming actions, though I think this should almost always be prohibited by making the cost of doing so effectively infinite, which brings me to the cost array.
+
+| agent | type1 | type2 | type3 | util | u_loc | u_land | movem  | castem | killem | feedem | helpem | bankem |
+|-------|-------|-------|-------|------|-------|--------|--------|--------|--------|--------|--------|--------|
+| -2    |  1    |  0    | 0     | 101  | 101   | 101    | 3      |  8     |  4     |  4     |  2     |  1     |
+| -1    |  1    |  0    | 0     | 101  | 101   | 101    | 101    |  101   |  101   |  101   |  101   |  101   |
+|  1    |  1    |  0    | 0     | 101  | 101   | 101    | 101    |  101   |  101   |  101   |  101   |  101   |
+|  2    |  1    |  0    | 0     | 101  | 101   | 101    | 101    |  101   |  101   |  101   |  101   |  101   |
+
+Assume that each agent gets a total budget of `100`. In that case, all of the table elements equal to 101 are effectively off limits because they are too costly (I might actually want to make them 1000 just in case some agent gets crafty and tries to lower another agent's cost). So in the above, the stake-holder can only take six possible actions, all of which directly affect resources and not other stake-holders' values or costs. By setting it up this way, the genetic algorithm will converge on the best set of these actions and the `ACTION` array above will never change values where `COST` elements are `101`. Later, we might decrease the value of  `util` in row 3 to allow the stake-holder to lobby the manager. Managers (different layer) would simply have cost arrays that have lower values allowing them to affect actions of stake-holders. With these tables now (I hope) completely clear, the code writing itself should become much smoother -- I've anchored to the title immediately above because I know it's going to be necessary to come back to these two difficult to remember tables.
+
 
 > <a name="u-6-APR-2017">Update: 6 APR 2017</a>
 
