@@ -217,6 +217,33 @@ void constrain_costs(double ***population, double ***COST, int layer,
     }
 }
 
+
+/* =============================================================================
+ * This function returns how many resources are on a stake-holder's land
+ * ========================================================================== */
+int res_on_my_land(double **resources, double ***land, int total, int owner,
+                   int type1, int type2, int type3){
+    int xloc, yloc;
+    int resource;
+    int resources_on_land;
+    
+    resources_on_land = 0;
+    for(resource = 0; resource < total; resource++){
+        if(resources[resource][1] == type1 &&
+           resources[resource][2] == type2 &&
+           resources[resource][3] == type3
+          ){
+            xloc = (int) resources[resource][4];
+            yloc = (int) resources[resource][5];
+            if(land[xloc][yloc][2] == owner){
+                resources_on_land++;
+            }
+        }
+    }
+    
+    return resources_on_land;
+}
+
 /* =============================================================================
  * This is a preliminary function that checks the fitness of each agent -- as of
  * now, fitness is just defined by how much action is placed into savem (last
@@ -239,9 +266,11 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
                       double **resources, double **agent_array,
                       int res_number, int landowner){
     int xloc, yloc;
-    int agent, resource;
-    int res_on_land;
-    double **RESOURCE_LOCAL;
+    int agent, resource, row;
+    int res_on_land, landscape_specific;
+    double res_count, *resource_totals;
+    
+    resource_totals = malloc(ROWS * sizeof(double));
     
     /* Need something here -- check if: 
      *
@@ -252,20 +281,49 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
      * of stake-holders should be interpreted accordingly (e.g., agents could be
      * allowed to do some actions on public land, or not at all -- perhaps an
      * option added to paras?
+     * 
+     * Don't actually need to check 1 -- can get around this.
+     * Also don't need a RESOURCE_LOCAL. Can just check to see if they are
+     * local when performing an action. Instead, need to see how much of each
+     * type are on the land.
      */
     
-    res_on_land = 0; /* Make a sub-function returning an int for this */
+    
+    
+    res_on_land = res_on_my_land(resources, landscape, res_number, landowner,
+                                     1, 0, 0);
+    
+    
+    /* The below will be its own function getting abundances caused by actions*/
+    agent = 0;
     for(resource = 0; resource < res_number; resource++){
-        xloc = (int) resources[resource][4];
-        yloc = (int) resources[resource][5];
-        if(landscape[xloc][yloc][2] == landowner){
-            res_on_land++;
-        }
+        for(row = 0; row < ROWS; row++){
+            res_count = 0;
+            if(population[row][0][agent] == -2                      &&
+               population[row][1][agent] == resources[resource][1]  &&
+               population[row][2][agent] == resources[resource][2]  &&
+               population[row][3][agent] == resources[resource][3]
+              ){
+                landscape_specific = population[row][6][agent];
+                if(landscape_specific == 0){
+                    res_count++;
+                }else{
+                    xloc = resources[resource][4];
+                    yloc = resources[resource][5];
+                    if(landscape[xloc][yloc][2] == landowner){
+                        res_count++;    
+                    }
+                }
+            }
     }
+    
+    
     
     for(agent = 0; agent < pop_size; agent++){
         fitnesses[agent] = population[0][12][agent];
     }
+    
+    free(resource_totals);
 }
 
 /* =============================================================================

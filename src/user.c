@@ -60,8 +60,7 @@ void send_agents_home(double **agent_array, double ***landscape, int xdim,
 
 
 /* =============================================================================
- * This function puts an agent somewhere (a random cell) on its own landscape,
- * but  only if the agent does in fact own some land
+ * This function counts the cell yield on a landscape layer
  * Inputs include:
  *     AGENTS: The array of agents
  *     LANDSCAPE: The landscape array
