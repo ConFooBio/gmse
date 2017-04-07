@@ -231,11 +231,37 @@ void constrain_costs(double ***population, double ***COST, int layer,
  *     landscape: The landscape array
  *     resources: The resource array
  *     agent_array: The agent array
+ *     res_number: The number of rows in the resource array
+ *     landowner: The agent ID of interest -- also the landowner
  * ========================================================================== */
 void strategy_fitness(double *fitnesses, double ***population, int pop_size, 
                       int ROWS, int COLS, double ***landscape,  
-                      double **resources, double **agent_array){
-    int agent;
+                      double **resources, double **agent_array,
+                      int res_number, int landowner){
+    int xloc, yloc;
+    int agent, resource;
+    int res_on_land;
+    double **RESOURCE_LOCAL;
+    
+    /* Need something here -- check if: 
+     *
+     *   1) agent has landscape-specific utility
+     *   2) agent actually owns some land
+     * 
+     * If neither are true, then RESOURCE_LOCAL should not be built, and actions
+     * of stake-holders should be interpreted accordingly (e.g., agents could be
+     * allowed to do some actions on public land, or not at all -- perhaps an
+     * option added to paras?
+     */
+    
+    res_on_land = 0; /* Make a sub-function returning an int for this */
+    for(resource = 0; resource < res_number; resource++){
+        xloc = (int) resources[resource][4];
+        yloc = (int) resources[resource][5];
+        if(landscape[xloc][yloc][2] == landowner){
+            res_on_land++;
+        }
+    }
     
     for(agent = 0; agent < pop_size; agent++){
         fitnesses[agent] = population[0][12][agent];
@@ -350,12 +376,14 @@ void place_winners(double ****population, int *winners, int pop_size, int ROWS,
  * and therefore test out whether or not they work.
  */
 void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
-        double ***LANDSCAPE, double *paras, int xdim, int ydim, int agent){
+        double ***LANDSCAPE, double *paras, int xdim, int ydim, 
+        int res_number, int agent){
     
     int row, col, gen, layer;
     int sampleK, chooseK;
     int popsize, agent_seed;
     int budget;
+    int landowner;
     int generations;
     int *winners;
     double mutation_rate, crossover_rate;
@@ -371,6 +399,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     mutation_rate  = paras[26];
     crossover_rate = paras[27];
     budget         = AGENT[agent][16];
+    landowner      = AGENT[agent][0];
 
     POPULATION = malloc(xdim * sizeof(double *));
     for(row = 0; row < xdim; row++){
@@ -408,7 +437,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         constrain_costs(POPULATION, COST, agent, popsize, xdim, ydim, budget);
   
         strategy_fitness(fitnesses, POPULATION, popsize, xdim, ydim, LANDSCAPE, 
-                         RESOURCES, AGENT);
+                         RESOURCES, AGENT, res_number, landowner);
   
         tournament(fitnesses, winners, popsize, sampleK, chooseK);
    
