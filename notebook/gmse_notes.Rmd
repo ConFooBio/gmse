@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **APR** [6](#u-6-APR-2017), [5](#u-5-APR-2017)
+     - **APR** [7](#u-7-APR-2017), [6](#u-6-APR-2017), [5](#u-5-APR-2017)
      - **MAR** [23](#u-23-MAR-2017), [22](#u-22-MAR-2017), [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
@@ -74,6 +74,47 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-7-APR-2017">Update: 7 APR 2017</a>
+
+Working through implementing the ideas for the fitness function from [yesterday](#u-6-APR-2017). I've linked some key parameters now through `user` and `ga` so they can be run in `strategy_fitness` (namely the resource number and agent_ID, `landowner`). Now it's important to note that building local resources has to be conditional -- if an agent has no land, they cannot do things on their land. And if their interests are global, this needs to be considered too. I think a collection of small functions called according to parameter options is needed, and landscape specific changes are really a subset of general actions, so maybe there's a better way to do this. Really though, it would be nice to have a way for the cost of performing actions on **land owned** versus **land not owned** to be different. Then again, it would be nice to have different utilities for resources on and off your land, but this could get very complex very quickly (might, however, be interesting in that maybe a farmer values crops positively on their own land but negatively on the land of other farmers). I think it will also shake out when the manager actions affecting costs comes into play -- so a manager will naturally up the cost if shooting somehow becomes *not* tied to a location in a way that affects other stake-holders or management decisions, for whatever reason. The bottom line is that I think it's okay for now to run the `ga` with the constraint that **if a resource/landscape utility value is tied to land ownership, then the actions should also be tied to owned landcape cells**. If not, then actions should happen either on all cells or only public land.
+
+```
+void strategy_fitness(double *fitnesses, double ***population, int pop_size, 
+                      int ROWS, int COLS, double ***landscape,  
+                      double **resources, double **agent_array,
+                      int res_number, int landowner){
+    int xloc, yloc;
+    int agent, resource;
+    int res_on_land;
+    double **RESOURCE_LOCAL;
+    
+    /* Need something here -- check if: 
+     *
+     *   1) agent has landscape-specific utility
+     *   2) agent actually owns some land
+     * 
+     * If neither are true, then RESOURCE_LOCAL should not be built, and actions
+     * of stake-holders should be interpreted accordingly (e.g., agents could be
+     * allowed to do some actions on public land, or not at all -- perhaps an
+     * option added to paras?
+     */
+    
+    res_on_land = 0; /* Make a sub-function returning an int for this */
+    for(resource = 0; resource < res_number; resource++){
+        xloc = (int) resources[resource][4];
+        yloc = (int) resources[resource][5];
+        if(landscape[xloc][yloc][2] == landowner){
+            res_on_land++;
+        }
+    }
+    
+    for(agent = 0; agent < pop_size; agent++){
+        fitnesses[agent] = population[0][12][agent];
+    }
+}
+```
+
 
 > <a name="u-6-APR-2017">Update: 6 APR 2017</a>
 
