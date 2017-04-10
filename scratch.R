@@ -23,6 +23,13 @@ plotting       = TRUE;  # Plot the results
 hunt           = FALSE; # Does the user hunt resources?
 start_hunting  = 0;     # What generation hunting starts
 res_consume    = 0;
+ga_popsize     = 100;   # Pop size in genetic algorithm
+ga_mingen      = 20;    # Minimum generations in a ga run
+ga_seedrep     = 10;    # How many copies to seed a ga with
+ga_sampleK     = 5;     # Random sample size in ga tournament
+ga_chooseK     = 2;     # Select from sample in ga tournament
+ga_mutation    = 0.1;   # Mutation rate in genetic algorithm
+ga_crossover   = 0.1;   # Crossover rate in genetic algorithm
 
 sim <- gmse( observe_type  = 0,
              agent_view    = 20,

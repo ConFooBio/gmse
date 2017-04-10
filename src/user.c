@@ -78,7 +78,6 @@ void count_cell_yield(double **agent_array, double ***landscape, int xdim,
     int agent;
     int agent_ID;
     double agent_yield;
-
     
     for(agent = 0; agent < agent_number; agent++){
         agent_ID    = agent_array[agent][0];
@@ -302,7 +301,7 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     /* Temporary call to genetic algorithm below for ONE agent -- testing */
     /*------------------------------------------------------------------------*/
     ga(actions, costs, agent_array, resource_array, land, paras, c_x, c_y, 
-       res_number, 1);
+       res_number, land_x, land_y, 1);
     /*------------------------------------------------------------------------*/
     
     

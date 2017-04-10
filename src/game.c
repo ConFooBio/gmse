@@ -217,7 +217,6 @@ void constrain_costs(double ***population, double ***COST, int layer,
     }
 }
 
-
 /* =============================================================================
  * This function returns how many resources are on a stake-holder's land
  * ========================================================================== */
@@ -244,6 +243,60 @@ int res_on_my_land(double **resources, double ***land, int total, int owner,
     return resources_on_land;
 }
 
+
+/* =============================================================================
+ * This function calculated each payoff for rows in the action matrix
+ * ========================================================================== */
+void calc_payoffs(double ***population, int ROWS, double ***landscape, 
+                  double **resources, int res_number, int landowner,
+                  int land_x, int land_y, double *payoff_vector, int agent){
+    
+    int xloc, yloc, yield_layer;
+    int resource, row;
+    int landscape_specific;
+    int res_count;
+    double cell_yield;
+    
+    for(row = 0; row < ROWS; row++){
+        payoff_vector[row] = 0;
+        if(population[row][0][agent] == -2){
+            for(resource = 0; resource < res_number; resource++){
+                if(population[row][1][agent] == resources[resource][1]  &&
+                   population[row][2][agent] == resources[resource][2]  &&
+                   population[row][3][agent] == resources[resource][3]
+                ){    
+                    landscape_specific = population[row][6][agent];
+                    if(landscape_specific == 0){
+                        res_count++;
+                    }else{
+                        xloc = resources[resource][4];
+                        yloc = resources[resource][5];
+                        if(landscape[xloc][yloc][2] == landowner){
+                            res_count++;    
+                        }
+                    } /* Below gives resource counts -- if a resource */ 
+                }
+            }
+            payoff_vector[row] += res_count;
+        }
+        if(population[row][0][agent] == -1){
+            yield_layer = population[row][1][agent];
+            for(xloc = 0; xloc < land_x; xloc++){
+                for(yloc = 0; yloc < land_y; yloc++){
+                    if(landscape[xloc][yloc][2] == landowner){
+                        cell_yield = landscape[xloc][yloc][yield_layer];
+                        payoff_vector[row] += cell_yield;
+                    }
+                }
+            }
+        }
+        if(population[row][0][agent] > -1){
+            payoff_vector[row] = 0;
+        }
+    }
+}
+
+
 /* =============================================================================
  * This is a preliminary function that checks the fitness of each agent -- as of
  * now, fitness is just defined by how much action is placed into savem (last
@@ -260,17 +313,19 @@ int res_on_my_land(double **resources, double ***land, int total, int owner,
  *     agent_array: The agent array
  *     res_number: The number of rows in the resource array
  *     landowner: The agent ID of interest -- also the landowner
+ *     land_x: The x dimension of the landscape
+ *     land_y: The y dimension of the landscape
  * ========================================================================== */
 void strategy_fitness(double *fitnesses, double ***population, int pop_size, 
                       int ROWS, int COLS, double ***landscape,  
                       double **resources, double **agent_array,
-                      int res_number, int landowner){
-    int xloc, yloc;
+                      int res_number, int landowner, int land_x, int land_y){
+    int xloc, yloc, yield_layer;
     int agent, resource, row;
     int res_on_land, landscape_specific;
-    double res_count, *resource_totals;
+    double cell_yield, res_count, *payoff_vector;
     
-    resource_totals = malloc(ROWS * sizeof(double));
+    payoff_vector = malloc(ROWS * sizeof(double));
     
     /* Need something here -- check if: 
      *
@@ -288,42 +343,22 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
      * type are on the land.
      */
     
-    
-    
     res_on_land = res_on_my_land(resources, landscape, res_number, landowner,
                                      1, 0, 0);
+
+    calc_payoffs(population, ROWS, landscape, resources, res_number, landowner,
+                 land_x, land_y, payoff_vector, agent);
     
-    
-    /* The below will be its own function getting abundances caused by actions*/
-    agent = 0;
-    for(resource = 0; resource < res_number; resource++){
-        for(row = 0; row < ROWS; row++){
-            res_count = 0;
-            if(population[row][0][agent] == -2                      &&
-               population[row][1][agent] == resources[resource][1]  &&
-               population[row][2][agent] == resources[resource][2]  &&
-               population[row][3][agent] == resources[resource][3]
-              ){
-                landscape_specific = population[row][6][agent];
-                if(landscape_specific == 0){
-                    res_count++;
-                }else{
-                    xloc = resources[resource][4];
-                    yloc = resources[resource][5];
-                    if(landscape[xloc][yloc][2] == landowner){
-                        res_count++;    
-                    }
-                }
-            }
+    for(row = 0; row < ROWS; row++){
+        printf("%f\t",payoff_vector[row]);
     }
-    
-    
+    printf("\n");
     
     for(agent = 0; agent < pop_size; agent++){
         fitnesses[agent] = population[0][12][agent];
     }
     
-    free(resource_totals);
+    free(payoff_vector);
 }
 
 /* =============================================================================
@@ -435,7 +470,7 @@ void place_winners(double ****population, int *winners, int pop_size, int ROWS,
  */
 void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double *paras, int xdim, int ydim, 
-        int res_number, int agent){
+        int res_number, int land_x, int land_y, int agent){
     
     int row, col, gen, layer;
     int sampleK, chooseK;
@@ -495,7 +530,8 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         constrain_costs(POPULATION, COST, agent, popsize, xdim, ydim, budget);
   
         strategy_fitness(fitnesses, POPULATION, popsize, xdim, ydim, LANDSCAPE, 
-                         RESOURCES, AGENT, res_number, landowner);
+                         RESOURCES, AGENT, res_number, landowner, land_x, land_y
+                        );
   
         tournament(fitnesses, winners, popsize, sampleK, chooseK);
    
