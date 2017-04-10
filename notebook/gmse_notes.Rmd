@@ -130,7 +130,48 @@ void calc_payoffs(double ***population, int ROWS, double ***landscape,
 }
 ```
 
-The above will needed to be called wtice in `calc_agent_fitness` so that the difference between vector elements can be calculated.
+The above will needed to be called twice in `calc_agent_fitness` so that the difference between vector elements can be calculated.
+
+**Use of `memcpy` to copy whole arrays**
+
+I have saved a bit of hassle by switching from the multiple loops to the simple use of `memcpy` in c, which works as follows in the `calc_agent_fitness` function.
+
+```
+void calc_agent_fitness(double ***population, int ROWS, int COLS, int landowner,
+                        double ***landscape, double **resources, int res_number,
+                        int land_x, int land_y, int trait_number,
+                        double *fitnesses){
+    
+    int agent, resource;
+    int res_on_land;
+    double *payoff_vector;
+    double **TEMP_RESOURCE;
+    
+    payoff_vector = malloc(ROWS * sizeof(double));
+    
+    TEMP_RESOURCE    = malloc(res_number * sizeof(double *));
+    for(resource = 0; resource < res_number; resource++){
+        TEMP_RESOURCE[resource] = malloc(trait_number * sizeof(double));   
+    } 
+    
+    memcpy(&TEMP_RESOURCE, &resources, sizeof(TEMP_RESOURCE));
+
+    for(resource = 0; resource < 10; resource++){
+        printf("%f\t%f\t || %f\t%f\n", resources[resource][0],
+               resources[resource][1], TEMP_RESOURCE[resource][0],
+               TEMP_RESOURCE[resource][1]);
+    }
+    /*
+    calc_payoffs(population, ROWS, landscape, resources, res_number, landowner,
+                 land_x, land_y, payoff_vector, agent);
+    
+    */
+    free(payoff_vector);
+    
+}
+```
+
+The temporary vector `TEMP_RESOURCE` needs to be made and remade so many times, and it appears that [`memcpy` is slightly faster than for loops](https://cboard.cprogramming.com/cplusplus-programming/117707-memcpy-loop-whats-faster.html). Nevertheless, I fear that use of `memcpy` might make the code less readable and its implementation could [depend on the hardware and compiler](http://computer-programming-forum.com/47-c-language/f6581dd6b532d98d.htm), which I don't want. For now, I'm going to do this the more readable way.
 
 > <a name="u-7-APR-2017">Update: 7 APR 2017</a>
 
