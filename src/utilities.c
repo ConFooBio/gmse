@@ -4,6 +4,32 @@
 #include <Rmath.h>
 
 /* =============================================================================
+ * This function returns how many resources are on a stake-holder's land
+ * ========================================================================== */
+int res_on_my_land(double **resources, double ***land, int total, int owner,
+                   int type1, int type2, int type3){
+    int xloc, yloc;
+    int resource;
+    int resources_on_land;
+    
+    resources_on_land = 0;
+    for(resource = 0; resource < total; resource++){
+        if(resources[resource][1] == type1 &&
+           resources[resource][2] == type2 &&
+           resources[resource][3] == type3
+        ){
+            xloc = (int) resources[resource][4];
+            yloc = (int) resources[resource][5];
+            if(land[xloc][yloc][2] == owner){
+                resources_on_land++;
+            }
+        }
+    }
+    
+    return resources_on_land;
+}
+
+/* =============================================================================
  * Swap pointers to rewrite ARRAY_B into ARRAY_A for a an array of any dimension
  * ========================================================================== */
 void find_descending_order(int *order_array, double *by_array, int length){

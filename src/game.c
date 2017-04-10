@@ -217,32 +217,6 @@ void constrain_costs(double ***population, double ***COST, int layer,
     }
 }
 
-/* =============================================================================
- * This function returns how many resources are on a stake-holder's land
- * ========================================================================== */
-int res_on_my_land(double **resources, double ***land, int total, int owner,
-                   int type1, int type2, int type3){
-    int xloc, yloc;
-    int resource;
-    int resources_on_land;
-    
-    resources_on_land = 0;
-    for(resource = 0; resource < total; resource++){
-        if(resources[resource][1] == type1 &&
-           resources[resource][2] == type2 &&
-           resources[resource][3] == type3
-          ){
-            xloc = (int) resources[resource][4];
-            yloc = (int) resources[resource][5];
-            if(land[xloc][yloc][2] == owner){
-                resources_on_land++;
-            }
-        }
-    }
-    
-    return resources_on_land;
-}
-
 
 /* =============================================================================
  * This function calculated each payoff for rows in the action matrix
@@ -309,9 +283,6 @@ void calc_agent_fitness(double ***population, int ROWS, int COLS, int landowner,
     double *payoff_vector;
     
     payoff_vector = malloc(ROWS * sizeof(double));
-    
-    res_on_land = res_on_my_land(resources, landscape, res_number, landowner,
-                                 1, 0, 0);
     
     calc_payoffs(population, ROWS, landscape, resources, res_number, landowner,
                  land_x, land_y, payoff_vector, agent);
