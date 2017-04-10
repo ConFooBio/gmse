@@ -221,7 +221,7 @@ void constrain_costs(double ***population, double ***COST, int layer,
 /* =============================================================================
  * This function calculated each payoff for rows in the action matrix
  * ========================================================================== */
-void calc_payoffs(double ***population, int ROWS, double ***landscape, 
+void calc_payoffs(double **population, int ROWS, double ***landscape, 
                   double **resources, int res_number, int landowner,
                   int land_x, int land_y, double *payoff_vector, int agent){
     
@@ -233,13 +233,13 @@ void calc_payoffs(double ***population, int ROWS, double ***landscape,
     
     for(row = 0; row < ROWS; row++){
         payoff_vector[row] = 0;
-        if(population[row][0][agent] == -2){
+        if(population[row][0] == -2){
             for(resource = 0; resource < res_number; resource++){
-                if(population[row][1][agent] == resources[resource][1]  &&
-                   population[row][2][agent] == resources[resource][2]  &&
-                   population[row][3][agent] == resources[resource][3]
+                if(population[row][1] == resources[resource][1]  &&
+                   population[row][2] == resources[resource][2]  &&
+                   population[row][3] == resources[resource][3]
                 ){    
-                    landscape_specific = population[row][6][agent];
+                    landscape_specific = population[row][6];
                     if(landscape_specific == 0){
                         res_count++;
                     }else{
@@ -253,8 +253,8 @@ void calc_payoffs(double ***population, int ROWS, double ***landscape,
             }
             payoff_vector[row] += res_count;
         }
-        if(population[row][0][agent] == -1){
-            yield_layer = population[row][1][agent];
+        if(population[row][0] == -1){
+            yield_layer = population[row][1];
             for(xloc = 0; xloc < land_x; xloc++){
                 for(yloc = 0; yloc < land_y; yloc++){
                     if(landscape[xloc][yloc][2] == landowner){
@@ -264,10 +264,31 @@ void calc_payoffs(double ***population, int ROWS, double ***landscape,
                 }
             }
         }
-        if(population[row][0][agent] > -1){
+        if(population[row][0] > -1){
             payoff_vector[row] = 0;
         }
     }
+}
+
+/* =============================================================================
+ * This function causes the agents to actually do the actions
+ * ========================================================================== */
+void do_actions(double ***landscape, double **resources, int land_x, int land_y,
+                double **action, int ROWS, int landowner, int res_number,
+                int COLS){
+    
+    int row, col;
+    
+    for(row = 0; row < ROWS; row++){
+        if(action[row][0] == -2){
+            
+        }
+        
+        if(action[row][0] == -1){
+            
+        }
+    }
+        
 }
 
 
@@ -279,13 +300,14 @@ void calc_agent_fitness(double ***population, int ROWS, int COLS, int landowner,
                         int land_x, int land_y, int trait_number,
                         double *fitnesses){
     
-    int agent, resource, trait;
+    int agent, resource, trait, row, col;
     int res_on_land;
     double *payoff_vector;
-    double **TEMP_RESOURCE;
+    double **TEMP_RESOURCE, **TEMP_ACTION; /* TODO: Also need TEMP_LANDSCAPE */
     
     payoff_vector = malloc(ROWS * sizeof(double));
     
+    /* --- Make tempororary resource and action arrays below --- */
     TEMP_RESOURCE    = malloc(res_number * sizeof(double *));
     for(resource = 0; resource < res_number; resource++){
         TEMP_RESOURCE[resource] = malloc(trait_number * sizeof(double));   
@@ -296,11 +318,28 @@ void calc_agent_fitness(double ***population, int ROWS, int COLS, int landowner,
         }
     } 
     
+    TEMP_ACTION = malloc(res_number * sizeof(double *));
+    for(row = 0; row < ROWS; row++){
+        TEMP_ACTION[row] = malloc(COLS * sizeof(double));   
+    }    
+    for(row = 0; row < ROWS; row++){
+        for(col = 0; col < COLS; col++){
+            TEMP_ACTION[row][col] = population[row][col][landowner];
+        }
+    }
+    /* ----------------------------------------------------------- */
+
     
-    calc_payoffs(population, ROWS, landscape, TEMP_RESOURCE, res_number, 
+    
+    calc_payoffs(TEMP_ACTION, ROWS, landscape, TEMP_RESOURCE, res_number, 
                  landowner, land_x, land_y, payoff_vector, agent);
     
     
+    
+    for(row = 0; row < ROWS; row++){
+        free(TEMP_ACTION[row]);
+    }
+    free(TEMP_ACTION);
     for(resource = 0; resource < res_number; resource++){
         free(TEMP_RESOURCE[resource]);
     }
