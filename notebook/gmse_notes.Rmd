@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **APR** [7](#u-7-APR-2017), [6](#u-6-APR-2017), [5](#u-5-APR-2017)
+     - **APR** [10](#u-10-APR-2017), [7](#u-7-APR-2017), [6](#u-6-APR-2017), [5](#u-5-APR-2017)
      - **MAR** [23](#u-23-MAR-2017), [22](#u-22-MAR-2017), [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
@@ -74,6 +74,63 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-10-APR-2017">Update: 10 APR 2017</a>
+
+I have re-arranged the fitness function structure to calculate fitness payoffs more clearly. One top level `strategy_fitness` function will calculate all strategy fitness in the genetic algorithm by looping through `calc_agent_fitness` for each agent in the population (**note**: this is each agent in the genetic algorithm population, from which the new strategy for **one** agent in the bigger G-MSE will be selected). The `calc_agent_fitness` will itself call the `calc_payoffs` function (see below) to get a vector with the same rows as the `ACTION` and `COST` arrays. Each element will eventually represent a change in the resource or landscape, corresponding to some utility value which will make it possible to calculate and compare overall fitness of the strategy.
+
+```
+void calc_payoffs(double ***population, int ROWS, double ***landscape, 
+                  double **resources, int res_number, int landowner,
+                  int land_x, int land_y, double *payoff_vector, int agent){
+    
+    int xloc, yloc, yield_layer;
+    int resource, row;
+    int landscape_specific;
+    int res_count;
+    double cell_yield;
+    
+    for(row = 0; row < ROWS; row++){
+        payoff_vector[row] = 0;
+        if(population[row][0][agent] == -2){
+            for(resource = 0; resource < res_number; resource++){
+                if(population[row][1][agent] == resources[resource][1]  &&
+                   population[row][2][agent] == resources[resource][2]  &&
+                   population[row][3][agent] == resources[resource][3]
+                ){    
+                    landscape_specific = population[row][6][agent];
+                    if(landscape_specific == 0){
+                        res_count++;
+                    }else{
+                        xloc = resources[resource][4];
+                        yloc = resources[resource][5];
+                        if(landscape[xloc][yloc][2] == landowner){
+                            res_count++;    
+                        }
+                    }
+                }
+            }
+            payoff_vector[row] += res_count;
+        }
+        if(population[row][0][agent] == -1){
+            yield_layer = population[row][1][agent];
+            for(xloc = 0; xloc < land_x; xloc++){
+                for(yloc = 0; yloc < land_y; yloc++){
+                    if(landscape[xloc][yloc][2] == landowner){
+                        cell_yield = landscape[xloc][yloc][yield_layer];
+                        payoff_vector[row] += cell_yield;
+                    }
+                }
+            }
+        }
+        if(population[row][0][agent] > -1){
+            payoff_vector[row] = 0;
+        }
+    }
+}
+```
+
+The above will needed to be called wtice in `calc_agent_fitness` so that the difference between vector elements can be calculated.
 
 > <a name="u-7-APR-2017">Update: 7 APR 2017</a>
 
