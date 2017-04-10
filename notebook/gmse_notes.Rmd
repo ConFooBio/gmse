@@ -173,6 +173,19 @@ void calc_agent_fitness(double ***population, int ROWS, int COLS, int landowner,
 
 The temporary vector `TEMP_RESOURCE` needs to be made and remade so many times, and it appears that [`memcpy` is slightly faster than for loops](https://cboard.cprogramming.com/cplusplus-programming/117707-memcpy-loop-whats-faster.html). Nevertheless, I fear that use of `memcpy` might make the code less readable and its implementation could [depend on the hardware and compiler](http://computer-programming-forum.com/47-c-language/f6581dd6b532d98d.htm), which I don't want. For now, I'm going to do this the more readable way.
 
+**Using `do_actions` function**
+
+A `do_actions` function will enact the actions of **one** (usually out of 100) member of the population in the genetic algorithm. So the general procedure will be to do the following.
+
+ - In `strategy_fitness`, loop through each member of the population (agent `ACTION` array) running `calc_agent_fitness`.
+ - In `calc_agent_fitness`, copy a dummy version of the resource, action, and landscape arrays. 
+ - In `calc_agent_fitness`, run `calc_payoffs` to get the payoffs *before* performing actions.
+ - In `calc_agent_fitness`, then run `do_actions`, which causes a change in the temporary resource array as a consequence of the temporary action array.
+ - In `calc_agent_fitness`, re-run `calc_payoffs` to get new payoffs *after* having performed the actions
+ - Use the difference between payoffs calculated before and after actions to asses utility using the temporary action array.
+ 
+ This should give a fitness function that is then returned to `strategy_fitness` (might want to have `calc_agent_fitness` return an `int`), which will store all fitnesses in a vector after the above loops. More bells and whistles can be added on to this later, but when this is finished, it should be a working genetic algorithm for modelling complex stake-holder behaviour.
+
 > <a name="u-7-APR-2017">Update: 7 APR 2017</a>
 
 Working through implementing the ideas for the fitness function from [yesterday](#u-6-APR-2017). I've linked some key parameters now through `user` and `ga` so they can be run in `strategy_fitness` (namely the resource number and agent_ID, `landowner`). Now it's important to note that building local resources has to be conditional -- if an agent has no land, they cannot do things on their land. And if their interests are global, this needs to be considered too. I think a collection of small functions called according to parameter options is needed, and landscape specific changes are really a subset of general actions, so maybe there's a better way to do this. Really though, it would be nice to have a way for the cost of performing actions on **land owned** versus **land not owned** to be different. Then again, it would be nice to have different utilities for resources on and off your land, but this could get very complex very quickly (might, however, be interesting in that maybe a farmer values crops positively on their own land but negatively on the land of other farmers). I think it will also shake out when the manager actions affecting costs comes into play -- so a manager will naturally up the cost if shooting somehow becomes *not* tied to a location in a way that affects other stake-holders or management decisions, for whatever reason. The bottom line is that I think it's okay for now to run the `ga` with the constraint that **if a resource/landscape utility value is tied to land ownership, then the actions should also be tied to owned landcape cells**. If not, then actions should happen either on all cells or only public land.
