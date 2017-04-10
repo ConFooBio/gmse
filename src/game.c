@@ -279,7 +279,7 @@ void calc_agent_fitness(double ***population, int ROWS, int COLS, int landowner,
                         int land_x, int land_y, int trait_number,
                         double *fitnesses){
     
-    int agent, resource;
+    int agent, resource, trait;
     int res_on_land;
     double *payoff_vector;
     double **TEMP_RESOURCE;
@@ -290,19 +290,21 @@ void calc_agent_fitness(double ***population, int ROWS, int COLS, int landowner,
     for(resource = 0; resource < res_number; resource++){
         TEMP_RESOURCE[resource] = malloc(trait_number * sizeof(double));   
     } 
+    for(resource = 0; resource < res_number; resource++){
+        for(trait = 0; trait < trait_number; trait++){
+            TEMP_RESOURCE[resource][trait] = resources[resource][trait];
+        }
+    } 
     
-    memcpy(&TEMP_RESOURCE, &resources, sizeof(TEMP_RESOURCE));
-
-    for(resource = 0; resource < 10; resource++){
-        printf("%f\t%f\t || %f\t%f\n", resources[resource][0],
-               resources[resource][1], TEMP_RESOURCE[resource][0],
-               TEMP_RESOURCE[resource][1]);
+    
+    calc_payoffs(population, ROWS, landscape, TEMP_RESOURCE, res_number, 
+                 landowner, land_x, land_y, payoff_vector, agent);
+    
+    
+    for(resource = 0; resource < res_number; resource++){
+        free(TEMP_RESOURCE[resource]);
     }
-    /*
-    calc_payoffs(population, ROWS, landscape, resources, res_number, landowner,
-                 land_x, land_y, payoff_vector, agent);
-    
-    */
+    free(TEMP_RESOURCE);
     free(payoff_vector);
     
 }
