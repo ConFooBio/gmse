@@ -274,7 +274,7 @@ void calc_payoffs(double ***population, int ROWS, double ***landscape,
                         if(landscape[xloc][yloc][2] == landowner){
                             res_count++;    
                         }
-                    } /* Below gives resource counts -- if a resource */ 
+                    }
                 }
             }
             payoff_vector[row] += res_count;
@@ -298,11 +298,33 @@ void calc_payoffs(double ***population, int ROWS, double ***landscape,
 
 
 /* =============================================================================
- * This is a preliminary function that checks the fitness of each agent -- as of
- * now, fitness is just defined by how much action is placed into savem (last
- * column). Things will get much more complex in a bit, but there needs to be
- * some sort of framework in place to first check to see that everything else is
- * working so that I can isolate the fitness function's effect later.
+ * This function calculates an individual agent's fitness
+ * ========================================================================== */
+void calc_agent_fitness(double ***population, int ROWS, int COLS, int landowner,
+                        double ***landscape, double **resources, int res_number,
+                        int land_x, int land_y, double *fitnesses){
+    
+    int agent;
+    int res_on_land;
+    double *payoff_vector;
+    
+    payoff_vector = malloc(ROWS * sizeof(double));
+    
+    res_on_land = res_on_my_land(resources, landscape, res_number, landowner,
+                                 1, 0, 0);
+    
+    calc_payoffs(population, ROWS, landscape, resources, res_number, landowner,
+                 land_x, land_y, payoff_vector, agent);
+    
+    
+    free(payoff_vector);
+    
+}
+
+
+/* =============================================================================
+ * This is a preliminary function that checks the fitness of each agent by 
+ * passing through a loop to calc_agent_fitness
  *     fitnesses: Array to order fitnesses of the agents in the population
  *     population: array of the population that is made (malloc needed earlier)
  *     pop_size: The size of the total population (layers to population)
@@ -323,42 +345,13 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
     int xloc, yloc, yield_layer;
     int agent, resource, row;
     int res_on_land, landscape_specific;
-    double cell_yield, res_count, *payoff_vector;
-    
-    payoff_vector = malloc(ROWS * sizeof(double));
-    
-    /* Need something here -- check if: 
-     *
-     *   1) agent has landscape-specific utility
-     *   2) agent actually owns some land
-     * 
-     * If neither are true, then RESOURCE_LOCAL should not be built, and actions
-     * of stake-holders should be interpreted accordingly (e.g., agents could be
-     * allowed to do some actions on public land, or not at all -- perhaps an
-     * option added to paras?
-     * 
-     * Don't actually need to check 1 -- can get around this.
-     * Also don't need a RESOURCE_LOCAL. Can just check to see if they are
-     * local when performing an action. Instead, need to see how much of each
-     * type are on the land.
-     */
-    
-    res_on_land = res_on_my_land(resources, landscape, res_number, landowner,
-                                     1, 0, 0);
-
-    calc_payoffs(population, ROWS, landscape, resources, res_number, landowner,
-                 land_x, land_y, payoff_vector, agent);
-    
-    for(row = 0; row < ROWS; row++){
-        printf("%f\t",payoff_vector[row]);
-    }
-    printf("\n");
+    double cell_yield, res_count;
     
     for(agent = 0; agent < pop_size; agent++){
         fitnesses[agent] = population[0][12][agent];
     }
     
-    free(payoff_vector);
+
 }
 
 /* =============================================================================
