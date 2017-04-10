@@ -277,10 +277,24 @@ void do_actions(double ***landscape, double **resources, int land_x, int land_y,
                 double **action, int ROWS, int landowner, int res_number,
                 int COLS){
     
-    int row, col;
+    int row, col, random;
+    int movem, castem, killem, feedem, helpem;
+    int total_actions;
     
     for(row = 0; row < ROWS; row++){
+        total_actions  = 0;
+        total_actions += action[row][7];  /* Move resource     */
+        total_actions += action[row][8];  /* Castrate resource */
+        total_actions += action[row][9];  /* Kill resource     */
+        total_actions += action[row][10]; /* Feed resource     */
+        total_actions += action[row][11]; /* Help resource     */
+
         if(action[row][0] == -2){
+            movem = action[row][7]; /* Move resource */
+            while(movem > 0){ /* Need to check if on the land before random */
+                random = floor( runif(0, res_number) );
+                movem--;    
+            }
             
         }
         
