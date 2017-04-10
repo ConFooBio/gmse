@@ -28,4 +28,4 @@ void place_winners(double ****population, int *winners, int pop_size, int ROWS,
 
 void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double *paras, int xdim, int ydim,
-        int res_number, int land_x, int land_y, int agent);
+        int res_number, int land_x, int land_y, int trait_number, int agent);

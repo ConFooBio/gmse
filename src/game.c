@@ -276,18 +276,33 @@ void calc_payoffs(double ***population, int ROWS, double ***landscape,
  * ========================================================================== */
 void calc_agent_fitness(double ***population, int ROWS, int COLS, int landowner,
                         double ***landscape, double **resources, int res_number,
-                        int land_x, int land_y, double *fitnesses){
+                        int land_x, int land_y, int trait_number,
+                        double *fitnesses){
     
-    int agent;
+    int agent, resource;
     int res_on_land;
     double *payoff_vector;
+    double **TEMP_RESOURCE;
     
     payoff_vector = malloc(ROWS * sizeof(double));
     
+    TEMP_RESOURCE    = malloc(res_number * sizeof(double *));
+    for(resource = 0; resource < res_number; resource++){
+        TEMP_RESOURCE[resource] = malloc(trait_number * sizeof(double));   
+    } 
+    
+    memcpy(&TEMP_RESOURCE, &resources, sizeof(TEMP_RESOURCE));
+
+    for(resource = 0; resource < 10; resource++){
+        printf("%f\t%f\t || %f\t%f\n", resources[resource][0],
+               resources[resource][1], TEMP_RESOURCE[resource][0],
+               TEMP_RESOURCE[resource][1]);
+    }
+    /*
     calc_payoffs(population, ROWS, landscape, resources, res_number, landowner,
                  land_x, land_y, payoff_vector, agent);
     
-    
+    */
     free(payoff_vector);
     
 }
@@ -306,17 +321,27 @@ void calc_agent_fitness(double ***population, int ROWS, int COLS, int landowner,
  *     agent_array: The agent array
  *     res_number: The number of rows in the resource array
  *     landowner: The agent ID of interest -- also the landowner
+ *     trait_number: The number of resource traits (columns)
  *     land_x: The x dimension of the landscape
  *     land_y: The y dimension of the landscape
  * ========================================================================== */
 void strategy_fitness(double *fitnesses, double ***population, int pop_size, 
                       int ROWS, int COLS, double ***landscape,  
                       double **resources, double **agent_array,
-                      int res_number, int landowner, int land_x, int land_y){
+                      int res_number, int landowner, int trait_number,
+                      int land_x, int land_y){
+    
     int xloc, yloc, yield_layer;
     int agent, resource, row;
     int res_on_land, landscape_specific;
     double cell_yield, res_count;
+    
+    
+    
+    calc_agent_fitness(population, ROWS, COLS, landowner, landscape, resources,
+                       res_number, land_x, land_y, trait_number, fitnesses);
+    
+    
     
     for(agent = 0; agent < pop_size; agent++){
         fitnesses[agent] = population[0][12][agent];
@@ -434,7 +459,7 @@ void place_winners(double ****population, int *winners, int pop_size, int ROWS,
  */
 void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double *paras, int xdim, int ydim, 
-        int res_number, int land_x, int land_y, int agent){
+        int res_number, int land_x, int land_y, int trait_number, int agent){
     
     int row, col, gen, layer;
     int sampleK, chooseK;
@@ -494,8 +519,8 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         constrain_costs(POPULATION, COST, agent, popsize, xdim, ydim, budget);
   
         strategy_fitness(fitnesses, POPULATION, popsize, xdim, ydim, LANDSCAPE, 
-                         RESOURCES, AGENT, res_number, landowner, land_x, land_y
-                        );
+                         RESOURCES, AGENT, res_number, landowner, trait_number,
+                         land_x, land_y);
   
         tournament(fitnesses, winners, popsize, sampleK, chooseK);
    
