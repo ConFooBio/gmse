@@ -220,10 +220,19 @@ void constrain_costs(double ***population, double ***COST, int layer,
 
 /* =============================================================================
  * This function calculated each payoff for rows in the action matrix
+ *     population: array of the population that is made (malloc needed earlier)
+ *     ROWS: Number of rows in the COST and ACTION arrays
+ *     landscape: The landscape array
+ *     resources: The resource array
+ *     res_number: The number of rows in the resource array
+ *     landowner: The agent ID of interest -- also the landowner
+ *     land_x: The x dimension of the landscape
+ *     land_y: The y dimension of the landscape
+ *     payoff_vector: A vector of payoffs for each row of the action array
  * ========================================================================== */
 void calc_payoffs(double **population, int ROWS, double ***landscape, 
                   double **resources, int res_number, int landowner,
-                  int land_x, int land_y, double *payoff_vector, int agent){
+                  int land_x, int land_y, double *payoff_vector){
     
     int xloc, yloc, yield_layer;
     int resource, row;
@@ -270,6 +279,72 @@ void calc_payoffs(double **population, int ROWS, double ***landscape,
     }
 }
 
+
+/* =============================================================================
+ * This function checks to see if a resource should be moved or not
+ *     u_loc: Whether or not an agent's actions depend on owning land cell
+ *     land_cell: The owner of the landscape cell of interest
+ *     landowner: The ID of the agent that owns the land 
+ * ========================================================================== */
+int check_if_can_act(int u_loc, int land_cell, int landowner){
+    int move;
+    
+    move = 0;
+    if(u_loc == 0){
+        move = 1;
+    }
+    if(u_loc == 1 && land_cell == landowner){
+        move = 1;
+    }
+    
+    return move;
+}
+
+
+/* =============================================================================
+ * This function causes the agents to move a resource
+ *     land: The landscape array
+ *     resources: The resource array
+ *     owner: The agent ID of interest -- also the landowner
+ *     u_loc: Whether or not an agent's actions depend on owning land cell
+ *     moves_left: The number of remaining times an agent will move a resource
+ *     res_number: The total number of resources in the resources array
+ *     land_x: The x dimension of the landscape
+ *     land_y: The y dimension of the landscape
+ *     res_type1: Type 1 category of resources being moved
+ *     res_type2: Type 2 category of resources being moved
+ *     res_type3: Type 3 category of resources being moved
+ * ========================================================================== */
+void move_resource(double ***land, double **resources, int owner, int u_loc, 
+                   int moves_left, int res_number, int land_x, int land_y,
+                   int res_type1, int res_type2, int res_type3){
+    
+    int xpos, ypos, xloc, yloc;
+    int cell, movem, move;
+    int resource, t1, t2, t3;
+    
+    resource = 0;
+    while(moves_left > 0 && resource < res_number){
+        t1 = resources[resource][1];
+        t2 = resources[resource][2];
+        t3 = resources[resource][3];
+        if(t1 == res_type1 && t2 == res_type2 && t3 == res_type3){
+            xpos = (int) resources[resource][4];
+            ypos = (int) resources[resource][5];
+            cell = land[xpos][ypos][2];
+            move = check_if_can_act(u_loc, cell, owner);
+            if(move == 1){
+                xloc = (int) floor( runif(0, land_x) );
+                yloc = (int) floor( runif(0, land_y) );
+                resources[resource][4] = xloc;
+                resources[resource][5] = yloc;
+                movem--;
+            }
+        }
+        resource++;
+    }
+}
+
 /* =============================================================================
  * This function causes the agents to actually do the actions
  * ========================================================================== */
@@ -277,19 +352,21 @@ void do_actions(double ***landscape, double **resources, int land_x, int land_y,
                 double **action, int ROWS, int landowner, int res_number,
                 int COLS){
     
+    int xpos, ypos, xloc, yloc;
     int row, col, random;
     int agentID, type1, type2, type3;
     int util, u_loc, u_land;
     int movem, castem, killem, feedem, helpem;
+    int resource, cell, move;
 
     for(row = 0; row < ROWS; row++){
         agentID = action[row][0];  /* Agent of interest (-2 = self) */
         type1   = action[row][1];  /* Resource type 1 */
         type2   = action[row][2];  /* Resource type 2 */
         type3   = action[row][3];  /* Resource type 3 */
-        util    = action[row][4];  /* Utility of resource or land cell val */
+        util    = action[row][4];  /* Utility of resource or land cell val  */
         u_loc   = action[row][5];  /* Are actions restricted to owned land? */
-        u_land  = action[row][6];  /* Does utility depend on owned land? */
+        u_land  = action[row][6];  /* Does utility depend on owned land?    */
         movem   = action[row][7];  /* Move resource     */
         castem  = action[row][8];  /* Castrate resource */
         killem  = action[row][9];  /* Kill resource     */
@@ -297,20 +374,8 @@ void do_actions(double ***landscape, double **resources, int land_x, int land_y,
         helpem  = action[row][11]; /* Help resource     */
 
         if(agentID == -2){
-
-            /* Now need to got through each action and randomly assign a 
-             * resource to *do* the action to.
-             */
-            
-            while(movem > 0){ /* Need to check if on the land before random */
-                random = floor( runif(0, res_number) );
-                movem--;    
-            }
-            
-        }
-        
-        if(action[row][0] == -1){
-            
+            move_resource(landscape, resources, landowner, u_loc, movem,
+                          res_number, land_x, land_y, type1, type2, type3);
         }
     }
         
@@ -357,7 +422,7 @@ void calc_agent_fitness(double ***population, int ROWS, int COLS, int landowner,
     
     
     calc_payoffs(TEMP_ACTION, ROWS, landscape, TEMP_RESOURCE, res_number, 
-                 landowner, land_x, land_y, payoff_vector, agent);
+                 landowner, land_x, land_y, payoff_vector);
     
     
     
