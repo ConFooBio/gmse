@@ -85,6 +85,43 @@ The action array has three columns of `util`, `u_loc`, and `u_land`, which repre
 
 What needs to happen next is for  `util`, `u_loc`, and `u_land` columns to be untouchable by the genetic algorithm when the first row in the action array (`agent`) is negative -- corresponding to direct actions of the user on resources or landscape layers. Remaining  `util`, `u_loc`, and `u_land` *should* be touchable. Hence, within `constrain_costs`, it is necessary to block adjustment to the relevant columns. 
 
+**I appear to have found a fix for this**, but I'm going to wait a day before I call the issue resolved. The fix basically involved telling the program not to touch columns below 7 if the first column of the row is less than one. 
+```
+start_col = 4;
+if(population[row][0][agent] < 0){
+    start_col = 7;
+} 
+```
+
+The new variable `start_col` then defines the column to start on when considering whether or not to constrain costs. The above also needs to appear in the functions affecting population initialisation, mutation, and crossover of the genetic algorithm. I'm not sure if there is a more elegant or more readable solution, but the above appears to work fine. The appropriate columns are untouchable in rows where the first column is negative. The constraining part of the `constrain_costs` function also looks a bit messy.
+
+```
+while(tot_cost > budget){
+    do{ /* This do assures xpos never equals ROWS (unlikely) */
+        xpos = (int) floor( runif(0,ROWS) );
+    }while(xpos == ROWS);
+    if(population[xpos][0][agent] > 0){
+        do{
+            ypos = (int) floor( runif(4,COLS) );
+        }while(ypos == COLS);
+    }else{
+        do{
+            ypos = (int) floor( runif(7,COLS) );
+        }while(ypos == COLS);               
+    }
+    if(population[xpos][ypos][agent] > 0){
+        population[xpos][ypos][agent]--;
+        tot_cost -= COST[xpos][ypos][layer];
+    }
+}
+```
+
+I think the messiness is really mostly caused by the `do` loops, which are there as a safety precaution against the unlikely event that the random number selected exactly equals `ROWS` or `COLS`, and hence returns a segfault. 
+
+**Next steps**
+
+With the `util`, `u_loc`, and `u_land` column situation *seemingly* resolved in the action array, I've done some initial testing again on the `move_resource`. The `move_resource` function now appears to only move resources when it's supposed to (i.e., when they're on the land and the action array says to move them -- assuming `u_loc = 1`). Now, before moving on, I should *check to make sure that resources are actually being moved* in the resources array. Once this is finished, I will double check **Issue 17**, then move on to a `castrate_resource` function.
+
 > <a name="u-10-APR-2017">Update: 10 APR 2017</a>
 
 I have re-arranged the fitness function structure to calculate fitness payoffs more clearly. One top level `strategy_fitness` function will calculate all strategy fitness in the genetic algorithm by looping through `calc_agent_fitness` for each agent in the population (**note**: this is each agent in the genetic algorithm population, from which the new strategy for **one** agent in the bigger G-MSE will be selected). The `calc_agent_fitness` will itself call the `calc_payoffs` function (see below) to get a vector with the same rows as the `ACTION` and `COST` arrays. Each element will eventually represent a change in the resource or landscape, corresponding to some utility value which will make it possible to calculate and compare overall fitness of the strategy.
