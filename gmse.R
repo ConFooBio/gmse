@@ -80,8 +80,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                     cell_types  = 2,
                                     cell_val_mn = 1,
                                     cell_val_sd = 0,
-                                    ownership   = 1:2,
-                                    owner_pr    = c(0.5, 0.5)
+                                    ownership   = 1:5,
+                                    owner_pr    = c(0.2, 0.2, 0.2, 0.2, 0.2)
     );
     # Set the starting conditions for one resource
     starting_resources <- make_resource( model              = pop_model, 
@@ -96,8 +96,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     );
     # This will obviously need to be changed -- new function in initialise.R
     AGENTS   <- make_agents( model        = pop_model,
-                             agent_number = 2,
-                             type_counts  = c(1,1),
+                             agent_number = 5,
+                             type_counts  = c(1,1,1,1,1),
                              vision       = agent_view,
                              rows         = land_dim_1,
                              cols         = land_dim_2,
@@ -106,7 +106,11 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     
     COST   <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
     COST[COST < 1] <- 1; # Need this until a proper make_cost function is made
+    COST[,8,]      <- 1;
+    COST[,1:7,]    <- 10000;
     ACTION <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
+    ACTION[,8,] <- 20;
+    ACTION[,5:7,] <- 1;
     
     time       <- time + 1;  # Ready for the initial time step.
     cells      <- land_dim_1 * land_dim_2; # Number of cells in the landscape
@@ -617,7 +621,8 @@ sim <- gmse( observe_type  = 0,
              times_observe = 1,
              land_dim_1    = 100,
              land_dim_2    = 100,
-             res_consume   = 0.5
+             res_consume   = 0.5,
+             time_max      = 100
 );
 
 ################################################################################

@@ -138,7 +138,6 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
     int *dim_COST;           /* Dimensions of the COST array incoming */
     int *dim_ACTION;         /* Dimensions of the ACTION array incoming */
-    double agent_budget;     /* THe budget that each agent has to work with */
     double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
     double *paras;           /* Pointer to PARAMETER (interface R and C) */

@@ -53,7 +53,7 @@ void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
     
     int xpos, ypos;
     int agent;
-    int row, col;
+    int row, col, start_col;
     double lowest_cost;
     double budget_count;
     double check_cost;
@@ -70,7 +70,14 @@ void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
                     population[row][col][agent] = ACTION[row][col][layer];
                 }
             }else{
-                for(col = 4; col < COLS; col++){
+                population[row][4][agent] = ACTION[row][4][layer];
+                population[row][5][agent] = ACTION[row][5][layer];
+                population[row][6][agent] = ACTION[row][6][layer];
+                start_col = 7;
+                if(population[row][0][agent] > 0){
+                    start_col = 4;
+                }             
+                for(col = start_col; col < COLS; col++){
                     population[row][col][agent] = 0;
                 }
             }
@@ -110,7 +117,7 @@ void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
 void crossover(double ***population, int pop_size, int ROWS, int COLS, 
                double pr){
     
-    int agent, row, col;
+    int agent, row, col, start_col;
     int cross_partner;
     double do_cross;
     double agent_val, partner_val;
@@ -121,7 +128,11 @@ void crossover(double ***population, int pop_size, int ROWS, int COLS,
             cross_partner = (int) floor( runif(0, pop_size) );
         }while(cross_partner == agent || cross_partner == pop_size);
         for(row = 0; row < ROWS; row++){
-            for(col = 4; col < COLS; col++){
+            start_col = 7;
+            if(population[row][0][agent] > 0){
+                start_col = 4;
+            }
+            for(col = start_col; col < COLS; col++){
                 do_cross = runif(0,1);
                 if(do_cross < pr){
                     agent_val   = population[row][col][agent];
@@ -147,7 +158,7 @@ void crossover(double ***population, int pop_size, int ROWS, int COLS,
 void mutation(double ***population, int pop_size, int ROWS, int COLS, 
                double pr){
     
-    int agent, row, col;
+    int agent, row, col, start_col;
     double do_mutation;
     double agent_val;
     double half_pr;
@@ -157,7 +168,11 @@ void mutation(double ***population, int pop_size, int ROWS, int COLS,
     /* First do the crossovers */
     for(agent = 0; agent < pop_size; agent++){
         for(row = 0; row < ROWS; row++){
-            for(col = 4; col < COLS; col++){
+            start_col = 7;
+            if(population[row][0][agent] > 0){
+                start_col = 4;
+            }
+            for(col = start_col; col < COLS; col++){
                 do_mutation = runif(0,1);
                 if( do_mutation < half_pr ){
                     population[row][col][agent]--;
@@ -190,13 +205,17 @@ void constrain_costs(double ***population, double ***COST, int layer,
                      int pop_size, int ROWS, int COLS, double budget){
     
     int xpos, ypos;
-    int agent, row, col;
+    int agent, row, col, start_col;
     double tot_cost, action_val, action_cost;
 
     for(agent = 0; agent < pop_size; agent++){
         tot_cost = 0;
         for(row = 0; row < ROWS; row++){
-            for(col = 4; col < COLS; col++){
+            start_col = 4;
+            if(population[row][0][agent] < 0){
+                start_col = 7;
+            } 
+            for(col = start_col; col < COLS; col++){
                 action_val  = population[row][col][agent];
                 action_cost = COST[row][col][layer];
                 tot_cost   += (action_val * action_cost);
@@ -206,9 +225,15 @@ void constrain_costs(double ***population, double ***COST, int layer,
             do{ /* This do assures xpos never equals ROWS (unlikely) */
                 xpos = (int) floor( runif(0,ROWS) );
             }while(xpos == ROWS);
-            do{
-                ypos = (int) floor( runif(4,COLS) );
-            }while(ypos == COLS);
+            if(population[xpos][0][agent] > 0){
+                do{
+                    ypos = (int) floor( runif(4,COLS) );
+                }while(ypos == COLS);
+            }else{
+                do{
+                    ypos = (int) floor( runif(7,COLS) );
+                }while(ypos == COLS);               
+            }
             if(population[xpos][ypos][agent] > 0){
                 population[xpos][ypos][agent]--;
                 tot_cost -= COST[xpos][ypos][layer];
@@ -296,7 +321,7 @@ int check_if_can_act(int u_loc, int land_cell, int landowner){
     if(u_loc == 1 && land_cell == landowner){
         move = 1;
     }
-    
+
     return move;
 }
 
@@ -320,14 +345,14 @@ void move_resource(double ***land, double **resources, int owner, int u_loc,
                    int res_type1, int res_type2, int res_type3){
     
     int xpos, ypos, xloc, yloc;
-    int cell, movem, move;
+    int cell, move;
     int resource, t1, t2, t3;
     
     resource = 0;
     while(moves_left > 0 && resource < res_number){
-        t1 = resources[resource][1];
-        t2 = resources[resource][2];
-        t3 = resources[resource][3];
+        t1 = (int) resources[resource][1];
+        t2 = (int) resources[resource][2];
+        t3 = (int) resources[resource][3];
         if(t1 == res_type1 && t2 == res_type2 && t3 == res_type3){
             xpos = (int) resources[resource][4];
             ypos = (int) resources[resource][5];
@@ -338,7 +363,7 @@ void move_resource(double ***land, double **resources, int owner, int u_loc,
                 yloc = (int) floor( runif(0, land_y) );
                 resources[resource][4] = xloc;
                 resources[resource][5] = yloc;
-                movem--;
+                moves_left--;
             }
         }
         resource++;
@@ -418,12 +443,12 @@ void calc_agent_fitness(double ***population, int ROWS, int COLS, int landowner,
         }
     }
     /* ----------------------------------------------------------- */
-
-    
     
     calc_payoffs(TEMP_ACTION, ROWS, landscape, TEMP_RESOURCE, res_number, 
                  landowner, land_x, land_y, payoff_vector);
     
+    do_actions(landscape, TEMP_RESOURCE, land_x, land_y, TEMP_ACTION, ROWS, 
+               landowner, res_number, COLS);
     
     
     for(row = 0; row < ROWS; row++){
@@ -636,19 +661,19 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         fitnesses[row] = 0;
         winners[row]   = 0;
     }
-    
+
     initialise_pop(ACTION, COST, agent, popsize, budget, agent_seed, xdim, ydim, 
                    POPULATION);
     
     gen = 0;
     while(gen < generations){
-
-        crossover(POPULATION, popsize, xdim, ydim, crossover_rate);
         
+        crossover(POPULATION, popsize, xdim, ydim, crossover_rate);
+            
         mutation(POPULATION, popsize, xdim, ydim, mutation_rate);
-    
-        constrain_costs(POPULATION, COST, agent, popsize, xdim, ydim, budget);
   
+        constrain_costs(POPULATION, COST, agent, popsize, xdim, ydim, budget);
+    
         strategy_fitness(fitnesses, POPULATION, popsize, xdim, ydim, LANDSCAPE, 
                          RESOURCES, AGENT, res_number, landowner, trait_number,
                          land_x, land_y);
