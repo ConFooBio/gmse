@@ -79,6 +79,12 @@ library(rhandsontable)
 
 I've decided that `u_loc` should actually refer to the *actions* of a particular agent being taken on their own land (`u_loc = 1`) or on all land (`u_loc = 0`). I'm debating whether a third option `u_loc = -1` should be available for forcing action to only occur on public land. I have also created a more readable structure for the `do_actions` function in `game.c`, which is going to be a bit on the long side, and will therefore need to be written in a way that is easy to follow, going through each action and performing the action through a series of nested `while` loops.
 
+**Cost issue: Issue #17**
+
+The action array has three columns of `util`, `u_loc`, and `u_land`, which represent the utility of a resource, whether or not actions on the resource are restricted to the user's land, and whether or not the utility of the resource is dependent on it being on the user's land. Currently, any positive values correspond to some cost in the cost array, which means that they are changed to zero when the cost is high. **In essence, these three columns represent identity, while the remaining rows to the right represent actions**. Ideally, we don't want the users to be affecting, or the `constrain_costs` function changing, `util`, `u_loc`, and `u_land` columns -- only the ones to the right.
+
+What needs to happen next is for  `util`, `u_loc`, and `u_land` columns to be untouchable by the genetic algorithm when the first row in the action array (`agent`) is negative -- corresponding to direct actions of the user on resources or landscape layers. Remaining  `util`, `u_loc`, and `u_land` *should* be touchable. Hence, within `constrain_costs`, it is necessary to block adjustment to the relevant columns. 
+
 > <a name="u-10-APR-2017">Update: 10 APR 2017</a>
 
 I have re-arranged the fitness function structure to calculate fitness payoffs more clearly. One top level `strategy_fitness` function will calculate all strategy fitness in the genetic algorithm by looping through `calc_agent_fitness` for each agent in the population (**note**: this is each agent in the genetic algorithm population, from which the new strategy for **one** agent in the bigger G-MSE will be selected). The `calc_agent_fitness` will itself call the `calc_payoffs` function (see below) to get a vector with the same rows as the `ACTION` and `COST` arrays. Each element will eventually represent a change in the resource or landscape, corresponding to some utility value which will make it possible to calculate and compare overall fitness of the strategy.
