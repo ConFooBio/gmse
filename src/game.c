@@ -278,19 +278,30 @@ void do_actions(double ***landscape, double **resources, int land_x, int land_y,
                 int COLS){
     
     int row, col, random;
+    int agentID, type1, type2, type3;
+    int util, u_loc, u_land;
     int movem, castem, killem, feedem, helpem;
-    int total_actions;
-    
-    for(row = 0; row < ROWS; row++){
-        total_actions  = 0;
-        total_actions += action[row][7];  /* Move resource     */
-        total_actions += action[row][8];  /* Castrate resource */
-        total_actions += action[row][9];  /* Kill resource     */
-        total_actions += action[row][10]; /* Feed resource     */
-        total_actions += action[row][11]; /* Help resource     */
 
-        if(action[row][0] == -2){
-            movem = action[row][7]; /* Move resource */
+    for(row = 0; row < ROWS; row++){
+        agentID = action[row][0];  /* Agent of interest (-2 = self) */
+        type1   = action[row][1];  /* Resource type 1 */
+        type2   = action[row][2];  /* Resource type 2 */
+        type3   = action[row][3];  /* Resource type 3 */
+        util    = action[row][4];  /* Utility of resource or land cell val */
+        u_loc   = action[row][5];  /* Are actions restricted to owned land? */
+        u_land  = action[row][6];  /* Does utility depend on owned land? */
+        movem   = action[row][7];  /* Move resource     */
+        castem  = action[row][8];  /* Castrate resource */
+        killem  = action[row][9];  /* Kill resource     */
+        feedem  = action[row][10]; /* Feed resource     */
+        helpem  = action[row][11]; /* Help resource     */
+
+        if(agentID == -2){
+
+            /* Now need to got through each action and randomly assign a 
+             * resource to *do* the action to.
+             */
+            
             while(movem > 0){ /* Need to check if on the land before random */
                 random = floor( runif(0, res_number) );
                 movem--;    
