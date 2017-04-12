@@ -305,7 +305,16 @@ void calc_payoffs(double **population, int ROWS, double ***landscape,
 }
 
 
-/* TODO: Make a function for resource_actions that encompasses all actions */
+/* =============================================================================
+ * This function enacts all user actions in a random order
+ *     resources: The resource array
+ *     row: The row of the action array (should be 0)
+ *     action: The action array
+ *     can_act: Binary vector length res_number where 1 if resource actionable
+ *     res_number: The number of rows in the resource array
+ *     land_x: The x dimension of the landscape
+ *     land_y: The y dimension of the landscape
+ * ========================================================================== */
 void resource_actions(double **resources, int row, double **action, 
                       int *can_act, int res_number, int land_x, int land_y){
     
@@ -356,6 +365,7 @@ void resource_actions(double **resources, int row, double **action,
                 default:
                     break;
             }
+            total_actions--;
         }
         resource++;
     }
@@ -397,8 +407,8 @@ void do_actions(double ***landscape, double **resources, int land_x, int land_y,
         
         switch(agentID){
             case -2:
-
-
+                resource_actions(resources, row, action, can_act, res_number, 
+                                 land_x, land_y);
                 break;
             case -1:
                 break;
