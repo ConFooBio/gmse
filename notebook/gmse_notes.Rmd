@@ -81,6 +81,60 @@ library(rhandsontable)
 
 I am now closing [Issue #17](https://github.com/bradduthie/gmse/issues/17) introduced [yesterday](#u-11-APR-2017), as the issue is resolved such that action array columns `util`, `u_loc`, and `u_land` are now not touched by the genetic algorithm where the first column of the action array takes a negative value.
 
+**Moving on to castration**
+
+I have tested to confirm that the moving (i.e., scaring) action is working and actually moving resources as intended. I am now moving on to the code for castrating (decreasing birth rate to zero) resources. As with the moving, there is really no analog on the landscape for this (since crops modelled using the landscape don't reproduce explicitly -- if we wanted them to, we could just model them as a different kind of resource), so I am also only doing a function of this for resources. Any positive values in the `ACTION` array therefore have no effect on landscape rows (i.e, where the first column equals `-1`). 
+
+The castration function (up and working) reuses a lot of code from the moving function, which initially led me to trying to make all of the actions part of one function.
+
+```
+/* =============================================================================
+ * This function causes the agents to castrate a resource
+ *     land: The landscape array
+ *     resources: The resource array
+ *     owner: The agent ID of interest -- also the landowner
+ *     u_loc: Whether or not an agent's actions depend on owning land cell
+ *     casts_left: The number of remaining times an agent will castrate
+ *     res_number: The total number of resources in the resources array
+ *     land_x: The x dimension of the landscape
+ *     land_y: The y dimension of the landscape
+ *     res_type1: Type 1 category of resources being moved
+ *     res_type2: Type 2 category of resources being moved
+ *     res_type3: Type 3 category of resources being moved
+ * ========================================================================== */
+void castrate_resource(double ***land, double **resources, int owner, int u_loc, 
+                   int casts_left, int res_number, int land_x, int land_y,
+                   int res_type1, int res_type2, int res_type3){
+    
+    int xpos, ypos, xloc, yloc;
+    int cell, cast;
+    int resource, t1, t2, t3;
+    
+    resource = 0;
+    while(casts_left > 0 && resource < res_number){
+        t1 = (int) resources[resource][1];
+        t2 = (int) resources[resource][2];
+        t3 = (int) resources[resource][3];
+        if(t1 == res_type1 && t2 == res_type2 && t3 == res_type3){
+            xpos = (int) resources[resource][4];
+            ypos = (int) resources[resource][5];
+            cell = land[xpos][ypos][2];
+            cast = check_if_can_act(u_loc, cell, owner);
+            if(cast == 1){
+                resources[resource][9] = 0;
+                casts_left--; 
+            }
+        }
+        resource++;
+    }
+}
+```
+
+Nevertheless, having these modular actions makes the code a bit more readable, and to combine all of them would require multiple `while` loops within the function anyway -- the resource type check could be pulled out, but then this would defeat the whole point of being able to switch the order of actions. **Then again**, it *could* make it easier to avoid having the same resource experiencing multiple actions. This is probably undesirable.
+
+**Even more importantly**, there is an issue here that all of these actions will start out with `resource = 0`, so the first resource will by default experience multiple actions wherever this is possible. Clearly this needs to be either randomised or done systematically in some way. **I think that the best solution is to create a function to sample without replacement**, put that function in `utilities.c`, then use it select resources to be acted on -- hence each resource will only experience *one* action. In the unlikely event that there are more actions than resources, it would be useful to somehow randomise which actions are taken -- perhaps smaller action specific functions should operate within the larger function ordering actions. In any case, **the above `castrate_resource` function and the moving function should change**.
+
+
 > <a name="u-11-APR-2017">Update: 11 APR 2017</a>
 
 I've decided that `u_loc` should actually refer to the *actions* of a particular agent being taken on their own land (`u_loc = 1`) or on all land (`u_loc = 0`). I'm debating whether a third option `u_loc = -1` should be available for forcing action to only occur on public land. I have also created a more readable structure for the `do_actions` function in `game.c`, which is going to be a bit on the long side, and will therefore need to be written in a way that is easy to follow, going through each action and performing the action through a series of nested `while` loops.
