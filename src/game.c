@@ -398,9 +398,17 @@ void do_actions(double ***landscape, double **resources, int land_x, int land_y,
         feedem  = action[row][10]; /* Feed resource     */
         helpem  = action[row][11]; /* Help resource     */
 
-        if(agentID == -2){
-            move_resource(landscape, resources, landowner, u_loc, movem,
-                          res_number, land_x, land_y, type1, type2, type3);
+        switch(agentID){
+            case -2:
+                if(movem > 0){ /* Move the resources */
+                    move_resource(landscape, resources, landowner, u_loc, movem,
+                        res_number, land_x, land_y, type1, type2, type3);
+                }
+                break;
+            case -1:
+                break;
+            default:
+                break;
         }
     }
         
@@ -446,11 +454,11 @@ void calc_agent_fitness(double ***population, int ROWS, int COLS, int landowner,
     
     calc_payoffs(TEMP_ACTION, ROWS, landscape, TEMP_RESOURCE, res_number, 
                  landowner, land_x, land_y, payoff_vector);
+
     
     do_actions(landscape, TEMP_RESOURCE, land_x, land_y, TEMP_ACTION, ROWS, 
                landowner, res_number, COLS);
-    
-    
+
     for(row = 0; row < ROWS; row++){
         free(TEMP_ACTION[row]);
     }
