@@ -3,30 +3,45 @@
 #include <Rinternals.h>
 #include <Rmath.h>
 
+
 /* =============================================================================
- * This function returns how many resources are on a stake-holder's land
+ * This function checks to see if a resource is of the correct type combination
  * ========================================================================== */
-int res_on_my_land(double **resources, double ***land, int total, int owner,
-                   int type1, int type2, int type3){
-    int xloc, yloc;
-    int resource;
-    int resources_on_land;
+void is_on_owner_land(int res_number, double **resources, int owner,
+                      double ***land, int *ident_vector){
+
+    int resource, xloc, yloc;
     
-    resources_on_land = 0;
-    for(resource = 0; resource < total; resource++){
+    for(resource = 0; resource < res_number; resource++){
+        xloc = (int) resources[resource][4];
+        yloc = (int) resources[resource][5];
+        if(land[xloc][yloc][2] == owner){
+            ident_vector[resource] = 1;
+        }else{
+            ident_vector[resource] = 0;   
+        }
+    }
+}
+
+
+/* =============================================================================
+ * This function checks to see if a resource is of the correct type combination
+ * ========================================================================== */
+void is_correct_type(int res_number, double **resources, int type1, int type2, 
+                     int type3, int *ident_vector){
+    
+    int resource, total;
+    
+    for(resource = 0; resource < res_number; resource++){
         if(resources[resource][1] == type1 &&
            resources[resource][2] == type2 &&
            resources[resource][3] == type3
-        ){
-            xloc = (int) resources[resource][4];
-            yloc = (int) resources[resource][5];
-            if(land[xloc][yloc][2] == owner){
-                resources_on_land++;
-            }
+          ){
+            ident_vector[resource] = 1;
+        }else{
+            ident_vector[resource] = 0;   
         }
     }
-    
-    return resources_on_land;
 }
 
 /* =============================================================================
