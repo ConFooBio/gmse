@@ -371,6 +371,50 @@ void move_resource(double ***land, double **resources, int owner, int u_loc,
 }
 
 /* =============================================================================
+ * This function causes the agents to castrate a resource
+ *     land: The landscape array
+ *     resources: The resource array
+ *     owner: The agent ID of interest -- also the landowner
+ *     u_loc: Whether or not an agent's actions depend on owning land cell
+ *     casts_left: The number of remaining times an agent will castrate
+ *     res_number: The total number of resources in the resources array
+ *     land_x: The x dimension of the landscape
+ *     land_y: The y dimension of the landscape
+ *     res_type1: Type 1 category of resources being moved
+ *     res_type2: Type 2 category of resources being moved
+ *     res_type3: Type 3 category of resources being moved
+ * ========================================================================== */
+void castrate_resource(double ***land, double **resources, int owner, int u_loc, 
+                   int casts_left, int res_number, int land_x, int land_y,
+                   int res_type1, int res_type2, int res_type3){
+    
+    int xpos, ypos, xloc, yloc;
+    int cell, cast;
+    int resource, t1, t2, t3;
+    
+    resource = 0;
+    while(casts_left > 0 && resource < res_number){
+        t1 = (int) resources[resource][1];
+        t2 = (int) resources[resource][2];
+        t3 = (int) resources[resource][3];
+        if(t1 == res_type1 && t2 == res_type2 && t3 == res_type3){
+            xpos = (int) resources[resource][4];
+            ypos = (int) resources[resource][5];
+            cell = land[xpos][ypos][2];
+            cast = check_if_can_act(u_loc, cell, owner);
+            if(cast == 1){
+                resources[resource][9] = 0;
+                casts_left--; 
+            }
+        }
+        resource++;
+    }
+}
+
+
+
+
+/* =============================================================================
  * This function causes the agents to actually do the actions
  * ========================================================================== */
 void do_actions(double ***landscape, double **resources, int land_x, int land_y,
@@ -403,6 +447,11 @@ void do_actions(double ***landscape, double **resources, int land_x, int land_y,
                 if(movem > 0){ /* Move the resources */
                     move_resource(landscape, resources, landowner, u_loc, movem,
                         res_number, land_x, land_y, type1, type2, type3);
+                }
+                if(castem > 0){ /* Castrate the resources */
+                    castrate_resource(landscape, resources, landowner, u_loc,
+                        castem, res_number, land_x, land_y, type1, type2, 
+                        type3);
                 }
                 break;
             case -1:
@@ -455,7 +504,6 @@ void calc_agent_fitness(double ***population, int ROWS, int COLS, int landowner,
     calc_payoffs(TEMP_ACTION, ROWS, landscape, TEMP_RESOURCE, res_number, 
                  landowner, land_x, land_y, payoff_vector);
 
-    
     do_actions(landscape, TEMP_RESOURCE, land_x, land_y, TEMP_ACTION, ROWS, 
                landowner, res_number, COLS);
 
