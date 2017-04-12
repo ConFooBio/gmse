@@ -134,6 +134,110 @@ Nevertheless, having these modular actions makes the code a bit more readable, a
 
 **Even more importantly**, there is an issue here that all of these actions will start out with `resource = 0`, so the first resource will by default experience multiple actions wherever this is possible. Clearly this needs to be either randomised or done systematically in some way. **I think that the best solution is to create a function to sample without replacement**, put that function in `utilities.c`, then use it select resources to be acted on -- hence each resource will only experience *one* action. In the unlikely event that there are more actions than resources, it would be useful to somehow randomise which actions are taken -- perhaps smaller action specific functions should operate within the larger function ordering actions. In any case, **the above `castrate_resource` function and the moving function should change**.
 
+**Major restructure of actions successful**
+
+In working through the separate user actions, I found it challenging to try to code things such that correct resources were affected, but these actionable resources were not affected in any particular order (e.g., all scaring first, then killing, etc.). If there was a particular order, then it's possible that users could systematically run out of resources to do things to (perhaps because they exausted the resources on their land) and hence *always* move resources but not kill them for arbitrary reasons. To work around this, it is necessary to randomly select an action and perform it on an actionable resource. This is solved with a new function `resource_actions`, which initial testing finds to work as intended.
+
+```
+/* =============================================================================
+ * This function enacts all user actions in a random order
+ *     resources: The resource array
+ *     row: The row of the action array (should be 0)
+ *     action: The action array
+ *     can_act: Binary vector length res_number where 1 if resource actionable
+ *     res_number: The number of rows in the resource array
+ *     land_x: The x dimension of the landscape
+ *     land_y: The y dimension of the landscape
+ * ========================================================================== */
+void resource_actions(double **resources, int row, double **action, 
+                      int *can_act, int res_number, int land_x, int land_y){
+    
+    int resource, xloc, yloc, i;
+    int util, u_loc, u_land;
+    int movem, castem, killem, feedem, helpem;
+    int *actions, total_actions, action_col, sample;
+    
+    actions       = malloc(5 * sizeof(int));
+    total_actions = 0;
+    for(i = 0; i < 5; i++){
+        action_col     = i + 7;
+        actions[i]     = action[row][action_col];
+        total_actions += action[row][action_col];
+    }
+    
+    resource = 0;
+    while(resource < res_number && total_actions > 0){
+        if(can_act[resource] == 1){
+            do{ /* Sampling avoids having some actions always first */
+                sample = floor( runif(0, 5) );
+            }while(actions[sample] == 0 && sample == 5);
+            /* Enact whichever action was randomly sampled */
+            switch(sample){
+                case 0: /* Move resource */
+                    xloc = (int) floor( runif(0, land_x) );
+                    yloc = (int) floor( runif(0, land_y) );
+                    resources[resource][4] = xloc;
+                    resources[resource][5] = yloc;
+                    actions[0]--;
+                    break;
+                case 1: /* Castrate resource */
+                    resources[resource][9] = 0;
+                    actions[1]--;
+                    break;
+                case 2: /* Kill resource */
+                    resources[resource][8] = 1;
+                    actions[2]--;
+                    break;
+                case 3: /* Feed resource (increase birth-rate)*/
+                    resources[resource][9]++;
+                    actions[3]--;
+                    break;
+                case 4: /* Help resource (increase offspring number directly) */
+                    resources[resource][10]++;
+                    actions[4]--;
+                    break;            
+                default:
+                    break;
+            }
+            total_actions--;
+        }
+        resource++;
+    }
+    free(actions);
+}
+```
+
+The above function is called by `do_actions` within a `switch` statement. Recall that the `resources` array here is a temporary array that will later be used to assess the impact of actions with respect to user utility to ultimately assign each agent in the genetic algorithm a fitness value. Some functions within `resource.c` are going to need to be used for this.
+
+Since I have added multiple functions that allocate memory, now is probably a good time to check for any errors or memory leaks.
+
+```
+ R -d "valgrind --tool=memcheck --leak-check=yes --track-origins=yes" --vanilla < gmse.R
+```
+
+After running valgrind, all appears to be clear.
+
+```
+==5787== HEAP SUMMARY:
+==5787==     in use at exit: 95,076,495 bytes in 17,685 blocks
+==5787==   total heap usage: 12,369,394 allocs, 12,351,709 frees, 2,246,425,240 bytes allocated
+==5787== 
+==5787== LEAK SUMMARY:
+==5787==    definitely lost: 0 bytes in 0 blocks
+==5787==    indirectly lost: 0 bytes in 0 blocks
+==5787==      possibly lost: 0 bytes in 0 blocks
+==5787==    still reachable: 95,076,495 bytes in 17,685 blocks
+==5787==         suppressed: 0 bytes in 0 blocks
+==5787== Reachable blocks (those to which a pointer was found) are not shown.
+==5787== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==5787== 
+==5787== For counts of detected and suppressed errors, rerun with: -v
+==5787== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+```
+
+The changes now have been pushed from a local branch to `dev`. The **next thing to work on** is to get key parameters from the temporary resource array that was changed (how many resources added, lost, moved, etc.). After this information is collected, then another `calc_payoffs` can be run on the changed array to get an updated estimate of key values and compare before and after user actions.
+
 
 > <a name="u-11-APR-2017">Update: 11 APR 2017</a>
 
