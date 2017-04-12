@@ -305,160 +305,108 @@ void calc_payoffs(double **population, int ROWS, double ***landscape,
 }
 
 
-/* =============================================================================
- * This function checks to see if a resource should be moved or not
- *     u_loc: Whether or not an agent's actions depend on owning land cell
- *     land_cell: The owner of the landscape cell of interest
- *     landowner: The ID of the agent that owns the land 
- * ========================================================================== */
-int check_if_can_act(int u_loc, int land_cell, int landowner){
-    int move;
+/* TODO: Make a function for resource_actions that encompasses all actions */
+void resource_actions(double **resources, int row, double **action, 
+                      int *can_act, int res_number, int land_x, int land_y){
     
-    move = 0;
-    if(u_loc == 0){
-        move = 1;
-    }
-    if(u_loc == 1 && land_cell == landowner){
-        move = 1;
-    }
-
-    return move;
-}
-
-
-/* =============================================================================
- * This function causes the agents to move a resource
- *     land: The landscape array
- *     resources: The resource array
- *     owner: The agent ID of interest -- also the landowner
- *     u_loc: Whether or not an agent's actions depend on owning land cell
- *     moves_left: The number of remaining times an agent will move a resource
- *     res_number: The total number of resources in the resources array
- *     land_x: The x dimension of the landscape
- *     land_y: The y dimension of the landscape
- *     res_type1: Type 1 category of resources being moved
- *     res_type2: Type 2 category of resources being moved
- *     res_type3: Type 3 category of resources being moved
- * ========================================================================== */
-void move_resource(double ***land, double **resources, int owner, int u_loc, 
-                   int moves_left, int res_number, int land_x, int land_y,
-                   int res_type1, int res_type2, int res_type3){
+    int resource, xloc, yloc, i;
+    int util, u_loc, u_land;
+    int movem, castem, killem, feedem, helpem;
+    int *actions, total_actions, action_col, sample;
     
-    int xpos, ypos, xloc, yloc;
-    int cell, move;
-    int resource, t1, t2, t3;
+    actions       = malloc(5 * sizeof(int));
+    total_actions = 0;
+    for(i = 0; i < 5; i++){
+        action_col     = i + 7;
+        actions[i]     = action[row][action_col];
+        total_actions += action[row][action_col];
+    }
     
     resource = 0;
-    while(moves_left > 0 && resource < res_number){
-        t1 = (int) resources[resource][1];
-        t2 = (int) resources[resource][2];
-        t3 = (int) resources[resource][3];
-        if(t1 == res_type1 && t2 == res_type2 && t3 == res_type3){
-            xpos = (int) resources[resource][4];
-            ypos = (int) resources[resource][5];
-            cell = land[xpos][ypos][2];
-            move = check_if_can_act(u_loc, cell, owner);
-            if(move == 1){
-                xloc = (int) floor( runif(0, land_x) );
-                yloc = (int) floor( runif(0, land_y) );
-                resources[resource][4] = xloc;
-                resources[resource][5] = yloc;
-                moves_left--;
+    while(resource < res_number && total_actions > 0){
+        if(can_act[resource] == 1){
+            do{ /* Sampling avoids having some actions always first */
+                sample = floor( runif(0, 5) );
+            }while(actions[sample] == 0 && sample == 5);
+            /* Enact whichever action was randomly sampled */
+            switch(sample){
+                case 0: /* Move resource */
+                    xloc = (int) floor( runif(0, land_x) );
+                    yloc = (int) floor( runif(0, land_y) );
+                    resources[resource][4] = xloc;
+                    resources[resource][5] = yloc;
+                    actions[0]--;
+                    break;
+                case 1: /* Castrate resource */
+                    resources[resource][9] = 0;
+                    actions[1]--;
+                    break;
+                case 2: /* Kill resource */
+                    resources[resource][8] = 1;
+                    actions[2]--;
+                    break;
+                case 3: /* Feed resource (increase birth-rate)*/
+                    resources[resource][9]++;
+                    actions[3]--;
+                    break;
+                case 4: /* Help resource (increase offspring number directly) */
+                    resources[resource][10]++;
+                    actions[4]--;
+                    break;            
+                default:
+                    break;
             }
         }
         resource++;
     }
+    free(actions);
 }
-
-/* =============================================================================
- * This function causes the agents to castrate a resource
- *     land: The landscape array
- *     resources: The resource array
- *     owner: The agent ID of interest -- also the landowner
- *     u_loc: Whether or not an agent's actions depend on owning land cell
- *     casts_left: The number of remaining times an agent will castrate
- *     res_number: The total number of resources in the resources array
- *     land_x: The x dimension of the landscape
- *     land_y: The y dimension of the landscape
- *     res_type1: Type 1 category of resources being moved
- *     res_type2: Type 2 category of resources being moved
- *     res_type3: Type 3 category of resources being moved
- * ========================================================================== */
-void castrate_resource(double ***land, double **resources, int owner, int u_loc, 
-                   int casts_left, int res_number, int land_x, int land_y,
-                   int res_type1, int res_type2, int res_type3){
-    
-    int xpos, ypos, xloc, yloc;
-    int cell, cast;
-    int resource, t1, t2, t3;
-    
-    resource = 0;
-    while(casts_left > 0 && resource < res_number){
-        t1 = (int) resources[resource][1];
-        t2 = (int) resources[resource][2];
-        t3 = (int) resources[resource][3];
-        if(t1 == res_type1 && t2 == res_type2 && t3 == res_type3){
-            xpos = (int) resources[resource][4];
-            ypos = (int) resources[resource][5];
-            cell = land[xpos][ypos][2];
-            cast = check_if_can_act(u_loc, cell, owner);
-            if(cast == 1){
-                resources[resource][9] = 0;
-                casts_left--; 
-            }
-        }
-        resource++;
-    }
-}
-
-
 
 
 /* =============================================================================
  * This function causes the agents to actually do the actions
  * ========================================================================== */
 void do_actions(double ***landscape, double **resources, int land_x, int land_y,
-                double **action, int ROWS, int landowner, int res_number,
+                double **action, int ROWS, int owner, int res_number,
                 int COLS){
     
     int xpos, ypos, xloc, yloc;
-    int row, col, random;
-    int agentID, type1, type2, type3;
-    int util, u_loc, u_land;
-    int movem, castem, killem, feedem, helpem;
+    int row, col;
+    int agentID, type1, type2, type3, u_loc;
     int resource, cell, move;
-
+    int *can_act, *on_land;
+    
     for(row = 0; row < ROWS; row++){
         agentID = action[row][0];  /* Agent of interest (-2 = self) */
         type1   = action[row][1];  /* Resource type 1 */
         type2   = action[row][2];  /* Resource type 2 */
         type3   = action[row][3];  /* Resource type 3 */
-        util    = action[row][4];  /* Utility of resource or land cell val  */
         u_loc   = action[row][5];  /* Are actions restricted to owned land? */
-        u_land  = action[row][6];  /* Does utility depend on owned land?    */
-        movem   = action[row][7];  /* Move resource     */
-        castem  = action[row][8];  /* Castrate resource */
-        killem  = action[row][9];  /* Kill resource     */
-        feedem  = action[row][10]; /* Feed resource     */
-        helpem  = action[row][11]; /* Help resource     */
 
+        can_act = malloc(res_number * sizeof(int));
+        is_correct_type(res_number, resources, type1, type2, type3, can_act);
+        
+        if(u_loc == 1){
+            on_land = malloc(res_number * sizeof(int));
+            is_on_owner_land(res_number, resources, owner, landscape, on_land);
+            for(resource = 0; resource < res_number; resource++){
+                can_act[resource] = can_act[resource] * on_land[resource];
+            }
+            free(on_land);
+        }      
+        
         switch(agentID){
             case -2:
-                if(movem > 0){ /* Move the resources */
-                    move_resource(landscape, resources, landowner, u_loc, movem,
-                        res_number, land_x, land_y, type1, type2, type3);
-                }
-                if(castem > 0){ /* Castrate the resources */
-                    castrate_resource(landscape, resources, landowner, u_loc,
-                        castem, res_number, land_x, land_y, type1, type2, 
-                        type3);
-                }
+
+
                 break;
             case -1:
                 break;
             default:
                 break;
         }
+        
+        free(can_act);
     }
         
 }
