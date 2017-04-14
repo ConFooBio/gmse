@@ -170,6 +170,16 @@ The function `calc_agent_fitness` is almost complete, which will be an initial d
 
 The next step is to write the `calc_utilities`. Overall, the whole program is noticeably slower, so I will want to optimise a bit if possible. I also need to do some [unit testing](https://en.wikipedia.org/wiki/Unit_testing) for all of this to make sure that the genetic algorithm is doing what I intend it to do.
 
+**Moving forward: optimsation and error in `ACTION`**
+
+Having completed some initial coding and testing, there is a lot to do on everything downstream of `calc_agent_fitness`. The function doesn't appears to alter agent utilities somehow, and slows down the simulations dramatically, from about half a second to several minutes to get through 100 generations. Options for addressing this include:
+
+1. Fix whatever is causing the utilities to change, tweak the code as much as possible to speed things up, and accept that the genetic algorithm will cause things to take longer.
+2. Instead of recreating a completely new resource array, just get the added new resources on a landscape by summing them on the old one, subtracting the dead ones, and adding births (maybe *expected* births, somehow?) -- but counting births only on mother's of the relevant land cells (if applicable).
+3. Ignore the detailed projection of the agent's actions and just have the agent assume that all of them will be successful -- so assume that an agent wanting to kill 6 resources on their land *really will* kill that number of resources even if there are not that many. Then calculate fitness directly from the actions **ignoring the resource array completely**. This removes all need for the `calc_payoffs` function and changes the nature of the `payoffs_to_fitness` function to directly assess fitness by assumingactions will be successful.
+  
+I find the third option most tempting. Perhaps there will be a case for extreme accuracy in predicting the effects of actions, but I think that it's unlikely that we will lose much if we assume that agent actions are successful in the genetic algorithm. This also builds in the kind of error that would seem to be realistic in terms of human behaviour. It will be necessary, however, to still have agents link resource abundance with changes on the landscape -- e.g., the indirect fitness benefit in terms of crop production increase caused by killing a resource needs to be realised in some way. The best way might be to rewrite `res_landscape_interaction` somehow to link the two *without* looping through each landscape cell for each resource. I don't know the best way to do this yet -- perhaps something in an observation model that estimates mean crop loss due to a resources of type `X`? 
+
 > <a name="u-12-APR-2017">Update: 12 APR 2017</a>
 
 **Resolved Issue #17**
