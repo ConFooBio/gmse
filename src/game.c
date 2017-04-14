@@ -375,6 +375,15 @@ void resource_actions(double **resources, int row, double **action,
 
 /* =============================================================================
  * This function causes the agents to actually do the actions
+ *     landscape: The landscape array
+ *     resources: The resource array
+ *     land_x: The x dimension of the landscape
+ *     land_y: The y dimension of the landscape
+ *     action: The action array
+ *     ROWS: Number of rows in the COST and ACTION arrays
+ *     owner: The agent ID of interest -- also the landowner
+ *     res_number: The number of rows in the resource array
+ *     COLS: Number of columns in the COST and ACTION arrays
  * ========================================================================== */
 void do_actions(double ***landscape, double **resources, int land_x, int land_y,
                 double **action, int ROWS, int owner, int res_number,
@@ -421,6 +430,35 @@ void do_actions(double ***landscape, double **resources, int land_x, int land_y,
         
 }
 
+/* =============================================================================
+ * This function looks at the resources and projects how many new resources
+ * their will be after deaths and births.
+ *     landscape: The landscape array
+ *     resources: The resource array
+ *     land_x: The x dimension of the landscape
+ *     land_y: The y dimension of the landscape
+ *     action: The action array
+ *     ROWS: Number of rows in the COST and ACTION arrays
+ *     owner: The agent ID of interest -- also the landowner
+ *     res_number: The number of rows in the resource array
+ *     COLS: Number of columns in the COST and ACTION arrays
+ * ========================================================================== */
+void project_res_abund(double ***landscape, double **resources, int land_x,
+                       int land_y, double **action, int ROWS, int owner,
+                       int res_number, int COLS){
+
+    int resource;
+
+    for(resource = 0; resource < res_number; resource++){
+        /*if(resources[resource][10] > 0){*/
+        printf("%f\t%f\t%f\t%f\t%f\n",resources[resource][0],resources[resource][1],
+               resources[resource][9],resources[resource][10],resources[resource][11]);
+        /*}*/
+    }
+}
+
+
+
 
 /* =============================================================================
  * This function calculates an individual agent's fitness
@@ -461,9 +499,13 @@ void calc_agent_fitness(double ***population, int ROWS, int COLS, int landowner,
     
     calc_payoffs(TEMP_ACTION, ROWS, landscape, TEMP_RESOURCE, res_number, 
                  landowner, land_x, land_y, payoff_vector);
-
+    
     do_actions(landscape, TEMP_RESOURCE, land_x, land_y, TEMP_ACTION, ROWS, 
                landowner, res_number, COLS);
+    
+    project_res_abund(landscape, TEMP_RESOURCE, land_x, land_y, TEMP_ACTION, 
+                      ROWS, landowner, res_number, COLS);
+    
 
     for(row = 0; row < ROWS; row++){
         free(TEMP_ACTION[row]);
