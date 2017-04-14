@@ -202,7 +202,6 @@ void res_landscape_interaction(double **resource_array, int resource_type_col,
     }
 }
 
-
 /* =============================================================================
  * MAIN RESOURCE FUNCTION:
  * ===========================================================================*/
