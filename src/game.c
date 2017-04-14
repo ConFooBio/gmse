@@ -372,7 +372,6 @@ void resource_actions(double **resources, int row, double **action,
     free(actions);
 }
 
-
 /* =============================================================================
  * This function causes the agents to actually do the actions
  *     landscape: The landscape array
@@ -439,18 +438,14 @@ void do_actions(double ***landscape, double **resources, int land_x, int land_y,
  * ========================================================================== */
 void project_res_abund(double **resources, double *paras, int res_number){
 
-    int time_para, edge_type, move_type, birthtype, deathtype;
-    int birth_K, death_K, move_res;
+    int birthtype, deathtype;
+    int birth_K, death_K;
     int resource;
-
-    time_para = (int) paras[0];
-    edge_type = (int) paras[1];
-    move_type = (int) paras[2];
+    
     birthtype = (int) paras[3];
     deathtype = (int) paras[4];
     birth_K   = (int) paras[5];
     death_K   = (int) paras[6];
-    move_res  = (int) paras[19]; /* Should the resources be moved? */
     
     res_add(resources, res_number, 9, birthtype, birth_K);
         
@@ -459,21 +454,41 @@ void project_res_abund(double **resources, double *paras, int res_number){
 }
 
 
-
+/* =============================================================================
+ * This function translates resouce abundances and crop yields to the fitness
+ * of an agent
+ *     action: The action array
+ *     ROWS: Number of rows in the COST and ACTION arrays
+ *     payoffs: Payoffs associated with each row of the action arrray
+ * ========================================================================== */
+double payoffs_to_fitness(double **action, int ROWS, double *payoffs){
+    int row;
+    double utility, abundance, the_fitness;
+    
+    for(row = 0; row < ROWS; row++){
+        utility      = action[row][4];
+        abundance    = payoffs[row];
+        the_fitness += utility * abundance;
+    }
+    
+    return the_fitness;
+}
 
 /* =============================================================================
  * This function calculates an individual agent's fitness
  * ========================================================================== */
-void calc_agent_fitness(double ***population, int ROWS, int COLS, int landowner,
-                        double ***landscape, double **resources, int res_number,
-                        int land_x, int land_y, int land_z, int trait_number,
-                        double *fitnesses, double *paras){
+double calc_agent_fitness(double ***population, int ROWS, int COLS, 
+                          int landowner, double ***landscape, 
+                          double **resources, int res_number, int land_x, 
+                          int land_y, int land_z, int trait_number,
+                          double *fitnesses, double *paras){
     
     int agent, resource, resource_new, trait, row, col, xloc, yloc, zloc;
     int res_on_land, res_nums_added, res_nums_subtracted, res_num_total;
     double *payoff_vector, *payoffs_after_actions, *payoff_change;
     double **TEMP_RESOURCE, **TEMP_ACTION, ***TEMP_LANDSCAPE;
     double **ADD_RESOURCES, **NEW_RESOURCES;
+    double a_fitness;
     
     payoff_vector         = malloc(ROWS * sizeof(double));
     payoffs_after_actions = malloc(ROWS * sizeof(double));
@@ -574,9 +589,9 @@ void calc_agent_fitness(double ***population, int ROWS, int COLS, int landowner,
 
     calc_payoffs(TEMP_ACTION, ROWS, landscape, NEW_RESOURCES, res_num_total, 
                  landowner, land_x, land_y, payoffs_after_actions);
-
-    /* Need a calc_utilities function */
     
+    a_fitness = payoffs_to_fitness(TEMP_ACTION, ROWS, payoffs_after_actions);
+
     /* ----------------------------------------------------------- */
    
     for(resource = 0; resource < res_num_total; resource++){
@@ -606,6 +621,8 @@ void calc_agent_fitness(double ***population, int ROWS, int COLS, int landowner,
     free(payoff_change);
     free(payoffs_after_actions);
     free(payoff_vector);
+    
+    return a_fitness;
 }
 
 
@@ -633,24 +650,21 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
                       int res_number, int landowner, int trait_number,
                       int land_x, int land_y, int land_z){
     
-    int xloc, yloc, yield_layer;
-    int agent, resource, row;
-    int res_on_land, landscape_specific;
-    double cell_yield, res_count;
+    int agent;
+    double agent_fitness;
     
-    
-    
-    calc_agent_fitness(population, ROWS, COLS, landowner, landscape, resources,
-                       res_number, land_x, land_y, land_z, trait_number, 
-                       fitnesses, paras);
-    
-    
-    
+    /* Figure out what's wrong with the calc_agent_fitness function
+    for(agent = 0; agent < pop_size; agent++){
+        agent_fitness = calc_agent_fitness(population, ROWS, COLS, landowner, 
+                                           landscape, resources, res_number, 
+                                           land_x, land_y, land_z, trait_number, 
+                                           fitnesses, paras);
+        fitnesses[agent] = agent_fitness;
+    }
+    */
     for(agent = 0; agent < pop_size; agent++){
         fitnesses[agent] = population[0][12][agent];
     }
-    
-
 }
 
 /* =============================================================================

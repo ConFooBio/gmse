@@ -246,7 +246,6 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
             RESOURCES <- be_hunter(OBSERVATION_NEW, AGENTS, RESOURCES, 
                                    LANDSCAPE_r, agent_view);   
         }
-        
     }
     
     res_columns <- c("Resource_ID",
