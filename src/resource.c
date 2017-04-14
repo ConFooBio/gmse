@@ -338,9 +338,6 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
               move_type);
     }
 
-    /* Resources affect the landscape (note the **ORDER** of this -- change? */
-    res_landscape_interaction(res_old, 1, 1, 8, res_number, 14, land, 1);
-  
     /* Identify, and calculate the number of, added individuals */
     res_add(res_old, res_number, 9, birthtype, birth_K);
     res_nums_added      = 0; 
@@ -387,7 +384,10 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
         }
         resource_new++;
     }
-    
+
+    /* Resources affect the landscape (note the **ORDER** of this -- change? */
+    res_landscape_interaction(res_new, 1, 1, 8, res_num_total, 14, land, 1);
+        
     /* This code switches from C back to R */
     /* ====================================================================== */        
     
