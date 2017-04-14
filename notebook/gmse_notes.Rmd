@@ -94,6 +94,82 @@ The above is in a `switch` function that is currently superfluous but might late
 
 In fact, it will probably be considerably cleaner and more readable to just make the biology-centred part of the whole `resource` function in `resource.c` its own function, `resource_dynamics`, then run `resource_dynamics` *in the genetic algorithm* with appropriate links. As a bonus, this would take care of the landscape-level effects of resources too.
 
+**Change order of resource interacting with landscape**
+
+To be consistent with the emerging fitness function of the genetic algorithm, I have decided to move resource interactions with the landscape to the *end* of the `resources.c` function. So rather than have resources interacting with the landscape before movement, birth, death, now resources will first move, reproduce, and die -- resoures remaining at the end of these demographic processes will then interact with the landscape. It might be useful to have this order flexible later.
+
+**Calculate agent fitness function almost finished**
+
+The function `calc_agent_fitness` is almost complete, which will be an initial draft of the genetic algorithm after I write in the code to translate resource abundances and crop yields to realised utilities. The meat of the function (excluding intialisation an memory management) is below
+
+```
+    /* ----------------------------------------------------------- */
+    
+    calc_payoffs(TEMP_ACTION, ROWS, landscape, TEMP_RESOURCE, res_number, 
+                 landowner, land_x, land_y, payoff_vector);
+   
+    do_actions(landscape, TEMP_RESOURCE, land_x, land_y, TEMP_ACTION, ROWS, 
+               landowner, res_number, COLS);
+    
+    /* =====  Below re-creates key parts of the resource model ===== */
+    project_res_abund(TEMP_RESOURCE, paras, res_number);
+   
+    res_nums_added      = 0;
+    res_nums_subtracted = 0;
+    for(resource = 0; resource < res_number; resource++){
+        res_nums_added += TEMP_RESOURCE[resource][10];
+        if(TEMP_RESOURCE[resource][8] < 0){
+            res_nums_subtracted += 1;
+        }
+    }
+    
+    ADD_RESOURCES = malloc(res_nums_added * sizeof(double *));
+    for(resource = 0; resource < res_nums_added; resource++){
+        ADD_RESOURCES[resource] = malloc(trait_number * sizeof(double));   
+    }
+    
+    res_place(ADD_RESOURCES, TEMP_RESOURCE, res_nums_added, res_number, 
+              trait_number, 10, 11);
+     
+    res_num_total  = res_number + res_nums_added - res_nums_subtracted;
+    
+    NEW_RESOURCES = malloc(res_num_total * sizeof(double *));
+    for(resource = 0; resource < res_num_total; resource++){
+        NEW_RESOURCES[resource] = malloc(trait_number * sizeof(double));   
+    }   
+    
+    resource_new = 0;
+    for(resource = 0; resource < res_number; resource++){
+        if(TEMP_RESOURCE[resource][8] >= 0){
+            for(trait=0; trait < trait_number; trait++){
+                NEW_RESOURCES[resource_new][trait] = 
+                    TEMP_RESOURCE[resource][trait];
+            }
+            resource_new++; 
+        }
+    }
+    for(resource = 0; resource < res_nums_added; resource++){
+        for(trait = 0; trait < trait_number; trait++){
+            NEW_RESOURCES[resource_new][trait] = ADD_RESOURCES[resource][trait];
+        }
+        resource_new++;
+    }
+ 
+    res_landscape_interaction(NEW_RESOURCES, 1, 1, 8, res_num_total, 14, 
+                              TEMP_LANDSCAPE, 1);
+    
+    /* ============================================================*/
+
+    calc_payoffs(TEMP_ACTION, ROWS, landscape, NEW_RESOURCES, res_num_total, 
+                 landowner, land_x, land_y, payoffs_after_actions);
+
+    /* Need a calc_utilities function */
+    
+    /* ----------------------------------------------------------- */
+```
+
+The next step is to write the `calc_utilities`. Overall, the whole program is noticeably slower, so I will want to optimise a bit if possible. I also need to do some [unit testing](https://en.wikipedia.org/wiki/Unit_testing) for all of this to make sure that the genetic algorithm is doing what I intend it to do.
+
 > <a name="u-12-APR-2017">Update: 12 APR 2017</a>
 
 **Resolved Issue #17**
