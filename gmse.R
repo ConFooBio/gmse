@@ -80,8 +80,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                     cell_types  = 2,
                                     cell_val_mn = 1,
                                     cell_val_sd = 0,
-                                    ownership   = 1:5,
-                                    owner_pr    = c(0.2, 0.2, 0.2, 0.2, 0.2)
+                                    ownership   = 1:2,
+                                    owner_pr    = c(0.5, 0.5)
     );
     # Set the starting conditions for one resource
     starting_resources <- make_resource( model              = pop_model, 
@@ -96,8 +96,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     );
     # This will obviously need to be changed -- new function in initialise.R
     AGENTS   <- make_agents( model        = pop_model,
-                             agent_number = 5,
-                             type_counts  = c(1,1,1,1,1),
+                             agent_number = 2,
+                             type_counts  = c(1,1),
                              vision       = agent_view,
                              rows         = land_dim_1,
                              cols         = land_dim_2,
