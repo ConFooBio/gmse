@@ -1,4 +1,4 @@
-#include "utilities.h"
+#include "resource.h"
 
 /* =============================================================================
  * This file is a work in progress, which will have all of the necessary
@@ -433,28 +433,29 @@ void do_actions(double ***landscape, double **resources, int land_x, int land_y,
 /* =============================================================================
  * This function looks at the resources and projects how many new resources
  * their will be after deaths and births.
- *     landscape: The landscape array
  *     resources: The resource array
- *     land_x: The x dimension of the landscape
- *     land_y: The y dimension of the landscape
- *     action: The action array
- *     ROWS: Number of rows in the COST and ACTION arrays
- *     owner: The agent ID of interest -- also the landowner
+ *     paras: Relevant parameter values
  *     res_number: The number of rows in the resource array
- *     COLS: Number of columns in the COST and ACTION arrays
  * ========================================================================== */
-void project_res_abund(double ***landscape, double **resources, int land_x,
-                       int land_y, double **action, int ROWS, int owner,
-                       int res_number, int COLS){
+void project_res_abund(double **resources, double *paras, int res_number){
 
+    int time_para, edge_type, move_type, birthtype, deathtype;
+    int birth_K, death_K, move_res;
     int resource;
 
-    for(resource = 0; resource < res_number; resource++){
-        /*if(resources[resource][10] > 0){*/
-        printf("%f\t%f\t%f\t%f\t%f\n",resources[resource][0],resources[resource][1],
-               resources[resource][9],resources[resource][10],resources[resource][11]);
-        /*}*/
-    }
+    time_para = (int) paras[0];
+    edge_type = (int) paras[1];
+    move_type = (int) paras[2];
+    birthtype = (int) paras[3];
+    deathtype = (int) paras[4];
+    birth_K   = (int) paras[5];
+    death_K   = (int) paras[6];
+    move_res  = (int) paras[19]; /* Should the resources be moved? */
+    
+    res_add(resources, res_number, 9, birthtype, birth_K);
+        
+    res_remove(resources, res_number, 8, deathtype, death_K);
+        
 }
 
 
@@ -465,17 +466,20 @@ void project_res_abund(double ***landscape, double **resources, int land_x,
  * ========================================================================== */
 void calc_agent_fitness(double ***population, int ROWS, int COLS, int landowner,
                         double ***landscape, double **resources, int res_number,
-                        int land_x, int land_y, int trait_number,
-                        double *fitnesses){
+                        int land_x, int land_y, int land_z, int trait_number,
+                        double *fitnesses, double *paras){
     
-    int agent, resource, trait, row, col;
-    int res_on_land;
-    double *payoff_vector;
-    double **TEMP_RESOURCE, **TEMP_ACTION; /* TODO: Also need TEMP_LANDSCAPE */
+    int agent, resource, resource_new, trait, row, col, xloc, yloc, zloc;
+    int res_on_land, res_nums_added, res_nums_subtracted, res_num_total;
+    double *payoff_vector, *payoffs_after_actions, *payoff_change;
+    double **TEMP_RESOURCE, **TEMP_ACTION, ***TEMP_LANDSCAPE;
+    double **ADD_RESOURCES, **NEW_RESOURCES;
     
-    payoff_vector = malloc(ROWS * sizeof(double));
+    payoff_vector         = malloc(ROWS * sizeof(double));
+    payoffs_after_actions = malloc(ROWS * sizeof(double));
+    payoff_change         = malloc(ROWS * sizeof(double));
     
-    /* --- Make tempororary resource and action arrays below --- */
+    /* --- Make tempororary resource, action, and landscape arrays below --- */
     TEMP_RESOURCE    = malloc(res_number * sizeof(double *));
     for(resource = 0; resource < res_number; resource++){
         TEMP_RESOURCE[resource] = malloc(trait_number * sizeof(double));   
@@ -495,18 +499,102 @@ void calc_agent_fitness(double ***population, int ROWS, int COLS, int landowner,
             TEMP_ACTION[row][col] = population[row][col][landowner];
         }
     }
+    
+    TEMP_LANDSCAPE = malloc(land_x * sizeof(double *));
+    for(xloc = 0; xloc < land_x; xloc++){
+        TEMP_LANDSCAPE[xloc] = malloc(land_y * sizeof(double *));
+        for(yloc = 0; yloc < land_y; yloc++){
+            TEMP_LANDSCAPE[xloc][yloc] = malloc(land_z * sizeof(double));   
+        }
+    } 
+    for(zloc = 0; zloc < land_z; zloc++){
+        for(yloc = 0; yloc < land_y; yloc++){
+            for(xloc = 0; xloc < land_x; xloc++){
+                TEMP_LANDSCAPE[xloc][yloc][zloc] = landscape[xloc][yloc][zloc];
+            }
+        }
+    }
+    
     /* ----------------------------------------------------------- */
     
     calc_payoffs(TEMP_ACTION, ROWS, landscape, TEMP_RESOURCE, res_number, 
                  landowner, land_x, land_y, payoff_vector);
-    
+   
     do_actions(landscape, TEMP_RESOURCE, land_x, land_y, TEMP_ACTION, ROWS, 
                landowner, res_number, COLS);
     
-    project_res_abund(landscape, TEMP_RESOURCE, land_x, land_y, TEMP_ACTION, 
-                      ROWS, landowner, res_number, COLS);
+    /* =====  Below re-creates key parts of the resource model ===== */
+    project_res_abund(TEMP_RESOURCE, paras, res_number);
+   
+    res_nums_added      = 0;
+    res_nums_subtracted = 0;
+    for(resource = 0; resource < res_number; resource++){
+        res_nums_added += TEMP_RESOURCE[resource][10];
+        if(TEMP_RESOURCE[resource][8] < 0){
+            res_nums_subtracted += 1;
+        }
+    }
     
+    ADD_RESOURCES = malloc(res_nums_added * sizeof(double *));
+    for(resource = 0; resource < res_nums_added; resource++){
+        ADD_RESOURCES[resource] = malloc(trait_number * sizeof(double));   
+    }
+    
+    res_place(ADD_RESOURCES, TEMP_RESOURCE, res_nums_added, res_number, 
+              trait_number, 10, 11);
+     
+    res_num_total  = res_number + res_nums_added - res_nums_subtracted;
+    
+    NEW_RESOURCES = malloc(res_num_total * sizeof(double *));
+    for(resource = 0; resource < res_num_total; resource++){
+        NEW_RESOURCES[resource] = malloc(trait_number * sizeof(double));   
+    }   
+    
+    resource_new = 0;
+    for(resource = 0; resource < res_number; resource++){
+        if(TEMP_RESOURCE[resource][8] >= 0){
+            for(trait=0; trait < trait_number; trait++){
+                NEW_RESOURCES[resource_new][trait] = 
+                    TEMP_RESOURCE[resource][trait];
+            }
+            resource_new++; 
+        }
+    }
+    for(resource = 0; resource < res_nums_added; resource++){
+        for(trait = 0; trait < trait_number; trait++){
+            NEW_RESOURCES[resource_new][trait] = ADD_RESOURCES[resource][trait];
+        }
+        resource_new++;
+    }
+ 
+    res_landscape_interaction(NEW_RESOURCES, 1, 1, 8, res_num_total, 14, 
+                              TEMP_LANDSCAPE, 1);
+    
+    /* ============================================================*/
 
+    calc_payoffs(TEMP_ACTION, ROWS, landscape, NEW_RESOURCES, res_num_total, 
+                 landowner, land_x, land_y, payoffs_after_actions);
+
+    /* Need a calc_utilities function */
+    
+    /* ----------------------------------------------------------- */
+   
+    for(resource = 0; resource < res_num_total; resource++){
+        free(NEW_RESOURCES[resource]);
+    }
+    free(NEW_RESOURCES);
+ 
+    for(resource = 0; resource < res_nums_added; resource++){
+        free(ADD_RESOURCES[resource]);
+    }
+    free(ADD_RESOURCES);
+    for(xloc = 0; xloc < land_x; xloc++){
+        for(yloc = 0; yloc < land_y; yloc++){
+            free(TEMP_LANDSCAPE[xloc][yloc]);   
+        }
+        free(TEMP_LANDSCAPE[xloc]);        
+    }
+    free(TEMP_LANDSCAPE); 
     for(row = 0; row < ROWS; row++){
         free(TEMP_ACTION[row]);
     }
@@ -515,8 +603,9 @@ void calc_agent_fitness(double ***population, int ROWS, int COLS, int landowner,
         free(TEMP_RESOURCE[resource]);
     }
     free(TEMP_RESOURCE);
+    free(payoff_change);
+    free(payoffs_after_actions);
     free(payoff_vector);
-    
 }
 
 
@@ -536,12 +625,13 @@ void calc_agent_fitness(double ***population, int ROWS, int COLS, int landowner,
  *     trait_number: The number of resource traits (columns)
  *     land_x: The x dimension of the landscape
  *     land_y: The y dimension of the landscape
+ *     land_z: The z dimension of the landscape 
  * ========================================================================== */
 void strategy_fitness(double *fitnesses, double ***population, int pop_size, 
-                      int ROWS, int COLS, double ***landscape,  
+                      int ROWS, int COLS, double ***landscape, double *paras,
                       double **resources, double **agent_array,
                       int res_number, int landowner, int trait_number,
-                      int land_x, int land_y){
+                      int land_x, int land_y, int land_z){
     
     int xloc, yloc, yield_layer;
     int agent, resource, row;
@@ -551,7 +641,8 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
     
     
     calc_agent_fitness(population, ROWS, COLS, landowner, landscape, resources,
-                       res_number, land_x, land_y, trait_number, fitnesses);
+                       res_number, land_x, land_y, land_z, trait_number, 
+                       fitnesses, paras);
     
     
     
@@ -670,8 +761,8 @@ void place_winners(double ****population, int *winners, int pop_size, int ROWS,
  * and therefore test out whether or not they work.
  */
 void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
-        double ***LANDSCAPE, double *paras, int xdim, int ydim, 
-        int res_number, int land_x, int land_y, int trait_number, int agent){
+        double ***LANDSCAPE, double *paras, int xdim, int ydim, int res_number,
+        int land_x, int land_y, int land_z, int trait_number, int agent){
     
     int row, col, gen, layer;
     int sampleK, chooseK;
@@ -731,8 +822,8 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         constrain_costs(POPULATION, COST, agent, popsize, xdim, ydim, budget);
     
         strategy_fitness(fitnesses, POPULATION, popsize, xdim, ydim, LANDSCAPE, 
-                         RESOURCES, AGENT, res_number, landowner, trait_number,
-                         land_x, land_y);
+                         paras, RESOURCES, AGENT, res_number, landowner, 
+                         trait_number, land_x, land_y, land_z);
   
         tournament(fitnesses, winners, popsize, sampleK, chooseK);
    
