@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **APR** [13](#u-13-APR-2017), [12](#u-12-APR-2017), [11](#u-11-APR-2017), [10](#u-10-APR-2017), [7](#u-7-APR-2017), [6](#u-6-APR-2017), [5](#u-5-APR-2017)
+     - **APR** [17](#u-17-APR-2017), [13](#u-13-APR-2017), [12](#u-12-APR-2017), [11](#u-11-APR-2017), [10](#u-10-APR-2017), [7](#u-7-APR-2017), [6](#u-6-APR-2017), [5](#u-5-APR-2017)
      - **MAR** [23](#u-23-MAR-2017), [22](#u-22-MAR-2017), [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
@@ -74,6 +74,293 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-17-APR-2017">Update: 17 APR 2017</a>
+
+It's a bit painful, but I'm going to delete some major pieces of code in the genetic algorithm (which will obviously be preserved in version control). The following functions are slowing things down, and given the new approach outlined in [option 3 from 13 APR](#delete_fitness_functions), I'm going to remove them and focus on the `ACTION` array only, assuming that agents act as if their actions *will* yield the intended results.
+
+```
+/* =============================================================================
+ * This function calculates an individual agent's fitness
+ * ========================================================================== */
+double calc_agent_fitness(double ***population, int ROWS, int COLS, 
+                          int landowner, double ***landscape, 
+                          double **resources, int res_number, int land_x, 
+                          int land_y, int land_z, int trait_number,
+                          double *fitnesses, double *paras){
+    
+    int agent, resource, resource_new, trait, row, col, xloc, yloc, zloc;
+    int res_on_land, res_nums_added, res_nums_subtracted, res_num_total;
+    double *payoff_vector, *payoffs_after_actions, *payoff_change;
+    double **TEMP_RESOURCE, **TEMP_ACTION, ***TEMP_LANDSCAPE;
+    double **ADD_RESOURCES, **NEW_RESOURCES;
+    double a_fitness;
+    
+    payoff_vector         = malloc(ROWS * sizeof(double));
+    payoffs_after_actions = malloc(ROWS * sizeof(double));
+    payoff_change         = malloc(ROWS * sizeof(double));
+    
+    /* --- Make tempororary resource, action, and landscape arrays below --- */
+    TEMP_RESOURCE    = malloc(res_number * sizeof(double *));
+    for(resource = 0; resource < res_number; resource++){
+        TEMP_RESOURCE[resource] = malloc(trait_number * sizeof(double));   
+    } 
+    for(resource = 0; resource < res_number; resource++){
+        for(trait = 0; trait < trait_number; trait++){
+            TEMP_RESOURCE[resource][trait] = resources[resource][trait];
+        }
+    } 
+    
+    TEMP_ACTION = malloc(res_number * sizeof(double *));
+    for(row = 0; row < ROWS; row++){
+        TEMP_ACTION[row] = malloc(COLS * sizeof(double));   
+    }    
+    for(row = 0; row < ROWS; row++){
+        for(col = 0; col < COLS; col++){
+            TEMP_ACTION[row][col] = population[row][col][landowner];
+        }
+    }
+    
+    TEMP_LANDSCAPE = malloc(land_x * sizeof(double *));
+    for(xloc = 0; xloc < land_x; xloc++){
+        TEMP_LANDSCAPE[xloc] = malloc(land_y * sizeof(double *));
+        for(yloc = 0; yloc < land_y; yloc++){
+            TEMP_LANDSCAPE[xloc][yloc] = malloc(land_z * sizeof(double));   
+        }
+    } 
+    for(zloc = 0; zloc < land_z; zloc++){
+        for(yloc = 0; yloc < land_y; yloc++){
+            for(xloc = 0; xloc < land_x; xloc++){
+                TEMP_LANDSCAPE[xloc][yloc][zloc] = landscape[xloc][yloc][zloc];
+            }
+        }
+    }
+    
+    /* ----------------------------------------------------------- */
+    
+    calc_payoffs(TEMP_ACTION, ROWS, landscape, TEMP_RESOURCE, res_number, 
+                 landowner, land_x, land_y, payoff_vector);
+   
+    do_actions(landscape, TEMP_RESOURCE, land_x, land_y, TEMP_ACTION, ROWS, 
+               landowner, res_number, COLS);
+    
+    /* =====  Below re-creates key parts of the resource model ===== */
+    project_res_abund(TEMP_RESOURCE, paras, res_number);
+   
+    res_nums_added      = 0;
+    res_nums_subtracted = 0;
+    for(resource = 0; resource < res_number; resource++){
+        res_nums_added += TEMP_RESOURCE[resource][10];
+        if(TEMP_RESOURCE[resource][8] < 0){
+            res_nums_subtracted += 1;
+        }
+    }
+    
+    ADD_RESOURCES = malloc(res_nums_added * sizeof(double *));
+    for(resource = 0; resource < res_nums_added; resource++){
+        ADD_RESOURCES[resource] = malloc(trait_number * sizeof(double));   
+    }
+    
+    res_place(ADD_RESOURCES, TEMP_RESOURCE, res_nums_added, res_number, 
+              trait_number, 10, 11);
+     
+    res_num_total  = res_number + res_nums_added - res_nums_subtracted;
+    
+    NEW_RESOURCES = malloc(res_num_total * sizeof(double *));
+    for(resource = 0; resource < res_num_total; resource++){
+        NEW_RESOURCES[resource] = malloc(trait_number * sizeof(double));   
+    }   
+    
+    resource_new = 0;
+    for(resource = 0; resource < res_number; resource++){
+        if(TEMP_RESOURCE[resource][8] >= 0){
+            for(trait=0; trait < trait_number; trait++){
+                NEW_RESOURCES[resource_new][trait] = 
+                    TEMP_RESOURCE[resource][trait];
+            }
+            resource_new++; 
+        }
+    }
+    for(resource = 0; resource < res_nums_added; resource++){
+        for(trait = 0; trait < trait_number; trait++){
+            NEW_RESOURCES[resource_new][trait] = ADD_RESOURCES[resource][trait];
+        }
+        resource_new++;
+    }
+ 
+    res_landscape_interaction(NEW_RESOURCES, 1, 1, 8, res_num_total, 14, 
+                              TEMP_LANDSCAPE, 1);
+    
+    /* ============================================================*/
+
+    calc_payoffs(TEMP_ACTION, ROWS, landscape, NEW_RESOURCES, res_num_total, 
+                 landowner, land_x, land_y, payoffs_after_actions);
+    
+    a_fitness = payoffs_to_fitness(TEMP_ACTION, ROWS, payoffs_after_actions);
+
+    /* ----------------------------------------------------------- */
+   
+    for(resource = 0; resource < res_num_total; resource++){
+        free(NEW_RESOURCES[resource]);
+    }
+    free(NEW_RESOURCES);
+ 
+    for(resource = 0; resource < res_nums_added; resource++){
+        free(ADD_RESOURCES[resource]);
+    }
+    free(ADD_RESOURCES);
+    for(xloc = 0; xloc < land_x; xloc++){
+        for(yloc = 0; yloc < land_y; yloc++){
+            free(TEMP_LANDSCAPE[xloc][yloc]);   
+        }
+        free(TEMP_LANDSCAPE[xloc]);        
+    }
+    free(TEMP_LANDSCAPE); 
+    for(row = 0; row < ROWS; row++){
+        free(TEMP_ACTION[row]);
+    }
+    free(TEMP_ACTION);
+    for(resource = 0; resource < res_number; resource++){
+        free(TEMP_RESOURCE[resource]);
+    }
+    free(TEMP_RESOURCE);
+    free(payoff_change);
+    free(payoffs_after_actions);
+    free(payoff_vector);
+    
+    return a_fitness;
+}
+```
+
+The above re-creation of the resouce model was particularly slow -- essentially running a big chunk of `resource.c` 2000 times (once for each of 100 simulated agents in the genetic algorithm for 20 generations). With more stake-holders or longer convergence times, this would become very time-consuming without much benefit.
+
+The above function calls `project_res_abund` (below) which is no longer needed.
+
+```
+/* =============================================================================
+ * This function looks at the resources and projects how many new resources
+ * their will be after deaths and births.
+ *     resources: The resource array
+ *     paras: Relevant parameter values
+ *     res_number: The number of rows in the resource array
+ * ========================================================================== */
+void project_res_abund(double **resources, double *paras, int res_number){
+
+    int birthtype, deathtype;
+    int birth_K, death_K;
+    int resource;
+    
+    birthtype = (int) paras[3];
+    deathtype = (int) paras[4];
+    birth_K   = (int) paras[5];
+    death_K   = (int) paras[6];
+    
+    res_add(resources, res_number, 9, birthtype, birth_K);
+        
+    res_remove(resources, res_number, 8, deathtype, death_K);
+        
+}
+```
+
+The function `calc_agent_fitness` also calls `calc_payoffs`, which can be removed.
+
+```
+/* =============================================================================
+ * This function calculated each payoff for rows in the action matrix
+ *     population: array of the population that is made (malloc needed earlier)
+ *     ROWS: Number of rows in the COST and ACTION arrays
+ *     landscape: The landscape array
+ *     resources: The resource array
+ *     res_number: The number of rows in the resource array
+ *     landowner: The agent ID of interest -- also the landowner
+ *     land_x: The x dimension of the landscape
+ *     land_y: The y dimension of the landscape
+ *     payoff_vector: A vector of payoffs for each row of the action array
+ * ========================================================================== */
+void calc_payoffs(double **population, int ROWS, double ***landscape, 
+                  double **resources, int res_number, int landowner,
+                  int land_x, int land_y, double *payoff_vector){
+    
+    int xloc, yloc, yield_layer;
+    int resource, row;
+    int landscape_specific;
+    int res_count;
+    double cell_yield;
+    
+    for(row = 0; row < ROWS; row++){
+        payoff_vector[row] = 0;
+        if(population[row][0] == -2){
+            for(resource = 0; resource < res_number; resource++){
+                if(population[row][1] == resources[resource][1]  &&
+                   population[row][2] == resources[resource][2]  &&
+                   population[row][3] == resources[resource][3]
+                ){    
+                    landscape_specific = population[row][6];
+                    if(landscape_specific == 0){
+                        res_count++;
+                    }else{
+                        xloc = resources[resource][4];
+                        yloc = resources[resource][5];
+                        if(landscape[xloc][yloc][2] == landowner){
+                            res_count++;    
+                        }
+                    }
+                }
+            }
+            payoff_vector[row] += res_count;
+        }
+        if(population[row][0] == -1){
+            yield_layer = population[row][1];
+            for(xloc = 0; xloc < land_x; xloc++){
+                for(yloc = 0; yloc < land_y; yloc++){
+                    if(landscape[xloc][yloc][2] == landowner){
+                        cell_yield = landscape[xloc][yloc][yield_layer];
+                        payoff_vector[row] += cell_yield;
+                    }
+                }
+            }
+        }
+        if(population[row][0] > -1){
+            payoff_vector[row] = 0;
+        }
+    }
+}
+```
+
+I'm leaving in the functions `do_actions` and `resource_actions`, which, while not part of the genetic algorithm now, might be used in `user.c` to to enact the strategies selected by the genetic algorithm.
+
+In place of all these functions, I'm going to write a modified version of `payoffs_to_fitness` (below, which will also be removed) called `actions_to_fitness`, which will need the `ACTION` array and `RESOURCE` array to return a value `the_fitness`.
+
+```
+/* =============================================================================
+ * This function translates resouce abundances and crop yields to the fitness
+ * of an agent
+ *     action: The action array
+ *     ROWS: Number of rows in the COST and ACTION arrays
+ *     payoffs: Payoffs associated with each row of the action arrray
+ * ========================================================================== */
+double payoffs_to_fitness(double **action, int ROWS, double *payoffs){
+    int row;
+    double utility, abundance, the_fitness;
+    
+    for(row = 0; row < ROWS; row++){
+        utility      = action[row][4];
+        abundance    = payoffs[row];
+        the_fitness += utility * abundance;
+    }
+    
+    return the_fitness;
+}
+```
+
+The idea will be to have agents *assume* that their actions will have the intended results (e.g., killing 5 resources) without using the entire resource model to project whether or not this is really expected (e.g., if only 3 resources are avaialble to kill). Since the `ACTION` array [includes utilities](#cost_action_arrays), we can multiply the assumed action effects times utility to calculate fitness. **One necessary added complication** is that there needs to be some way to model indirect effects on fitness, for example, if resources increase or decrease crop cell values (or other resource abundances) or vice versa. There needs to be some way for agents to recognise that they can, e.g., kill resources to increase crop yield. Rather than go through the computationally intense task of replicating full interactions within the genetic algorithm, **I think it would be better to have G-MSE create a 2D array that identifies the effect of each resource type or landscape layer on each other resource type or landscape layer**. This array wouldn't need to be re-created *ex nihilo* every time the genetic algorithm is run, but could instead be either produced at a higher level from the parameters of the genetic algorithm, or perhaps calculated somehow in the manager function (not yet written). Hence, the consequences of an action on any given resource type or landscape layer could be followed through the 2D array instead by re-creating the resource algorithm. This would allow us to directly manipulate error as well, if for example some stake-holders don't recognise certain consequences of affecting one or another resource. For proof of concept, only a two by two array needs to be used.
+
+|             |  Resource_1   |  Landscape_1  |
+|-------------|---------------|---------------|
+| Resource_1  |     0         |     -0.5      |
+| Landscape_1 |     0.1       |     0         |
+
+Where the rows above are the focal thing of interest and the columns show what the focal thing is having an effect on, per capita. This could be challenging because the per capita effect might vary with resource abundances, and might be factored through other parameters (e.g., landscape cells affecting resource birth or death). Getting expected change in abundance could be a bit challenging, though would be certainly less computationally intense than the way I was doing it before. I'll start with using defined parameter values for proof of concept, but I do think that this array would be best built in the manager model, perhaps with multiple options that can incorporate error and uncertainty.
 
 > <a name="u-13-APR-2017">Update: 13 APR 2017</a>
 
@@ -170,7 +457,7 @@ The function `calc_agent_fitness` is almost complete, which will be an initial d
 
 The next step is to write the `calc_utilities`. Overall, the whole program is noticeably slower, so I will want to optimise a bit if possible. I also need to do some [unit testing](https://en.wikipedia.org/wiki/Unit_testing) for all of this to make sure that the genetic algorithm is doing what I intend it to do.
 
-**Moving forward: optimsation and error in `ACTION`**
+<a name="delete_fitness_functions">**Moving forward: optimsation and error in `ACTION`**</a>
 
 Having completed some initial coding and testing, there is a lot to do on everything downstream of `calc_agent_fitness`. The function doesn't appears to alter agent utilities somehow, and slows down the simulations dramatically, from about half a second to several minutes to get through 100 generations. Options for addressing this include:
 
