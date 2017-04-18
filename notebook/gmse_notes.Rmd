@@ -79,6 +79,41 @@ library(rhandsontable)
 
 An additional thought that could be useful for the genetic algorithm is that it might make sense for the `AGENT` array to also include abundances of each resource type and landscape level in columns at the end of the array, the order of which matches the order of the 2D array described [yesterday](#u-17-APR-2017). Something like the former `anecdotal` function could then be used to fill in abundance values as appropriate (e.g., matching resource on the agent's owned land, or on public land, or nearby to the location of the agent).
 
+**Initialise interaction array**
+
+A new function in R initialises an array of interactions among resource types and landscape layers.
+
+```{r}
+#' Initialise array of resource and landscape-level interactions
+#'
+#'@param resources the resource array
+#'@param landscape the landscape array
+#'@export
+make_interaction_array <- function(resources, landscape){
+    resource_types  <- unique(resources[,2:4]);
+    resource_count  <- dim(resource_types)[1];
+    landscape_count <- dim(landscape)[3] - 2; # Maybe put all of them in later?
+    total_dims      <- resource_count + landscape_count;
+    INTERACTIONS    <- matrix(data = 0, nrow = total_dims, ncol = total_dims);
+    
+    name_vec <- NULL;                                   
+    for(i in 1:dim(resource_types)[1]){
+        name_vec <- c( name_vec, 
+                       paste(resource_types[i,1],
+                             resource_types[i,2],
+                             resource_types[i,3],
+                             sep = "" )
+                      );                                   
+    }            
+    name_vec <- c(name_vec, as.character(paste("L",1:landscape_count,sep="")));
+    rownames(INTERACTIONS) <- name_vec;
+    colnames(INTERACTIONS) <- name_vec;
+    return(INTERACTIONS);
+}
+```
+
+Specific values can be added in outside the `make_interaction_array` function and updated as need be by G-MSE.
+
 > <a name="u-17-APR-2017">Update: 17 APR 2017</a>
 
 It's a bit painful, but I'm going to delete some major pieces of code in the genetic algorithm (which will obviously be preserved in version control). The following functions are slowing things down, and given the new approach outlined in [option 3 from 13 APR](#delete_fitness_functions), I'm going to remove them and focus on the `ACTION` array only, assuming that agents act as if their actions *will* yield the intended results.
