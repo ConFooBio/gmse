@@ -185,4 +185,36 @@ utility_layer <- function(agent_IDs, agent_number, res_types){
 }
 
 
+#' Initialise array of resource and landscape-level interactions
+#'
+#'@param resources the resource array
+#'@param landscape the landscape array
+#'@export
+make_interaction_array <- function(resources, landscape){
+    resource_types  <- unique(resources[,2:4]);
+    resource_count  <- dim(resource_types)[1];
+    landscape_count <- dim(landscape)[3] - 2; # Maybe put all of them in later?
+    total_dims      <- resource_count + landscape_count;
+    INTERACTIONS    <- matrix(data = 0, nrow = total_dims, ncol = total_dims);
+    
+    name_vec <- NULL;                                   
+    for(i in 1:dim(resource_types)[1]){
+        name_vec <- c( name_vec, 
+                       paste(resource_types[i,1],
+                             resource_types[i,2],
+                             resource_types[i,3],
+                             sep = "" )
+                      );                                   
+    }            
+    name_vec <- c(name_vec, as.character(paste("L",1:landscape_count,sep="")));
+    rownames(INTERACTIONS) <- name_vec;
+    colnames(INTERACTIONS) <- name_vec;
+    return(INTERACTIONS);
+}
+                                   
 
+                                  
+                                   
+                                   
+                                   
+                                   
