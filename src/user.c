@@ -315,23 +315,23 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
         Jacobian_mat[row] = malloc(jacobian_dim * sizeof(double));
     }
     vec_pos = 0;
-    for(row = 0; row < jacobian_dim; row++){
-        for(col = 0; col < jacobian_dim; col++){
+    for(col = 0; col < jacobian_dim; col++){
+        for(row = 0; row < jacobian_dim; row++){
             Jacobian_mat[row][col] = jaco_ptr[vec_pos];
             vec_pos++;
         }
     }
     
     /* Code below remakes the INTERACT table for easier use */
-    int_d0  = dim_JACOBIAN[0];
-    int_d1  = dim_JACOBIAN[1];
-    interact_table  = malloc(int_d0 * sizeof(double *));
+    int_d0  = dim_INTERACT[0];
+    int_d1  = dim_INTERACT[1];
+    interact_table  = malloc(int_d0 * sizeof(int *));
     for(row = 0; row < int_d0; row++){
-        interact_table[row] = malloc(int_d1 * sizeof(double));
+        interact_table[row] = malloc(int_d1 * sizeof(int));
     }
     vec_pos = 0;
-    for(row = 0; row < int_d0; row++){
-        for(col = 0; col < int_d1; col++){
+    for(col = 0; col < int_d1; col++){
+        for(row = 0; row < int_d0; row++){
             interact_table[row][col] = intr_ptr[vec_pos];
             vec_pos++;
         }
