@@ -200,6 +200,8 @@ make_interaction_array <- function(resources, landscape){
     total_dims      <- resource_count + landscape_count;
     INTERACTIONS    <- matrix(data = 0, nrow = total_dims, ncol = total_dims);
     
+    diag(INTERACTIONS) <- 1;
+    
     name_vec <- NULL;                                   
     for(i in 1:dim(resource_types)[1]){
         name_vec <- c( name_vec, 

@@ -396,35 +396,81 @@ double payoffs_to_fitness(double ***population, int agent, int ROWS,
  *     pop_size: The size of the total population (layers to population)
  *     ROWS: Number of rows in the COST and ACTION arrays
  *     COLS: Number of columns in the COST and ACTION arrays
- *     landscape: The landscape array
- *     resources: The resource array
  *     agent_array: The agent array
  *     jaco: The jacobian matrix of resource and landscape interactions
- *     res_number: The number of rows in the resource array
- *     landowner: The agent ID of interest -- also the landowner
- *     trait_number: The number of resource traits (columns)
- *     land_x: The x dimension of the landscape
- *     land_y: The y dimension of the landscape
- *     land_z: The z dimension of the landscape 
+ *     interact_table: Lookup table for figuring out rows of jaco and types
+ *     interest_num: The number of rows and cols in jac, and rows in lookup
  * ========================================================================== */
 void strategy_fitness(double *fitnesses, double ***population, int pop_size, 
                       int ROWS, int COLS, double **agent_array, double **jaco,
-                      int **interact_table){
+                      int **interact_table, int interest_num){
     
-    int agent;
-    double agent_fitness;
+    int agent, i, row, act_type, type1, type2, type3, interest_row;
+    double agent_fitness, *count_change, foc_effect;
+    double movem, castem, killem, feedem, helpem;
+    double utility, *utilities;
     
-    /*
-    for(agent = 0; agent < pop_size; agent++){
-        agent_fitness = payoffs_to_fitness(population, agent, ROWS, jaco);
-        fitnesses[agent] = agent_fitness;
+    count_change = malloc(interest_num * sizeof(int));
+    utilities    = malloc(interest_num * sizeof(int));
+    
+    for(i = 0; i < interest_num; i++){
+        count_change[i] = 0; /* Initialise all count changes at zero */
+        utilities[i]    = 0; /* Same for utilities */
     }
-    */
     
-    /* Remove this eventually */
     for(agent = 0; agent < pop_size; agent++){
-        fitnesses[agent] = population[0][12][agent];
+        for(row = 0; row < ROWS; row++){
+            foc_effect = 0;
+            act_type   = (int) population[row][0][agent];
+            type1      = population[row][1][agent];
+            type2      = population[row][2][agent];
+            type3      = population[row][3][agent];
+            utility    = population[row][4][agent];
+            movem      = population[row][7][agent];
+            castem     = population[row][8][agent];
+            killem     = population[row][9][agent];
+            feedem     = population[row][10][agent];
+            helpem     = population[row][11][agent];
+            switch(act_type){
+                case -2:
+                    foc_effect -= movem;  /* Times birth to account for repr? */
+                    foc_effect -= castem; /* But only remove E offspring? */
+                    foc_effect -= killem; /* But also remove E offspring? */
+                    foc_effect += feedem; /* But should less mortality */
+                    foc_effect += helpem; /* But should affect offspring? */
+                    interest_row = 0;
+                    while(interest_row < interest_num){
+                        if(interact_table[interest_row][1] == type1 &&
+                           interact_table[interest_row][2] == type2 &&
+                           interact_table[interest_row][3] == type3
+                        ){
+                            break;
+                        }else{
+                            interest_row++;
+                        }
+                    } /* Found the right row in the look-up table */
+                    for(i = 0; i < interest_num; i++){
+                        count_change[i] += foc_effect * jaco[interest_row][i];
+                    }
+                    utilities[interest_row] = utility;
+                case -1:
+                    break; /* Add landscape effects here */
+                default:
+                    break;
+            }
+        }
+        fitnesses[agent] = 0;
+        for(i = 0; i < interest_num; i++){
+            fitnesses[agent] += count_change[i] * utilities[i];
+        }
+        
+        /* The below will be removed -- once a minor bug is found */
+        /* fitnesses[agent] = population[0][12][agent]; */
     }
+    
+    
+    free(utilities);
+    free(count_change);
 }
 
 /* =============================================================================
@@ -537,7 +583,7 @@ void place_winners(double ****population, int *winners, int pop_size, int ROWS,
 void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double **JACOBIAN, int **interact_table, 
         double *paras, int xdim, int ydim, int res_number, int land_x, 
-        int land_y, int land_z, int trait_number, int agent){
+        int land_y, int land_z, int trait_number, int jaco_dim, int agent){
     
     int row, col, gen, layer;
     int sampleK, chooseK;
@@ -597,7 +643,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         constrain_costs(POPULATION, COST, agent, popsize, xdim, ydim, budget);
 
         strategy_fitness(fitnesses, POPULATION, popsize, xdim, ydim, AGENT, 
-                         JACOBIAN, interact_table);
+                         JACOBIAN, interact_table, jaco_dim);
   
         tournament(fitnesses, winners, popsize, sampleK, chooseK);
    

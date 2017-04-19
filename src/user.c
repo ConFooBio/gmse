@@ -349,7 +349,7 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     /*------------------------------------------------------------------------*/
     ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
        interact_table, paras, c_x, c_y, res_number, land_x, land_y, land_z, 
-       trait_number, 1);
+       trait_number, jacobian_dim, 1);
     /*------------------------------------------------------------------------*/
     
     
