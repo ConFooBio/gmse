@@ -58,7 +58,7 @@ user <- function(resource   = NULL,
 
 # Below calls the user function from c
 run_user <- function(RESOURCE_c, LANDSCAPE_c, PARAMETERS_c, AGENT_c, COST_c,
-                     ACTION_c){
+                     ACTION_c, JACOBIAN_c){
     .Call("user", RESOURCE_c, LANDSCAPE_c, PARAMETERS_c, AGENT_c, COST_c,
-          ACTION_c);
+          ACTION_c, JACOBIAN_c);
 }
