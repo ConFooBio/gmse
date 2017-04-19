@@ -374,13 +374,14 @@ void do_actions(double ***landscape, double **resources, int land_x, int land_y,
  *     ROWS: Number of rows in the COST and ACTION arrays
  *     payoffs: Payoffs associated with each row of the action arrray
  * ========================================================================== */
-double payoffs_to_fitness(double **action, int ROWS, double *payoffs){
+double payoffs_to_fitness(double ***population, int agent, int ROWS, 
+                          double **jaco){
     int row;
     double utility, abundance, the_fitness;
     
     for(row = 0; row < ROWS; row++){
-        utility      = action[row][4];
-        abundance    = payoffs[row];
+        utility      = population[row][4][agent];
+        abundance    = jaco[row][row]; /* This isn't right ... */
         the_fitness += utility * abundance;
     }
     
@@ -389,7 +390,7 @@ double payoffs_to_fitness(double **action, int ROWS, double *payoffs){
 
 /* =============================================================================
  * This is a preliminary function that checks the fitness of each agent by 
- * passing through a loop to calc_agent_fitness
+ * passing through a loop to payoffs_to_fitness
  *     fitnesses: Array to order fitnesses of the agents in the population
  *     population: array of the population that is made (malloc needed earlier)
  *     pop_size: The size of the total population (layers to population)
@@ -398,6 +399,7 @@ double payoffs_to_fitness(double **action, int ROWS, double *payoffs){
  *     landscape: The landscape array
  *     resources: The resource array
  *     agent_array: The agent array
+ *     jaco: The jacobian matrix of resource and landscape interactions
  *     res_number: The number of rows in the resource array
  *     landowner: The agent ID of interest -- also the landowner
  *     trait_number: The number of resource traits (columns)
@@ -406,23 +408,19 @@ double payoffs_to_fitness(double **action, int ROWS, double *payoffs){
  *     land_z: The z dimension of the landscape 
  * ========================================================================== */
 void strategy_fitness(double *fitnesses, double ***population, int pop_size, 
-                      int ROWS, int COLS, double ***landscape, double *paras,
-                      double **resources, double **agent_array,
-                      int res_number, int landowner, int trait_number,
-                      int land_x, int land_y, int land_z){
+                      int ROWS, int COLS, double **agent_array, double **jaco){
     
     int agent;
     double agent_fitness;
     
-    /* Figure out what's wrong with the calc_agent_fitness function
+    /*
     for(agent = 0; agent < pop_size; agent++){
-        agent_fitness = calc_agent_fitness(population, ROWS, COLS, landowner, 
-                                           landscape, resources, res_number, 
-                                           land_x, land_y, land_z, trait_number, 
-                                           fitnesses, paras);
+        agent_fitness = payoffs_to_fitness(population, agent, ROWS, jaco);
         fitnesses[agent] = agent_fitness;
     }
     */
+    
+    /* Remove this eventually */
     for(agent = 0; agent < pop_size; agent++){
         fitnesses[agent] = population[0][12][agent];
     }
@@ -536,8 +534,9 @@ void place_winners(double ****population, int *winners, int pop_size, int ROWS,
  * and therefore test out whether or not they work.
  */
 void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
-        double ***LANDSCAPE, double *paras, int xdim, int ydim, int res_number,
-        int land_x, int land_y, int land_z, int trait_number, int agent){
+        double ***LANDSCAPE, double **JACOBIAN, double *paras, int xdim, 
+        int ydim, int res_number, int land_x, int land_y, int land_z, 
+        int trait_number, int agent){
     
     int row, col, gen, layer;
     int sampleK, chooseK;
@@ -595,15 +594,14 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         mutation(POPULATION, popsize, xdim, ydim, mutation_rate);
   
         constrain_costs(POPULATION, COST, agent, popsize, xdim, ydim, budget);
-    
-        strategy_fitness(fitnesses, POPULATION, popsize, xdim, ydim, LANDSCAPE, 
-                         paras, RESOURCES, AGENT, res_number, landowner, 
-                         trait_number, land_x, land_y, land_z);
+
+        strategy_fitness(fitnesses, POPULATION, popsize, xdim, ydim, AGENT, 
+                         JACOBIAN);
   
         tournament(fitnesses, winners, popsize, sampleK, chooseK);
    
         place_winners(&POPULATION, winners, popsize, xdim, ydim);
-   
+
         gen++;
     
     }
