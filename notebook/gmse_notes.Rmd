@@ -83,6 +83,136 @@ It's worth pointing out that the interaction array from [yesterday's](#u-18-APR-
 
 Note that one benefit of individual-based modelling is that each individual can be unique -- for example, an individual's consumption rate of crops does not have to be completely defined by its type; there can be individual variation within types too. Hence, it is probably undesirable to have the Jacobian matrix of type and landscape cell layers *define* how individual interactions should occur. There should be some variation and uncertainty at least as an option. Hence, the interaction array should probably be calculated *a posteriori* as much as possible -- ideally from looking at interactions on the landscape (e.g., by the eventual `manager.c`), or perhaps a function should go through the resource and landscape arrays and figure out the average interaction for each data type somewhere within G-MSE (but *not* from within the genetic algorithm; it would take too long). These details can be worked out later in the `manager.c` file, or perhaps somehow with the `anecdotal` function, which I think now can be made more general. **For now**, I'm going to manually set values in the matrix and use them to build an efficient genetic algorithm.
 
+**Dealing with issues of order in the fitness function**
+
+Resource type order needs to be identified for all resource types and landscape layers. The easiest way to do this is to just have a new array that lists all resource and landscape types, such as the below.
+
+| Res | Type 1 | Type 2 | Type 3 |
+|-----|--------|--------|--------|
+|  1  |   1    |   0    |   0    |
+|  1  |   2    |   0    |   0    |
+|  0  |   1    |   0    |   0    |
+
+The first column just identifies whether or not the row refers to a resource or a landscape level. The second through fourth columns identify a type (2 and 3 are always zero for landscape levels). This strikes me as the most clear way of keeping track of which rows go with which types in both the Jacobian matrix and the resource array, which I eventually will want to include columns associated with each row, potentially?
+
+The table is initialised with a simple function now in `initialise.R` to be called from the main `gmse.R`.
+
+```{r}
+#' Initialise array of resource and landscape-level interactions
+#'
+#'@param resources the resource array
+#'@param landscape the landscape array
+#'@export
+make_interaction_table <- function(resources, landscape){
+    
+    resource_types      <- unique(resources[,2:4]);
+    resource_part       <- matrix(data=0, nrow=dim(resource_types)[1], ncol=4);
+    resource_part[,2:4] <- resource_types;
+    
+    landscape_count    <- dim(landscape)[3] - 2; # Again, maybe all in later?
+    landscape_part     <- matrix(data = 0, nrow = landscape_count, ncol = 4);
+    landscape_part[,1] <- 1;
+    landscape_part[,2] <- 1:landscape_count;
+    
+    the_table <- rbind(resource_part, landscape_part);
+}
+```
+
+The table, along with the Jacobian matrix, is now passed to the user function and into the genetic algorithm where it can be used by the fitness function.
+
+**A revised fitness function**
+
+A revised fitness function is below, which has **not** passed unit tests because it doesn't appear to be maximising utility correctly. There is likely one or more minor bugs in the code that need to be fixed, and it would be better anyway to break the below down into a couple smaller functions anyway.
+
+```
+/* =============================================================================
+ * This is a preliminary function that checks the fitness of each agent by 
+ * passing through a loop to payoffs_to_fitness
+ *     fitnesses: Array to order fitnesses of the agents in the population
+ *     population: array of the population that is made (malloc needed earlier)
+ *     pop_size: The size of the total population (layers to population)
+ *     ROWS: Number of rows in the COST and ACTION arrays
+ *     COLS: Number of columns in the COST and ACTION arrays
+ *     agent_array: The agent array
+ *     jaco: The jacobian matrix of resource and landscape interactions
+ *     interact_table: Lookup table for figuring out rows of jaco and types
+ *     interest_num: The number of rows and cols in jac, and rows in lookup
+ * ========================================================================== */
+void strategy_fitness(double *fitnesses, double ***population, int pop_size, 
+                      int ROWS, int COLS, double **agent_array, double **jaco,
+                      int **interact_table, int interest_num){
+    
+    int agent, i, row, act_type, type1, type2, type3, interest_row;
+    double agent_fitness, *count_change, foc_effect;
+    double movem, castem, killem, feedem, helpem;
+    double utility, *utilities;
+    
+    count_change = malloc(interest_num * sizeof(int));
+    utilities    = malloc(interest_num * sizeof(int));
+    
+    for(i = 0; i < interest_num; i++){
+        count_change[i] = 0; /* Initialise all count changes at zero */
+        utilities[i]    = 0; /* Same for utilities */
+    }
+    
+    for(agent = 0; agent < pop_size; agent++){
+        for(row = 0; row < ROWS; row++){
+            foc_effect = 0;
+            act_type   = (int) population[row][0][agent];
+            type1      = population[row][1][agent];
+            type2      = population[row][2][agent];
+            type3      = population[row][3][agent];
+            utility    = population[row][4][agent];
+            movem      = population[row][7][agent];
+            castem     = population[row][8][agent];
+            killem     = population[row][9][agent];
+            feedem     = population[row][10][agent];
+            helpem     = population[row][11][agent];
+            switch(act_type){
+                case -2:
+                    foc_effect -= movem;  /* Times birth to account for repr? */
+                    foc_effect -= castem; /* But only remove E offspring? */
+                    foc_effect -= killem; /* But also remove E offspring? */
+                    foc_effect += feedem; /* But should less mortality */
+                    foc_effect += helpem; /* But should affect offspring? */
+                    interest_row = 0;
+                    while(interest_row < interest_num){
+                        if(interact_table[interest_row][1] == type1 &&
+                           interact_table[interest_row][2] == type2 &&
+                           interact_table[interest_row][3] == type3
+                        ){
+                            break;
+                        }else{
+                            interest_row++;
+                        }
+                    } /* Found the right row in the look-up table */
+                    for(i = 0; i < interest_num; i++){
+                        count_change[i] += foc_effect * jaco[interest_row][i];
+                    }
+                    utilities[interest_row] = utility;
+                case -1:
+                    break; /* Add landscape effects here */
+                default:
+                    break;
+            }
+        }
+        fitnesses[agent] = 0;
+        for(i = 0; i < interest_num; i++){
+            fitnesses[agent] += count_change[i] * utilities[i];
+        }
+        
+        /* The below will be removed -- once a minor bug is found */
+        /* fitnesses[agent] = population[0][12][agent]; */
+    }
+    
+    
+    free(utilities);
+    free(count_change);
+}
+```
+
+Nevertheless, this is definitely some progress -- and the code is still fast. **The next step** is to print output from the above function to track down what is incorrect.
+
 > <a name="u-18-APR-2017">Update: 18 APR 2017</a>
 
 An additional thought that could be useful for the genetic algorithm is that it might make sense for the `AGENT` array to also include abundances of each resource type and landscape level in columns at the end of the array, the order of which matches the order of the 2D array described [yesterday](#u-17-APR-2017). Something like the former `anecdotal` function could then be used to fill in abundance values as appropriate (e.g., matching resource on the agent's owned land, or on public land, or nearby to the location of the agent).
