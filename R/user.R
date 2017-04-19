@@ -9,6 +9,7 @@
 #'@param cost Array of the costs associated with each agent actions
 #'@param action Array of each agents actions
 #'@param Jacobian Jacobian matrix of resources & landscape layer effects
+#'@param inter_table Interaction table indexing types with Jacobian matrix
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
 #'@return Data frames of user output at the end of the time step
@@ -20,6 +21,7 @@ user <- function(resource   = NULL,
                  cost       = NULL,
                  action     = NULL,
                  Jacobian   = NULL,
+                 inter_tabl = NULL,
                  model      = "IBM"
 ) {
     check_model <- 0;
@@ -45,7 +47,8 @@ user <- function(resource   = NULL,
                              AGENT_c       = agent,
                              COST_c        = cost,
                              ACTION_c      = action,
-                             JACOBIAN_c    = Jacobian
+                             JACOBIAN_c    = Jacobian,
+                             INTERACT_c    = inter_tabl
         );
    
         check_model <- 1;
@@ -58,7 +61,7 @@ user <- function(resource   = NULL,
 
 # Below calls the user function from c
 run_user <- function(RESOURCE_c, LANDSCAPE_c, PARAMETERS_c, AGENT_c, COST_c,
-                     ACTION_c, JACOBIAN_c){
+                     ACTION_c, JACOBIAN_c, INTERACT_c){
     .Call("user", RESOURCE_c, LANDSCAPE_c, PARAMETERS_c, AGENT_c, COST_c,
-          ACTION_c, JACOBIAN_c);
+          ACTION_c, JACOBIAN_c, INTERACT_c);
 }

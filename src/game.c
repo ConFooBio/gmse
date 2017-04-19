@@ -408,7 +408,8 @@ double payoffs_to_fitness(double ***population, int agent, int ROWS,
  *     land_z: The z dimension of the landscape 
  * ========================================================================== */
 void strategy_fitness(double *fitnesses, double ***population, int pop_size, 
-                      int ROWS, int COLS, double **agent_array, double **jaco){
+                      int ROWS, int COLS, double **agent_array, double **jaco,
+                      int **interact_table){
     
     int agent;
     double agent_fitness;
@@ -534,9 +535,9 @@ void place_winners(double ****population, int *winners, int pop_size, int ROWS,
  * and therefore test out whether or not they work.
  */
 void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
-        double ***LANDSCAPE, double **JACOBIAN, double *paras, int xdim, 
-        int ydim, int res_number, int land_x, int land_y, int land_z, 
-        int trait_number, int agent){
+        double ***LANDSCAPE, double **JACOBIAN, int **interact_table, 
+        double *paras, int xdim, int ydim, int res_number, int land_x, 
+        int land_y, int land_z, int trait_number, int agent){
     
     int row, col, gen, layer;
     int sampleK, chooseK;
@@ -596,7 +597,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         constrain_costs(POPULATION, COST, agent, popsize, xdim, ydim, budget);
 
         strategy_fitness(fitnesses, POPULATION, popsize, xdim, ydim, AGENT, 
-                         JACOBIAN);
+                         JACOBIAN, interact_table);
   
         tournament(fitnesses, winners, popsize, sampleK, chooseK);
    

@@ -215,8 +215,24 @@ make_interaction_array <- function(resources, landscape){
     return(INTERACTIONS);
 }
                                    
-
-                                  
+#' Initialise array of resource and landscape-level interactions
+#'
+#'@param resources the resource array
+#'@param landscape the landscape array
+#'@export
+make_interaction_table <- function(resources, landscape){
+    
+    resource_types      <- unique(resources[,2:4]);
+    resource_part       <- matrix(data=0, nrow=dim(resource_types)[1], ncol=4);
+    resource_part[,2:4] <- resource_types;
+    
+    landscape_count    <- dim(landscape)[3] - 2; # Again, maybe all in later?
+    landscape_part     <- matrix(data = 0, nrow = landscape_count, ncol = 4);
+    landscape_part[,1] <- 1;
+    landscape_part[,2] <- 1:landscape_count;
+    
+    the_table <- rbind(resource_part, landscape_part);
+}
                                    
                                    
                                    

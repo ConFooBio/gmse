@@ -109,6 +109,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     );
     Jacobian[1,2] <- res_consume; # Temporary to fix consumption rate
     
+    interaction_tabl <- make_interaction_table(starting_resources, LANDSCAPE_r);
+    
     COST   <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
     COST[COST < 1] <- 1; # Need this until a proper make_cost function is made
     COST[,8,]      <- 1;
@@ -217,14 +219,15 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                        type_cat   = 1
         );
         
-        USERS <- user(resource  = RESOURCES,
-                      agent     = AGENTS,
-                      landscape = LANDSCAPE_r, 
-                      paras     = paras,
-                      cost      = COST,
-                      action    = ACTION,
-                      Jacobian  = Jacobian,
-                      model     = "IBM"
+        USERS <- user(resource   = RESOURCES,
+                      agent      = AGENTS,
+                      landscape  = LANDSCAPE_r, 
+                      paras      = paras,
+                      cost       = COST,
+                      action     = ACTION,
+                      Jacobian   = Jacobian,
+                      inter_tabl = interaction_tabl,
+                      model      = "IBM"
         );
         RESOURCES    <- USERS[[1]];
         AGENTS       <- USERS[[2]];
