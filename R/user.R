@@ -8,6 +8,7 @@
 #'@param paras Vector of parameter values to read into the model
 #'@param cost Array of the costs associated with each agent actions
 #'@param action Array of each agents actions
+#'@param Jacobian Jacobian matrix of resources & landscape layer effects
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
 #'@return Data frames of user output at the end of the time step
@@ -18,6 +19,7 @@ user <- function(resource   = NULL,
                  paras      = NULL,
                  cost       = NULL,
                  action     = NULL,
+                 Jacobian   = NULL,
                  model      = "IBM"
 ) {
     check_model <- 0;
@@ -42,7 +44,8 @@ user <- function(resource   = NULL,
                              PARAMETERS_c  = paras,
                              AGENT_c       = agent,
                              COST_c        = cost,
-                             ACTION_c      = action
+                             ACTION_c      = action,
+                             JACOBIAN_c    = Jacobian
         );
    
         check_model <- 1;

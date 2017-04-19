@@ -111,9 +111,10 @@ void count_cell_yield(double **agent_array, double ***landscape, int xdim,
  *      AGENT:      An array of *row agents and *col traits for each agent
  *      COST:       An array of the cost of actions for each agent
  *      ACTION:     An array of the action of agents
+ *      JACOBIAN:   A Jacobian matrix of resource type and landscape effects
  * ===========================================================================*/
 SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
-          SEXP ACTION){
+          SEXP ACTION, SEXP JACOBIAN){
  
     /* SOME STANDARD DECLARATIONS OF KEY VARIABLES AND POINTERS               */
     /* ====================================================================== */
@@ -131,6 +132,7 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     int trait_number;        /* Number of traits included in the resource */
     int agent_number;        /* Number of agents that can potentially observe */
     int agent_traits;        /* Number of traits that each agent has */
+    int jacobian_dim;        /* Dimensions of the (square) Jacobian matrix */
     int protected_n;         /* Number of protected R objects */
     int vec_pos;             /* Vector position for making arrays */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
@@ -138,6 +140,7 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
     int *dim_COST;           /* Dimensions of the COST array incoming */
     int *dim_ACTION;         /* Dimensions of the ACTION array incoming */
+    int *dim_JACOBIAN;       /* Dimensions of the JACOBIAN matrix incoming */
     double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
     double *paras;           /* Pointer to PARAMETER (interface R and C) */
@@ -149,7 +152,9 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     double *new_cost_ptr;    /* Pointer to new cost array that is returned */
     double *data_ptr;        /* Pointer to DATA (interface R and C) */
     double *land_ptr_new;    /* Pointer to a new landscape */
+    double *jaco_ptr;        /* Pointer to JACOBIAN (interface R and C) */
     double **resource_array; /* Array to store the old RESOURCE in C */
+    double **Jacobian_mat;   /* Array to store the Jacobian matrix in C */
     double ***land;          /* Array to store the landscape in C*/
     double **agent_array;    /* Array to store the agents in C */
     double ***costs;         /* Array of the costs of user actions */
@@ -180,6 +185,10 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     protected_n++;
     action_ptr = REAL(ACTION);
     
+    PROTECT( JACOBIAN = AS_NUMERIC(JACOBIAN) );
+    protected_n++;
+    jaco_ptr = REAL(JACOBIAN);
+    
     PROTECT( PARAMETERS = AS_NUMERIC(PARAMETERS) );
     protected_n++;
     paras = REAL(PARAMETERS);
@@ -189,6 +198,7 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     dim_AGENT      = INTEGER( GET_DIM(AGENT) );
     dim_COST       = INTEGER( GET_DIM(COST) );
     dim_ACTION     = INTEGER( GET_DIM(ACTION) );
+    dim_JACOBIAN   = INTEGER( GET_DIM(JACOBIAN) );
 
     /* The C code for the model itself falls under here */
     /* ====================================================================== */
@@ -288,9 +298,22 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     }
     /* RESOURCE is now stored as resource_array (discrete resources) */    
 
+    /* Code below remakes the JACOBIAN matrix for easier use */
+    jacobian_dim  = dim_JACOBIAN[0];
+    Jacobian_mat  = malloc(jacobian_dim * sizeof(double *));
+    for(row = 0; row < jacobian_dim; row++){
+        Jacobian_mat[row] = malloc(jacobian_dim * sizeof(double));
+    }
+    vec_pos = 0;
+    for(row = 0; row < jacobian_dim; row++){
+        for(col = 0; col < jacobian_dim; col++){
+            Jacobian_mat[row][col] = jaco_ptr[vec_pos];
+            vec_pos++;
+        }
+    }
+    
     /* Do the biology here now */
     /* ====================================================================== */
-    
     
     send_agents_home(agent_array, land, land_x, land_y, agent_number, 2);
       
@@ -394,6 +417,11 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     
     UNPROTECT(protected_n);
     
+    /* Free all of the allocated memory used in the Jacobian matrix */
+    for(row = 0; row < jacobian_dim; row++){
+        free(Jacobian_mat[row]);
+    }
+    free(Jacobian_mat);
     /* Free all of the allocated memory used in agent array */
     for(agent = 0; agent < agent_number; agent++){
         free(agent_array[agent]);
