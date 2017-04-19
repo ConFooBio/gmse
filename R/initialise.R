@@ -9,6 +9,9 @@
 #'@param rows Location of resource on LANDSCAPE (y-axis)
 #'@param cols Location of resource on LANDSCAPE (x-axis)
 #'@param move Parameter affecting individual movement
+#'@param rm_pr Probability of resource removal (death) per time step
+#'@param lambda Rate parameter for Poisson random sampling affecting birthrate
+#'@param consumption_rate Rate at which resource consumes crops on landscape
 #'@return the_resources Initialised data frame of resources being modelled
 #'@export
 make_resource <- function(model              = "IBM", 
