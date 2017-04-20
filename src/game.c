@@ -367,26 +367,7 @@ void do_actions(double ***landscape, double **resources, int land_x, int land_y,
 }
 
 
-/* =============================================================================
- * This function translates resouce abundances and crop yields to the fitness
- * of an agent
- *     action: The action array
- *     ROWS: Number of rows in the COST and ACTION arrays
- *     payoffs: Payoffs associated with each row of the action arrray
- * ========================================================================== */
-double payoffs_to_fitness(double ***population, int agent, int ROWS, 
-                          double **jaco){
-    int row;
-    double utility, abundance, the_fitness;
-    
-    for(row = 0; row < ROWS; row++){
-        utility      = population[row][4][agent];
-        abundance    = jaco[row][row]; /* This isn't right ... */
-        the_fitness += utility * abundance;
-    }
-    
-    return the_fitness;
-}
+
 
 /* =============================================================================
  * This is a preliminary function that checks the fitness of each agent by 
