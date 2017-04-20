@@ -353,6 +353,19 @@ void land_to_counts(double ***population, int **interact_table, int int_num,
 
 For each sub-case, how the population array is interpreted can be specialised. For example, if `castem` doesn't really mean anything on the landscape, then it can simply be ignored and agents will adapt by not doing it. In this sense, these two sub-functions become easy things to tinker with for translating actions to utilities.
 
+<a name="v0.0.9">**Version `v0.0.9`: A working genetic algorithm**</a>
+
+I moved the function `do_actions` and its dependency `resource_actions` to the `user.c` file so that the actions of a particular agent could be performed on the *actual* population after the genetic algorithm simulated and selected an adaptive strategy. As a test drive, I simulated the actions of only one stake-holder who is trying to maximise crop yield, and whose only avenue for doing so is getting resources of their land one way or another. The figure below shows the output.
+
+![*Output when agents can make some adaptive decisions*](images/ga_working_user.png)
+
+The figure tells an interesting story. The light blue individual in the right-hand panels represents a farmer, who has quickly figured out that little black dots on their farm are decreasing crop yield, which the farmer wants to maximise. Initially, the growing population of black dots causes crop yield to decline, but by generation 8 or 9, the farmer has opted to scare these dots to public land. Consequently, mean farm yield over all land goes up a bit (due to intraspecific competition between black dots), and almost all of the crop damage occurs on the public land (dark blue) while the farmer's land (light blue) has better yield. The spatial distribution of the black dots is very easy to see -- all of the back dots have been 'scared' into the public land.
+
+This is exciting -- we have a working model in which a genetic algorithm is being used to identify and enact a stake-holders strategy given their specific interests. **The only major conceptual hurdle** now is likely to be the manager's response, enacting policy by affecting costs of actions, and stake-holders actions that affect other agent's costs (e.g., lobbying a manager). This isn't even much of a jump though -- really, the framework is in place and a lot of the work from here is just grunt work in terms of coding the specifics what options will be available to what agents. **It shouldn't be too long before we have a working model of conflict** that can be applied to real-world case studies. Hence, I'm calling this `v0.0.9` and pushing to `master`. This implementation of the genetic algorithm is also not noticably slower than previous versions -- it took about a second to run the above; my goal is to keep it low.
+
+The next step will be to figure out what options should be available for directly affecting the landscape, and what needs to be done to apply the genetic algorithm to costs of *other* agents actions (hooks for this are already coded in `switch` functions of the genetic algorithm). I would also like to build the `manager.c` function with the ability to empirically derive the Jacobian matrix, and (eventually) make it possible for agents to consider the *histories* of each others actions (shouldn't be too much of a stretch, but this is an extension of the genetic algorithm that can come later).
+
+
 > <a name="u-19-APR-2017">Update: 19 APR 2017</a>
 
 It's worth pointing out that the interaction array from [yesterday's](#u-18-APR-2017) `make_interaction_array` function can be defined more generally as a [Jacobian matrix](https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant). I think it's worth doing this for the sake of clarity and generality, and thinking about the elements of the array as first order partial derivatives.
