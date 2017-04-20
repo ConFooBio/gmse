@@ -95,6 +95,130 @@ void count_cell_yield(double **agent_array, double ***landscape, int xdim,
 }
 
 /* =============================================================================
+ * This function enacts all user actions in a random order
+ *     resources: The resource array
+ *     row: The row of the action array (should be 0)
+ *     action: The action array
+ *     can_act: Binary vector length res_number where 1 if resource actionable
+ *     res_number: The number of rows in the resource array
+ *     land_x: The x dimension of the landscape
+ *     land_y: The y dimension of the landscape
+ * ========================================================================== */
+void resource_actions(double **resources, int row, double ***action, int owner, 
+                      int *can_act, int res_number, int land_x, int land_y){
+    
+    int resource, xloc, yloc, i;
+    int util, u_loc, u_land;
+    int movem, castem, killem, feedem, helpem;
+    int *actions, total_actions, action_col, sample;
+    
+    actions       = malloc(5 * sizeof(int));
+    total_actions = 0;
+    for(i = 0; i < 5; i++){
+        action_col     = i + 7;
+        actions[i]     = action[row][action_col][owner];
+        total_actions += action[row][action_col][owner];
+    }
+    
+    resource = 0;
+    while(resource < res_number && total_actions > 0){
+        if(can_act[resource] == 1){
+            do{ /* Sampling avoids having some actions always first */
+                sample = floor( runif(0, 5) );
+            }while(actions[sample] == 0 && sample == 5);
+            /* Enact whichever action was randomly sampled */
+            switch(sample){
+            case 0: /* Move resource */
+            xloc = (int) floor( runif(0, land_x) );
+                yloc = (int) floor( runif(0, land_y) );
+                resources[resource][4] = xloc;
+                resources[resource][5] = yloc;
+                actions[0]--; 
+                break;
+            case 1: /* Castrate resource */
+            resources[resource][9] = 0;
+                actions[1]--; 
+                break;
+            case 2: /* Kill resource */
+            resources[resource][8] = 1;
+                actions[2]--;
+                break;
+            case 3: /* Feed resource (increase birth-rate)*/
+            resources[resource][9]++;
+                actions[3]--;
+                break;
+            case 4: /* Help resource (increase offspring number directly) */
+            resources[resource][10]++;
+                actions[4]--;
+                break;            
+            default:
+                break;
+            }
+            total_actions--;
+        }
+        resource++;
+    }
+    free(actions);
+}
+
+/* =============================================================================
+ * This function causes the agents to actually do the actions
+ *     landscape: The landscape array
+ *     resources: The resource array
+ *     land_x: The x dimension of the landscape
+ *     land_y: The y dimension of the landscape
+ *     action: The action array
+ *     ROWS: Number of rows in the COST and ACTION arrays
+ *     owner: The agent ID of interest -- also the landowner
+ *     res_number: The number of rows in the resource array
+ *     COLS: Number of columns in the COST and ACTION arrays
+ * ========================================================================== */
+void do_actions(double ***landscape, double **resources, int land_x, int land_y,
+                double ***action, int ROWS, int owner, int res_number,
+                int COLS){
+    
+    int xpos, ypos, xloc, yloc;
+    int row, col;
+    int agentID, type1, type2, type3, u_loc;
+    int resource, cell, move;
+    int *can_act, *on_land;
+    
+    for(row = 0; row < ROWS; row++){
+        agentID = action[row][0][owner];  /* Agent of interest (-2 = self) */
+        type1   = action[row][1][owner];  /* Resource type 1 */
+        type2   = action[row][2][owner];  /* Resource type 2 */
+        type3   = action[row][3][owner];  /* Resource type 3 */
+        u_loc   = action[row][5][owner];  /* Restricted to owned land? */
+
+        can_act = malloc(res_number * sizeof(int));
+        is_correct_type(res_number, resources, type1, type2, type3, can_act);
+
+        if(u_loc == 1){
+            on_land = malloc(res_number * sizeof(int));
+            is_on_owner_land(res_number, resources, owner, landscape, on_land);
+        for(resource = 0; resource < res_number; resource++){
+            can_act[resource] = can_act[resource] * on_land[resource];
+        }
+        free(on_land);
+    }      
+
+    switch(agentID){
+        case -2:
+            resource_actions(resources, row, action, owner, can_act, res_number, 
+                             land_x, land_y);
+            break;
+        case -1:
+            break;
+        default:
+            break;
+    }
+
+    free(can_act);
+    }
+}
+
+
+/* =============================================================================
  * MAIN OBSERVATION FUNCTION:
  * ===========================================================================*/
 
@@ -351,7 +475,10 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
        interact_table, paras, c_x, c_y, res_number, land_x, land_y, land_z, 
        trait_number, jacobian_dim, 1);
     /*------------------------------------------------------------------------*/
-    
+
+    /* TODO: NEED TO TEST AND CONFIRM THAT RESOURCES ARE BEING CHANGED HERE */
+    do_actions(land, resource_array, land_x, land_y, actions, a_x, 1, 
+               res_number, a_y);
     
     /* This code switches from C back to R */
     /* ====================================================================== */        
