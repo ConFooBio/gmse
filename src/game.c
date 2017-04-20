@@ -418,7 +418,7 @@ void res_to_counts(double ***population, int **interact_table, int int_num,
 
 /* =============================================================================
  * This function updates count change and utility arrays for direct actions on 
- * resources
+ * a landscape
  *     population: The population array of agents in the genetic algorithm
  *     interact_table: The lookup table for figuring out how resources interact
  *     int_num: The number of rows and cols in jac, and rows in the lookup
