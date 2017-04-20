@@ -107,7 +107,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     Jacobian <- make_interaction_array(resources = starting_resources,
                                        landscape = LANDSCAPE_r
     );
-    Jacobian[1,2] <- res_consume; # Temporary to fix consumption rate
+    Jacobian[1,2] <- -1 * res_consume; # Temporary to fix consumption rate
     
     interaction_tabl <- make_interaction_table(starting_resources, LANDSCAPE_r);
     
@@ -117,7 +117,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     COST[,1:7,]    <- 10000;
     ACTION <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
     ACTION[1:2,5:7,] <- 1;
-    ACTION[1,5,2] <- 100;
+    ACTION[2,5,2] <- 100;
     
     time       <- time + 1;  # Ready for the initial time step.
     cells      <- land_dim_1 * land_dim_2; # Number of cells in the landscape

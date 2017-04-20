@@ -439,7 +439,8 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
                     foc_effect += helpem; /* But should affect offspring? */
                     interest_row = 0;
                     while(interest_row < interest_num){
-                        if(interact_table[interest_row][1] == type1 &&
+                        if(interact_table[interest_row][0] == 0     &&
+                           interact_table[interest_row][1] == type1 &&
                            interact_table[interest_row][2] == type2 &&
                            interact_table[interest_row][3] == type3
                         ){
@@ -447,30 +448,35 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
                         }else{
                             interest_row++;
                         }
-                    } 
+                    }
                     for(i = 0; i < interest_num; i++){
                         count_change[i] += foc_effect * jaco[interest_row][i];
                     }
                     utilities[interest_row] = utility;
-    
                 case -1:
+                    interest_row = 0;
+                    while(interest_row < interest_num){
+                        if(interact_table[interest_row][0] == 1     &&
+                           interact_table[interest_row][1] == type1 &&
+                           interact_table[interest_row][2] == type2 &&
+                           interact_table[interest_row][3] == type3
+                        ){
+                            break;
+                        }else{
+                            interest_row++;
+                        }
+                    }
+                    utilities[interest_row] = utility;
                     break; /* Add landscape effects here */
                 default:
                     break;
             }
         }
-        
         fitnesses[agent] = 0;
         for(i = 0; i < interest_num; i++){
             fitnesses[agent] += count_change[i] * utilities[i];
         }
-        
-        /* The below will be removed -- once a minor bug is found */
-        /* fitnesses[agent] = population[0][12][agent]; */
-        
     }
-    
-    
     free(utilities);
     free(count_change);
 }
