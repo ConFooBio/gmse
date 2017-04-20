@@ -369,6 +369,84 @@ void do_actions(double ***landscape, double **resources, int land_x, int land_y,
 
 
 
+
+
+
+
+/* =============================================================================
+ * This function updates count change and utility arrays for direct actions on 
+ * resources
+ *     population: The population array of agents in the genetic algorithm
+ *     interact_table: The lookup table for figuring out how resources interact
+ *     int_num: The number of rows and cols in jac, and rows in the lookup
+ *     count_change: A vector of how counts have changed as a result of actions
+ *     utilities: A vector of the utilities of each resource/landscape level
+ *     jaco: The interaction table itself (i.e., Jacobian matrix)
+ *     row: The row of the interaction and lookup table being examined
+ *     agent: The agent in the population whose fitness is being assessed
+ * ========================================================================== */
+void res_to_counts(double ***population, int **interact_table, int int_num,
+                   double *count_change, double *utilities, double **jaco,
+                   int row, int agent){
+    
+    int i, act_type, interest_row;
+    double foc_effect;
+    
+    foc_effect  = 0.0;
+    foc_effect -= population[row][7][agent];  /* Times birth account for repr?*/
+    foc_effect -= population[row][8][agent]; /* But only remove E offspring? */
+    foc_effect -= population[row][9][agent]; /* But also remove E offspring? */
+    foc_effect += population[row][10][agent]; /* But should less mortality */
+    foc_effect += population[row][11][agent]; /* But should affect offspring? */
+    interest_row = 0;
+    while(interest_row < int_num){
+        if(interact_table[interest_row][0] == 0                         &&
+           interact_table[interest_row][1] == population[row][1][agent] &&
+           interact_table[interest_row][2] == population[row][2][agent] &&
+           interact_table[interest_row][3] == population[row][3][agent]
+          ){
+               break;
+           }else{
+               interest_row++;
+        }
+    }
+    for(i = 0; i < int_num; i++){
+        count_change[i] += foc_effect * jaco[interest_row][i];
+    }
+    utilities[interest_row] = population[row][4][agent];
+}
+
+/* =============================================================================
+ * This function updates count change and utility arrays for direct actions on 
+ * resources
+ *     population: The population array of agents in the genetic algorithm
+ *     interact_table: The lookup table for figuring out how resources interact
+ *     int_num: The number of rows and cols in jac, and rows in the lookup
+ *     utilities: A vector of the utilities of each resource/landscape level
+ *     row: The row of the interaction and lookup table being examined
+ *     agent: The agent in the population whose fitness is being assessed
+ * ========================================================================== */
+void land_to_counts(double ***population, int **interact_table, int int_num,
+                    double *utilities, int row, int agent){
+    
+    int i, act_type, interest_row;
+    double foc_effect;
+    
+    interest_row = 0;
+    while(interest_row < int_num){
+        if(interact_table[interest_row][0] == 1     &&
+           interact_table[interest_row][1] == population[row][1][agent] &&
+           interact_table[interest_row][2] == population[row][2][agent] &&
+           interact_table[interest_row][3] == population[row][3][agent]
+          ){
+               break;
+           }else{
+               interest_row++;
+           }
+    }
+    utilities[interest_row] = population[row][4][agent];
+}
+
 /* =============================================================================
  * This is a preliminary function that checks the fitness of each agent by 
  * passing through a loop to payoffs_to_fitness
@@ -400,55 +478,16 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
             utilities[i]    = 0; /* Same for utilities */
         }
         for(row = 0; row < ROWS; row++){
-            foc_effect = 0;
             act_type   = (int) population[row][0][agent];
-            type1      = population[row][1][agent];
-            type2      = population[row][2][agent];
-            type3      = population[row][3][agent];
-            utility    = population[row][4][agent];
-            movem      = population[row][7][agent];
-            castem     = population[row][8][agent];
-            killem     = population[row][9][agent];
-            feedem     = population[row][10][agent];
-            helpem     = population[row][11][agent];
             switch(act_type){
                 case -2:
-                    foc_effect -= movem;  /* Times birth to account for repr? */
-                    foc_effect -= castem; /* But only remove E offspring? */
-                    foc_effect -= killem; /* But also remove E offspring? */
-                    foc_effect += feedem; /* But should less mortality */
-                    foc_effect += helpem; /* But should affect offspring? */
-                    interest_row = 0;
-                    while(interest_row < interest_num){
-                        if(interact_table[interest_row][0] == 0     &&
-                           interact_table[interest_row][1] == type1 &&
-                           interact_table[interest_row][2] == type2 &&
-                           interact_table[interest_row][3] == type3
-                        ){
-                            break;
-                        }else{
-                            interest_row++;
-                        }
-                    }
-                    for(i = 0; i < interest_num; i++){
-                        count_change[i] += foc_effect * jaco[interest_row][i];
-                    }
-                    utilities[interest_row] = utility;
+                    res_to_counts(population, interact_table, interest_num,
+                                  count_change, utilities, jaco, row, agent);
+                    break;
                 case -1:
-                    interest_row = 0;
-                    while(interest_row < interest_num){
-                        if(interact_table[interest_row][0] == 1     &&
-                           interact_table[interest_row][1] == type1 &&
-                           interact_table[interest_row][2] == type2 &&
-                           interact_table[interest_row][3] == type3
-                        ){
-                            break;
-                        }else{
-                            interest_row++;
-                        }
-                    }
-                    utilities[interest_row] = utility;
-                    break; /* Add landscape effects here */
+                    land_to_counts(population, interact_table, interest_num,
+                                   utilities, row, agent);
+                    break; 
                 default:
                     break;
             }
