@@ -413,12 +413,11 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
     count_change = malloc(interest_num * sizeof(int));
     utilities    = malloc(interest_num * sizeof(int));
     
-    for(i = 0; i < interest_num; i++){
-        count_change[i] = 0; /* Initialise all count changes at zero */
-        utilities[i]    = 0; /* Same for utilities */
-    }
-    
     for(agent = 0; agent < pop_size; agent++){
+        for(i = 0; i < interest_num; i++){
+            count_change[i] = 0; /* Initialise all count changes at zero */
+            utilities[i]    = 0; /* Same for utilities */
+        }
         for(row = 0; row < ROWS; row++){
             foc_effect = 0;
             act_type   = (int) population[row][0][agent];
@@ -448,17 +447,19 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
                         }else{
                             interest_row++;
                         }
-                    } /* Found the right row in the look-up table */
+                    } 
                     for(i = 0; i < interest_num; i++){
                         count_change[i] += foc_effect * jaco[interest_row][i];
                     }
                     utilities[interest_row] = utility;
+    
                 case -1:
                     break; /* Add landscape effects here */
                 default:
                     break;
             }
         }
+        
         fitnesses[agent] = 0;
         for(i = 0; i < interest_num; i++){
             fitnesses[agent] += count_change[i] * utilities[i];
@@ -466,6 +467,7 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
         
         /* The below will be removed -- once a minor bug is found */
         /* fitnesses[agent] = population[0][12][agent]; */
+        
     }
     
     
