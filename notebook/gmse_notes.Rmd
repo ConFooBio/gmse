@@ -83,6 +83,13 @@ I have begun to implement actions on the landscape as an option. For now, these 
 
 It will be helpful to link the appropriate element of the interaction array (Jacobian matrix) to the actions in the `landscape_actions` function in `user.c`. As of now, the amount of increase in crop yield (and decrease) is hard-coded in the function, but it really should be linked with the appropriate diagonal element in the interaction array -- increasing or decreasing a cell's value by the magnitude in the array element. 
 
+**More testing, success**
+
+More testing shows that the genetic algorithm and user function is working as intendend, and I have looped the genetic algorithm so that it is run for all simulated agents with now issues -- even when landscape dimensions or agent number changes. There are, however, some minor things that need to be tweaked.
+
+- The colours in the plot indicating land ownership (upper left panel) and individual stake-holder yield (lower right panel) do not match up when one or more agents do not own land. This is an easy fix, but it will take a bit of time to do it.
+- The order of user actions might be something to keep in mind -- as of now this simply loops, but it is possible now for one agent to kick resources off their land only to have those resources immiediately kicked back by their neighbour. At the very least, the order of agent actions (at least those of stake-holders) should probably be randomised.
+
 > <a name="u-20-APR-2017">Update: 20 APR 2017</a>
 
 The minor bug from yesterday has been resolved. The following bet of code needed to be *within* the larger loop that cycled through the population of agents in the genetic algorithm.
