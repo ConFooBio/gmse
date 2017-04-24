@@ -167,9 +167,10 @@ void resource_actions(double **resources, int row, double ***action, int agent,
  *     agent: The agent doing the acting (row and ID)
  *     land_x: The x dimension of the landscape
  *     land_y: The y dimension of the landscape
+ *     agentID: The ID of an agent (should be agent + 1)
  * ========================================================================== */
 void landscape_actions(double ***land, int row, double ***action, int agent, 
-                       int land_x, int land_y){
+                       int land_x, int land_y, int agentID){
     
     int resource, xloc, yloc, i;
     int util, u_loc, u_land;
@@ -198,7 +199,11 @@ void landscape_actions(double ***land, int row, double ***action, int agent,
                         xloc = 0;
                         yloc++;
                     }
-                }while(land[xloc][yloc][2] != agent);
+                    if(yloc == land_y){
+                        total_actions = 0;
+                        yloc = 0;
+                    }
+                }while(total_actions > 0 && land[xloc][yloc][2] != agentID);
                 break;
             default:
                 xloc++;
@@ -206,6 +211,9 @@ void landscape_actions(double ***land, int row, double ***action, int agent,
                     xloc = 0;
                     yloc++;
                 }
+        }
+        if(total_actions == 0){
+            break;
         }
         /* Act on the cell */
         while(actions[i] == 0){
@@ -237,7 +245,6 @@ void landscape_actions(double ***land, int row, double ***action, int agent,
     free(actions);
 }
 
-
 /* =============================================================================
  * This function causes the agents to actually do the actions
  *     landscape: The landscape array
@@ -249,23 +256,24 @@ void landscape_actions(double ***land, int row, double ***action, int agent,
  *     owner: The agent ID of interest -- also the landowner
  *     res_number: The number of rows in the resource array
  *     COLS: Number of columns in the COST and ACTION arrays
+ *     agentID: The ID of an agent (should be owner + 1)
  * ========================================================================== */
 void do_actions(double ***landscape, double **resources, int land_x, int land_y,
                 double ***action, int ROWS, int owner, int res_number,
-                int COLS){
+                int COLS, int agentID){
     
     int xpos, ypos, xloc, yloc;
     int row, col;
-    int agentID, type1, type2, type3, u_loc;
+    int act_type, type1, type2, type3, u_loc;
     int resource, cell, move;
     int *can_act, *on_land;
     
     for(row = 0; row < ROWS; row++){
-        agentID = action[row][0][owner];  /* Agent of interest (-2 = self) */
-        type1   = action[row][1][owner];  /* Resource type 1 */
-        type2   = action[row][2][owner];  /* Resource type 2 */
-        type3   = action[row][3][owner];  /* Resource type 3 */
-        u_loc   = action[row][5][owner];  /* Restricted to owned land? */
+        act_type = action[row][0][owner];  /* Agent of interest (-2 = self) */
+        type1    = action[row][1][owner];  /* Resource type 1 */
+        type2    = action[row][2][owner];  /* Resource type 2 */
+        type3    = action[row][3][owner];  /* Resource type 3 */
+        u_loc    = action[row][5][owner];  /* Restricted to owned land? */
 
         can_act = malloc(res_number * sizeof(int));
         is_correct_type(res_number, resources, type1, type2, type3, can_act);
@@ -279,13 +287,15 @@ void do_actions(double ***landscape, double **resources, int land_x, int land_y,
         free(on_land);
     }      
 
-    switch(agentID){
+    switch(act_type){
         case -2:
             resource_actions(resources, row, action, owner, can_act, res_number, 
                              land_x, land_y);
             break;
         case -1:
-            landscape_actions(landscape, row, action, owner, land_x, land_y);
+            landscape_actions(landscape, row, action, owner, land_x, land_y, 
+                              agentID);
+             
             break;
         default:
             break;
@@ -331,6 +341,7 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     int resource;            /* Index for resource (rows of RESOURCE) */
     int res_trait;           /* Index for resource traits (cols of RESOURCE) */
     int agent;               /* Index for agent in the array (rows) */
+    int agentID;             /* Index for the ID of an agent */
     int agent_trait;         /* Index for agent traits (cols of agent_array) */
     int res_number;          /* Number of resources included (default = 1) */
     int trait_number;        /* Number of traits included in the resource */
@@ -544,19 +555,21 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     
     send_agents_home(agent_array, land, land_x, land_y, agent_number, 2);
       
-    count_cell_yield(agent_array, land, land_x, land_y, agent_number, 1, 2, 15);    
     
-    /*------------------------------------------------------------------------*/
-    /* Temporary call to genetic algorithm below for ONE agent -- testing */
-    /*------------------------------------------------------------------------*/
-    ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
-       interact_table, paras, c_x, c_y, res_number, land_x, land_y, land_z, 
-       trait_number, jacobian_dim, 1);
-    /*------------------------------------------------------------------------*/
-
-    /* TODO: NEED TO TEST AND CONFIRM THAT RESOURCES ARE BEING CHANGED HERE */
-    do_actions(land, resource_array, land_x, land_y, actions, a_x, 1, 
-               res_number, a_y);
+    for(agent = 0; agent < agent_number; agent++){  
+      
+        agentID = agent_array[agent][0];
+      
+        ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
+           interact_table, paras, c_x, c_y, res_number, land_x, land_y, land_z, 
+           trait_number, jacobian_dim, agent);
+        
+        do_actions(land, resource_array, land_x, land_y, actions, a_x, agent, 
+                   res_number, a_y, agentID);
+    }
+    
+    
+    count_cell_yield(agent_array, land, land_x, land_y, agent_number, 1, 2, 15);
     
     /* This code switches from C back to R */
     /* ====================================================================== */        

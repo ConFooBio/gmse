@@ -80,8 +80,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                     cell_types  = 2,
                                     cell_val_mn = 1,
                                     cell_val_sd = 0,
-                                    ownership   = 1:2,
-                                    owner_pr    = c(0.5, 0.5)
+                                    ownership   = 1:3,
+                                    owner_pr    = c(0.5, 0.25, 0.25)
     );
     # Set the starting conditions for one resource
     starting_resources <- make_resource( model              = pop_model, 
@@ -96,8 +96,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     );
     # This will obviously need to be changed -- new function in initialise.R
     AGENTS   <- make_agents( model        = pop_model,
-                             agent_number = 2,
-                             type_counts  = c(1,1),
+                             agent_number = 3,
+                             type_counts  = c(1,2),
                              vision       = agent_view,
                              rows         = land_dim_1,
                              cols         = land_dim_2,
@@ -115,10 +115,12 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     COST[COST < 1] <- 1; # Need this until a proper make_cost function is made
     COST[,8,]      <- 1;
     COST[,1:7,]    <- 10000;
+    COST[,11:12,2:3] <- 1000;
     ACTION <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
     ACTION[1:2,5:7,] <- 1;
-    ACTION[2,5,2]    <- 100;
     ACTION[1,5,1]    <- 100;
+    ACTION[2,5,2]    <- 100;
+    ACTION[2,5,3]    <- 100;
     
     time       <- time + 1;  # Ready for the initial time step.
     cells      <- land_dim_1 * land_dim_2; # Number of cells in the landscape
@@ -559,8 +561,8 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras,
         mtext("Mean % Yield", side = 4, line = 2.4);
         # ------------ Panel 4 (lower right);
         par(mar=c(4,6,1,1));
-        cell_number <- dim(land3)[1] * dim(land3)[2]
-        max_yield   <- floor( cell_number / (dim(age_t)[1]) )
+        cell_number <- dim(land3)[1] * dim(land3)[2];
+        max_yield   <- cell_number; #floor( cell_number / (dim(age_t)[1]) )
         plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, max_yield),
              xlim=c(0,time_max), xlab="Time Step", ylab="Stake-holder yield",
              cex.lab=1.25);
