@@ -188,6 +188,10 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     ACTION_REC      <- NULL;
     
     while(time < time_max){
+        
+        AGENTS[1,5] <- sample(x = 1:ldx, size = 1); # Change this later?
+        AGENTS[1,6] <- sample(x = 1:ldy, size = 1);
+        
         RESOURCE_NEW      <- resource(resource   = RESOURCES,
                                       landscape  = LANDSCAPE_r,
                                       paras      = paras,

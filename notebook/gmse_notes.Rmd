@@ -89,6 +89,7 @@ More testing shows that the genetic algorithm and user function is working as in
 
 - The colours in the plot indicating land ownership (upper left panel) and individual stake-holder yield (lower right panel) do not match up when one or more agents do not own land. This is an easy fix, but it will take a bit of time to do it.
 - The order of user actions might be something to keep in mind -- as of now this simply loops, but it is possible now for one agent to kick resources off their land only to have those resources immiediately kicked back by their neighbour. At the very least, the order of agent actions (at least those of stake-holders) should probably be randomised.
+- The `observe_type = 0` still isn't plotting correctly. I'm not sure why this is, but it seems to produce underestimates of population abundance that are off consisently by half the `times_obs`. It will be a good idea to get this settled, finally.
 
 > <a name="u-20-APR-2017">Update: 20 APR 2017</a>
 
