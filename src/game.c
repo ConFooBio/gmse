@@ -264,8 +264,8 @@ void res_to_counts(double ***population, int **interact_table, int int_num,
     
     foc_effect  = 0.0;
     foc_effect -= population[row][7][agent];  /* Times birth account for repr?*/
-    foc_effect -= population[row][8][agent]; /* But only remove E offspring? */
-    foc_effect -= population[row][9][agent]; /* But also remove E offspring? */
+    foc_effect -= population[row][8][agent];  /* But only remove E offspring? */
+    foc_effect -= population[row][9][agent];  /* But also remove E offspring? */
     foc_effect += population[row][10][agent]; /* But should less mortality */
     foc_effect += population[row][11][agent]; /* But should affect offspring? */
     interest_row = 0;
@@ -297,11 +297,15 @@ void res_to_counts(double ***population, int **interact_table, int int_num,
  *     agent: The agent in the population whose fitness is being assessed
  * ========================================================================== */
 void land_to_counts(double ***population, int **interact_table, int int_num,
-                    double *utilities, int row, int agent){
+                    double *utilities, int row, int agent, double **jaco,
+                    double *count_change){
     
     int i, act_type, interest_row;
     double foc_effect;
     
+    foc_effect   = 0.0;
+    foc_effect  -= population[row][9][agent];  /* Kill the crop */
+    foc_effect  += population[row][10][agent]; /* Feed the crop */
     interest_row = 0;
     while(interest_row < int_num){
         if(interact_table[interest_row][0] == 1     &&
@@ -313,6 +317,9 @@ void land_to_counts(double ***population, int **interact_table, int int_num,
            }else{
                interest_row++;
            }
+    }
+    for(i = 0; i < int_num; i++){
+        count_change[i] += foc_effect * jaco[interest_row][i];
     }
     utilities[interest_row] = population[row][4][agent];
 }
@@ -356,7 +363,7 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
                     break;
                 case -1:
                     land_to_counts(population, interact_table, interest_num,
-                                   utilities, row, agent);
+                                   utilities, row, agent, jaco, count_change);
                     break; 
                 default:
                     break;
