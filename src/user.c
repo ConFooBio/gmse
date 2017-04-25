@@ -162,7 +162,7 @@ void resource_actions(double **resources, int row, double ***action, int agent,
 /* =============================================================================
  * This function enacts all user actions in a random order
  *     land: The landscape array
- *     row: The row of the action array (should be 0)
+ *     row: The row of the action array 
  *     action: The action array
  *     agent: The agent doing the acting (row and ID)
  *     land_x: The x dimension of the landscape
@@ -170,12 +170,12 @@ void resource_actions(double **resources, int row, double ***action, int agent,
  *     agentID: The ID of an agent (should be agent + 1)
  * ========================================================================== */
 void landscape_actions(double ***land, int row, double ***action, int agent, 
-                       int land_x, int land_y, int agentID){
+                       int land_x, int land_y, int agentID, double **jaco){
     
     int resource, xloc, yloc, i;
     int util, u_loc, u_land;
     int *actions, total_actions, action_col, sample;
-    
+
     actions       = malloc(5 * sizeof(int));
     total_actions = 0;
     for(i = 0; i < 5; i++){
@@ -231,7 +231,7 @@ void landscape_actions(double ***land, int row, double ***action, int agent,
                 actions[2]--;
                 break;
             case 3: /* Might need to multiply by effect in Jaco matrix */
-                land[xloc][yloc][1] += land[xloc][yloc][1] * 2;
+                land[xloc][yloc][1] += land[xloc][yloc][1] * jaco[row][row];
                 actions[3]--;
             case 4:
                 actions[4]--;
@@ -257,15 +257,19 @@ void landscape_actions(double ***land, int row, double ***action, int agent,
  *     res_number: The number of rows in the resource array
  *     COLS: Number of columns in the COST and ACTION arrays
  *     agentID: The ID of an agent (should be owner + 1)
+ *     jaco: The interaction matrix of how resources/landscape affect each other
+ *     interact_table: The look-up table to process the interaction matrix
+ *     interest_num: The dimensions n by n of jaco and rows in interact_table
  * ========================================================================== */
 void do_actions(double ***landscape, double **resources, int land_x, int land_y,
                 double ***action, int ROWS, int owner, int res_number,
-                int COLS, int agentID){
+                int COLS, int agentID, double **jaco, int **interact_table,
+                int interest_num){
     
     int xpos, ypos, xloc, yloc;
     int row, col;
     int act_type, type1, type2, type3, u_loc;
-    int resource, cell, move;
+    int resource, cell, move, land_action_num;
     int *can_act, *on_land;
     
     for(row = 0; row < ROWS; row++){
@@ -281,27 +285,25 @@ void do_actions(double ***landscape, double **resources, int land_x, int land_y,
         if(u_loc == 1){
             on_land = malloc(res_number * sizeof(int));
             is_on_owner_land(res_number, resources, owner, landscape, on_land);
-        for(resource = 0; resource < res_number; resource++){
-            can_act[resource] = can_act[resource] * on_land[resource];
+            for(resource = 0; resource < res_number; resource++){
+                can_act[resource] = can_act[resource] * on_land[resource];
+            }
+            free(on_land);
         }
-        free(on_land);
-    }      
 
-    switch(act_type){
-        case -2:
-            resource_actions(resources, row, action, owner, can_act, res_number, 
-                             land_x, land_y);
-            break;
-        case -1:
-            landscape_actions(landscape, row, action, owner, land_x, land_y, 
-                              agentID);
-             
-            break;
-        default:
-            break;
-    }
-
-    free(can_act);
+        switch(act_type){
+            case -2:
+                resource_actions(resources, row, action, owner, can_act, 
+                                 res_number, land_x, land_y);
+                break;
+            case -1:
+                landscape_actions(landscape, row, action, owner, land_x, land_y, 
+                                  agentID, jaco);
+                break;
+            default:
+                break;
+        }
+        free(can_act);
     }
 }
 
@@ -555,7 +557,6 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     
     send_agents_home(agent_array, land, land_x, land_y, agent_number, 2);
       
-    
     for(agent = 0; agent < agent_number; agent++){  
       
         agentID = agent_array[agent][0];
@@ -565,9 +566,9 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
            trait_number, jacobian_dim, agent);
         
         do_actions(land, resource_array, land_x, land_y, actions, a_x, agent, 
-                   res_number, a_y, agentID);
+                   res_number, a_y, agentID, Jacobian_mat, interact_table,
+                   jacobian_dim);
     }
-    
     
     count_cell_yield(agent_array, land, land_x, land_y, agent_number, 1, 2, 15);
     
