@@ -57,7 +57,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   ga_sampleK     = 5,     # Random sample size in ga tournament
                   ga_chooseK     = 2,     # Select from sample in ga tournament
                   ga_mutation    = 0.1,   # Mutation rate in genetic algorithm
-                  ga_crossover   = 0.1    # Crossover rate in genetic algorithm
+                  ga_crossover   = 0.1,   # Crossover rate in genetic algorithm
+                  move_agents    = TRUE   # Move agents once per time step
 ){
     
     if(observe_type == 1 & times_observe < 2){
@@ -149,6 +150,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     gac <- ga_chooseK;
     gmu <- ga_mutation;
     gcr <- ga_crossover;
+    mva <- move_agents;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -177,7 +179,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                gal,     # 24. The number of sample agents for tournament in ga
                gac,     # 25. The number of selected agents in a ga tournament
                gmu,     # 26. The mutation rate of loci in the genetic algorithm
-               gcr      # 27. The crossover rate in the genetic algorithm
+               gcr,     # 27. The crossover rate in the genetic algorithm
+               mva      # 28. Move agents once per time step
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
@@ -217,18 +220,19 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                          obs_method = obt,
                                          move_res   = rmo
         );
-        
+  
         # anecdotal is a bit useless right now, but included here anyway. 
-        AGENTS            <- anecdotal(resource   = RESOURCES,
-                                       landscape  = LANDSCAPE_r,
-                                       paras      = paras,
-                                       agent      = AGENTS,
-                                       res_type   = 1,
-                                       samp_age   = rma,
-                                       agent_type = -1,
-                                       type_cat   = 1
+        AGENTS            <- anecdotal(resource    = RESOURCES,
+                                       landscape   = LANDSCAPE_r,
+                                       paras       = paras,
+                                       agent       = AGENTS,
+                                       res_type    = 1,
+                                       samp_age    = rma,
+                                       agent_type  = -1,
+                                       type_cat    = 1,
+                                       move_agents = mva
         );
-        
+
         USERS <- user(resource   = RESOURCES,
                       agent      = AGENTS,
                       landscape  = LANDSCAPE_r, 

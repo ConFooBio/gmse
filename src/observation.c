@@ -597,7 +597,6 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     /* RESOURCE is now stored as resource_array (discrete resources) */
 
     /* Code below reads in the LANDSCAPE for easy of use */
-    /* Code below reads in the LANDSCAPE for easy of use */
     land_z = dim_LANDSCAPE[2];
     land_y = dim_LANDSCAPE[1];
     land_x = dim_LANDSCAPE[0];
@@ -892,8 +891,9 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     
     /* SOME STANDARD DECLARATIONS OF KEY VARIABLES AND POINTERS               */
     /* ====================================================================== */
-    int xloc;                /* Index of x location on the landscape */ 
+    int xloc, yloc;          /* Index of x & y location on the landscape */ 
     int land_x, land_y;      /* x and y maximum location given LANDSCAPE */
+    int land_z;              /* Number of layers in the landscape */
     int resource;            /* Index for resource (rows of RESOURCE) */
     int res_trait;           /* Index for resource traits (cols of RESOURCE) */
     int agent;               /* Index for agent in the array (rows) */
@@ -919,6 +919,8 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int seeit;               /* Index summing number of seen resources */
     int rec_col;             /* Agent col where seen resources are recorded */
     int a_check;             /* Check agent to see if they view (dynamic) */
+    int move_agents;         /* Do the agents move once */
+    int move_t;              /* Movement type of the agents */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
@@ -928,7 +930,7 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     double *agent_ptr;       /* Pointer to AGENT (interface R and C) */
     double *data_ptr;        /* Pointer to DATA (interface R and C) */
     double **resource_array; /* Array to store the old RESOURCE in C */
-    double **land;           /* Array to store the landscape in C*/
+    double ***land;          /* Array to store the landscape in C*/
     double **agent_array;    /* Array to store the agents in C */
 
     /* First take care of all the reading in of code from R to C */
@@ -976,12 +978,16 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     /* RESOURCE is now stored as resource_array (discrete resources) */
     
     /* Code below reads in the LANDSCAPE for easy of use */
+    land_z = dim_LANDSCAPE[2];
     land_y = dim_LANDSCAPE[1];
     land_x = dim_LANDSCAPE[0];
     land   = malloc(land_x * sizeof(double *));
     for(xloc = 0; xloc < land_x; xloc++){
-        land[xloc] = malloc(land_y * sizeof(double));   
-    } /* LANDSCAPE is now stored as land */
+        land[xloc] = malloc(land_y * sizeof(double *));
+        for(yloc = 0; yloc < land_y; yloc++){
+            land[xloc][yloc] = malloc(land_z * sizeof(double));   
+        }
+    } 
     
     /* Code below remakes the AGENT matrix for easier use */
     agent_number        = dim_AGENT[0];
@@ -1005,11 +1011,13 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     edge         = (int) paras[1];  /* What kind of edge is on the landscape  */ 
     a_type       = (int) paras[7];  /* What type of agent is observing        */
     res_type     = (int) paras[9];  /* What type of resources are observed    */
+    move_t       = (int) paras[14]; /* Type of movement being used            */
     by_type_r    = (int) paras[15]; /* Category (column) of res type loc      */
     min_age      = (int) paras[16]; /* Minimum age of resources viewed        */
     by_type_a    = (int) paras[17]; /* Category (column) of agent type loc    */
     rec_col      = (int) paras[18]; /* Column where viewed resources recorded */
     EucD         = (int) paras[20]; /* Do individuals view by Euclidean dist  */
+    move_agents  = (int) paras[28]; /* Do the agents move once?               */
     
     for(agent = 0; agent < agent_number; agent++){
         seeit    = 0;     /* Start with an agent not seeing anything */
@@ -1031,6 +1039,10 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
                                EucD);
                 agent_array[agent][rec_col] = seeit;
             }
+        }
+        if(move_agents == 1){
+            a_mover(agent_array, 4, 5, 6, edge, agent, land, land_x, land_y, 
+                    move_t);
         }
     }
     
@@ -1059,9 +1071,12 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     }
     free(agent_array);
     for(xloc = 0; xloc < land_x; xloc++){
+        for(yloc = 0; yloc < land_y; yloc++){
+            free(land[xloc][yloc]);   
+        }
         free(land[xloc]);        
     }
-    free(land);
+    free(land); 
     for(resource = 0; resource < res_number; resource++){
         free(resource_array[resource]);
     }
