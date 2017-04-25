@@ -77,9 +77,13 @@ library(rhandsontable)
 
 > <a name="u-25-APR-2017">Update: 25 APR 2017</a>
 
-**Resolved issue #18**
+**Resolved [issue #18](https://github.com/bradduthie/gmse/issues/18)**
 
 The landscape actions within the user model are now affected by the interaction matrix from the appropriate diagonal element. This effectively adjust the effect of a user's actions to increase a cell value by some magnitude. For example, if an agent wants to increase their crop yield they will not do so by the current cell yield plus one times whatever the appropriate element is in the interaction matrix (default could be one -- doubling yield). Initial testing shows that this works as intended; stake-holders interested in maximising crop yield do so reliably when they can increase yield on a cell twenty-fold; mean crop yield on the whole landscape increases in turn. When the increase is smaller (50%), then a range of strategies appears possible -- one stake-holder chose to kill resources while the other chose to directly increase yield (dependent on costs, which varied among stake-holders). Next, the plan is to address some of the minor clean-up tasks (bulleted list from [yesterday](#u-24-APR-2017)) before getting to the ultimate goal of allowing agents to affect one another's costs in the genetic algorithm.
+
+**Resolved [issue #11](https://github.com/bradduthie/gmse/issues/11)**
+
+I appear to have resolved [issue #11](https://github.com/bradduthie/gmse/issues/11) by calling the `a_mover` function in `observation.c` from within the `anecdotal` function. This gives the option to move agents when the R function `anecdotal` is called during a time step. Later I might also consider giving the option to specify moving agents onto land that they own; this would probably be best accomplished by calling `send_agents_home`, which is currently in `user.c`, but could be moved to `utilities.c`. Tests of `anecdotal` in R confirm that it is moving agents as expected.
 
 > <a name="u-24-APR-2017">Update: 24 APR 2017</a>
 
