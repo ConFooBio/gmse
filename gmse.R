@@ -311,7 +311,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                        land3  = LANDSCAPE_r[,,3],
                        agents = AGENT_REC,
                        paras  = paras, 
-                       view   = agent_view);
+                       view   = agent_view,
+                       times  = times_observe);
         }
         if(obt == 1){
             case01plot(res    = RESOURCE_REC, 
@@ -409,19 +410,22 @@ ind_to_land <- function(inds, landscape){
 ################################################################################
 # Density estimator
 ################################################################################
-dens_est <- function(observation = obs_t, view = view, land = land){
-    vision <- (2*view) + 1;
-    area   <- vision * vision;
-    cells  <- dim(land)[1] * dim(land)[2];
+dens_est <- function(observation = obs_t, view = view, land = land, times = 1){
+    vision  <- (2*view) + 1;
+    area    <- vision * vision;
+    cells   <- dim(land)[1] * dim(land)[2];
     if(area > cells){
         area <- cells;   
     }
-    prp    <- dim(observation)[1] / area;
-    est    <- prp * cells;
-    lcp    <- prp - 1.96 * sqrt((1/(vision*vision))*prp*(1-prp));
-    ucp    <- prp + 1.96 * sqrt((1/(vision*vision))*prp*(1-prp));
-    lci    <- cells * lcp
-    uci    <- cells * ucp;
+    area    <- area * times;
+    endrow  <- 15 + times;
+    tot_obs <- sum(observation[,16:endrow]);
+    prp     <- tot_obs / area;
+    est     <- prp * cells;
+    lcp     <- prp - 1.96 * sqrt((1/(vision*vision))*prp*(1-prp));
+    ucp     <- prp + 1.96 * sqrt((1/(vision*vision))*prp*(1-prp));
+    lci     <- cells * lcp
+    uci     <- cells * ucp;
     return(list(Nc=est, lci=lci, uci=uci));
 }
 
@@ -498,7 +502,7 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras){
 ## Plot this way when looking at view or mark-recapture sampling
 ####################################################################
 case01plot <- function(res, obs, land1, land2, land3, agents, paras, 
-                       view = NULL){
+                       view = NULL, times = 1){
     gens <- NULL;
     abun <- NULL;
     est  <- NULL;
@@ -552,7 +556,8 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras,
             uci      <- c(uci, analysis$uci);
         }
         if(!is.null(obs_t) & !is.null(view) & case == 0){
-            analysis <- dens_est(observation=obs_t, view=view, land=land1);
+            analysis <- dens_est(observation=obs_t, view=view, land=land1, 
+                                 times = times);
             est      <- c(est, analysis$Nc);
             lci      <- c(lci, analysis$lci);
             uci      <- c(uci, analysis$uci);
@@ -631,13 +636,13 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, agent_view){
 
 ################################################################################
 
-sim <- gmse( observe_type  = 1,
+sim <- gmse( observe_type  = 0,
              agent_view    = 20,
              res_death_K   = 400,
              plotting      = TRUE,
              hunt          = FALSE,
              start_hunting = 95,
-             fixed_observe = 10,
+             fixed_observe = 1,
              times_observe = 20,
              land_dim_1    = 100,
              land_dim_2    = 100,
