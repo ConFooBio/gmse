@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **APR** [26](#u-26-APR-2017), [25](#u-25-APR-2017), [24](#u-24-APR-2017), [20](#u-20-APR-2017), [19](#u-19-APR-2017), [18](#u-18-APR-2017), [17](#u-17-APR-2017), [13](#u-13-APR-2017), [12](#u-12-APR-2017), [11](#u-11-APR-2017), [10](#u-10-APR-2017), [7](#u-7-APR-2017), [6](#u-6-APR-2017), [5](#u-5-APR-2017)
+     - **APR** [28](#u-28-APR-2017), [26](#u-26-APR-2017), [25](#u-25-APR-2017), [24](#u-24-APR-2017), [20](#u-20-APR-2017), [19](#u-19-APR-2017), [18](#u-18-APR-2017), [17](#u-17-APR-2017), [13](#u-13-APR-2017), [12](#u-12-APR-2017), [11](#u-11-APR-2017), [10](#u-10-APR-2017), [7](#u-7-APR-2017), [6](#u-6-APR-2017), [5](#u-5-APR-2017)
      - **MAR** [23](#u-23-MAR-2017), [22](#u-22-MAR-2017), [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
      - **JAN** [31](#u-31-JAN-2017), [30](#u-30-JAN-2017), [29](#u-29-JAN-2017), [27](#u-27-JAN-2017), [26](#u-26-JAN-2017), [25](#u-25-JAN-2017), [24](#u-24-JAN-2017), [23](#u-23-JAN-2017), [22](#u-22-JAN-2017), [20](#u-20-JAN-2017), [19](#u-19-JAN-2017), [18](#u-18-JAN-2017), [17](#u-17-JAN-2017), [16](#u-16-JAN-2017), [15](#u-15-JAN-2017), [13](#u-13-JAN-2017), [11](#u-11-JAN-2017), [10](#u-10-JAN-2017)
@@ -74,6 +74,38 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-28-APR-2017">Update: 26 APR 2017</a>
+
+**Concrete plan for manager fitness function**
+
+The next step in the coding is to allow managers to generate policy by using their utilities to affect the costs of other agents. This will require that managers recognise how the actions of other agents will affect resources and the landscape, then adjust costs to encourage agents to act in a particular way. There are several things to keep in mind here.
+
+- Policy really should be universal; there should be a default setting, therefore, that constrains the manager to affect costs in the same way for all agents (this could be removed, or perhaps relaxed to allow the manager to treat different agent types differently). This could be something as simple as giving the manager ideal values for each action, then seeing if the total actions are above or below those values. Costs could then be adjusted accordingly, somehow linking cost value to an expected action (this might be a simple one to one, actually). 
+- The manager should have their own budget, but it probably shouldn't take too much cost to change policy -- at least not at first. THe `bankem` column could be used to suck up actions in the genetic algorithm if doing nothing is advantageous..
+- A problem could be if we want managers to be able to implement policy themselves and also set policy by adjusting other agent's costs. The issue here is that these two things wouldn't seem to interact cost-wise. That is, it doesn't seem like setting a policy against culling (by moving up the cost of `killem`) should stop managers from feeding resources on public land. Maybe it does, but it doesn't seem like it should have to be this way. 
+
+**Some solutions to account for the above**
+
+Given that the manager already has a special status in the rest of G-MSE, maybe it's not too much of a stretch to make their cost-adjusting actions apply to all non-managers by default by making all cost-adjusting rows in the `ACTION` array (on the manager's layer) equivalent. **Or, even better**, the first row, which corresponds to the manager's own costs (or any agent's *own* cost row, since the cost of adjusting their own cost doesn't really come into play -- or really make much sense), could simply define the cost of affecting **all** stake-holders cost values. 
+
+| agent | type1 | type2 | type3 | util | u_loc | u_land | movem  | castem | killem | feedem | helpem | bankem |
+|-------|-------|-------|-------|------|-------|--------|--------|--------|--------|--------|--------|--------|
+| -2    |  1    |  0    | 0     | 101  | 101   | 101    | 3      |  8     |  4     |  4     |  2     |  1     |
+| -2    |  2    |  0    | 0     | 101  | 101   | 101    | 4      |  3     |  6     |  2     |  3     |  1     |
+| -1    |  1    |  0    | 0     | 101  | 101   | 101    | 101    |  101   |  101   |  101   |  101   |  101   |
+|  1    |  1    |  0    | 0     | 101  | 101   | 101    | 101    |  101   |  101   |  101   |  101   |  101   |
+|  1    |  2    |  0    | 0     | 101  | 101   | 101    | 101    |  101   |  101   |  101   |  101   |  101   |
+|  2    |  1    |  0    | 0     | 101  | 101   | 101    | 101    |  101   |  101   |  101   |  101   |  101   |
+|  2    |  2    |  0    | 0     | 101  | 101   | 101    | 101    |  101   |  101   |  101   |  101   |  101   |
+|  3    |  1    |  0    | 0     | 101  | 101   | 101    | 101    |  101   |  101   |  101   |  101   |  101   |
+|  3    |  2    |  0    | 0     | 101  | 101   | 101    | 101    |  101   |  101   |  101   |  101   |  101   |
+
+Assume that the above `COST` array layer corresponds to the manager: `agent = 1`. In the above `COST` array, we have three agents (`agent = 1` is a manager, while `agent = 2` and `agent = 3` are stake-holders), two resource types, and one landscape layer. So in rows 4 and 5 above where the first column `agent = 1`, we have, essentially, costs of what it takes to affect the entire array of stake-holders actions (all layers where `agent = -2` or `agent = -1`) on a particular resource. This value can then be used to directly implement actions in the first two rows of all layers of the `ACTION` array. **Note** that the structure of the code does not allow managers to make policy on landscape use -- only resources, which might or might not have to be changed. What we're essentially saying with this is that a manager cannot tell a farmer to not kill or fertilise crops on the farmer's own land. Only resources are affected by manager policy (we could, of course, make crops resources -- though this would be a bit of a time consuming work around). We could find a way around this if need be, but I can't think of many situations in which we would want a manager to be able to tell a stake-holder that they can't increase their own crop yield or kill their crops.
+
+**Issue #19: Cost and Action arrays: landscape level initialisation**
+
+The number of landscape layers in the `COST` and `ACTION` arrays is too many -- the `utility_layer` adds one in for every unique resource instead of for every unique landscape layer. This is an easy fix by adding an option to the function to specify landscape layers.
 
 > <a name="u-26-APR-2017">Update: 26 APR 2017</a>
 
