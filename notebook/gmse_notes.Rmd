@@ -75,7 +75,7 @@ library(rhandsontable)
 <a name="updates">Project updates:</a>
 ================================================================================
 
-> <a name="u-28-APR-2017">Update: 26 APR 2017</a>
+> <a name="u-28-APR-2017">Update: 28 APR 2017</a>
 
 **Concrete plan for manager fitness function**
 
@@ -103,9 +103,21 @@ Given that the manager already has a special status in the rest of G-MSE, maybe 
 
 Assume that the above `COST` array layer corresponds to the manager: `agent = 1`. In the above `COST` array, we have three agents (`agent = 1` is a manager, while `agent = 2` and `agent = 3` are stake-holders), two resource types, and one landscape layer. So in rows 4 and 5 above where the first column `agent = 1`, we have, essentially, costs of what it takes to affect the entire array of stake-holders actions (all layers where `agent = -2` or `agent = -1`) on a particular resource. This value can then be used to directly implement actions in the first two rows of all layers of the `ACTION` array. **Note** that the structure of the code does not allow managers to make policy on landscape use -- only resources, which might or might not have to be changed. What we're essentially saying with this is that a manager cannot tell a farmer to not kill or fertilise crops on the farmer's own land. Only resources are affected by manager policy (we could, of course, make crops resources -- though this would be a bit of a time consuming work around). We could find a way around this if need be, but I can't think of many situations in which we would want a manager to be able to tell a stake-holder that they can't increase their own crop yield or kill their crops.
 
-**Issue #19: Cost and Action arrays: landscape level initialisation**
+**[Issue #19](https://github.com/bradduthie/gmse/issues/19): Cost and Action arrays: landscape level initialisation**
 
 The number of landscape layers in the `COST` and `ACTION` arrays is too many -- the `utility_layer` adds one in for every unique resource instead of for every unique landscape layer. This is an easy fix by adding an option to the function to specify landscape layers.
+
+**More concrete ideas**
+
+A general algorithm-sketch for the managers could be as follows in the *fitness function* of the genetic algorithm. **Note** that this will be called in the manager model, not the user model, so there isn't a worry about the stake-holders updating their actions at the wrong time -- their actions will be static while the manager is considering what to do.
+
+ 1. Identify the current abundances of all resources based on an analysis of the observation model.
+ 2. Identify the ideal abundances for management, identified from the agent's layer of the `ACTION` array, column `util`.
+ 3. Calculate the updated resource abundances predicted from the `ACTION` matrix of stake-holders (e.g., from all rows where `agent = -2`). Hence, resources will be decreased by some columns and increased by others based on the *past* actions of stake-holders. This *might or might not* also need to include resource abundance projections based on birth and death rates -- ideally this would be the case, with projections using estimates from the observation model, but maybe just use the abundances as a first step? *Note*, the 'projected' birth rate need not use the `RESOURCE` array explicitly, but could be estmated and applied from the history of observation -- in fact, this would probably be better.
+ 4. Apply new costs to all users -- have managers assume that higher costs means that actions will decrease proportionally, and lower costs will mean that actions will increase proportionally. It could potentially get more complex than this, but I don't think that it needs to at the moment; stake-holders will usually be wanting to maximise *something* rather than balancing between many things, and even if not, costs should still constrain their decisions in line with the direct that the manager is trying to push -- the point isn't to optimise decisions, but to replicate the common sense and expertise of a manager that does not have complete access to other stake-holders minds.
+ 5. Given the new actions, re-calculate updated resource abundances from 3 to assign fitness.
+ 
+The algorithm above should be fairly fast, and while it won't provide the *optimal* solution for managers, it isn't actually intended to do so. The point is to find an adaptive strategy based on the tools available to the manager and the limited information that the manager realistically has about resource abundacnes and stake-holder strategies. Following from the above, I dare say that the fitness function for stake-holders affecting manager's `util` might be not too difficult, but I'll need to think carefully about the best way to implement it.
 
 > <a name="u-26-APR-2017">Update: 26 APR 2017</a>
 
