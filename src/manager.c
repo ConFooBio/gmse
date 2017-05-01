@@ -272,8 +272,15 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     
     /* Do the biology here now */
     /* ====================================================================== */
-    
 
+    /* 1. Get summary statistics for resources from the observation array     */
+    /* 2. Place estimated resource abundances in a vector the size of int_d0  */
+    /* 3. Initialise new vector of size int_d0 with temp utilities of manager */  
+    /* 4. Subtract abundances from temp utilities to get marginal utilities   */
+    /* 5. Insert the marginal utilities into the agent = 1 col1 of ACTION     */
+    /* 6. Run the genetic algorithm (add extension to interpet cost effects)  */
+    /* 7. Put in place the new ACTION array from 6                            */
+    /* 8. Adjust the COST array appropriately from the new manager actions    */
     
     /* This code switches from C back to R */
     /* ====================================================================== */        

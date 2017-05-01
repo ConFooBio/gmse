@@ -110,6 +110,28 @@ To this, there are a few more other possible options that I can't, at the moment
 7. Stake-holders affect the costs of managers' actions (on resources or *other* stake-holders costs)
 8. Managers affecting stake-holder utilities
 
+**Framework for manager actions**
+
+The framework for manager actions in both R and C is now entirely built -- data structures can be read in and out, so now all that is left is to do the modelling. I've commented what will happen within `manager.c`; each of the numbers below might or might not represent uniqe sub-functions.
+
+```
+/* Do the biology here now */
+/* ====================================================================== */
+
+/* 1. Get summary statistics for resources from the observation array     */
+/* 2. Place estimated resource abundances in a vector the size of int_d0  */
+/* 3. Initialise new vector of size int_d0 with temp utilities of manager */  
+/* 4. Subtract abundances from temp utilities to get marginal utilities   */
+/* 5. Insert the marginal utilities into the agent = 1 col1 of ACTION     */
+/* 6. Run the genetic algorithm (add extension to interpet cost effects)  */
+/* 7. Put in place the new ACTION array from 6                            */
+/* 8. Adjust the COST array appropriately from the new manager actions    */
+
+/* This code switches from C back to R */
+/* ====================================================================== */        
+```
+
+With all of these in place, the end result should be a new `COST` array based on manager actions. It will be important to make sure that the *manager's* costs are defined appropriately so that the manager doesn't start doing actions themselves. This could actually be a bit of a problem; if we want the manager to do things themselves, then it's hard to see why they wouldn't just perform the actions instead of adjusting the costs. Then again, perhaps this is kind of the point? Maybe sufficiently high costs of actions and sufficiently low costs of *policy* adjustment should cause the genetic algorithm to naturally find policy as a better means of acheiving what the manager wants. In fact, this seems almost certain; if managers in the real world could achieve all policy aims single-handedly, then that's what they would probably be hired to do. In the real world, changing policy is more effective -- it's also possible that we could allow them to do their own direct actions to resources in the `user` model, like the stake-holders. Costs of setting policy could then be independent from costs of doing actions by changing manager `COST` between models.
 
 > <a name="u-28-APR-2017">Update: 28 APR 2017</a>
 
