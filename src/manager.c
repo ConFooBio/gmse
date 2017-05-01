@@ -1,5 +1,19 @@
 #include "game.h"
 
+
+/* =============================================================================
+ * This function uses the observation array to estimate resource abundances
+ *     obs_array:      The observation array
+ *     para:           A vector of parameters needed to handle the obs_array
+ *     interact_table: Lookup table to get all types of resource values
+ *     est_abund:      A vector of estimated abundances for each resource type
+ * ========================================================================== */
+void estimate_abundances(double **obs_array, double *para, int **interact_table,
+                         int *est_abund){
+    
+}
+
+
 /* =============================================================================
  * MAIN OBSERVATION FUNCTION:
  * ===========================================================================*/
