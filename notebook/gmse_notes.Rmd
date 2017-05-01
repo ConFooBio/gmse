@@ -87,6 +87,30 @@ There is a minor conceptual issue regarding the implementation of the genetic al
 
 I think that option 2 is actually a bit faster, and will probably be easier to implement in terms of coding.
 
+**Isolating effects of uncertainty**
+
+It is worth pointing out in passing that above option 2 offers a very straight-forward way of looking at uncertainty with respect to management decisions. When passing resource abundances to update temporary `util` values for managers, we could compare the estimates of abundances produced from the observation model to the *actual* abundances from the resource model. This could be a very simple option in the software, and **it might be useful to run the genetic algorithm twice for managers in each time step** to simulate side-by-side how decisions would be made in the presence and absence of uncertainty.
+
+**Initialising the manger model**
+
+To get the ball rolling on the manager function's implementation of the genetic algorithm, now is as good of a time as any to initialise `manager.R` and `manager.c`, since the arguments passed to `game.c` need to be coaxed into the right form via the manager model. It's important to keep in mind that **I still need to implement the lobbying option for stake-holders**, but I think that this will be easier once the manager's genetic algorithm is built. It's also notworthy that we're probably not going to need managers to adjust stake-holder's utilities. So really, in a pinch, their are three types of actions that are really going to be important, probably always.
+
+1. Stake-holders actions affect resoure and landscape properties (done)
+2. Stake-holders actions affect manager utilities
+3. Manager actions affect stake-holder costs of performing actions
+
+To this list of three essential types of actions, there are a few additional actions that would be good to have, ideally as fitting within the general framework of the model seemlessely, but if necessary could be add-ons for future development.
+
+4. Managers actions affect resource and landscape properties (effectively done)
+5. Stake-holders affect the costs of one another
+6. Stake-holders affect the utilities of one another
+
+To this, there are a few more other possible options that I can't, at the moment, see why anyone would want to model. I'm not entirely sure these are really sensical, actually.
+
+7. Stake-holders affect the costs of managers' actions (on resources or *other* stake-holders costs)
+8. Managers affecting stake-holder utilities
+
+
 > <a name="u-28-APR-2017">Update: 28 APR 2017</a>
 
 **Concrete plan for manager fitness function**
