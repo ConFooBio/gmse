@@ -87,6 +87,52 @@ There is a minor conceptual issue regarding the implementation of the genetic al
 
 I think that option 2 is actually a bit faster, and will probably be easier to implement in terms of coding.
 
+**Isolating effects of uncertainty**
+
+It is worth pointing out in passing that above option 2 offers a very straight-forward way of looking at uncertainty with respect to management decisions. When passing resource abundances to update temporary `util` values for managers, we could compare the estimates of abundances produced from the observation model to the *actual* abundances from the resource model. This could be a very simple option in the software, and **it might be useful to run the genetic algorithm twice for managers in each time step** to simulate side-by-side how decisions would be made in the presence and absence of uncertainty.
+
+**Initialising the manger model**
+
+To get the ball rolling on the manager function's implementation of the genetic algorithm, now is as good of a time as any to initialise `manager.R` and `manager.c`, since the arguments passed to `game.c` need to be coaxed into the right form via the manager model. It's important to keep in mind that **I still need to implement the lobbying option for stake-holders**, but I think that this will be easier once the manager's genetic algorithm is built. It's also notworthy that we're probably not going to need managers to adjust stake-holder's utilities. So really, in a pinch, their are three types of actions that are really going to be important, probably always.
+
+1. Stake-holders actions affect resoure and landscape properties (done)
+2. Stake-holders actions affect manager utilities
+3. Manager actions affect stake-holder costs of performing actions
+
+To this list of three essential types of actions, there are a few additional actions that would be good to have, ideally as fitting within the general framework of the model seemlessely, but if necessary could be add-ons for future development.
+
+4. Managers actions affect resource and landscape properties (effectively done)
+5. Stake-holders affect the costs of one another
+6. Stake-holders affect the utilities of one another
+
+To this, there are a few more other possible options that I can't, at the moment, see why anyone would want to model. I'm not entirely sure these are really sensical, actually.
+
+7. Stake-holders affect the costs of managers' actions (on resources or *other* stake-holders costs)
+8. Managers affecting stake-holder utilities
+
+**Framework for manager actions**
+
+The framework for manager actions in both R and C is now entirely built -- data structures can be read in and out, so now all that is left is to do the modelling. I've commented what will happen within `manager.c`; each of the numbers below might or might not represent uniqe sub-functions.
+
+```
+/* Do the biology here now */
+/* ====================================================================== */
+
+/* 1. Get summary statistics for resources from the observation array     */
+/* 2. Place estimated resource abundances in a vector the size of int_d0  */
+/* 3. Initialise new vector of size int_d0 with temp utilities of manager */  
+/* 4. Subtract abundances from temp utilities to get marginal utilities   */
+/* 5. Insert the marginal utilities into the agent = 1 col1 of ACTION     */
+/* 6. Run the genetic algorithm (add extension to interpet cost effects)  */
+/* 7. Put in place the new ACTION array from 6                            */
+/* 8. Adjust the COST array appropriately from the new manager actions    */
+
+/* This code switches from C back to R */
+/* ====================================================================== */        
+```
+
+With all of these in place, the end result should be a new `COST` array based on manager actions. It will be important to make sure that the *manager's* costs are defined appropriately so that the manager doesn't start doing actions themselves. This could actually be a bit of a problem; if we want the manager to do things themselves, then it's hard to see why they wouldn't just perform the actions instead of adjusting the costs. Then again, perhaps this is kind of the point? Maybe sufficiently high costs of actions and sufficiently low costs of *policy* adjustment should cause the genetic algorithm to naturally find policy as a better means of acheiving what the manager wants. In fact, this seems almost certain; if managers in the real world could achieve all policy aims single-handedly, then that's what they would probably be hired to do. In the real world, changing policy is more effective -- it's also possible that we could allow them to do their own direct actions to resources in the `user` model, like the stake-holders. Costs of setting policy could then be independent from costs of doing actions by changing manager `COST` between models.
+
 > <a name="u-28-APR-2017">Update: 28 APR 2017</a>
 
 **Concrete plan for manager fitness function**
