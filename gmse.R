@@ -68,7 +68,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     pop_model       <- "IBM";
     RESOURCE_ini    <- 100;
     movement        <- res_movement;
-    res_types_ini   <- 1;   
+    res_types_ini   <- 1;
     
     time            <- 0;
     
