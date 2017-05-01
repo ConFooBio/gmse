@@ -30,6 +30,7 @@ ga_sampleK     = 5;     # Random sample size in ga tournament
 ga_chooseK     = 2;     # Select from sample in ga tournament
 ga_mutation    = 0.1;   # Mutation rate in genetic algorithm
 ga_crossover   = 0.1;   # Crossover rate in genetic algorithm
+move_agents    = TRUE   # Move agents once per time step
 
 sim <- gmse( observe_type  = 0,
              agent_view    = 20,

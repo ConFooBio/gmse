@@ -11,6 +11,7 @@ setwd("~/Dropbox/projects/gmse");
 
 # Compiled using the following
 # R CMD SHLIB -o gmse.so resource.c observation.c user.c game.c utilities.c
+#   manager.c
 dyn.load('src/gmse.so') # Just keep this here for now.
 
 source("R/initialise.R");
@@ -19,6 +20,7 @@ source("R/resource.R");
 source("R/observation.R");
 source("R/user.R");
 source("R/anecdotal.R");
+source("R/manager.R");
 
 ################################################################################
 
@@ -220,6 +222,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                          obs_method = obt,
                                          move_res   = rmo
         );
+        OBSERVATION_r  <- OBSERVATION_NEW[[1]];
   
         # anecdotal is a bit useless right now, but included here anyway. 
         AGENTS            <- anecdotal(resource    = RESOURCES,
@@ -233,6 +236,18 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                        move_agents = mva
         );
 
+        MANAGER  <- manager(resource    = RESOURCES,
+                            agent       = AGENTS,
+                            landscape   = LANDSCAPE_r, 
+                            paras       = paras,
+                            cost        = COST,
+                            action      = ACTION,
+                            Jacobian    = Jacobian,
+                            inter_tabl  = interaction_tabl,
+                            observation = OBSERVATION_r,
+                            model       = "IBM"
+        );
+        
         USERS <- user(resource   = RESOURCES,
                       agent      = AGENTS,
                       landscape  = LANDSCAPE_r, 

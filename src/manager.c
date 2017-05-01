@@ -21,8 +21,9 @@
  *      INTERACT:    A table indexing types with rows of interaction array
  *      OBSERVATION: An array of the observations from the observation model
  * ===========================================================================*/
-SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
-          SEXP ACTION, SEXP JACOBIAN, SEXP INTERACT, SEXP OBSERVATION){
+SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, 
+             SEXP COST, SEXP ACTION, SEXP JACOBIAN, SEXP INTERACT, 
+             SEXP OBSERVATION){
  
     /* SOME STANDARD DECLARATIONS OF KEY VARIABLES AND POINTERS               */
     /* ====================================================================== */

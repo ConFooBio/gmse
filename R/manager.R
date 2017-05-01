@@ -16,15 +16,15 @@
 #'@return Data frames of user output at the end of the time step
 #'@export
 manager <- function(resource    = NULL,
-                 agent       = NULL,
-                 landscape   = NULL, 
-                 paras       = NULL,
-                 cost        = NULL,
-                 action      = NULL,
-                 Jacobian    = NULL,
-                 inter_tabl  = NULL,
-                 observation = NULL,
-                 model       = "IBM"
+                    agent       = NULL,
+                    landscape   = NULL, 
+                    paras       = NULL,
+                    cost        = NULL,
+                    action      = NULL,
+                    Jacobian    = NULL,
+                    inter_tabl  = NULL,
+                    observation = NULL,
+                    model       = "IBM"
 ) {
     check_model <- 0;
     if(model == "IBM"){
@@ -47,7 +47,7 @@ manager <- function(resource    = NULL,
         if(!is.array(Jacobian)){
             stop("Warning: Interaction matrix needs to be in an array");
         }
-        if(!is.array(inter_table)){
+        if(!is.array(inter_tabl)){
             stop("Warning: Look-up table for interactions needs to be array");
         }         
         # If all checks out, then run the manager model
@@ -75,5 +75,5 @@ manager <- function(resource    = NULL,
 run_manage <- function(RESOURCE_c, LANDSCAPE_c, PARAMETERS_c, AGENT_c, COST_c,
                        ACTION_c, JACOBIAN_c, INTERACT_c, OBSERVATION_c){
     .Call("manager", RESOURCE_c, LANDSCAPE_c, PARAMETERS_c, AGENT_c, COST_c,
-          ACTION_c, JACOBIAN_c, INTERACT_c, observation_C);
+          ACTION_c, JACOBIAN_c, INTERACT_c, OBSERVATION_c);
 }
