@@ -433,15 +433,15 @@ dens_est <- function(observation = obs_t, view = view, land = land, times = 1){
         area <- cells;   
     }
     area    <- area * times;
-    endrow  <- 15 + times;
-    tot_obs <- sum(observation[,16:endrow]);
+    endrow  <- 16 + times;
+    tot_obs <- sum(observation[,17:endrow]);
     prp     <- tot_obs / area;
     est     <- prp * cells;
     lcp     <- prp - 1.96 * sqrt((1/(vision*vision))*prp*(1-prp));
     ucp     <- prp + 1.96 * sqrt((1/(vision*vision))*prp*(1-prp));
     lci     <- cells * lcp
     uci     <- cells * ucp;
-    return(list(Nc=est, lci=lci, uci=uci));
+    return(list(Nc=est, lci=lci, uci=uci, test = tot_obs));
 }
 
 ###########################################################
