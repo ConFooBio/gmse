@@ -1,16 +1,128 @@
 #include "game.h"
 
 
+
+/* =============================================================================
+ * This function calculates density-based abundance estimates
+ *     obs_array:  The observation array
+ *     obs_rows:   Number of rows in the observation array obs_array
+ *     obs_cols:   Number of cols in the observation array obs_array
+ *     type1:      Resources of type 1 being observed
+ *     type2:      Resources of type 2 being observed
+ *     type3:      Resources of type 3 being observed
+ * ========================================================================== */
+int res_obs(double **obs_array, int obs_rows, int obs_cols, int type1, 
+            int type2, int type3){
+
+    int i, j, obs_count;
+    
+    obs_count = 0;
+ 
+    for(i = 0; i < obs_rows; i++){
+        if( (obs_array[i][1] == type1 || obs_array[i][1] < 0) &&
+            (obs_array[i][2] == type2 || obs_array[i][2] < 0) &&
+            (obs_array[i][3] == type3 || obs_array[i][3] < 0)
+        ){
+            for(j = 15; j < obs_cols; j++){
+                obs_count += obs_array[i][j];
+            }
+        }
+    }
+    printf("%d\t", obs_count);
+    return obs_count;
+}
+
+/* =============================================================================
+ * This function calculates density-based abundance estimates
+ *     obs_array:      The observation array
+ *     para:           A vector of parameters needed to handle the obs_array
+ *     agent_array:    Agent array, including managers (agent type 0)
+ *     agents:         Total number of agents (rows) in the agents array
+ *     obs_array_rows: Number of rows in the observation array obs_array
+ *     obs_array_cols: Number of cols in the observation array obs_array
+ *     abun_est:       Vector where abundance estimates for each type are placed
+ *     interact_table: Lookup table to get all types of resource values
+ *     int_table_rows: The number of rows in the interact_table
+ * ========================================================================== */
+void dens_est(double **obs_array, double *para, double **agent_array, 
+              int agents, int obs_array_rows, int obs_array_cols, 
+              double *abun_est, int **interact_table, int int_table_rows){
+ 
+    int i, j, resource;
+    int view, a_type, land_x, land_y, type1, type2, type3;
+    int vision, area, cells, times_obs, tot_obs;
+    double prop_obs, estimate;
+
+    a_type    = (int) para[7];  /* What type of agent does the observing  */
+    times_obs = (int) para[11];
+    land_x    = (int) para[12];
+    land_y    = (int) para[13];
+    
+    view = 0;
+    for(i = 0; i < agents; i++){
+        if(agent_array[i][1] == a_type){
+            view += agent_array[i][8];
+        }
+    }
+
+    vision  = (2 * view) + 1;
+    area    = vision * vision * times_obs;
+    cells   = land_x * land_y; /* Plus one needed for zero index */
+    tot_obs = 0;
+    
+    for(resource = 0; resource < int_table_rows; resource++){
+        abun_est[resource] = 0;
+        if(interact_table[resource][0] == 0){ /* Change when turn off type? */
+            type1   = interact_table[resource][1];
+            type2   = interact_table[resource][2];
+            type3   = interact_table[resource][3];
+            tot_obs = res_obs(obs_array, obs_array_rows, obs_array_cols, type1, 
+                              type2, type3);
+            prop_obs = (double) tot_obs / area;
+            estimate = prop_obs * cells;
+            
+            abun_est[resource] = estimate;
+        }
+    }
+}
+
+
 /* =============================================================================
  * This function uses the observation array to estimate resource abundances
  *     obs_array:      The observation array
  *     para:           A vector of parameters needed to handle the obs_array
  *     interact_table: Lookup table to get all types of resource values
- *     est_abund:      A vector of estimated abundances for each resource type
+ *     agent_array:    Agent array, including managers (agent type 0)
+ *     agents:         Total number of agents (rows) in the agents array
+ *     obs_x:          Number of rows in the observation array
+ *     obs_y:          Number of cols in the observation array
+ *     abun_est:       Vector where abundance estimates for each type are placed
+ *     int_table_rows: The number of rows in the interact_table
  * ========================================================================== */
 void estimate_abundances(double **obs_array, double *para, int **interact_table,
-                         int *est_abund){
+                         double **agent_array, int agents, int obs_x, int obs_y,
+                         double *abun_est, int int_table_rows){
     
+    int estimate_type, recaptures;
+    double abun;
+    
+    estimate_type = (int) para[8];
+
+    switch(estimate_type){
+        case 0:
+            dens_est(obs_array, para, agent_array, agents, obs_x, obs_y, 
+                     abun_est, interact_table, int_table_rows);
+            break;
+        case 1:
+            recaptures    = (int) para[10];
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+        default:
+            break;
+    }
 }
 
 
@@ -90,7 +202,8 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     double **agent_array;    /* Array to store the agents in C */
     double ***costs;         /* Array of the costs of user actions */
     double ***actions;       /* Array of user actions */
-    double **obs_array;      /* Array of observations from observation model */ 
+    double **obs_array;      /* Array of observations from observation model */
+    double *abun_est;        /* Vector used to estimate abundances */
 
     /* First take care of all the reading in of code from R to C */
     /* ====================================================================== */
@@ -287,6 +400,12 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     /* Do the biology here now */
     /* ====================================================================== */
 
+    abun_est = malloc(int_d0 * sizeof(double));
+    
+    estimate_abundances(obs_array, paras, interact_table, agent_array,
+                        agent_number, obs_d0, obs_d1, abun_est, int_d0);
+    
+    
     /* 1. Get summary statistics for resources from the observation array     */
     /* 2. Place estimated resource abundances in a vector the size of int_d0  */
     /* 3. Initialise new vector of size int_d0 with temp utilities of manager */  
@@ -295,6 +414,8 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     /* 6. Run the genetic algorithm (add extension to interpet cost effects)  */
     /* 7. Put in place the new ACTION array from 6                            */
     /* 8. Adjust the COST array appropriately from the new manager actions    */
+
+    free(abun_est);
     
     /* This code switches from C back to R */
     /* ====================================================================== */        
