@@ -88,6 +88,146 @@ To fix this, it shouldn't be much more than a simple removal of specifying `res_
 
 Originally, I had the idea to use the global vector `para` as a way of storing information easily and using it across all of the models. The vector `para` would store key information about pretty much everything, then be dynamically updated as need be from higher level functions in the model. In the last two months of coding, I have been specifying parameter names in functions explicitly, which has made sense during the coding process for my own writing, but it will be beneficial to clean all of this up later by reading `para` into these sub-functions that otherwise have sometimes about a dozen arguments. Most functions would then have considerably fewer arguments, and the **description** of variables stored as vector elements in `para` could be immediately defined within sub-functions and used by name thereafter. The whole program would then have a similar feel of reading in key arrays and vectors and then specifying the key variables within sub-functions.
 
+**1. Get summary statistics for resources from the observation array**
+
+I have now written the functions for `case 0` (density-based estimation) getting abundance estimates from the `observation` array, as outlined [yesterday](#u-1-MAY-2017). This took slightly longer than anticipated because it turns out that there was a minor error in R's estimation of abundances due to an incorrect column being summed. I had to figure out why C and R did not agree on the same abundance estimates; they now do (i.e., both independent codings to get the same estimate from the same observation array). I now need to do the other three types of observation and get abundance estimates from it. In the highest level function for this part of the manager model, the `estimate_abundances` function is called.
+
+```
+/* =============================================================================
+ * This function uses the observation array to estimate resource abundances
+ *     obs_array:      The observation array
+ *     para:           A vector of parameters needed to handle the obs_array
+ *     interact_table: Lookup table to get all types of resource values
+ *     agent_array:    Agent array, including managers (agent type 0)
+ *     agents:         Total number of agents (rows) in the agents array
+ *     obs_x:          Number of rows in the observation array
+ *     obs_y:          Number of cols in the observation array
+ *     abun_est:       Vector where abundance estimates for each type are placed
+ *     int_table_rows: The number of rows in the interact_table
+ * ========================================================================== */
+void estimate_abundances(double **obs_array, double *para, int **interact_table,
+                         double **agent_array, int agents, int obs_x, int obs_y,
+                         double *abun_est, int int_table_rows){
+    
+    int estimate_type, recaptures;
+    double abun;
+    
+    estimate_type = (int) para[8];
+
+    switch(estimate_type){
+        case 0:
+            dens_est(obs_array, para, agent_array, agents, obs_x, obs_y, 
+                     abun_est, interact_table, int_table_rows);
+            break;
+        case 1:
+            recaptures    = (int) para[10];
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+        default:
+            break;
+    }
+}
+```
+
+The above function will call subfunctions based on estimate type (0 to 3). Now only the density function `dens_est` has been written and tested.
+
+```
+/* =============================================================================
+ * This function calculates density-based abundance estimates
+ *     obs_array:      The observation array
+ *     para:           A vector of parameters needed to handle the obs_array
+ *     agent_array:    Agent array, including managers (agent type 0)
+ *     agents:         Total number of agents (rows) in the agents array
+ *     obs_array_rows: Number of rows in the observation array obs_array
+ *     obs_array_cols: Number of cols in the observation array obs_array
+ *     abun_est:       Vector where abundance estimates for each type are placed
+ *     interact_table: Lookup table to get all types of resource values
+ *     int_table_rows: The number of rows in the interact_table
+ * ========================================================================== */
+void dens_est(double **obs_array, double *para, double **agent_array, 
+              int agents, int obs_array_rows, int obs_array_cols, 
+              double *abun_est, int **interact_table, int int_table_rows){
+ 
+    int i, j, resource;
+    int view, a_type, land_x, land_y, type1, type2, type3;
+    int vision, area, cells, times_obs, tot_obs;
+    double prop_obs, estimate;
+
+    a_type    = (int) para[7];  /* What type of agent does the observing  */
+    times_obs = (int) para[11];
+    land_x    = (int) para[12];
+    land_y    = (int) para[13];
+    
+    view = 0;
+    for(i = 0; i < agents; i++){
+        if(agent_array[i][1] == a_type){
+            view += agent_array[i][8];
+        }
+    }
+
+    vision  = (2 * view) + 1;
+    area    = vision * vision * times_obs;
+    cells   = land_x * land_y; /* Plus one needed for zero index */
+    tot_obs = 0;
+    
+    for(resource = 0; resource < int_table_rows; resource++){
+        abun_est[resource] = 0;
+        if(interact_table[resource][0] == 0){ /* Change when turn off type? */
+            type1   = interact_table[resource][1];
+            type2   = interact_table[resource][2];
+            type3   = interact_table[resource][3];
+            tot_obs = res_obs(obs_array, obs_array_rows, obs_array_cols, type1, 
+                              type2, type3);
+            prop_obs = (double) tot_obs / area;
+            estimate = prop_obs * cells;
+            
+            abun_est[resource] = estimate;
+        }
+    }
+}
+```
+
+The `dens_est` function above calls the `res_obs` function, which returns the number of observations for a specific resource type.
+
+```
+/* =============================================================================
+ * This function calculates density-based abundance estimates
+ *     obs_array:  The observation array
+ *     obs_rows:   Number of rows in the observation array obs_array
+ *     obs_cols:   Number of cols in the observation array obs_array
+ *     type1:      Resources of type 1 being observed
+ *     type2:      Resources of type 2 being observed
+ *     type3:      Resources of type 3 being observed
+ * ========================================================================== */
+int res_obs(double **obs_array, int obs_rows, int obs_cols, int type1, 
+            int type2, int type3){
+
+    int i, j, obs_count;
+    
+    obs_count = 0;
+ 
+    for(i = 0; i < obs_rows; i++){
+        if( (obs_array[i][1] == type1 || obs_array[i][1] < 0) &&
+            (obs_array[i][2] == type2 || obs_array[i][2] < 0) &&
+            (obs_array[i][3] == type3 || obs_array[i][3] < 0)
+        ){
+            for(j = 15; j < obs_cols; j++){
+                obs_count += obs_array[i][j];
+            }
+        }
+    }
+    return obs_count;
+}
+```
+
+The point of the above break-down, aside from making things more readable, is that we might want to get abundance estimates for each resource type -- at least have G-MSE produce them even if we pretend that managers cannot see them. When [Issue: #20](https://github.com/bradduthie/gmse/issues/20) is resolved, all resources will then be estimated. **NOTE: This could be an issue because if a fixed number of resource types are sampled, as with mark-recapture, then it could sample *different* resources. It might be best to change mark-recapture so that it takes a `fixed_obs` for each unique resource type, somehow.** The point is that it's easier and more computationally efficient to ignore some data (and not allow managers to notice it) than it is to have to run `observation` multiple times to re-collect using the same protocol.
+
+Eventually, I also want the `obs_array[i][1, 2, or 3]` to be able to take -1 as a value in here somehow -- basically, I want the counts to be taken to *ignore one of a resource's type*. For example, we could imagine wanting to have separate sexes indicated by `type2 = 0` or `type2 = 1` in column 2 of the `obs_array`, but perhaps not want managers to actually *use* this when estimating abundance (alternatively -- could combine observations later).
+
+
 > <a name="u-1-MAY-2017">Update: 1 MAY 2017</a>
 
 **Manager function to genetic algorithm link**
