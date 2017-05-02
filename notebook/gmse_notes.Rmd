@@ -84,6 +84,10 @@ Currently, the observation model only records resources into the observation arr
 
 To fix this, it shouldn't be much more than a simple removal of specifying `res_type` values in `observation.c`. When there is only one resource type, all calculations should proceed normally, but when more resources are introduced, an `if` is needed for both management and plotting (different groups of resources could even be made, ignoring subdivisions, by skipping the `if` if the type specified to look at equals `-1`.
 
+**[Issue: #21](https://github.com/bradduthie/gmse/issues/21) Improve code readability using `para`**
+
+Originally, I had the idea to use the global vector `para` as a way of storing information easily and using it across all of the models. The vector `para` would store key information about pretty much everything, then be dynamically updated as need be from higher level functions in the model. In the last two months of coding, I have been specifying parameter names in functions explicitly, which has made sense during the coding process for my own writing, but it will be beneficial to clean all of this up later by reading `para` into these sub-functions that otherwise have sometimes about a dozen arguments. Most functions would then have considerably fewer arguments, and the **description** of variables stored as vector elements in `para` could be immediately defined within sub-functions and used by name thereafter. The whole program would then have a similar feel of reading in key arrays and vectors and then specifying the key variables within sub-functions.
+
 > <a name="u-1-MAY-2017">Update: 1 MAY 2017</a>
 
 **Manager function to genetic algorithm link**
