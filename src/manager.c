@@ -1,7 +1,5 @@
 #include "game.h"
 
-
-
 /* =============================================================================
  * This function calculates density-based abundance estimates
  *     obs_array:  The observation array
@@ -28,7 +26,6 @@ int res_obs(double **obs_array, int obs_rows, int obs_cols, int type1,
             }
         }
     }
-    printf("%d\t", obs_count);
     return obs_count;
 }
 
