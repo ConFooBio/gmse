@@ -305,8 +305,7 @@ void field_work(double **resource_array, double **agent_array, double *paras,
     switch(find_proc){
         case 0: /* Mark all individuals within view */
             for(resource = 0; resource < res_rows; resource++){
-                if(resource_array[resource][1]  == res_type && 
-                   resource_array[resource][11] >= min_age){
+                if(resource_array[resource][11] >= min_age){
                     r_x   = resource_array[resource][4];
                     r_y   = resource_array[resource][5];
                     seeme = binos(xloc, yloc, r_x, r_y, edge, view, ldx, ldy, 
@@ -364,8 +363,7 @@ void field_work(double **resource_array, double **agent_array, double *paras,
         default:
             printf("Error setting observation type: using vision-based CMR");
             for(resource = 0; resource < res_rows; resource++){
-                if(resource_array[resource][1]  == res_type && 
-                   resource_array[resource][11] >= min_age){
+                if(resource_array[resource][11] >= min_age){
                     r_x = resource_array[resource][4];
                     r_y = resource_array[resource][5];
                     seeme = binos(xloc, yloc, r_x, r_y, edge, view, ldx, ldy,
@@ -450,7 +448,7 @@ void mark_res(double **resource_array, double **agent_array, double ***land,
  *     Accumlated markings of resources within a given area of landscape
  * ========================================================================== */
 void transect(double **resource_array, double *paras, int start_x, int start_y, 
-              int end_x, int end_y, int res_rows, int res_type, int obs_iter){
+              int end_x, int end_y, int res_rows, int obs_iter){
     
     int resource;
     int agent;
@@ -459,8 +457,7 @@ void transect(double **resource_array, double *paras, int start_x, int start_y,
     min_age = paras[16];
 
     for(resource = 0; resource < res_rows; resource++){
-        if(resource_array[resource][1]  == res_type  && 
-           resource_array[resource][11] >= min_age   &&
+        if(resource_array[resource][11] >= min_age   &&
            resource_array[resource][4]  >= start_x   &&
            resource_array[resource][4]  <  end_x     &&
            resource_array[resource][5]  >= start_y   &&
@@ -704,7 +701,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
             ty1          = transect_len;
             while(ty0 < land_y){
                 transect(resource_array, paras, tx0, ty0, tx1, ty1, res_number, 
-                         res_type, obs_iter);
+                         obs_iter);
                 obs_iter++;
                 ty0 =  ty1;
                 ty1 += transect_len + 1;
@@ -735,7 +732,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
             ty1          = transect_len;
             while(tx0 < land_x && ty0 < land_y){
                 transect(resource_array, paras, tx0, ty0, tx1, ty1, res_number, 
-                         res_type, obs_iter);
+                         obs_iter);
                 obs_iter++;
                 tx0 =  tx1;
                 tx1 += transect_len;
