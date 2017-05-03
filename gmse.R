@@ -213,7 +213,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                          landscape  = LANDSCAPE_r,
                                          paras      = paras,
                                          agent      = AGENTS,
-                                         res_type   = 1, # Resource(s) observed
+                                         inter_tabl = interaction_tabl,
                                          fix_mark   = fxo,
                                          times      = tmo,
                                          samp_age   = rma,
@@ -651,18 +651,19 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, agent_view){
 
 ################################################################################
 
-sim <- gmse( observe_type  = 0,
+sim <- gmse( observe_type  = 1,
              agent_view    = 20,
              res_death_K   = 400,
              plotting      = TRUE,
              hunt          = FALSE,
              start_hunting = 95,
-             fixed_observe = 1,
+             fixed_observe = 10,
              times_observe = 20,
              land_dim_1    = 100,
              land_dim_2    = 100,
              res_consume   = 0.5,
-             time_max      = 100
+             time_max      = 100,
+             res_move_obs  = TRUE
 );
 
 ################################################################################

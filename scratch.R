@@ -13,8 +13,8 @@ res_move_type  = 2;     # What type of movement for resources
 res_birth_type = 2;     # What type of birth for resources
 res_death_type = 2;     # What type of death for resources
 observe_type   = 0;     # Type of observation used
-fixed_observe  = 1;     # How many obs (if type = 1)
-times_observe  = 1;     # How many times obs (if type = 0)
+fixed_observe  = 10;    # How many obs (if type = 1)
+times_observe  = 20;    # How many times obs (if type = 0)
 obs_move_type  = 1;     # Type of movement for agents
 res_min_age    = 1;     # Minimum age recorded and observed
 res_move_obs   = TRUE;  # Move resources while observing
@@ -31,13 +31,3 @@ ga_chooseK     = 2;     # Select from sample in ga tournament
 ga_mutation    = 0.1;   # Mutation rate in genetic algorithm
 ga_crossover   = 0.1;   # Crossover rate in genetic algorithm
 move_agents    = TRUE   # Move agents once per time step
-
-sim <- gmse( observe_type  = 0,
-             agent_view    = 20,
-             res_death_K   = 400,
-             plotting      = TRUE,
-             hunt          = FALSE,
-             start_hunting = 95
-);
-
-
