@@ -494,7 +494,6 @@ void sample_fixed_res(double **resource_array, double **agent_array,
     edge_type    = (int) paras[1];
     move_type    = (int) paras[2];
     fixed_sample = (int) paras[10];
-    times_obs    = (int) paras[11];
     land_x       = (int) paras[12];
     land_y       = (int) paras[13];
     by_type      = (int) paras[17];
@@ -506,10 +505,12 @@ void sample_fixed_res(double **resource_array, double **agent_array,
         fixed_sample = 1;
     }
     
-    obs_iter = trait_number + 1; 
-    
+
     for(row = 0; row < lookup_rows; row++){
         if(lookup[row][0] == 0){
+            obs_iter     = trait_number + 1; 
+            times_obs    = (int) paras[11];
+            
             type1 = lookup[row][1];    
             type2 = lookup[row][2];
             type3 = lookup[row][3];
@@ -677,7 +678,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     dim_RESOURCE   = INTEGER( GET_DIM(RESOURCE)  );
     dim_LANDSCAPE  = INTEGER( GET_DIM(LANDSCAPE) );
     dim_AGENT      = INTEGER( GET_DIM(AGENT) );
-    dim_INTERACT    = INTEGER( GET_DIM(INTERACT) );
+    dim_INTERACT   = INTEGER( GET_DIM(INTERACT) );
 
     /* The C code for the model itself falls under here */
     /* ====================================================================== */

@@ -7,6 +7,7 @@
 #'@param landscape Data frame at the start of the time step
 #'@param paras Vector of parameter values to read into the model
 #'@param agent Agent data frame at the start of the time step
+#'@param inter_table Interaction table indexing types with Jacobian matrix
 #'@param types The types of data being observed
 #'@param fix_mark Fixed number of individuals marked? (A number, or FALSE)
 #'@param times Number of times that the observations are made
@@ -22,7 +23,7 @@ observation <- function(resource   = NULL,
                         landscape  = NULL, 
                         paras      = NULL, 
                         agent      = NULL,
-                        res_type   = 1,
+                        inter_tabl = NULL,
                         fix_mark   = FALSE,
                         times      = 1,
                         samp_age   = 1,
@@ -52,7 +53,6 @@ observation <- function(resource   = NULL,
         # If all checks out, first put the type into paras for easier input
         paras[8]  <- agent_type;
         paras[9]  <- obs_method;
-        paras[10] <- res_type;
         paras[11] <- as.numeric(fix_mark); # Note: 'FALSE' coerced to zero
         paras[12] <- times;
         paras[17] <- samp_age;
@@ -65,7 +65,8 @@ observation <- function(resource   = NULL,
         OBSERVE_OUT  <- run_observation_a( RESOURCE_c   = resource,
                                            LANDSCAPE_c  = landscape,
                                            PARAMETERS_c = paras,
-                                           AGENT_c      = agent
+                                           AGENT_c      = agent,
+                                           INTERACT_c   = inter_tabl
                                            );
         check_model <- 1;
     }
@@ -75,6 +76,8 @@ observation <- function(resource   = NULL,
     return(OBSERVE_OUT);
 }
 
-run_observation_a <- function(RESOURCE_c, LANDSCAPE_c, PARAMETERS_c, AGENT_c){
-    .Call("observation", RESOURCE_c, LANDSCAPE_c, PARAMETERS_c, AGENT_c);
+run_observation_a <- function(RESOURCE_c, LANDSCAPE_c, PARAMETERS_c, AGENT_c,
+                              INTERACT_c){
+    .Call("observation", RESOURCE_c, LANDSCAPE_c, PARAMETERS_c, AGENT_c, 
+          INTERACT_c);
 }
