@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
  
-     - **MAY** [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
+     - **MAY** [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
      - **APR** [28](#u-28-APR-2017), [26](#u-26-APR-2017), [25](#u-25-APR-2017), [24](#u-24-APR-2017), [20](#u-20-APR-2017), [19](#u-19-APR-2017), [18](#u-18-APR-2017), [17](#u-17-APR-2017), [13](#u-13-APR-2017), [12](#u-12-APR-2017), [11](#u-11-APR-2017), [10](#u-10-APR-2017), [7](#u-7-APR-2017), [6](#u-6-APR-2017), [5](#u-5-APR-2017)
      - **MAR** [23](#u-23-MAR-2017), [22](#u-22-MAR-2017), [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
@@ -75,6 +75,315 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-3-MAY-2017">Update: 3 MAY 2017</a>
+
+**Resolved [Issue: #20](https://github.com/bradduthie/gmse/issues/20)**
+
+[Issue: #20](https://github.com/bradduthie/gmse/issues/20) has now been resolved. The `res_type` has now been removed from the observation model, and observations simply occur for all unique resource types -- if some are not needed, then they are not analysed. Doing this required very little modification for transect type sampling (`case 2` and `case 3`), but considerably more for density base sampling (`case 0`) and especially mark and recapture (`case 1`). In these cases, I decided to split the sampling functions up more clearly. Testing revealed some initial errors, but these were ironed out and fixed. Currently, the correct `OBSERVATION` array is returned, although this array is not analysed correctly when plotting in R for more than one resource (the code for this has not yet be written).  
+
+**NOTE: there is no code written to ignore subdivisions yet. I'm not sure whether or not we'll actually want this, but the option could simply be something placed in `para` and checked in the subfunctions in `observation.c`**
+
+**Major changes to `observation.c`**
+
+In resolving [Issue: #20](https://github.com/bradduthie/gmse/issues/20), I have re-worked the code in `observation.c` to be more readable. instead of the `switch(methods)` in the main observation function calling density based estimation or mark-recapture, but *both* of these functions, confusingly, calling the same `mark_res` sub-function, I now have  `mark_res` being called for density based estimation. Hence, each method of observation has its own (considerably smaller) sub-function, each of which calls another sub-function. For example, with density-based estimation, we have the following function called `times_obs` times.
+
+```
+/* =============================================================================
+ * Density method of estimation
+ * ===========================================================================*/
+/* =============================================================================
+ * This simulates the capture-mark-recapture of a resource type
+ * Inputs include:
+ *     resource_array: data frame of resources to be marked and/or recaptured
+ *     agent_array: data frame of agents, potentially doing the marking
+ *     land: The landscape on which interactions occur
+ *     paras: vector of parameter values
+ *     res_rows: Total number of resources that can be sampled
+ *     a_row: Total number agents that could possibly sample
+ *     obs_col: The number of columns in the observational array
+ *     a_type: The type of agent that is doing the marking
+ *     by_type: The type column that is being used
+ *     find_type: The type of finding that observers do (view-based or rand)
+ * Output:
+ *     Accumlated markings of resources by agents
+ * ========================================================================== */
+void mark_res(double **resource_array, double **agent_array, double ***land,
+              double *paras, int res_rows, int a_row, int obs_col, int a_type, 
+              int by_type, int find_type){
+    
+    int resource;
+    int agent;
+    int count;
+    int edge;        /* How does edge work? (Effects agent vision & movement) */
+    int samp_res;    /* A randomly sampled resource */
+    int ldx, ldy;
+    int move_t;
+    int sample_num;   /* Times resources observed during one time step */
+
+    edge       = (int) paras[1];  /* What type of edge is on the landscape */
+    sample_num = (int) paras[11];
+    ldx        = (int) paras[12]; /* dimensions of landscape -- x and y */
+    ldy        = (int) paras[13];
+    move_t     = (int) paras[14]; /* Type of movement being used  */
+
+    for(agent = 0; agent < a_row; agent++){
+        if(agent_array[agent][by_type] == a_type){ 
+            mark_in_view(resource_array, agent_array, paras, res_rows, agent, 
+                         find_type, obs_col);
+        }
+        if(sample_num > 1){
+            a_mover(agent_array, 4, 5, 6, edge, agent, land, ldx, ldy, move_t);
+        }
+    }
+}
+```
+
+The above function calls `mark_in_view`, which marks all resources in the agent's view (regardless of type, which will get sorted out later).
+
+```
+/* =============================================================================
+ * This simulates an individual agent doing some field work (observing)
+ * Inputs include:
+ *     resource_array: data frame of resources to be marked and/or recaptured
+ *     agent_array: data frame of agents, potentially doing the marking
+ *     paras: vector of parameter values
+ *     res_rows: Total number of rows in the res_adding data frame
+ *     worker: The row of the agent that is doing the working
+ *     find_proc: The procedure used for finding and marking resources
+ *     res_type: The type of resources being marked
+ *     obs_col: The number of columns in the observation array
+ * Output:
+ *     The resource_array is marked by a particular agent
+ * ========================================================================== */
+void mark_in_view(double **resource_array, double **agent_array, double *paras,
+                  int res_rows, int worker, int find_proc, int obs_col){
+
+    int xloc;         /* x location of the agent doing work */
+    int yloc;         /* y location of the agent doing work */
+    int view;         /* The 'view' (sampling range) around agent's location */
+    int edge;         /* What type of edge is being used in the simulation */
+    int resource;     /* Index for resource array */
+    int r_x;          /* x location of a resource */
+    int r_y;          /* y location of a resource */
+    int seeme;        /* Test if observer sees/captures the resource */
+    int ldx;          /* Landscape dimension on the x-axis */
+    int ldy;          /* Landscape dimension on the y-axis */
+    int EucD;         /* Is vision based on Euclidean distance? */
+    double min_age;   /* Minimum at which sampling can occur */
+    
+    xloc  = (int) agent_array[worker][4];
+    yloc  = (int) agent_array[worker][5];
+    view  = (int) agent_array[worker][8];
+    edge  = (int) paras[1];
+    ldx   = (int) paras[12];
+    ldy   = (int) paras[13];
+    EucD  = (int) paras[20];
+    
+    min_age = paras[16];
+    
+    for(resource = 0; resource < res_rows; resource++){
+        if(resource_array[resource][11] >= min_age){
+            r_x   = resource_array[resource][4];
+            r_y   = resource_array[resource][5];
+            seeme = binos(xloc, yloc, r_x, r_y, edge, view, ldx, ldy, EucD);
+            agent_array[worker][10]           += seeme;
+            resource_array[resource][obs_col] += seeme;
+            resource_array[resource][12]      += seeme;
+        }
+    }
+}
+```
+
+The mark-recapture technique, in contrast, calls the new function `sample_fixed_res` once (`time_obs` is taken care of in the sub-function).
+
+```
+/* =============================================================================
+ * Mark re-capture method of estimation
+ * ===========================================================================*/
+/* =============================================================================
+ * This simulates the capture-mark-recapture of a resource type
+ * Inputs include:
+ *     resource_array: data frame of resources to be marked and/or recaptured
+ *     agent_array: data frame of agents, potentially doing the marking
+ *     land: The landscape on which interactions occur
+ *     paras: vector of parameter values
+ *     lookup: The table listing resources and landscape layers to lookup
+ *     res_rows: Total number of resources that can be sampled
+ *     agent_number: Total number of agents in the agent array
+ *     a_type: The type of agent that is doing the marking
+ *     trait_number: The number of traits (columns) of the resource array
+ *     lookup_rows: The number of rows in the lookup table
+ * Output:
+ *     Accumlated markings of resources by agents
+ * ========================================================================== */
+void sample_fixed_res(double **resource_array, double **agent_array, 
+                      double ***land, double *paras, int **lookup, int res_rows, 
+                      int agent_number, int a_type, int trait_number, 
+                      int lookup_rows){
+
+    int edge_type, move_type, fixed_sample, times_obs, move_res, by_type;
+    int land_x, land_y;
+    int obs_iter, agent;
+    int row, type1, type2, type3;
+    
+    edge_type    = (int) paras[1];
+    move_type    = (int) paras[2];
+    fixed_sample = (int) paras[10];
+    land_x       = (int) paras[12];
+    land_y       = (int) paras[13];
+    by_type      = (int) paras[17];
+    move_res     = (int) paras[19];
+    
+    if(fixed_sample < 1){
+        printf("ERROR: Fixed sample must be >= 1 \n ... Making = 1 \n");
+        paras[10]    = 1;
+        fixed_sample = 1;
+    }
+    
+
+    for(row = 0; row < lookup_rows; row++){
+        if(lookup[row][0] == 0){
+            obs_iter     = trait_number + 1; 
+            times_obs    = (int) paras[11];
+            
+            type1 = lookup[row][1];    
+            type2 = lookup[row][2];
+            type3 = lookup[row][3];
+            while(times_obs > 0){
+                for(agent = 0; agent < agent_number; agent++){
+                    if(agent_array[agent][by_type] == a_type){ 
+                        mark_fixed(resource_array, agent_array, paras, res_rows, 
+                                   agent, obs_iter, type1, type2, type3);
+                    }
+                }
+                obs_iter++;
+                times_obs--;
+                if(move_res == 1){ /* Move resources if need for new sample */
+                    res_mover(resource_array, 4, 5, 6, res_rows, edge_type, 
+                              land, land_x, land_y, move_type); 
+                }
+            }
+        }
+    }
+}
+```
+
+The sub-function `mark_fixed` marks a fixed number of a specific type of resource.
+
+```
+/* =============================================================================
+ * This simulates an individual agent marking a fixed number of resources
+ * Inputs include:
+ *     resource_array: data frame of resources to be marked and/or recaptured
+ *     agent_array: data frame of agents, potentially doing the marking
+ *     paras: vector of parameter values
+ *     res_rows: Total number of rows in the res_adding data frame
+ *     worker: The row of the agent that is doing the working
+ *     obs_col: The number of columns in the observation array
+ *     type1: Resource type 1 being marked
+ *     type2: Resource type 2 being marked
+ *     type3: Resource type 3 being marked
+ * Output:
+ *     Specific resources in resource_array are marked by a particular agent
+ * ========================================================================== */
+void mark_fixed(double **resource_array, double **agent_array, double *paras,
+                int res_rows, int worker, int obs_col, int type1, int type2, 
+                int type3){
+    
+    int xloc;         /* x location of the agent doing work */
+    int yloc;         /* y location of the agent doing work */
+    int view;         /* The 'view' (sampling range) around agent's location */
+    int edge;         /* What type of edge is being used in the simulation */
+    int resource;     /* Index for resource array */
+    int r_x;          /* x location of a resource */
+    int r_y;          /* y location of a resource */
+    int seeme;        /* Test if observer sees/captures the resource */
+    int ldx;          /* Landscape dimension on the x-axis */
+    int ldy;          /* Landscape dimension on the y-axis */
+    int fixn;         /* If procedure is to sample a fixed number; how many? */
+    int count;        /* Index for sampling a fixed number of resource */
+    int sampled;      /* The resource randomly sampled */
+    int type_num;     /* Number of the type of resource to be fixed sampled */
+    int EucD;         /* Is vision based on Euclidean distance? */
+    double sampl;     /* Random uniform sampling of a resource */
+    double min_age;   /* Minimum at which sampling can occur */
+
+    xloc  = (int) agent_array[worker][4];
+    yloc  = (int) agent_array[worker][5];
+    view  = (int) agent_array[worker][8];
+    edge  = (int) paras[1];
+    ldx   = (int) paras[12];
+    ldy   = (int) paras[13];
+    EucD  = (int) paras[20];
+
+    min_age = (int) paras[16];
+    
+    fixn     = (int) paras[10];
+    type_num = 0;
+    for(resource = 0; resource < res_rows; resource++){
+        if(resource_array[resource][1]  == type1 &&
+           resource_array[resource][2]  == type2 &&
+           resource_array[resource][3]  == type3 &&
+           resource_array[resource][11] >= min_age
+        ){
+            type_num++;
+        }
+    }
+    if(type_num > fixn){ /* If more resources than the sample number */
+        /* Temp tallies are used here to sample without replacement */
+        for(resource = 0; resource < res_rows; resource++){
+            if(resource_array[resource][1]  == type1 &&
+               resource_array[resource][2]  == type2 &&
+               resource_array[resource][3]  == type3
+            ){
+                resource_array[resource][13] = 0; /* Start untallied */
+            }
+        }
+        count = fixn;
+        sampl = 0;
+        while(count > 0){
+            do{ /* Find an un-tallied resource in the array */
+                 sampl   = runif(0, 1) * res_rows;
+                 sampled = (int) sampl;
+              } while(resource_array[sampled][13] == 1         || 
+                      resource_array[sampled][1]  != type1     ||
+                      resource_array[sampled][2]  != type2     ||
+                      resource_array[sampled][3]  != type3     ||
+                      resource_array[sampled][11] <  min_age   ||
+                      sampled == res_rows /* In case sample returns 1 */
+                );
+            resource_array[sampled][obs_col]++; /* Marks accumulate  */
+            resource_array[sampled][12]++;
+            resource_array[sampled][13] = 1;    /* Tally is noted    */
+            count--;
+        }
+        agent_array[worker][10] += fixn;
+    }else{ /* Else all of the resources should be marked */
+        for(resource = 0; resource < res_rows; resource++){
+            if(resource_array[resource][1]  == type1 &&
+               resource_array[resource][2]  == type2 &&
+               resource_array[resource][3]  == type3 &&
+               resource_array[resource][11] >= min_age
+            ){
+               resource_array[resource][obs_col]++;  /* Mark all */
+               resource_array[resource][12]++;
+             }
+        }
+        agent_array[worker][10] += type_num; /* All resources marked */ 
+   }
+}
+```
+
+This still isn't the most readable code, but it's better than what it was before. Eventually, I would prefer to get rid of as man of the function arguments as possible and place these as elements within `para`. The identities of `para` elements could then be explained in the function more clearly (and consistently). This would lead to less bulky functions and a bit clearer structure for the code, but I think it can be implemented later as the code is given a more general clean-up.
+
+**[Issue: #22](https://github.com/bradduthie/gmse/issues/22) User function crashes with multiple resources**
+
+For some reason, the `user.c` call appears to crash when there is more than one resource. I only noticed this after the overhaul of the observation model, but I doubt they are related. More likely, one of the many arrays with dimensions that depend on resource number is being built or called improperly, leading to a segmentation fault. This should be fixed, of course, but I suspect the problem is not too far buried.
+
+**Next steps still to get abundance estimate from observation array in `manager.c`**
+
+The above issues were progress, but it has set back the pace of the manager model a bit. The next item on the agenda is to still get individual abundance estimates within for each unique resource type in the manager model. The density estimate is completed, and the whole thing should work because the code is already written to loop through the interaction table and get abundance estimates for each unique resource. **This should be tested by including more than one resource and turning off the user function** (see [Issue: #22](https://github.com/bradduthie/gmse/issues/22)). Once it works, then I need to do the same thing for mark-recapture and transect-based estimates of abundance. Then, I'll try to get through items 2-5 from the list on the list from [Monday](#u-1-MAY-2017).
 
 > <a name="u-2-MAY-2017">Update: 2 MAY 2017</a>
 
