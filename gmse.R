@@ -651,7 +651,7 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, agent_view){
 
 ################################################################################
 
-sim <- gmse( observe_type  = 3,
+sim <- gmse( observe_type  = 0,
              agent_view    = 20,
              res_death_K   = 400,
              plotting      = TRUE,

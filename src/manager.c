@@ -301,7 +301,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
  
     /* SOME STANDARD DECLARATIONS OF KEY VARIABLES AND POINTERS               */
     /* ====================================================================== */
-    int xloc, yloc;          /* Index of x & y locations on the landscape */ 
+    int xloc, yloc, i;       /* Index of x & y locations on the landscape */ 
     int land_x, land_y;      /* x and y maximum location given LANDSCAPE */
     int zloc, land_z;        /* z locations */
     int c_x, c_y, c_z;       /* Dimensions of cost array */
@@ -352,6 +352,8 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     double ***actions;       /* Array of user actions */
     double **obs_array;      /* Array of observations from observation model */
     double *abun_est;        /* Vector used to estimate abundances */
+    double *temp_util;       /* Vector temporarily holding manager utils */
+    double *marg_util;       /* Margin utilities for a manager's actions */
 
     /* First take care of all the reading in of code from R to C */
     /* ====================================================================== */
@@ -548,19 +550,37 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     /* Do the biology here now */
     /* ====================================================================== */
 
-    abun_est = malloc(int_d0 * sizeof(double));
+    abun_est  = malloc(int_d0 * sizeof(double));
+    temp_util = malloc(int_d0 * sizeof(double));
+    marg_util = malloc(int_d0 * sizeof(double));
     
     estimate_abundances(obs_array, paras, interact_table, agent_array,
                         agent_number, obs_d0, obs_d1, abun_est, int_d0,
                         trait_number);
     
+    for(row = 0; row < int_d0; row++){
+        temp_util[row] = 0;
+        marg_util[row] = 0;
+        if(actions[row][0][0] < 0){
+            temp_util[row] = actions[row][4][0];
+            marg_util[row] = temp_util[row] - abun_est[row];
+        }
+    }
+
+    i = 0;
+    for(row = 0; row < a_x; row++){
+        if(actions[row][0][0] == 1){
+            actions[row][4][0] = marg_util[i];
+            i++;
+        }
+    }
     
     /* 1. Get summary statistics for resources from the observation array     */
     /* 2. Place estimated resource abundances in a vector the size of int_d0  */
-    
     /* 3. Initialise new vector of size int_d0 with temp utilities of manager */  
     /* 4. Subtract abundances from temp utilities to get marginal utilities   */
     /* 5. Insert the marginal utilities into the agent = 1 col1 of ACTION     */
+    
     /* 6. Run the genetic algorithm (add extension to interpet cost effects)  */
     /* 7. Put in place the new ACTION array from 6                            */
     /* 8. Adjust the COST array appropriately from the new manager actions    */
@@ -569,9 +589,15 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     for(row = 0; row < int_d0; row++){
         printf("%f\t", abun_est[row]);
     }
+    printf(" | ");
+    for(row = 0; row < c_x; row++){
+        printf("%f\t", temp_util[row]);
+    }
     printf("\n");
     */
     
+    free(marg_util);
+    free(temp_util);
     free(abun_est);
     
     /* This code switches from C back to R */
