@@ -201,6 +201,47 @@ double chapman_est(double **obs_array, double *para, int obs_array_rows,
 
 No confidence intervals are calculated at the moment, since I'm not sure how the simulated manager would use the uncertaintly, but if we eventually want real people to be able to 'play' the game as managers, then it shouldn't be too difficult to add confidence intervals to all population size estimates within the C functions of `manager.c`.
 
+**Transect estimation of resource abundances**
+
+Manager estimation of abundances collected from transect type sampling (i.e., `case 2` and `case 3`) are considerably easier than density-based and mark-recapture matrics. The times a resource is observed is simply stored in the 12th column (in C; 13 in R) of the observation matrix. The `transect_est` does the job for any number of resources all in one go.
+
+```
+/* =============================================================================
+ * This function calculates mark-recapture-based (Chapman) abundance estimates
+ *     obs_array:      The observation array
+ *     para:           A vector of parameters needed to handle the obs_array
+ *     obs_array_rows: Number of rows in the observation array obs_array
+ *     abun_est:       Vector where abundance estimates for each type are placed
+ *     interact_table: Lookup table to get all types of resource values
+ *     int_table_rows: The number of rows in the interact_table
+ * ========================================================================== */
+void transect_est(double **obs_array, double *para, int obs_array_rows, 
+                  double *abun_est, int **interact_table, int int_table_rows){
+    
+    int resource, observation, type1, type2, type3;
+    
+    for(resource = 0; resource < int_table_rows; resource++){
+        abun_est[resource] = 0;
+        if(interact_table[resource][0] == 0){ /* Change when turn off type? */
+            type1    = interact_table[resource][1];
+            type2    = interact_table[resource][2];
+            type3    = interact_table[resource][3];
+            for(observation = 0; observation < obs_array_rows; observation++){
+                if(obs_array[observation][1] == type1 && 
+                   obs_array[observation][2] == type2 && 
+                   obs_array[observation][3] == type3
+                ){
+                    abun_est[resource] += obs_array[observation][12];
+                }
+                    
+            }
+        }
+    }
+}
+```
+
+Abundances need to now be compared to manager utilities (and for now, I'm just going to assume that the agent with `agentID = 1` is the head manager (other `type1 = 0` agents can be 'managers' collecting data, but I don't see how or why we would want multiple managers bargaining over resources with different `util` values; not yet at least, and probably not ever).
+
 > <a name="u-3-MAY-2017">Update: 3 MAY 2017</a>
 
 **Resolved [Issue: #20](https://github.com/bradduthie/gmse/issues/20)**
