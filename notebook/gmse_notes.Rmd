@@ -242,6 +242,32 @@ void transect_est(double **obs_array, double *para, int obs_array_rows,
 
 Abundances need to now be compared to manager utilities (and for now, I'm just going to assume that the agent with `agentID = 1` is the head manager (other `type1 = 0` agents can be 'managers' collecting data, but I don't see how or why we would want multiple managers bargaining over resources with different `util` values; not yet at least, and probably not ever).
 
+**Getting marginal utilities for management and putting them in `ACTION`**
+
+Back to the big picture, I have now finished the first five (easiest) of the tasks below.
+
+```
+/* 1. Get summary statistics for resources from the observation array     */
+/* 2. Place estimated resource abundances in a vector the size of int_d0  */
+/* 3. Initialise new vector of size int_d0 with temp utilities of manager */  
+/* 4. Subtract abundances from temp utilities to get marginal utilities   */
+/* 5. Insert the marginal utilities into the agent = 1 col1 of ACTION     */
+/* 6. Run the genetic algorithm (add extension to interpet cost effects)  */
+/* 7. Put in place the new ACTION array from 6                            */
+/* 8. Adjust the COST array appropriately from the new manager actions    */
+```
+
+Essentially, the `manager.c` function now gets estimates for the abundances of each resource, then places those estimates in a temporary vector. Elements in this vector (corresponding to resource abundances) are then subtracted from the manager's utility values (corresponding to *desired* resource counts). What's left is then the marginal utility of resources -- if there are more resources than the manager desires, then the marginal utility is negative, and if there are fewer, then the marginal utility is positive. The marginal utility is then placed back into the first layer of the `ACTION` array (corresponding to the manager) where column 1 equals 1 (i.e., intepreted as actions of the manager affecting their own costs -- existing values of which aren't really being used because the concept doesn't make a lot of sense, and the values are really just there as place-holders for where they mean things in other layers of the array). Hence the `util` column then includes values for the ideal resource abundance (where column 1 equals -2 -- `util` is in column 5) and the marginal utility given estimated resource abundance (where column 1 equals 1). See below.
+
+```
+-2.000000	1.000000	0.000000	0.000000	100.000000	1.000000	1.000000	
+-1.000000	1.000000	0.000000	0.000000	1.000000	1.000000	1.000000	
+1.000000	1.000000	0.000000	0.000000	-330.696014	0.000000	0.000000	
+2.000000	1.000000	0.000000	0.000000	0.000000	0.000000	0.000000	
+3.000000	1.000000	0.000000	0.000000	0.000000	0.000000	0.000000
+```
+
+In the above, the manager sees 100 as the ideal population size, but there are ca 430 resources of `type1 = 1`, `type2 = 0`, `type3 = 0` in the population. Hence the manager would like to see ca 330 *fewer* of these kinds of resources. The `-330.696014` printed from a test simulation above will allow the genetic algorithm to adjust the `COST` array accordingly, decreasing `COST` columns that correspond to the killing or castrating (but not moving, I suppose) of resources.
 
 > <a name="u-3-MAY-2017">Update: 3 MAY 2017</a>
 
