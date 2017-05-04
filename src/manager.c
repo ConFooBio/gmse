@@ -193,6 +193,43 @@ void rmr_est(double **obs_array, double *para, int obs_array_rows,
 }
 
 
+
+/* =============================================================================
+ * This function calculates mark-recapture-based (Chapman) abundance estimates
+ *     obs_array:      The observation array
+ *     para:           A vector of parameters needed to handle the obs_array
+ *     obs_array_rows: Number of rows in the observation array obs_array
+ *     abun_est:       Vector where abundance estimates for each type are placed
+ *     interact_table: Lookup table to get all types of resource values
+ *     int_table_rows: The number of rows in the interact_table
+ * ========================================================================== */
+void transect_est(double **obs_array, double *para, int obs_array_rows, 
+                  double *abun_est, int **interact_table, int int_table_rows){
+    
+    int resource, observation, type1, type2, type3;
+    
+    for(resource = 0; resource < int_table_rows; resource++){
+        abun_est[resource] = 0;
+        if(interact_table[resource][0] == 0){ /* Change when turn off type? */
+            type1    = interact_table[resource][1];
+            type2    = interact_table[resource][2];
+            type3    = interact_table[resource][3];
+            for(observation = 0; observation < obs_array_rows; observation++){
+                if(obs_array[observation][1] == type1 && 
+                   obs_array[observation][2] == type2 && 
+                   obs_array[observation][3] == type3
+                ){
+                    abun_est[resource] += obs_array[observation][12];
+                }
+                    
+            }
+        }
+    }
+}
+
+
+
+
 /* =============================================================================
  * This function uses the observation array to estimate resource abundances
  *     obs_array:      The observation array
@@ -224,8 +261,12 @@ void estimate_abundances(double **obs_array, double *para, int **interact_table,
                     int_table_rows, trait_num);
             break;
         case 2:
+            transect_est(obs_array, para, obs_x, abun_est, interact_table, 
+                         int_table_rows);
             break;
         case 3:
+            transect_est(obs_array, para, obs_x, abun_est, interact_table, 
+                         int_table_rows);
             break;
         default:
             break;
@@ -516,18 +557,21 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     
     /* 1. Get summary statistics for resources from the observation array     */
     /* 2. Place estimated resource abundances in a vector the size of int_d0  */
+    
     /* 3. Initialise new vector of size int_d0 with temp utilities of manager */  
     /* 4. Subtract abundances from temp utilities to get marginal utilities   */
     /* 5. Insert the marginal utilities into the agent = 1 col1 of ACTION     */
     /* 6. Run the genetic algorithm (add extension to interpet cost effects)  */
     /* 7. Put in place the new ACTION array from 6                            */
     /* 8. Adjust the COST array appropriately from the new manager actions    */
+    
     /*
     for(row = 0; row < int_d0; row++){
         printf("%f\t", abun_est[row]);
     }
     printf("\n");
     */
+    
     free(abun_est);
     
     /* This code switches from C back to R */
