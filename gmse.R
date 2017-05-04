@@ -379,7 +379,7 @@ cmr_estimate <- function(obs, year){
 # Chapman estimator for capture-mark-recapture
 ################################################################################
 chapman_est <- function(observation, marks = 1, recaptures = 1){
-    mcols  <- seq(from = 16, to = 16 + (marks-1), by = 1);
+    mcols  <- seq(from = 17, to = 17 + (marks-1), by = 1);
     rcols  <- seq(from = max(mcols+1), to = max(mcols+1)+(recaptures-1), by=1);
     if(marks > 1){
         mrked <- apply(X=observation[,mcols], MARGIN = 1, FUN = sum);

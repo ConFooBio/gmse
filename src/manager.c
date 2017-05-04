@@ -85,6 +85,115 @@ void dens_est(double **obs_array, double *para, double **agent_array,
 
 
 /* =============================================================================
+ * This function calculates RMR (chapman) for one resource type
+ *     obs_array:      The observation array
+ *     para:           A vector of parameters needed to handle the obs_array
+ *     obs_array_rows: Number of rows in the observation array obs_array
+ *     obs_array_cols: Number of cols in the observation array obs_array
+ *     trait_number:   The number of traits in the resource array
+ *     type1:          Resource type 1
+ *     type2:          Resource type 2
+ *     type3:          Resource type 3
+ * ========================================================================== */
+double chapman_est(double **obs_array, double *para, int obs_array_rows, 
+                   int obs_array_cols, int trait_number, int type1, int type2,
+                   int type3){
+    
+    int row, col;
+    int total_marks, recaptures, mark_start, recapture_start;
+    int *marked, sum_marked, n, K, k;
+    double estimate, floored_est;
+    
+    total_marks     = (int) para[11];
+    recaptures      = (int) para[10];
+    mark_start      = trait_number + 1;
+    recapture_start = mark_start + (total_marks - recaptures);
+    
+    if(total_marks < 2 || recaptures < 1){
+        printf("ERROR: Not enough marks or recaptures for management");
+        return 0;
+    }
+    
+    n      = 0;
+    marked = malloc(obs_array_rows * sizeof(int));
+    for(row = 0; row < obs_array_rows; row++){
+        marked[row] = 0;
+        if(obs_array[row][1] == type1 && 
+           obs_array[row][2] == type2 &&
+           obs_array[row][3] == type3
+        ){
+            for(col = mark_start; col < recapture_start; col++){
+                if(obs_array[row][col] > 0){
+                    marked[row] = 1;
+                    n++;
+                    break;
+                }
+            }
+        }
+    }
+    
+    K = 0;
+    k = 0;
+    for(row = 0; row < obs_array_rows; row++){
+        if(obs_array[row][1] == type1 && 
+           obs_array[row][2] == type2 &&
+           obs_array[row][3] == type3
+        ){
+            for(col = recapture_start; col < obs_array_cols; col++){
+                if(obs_array[row][col] > 0){
+                    K++;
+                    if(marked[row] > 0){
+                        k++;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    
+    estimate    = ((n + 1) * (K + 1) / (k + 1)) - 1;
+    floored_est = floor(estimate);
+
+    free(marked);  
+    
+    return floored_est;
+}
+
+
+/* =============================================================================
+ * This function calculates mark-recapture-based (Chapman) abundance estimates
+ *     obs_array:      The observation array
+ *     para:           A vector of parameters needed to handle the obs_array
+ *     obs_array_rows: Number of rows in the observation array obs_array
+ *     obs_array_cols: Number of cols in the observation array obs_array
+ *     abun_est:       Vector where abundance estimates for each type are placed
+ *     interact_table: Lookup table to get all types of resource values
+ *     int_table_rows: The number of rows in the interact_table
+ *     trait_number:   The number of traits in the resouce array
+ * ========================================================================== */
+void rmr_est(double **obs_array, double *para, int obs_array_rows, 
+             int obs_array_cols, double *abun_est, int **interact_table, 
+             int int_table_rows, int trait_number){
+    
+    int resource, type1, type2, type3;
+    double estimate;
+    
+    for(resource = 0; resource < int_table_rows; resource++){
+        abun_est[resource] = 0;
+        if(interact_table[resource][0] == 0){ /* Change when turn off type? */
+            type1    = interact_table[resource][1];
+            type2    = interact_table[resource][2];
+            type3    = interact_table[resource][3];
+            estimate = chapman_est(obs_array, para, obs_array_rows, 
+                                   obs_array_cols, trait_number, type1, type2,
+                                   type3);
+            abun_est[resource] = estimate;
+        }
+    }
+}
+
+
+/* =============================================================================
  * This function uses the observation array to estimate resource abundances
  *     obs_array:      The observation array
  *     para:           A vector of parameters needed to handle the obs_array
@@ -98,9 +207,9 @@ void dens_est(double **obs_array, double *para, double **agent_array,
  * ========================================================================== */
 void estimate_abundances(double **obs_array, double *para, int **interact_table,
                          double **agent_array, int agents, int obs_x, int obs_y,
-                         double *abun_est, int int_table_rows){
+                         double *abun_est, int int_table_rows, int trait_num){
     
-    int estimate_type, recaptures;
+    int estimate_type;
     double abun;
     
     estimate_type = (int) para[8];
@@ -111,7 +220,8 @@ void estimate_abundances(double **obs_array, double *para, int **interact_table,
                      abun_est, interact_table, int_table_rows);
             break;
         case 1:
-            recaptures    = (int) para[10];
+            rmr_est(obs_array, para, obs_x, obs_y, abun_est, interact_table, 
+                    int_table_rows, trait_num);
             break;
         case 2:
             break;
@@ -400,7 +510,8 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     abun_est = malloc(int_d0 * sizeof(double));
     
     estimate_abundances(obs_array, paras, interact_table, agent_array,
-                        agent_number, obs_d0, obs_d1, abun_est, int_d0);
+                        agent_number, obs_d0, obs_d1, abun_est, int_d0,
+                        trait_number);
     
     
     /* 1. Get summary statistics for resources from the observation array     */
@@ -411,7 +522,12 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     /* 6. Run the genetic algorithm (add extension to interpet cost effects)  */
     /* 7. Put in place the new ACTION array from 6                            */
     /* 8. Adjust the COST array appropriately from the new manager actions    */
-
+    /*
+    for(row = 0; row < int_d0; row++){
+        printf("%f\t", abun_est[row]);
+    }
+    printf("\n");
+    */
     free(abun_est);
     
     /* This code switches from C back to R */
