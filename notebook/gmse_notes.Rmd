@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
  
-     - **MAY** [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
+     - **MAY** [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
      - **APR** [28](#u-28-APR-2017), [26](#u-26-APR-2017), [25](#u-25-APR-2017), [24](#u-24-APR-2017), [20](#u-20-APR-2017), [19](#u-19-APR-2017), [18](#u-18-APR-2017), [17](#u-17-APR-2017), [13](#u-13-APR-2017), [12](#u-12-APR-2017), [11](#u-11-APR-2017), [10](#u-10-APR-2017), [7](#u-7-APR-2017), [6](#u-6-APR-2017), [5](#u-5-APR-2017)
      - **MAR** [23](#u-23-MAR-2017), [22](#u-22-MAR-2017), [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
@@ -75,6 +75,131 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-4-MAY-2017">Update: 4 MAY 2017</a>
+
+**Manager model looped resources and mark-recapture**
+
+The density estimate within the manager model `manager.c` now returns accurate abundances for multiple resources (storing them in a vector `est_abun`). This was confirmed by shutting off the `user` function (see [Issue: #22](https://github.com/bradduthie/gmse/issues/22)). 
+
+Additionally, the mark-recapture estimator has been successfully initialised in `manager.c`, and works for multiple resources. There was a bit of a hiccup here because the test printouts of abundances were consistently different from what was seen in the R plot. This turned out to be a minor error in R, not C (one too many columns were being read in in R to estimate resources marked). By fixing the error in R, both R and C estimates now match and are accurate. The next step is to return estmates for transect-based sampling abundances.
+
+The mark-recapture analysis uses Chapman estimation, which is calculated in two functions. The function `rmr_est` runs calls `chapman_est` for each individual resource, inputting the results into the `abun_est` vector.
+
+```
+/* =============================================================================
+ * This function calculates mark-recapture-based (Chapman) abundance estimates
+ *     obs_array:      The observation array
+ *     para:           A vector of parameters needed to handle the obs_array
+ *     obs_array_rows: Number of rows in the observation array obs_array
+ *     obs_array_cols: Number of cols in the observation array obs_array
+ *     abun_est:       Vector where abundance estimates for each type are placed
+ *     interact_table: Lookup table to get all types of resource values
+ *     int_table_rows: The number of rows in the interact_table
+ *     trait_number:   The number of traits in the resouce array
+ * ========================================================================== */
+void rmr_est(double **obs_array, double *para, int obs_array_rows, 
+             int obs_array_cols, double *abun_est, int **interact_table, 
+             int int_table_rows, int trait_number){
+    
+    int resource, type1, type2, type3;
+    double estimate;
+    
+    for(resource = 0; resource < int_table_rows; resource++){
+        abun_est[resource] = 0;
+        if(interact_table[resource][0] == 0){ /* Change when turn off type? */
+            type1    = interact_table[resource][1];
+            type2    = interact_table[resource][2];
+            type3    = interact_table[resource][3];
+            estimate = chapman_est(obs_array, para, obs_array_rows, 
+                                   obs_array_cols, trait_number, type1, type2,
+                                   type3);
+            abun_est[resource] = estimate;
+        }
+    }
+}
+```
+
+The function `chapman_est` itself does all of the maths for estimating population abundance from mark-recapture data in the `OBSERVATION` ARRAY.
+
+```
+/* =============================================================================
+ * This function calculates RMR (chapman) for one resource type
+ *     obs_array:      The observation array
+ *     para:           A vector of parameters needed to handle the obs_array
+ *     obs_array_rows: Number of rows in the observation array obs_array
+ *     obs_array_cols: Number of cols in the observation array obs_array
+ *     trait_number:   The number of traits in the resource array
+ *     type1:          Resource type 1
+ *     type2:          Resource type 2
+ *     type3:          Resource type 3
+ * ========================================================================== */
+double chapman_est(double **obs_array, double *para, int obs_array_rows, 
+                   int obs_array_cols, int trait_number, int type1, int type2,
+                   int type3){
+    
+    int row, col;
+    int total_marks, recaptures, mark_start, recapture_start;
+    int *marked, sum_marked, n, K, k;
+    double estimate, floored_est;
+    
+    total_marks     = (int) para[11];
+    recaptures      = (int) para[10];
+    mark_start      = trait_number + 1;
+    recapture_start = mark_start + (total_marks - recaptures);
+    
+    if(total_marks < 2 || recaptures < 1){
+        printf("ERROR: Not enough marks or recaptures for management");
+        return 0;
+    }
+    
+    n      = 0;
+    marked = malloc(obs_array_rows * sizeof(int));
+    for(row = 0; row < obs_array_rows; row++){
+        marked[row] = 0;
+        if(obs_array[row][1] == type1 && 
+           obs_array[row][2] == type2 &&
+           obs_array[row][3] == type3
+        ){
+            for(col = mark_start; col < recapture_start; col++){
+                if(obs_array[row][col] > 0){
+                    marked[row] = 1;
+                    n++;
+                    break;
+                }
+            }
+        }
+    }
+    
+    K = 0;
+    k = 0;
+    for(row = 0; row < obs_array_rows; row++){
+        if(obs_array[row][1] == type1 && 
+           obs_array[row][2] == type2 &&
+           obs_array[row][3] == type3
+        ){
+            for(col = recapture_start; col < obs_array_cols; col++){
+                if(obs_array[row][col] > 0){
+                    K++;
+                    if(marked[row] > 0){
+                        k++;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    
+    estimate    = ((n + 1) * (K + 1) / (k + 1)) - 1;
+    floored_est = floor(estimate);
+
+    free(marked);  
+    
+    return floored_est;
+}
+```
+
+No confidence intervals are calculated at the moment, since I'm not sure how the simulated manager would use the uncertaintly, but if we eventually want real people to be able to 'play' the game as managers, then it shouldn't be too difficult to add confidence intervals to all population size estimates within the C functions of `manager.c`.
 
 > <a name="u-3-MAY-2017">Update: 3 MAY 2017</a>
 
