@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **MAY** [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
+     - **MAY** [5](#u-5-MAY-2017), [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
      - **APR** [28](#u-28-APR-2017), [26](#u-26-APR-2017), [25](#u-25-APR-2017), [24](#u-24-APR-2017), [20](#u-20-APR-2017), [19](#u-19-APR-2017), [18](#u-18-APR-2017), [17](#u-17-APR-2017), [13](#u-13-APR-2017), [12](#u-12-APR-2017), [11](#u-11-APR-2017), [10](#u-10-APR-2017), [7](#u-7-APR-2017), [6](#u-6-APR-2017), [5](#u-5-APR-2017)
      - **MAR** [23](#u-23-MAR-2017), [22](#u-22-MAR-2017), [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
@@ -75,6 +75,65 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-5-MAY-2017">Update: 5 MAY 2017</a>
+
+We have now reached a point where we have a clear link from manager *utility* to a manager's desired change in resources. The `util` column of a manager (layer = 1) action array defines how many resources of a particular type the manager *wants* there to be when column 1 equals -2 (added below for clarity).
+
+```
+-2.000000	1.000000	0.000000	0.000000	100.000000	1.000000	1.000000	
+-1.000000	1.000000	0.000000	0.000000	1.000000	1.000000	1.000000	
+1.000000	1.000000	0.000000	0.000000	-330.696014	0.000000	0.000000	
+2.000000	1.000000	0.000000	0.000000	0.000000	0.000000	0.000000	
+3.000000	1.000000	0.000000	0.000000	0.000000	0.000000	0.000000
+```
+
+From this `util` value and the estimated abundance from the observation model, we can get to the marginal utility, which is placed in the same action array layer where column 1 equals the manager ID. We now need this value to have some effect; e.g., in the above where the population size is 330 individuals more than the manager wants, the manager needs to adjust the cost array in some way that has the predicted effect of lowering population size by roughly this amount. The way that the genetic algorithm can learn to do this is by assuming that the action array (which will have been the actions run in the last `user` model) represents what stake-holders will do when constrained appropriately by costs. So, for example, we can consider the `ACTION` array below.
+
+```
+, , 1
+
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]
+[1,]   -2    1    0    0  100    1    1    0    0     0     0    20     0
+[2,]   -1    1    0    0    1    1    1    0    0     1     0     0     0
+[3,]    1    1    0    0    0    0    0    0    0     0     0     0     1
+[4,]    2    1    0    0    0    0    0    0    1     1     0     0     0
+[5,]    3    1    0    0    0    0    0    0    0     0     0     0     0
+
+, , 2
+
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]
+[1,]   -2    1    0    0    1    1    1   81    0     0     0     0     0
+[2,]   -1    1    0    0  100    1    1    0    0     0     0     0     0
+[3,]    1    1    0    0    0    0    0    0    0     0     0     0     0
+[4,]    2    1    0    0    0    0    0    0    0     0     0     0     0
+[5,]    3    1    0    0    0    0    0    0    0     0     0     0     0
+
+, , 3
+
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]
+[1,]   -2    1    0    0    1    1    1   72    2     0     0     0     1
+[2,]   -1    1    0    0  100    1    1    1    0     0     0     0     0
+[3,]    1    1    0    0    0    0    0    0    1     0     0     0     0
+[4,]    2    1    0    0    0    0    0    0    0     0     1     0     0
+[5,]    3    1    0    0    0    0    0    0    0     1     0     0     0
+```
+
+The first layer is the manager, and the second two are stake-holders that have `util = 100` for the landscape layer 1, and `util = 1` for the resource defined by `type1 = 1`, `type2 = 0`, and `type3 = 0`. In the above example, the resource might be geese disturbing crops, and the stake-holders might be farmers. In both cases, the stake-holders devote nearly all or nearly all of their budget to moving the resource (column 8 corresopnds to `movem`). The manager can then project total number of resources increased or decreased by these actions, and -- perhaps eventually -- whose land they will be on (the code is there for the manager to prefer them on public or private land, but this might need to be implemented later). Assuming that the manager just cares about total resource abundance for now, the should be able to recognise that `movem` will *not* decrease *total* resource abundance; hence, the manager might prefer stake-holders to switch to `killem` (column 10). 
+
+It's this switch that is a challenge for the model. It's easy now to have the manager recognise that stake-holder actions are not optimal in terms of policy -- more actions are being devoted to something that doesn't kill resources, and more would be better placed by increasing stake-holder column 10 values. Still, how much the manager should lower costs to get the desired abundance is unclear (and even more so if we were to add multiple resources). The manager can't exactly use the stake-holder utilities for the resource *per se* either, because the actions are determined by how resources interact; we also don't want to run a sub-genetic algorithm for the manager to anticipate stake-holder actions, as this would end up being computationally intense.
+
+Perhaps the manager should simply recognise the plus-minus-neutral effects of each column (from columns 8-13 above, `0 - - + + 0`). This gets part of the way there; if the manager wants resources killed, then they could crank up the costs associated with all `0` and `+` actions (perhaps this shouldn't be allowed though for `bankem`, which would effectively prohibit stake-holders from inaction). The magnitude of costs for `-` actions such as `killem` or `castem` could then be decided by assuming that stake-holders would transfer `-` and `0` (again, exclude `bankem`) to the lowest column of `-` if the cost were the lowest.
+
+Maybe managers should make a judgement *a priori* about what stake-holders are trying to do; classifying them as either wanting more or less of a particular resource. Wanting less of a resource would be associated with high values in action columns for `killem` and `castem`, and also `movem` but *only* if `u_loc = 1` and `u_land = 1` for the stakeholder (i.e., if the desires and ability to move them depends on the resource being on *their* land). Wanting more of a resource would be associated with high values in action columns for `feedem` and `helpem`. The manager could then assume that stake-holders would allocate their total budget actions proportionally to `-`, `+`, or `0` columns, but without discrimination between columns. It could be easy to summarise budget and action totals as in the table below.
+
+ Action type | *Total budget* |
+-------------|----------------|
+ Increasing  |     500        |
+ Decreasing  |     200        |
+ Neutral     |     300        |
+ 
+In the above, a net 300 more resources would appear if the manager does nothing (ignoring the resource model and consequences of carrying capacity for the moment). **Note that the actions should really be run through the interaction array** so that interactions between two resources could be hypothetically projected. This wouldn't be much extra work -- the increase in a resource could just be multiplied by the appropriate column in the Jacobian matrix. **Also note** that costs are only one way to adjust resources -- another would be having something like licenses to kill be a resource that stake-holders might want to buy -- the manager could make more of these and they could themselves be modelled as a dynamic and affecting the Jacobian matrix.
 
 > <a name="u-4-MAY-2017">Update: 4 MAY 2017</a>
 
