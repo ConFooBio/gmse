@@ -400,17 +400,13 @@ void policy_to_counts(double ***population, int **interact_table, int int_num,
     
     int row, col, layer, act_type, i, type1, type2, type3, cost_row;
     double old_cost, new_cost, cost_change, new_action, mean_cost, sum_actions;
-    double **mean_costs, **hold_actions;
+    double **mean_costs, *hold_actions;
     
-    hold_actions = malloc(int_num * sizeof(double *));
-    for(row = 0; row < int_num; row++){
-        hold_actions[row] = malloc(13 * sizeof(double));
-    }
+
+    hold_actions = malloc(13 * sizeof(double));
     
-    for(row = 0; row < int_num; row++){
-        for(col = 4; col < 13; col++){
-            hold_actions[row][col] = population[row][col][agent];
-        }
+    for(i = 0; i < 13; i++){
+        hold_actions[i] = population[action_row][i][agent];
     }
     
     for(col = 7; col < 13; col++){
@@ -424,21 +420,16 @@ void policy_to_counts(double ***population, int **interact_table, int int_num,
         new_cost    = population[manager_row][col][agent];
         cost_change = old_cost / new_cost;
         new_action  = sum_actions * cost_change;
-        population[row][col][agent] = floor(new_action);
+        population[action_row][col][agent] = floor(new_action);
     }
     
     res_to_counts(population, interact_table, int_num, count_change, utilities, 
                   jaco, action_row, agent);
 
-    for(row = 0; row < int_num; row++){
-        for(col = 4; col < 13; col++){
-            population[row][col][agent] = hold_actions[row][col];
-        }
+    for(i = 0; i < 13; i++){
+        population[action_row][i][agent] = hold_actions[i];
     }
-    
-    for(row = 0; row < int_num; row++){
-        free(hold_actions[row]);
-    }
+
     free(hold_actions);
 }
 
@@ -459,7 +450,7 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
                      int **interact_table, int interest_num, int agentID){
     
     int agent, i, row, act_type, action_row, manager_row, type1, type2, type3;
-    double agent_fitness, *count_change, foc_effect;
+    double agent_fitness, *count_change, foc_effect, change_dev;
     double movem, castem, killem, feedem, helpem;
     double utility, *utilities;
     
@@ -486,38 +477,24 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
             }
         }
         
+        /* Get the marginal utilities into utilities by running policy_to_counts
+         * and get the count_change the same way. The above runs thorugh this
+         * for each agent and for each resource Here still within the agent loop
+         * we need to get the vectors summed appropriately to a reasonable
+         * fitness metric (keeping in mind that it's not just ordinal
+         */
         
         
         fitnesses[agent] = 0;
-        for(i = 0; i < interest_num; i++){
-            fitnesses[agent] += count_change[i] * utilities[i];
+        for(i = 0; i < interest_num; i++){ /* Minimises dev from marg util*/
+            change_dev       =  (count_change[i] - utilities[i]) * 
+                                (count_change[i] - utilities[i]) + 1;
+            fitnesses[agent] += (1 / change_dev);
         }
     }
     free(utilities);
     free(count_change);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
