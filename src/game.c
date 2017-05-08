@@ -259,7 +259,7 @@ void res_to_counts(double ***population, int **interact_table, int int_num,
                    double *count_change, double *utilities, double **jaco,
                    int row, int agent){
     
-    int i, act_type, interest_row;
+    int i, interest_row;
     double foc_effect;
     
     foc_effect  = 0.0;
@@ -324,6 +324,8 @@ void land_to_counts(double ***population, int **interact_table, int int_num,
     utilities[interest_row] = population[row][4][agent];
 }
 
+
+
 /* =============================================================================
  * This is a preliminary function that checks the fitness of each agent by 
  * passing through a loop to payoffs_to_fitness
@@ -331,20 +333,17 @@ void land_to_counts(double ***population, int **interact_table, int int_num,
  *     population: array of the population that is made (malloc needed earlier)
  *     pop_size: The size of the total population (layers to population)
  *     ROWS: Number of rows in the COST and ACTION arrays
- *     COLS: Number of columns in the COST and ACTION arrays
  *     agent_array: The agent array
  *     jaco: The jacobian matrix of resource and landscape interactions
  *     interact_table: Lookup table for figuring out rows of jaco and types
  *     interest_num: The number of rows and cols in jac, and rows in lookup
  * ========================================================================== */
 void strategy_fitness(double *fitnesses, double ***population, int pop_size, 
-                      int ROWS, int COLS, double **agent_array, double **jaco,
+                      int ROWS, double **agent_array, double **jaco,
                       int **interact_table, int interest_num){
     
-    int agent, i, row, act_type, type1, type2, type3, interest_row;
-    double agent_fitness, *count_change, foc_effect;
-    double movem, castem, killem, feedem, helpem;
-    double utility, *utilities;
+    int agent, i, row, act_type;
+    double *count_change, *utilities;
     
     count_change = malloc(interest_num * sizeof(int));
     utilities    = malloc(interest_num * sizeof(int));
@@ -377,6 +376,166 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
     free(utilities);
     free(count_change);
 }
+
+
+
+
+
+/* =============================================================================
+ * This function updates count change and utility arrays for changes in policy
+ *     population: The population array of agents in the genetic algorithm
+ *     interact_table: The lookup table for figuring out how resources interact
+ *     int_num: The number of rows and cols in jac, and rows in the lookup
+ *     utilities: A vector of the utilities of each resource/landscape level
+ *     agent: The agent in the population whose fitness is being assessed
+ *     layers: The number of layers (z dimension) in the COST and ACTION arrays
+ *     COST: The cost array, for comparison with how costs change with actions
+ *     ACTION: The action array to summarise current stake-holder actions
+ *     agentID: The ID of the agent doing policy (should probably always be 1)
+ * ========================================================================== */
+void policy_to_counts(double ***population, int **interact_table, int int_num,
+                      double *utilities, int agent, int layers, double **jaco,
+                      double *count_change, double ***COST, double ***ACTION,
+                      int agentID, int ROWS){
+    
+    int row, col, layer, act_type, i, type1, type2, type3, cost_row;
+    double old_cost, new_cost, cost_change, new_action, mean_cost, sum_actions;
+    double **mean_costs, **hold_actions;
+    
+    hold_actions = malloc(int_num * sizeof(double *));
+    for(row = 0; row < int_num; row++){
+        hold_actions[row] = malloc(13 * sizeof(double));
+    }
+    
+    for(row = 0; row < int_num; row++){
+        for(col = 4; col < 13; col++){
+            hold_actions[row][col] = population[row][col][agent];
+        }
+    }
+    
+    
+    for(row = 0; row < int_num; row++){
+        type1    = population[row][1][agent];
+        type2    = population[row][2][agent];
+        type3    = population[row][3][agent];
+        cost_row = 0;
+        while(agentID  != population[cost_row][0][agent] &&
+              type1    != population[cost_row][1][agent] &&
+              type2    != population[cost_row][2][agent] &&
+              type3    != population[cost_row][3][agent] &&
+              cost_row < ROWS
+        ){
+            cost_row++;
+        }
+        population[row][4][agent] = population[cost_row][4][agent];
+        population[row][5][agent] = population[cost_row][5][agent];
+        population[row][6][agent] = population[cost_row][6][agent];
+        for(col = 7; col < 13; col++){
+            sum_actions = 0; 
+            mean_cost   = 0;
+            for(layer = 0; layer < layers; layer++){
+                sum_actions += ACTION[row][col][layer];
+                mean_cost   += (COST[row][col][layer] / layers);
+            }
+            old_cost    = mean_cost;
+            new_cost    = population[cost_row][col][agent];
+            cost_change = old_cost / new_cost;
+            new_action  = sum_actions * cost_change;
+            population[row][col][agent] = floor(new_action);
+        }
+    }
+    
+    for(row = 0; row < int_num; row++){            
+        act_type   = (int) population[row][0][agent];
+        if(act_type == -2){
+            res_to_counts(population, interact_table, int_num, count_change, 
+                          utilities, jaco, row, agent);
+        }
+    }
+    
+
+    
+    
+    for(row = 0; row < int_num; row++){
+        for(col = 4; col < 13; col++){
+            population[row][col][agent] = hold_actions[row][col];
+        }
+    }
+    
+    
+    for(row = 0; row < int_num; row++){
+        free(hold_actions[row]);
+    }
+    free(hold_actions);
+}
+
+/* =============================================================================
+ * This is a preliminary function that checks the fitness of each agent by 
+ * passing through a loop to payoffs_to_fitness
+ *     fitnesses: Array to order fitnesses of the agents in the population
+ *     population: array of the population that is made (malloc needed earlier)
+ *     pop_size: The size of the total population (layers to population)
+ *     ROWS: Number of rows in the COST and ACTION arrays
+ *     agent_array: The agent array
+ *     jaco: The jacobian matrix of resource and landscape interactions
+ *     interact_table: Lookup table for figuring out rows of jaco and types
+ *     interest_num: The number of rows and cols in jac, and rows in lookup
+ * ========================================================================== */
+void manager_fitness(double *fitnesses, double ***population, int pop_size, 
+                     int ROWS, double **agent_array, double **jaco,
+                     int **interact_table, int interest_num, int agentID){
+    
+    int agent, i, row, act_type, interest_row;
+    double agent_fitness, *count_change, foc_effect;
+    double movem, castem, killem, feedem, helpem;
+    double utility, *utilities;
+    
+    count_change = malloc(interest_num * sizeof(int));
+    utilities    = malloc(interest_num * sizeof(int));
+    
+    for(agent = 0; agent < pop_size; agent++){
+        for(i = 0; i < interest_num; i++){
+            count_change[i] = 0; /* Initialise all count changes at zero */
+            utilities[i]    = 0; /* Same for utilities */
+        }
+        interest_row = 0;
+        for(row = 0; row < ROWS; row++){
+            act_type   = (int) population[row][0][agent];
+            if(act_type == agentID){
+            }
+        }
+        fitnesses[agent] = 0;
+        for(i = 0; i < interest_num; i++){
+            fitnesses[agent] += count_change[i] * utilities[i];
+        }
+    }
+    free(utilities);
+    free(count_change);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* =============================================================================
  * This function takes an array of fitnesses and returns an equal size array of
@@ -488,7 +647,8 @@ void place_winners(double ****population, int *winners, int pop_size, int ROWS,
 void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double **JACOBIAN, int **interact_table, 
         double *paras, int xdim, int ydim, int res_number, int land_x, 
-        int land_y, int land_z, int trait_number, int jaco_dim, int agent){
+        int land_y, int land_z, int trait_number, int jaco_dim, int agent,
+        int layers){
     
     int row, col, gen, layer;
     int sampleK, chooseK;
@@ -547,8 +707,8 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
   
         constrain_costs(POPULATION, COST, agent, popsize, xdim, ydim, budget);
 
-        strategy_fitness(fitnesses, POPULATION, popsize, xdim, ydim, AGENT, 
-                         JACOBIAN, interact_table, jaco_dim);
+        strategy_fitness(fitnesses, POPULATION, popsize, xdim, AGENT, JACOBIAN, 
+                         interact_table, jaco_dim);
   
         tournament(fitnesses, winners, popsize, sampleK, chooseK);
    
