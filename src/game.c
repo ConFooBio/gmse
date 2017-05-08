@@ -494,7 +494,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     int sampleK, chooseK;
     int popsize, agent_seed;
     int budget;
-    int landowner;
+    int agentID;
     int generations;
     int *winners;
     double mutation_rate, crossover_rate;
@@ -510,7 +510,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     mutation_rate  = paras[26];
     crossover_rate = paras[27];
     budget         = AGENT[agent][16];
-    landowner      = AGENT[agent][0];
+    agentID        = AGENT[agent][0];
 
     POPULATION = malloc(xdim * sizeof(double *));
     for(row = 0; row < xdim; row++){
