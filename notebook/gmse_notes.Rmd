@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **MAY** [5](#u-5-MAY-2017), [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
+     - **MAY** [8](#u-8-MAY-2017), [5](#u-5-MAY-2017), [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
      - **APR** [28](#u-28-APR-2017), [26](#u-26-APR-2017), [25](#u-25-APR-2017), [24](#u-24-APR-2017), [20](#u-20-APR-2017), [19](#u-19-APR-2017), [18](#u-18-APR-2017), [17](#u-17-APR-2017), [13](#u-13-APR-2017), [12](#u-12-APR-2017), [11](#u-11-APR-2017), [10](#u-10-APR-2017), [7](#u-7-APR-2017), [6](#u-6-APR-2017), [5](#u-5-APR-2017)
      - **MAR** [23](#u-23-MAR-2017), [22](#u-22-MAR-2017), [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
@@ -75,6 +75,27 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-8-MAY-2017">Update: 8 MAY 2017</a>
+
+Linking manager marginal utilities and manager actions remains difficult, but I have decided on the following plan to move forward.
+
+  - Develop a very simple criteria for assessing the fitness of adjusting costs in `strategy_fitness` in `game.c`. Do this in the `switch` function where `case 1:`, but include an `if` statement to make sure that `if(act_type == agentID)`, then the genetic algorithm knows that it's affecting all other user actions in the `-2` row. A **new function** `policy_to_counts` will be created in `game.c` which takes in the `ACTION` and `COST` arrays. This new function will assume two things.
+  
+    1. The *proportion* of `+`, `-`, and `0` actions (from the perspective of a stake-holder) will not change -- i.e., stake-holders will try to achieve the same ends in the next time step as they did in the previous time step. The `movem` column will be defined as `-` if `util_loc = 1` and `util_land = 1`, else it will be defined as `0` (again, from the stake-holder perspective, from the manager's perspective this is always `0` -- at least, I can't think of any reason why we would want it not to be zero.
+    
+    2. <s> Stake-holders will invest in whatever `+`, `-`, or `0` action is least costly. Hence to loosely predict stake-holder actions, the manager could simply assume that the stake-holder invests a proportion of their total budget to the least costly action, and based on the manager's set cost, puts their budget into those actions accordingly. Hence, if we had a farmer that wanted to increase crop yield by reducing resource abundance, and had to choose between `movem`, `killem`, and `castem` with costs of 10, 2, and 5, respectively, then the farmer would put all of their budget into `killem` (or a high proportion, at least). This requires the manager (whose actions are already set within the genetic algorithm) to get a proportion for each of the stake-holders actions, then divy their actions out based on the revised costs.</s>
+    
+Let's try all of the above again. We're trying to get from cost adjustments to fitness. We *have* the cost adjustments in hand; the manager population in the genetic algorithm is in the process of selecting which of these adjustments are best. The difficultly is now translating the cost adjustments to stake-holder actions, and figuring out just how *good* we want managers to be at assessing stake-holder actions. One extreme is to run the genetic algorithm in each *within* the manger's decision making to figure out how stake-holders will respond to policy change with a high degree of acurracy. Another extreme is to assume the sum total of each action will not change and to adjust costs accordingly. Perhaps, to start, we could define a new array within the new function `policy_to_counts`, `**sum_actions`, which would sum up all stake-holder actions for each resource type.
+
+| agent | type1 | type2 | type3 | util | u_loc | u_land | movem  | castem | killem | feedem | helpem | bankem |
+|-------|-------|-------|-------|------|-------|--------|--------|--------|--------|--------|--------|--------|
+| -2    |  1    |  0    | 0     | 10   | 10    | 10     | 32     |  2     |  16    |  0     |  0     |  0     |
+| -2    |  2    |  0    | 0     | 301  | 10    | 10     | 4      |  1     |  0     |  0     |  1     |  1     |
+
+The hypothetical `sum_actions` array above adds up all of the rows in the `ACTION` array where column 1 equals -2. For each resource we then get a picture of what is going to happen in the next generation (to some extent it is unrealistic to assume that managers have this detailed information, but then again, these are actions from the previous time step, so it's perhaps not too much of a stretch to assume that the manager has some idea what actions were taken). We also get a picture of the sum utilities for each resource type. **To project the consequences of manager cost adjustment**, managers can 
+
+
 
 > <a name="u-5-MAY-2017">Update: 5 MAY 2017</a>
 
