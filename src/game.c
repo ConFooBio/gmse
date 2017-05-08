@@ -396,7 +396,7 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
 void policy_to_counts(double ***population, int **interact_table, int int_num,
                       double *utilities, int agent, int layers, double **jaco,
                       double *count_change, double ***COST, double ***ACTION,
-                      int agentID, int ROWS){
+                      int agentID, int ROWS, int action_row, int manager_row){
     
     int row, col, layer, act_type, i, type1, type2, type3, cost_row;
     double old_cost, new_cost, cost_change, new_action, mean_cost, sum_actions;
@@ -413,55 +413,28 @@ void policy_to_counts(double ***population, int **interact_table, int int_num,
         }
     }
     
-    
-    for(row = 0; row < int_num; row++){
-        type1    = population[row][1][agent];
-        type2    = population[row][2][agent];
-        type3    = population[row][3][agent];
-        cost_row = 0;
-        while(agentID  != population[cost_row][0][agent] &&
-              type1    != population[cost_row][1][agent] &&
-              type2    != population[cost_row][2][agent] &&
-              type3    != population[cost_row][3][agent] &&
-              cost_row < ROWS
-        ){
-            cost_row++;
+    for(col = 7; col < 13; col++){
+        sum_actions = 0; 
+        mean_cost   = 0;
+        for(layer = 0; layer < layers; layer++){
+            sum_actions += ACTION[action_row][col][layer];
+            mean_cost   += (COST[action_row][col][layer] / layers);
         }
-        population[row][4][agent] = population[cost_row][4][agent];
-        population[row][5][agent] = population[cost_row][5][agent];
-        population[row][6][agent] = population[cost_row][6][agent];
-        for(col = 7; col < 13; col++){
-            sum_actions = 0; 
-            mean_cost   = 0;
-            for(layer = 0; layer < layers; layer++){
-                sum_actions += ACTION[row][col][layer];
-                mean_cost   += (COST[row][col][layer] / layers);
-            }
-            old_cost    = mean_cost;
-            new_cost    = population[cost_row][col][agent];
-            cost_change = old_cost / new_cost;
-            new_action  = sum_actions * cost_change;
-            population[row][col][agent] = floor(new_action);
-        }
+        old_cost    = mean_cost;
+        new_cost    = population[manager_row][col][agent];
+        cost_change = old_cost / new_cost;
+        new_action  = sum_actions * cost_change;
+        population[row][col][agent] = floor(new_action);
     }
     
-    for(row = 0; row < int_num; row++){            
-        act_type   = (int) population[row][0][agent];
-        if(act_type == -2){
-            res_to_counts(population, interact_table, int_num, count_change, 
-                          utilities, jaco, row, agent);
-        }
-    }
-    
+    res_to_counts(population, interact_table, int_num, count_change, utilities, 
+                  jaco, action_row, agent);
 
-    
-    
     for(row = 0; row < int_num; row++){
         for(col = 4; col < 13; col++){
             population[row][col][agent] = hold_actions[row][col];
         }
     }
-    
     
     for(row = 0; row < int_num; row++){
         free(hold_actions[row]);
@@ -485,7 +458,7 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
                      int ROWS, double **agent_array, double **jaco,
                      int **interact_table, int interest_num, int agentID){
     
-    int agent, i, row, act_type, interest_row;
+    int agent, i, row, act_type, action_row, manager_row, type1, type2, type3;
     double agent_fitness, *count_change, foc_effect;
     double movem, castem, killem, feedem, helpem;
     double utility, *utilities;
@@ -498,12 +471,23 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
             count_change[i] = 0; /* Initialise all count changes at zero */
             utilities[i]    = 0; /* Same for utilities */
         }
-        interest_row = 0;
-        for(row = 0; row < ROWS; row++){
-            act_type   = (int) population[row][0][agent];
-            if(act_type == agentID){
+        action_row  = 0;
+        while(population[action_row][0][agent] < -1){
+            type1 = population[action_row][1][agent];
+            type2 = population[action_row][2][agent];
+            type3 = population[action_row][3][agent];
+            manager_row = 0;
+            while(population[manager_row][0][agent] == agentID &&
+                  population[manager_row][1][agent] == type1   &&
+                  population[manager_row][2][agent] == type2   &&
+                  population[manager_row][3][agent] == type3
+            ){
+                manager_row++;
             }
         }
+        
+        
+        
         fitnesses[agent] = 0;
         for(i = 0; i < interest_num; i++){
             fitnesses[agent] += count_change[i] * utilities[i];
