@@ -385,35 +385,31 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
 
 /* =============================================================================
  * This function sums (or averages) a row of COST or ACTION across all layers
- *    array: The array that is meant to be summed or averaged
- *    out_vector: The vector where the summed/average values are to be stored
+ *    array: The 3D array that is meant to be summed or averaged
+ *    out: The 2D array where the summed/average values are to be stored
  *    get_mean: TRUE (1) or FALSE (0) indiciating whether to get mean vs sum
- *    from: The starting column from which values will be extracted
- *    to: The ending column from which values will be extracted
+ *    ROWS: Number of rows in array
+ *    COLS: Number of cols in array
  *    total_layers: How many layers there are in array (depth)
- *    action_row: Which row of the array column elements are summed over
  * ========================================================================== */
-void sum_array_layers(double ***array, double *out_vector, int get_mean,
-                      int from, int to, int total_layers, int action_row){
+void sum_array_layers(double ***array, double **out, int get_mean, int ROWS,
+                      int COLS, int layers){
     
-    int row, col, layer, act_type, i, type1, type2, type3, cost_row;
-    double old_cost, new_cost, cost_change, new_action, mean_cost, sum_actions;
-    double *actions;
-    
-    for(col = from; col < to; col++){
-        sum_actions = 0; 
-        mean_cost   = 0;
-        if(get_mean == 1){
-            sum_actions += (array[action_row][col][layer] / total_layers);
-        }else{
-            sum_actions += array[action_row][col][layer];
+    int row, col, layer;
+
+    for(row = 0; row < ROWS; row++){
+        for(col = 0; col < COLS; col++){
+            if(get_mean == 1){
+                for(layer = 0; layer < layers; layer++){
+                    out[row][col] += (array[row][col][layer] / layers);
+                }
+            }else{
+                for(layer = 0; layer < layers; layer++){
+                    out[row][col] += array[row][col][layer];
+                }                
+            }
         }
-        out_vector[col] =  sum_actions;
     }
-    from--;
-    do{
-        out_vector[from] = 0;
-    }while(from > 0);
 }
 
 
@@ -421,53 +417,31 @@ void sum_array_layers(double ***array, double *out_vector, int get_mean,
 /* =============================================================================
  * This function updates count change and utility arrays for changes in policy
  *     population: The population array of agents in the genetic algorithm
- *     interact_table: The lookup table for figuring out how resources interact
- *     int_num: The number of rows and cols in jac, and rows in the lookup
- *     utilities: A vector of the utilities of each resource/landscape level
- *     agent: The agent in the population whose fitness is being assessed
- *     layers: The number of layers (z dimension) in the COST and ACTION arrays
- *     COST: The cost array, for comparison with how costs change with actions
- *     ACTION: The action array to summarise current stake-holder actions
- *     agentID: The ID of the agent doing policy (should probably always be 1)
+ *     merged_acts: The action 2D array of summed elements across 3D ACTION
+ *     agent: The agent (layer) in the population being simulated
+ *     merged_costs: The mean cost paid for each element in the ACTION array
+ *     act_change: The array of predicted new actions given new costs
+ *     action_row: The row where the action and old costs are located
+ *     manager_row: The row where the new costs from the manager are located
+ *     COLS: The number of columns in the ACTION and COST arrays
  * ========================================================================== */
-void policy_to_counts(double ***population, int **interact_table, int int_num,
-                      double *utilities, int agent, int layers, double **jaco,
-                      double *count_change, double ***COST, double ***ACTION,
-                      int agentID, int ROWS, int action_row, int manager_row,
-                      double *merged_acts, double *merged_costs){
+void policy_to_counts(double ***population, double **merged_acts, int agent,
+                      double **merged_costs, double **act_change, 
+                      int action_row, int manager_row, int COLS){
     
-    int row, col, layer, act_type, i, type1, type2, type3, cost_row;
-    double old_cost, new_cost, cost_change, new_action, mean_cost, sum_actions;
-    double *hold_actions;
+    int col;
+    double old_cost, new_cost, cost_change, new_action;
     
-    hold_actions = malloc(13 * sizeof(double));
-    
-    for(i = 0; i < 13; i++){
-        hold_actions[i] = population[action_row][i][agent];
-    }
-    
-    for(col = 7; col < 13; col++){
-        sum_actions = 0; 
-        mean_cost   = 0;
-        for(layer = 0; layer < layers; layer++){
-            sum_actions += ACTION[action_row][col][layer];
-            mean_cost   += (COST[action_row][col][layer] / layers);
-        }
-        old_cost    = merged_cost[col];
+    for(col = 0; col < COLS; col++){
+        old_cost    = merged_costs[action_row][col];
         new_cost    = population[manager_row][col][agent];
+        if(new_cost == 0){
+            new_cost = 0.5; /* Need to avoid Inf increase in cost somehow */
+        }
         cost_change = old_cost / new_cost;
-        new_action  = sum_actions * cost_change;
-        population[action_row][col][agent] = floor(new_action);
+        new_action  = merged_acts[action_row][col] * cost_change;
+        act_change[action_row][col] = floor(new_action);
     }
-    
-    res_to_counts(population, interact_table, int_num, count_change, utilities, 
-                  jaco, action_row, agent);
-
-    for(i = 0; i < 13; i++){
-        population[action_row][i][agent] = hold_actions[i];
-    }
-
-    free(hold_actions);
 }
 
 /* =============================================================================
@@ -485,65 +459,88 @@ void policy_to_counts(double ***population, int **interact_table, int int_num,
 void manager_fitness(double *fitnesses, double ***population, int pop_size, 
                      int ROWS, double **agent_array, double **jaco,
                      int **interact_table, int interest_num, int agentID,
-                     double ***COST, double ***ACTION, int ac_lyr){
+                     double ***COST, double ***ACTION, int COLS, int layers){
     
     int agent, i, row, act_type, action_row, manager_row, type1, type2, type3;
-    double agent_fitness, *count_change, foc_effect, change_dev;
-    double movem, castem, killem, feedem, helpem;
-    double utility, *utilities, *merged_acts, *merged_costs;
+    double agent_fitness, *count_change, foc_effect, change_dev, max_dev;
+    double movem, castem, killem, feedem, helpem, *dev_from_util;
+    double utility, *utils, **merged_acts, **merged_costs, **act_change;
     
-    count_change = malloc(interest_num * sizeof(int));
-    utilities    = malloc(interest_num * sizeof(int));
-    merged_acts  = malloc(ac_lyr * sizeof(double));
-    merged_costs = malloc(ac_lyr * sizeof(double));
-    
-
-    
-    
-    for(agent = 0; agent < pop_size; agent++){
-        for(i = 0; i < interest_num; i++){
-            count_change[i] = 0; /* Initialise all count changes at zero */
-            utilities[i]    = 0; /* Same for utilities */
-        }
-        action_row  = 0;
-        while(population[action_row][0][agent] < -1){
-            type1 = population[action_row][1][agent];
-            type2 = population[action_row][2][agent];
-            type3 = population[action_row][3][agent];
-            manager_row = 0;
-            while(population[manager_row][0][agent] == agentID &&
-                  population[manager_row][1][agent] == type1   &&
-                  population[manager_row][2][agent] == type2   &&
-                  population[manager_row][3][agent] == type3
-            ){
-                manager_row++;
-            }
-            
-            sum_array_layers(ACTION, merged_acts, 0, 7, 13, ac_lyr, action_row);
-            sum_array_layers(COST, merged_costs, 1, 7, 13, ac_lyr, action_row);
-
-            
-        }
-        
-        /* Get the marginal utilities into utilities by running policy_to_counts
-         * and get the count_change the same way. The above runs thorugh this
-         * for each agent and for each resource Here still within the agent loop
-         * we need to get the vectors summed appropriately to a reasonable
-         * fitness metric (keeping in mind that it's not just ordinal
-         */
-        
-        
-        fitnesses[agent] = 0;
-        for(i = 0; i < interest_num; i++){ /* Minimises dev from marg util*/
-            change_dev       =  (count_change[i] - utilities[i]) * 
-                                (count_change[i] - utilities[i]) + 1;
-            fitnesses[agent] += (1 / change_dev);
-        }
+    count_change  = malloc(interest_num * sizeof(int));
+    utils         = malloc(interest_num * sizeof(int));
+    dev_from_util = malloc(interest_num * sizeof(double));
+    merged_acts   = malloc(ROWS * sizeof(double *));
+    for(i = 0; i < ROWS; i++){
+        merged_acts[i] = malloc(COLS * sizeof(double));
+    }
+    merged_costs = malloc(ROWS * sizeof(double *));
+    for(i = 0; i < ROWS; i++){
+        merged_costs[i] = malloc(COLS * sizeof(double));
+    }
+    act_change = malloc(ROWS * sizeof(double *));
+    for(i = 0; i < ROWS; i++){
+        act_change[i] = malloc(COLS * sizeof(double));
     }
     
+    sum_array_layers(ACTION, merged_acts, 0, ROWS, COLS, layers);
+    sum_array_layers(COST,  merged_costs, 1, ROWS, COLS, layers);
+    
+    max_dev = 0;
+    for(agent = 0; agent < pop_size; agent++){
+        for(action_row = 0; action_row < interest_num; action_row++){
+            count_change[action_row] = 0; /* Initialise at zero */
+            utils[action_row]        = 0; /* Same for utilities */
+            while(population[action_row][0][agent] < -1){
+                type1 = population[action_row][1][agent];
+                type2 = population[action_row][2][agent];
+                type3 = population[action_row][3][agent];
+                manager_row = 0;
+                while(population[manager_row][0][agent] == agentID &&
+                      population[manager_row][1][agent] == type1   &&
+                      population[manager_row][2][agent] == type2   &&
+                      population[manager_row][3][agent] == type3
+                ){
+                    manager_row++;
+                }
+            }
+            policy_to_counts(population, merged_acts, agent, merged_costs, 
+                             act_change, action_row, manager_row, COLS);
+            foc_effect  = 0.0;
+            foc_effect -= act_change[action_row][9];  /* See Issue #23 */
+            foc_effect += act_change[action_row][10]; 
+            foc_effect += act_change[action_row][11]; 
+            for(i = 0; i < interest_num; i++){
+                count_change[i] += foc_effect * jaco[action_row][i];
+            }
+            utils[action_row] = population[manager_row][4][agent];
+        }
+        for(i = 0; i < interest_num; i++){ /* Minimises dev from marg util*/
+            change_dev += (count_change[i]-utils[i])*(count_change[i]-utils[i]);
+        } 
+        if(change_dev > max_dev){
+            max_dev = change_dev;
+        }
+        dev_from_util[agent] = change_dev;
+    }
+    
+    for(agent = 0; agent < pop_size; agent++){
+        fitnesses[agent] = max_dev - dev_from_util[agent];
+    }
+    
+    for(i = 0; i < ROWS; i++){
+        free(act_change[i]);
+    }
+    free(act_change);
+    for(i = 0; i < ROWS; i++){
+        free(merged_costs[i]);
+    }
     free(merged_costs);
+    for(i = 0; i < ROWS; i++){
+        free(merged_acts[i]);
+    }
     free(merged_acts);
-    free(utilities);
+    free(dev_from_util);
+    free(utils);
     free(count_change);
 }
 
