@@ -377,12 +377,6 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
     free(count_change);
 }
 
-
-
-
-
-
-
 /* =============================================================================
  * This function sums (or averages) a row of COST or ACTION across all layers
  *    array: The 3D array that is meant to be summed or averaged
@@ -412,10 +406,8 @@ void sum_array_layers(double ***array, double **out, int get_mean, int ROWS,
     }
 }
 
-
-
 /* =============================================================================
- * This function updates count change and utility arrays for changes in policy
+ * This function updates a temporary action array for changes in policy
  *     population: The population array of agents in the genetic algorithm
  *     merged_acts: The action 2D array of summed elements across 3D ACTION
  *     agent: The agent (layer) in the population being simulated
