@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
  
-     - **MAY** [8](#u-8-MAY-2017), [5](#u-5-MAY-2017), [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
+     - **MAY** [9](#u-9-MAY-2017), [8](#u-8-MAY-2017), [5](#u-5-MAY-2017), [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
      - **APR** [28](#u-28-APR-2017), [26](#u-26-APR-2017), [25](#u-25-APR-2017), [24](#u-24-APR-2017), [20](#u-20-APR-2017), [19](#u-19-APR-2017), [18](#u-18-APR-2017), [17](#u-17-APR-2017), [13](#u-13-APR-2017), [12](#u-12-APR-2017), [11](#u-11-APR-2017), [10](#u-10-APR-2017), [7](#u-7-APR-2017), [6](#u-6-APR-2017), [5](#u-5-APR-2017)
      - **MAR** [23](#u-23-MAR-2017), [22](#u-22-MAR-2017), [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
@@ -75,6 +75,186 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-9-MAY-2017">Update: 9 MAY 2017</a>
+
+**New [Issue #23](https://github.com/bradduthie/gmse/issues/23): Revise predicted consequences of user and manager actions**
+
+In functions in the genetic algorithm `res_to_counts` and `policy_to_counts`, the projected consequences of actions needs to be fine tuned. As of now, it predicts one fewer resource from `movem`, `killem`, and `castem`, and one more resource from `feedem` and `helpem` in `res_to_counts`. In `policy_to_counts`, it predicts one fewer resource for `killem` and one more resource for `feedem` and `helpem`. Really, there should probably at least be an option to use more precise estimates of what will happen. For the user function, this matters a bit less because stake-holders typically just want more or less of a resource. Managers, however, are trying to hit a middle ground a lot of the time; it is also more reasonable to assume that they have demographic information on the resources of interest.
+
+**More writing and re-writing the manager genetic algorithm**
+
+I have completed an initial draft of the manager fitness function `manager_fitness` and its associated sub-functions `policy_to_counts` and `sum_array_layers`. The function `manager_fitness` might need to be pruned a bit by adding a third sub-function, as it's a bit long at the moment.
+
+```
+/* =============================================================================
+ * This is a preliminary function that checks the fitness of each agent by 
+ * passing through a loop to payoffs_to_fitness
+ *     fitnesses: Array to order fitnesses of the agents in the population
+ *     population: array of the population that is made (malloc needed earlier)
+ *     pop_size: The size of the total population (layers to population)
+ *     ROWS: Number of rows in the COST and ACTION arrays
+ *     agent_array: The agent array
+ *     jaco: The jacobian matrix of resource and landscape interactions
+ *     interact_table: Lookup table for figuring out rows of jaco and types
+ *     interest_num: The number of rows and cols in jac, and rows in lookup
+ * ========================================================================== */
+void manager_fitness(double *fitnesses, double ***population, int pop_size, 
+                     int ROWS, double **agent_array, double **jaco,
+                     int **interact_table, int interest_num, int agentID,
+                     double ***COST, double ***ACTION, int COLS, int layers){
+    
+    int agent, i, row, act_type, action_row, manager_row, type1, type2, type3;
+    double agent_fitness, *count_change, foc_effect, change_dev, max_dev;
+    double movem, castem, killem, feedem, helpem, *dev_from_util;
+    double utility, *utils, **merged_acts, **merged_costs, **act_change;
+    
+    count_change  = malloc(interest_num * sizeof(int));
+    utils         = malloc(interest_num * sizeof(int));
+    dev_from_util = malloc(interest_num * sizeof(double));
+    merged_acts   = malloc(ROWS * sizeof(double *));
+    for(i = 0; i < ROWS; i++){
+        merged_acts[i] = malloc(COLS * sizeof(double));
+    }
+    merged_costs = malloc(ROWS * sizeof(double *));
+    for(i = 0; i < ROWS; i++){
+        merged_costs[i] = malloc(COLS * sizeof(double));
+    }
+    act_change = malloc(ROWS * sizeof(double *));
+    for(i = 0; i < ROWS; i++){
+        act_change[i] = malloc(COLS * sizeof(double));
+    }
+    
+    sum_array_layers(ACTION, merged_acts, 0, ROWS, COLS, layers);
+    sum_array_layers(COST,  merged_costs, 1, ROWS, COLS, layers);
+    
+    max_dev = 0;
+    for(agent = 0; agent < pop_size; agent++){
+        for(action_row = 0; action_row < interest_num; action_row++){
+            count_change[action_row] = 0; /* Initialise at zero */
+            utils[action_row]        = 0; /* Same for utilities */
+            while(population[action_row][0][agent] < -1){
+                type1 = population[action_row][1][agent];
+                type2 = population[action_row][2][agent];
+                type3 = population[action_row][3][agent];
+                manager_row = 0;
+                while(population[manager_row][0][agent] == agentID &&
+                      population[manager_row][1][agent] == type1   &&
+                      population[manager_row][2][agent] == type2   &&
+                      population[manager_row][3][agent] == type3
+                ){
+                    manager_row++;
+                }
+            }
+            policy_to_counts(population, merged_acts, agent, merged_costs, 
+                             act_change, action_row, manager_row, COLS);
+            foc_effect  = 0.0;
+            foc_effect -= act_change[action_row][9];  /* See Issue #23 */
+            foc_effect += act_change[action_row][10]; 
+            foc_effect += act_change[action_row][11]; 
+            for(i = 0; i < interest_num; i++){
+                count_change[i] += foc_effect * jaco[action_row][i];
+            }
+            utils[action_row] = population[manager_row][4][agent];
+        }
+        for(i = 0; i < interest_num; i++){ /* Minimises dev from marg util*/
+            change_dev += (count_change[i]-utils[i])*(count_change[i]-utils[i]);
+        } 
+        if(change_dev > max_dev){
+            max_dev = change_dev;
+        }
+        dev_from_util[agent] = change_dev;
+    }
+    
+    for(agent = 0; agent < pop_size; agent++){
+        fitnesses[agent] = max_dev - dev_from_util[agent];
+    }
+    
+    for(i = 0; i < ROWS; i++){
+        free(act_change[i]);
+    }
+    free(act_change);
+    for(i = 0; i < ROWS; i++){
+        free(merged_costs[i]);
+    }
+    free(merged_costs);
+    for(i = 0; i < ROWS; i++){
+        free(merged_acts[i]);
+    }
+    free(merged_acts);
+    free(dev_from_util);
+    free(utils);
+    free(count_change);
+}
+```
+The `policy_to_counts` function feeds new actions back to the main manager fitness function based on the new costs imposed by managers. We assume that new actions are proportional to the percent increase or reduction to costs (e.g., twice as many `killem` actions if the manager makes it cost half as much). I cases where the cost drops to zero (debating whether I want his to be possible -- probably not), we assume the new cost is 0.5 and calculate accordingly.
+
+```
+/* =============================================================================
+ * This function updates a temporary action array for changes in policy
+ *     population: The population array of agents in the genetic algorithm
+ *     merged_acts: The action 2D array of summed elements across 3D ACTION
+ *     agent: The agent (layer) in the population being simulated
+ *     merged_costs: The mean cost paid for each element in the ACTION array
+ *     act_change: The array of predicted new actions given new costs
+ *     action_row: The row where the action and old costs are located
+ *     manager_row: The row where the new costs from the manager are located
+ *     COLS: The number of columns in the ACTION and COST arrays
+ * ========================================================================== */
+void policy_to_counts(double ***population, double **merged_acts, int agent,
+                      double **merged_costs, double **act_change, 
+                      int action_row, int manager_row, int COLS){
+    
+    int col;
+    double old_cost, new_cost, cost_change, new_action;
+    
+    for(col = 0; col < COLS; col++){
+        old_cost    = merged_costs[action_row][col];
+        new_cost    = population[manager_row][col][agent];
+        if(new_cost == 0){
+            new_cost = 0.5; /* Need to avoid Inf increase in cost somehow */
+        }
+        cost_change = old_cost / new_cost;
+        new_action  = merged_acts[action_row][col] * cost_change;
+        act_change[action_row][col] = floor(new_action);
+    }
+}
+```
+
+The function `sum_array_layers` is basically an [apply](https://www.r-bloggers.com/the-r-apply-function-a-tutorial-with-examples/) function in R, except that it only works with the `COST` or `ACTION` arrays, and only in one dimension.
+
+```
+/* =============================================================================
+ * This function sums (or averages) a row of COST or ACTION across all layers
+ *    array: The 3D array that is meant to be summed or averaged
+ *    out: The 2D array where the summed/average values are to be stored
+ *    get_mean: TRUE (1) or FALSE (0) indiciating whether to get mean vs sum
+ *    ROWS: Number of rows in array
+ *    COLS: Number of cols in array
+ *    total_layers: How many layers there are in array (depth)
+ * ========================================================================== */
+void sum_array_layers(double ***array, double **out, int get_mean, int ROWS,
+                      int COLS, int layers){
+    
+    int row, col, layer;
+
+    for(row = 0; row < ROWS; row++){
+        for(col = 0; col < COLS; col++){
+            if(get_mean == 1){
+                for(layer = 0; layer < layers; layer++){
+                    out[row][col] += (array[row][col][layer] / layers);
+                }
+            }else{
+                for(layer = 0; layer < layers; layer++){
+                    out[row][col] += array[row][col][layer];
+                }                
+            }
+        }
+    }
+}
+```
+
+I have not tested any of these functions at all. They almost certainly contain some bugs at the moment, so a lot of work is going to need to debugging them and making sure that they actually are doing what I want them to do. Tomorrow might be a good time for a thorough debugging and memory leak checks. If all this works though, managers should be able to dynamically change costs in response to stake-holders to manage resources -- once the appropriate call from `manager.c` is in place (it hasn't been coded yet, but this should be trivial to write). **Note that** the git history immediately prior to commit [79446e394133bb9e6b4792d334ab863e32ef0881](https://github.com/bradduthie/gmse/commit/79446e394133bb9e6b4792d334ab863e32ef0881) will show some attempts at getting the above functions working in different ways. I settled on the above after restructuring the code considerably for both speed and readability.
 
 > <a name="u-8-MAY-2017">Update: 8 MAY 2017</a>
 
