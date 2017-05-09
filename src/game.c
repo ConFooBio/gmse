@@ -381,6 +381,43 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
 
 
 
+
+
+/* =============================================================================
+ * This function sums (or averages) a row of COST or ACTION across all layers
+ *    array: The array that is meant to be summed or averaged
+ *    out_vector: The vector where the summed/average values are to be stored
+ *    get_mean: TRUE (1) or FALSE (0) indiciating whether to get mean vs sum
+ *    from: The starting column from which values will be extracted
+ *    to: The ending column from which values will be extracted
+ *    total_layers: How many layers there are in array (depth)
+ *    action_row: Which row of the array column elements are summed over
+ * ========================================================================== */
+void sum_array_layers(double ***array, double *out_vector, int get_mean,
+                      int from, int to, int total_layers, int action_row){
+    
+    int row, col, layer, act_type, i, type1, type2, type3, cost_row;
+    double old_cost, new_cost, cost_change, new_action, mean_cost, sum_actions;
+    double *actions;
+    
+    for(col = from; col < to; col++){
+        sum_actions = 0; 
+        mean_cost   = 0;
+        if(get_mean == 1){
+            sum_actions += (array[action_row][col][layer] / total_layers);
+        }else{
+            sum_actions += array[action_row][col][layer];
+        }
+        out_vector[col] =  sum_actions;
+    }
+    from--;
+    do{
+        out_vector[from] = 0;
+    }while(from > 0);
+}
+
+
+
 /* =============================================================================
  * This function updates count change and utility arrays for changes in policy
  *     population: The population array of agents in the genetic algorithm
@@ -396,13 +433,13 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
 void policy_to_counts(double ***population, int **interact_table, int int_num,
                       double *utilities, int agent, int layers, double **jaco,
                       double *count_change, double ***COST, double ***ACTION,
-                      int agentID, int ROWS, int action_row, int manager_row){
+                      int agentID, int ROWS, int action_row, int manager_row,
+                      double *merged_acts, double *merged_costs){
     
     int row, col, layer, act_type, i, type1, type2, type3, cost_row;
     double old_cost, new_cost, cost_change, new_action, mean_cost, sum_actions;
-    double **mean_costs, *hold_actions;
+    double *hold_actions;
     
-
     hold_actions = malloc(13 * sizeof(double));
     
     for(i = 0; i < 13; i++){
@@ -416,7 +453,7 @@ void policy_to_counts(double ***population, int **interact_table, int int_num,
             sum_actions += ACTION[action_row][col][layer];
             mean_cost   += (COST[action_row][col][layer] / layers);
         }
-        old_cost    = mean_cost;
+        old_cost    = merged_cost[col];
         new_cost    = population[manager_row][col][agent];
         cost_change = old_cost / new_cost;
         new_action  = sum_actions * cost_change;
@@ -447,15 +484,21 @@ void policy_to_counts(double ***population, int **interact_table, int int_num,
  * ========================================================================== */
 void manager_fitness(double *fitnesses, double ***population, int pop_size, 
                      int ROWS, double **agent_array, double **jaco,
-                     int **interact_table, int interest_num, int agentID){
+                     int **interact_table, int interest_num, int agentID,
+                     double ***COST, double ***ACTION, int ac_lyr){
     
     int agent, i, row, act_type, action_row, manager_row, type1, type2, type3;
     double agent_fitness, *count_change, foc_effect, change_dev;
     double movem, castem, killem, feedem, helpem;
-    double utility, *utilities;
+    double utility, *utilities, *merged_acts, *merged_costs;
     
     count_change = malloc(interest_num * sizeof(int));
     utilities    = malloc(interest_num * sizeof(int));
+    merged_acts  = malloc(ac_lyr * sizeof(double));
+    merged_costs = malloc(ac_lyr * sizeof(double));
+    
+
+    
     
     for(agent = 0; agent < pop_size; agent++){
         for(i = 0; i < interest_num; i++){
@@ -475,6 +518,11 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
             ){
                 manager_row++;
             }
+            
+            sum_array_layers(ACTION, merged_acts, 0, 7, 13, ac_lyr, action_row);
+            sum_array_layers(COST, merged_costs, 1, 7, 13, ac_lyr, action_row);
+
+            
         }
         
         /* Get the marginal utilities into utilities by running policy_to_counts
@@ -492,6 +540,9 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
             fitnesses[agent] += (1 / change_dev);
         }
     }
+    
+    free(merged_costs);
+    free(merged_acts);
     free(utilities);
     free(count_change);
 }
