@@ -460,7 +460,7 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
     
     count_change  = malloc(interest_num * sizeof(int));
     utils         = malloc(interest_num * sizeof(int));
-    dev_from_util = malloc(interest_num * sizeof(double));
+    dev_from_util = malloc(pop_size * sizeof(double));
     merged_acts   = malloc(ROWS * sizeof(double *));
     for(i = 0; i < ROWS; i++){
         merged_acts[i] = malloc(COLS * sizeof(double));
@@ -480,25 +480,23 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
     max_dev = 0;
     for(agent = 0; agent < pop_size; agent++){
         for(action_row = 0; action_row < interest_num; action_row++){
-            count_change[action_row] = 0; /* Initialise at zero */
-            utils[action_row]        = 0; /* Same for utilities */
-            while(population[action_row][0][agent] < -1){
-                type1 = population[action_row][1][agent];
-                type2 = population[action_row][2][agent];
-                type3 = population[action_row][3][agent];
-                manager_row = 0;
-                while(population[manager_row][0][agent] == agentID &&
-                      population[manager_row][1][agent] == type1   &&
-                      population[manager_row][2][agent] == type2   &&
-                      population[manager_row][3][agent] == type3
-                ){
-                    manager_row++;
-                }
+            count_change[action_row] = 0; 
+            utils[action_row]        = 0; 
+            manager_row              = 0;
+            type1                    = population[action_row][1][agent];
+            type2                    = population[action_row][2][agent];
+            type3                    = population[action_row][3][agent];
+            while(population[manager_row][0][agent] == agentID &&
+                  population[manager_row][1][agent] == type1   &&
+                  population[manager_row][2][agent] == type2   &&
+                  population[manager_row][3][agent] == type3
+            ){
+                manager_row++;
             }
             policy_to_counts(population, merged_acts, agent, merged_costs, 
                              act_change, action_row, manager_row, COLS);
             foc_effect  = 0.0;
-            foc_effect -= act_change[action_row][9];  /* See Issue #23 */
+            foc_effect -= act_change[action_row][9];  
             foc_effect += act_change[action_row][10]; 
             foc_effect += act_change[action_row][11]; 
             for(i = 0; i < interest_num; i++){
@@ -506,7 +504,7 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
             }
             utils[action_row] = population[manager_row][4][agent];
         }
-        for(i = 0; i < interest_num; i++){ /* Minimises dev from marg util*/
+        for(i = 0; i < interest_num; i++){ 
             change_dev += (count_change[i]-utils[i])*(count_change[i]-utils[i]);
         } 
         if(change_dev > max_dev){
@@ -636,8 +634,6 @@ void place_winners(double ****population, int *winners, int pop_size, int ROWS,
     }
     free(NEW_POP);
 }
-
-
 
 
 /* 
