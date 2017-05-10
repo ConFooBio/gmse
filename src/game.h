@@ -30,4 +30,5 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double **JACOBIAN, int **interact_table, 
         double *paras, int xdim, int ydim, int res_number, int land_x, 
         int land_y, int land_z, int trait_number, int jaco_dim, int agent,
-        int layers);
+        int managing, int ACT_rows, int ACT_cols, int ACT_depth,
+        int interest_num);

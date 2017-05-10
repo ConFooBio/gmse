@@ -649,7 +649,8 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double **JACOBIAN, int **interact_table, 
         double *paras, int xdim, int ydim, int res_number, int land_x, 
         int land_y, int land_z, int trait_number, int jaco_dim, int agent,
-        int layers){
+        int managing, int ACT_rows, int ACT_cols, int ACT_depth, 
+        int interest_num){
     
     int row, col, gen, layer;
     int sampleK, chooseK;
@@ -708,8 +709,14 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
   
         constrain_costs(POPULATION, COST, agent, popsize, xdim, ydim, budget);
 
-        strategy_fitness(fitnesses, POPULATION, popsize, xdim, AGENT, JACOBIAN, 
-                         interact_table, jaco_dim);
+        if(managing == 1){
+            manager_fitness(fitnesses, POPULATION, popsize, ACT_rows, AGENT, 
+                            JACOBIAN, interact_table, interest_num, agentID,
+                            COST,ACTION, ACT_cols, ACT_depth);
+        }else{
+            strategy_fitness(fitnesses, POPULATION, popsize, xdim, AGENT, 
+                             JACOBIAN, interact_table, jaco_dim);
+        }
   
         tournament(fitnesses, winners, popsize, sampleK, chooseK);
    
