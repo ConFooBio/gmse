@@ -288,10 +288,10 @@ void set_action_costs(double ***ACTION, double ***COST, int manID, int mlayer,
         type1                    = ACTION[cost_row][1][mlayer];
         type2                    = ACTION[cost_row][2][mlayer];
         type3                    = ACTION[cost_row][3][mlayer];
-        while(ACTION[manager_row][0][mlayer] == manID   &&
-              ACTION[manager_row][1][mlayer] == type1   &&
-              ACTION[manager_row][2][mlayer] == type2   &&
-              ACTION[manager_row][3][mlayer] == type3
+        while(ACTION[manager_row][0][mlayer] != manID   &&
+              ACTION[manager_row][1][mlayer] != type1   &&
+              ACTION[manager_row][2][mlayer] != type2   &&
+              ACTION[manager_row][3][mlayer] != type3
         ){
             manager_row++;
         }
@@ -610,9 +610,9 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     
     ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
        interact_table, paras, c_x, c_y, res_number, land_x, land_y, land_z, 
-       trait_number, jacobian_dim, 0, 1, a_x, a_y, a_z);
+       trait_number, jacobian_dim - 1, 0, 1, a_x, a_y, a_z);
     
-    set_action_costs(actions, costs, 1, 0, jacobian_dim, a_z);
+    set_action_costs(actions, costs, 1, 0, jacobian_dim - 1, a_z);
     
     free(marg_util);
     free(temp_util);
