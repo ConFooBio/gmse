@@ -118,6 +118,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     COST   <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
     COST[COST < 1] <- 1; # Need this until a proper make_cost function is made
     COST[,8,]      <- 1;
+    COST[,10,]     <- 1;
     COST[,1:7,]    <- 10000;
     #COST[,11:12,2:3] <- 1000;
     ACTION <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
@@ -125,6 +126,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     ACTION[1,5,1]    <- 100;
     ACTION[2,5,2]    <- 100;
     ACTION[2,5,3]    <- 100;
+    ACTION[1,5,1]    <- 200;
+    AGENTS[1,17]     <- 2000;
     
     time       <- time + 1;  # Ready for the initial time step.
     cells      <- land_dim_1 * land_dim_2; # Number of cells in the landscape
@@ -247,6 +250,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                             observation = OBSERVATION_r,
                             model       = "IBM"
         );
+        ACTION <- MANAGER[[4]];
+        COST   <- MANAGER[[5]];
         
         USERS <- user(resource   = RESOURCES,
                       agent      = AGENTS,

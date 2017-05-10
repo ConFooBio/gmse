@@ -424,11 +424,12 @@ void policy_to_counts(double ***population, double **merged_acts, int agent,
     int col;
     double old_cost, new_cost, cost_change, new_action;
     
-    for(col = 0; col < COLS; col++){
+    for(col = 7; col < COLS; col++){
         old_cost    = merged_costs[action_row][col];
         new_cost    = population[manager_row][col][agent];
-        if(new_cost == 0){
-            new_cost = 0.5; /* Need to avoid Inf increase in cost somehow */
+        if(new_cost <= 0){
+            new_cost = 1;
+            population[manager_row][col][agent] = new_cost;
         }
         cost_change = old_cost / new_cost;
         new_action  = merged_acts[action_row][col] * cost_change;
@@ -486,10 +487,10 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
             type1                    = population[action_row][1][agent];
             type2                    = population[action_row][2][agent];
             type3                    = population[action_row][3][agent];
-            while(population[manager_row][0][agent] == agentID &&
-                  population[manager_row][1][agent] == type1   &&
-                  population[manager_row][2][agent] == type2   &&
-                  population[manager_row][3][agent] == type3
+            while(population[manager_row][0][agent] != agentID &&
+                  population[manager_row][1][agent] != type1   &&
+                  population[manager_row][2][agent] != type2   &&
+                  population[manager_row][3][agent] != type3
             ){
                 manager_row++;
             }
@@ -724,7 +725,13 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     
     for(row = 0; row < xdim; row++){
         for(col = 0; col < ydim; col++){
-            ACTION[row][col][agent] = POPULATION[row][col][agent];
+            if(managing == 1){
+                if(ACTION[row][0][agent] == -2){
+                    ACTION[row][col][agent] = POPULATION[row][col][agent];
+                }
+            }else{
+                ACTION[row][col][agent] = POPULATION[row][col][agent];
+            }
         }
     }
 

@@ -227,9 +227,6 @@ void transect_est(double **obs_array, double *para, int obs_array_rows,
     }
 }
 
-
-
-
 /* =============================================================================
  * This function uses the observation array to estimate resource abundances
  *     obs_array:      The observation array
@@ -270,6 +267,42 @@ void estimate_abundances(double **obs_array, double *para, int **interact_table,
             break;
         default:
             break;
+    }
+}
+
+
+/* =============================================================================
+ * This function uses the observation array to estimate resource abundances
+ *      COST:        An array of the cost of actions for each agent
+ *      ACTION:      An array of the action of agents
+ *      manID:       The ID of the managing agent (should usually be 1)
+ *      mRow:        The layer of the action column of manager (usually 0) 
+ * ========================================================================== */
+void set_action_costs(double ***ACTION, double ***COST, int manID, int mlayer,
+                      int interest_num, int total_layers){
+
+    int cost_row, manager_row, type1, type2, type3, layer;
+    
+    for(cost_row = 0; cost_row < interest_num; cost_row++){
+        manager_row              = 0;
+        type1                    = ACTION[cost_row][1][mlayer];
+        type2                    = ACTION[cost_row][2][mlayer];
+        type3                    = ACTION[cost_row][3][mlayer];
+        while(ACTION[manager_row][0][mlayer] == manID   &&
+              ACTION[manager_row][1][mlayer] == type1   &&
+              ACTION[manager_row][2][mlayer] == type2   &&
+              ACTION[manager_row][3][mlayer] == type3
+        ){
+            manager_row++;
+        }
+        for(layer = 0; layer < total_layers; layer++){
+            COST[cost_row][7][layer]  = ACTION[manager_row][7][mlayer];
+            COST[cost_row][8][layer]  = ACTION[manager_row][8][mlayer];
+            COST[cost_row][9][layer]  = ACTION[manager_row][9][mlayer];
+            COST[cost_row][10][layer] = ACTION[manager_row][10][mlayer];
+            COST[cost_row][11][layer] = ACTION[manager_row][11][mlayer];
+            COST[cost_row][12][layer] = ACTION[manager_row][12][mlayer];
+        }
     }
 }
 
@@ -575,32 +608,11 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
         }
     }
     
-    
     ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
        interact_table, paras, c_x, c_y, res_number, land_x, land_y, land_z, 
        trait_number, jacobian_dim, 0, 1, a_x, a_y, a_z);
     
-    
-    /* 1. Get summary statistics for resources from the observation array     */
-    /* 2. Place estimated resource abundances in a vector the size of int_d0  */
-    /* 3. Initialise new vector of size int_d0 with temp utilities of manager */  
-    /* 4. Subtract abundances from temp utilities to get marginal utilities   */
-    /* 5. Insert the marginal utilities into the agent = 1 col1 of ACTION     */
-    
-    /* 6. Run the genetic algorithm (add extension to interpet cost effects)  */
-    /* 7. Put in place the new ACTION array from 6                            */
-    /* 8. Adjust the COST array appropriately from the new manager actions    */
-    
-    /*
-    for(row = 0; row < int_d0; row++){
-        printf("%f\t", abun_est[row]);
-    }
-    printf(" | ");
-    for(row = 0; row < c_x; row++){
-        printf("%f\t", temp_util[row]);
-    }
-    printf("\n");
-    */
+    set_action_costs(actions, costs, 1, 0, jacobian_dim, a_z);
     
     free(marg_util);
     free(temp_util);
