@@ -393,6 +393,7 @@ void sum_array_layers(double ***array, double **out, int get_mean, int ROWS,
 
     for(row = 0; row < ROWS; row++){
         for(col = 0; col < COLS; col++){
+            out[row][col] = 0;
             if(get_mean == 1){
                 for(layer = 0; layer < layers; layer++){
                     out[row][col] += (array[row][col][layer] / layers);
@@ -487,9 +488,9 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
             type1                    = population[action_row][1][agent];
             type2                    = population[action_row][2][agent];
             type3                    = population[action_row][3][agent];
-            while(population[manager_row][0][agent] != agentID &&
-                  population[manager_row][1][agent] != type1   &&
-                  population[manager_row][2][agent] != type2   &&
+            while(population[manager_row][0][agent] != agentID ||
+                  population[manager_row][1][agent] != type1   ||
+                  population[manager_row][2][agent] != type2   ||
                   population[manager_row][3][agent] != type3
             ){
                 manager_row++;
@@ -505,14 +506,16 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
             }
             utils[action_row] = population[manager_row][4][agent];
         }
-        for(i = 0; i < interest_num; i++){ 
+        change_dev = 0;
+        for(i = 0; i < interest_num; i++){
             change_dev += (count_change[i]-utils[i])*(count_change[i]-utils[i]);
-        } 
+        }
         if(change_dev > max_dev){
             max_dev = change_dev;
         }
         dev_from_util[agent] = change_dev;
     }
+
     
     for(agent = 0; agent < pop_size; agent++){
         fitnesses[agent] = max_dev - dev_from_util[agent];

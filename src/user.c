@@ -562,7 +562,7 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
         agentID = agent_array[agent][0];
       
         if(agentID > 1){
-      
+            
             ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
                interact_table, paras, c_x, c_y, res_number, land_x, land_y, 
                land_z, trait_number, jacobian_dim, agent, 0, a_x, a_y, a_z);
