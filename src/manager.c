@@ -575,6 +575,12 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
         }
     }
     
+    /*
+    ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
+       interact_table, paras, c_x, c_y, res_number, land_x, land_y, land_z, 
+       trait_number, jacobian_dim, 0, 1, a_x, a_y, a_z);
+    */
+    
     /* 1. Get summary statistics for resources from the observation array     */
     /* 2. Place estimated resource abundances in a vector the size of int_d0  */
     /* 3. Initialise new vector of size int_d0 with temp utilities of manager */  

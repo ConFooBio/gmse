@@ -711,8 +711,8 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
 
         if(managing == 1){
             manager_fitness(fitnesses, POPULATION, popsize, ACT_rows, AGENT, 
-                            JACOBIAN, interact_table, interest_num, agentID,
-                            COST,ACTION, ACT_cols, ACT_depth);
+                            JACOBIAN, interact_table, jaco_dim, agentID,
+                            COST, ACTION, ACT_cols, ACT_depth);
         }else{
             strategy_fitness(fitnesses, POPULATION, popsize, xdim, AGENT, 
                              JACOBIAN, interact_table, jaco_dim);
