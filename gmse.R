@@ -129,7 +129,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     ACTION[1,5,1]    <- 2000;
     COST[,8:13,1]    <- 10000;
     COST[3,8:13,1]   <- 1;
-    AGENTS[1,17]     <- 2000;
+    AGENTS[1,17]     <- 100;
     
     time       <- time + 1;  # Ready for the initial time step.
     cells      <- land_dim_1 * land_dim_2; # Number of cells in the landscape

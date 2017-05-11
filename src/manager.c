@@ -609,10 +609,10 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
             i++;
         }
     }
-    
+
     ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
        interact_table, paras, c_x, c_y, res_number, land_x, land_y, land_z, 
-       trait_number, jacobian_dim - 1, 0, 1, a_x, a_y, a_z);
+       trait_number, 1, 0, 1, a_x, a_y, a_z);
     
     set_action_costs(actions, costs, 1, 0, jacobian_dim - 1, a_z, agent_array);
     

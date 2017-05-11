@@ -458,7 +458,7 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
                      int **interact_table, int interest_num, int agentID,
                      double ***COST, double ***ACTION, int COLS, int layers){
     
-    int agent, i, row, act_type, action_row, manager_row, type1, type2, type3;
+    int agent, i, m_lyr, act_type, action_row, manager_row, type1, type2, type3;
     double agent_fitness, *count_change, foc_effect, change_dev, max_dev;
     double movem, castem, killem, feedem, helpem, *dev_from_util;
     double utility, *utils, **merged_acts, **merged_costs, **act_change;
@@ -477,6 +477,11 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
     act_change = malloc(ROWS * sizeof(double *));
     for(i = 0; i < ROWS; i++){
         act_change[i] = malloc(COLS * sizeof(double));
+    }
+    
+    m_lyr = 0;
+    while(agent_array[m_lyr][0] != agentID && m_lyr < ROWS){
+        m_lyr++;
     }
     
     sum_array_layers(ACTION, merged_acts, 0, ROWS, COLS, layers, agent_array);
@@ -507,7 +512,8 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
             for(i = 0; i < interest_num; i++){
                 count_change[i] += foc_effect * jaco[action_row][i];
             }
-            utils[action_row] = population[manager_row][4][agent];
+            utils[action_row] = ACTION[manager_row][4][m_lyr];
+            /* printf("%d\t%f\t%f\n", agent, utils[0], population[manager_row][4][agent]); */
         }
         change_dev = 0;
         for(i = 0; i < interest_num; i++){
@@ -518,8 +524,7 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
         }
         dev_from_util[agent] = change_dev;
     }
-
-    
+        
     for(agent = 0; agent < pop_size; agent++){
         fitnesses[agent] = max_dev - dev_from_util[agent];
     }
@@ -652,8 +657,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double **JACOBIAN, int **interact_table, 
         double *paras, int xdim, int ydim, int res_number, int land_x, 
         int land_y, int land_z, int trait_number, int jaco_dim, int agent,
-        int managing, int ACT_rows, int ACT_cols, int ACT_depth, 
-        int interest_num){
+        int managing, int ACT_rows, int ACT_cols, int ACT_depth){
     
     int row, col, gen, layer;
     int sampleK, chooseK;
@@ -699,9 +703,10 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         fitnesses[row] = 0;
         winners[row]   = 0;
     }
-
+    
     initialise_pop(ACTION, COST, agent, popsize, budget, agent_seed, xdim, ydim, 
                    POPULATION);
+
     
     gen = 0;
     while(gen < generations){
@@ -711,7 +716,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         mutation(POPULATION, popsize, xdim, ydim, mutation_rate);
   
         constrain_costs(POPULATION, COST, agent, popsize, xdim, ydim, budget);
-
+        
         if(managing == 1){
             manager_fitness(fitnesses, POPULATION, popsize, ACT_rows, AGENT, 
                             JACOBIAN, interact_table, jaco_dim, agentID,
@@ -731,13 +736,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     
     for(row = 0; row < xdim; row++){
         for(col = 0; col < ydim; col++){
-            if(managing == 1){
-                if(ACTION[row][0][agent] == -2){
-                    ACTION[row][col][agent] = POPULATION[row][col][agent];
-                }
-            }else{
-                ACTION[row][col][agent] = POPULATION[row][col][agent];
-            }
+            ACTION[row][col][agent] = POPULATION[row][col][agent];
         }
     }
 
