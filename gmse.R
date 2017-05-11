@@ -126,7 +126,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     ACTION[1,5,1]    <- 100;
     ACTION[2,5,2]    <- 100;
     ACTION[2,5,3]    <- 100;
-    ACTION[1,5,1]    <- 2000;
+    ACTION[1,5,1]    <- 0;
     COST[,8:13,1]    <- 10000;
     COST[3,8:13,1]   <- 1;
     AGENTS[1,17]     <- 100;
