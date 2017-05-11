@@ -279,7 +279,7 @@ void estimate_abundances(double **obs_array, double *para, int **interact_table,
  *      mRow:        The layer of the action column of manager (usually 0) 
  * ========================================================================== */
 void set_action_costs(double ***ACTION, double ***COST, int manID, int mlayer,
-                      int interest_num, int total_layers){
+                      int interest_num, int total_layers, double **agent_array){
 
     int cost_row, manager_row, type1, type2, type3, layer;
     
@@ -296,12 +296,14 @@ void set_action_costs(double ***ACTION, double ***COST, int manID, int mlayer,
             manager_row++;
         }
         for(layer = 0; layer < total_layers; layer++){
-            COST[cost_row][7][layer]  = ACTION[manager_row][7][mlayer];
-            COST[cost_row][8][layer]  = ACTION[manager_row][8][mlayer];
-            COST[cost_row][9][layer]  = ACTION[manager_row][9][mlayer];
-            COST[cost_row][10][layer] = ACTION[manager_row][10][mlayer];
-            COST[cost_row][11][layer] = ACTION[manager_row][11][mlayer];
-            COST[cost_row][12][layer] = ACTION[manager_row][12][mlayer];
+            if(agent_array[layer][1] > 0){ /* Managers can't affect self */
+                COST[cost_row][7][layer]  = ACTION[manager_row][7][mlayer];
+                COST[cost_row][8][layer]  = ACTION[manager_row][8][mlayer];
+                COST[cost_row][9][layer]  = ACTION[manager_row][9][mlayer];
+                COST[cost_row][10][layer] = ACTION[manager_row][10][mlayer];
+                COST[cost_row][11][layer] = ACTION[manager_row][11][mlayer];
+                COST[cost_row][12][layer] = ACTION[manager_row][12][mlayer];
+            }
         }
     }
 }
@@ -612,7 +614,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
        interact_table, paras, c_x, c_y, res_number, land_x, land_y, land_z, 
        trait_number, jacobian_dim - 1, 0, 1, a_x, a_y, a_z);
     
-    set_action_costs(actions, costs, 1, 0, jacobian_dim - 1, a_z);
+    set_action_costs(actions, costs, 1, 0, jacobian_dim - 1, a_z, agent_array);
     
     free(marg_util);
     free(temp_util);

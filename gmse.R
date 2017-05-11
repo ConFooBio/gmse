@@ -127,7 +127,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     ACTION[2,5,2]    <- 100;
     ACTION[2,5,3]    <- 100;
     ACTION[1,5,1]    <- 2000;
-    COST[,8:13,1]    <- 1;
+    COST[,8:13,1]    <- 10000;
+    COST[3,8:13,1]   <- 1;
     AGENTS[1,17]     <- 2000;
     
     time       <- time + 1;  # Ready for the initial time step.
@@ -609,7 +610,6 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras,
         Sys.sleep(0.1);
     }
 }
-
 
 ####################################################################
 ## A bit of code to read out and allow input to the observation

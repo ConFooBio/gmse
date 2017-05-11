@@ -385,9 +385,10 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
  *    ROWS: Number of rows in array
  *    COLS: Number of cols in array
  *    total_layers: How many layers there are in array (depth)
+ *    agent_array: The agent array
  * ========================================================================== */
 void sum_array_layers(double ***array, double **out, int get_mean, int ROWS,
-                      int COLS, int layers){
+                      int COLS, int layers, double **agent_array){
     
     int row, col, layer;
 
@@ -400,7 +401,9 @@ void sum_array_layers(double ***array, double **out, int get_mean, int ROWS,
                 }
             }else{
                 for(layer = 0; layer < layers; layer++){
-                    out[row][col] += array[row][col][layer];
+                    if(agent_array[layer][1] > 0){
+                        out[row][col] += array[row][col][layer];
+                    }
                 }                
             }
         }
@@ -476,8 +479,8 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
         act_change[i] = malloc(COLS * sizeof(double));
     }
     
-    sum_array_layers(ACTION, merged_acts, 0, ROWS, COLS, layers);
-    sum_array_layers(COST,  merged_costs, 1, ROWS, COLS, layers);
+    sum_array_layers(ACTION, merged_acts, 0, ROWS, COLS, layers, agent_array);
+    sum_array_layers(COST,  merged_costs, 1, ROWS, COLS, layers, agent_array);
     
     max_dev = 0;
     for(agent = 0; agent < pop_size; agent++){
