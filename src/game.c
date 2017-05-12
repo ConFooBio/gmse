@@ -349,8 +349,8 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
     int agent, i, row, act_type;
     double *count_change, *utilities;
     
-    count_change = malloc(interest_num * sizeof(int));
-    utilities    = malloc(interest_num * sizeof(int));
+    count_change = malloc(interest_num * sizeof(double));
+    utilities    = malloc(interest_num * sizeof(double));
     
     for(agent = 0; agent < pop_size; agent++){
         for(i = 0; i < interest_num; i++){
@@ -474,8 +474,8 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
     double movem, castem, killem, feedem, helpem, *dev_from_util;
     double utility, *utils, **merged_acts, **merged_costs, **act_change;
     
-    count_change  = malloc(interest_num * sizeof(int));
-    utils         = malloc(interest_num * sizeof(int));
+    count_change  = malloc(interest_num * sizeof(double));
+    utils         = malloc(interest_num * sizeof(double));
     dev_from_util = malloc(pop_size * sizeof(double));
     merged_acts   = malloc(ROWS * sizeof(double *));
     for(i = 0; i < ROWS; i++){
