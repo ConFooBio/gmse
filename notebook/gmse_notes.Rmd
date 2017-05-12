@@ -111,6 +111,9 @@ Some initial testing revealed that some memory might have been poorly allocated;
 
 I dare say that this might nearly be an [alpha version](https://en.wikipedia.org/wiki/Software_release_life_cycle#Alpha) of the software. I just need to get some more clever ways to input array values, and make sure that I resolve [Issue #22](https://github.com/bradduthie/gmse/issues/22). 
 
+**[Issue #24](https://github.com/bradduthie/gmse/issues/24) Resources retain `helpem` and `feedem`**
+
+Resources are retaining their values of `helpem` and `feedem` *after* being helped for one generation. Worse, they are passing their inherited characteristics on to their offspring. This needs to be changed so that agent actions have the **temporary** effect of increasing offspring survival probability or reproduction -- else populations will never run the risk of crashing.
 
 > <a name="u-11-MAY-2017">Update: 11 MAY 2017</a>
 
