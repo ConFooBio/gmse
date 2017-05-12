@@ -33,7 +33,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   land_dim_2     = 100,   # y dimension of the landscape
                   res_movement   = 1,     # How far do resources move
                   remove_pr      = 0.0,   # Density independent resource death
-                  lambda         = 0.9,   # Resource growth rate
+                  lambda         = 0.00,  # Resource growth rate
                   agent_view     = 10,    # Number cells agent view around them
                   agent_move     = 50,    # Number cells agent can move
                   res_birth_K    = 10000, # Carrying capacity applied to birth
@@ -84,7 +84,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                     cell_val_mn = 1,
                                     cell_val_sd = 0,
                                     ownership   = 1:3,
-                                    owner_pr    = c(0.5, 0.25, 0.25)
+                                    owner_pr    = c(0, 0.5, 0.5)
     );
     # Set the starting conditions for one resource
     starting_resources <- make_resource( model              = pop_model, 
@@ -100,7 +100,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     # This will obviously need to be changed -- new function in initialise.R
     AGENTS   <- make_agents( model        = pop_model,
                              agent_number = 3,
-                             type_counts  = c(1,2),
+                             type_counts  = c(1, 2),
                              vision       = agent_view,
                              rows         = land_dim_1,
                              cols         = land_dim_2,
@@ -126,7 +126,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     ACTION[1,5,1]    <- 100;
     ACTION[2,5,2]    <- 100;
     ACTION[2,5,3]    <- 100;
-    ACTION[1,5,1]    <- 1000;     ###### CONTROL HOW MUCH MANAGER LIKES RESOURCES
+    ACTION[1,5,1]    <- 0;   ###### CONTROL HOW MUCH MANAGER LIKES RESOURCES
     COST[,8:13,1]    <- 10000;
     COST[3,8:13,1]   <- 1;
     AGENTS[1,17]     <- 100;
@@ -332,7 +332,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                        land2  = LANDSCAPE_REC,
                        land3  = LANDSCAPE_r[,,3],
                        agents = AGENT_REC,
-                       paras  = paras, 
+                       paras  = paras,
+                       ACTION = ACTION_REC,
+                       COST   = COST_REC,
                        view   = agent_view,
                        times  = times_observe);
         }
@@ -343,6 +345,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                        land2  = LANDSCAPE_REC,
                        land3  = LANDSCAPE_r[,,3],
                        agents = AGENT_REC,
+                       ACTION = ACTION_REC,
+                       COST   = COST_REC,
                        paras  = paras);
         }
         if(obt == 2){
@@ -523,8 +527,8 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras){
 ####################################################################
 ## Plot this way when looking at view or mark-recapture sampling
 ####################################################################
-case01plot <- function(res, obs, land1, land2, land3, agents, paras, 
-                       view = NULL, times = 1){
+case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
+                       COST, view = NULL, times = 1){
     gens <- NULL;
     abun <- NULL;
     est  <- NULL;
@@ -558,14 +562,14 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras,
         abun  <- c(abun, dim(res_t)[1]);
         lnds  <- c(lnds, mean(lnd_t));
         ages  <- rbind(ages, age_t[,16]);
-        par(mfrow=c(2,2),mar=c(0,0,0,0));
+        par(mfrow=c(3,2),mar=c(0,0,0,0));
         # ------------- Panel 1 (upper left)
         indis  <- ind_to_land(inds=res_t, landscape=land1);
         image(indis, col=land_cols, xaxt="n", yaxt="n");
         # ------------- Panel 2 (upper right)
         col_num <- max(land3);
         image(land3, col=topo.colors(col_num), xaxt="n", yaxt="n");
-        # ------------- Panel 3 (lower left)
+        # ------------- Panel 3 (middle left)
         par(mar=c(4,5,1,4));
         plot(x=gens, y=abun, pch=20, type="l", lwd=2, ylim=c(0, ymaxi),
              xlim=c(0,time_max), xlab="Time Step", ylab="Abundance",
@@ -595,7 +599,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras,
              ylab = "");
         axis(side=4, at=c(0, 25, 50, 75, 100));
         mtext("Mean % Yield", side = 4, line = 2.4);
-        # ------------ Panel 4 (lower right);
+        # ------------ Panel 4 (middle right);
         par(mar=c(4,6,1,1));
         cell_number <- dim(land3)[1] * dim(land3)[2];
         max_yield   <- cell_number; #floor( cell_number / (dim(age_t)[1]) )
@@ -607,6 +611,45 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras,
             points(x=gens, y=ages[,stakeholder], type="l", lwd=2, 
                    col = stake_colors[stakeholder]);
         }
+        # ------------- Panel 5 (lower left)
+        res_costs <- matrix(data = 0, nrow = i, ncol = 5);
+        for(j in 1:i){
+            res_costs[j,1] <- ACTION[[j]][3,8,1];
+            res_costs[j,2] <- ACTION[[j]][3,9,1];
+            res_costs[j,3] <- ACTION[[j]][3,10,1];
+            res_costs[j,4] <- ACTION[[j]][3,11,1];
+            res_costs[j,5] <- ACTION[[j]][3,12,1];
+        }
+        par(mar=c(4,5,1,4));
+        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, 50),
+             xlim=c(0,time_max), xlab="Time Step", ylab="Cost of actions",
+             cex.lab=1.25);
+        points(x=gens, y=res_costs[,1], type="l", col="green", lwd=2);
+        points(x=gens, y=res_costs[,2], type="l", col="indianred1", lwd=2);
+        points(x=gens, y=res_costs[,3], type="l", col="indianred3", lwd=2);
+        points(x=gens, y=res_costs[,4], type="l", col="deepskyblue1", lwd=2);
+        points(x=gens, y=res_costs[,5], type="l", col="deepskyblue2", lwd=2);
+        # ------------- Panel 5 (lower left)
+        res_acts <- matrix(data = 0, nrow = i, ncol = 5);
+        for(j in 1:i){
+            for(k in 2:dim(ACTION[[j]])[3]){
+                res_acts[j,1] <- res_acts[j,1] + ACTION[[j]][1,8,k];
+                res_acts[j,2] <- res_acts[j,2] + ACTION[[j]][1,9,k];
+                res_acts[j,3] <- res_acts[j,3] + ACTION[[j]][1,10,k];
+                res_acts[j,4] <- res_acts[j,4] + ACTION[[j]][1,11,k];
+                res_acts[j,5] <- res_acts[j,5] + ACTION[[j]][1,12,k];
+            }
+        }
+        par(mar=c(4,6,1,1));
+        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, 150),
+             xlim=c(0,time_max), xlab="Time Step", ylab="Actions made",
+             cex.lab=1.25);
+        points(x=gens, y=res_acts[,1], type="l", col="green", lwd=2);
+        points(x=gens, y=res_acts[,2], type="l", col="indianred1", lwd=2);
+        points(x=gens, y=res_acts[,3], type="l", col="indianred3", lwd=2);
+        points(x=gens, y=res_acts[,4], type="l", col="deepskyblue1", lwd=2);
+        points(x=gens, y=res_acts[,5], type="l", col="deepskyblue2", lwd=2);
+        # -------------
         Sys.sleep(0.1);
     }
 }
@@ -667,7 +710,7 @@ sim <- gmse( observe_type  = 0,
              times_observe = 20,
              land_dim_1    = 100,
              land_dim_2    = 100,
-             res_consume   = 0.5,
+             res_consume   = 0.0,
              time_max      = 100,
              res_move_obs  = TRUE
 );
