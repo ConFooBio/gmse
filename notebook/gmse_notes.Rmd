@@ -86,6 +86,32 @@ A bug in the code was causing managers to set their marginal fitneses to zero wi
 
 For some reason, managers are going way overbudget in allocating actions. Fortunately, they're at least allocating their actions well, but I need to fined out why their budget looks more like 500 when I set it to 100. Note that this **only happens when managers want more of a resource**, not fewer. Perhaps the marginal utility is getting added into the budget? **Yes**, this appears to be the case and has been fixed with commit [d60312da590630fc2a680a57b8daed8e6d6bfafd](https://github.com/bradduthie/gmse/commit/d60312da590630fc2a680a57b8daed8e6d6bfafd), and now the costs no longer go over the manager's budget.
 
+**Valgrind summary**
+
+Some initial testing revealed that some memory might have been poorly allocated; allocating space for an `int` instead of a `double` in the genetic algorithm was flagged by `valgrind`. After fixing this (see commit [57d0c78de7e421687870749549d309cf85d31dab](https://github.com/bradduthie/gmse/commit/57d0c78de7e421687870749549d309cf85d31dab)), `valgrind` returns no errors or leaks.
+
+```
+==8048== 
+==8048== HEAP SUMMARY:
+==8048==     in use at exit: 194,900,716 bytes in 19,004 blocks
+==8048==   total heap usage: 12,387,437 allocs, 12,368,433 frees, 2,482,975,628 bytes allocated
+==8048== 
+==8048== LEAK SUMMARY:
+==8048==    definitely lost: 0 bytes in 0 blocks
+==8048==    indirectly lost: 0 bytes in 0 blocks
+==8048==      possibly lost: 0 bytes in 0 blocks
+==8048==    still reachable: 194,900,716 bytes in 19,004 blocks
+==8048==         suppressed: 0 bytes in 0 blocks
+==8048== Reachable blocks (those to which a pointer was found) are not shown.
+==8048== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==8048== 
+==8048== For counts of detected and suppressed errors, rerun with: -v
+==8048== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+```
+
+I dare say that this might nearly be an [alpha version](https://en.wikipedia.org/wiki/Software_release_life_cycle#Alpha) of the software. I just need to get some more clever ways to input array values, and make sure that I resolve [Issue #22](https://github.com/bradduthie/gmse/issues/22). 
+
+
 > <a name="u-11-MAY-2017">Update: 11 MAY 2017</a>
 
 **Some success with manager fitness function debugging -- more testing needed**

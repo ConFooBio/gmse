@@ -328,8 +328,6 @@ void land_to_counts(double ***population, int **interact_table, int int_num,
     utilities[interest_row] = population[row][4][agent];
 }
 
-
-
 /* =============================================================================
  * This is a preliminary function that checks the fitness of each agent by 
  * passing through a loop to payoffs_to_fitness
