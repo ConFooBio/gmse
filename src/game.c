@@ -113,12 +113,12 @@ void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
  *     ROWS: Number of rows in the COST and ACTION arrays
  *     COLS: Number of columns in the COST and ACTION arrays
  *     pr: Probability of a crossover site occurring at an element.
+ *     agentID: The ID of the agent
  * ========================================================================== */
 void crossover(double ***population, int pop_size, int ROWS, int COLS, 
-               double pr){
+               double pr, int agentID){
     
-    int agent, row, col, start_col;
-    int cross_partner;
+    int agent, row, col, start_col, col_check, cross_partner;
     double do_cross;
     double agent_val, partner_val;
     
@@ -129,7 +129,8 @@ void crossover(double ***population, int pop_size, int ROWS, int COLS,
         }while(cross_partner == agent || cross_partner == pop_size);
         for(row = 0; row < ROWS; row++){
             start_col = 7;
-            if(population[row][0][agent] > 0){
+            col_check = population[row][0][agent];
+            if(col_check > 0 && col_check != agentID){
                 start_col = 4;
             }
             for(col = start_col; col < COLS; col++){
@@ -154,22 +155,21 @@ void crossover(double ***population, int pop_size, int ROWS, int COLS,
  *     ROWS: Number of rows in the COST and ACTION arrays
  *     COLS: Number of columns in the COST and ACTION arrays
  *     pr: Probability of a mutation occurring at an element.
+ *     agentID: The ID of the agent
  * ========================================================================== */
 void mutation(double ***population, int pop_size, int ROWS, int COLS, 
-               double pr){
+               double pr, int agentID){
     
-    int agent, row, col, start_col;
-    double do_mutation;
-    double agent_val;
-    double half_pr;
-    
+    int agent, row, col, start_col, col_check;
+    double do_mutation, agent_val, half_pr;
+
     half_pr = 0.5 * pr;
     
-    /* First do the crossovers */
     for(agent = 0; agent < pop_size; agent++){
         for(row = 0; row < ROWS; row++){
             start_col = 7;
-            if(population[row][0][agent] > 0){
+            col_check = population[row][0][agent];
+            if(col_check > 0 && col_check != agentID){
                 start_col = 4;
             }
             for(col = start_col; col < COLS; col++){
@@ -202,17 +202,19 @@ void mutation(double ***population, int pop_size, int ROWS, int COLS,
  *     budget: The budget that random agents have to work with
  * ========================================================================== */
 void constrain_costs(double ***population, double ***COST, int layer, 
-                     int pop_size, int ROWS, int COLS, double budget){
+                     int pop_size, int ROWS, int COLS, double budget, 
+                     int agentID){
     
     int xpos, ypos;
-    int agent, row, col, start_col;
+    int agent, row, col, start_col, col_check;
     double tot_cost, action_val, action_cost;
 
     for(agent = 0; agent < pop_size; agent++){
         tot_cost = 0;
         for(row = 0; row < ROWS; row++){
             start_col = 4;
-            if(population[row][0][agent] < 0){
+            col_check = population[row][0][agent];
+            if(col_check < 0 || col_check == agentID){
                 start_col = 7;
             } 
             for(col = start_col; col < COLS; col++){
@@ -458,7 +460,7 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
                      int **interact_table, int interest_num, int agentID,
                      double ***COST, double ***ACTION, int COLS, int layers){
     
-    int agent, i, m_lyr, act_type, action_row, manager_row, type1, type2, type3;
+    int agent, i, j, m_lyr, action_row, manager_row, type1, type2, type3;
     double agent_fitness, *count_change, foc_effect, change_dev, max_dev;
     double movem, castem, killem, feedem, helpem, *dev_from_util;
     double utility, *utils, **merged_acts, **merged_costs, **act_change;
@@ -487,6 +489,13 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
     sum_array_layers(ACTION, merged_acts, 0, ROWS, COLS, layers, agent_array);
     sum_array_layers(COST,  merged_costs, 1, ROWS, COLS, layers, agent_array);
     
+    /* So actions > 0 to respond to possible change */
+    for(i = 0; i < ROWS; i++){
+        for(j = 0; j < COLS; j++){
+            merged_acts[i][j] += 10; 
+        }
+    } 
+
     max_dev = 0;
     for(agent = 0; agent < pop_size; agent++){
         for(action_row = 0; action_row < interest_num; action_row++){
@@ -706,17 +715,17 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     
     initialise_pop(ACTION, COST, agent, popsize, budget, agent_seed, xdim, ydim, 
                    POPULATION);
-
     
     gen = 0;
     while(gen < generations){
         
-        crossover(POPULATION, popsize, xdim, ydim, crossover_rate);
-            
-        mutation(POPULATION, popsize, xdim, ydim, mutation_rate);
-  
-        constrain_costs(POPULATION, COST, agent, popsize, xdim, ydim, budget);
+        crossover(POPULATION, popsize, xdim, ydim, crossover_rate, agentID);
         
+        mutation(POPULATION, popsize, xdim, ydim, mutation_rate, agentID);
+
+        constrain_costs(POPULATION, COST, agent, popsize, xdim, ydim, budget,
+                        agentID);
+
         if(managing == 1){
             manager_fitness(fitnesses, POPULATION, popsize, ACT_rows, AGENT, 
                             JACOBIAN, interact_table, jaco_dim, agentID,
@@ -733,10 +742,10 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         gen++;
     
     }
-    
+        
     for(row = 0; row < xdim; row++){
         for(col = 0; col < ydim; col++){
-            ACTION[row][col][agent] = POPULATION[row][col][agent];
+            ACTION[row][col][agent] = POPULATION[row][col][agent];  
         }
     }
 
