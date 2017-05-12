@@ -394,22 +394,28 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
 void sum_array_layers(double ***array, double **out, int get_mean, int ROWS,
                       int COLS, int layers, double **agent_array){
     
-    int row, col, layer;
+    int row, col, layer, layer_count;
 
+    if(get_mean == 1){
+        layer_count = 0;
+        for(layer = 0; layer < layers; layer++){
+            if(agent_array[layer][1] > 0){
+                layer_count++;
+            }
+        }
+    }
     for(row = 0; row < ROWS; row++){
         for(col = 0; col < COLS; col++){
             out[row][col] = 0;
-            if(get_mean == 1){
-                for(layer = 0; layer < layers; layer++){
-                    out[row][col] += (array[row][col][layer] / layers);
-                }
-            }else{
-                for(layer = 0; layer < layers; layer++){
-                    if(agent_array[layer][1] > 0){
+            for(layer = 0; layer < layers; layer++){
+                if(agent_array[layer][1] > 0){
+                    if(get_mean == 1){
+                        out[row][col] += array[row][col][layer] / layer_count;
+                    }else{
                         out[row][col] += array[row][col][layer];
                     }
-                }                
-            }
+                }
+            }                
         }
     }
 }
@@ -443,6 +449,7 @@ void policy_to_counts(double ***population, double **merged_acts, int agent,
         new_action  = merged_acts[action_row][col] * cost_change;
         act_change[action_row][col] = floor(new_action);
     }
+    /* printf("%f\t%f\t%f\t%f\n",old_cost,new_cost,cost_change,new_action); */
 }
 
 /* =============================================================================
@@ -516,6 +523,7 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
             policy_to_counts(population, merged_acts, agent, merged_costs, 
                              act_change, action_row, manager_row, COLS);
             foc_effect  = 0.0;
+            foc_effect -= act_change[action_row][8]; 
             foc_effect -= act_change[action_row][9];  
             foc_effect += act_change[action_row][10]; 
             foc_effect += act_change[action_row][11]; 
@@ -533,7 +541,6 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
         }
         dev_from_util[agent] = change_dev;
     }
-        
     for(agent = 0; agent < pop_size; agent++){
         fitnesses[agent] = max_dev - dev_from_util[agent];
     }
@@ -671,10 +678,10 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     int row, col, gen, layer;
     int sampleK, chooseK;
     int popsize, agent_seed;
-    int budget;
     int agentID;
     int generations;
     int *winners;
+    double budget;
     double mutation_rate, crossover_rate;
     double ***POPULATION;
     double ***NEW_POP;
@@ -687,7 +694,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     chooseK        = (int) paras[25];
     mutation_rate  = paras[26];
     crossover_rate = paras[27];
-    budget         = AGENT[agent][16];
+    budget         = (double) AGENT[agent][16];
     agentID        = AGENT[agent][0];
 
     POPULATION = malloc(xdim * sizeof(double *));
