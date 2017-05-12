@@ -229,7 +229,7 @@ void constrain_costs(double ***population, double ***COST, int layer,
                 xpos = (int) floor( runif(0,ROWS) );
             }while(xpos == ROWS);
             col_check = population[xpos][0][agent];
-            if(col_check > 0 || col_check == agentID){
+            if(col_check > 0 && col_check != agentID){
                 do{
                     ypos = (int) floor( runif(4,COLS) );
                 }while(ypos == COLS);
