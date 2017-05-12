@@ -49,11 +49,11 @@ int min_cost(double ***COST, int layer, double budget, int rows, int cols){
  * ========================================================================== */
 void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
                     double budget, int carbon_copies, int ROWS, int COLS,
-                    double ***population){
+                    double ***population, int agentID){
     
     int xpos, ypos;
     int agent;
-    int row, col, start_col;
+    int row, col, start_col, col_check;
     double lowest_cost;
     double budget_count;
     double check_cost;
@@ -74,7 +74,8 @@ void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
                 population[row][5][agent] = ACTION[row][5][layer];
                 population[row][6][agent] = ACTION[row][6][layer];
                 start_col = 7;
-                if(population[row][0][agent] > 0){
+                col_check = population[row][0][agent];
+                if(col_check > 0 && col_check != agentID){
                     start_col = 4;
                 }             
                 for(col = start_col; col < COLS; col++){
@@ -227,7 +228,8 @@ void constrain_costs(double ***population, double ***COST, int layer,
             do{ /* This do assures xpos never equals ROWS (unlikely) */
                 xpos = (int) floor( runif(0,ROWS) );
             }while(xpos == ROWS);
-            if(population[xpos][0][agent] > 0){
+            col_check = population[xpos][0][agent];
+            if(col_check > 0 || col_check == agentID){
                 do{
                     ypos = (int) floor( runif(4,COLS) );
                 }while(ypos == COLS);
@@ -489,8 +491,7 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
     sum_array_layers(ACTION, merged_acts, 0, ROWS, COLS, layers, agent_array);
     sum_array_layers(COST,  merged_costs, 1, ROWS, COLS, layers, agent_array);
     
-    /* So actions > 0 to respond to possible change */
-    for(i = 0; i < ROWS; i++){
+    for(i = 0; i < ROWS; i++){ /* Actions > 0 to respond to possible change */
         for(j = 0; j < COLS; j++){
             merged_acts[i][j] += 10; 
         }
@@ -522,7 +523,6 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
                 count_change[i] += foc_effect * jaco[action_row][i];
             }
             utils[action_row] = ACTION[manager_row][4][m_lyr];
-            /* printf("%d\t%f\t%f\n", agent, utils[0], population[manager_row][4][agent]); */
         }
         change_dev = 0;
         for(i = 0; i < interest_num; i++){
@@ -714,7 +714,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     }
     
     initialise_pop(ACTION, COST, agent, popsize, budget, agent_seed, xdim, ydim, 
-                   POPULATION);
+                   POPULATION, agentID);
     
     gen = 0;
     while(gen < generations){

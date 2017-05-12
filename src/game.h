@@ -4,13 +4,13 @@ int min_cost(double ***COST, int layer, double budget, int rows, int cols);
 
 void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
                     int budget, int carbon_copies, int ROWS, int COLS,
-                    double ***population);
+                    double ***population, int agentID);
 
 void crossover(double ***population, int pop_size, int ROWS, int COLS, 
-          double pr);
+          double pr, int agentID);
 
 void mutation(double ***population, int pop_size, int ROWS, int COLS, 
-         double pr);
+         double pr, int agentID);
 
 void constrain_costs(double ***population, double ***COST, int layer, 
                 int pop_size, int ROWS, int COLS, double budget);
