@@ -78,7 +78,7 @@ library(rhandsontable)
 
 > <a name="u-15-MAY-2017">Update: 15 MAY 2017</a>
 
-**[Resolved Issue #24](https://github.com/bradduthie/gmse/issues/24) Resources retain `helpem` and `feedem`**
+**Resolved [Issue #24](https://github.com/bradduthie/gmse/issues/24) Resources retain `helpem` and `feedem`**
 
 [Issue #24](https://github.com/bradduthie/gmse/issues/24) appears to be resolved, although the it was a bit trickier than anticipated to do so. I created three additional columns in the `RESORUCE` array to store the change in the baseline values of birthrate, death probability, and offspring number. As far as I can tell, there is no longer any carryover in these demographic values, nor do parents pass on their adjusted values to their offspring. Fixing this required several changes to `user.c` and `resource.c`. As a consequence, death rate caused by killing is now completely independent of carrying capacity (as seems sensible). **Another thing to decide is if increases in birth rate or offspring number caused by user actions should also be independent of carrying capacity;** that is, when users `helpem` or `feedem`, are they increasing the carrying capacity itself, or just the population growth rate *to* carrying capacity (as of now, it's the latter).
 
