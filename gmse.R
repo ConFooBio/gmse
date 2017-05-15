@@ -111,7 +111,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                        landscape = LANDSCAPE_r
     );
     Jacobian[1,2] <- -1 * res_consume; # Temporary to fix consumption rate
-    Jacobian[2,2] <- 0.5;
+    Jacobian[2,1] <- 0;
     
     interaction_tabl <- make_interaction_table(starting_resources, LANDSCAPE_r);
     
@@ -710,7 +710,7 @@ sim <- gmse( observe_type  = 0,
              times_observe = 20,
              land_dim_1    = 100,
              land_dim_2    = 100,
-             res_consume   = 0.0,
+             res_consume   = 0.5,
              time_max      = 100,
              res_move_obs  = TRUE
 );
