@@ -33,7 +33,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   land_dim_2     = 100,   # y dimension of the landscape
                   res_movement   = 1,     # How far do resources move
                   remove_pr      = 0.0,   # Density independent resource death
-                  lambda         = 0.25,  # Resource growth rate
+                  lambda         = 0.65,  # Resource growth rate
                   agent_view     = 10,    # Number cells agent view around them
                   agent_move     = 50,    # Number cells agent can move
                   res_birth_K    = 10000, # Carrying capacity applied to birth
@@ -85,7 +85,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                     cell_val_mn = 1,
                                     cell_val_sd = 0,
                                     ownership   = 1:3,
-                                    owner_pr    = c(0.2, 0.4, 0.4)
+                                    owner_pr    = c(0.6, 0.2, 0.2)
     );
     # Set the starting conditions for one resource
     starting_resources <- make_resource( model              = pop_model, 
@@ -127,10 +127,12 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     ACTION[1,5,1]    <- 100;
     ACTION[2,5,2]    <- 100;
     ACTION[2,5,3]    <- 100;
-    ACTION[1,5,1]    <- 200;   ###### CONTROL HOW MUCH MANAGER LIKES RESOURCES
+    ACTION[1,5,1]    <- 800;   ###### CONTROL HOW MUCH MANAGER LIKES RESOURCES
+    COST[,8:13,]     <- 1;
+    COST[2,8:13,]    <- 1000;
     COST[,8:13,1]    <- 10000;
     COST[3,8:13,1]   <- 1;
-    AGENTS[1,17]     <- 100;
+    #AGENTS[,17]     <- 1;
     
     time       <- time + 1;  # Ready for the initial time step.
     cells      <- land_dim_1 * land_dim_2; # Number of cells in the landscape
@@ -289,8 +291,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
             print("Extinction has occurred");
             break;
         }
-        print(c(time, dim(RESOURCES)[1]));
-        
+
         if(hunt == TRUE & time > start_hunting){
             RESOURCES <- be_hunter(OBSERVATION_NEW, AGENTS, RESOURCES, 
                                    LANDSCAPE_r, agent_view);   
@@ -723,7 +724,8 @@ sim <- gmse( observe_type  = 1,
              land_dim_2    = 100,
              res_consume   = 0.5,
              time_max      = 100,
-             res_move_obs  = TRUE
+             res_move_obs  = TRUE,
+             max_ages      = 5000
 );
 
 ################################################################################

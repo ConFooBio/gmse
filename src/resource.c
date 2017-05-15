@@ -137,7 +137,7 @@ void res_remove(double **res_removing, int rows, int rm_row, int type, int K,
                 int rm_adj, int max_age){
 
     int resource, over_K;
-    double rand_unif, rm_odds;
+    double rand_unif, rm_from_K, rm_from_Ind, rm_odds;
 
     switch(type){
         case 0: /* No removal */
@@ -155,13 +155,19 @@ void res_remove(double **res_removing, int rows, int rm_row, int type, int K,
         case 2: 
             over_K  = rows - K;
             if(over_K > 0){
-                rm_odds  = (double) over_K / rows;
-                rm_odds += res_removing[resource][rm_adj];
+                rm_from_K  = (double) over_K / rows;
                 for(resource = 0; resource < rows; resource++){
-                    rand_unif = runif(0, 1);
-                    if(rand_unif < rm_odds){
+                    rand_unif   = runif(0, 1);
+                    if(rand_unif < rm_from_K){
                         res_removing[resource][rm_row] = -1;   
                     }
+                }
+            }
+            for(resource = 0; resource < rows; resource++){
+                rm_from_Ind = res_removing[resource][rm_adj];
+                rand_unif   = runif(0, 1);
+                if(rand_unif < rm_from_Ind){
+                    res_removing[resource][rm_row] = -1;   
                 }
             }
             break;
@@ -200,7 +206,7 @@ void res_landscape_interaction(double **resource_array, int resource_type_col,
     int x_pos, y_pos;
     double c_rate;
     double current_val;
-    double esize;
+    /* double esize; */
     
     for(resource = 0; resource < rows; resource++){
         if(resource_array[resource][resource_type_col] == resource_type){
@@ -209,11 +215,11 @@ void res_landscape_interaction(double **resource_array, int resource_type_col,
             c_rate = resource_array[resource][14];
         
             landscape[x_pos][y_pos][landscape_layer] *= (1 - c_rate);
-
+            /* TODO: FIX THIS
             current_val = resource_array[resource][resource_col];
             esize       = resource_array[resource][resource_effect];
             resource_array[resource][resource_col] += (1 - current_val) * esize;
- 
+            */
         }                
     }
 }
@@ -311,7 +317,6 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
         }
     }
     /* RESOURCE is now stored as res_old (discrete resources) */
-
     
     /* Code below reads in the LANDSCAPE for easy of use */
     land_z = dim_LANDSCAPE[2];
@@ -370,7 +375,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
               10, 11);
     
     /* Identify, and calculate the number, of removed individuals */    
-    res_remove(res_old, res_number, 8, deathtype, death_K, 15, max_age);
+    res_remove(res_old, res_number, 8, deathtype, death_K, 15, 5);
     res_nums_subtracted = 0; 
     for(resource = 0; resource < res_number; resource++){
         if(res_old[resource][8] < 0){
@@ -390,7 +395,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     resource_new = 0;
     for(resource = 0; resource < res_number; resource++){
         if(res_old[resource][8] >= 0){
-            for(trait=0; trait < trait_number; trait++){
+            for(trait = 0; trait < trait_number; trait++){
                 res_new[resource_new][trait] = res_old[resource][trait];
             }
             res_new[resource_new][15] = 0;
@@ -410,7 +415,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     }
     
     /* Resources affect the landscape (note the **ORDER** of this -- change? */
-    res_landscape_interaction(res_new, 1, 1, 8, res_num_total, 14, land, 1);
+    res_landscape_interaction(res_new, 1, 1, 15, res_num_total, 14, land, 1);
         
     /* This code switches from C back to R */
     /* ====================================================================== */        
