@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **MAY** [12](#u-12-MAY-2017), [11](#u-11-MAY-2017), [10](#u-10-MAY-2017), [9](#u-9-MAY-2017), [8](#u-8-MAY-2017), [5](#u-5-MAY-2017), [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
+     - **MAY** [15](#u-15-MAY-2017), [12](#u-12-MAY-2017), [11](#u-11-MAY-2017), [10](#u-10-MAY-2017), [9](#u-9-MAY-2017), [8](#u-8-MAY-2017), [5](#u-5-MAY-2017), [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
      - **APR** [28](#u-28-APR-2017), [26](#u-26-APR-2017), [25](#u-25-APR-2017), [24](#u-24-APR-2017), [20](#u-20-APR-2017), [19](#u-19-APR-2017), [18](#u-18-APR-2017), [17](#u-17-APR-2017), [13](#u-13-APR-2017), [12](#u-12-APR-2017), [11](#u-11-APR-2017), [10](#u-10-APR-2017), [7](#u-7-APR-2017), [6](#u-6-APR-2017), [5](#u-5-APR-2017)
      - **MAR** [23](#u-23-MAR-2017), [22](#u-22-MAR-2017), [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
@@ -75,6 +75,24 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-15-MAY-2017">Update: 15 MAY 2017</a>
+
+**[Resolved Issue #24](https://github.com/bradduthie/gmse/issues/24) Resources retain `helpem` and `feedem`**
+
+[Issue #24](https://github.com/bradduthie/gmse/issues/24) appears to be resolved, although the it was a bit trickier than anticipated to do so. I created three additional columns in the `RESORUCE` array to store the change in the baseline values of birthrate, death probability, and offspring number. As far as I can tell, there is no longer any carryover in these demographic values, nor do parents pass on their adjusted values to their offspring. Fixing this required several changes to `user.c` and `resource.c`. As a consequence, death rate caused by killing is now completely independent of carrying capacity (as seems sensible). **Another thing to decide is if increases in birth rate or offspring number caused by user actions should also be independent of carrying capacity;** that is, when users `helpem` or `feedem`, are they increasing the carrying capacity itself, or just the population growth rate *to* carrying capacity (as of now, it's the latter).
+
+**A working example -- but still some debugging to do**
+
+After resolving [Issue #24](https://github.com/bradduthie/gmse/issues/24), some initial testing shows that the model appears to be working as intended (more testing is obviously needed). The below shows a scenario in which one resource has a small effect on crop yield. The upper left panel shows resources on the landscape. The upper right panel shows land ownership (the blue is public -- manager owned -- land). The middle left shows population abundance (black) and its estimate (blue); carrying capacity is 400 (red dashed line), but the manager is trying to keep the population around 200 (dashed blue line) -- mean percent yield of the crop is shown in the orange line. The mid right panel shows yields of each plot. The lower left panel shows the changing policy set by the manager -- red lines show the cost of stakeholders killing or castrating resources (very high values effectively prohibit it). Green shows the cost of moving (scaring) resources off the stake-holder's land, and blue shows the cost of helping the resource (increasing its birthrate or offspring production). The lower right shows what stake-holders do in response to policy -- colours show actions corresponding to the same colour costs in the lower left panel.
+
+![*Output when agents can make some adaptive decisions*](images/manager_responding.png)
+
+So in the above example, we have the manager effectively prohibiting killing or castrating resources until about generation 18, when the population gets higher than desired. At this point, the manager switches to allow killing and castrating, and makes moving and helping resources more costly -- stake-holders respond to this by doing a bit more killing and castrating, and the population goes down in response.
+
+**Looking good, but still need to clean the code**
+
+The above example is encouraging, but there is still quite a bit of clean-up to do. More unit testing is necessary to make sure that all resources are doing what they should, and I think the interaction between resources and landscape could be made a bit better in the resource model. Also, setting the initial costs and utilities is quite messy -- I need to fix this up a bit so that there is at least one easy place to do this in the code, then an easy way to do it as an argument in the `gmse` function. It would also be nice not to have managers or stake-holders be quite so short-sighted -- but having decisions be made based on history will require quite a bit more work, though the structure is there for it to be done in the code.
 
 > <a name="u-12-MAY-2017">Update: 12 MAY 2017</a>
 
