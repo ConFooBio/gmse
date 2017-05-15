@@ -134,19 +134,19 @@ void resource_actions(double **resources, int row, double ***action, int agent,
                     actions[0]--; 
                     break;
                 case 1: /* Castrate resource */
-                    resources[resource][9] = 0;
+                    resources[resource][16] = 0;
                     actions[1]--; 
                     break;
                 case 2: /* Kill resource */
-                    resources[resource][8] = 1;
+                    resources[resource][15] = 1;
                     actions[2]--;
                     break;
                 case 3: /* Feed resource (increase birth-rate)*/
-                    resources[resource][9]++;
+                    resources[resource][16]++;
                     actions[3]--;
                     break;
                 case 4: /* Help resource (increase offspring number directly) */
-                    resources[resource][10]++;
+                    resources[resource][17]++;
                     actions[4]--;
                     break;            
                 default:

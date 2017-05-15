@@ -33,7 +33,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   land_dim_2     = 100,   # y dimension of the landscape
                   res_movement   = 1,     # How far do resources move
                   remove_pr      = 0.0,   # Density independent resource death
-                  lambda         = 0.00,  # Resource growth rate
+                  lambda         = 0.25,  # Resource growth rate
                   agent_view     = 10,    # Number cells agent view around them
                   agent_move     = 50,    # Number cells agent can move
                   res_birth_K    = 10000, # Carrying capacity applied to birth
@@ -60,7 +60,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   ga_chooseK     = 2,     # Select from sample in ga tournament
                   ga_mutation    = 0.1,   # Mutation rate in genetic algorithm
                   ga_crossover   = 0.1,   # Crossover rate in genetic algorithm
-                  move_agents    = TRUE   # Move agents once per time step
+                  move_agents    = TRUE,  # Move agents once per time step
+                  max_ages       = 5      # Maximum age of any resource(s)
 ){
     
     if(observe_type == 1 & times_observe < 2){
@@ -84,7 +85,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                     cell_val_mn = 1,
                                     cell_val_sd = 0,
                                     ownership   = 1:3,
-                                    owner_pr    = c(0, 0.5, 0.5)
+                                    owner_pr    = c(0.2, 0.4, 0.4)
     );
     # Set the starting conditions for one resource
     starting_resources <- make_resource( model              = pop_model, 
@@ -126,7 +127,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     ACTION[1,5,1]    <- 100;
     ACTION[2,5,2]    <- 100;
     ACTION[2,5,3]    <- 100;
-    ACTION[1,5,1]    <- 0;   ###### CONTROL HOW MUCH MANAGER LIKES RESOURCES
+    ACTION[1,5,1]    <- 200;   ###### CONTROL HOW MUCH MANAGER LIKES RESOURCES
     COST[,8:13,1]    <- 10000;
     COST[3,8:13,1]   <- 1;
     AGENTS[1,17]     <- 100;
@@ -158,6 +159,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     gmu <- ga_mutation;
     gcr <- ga_crossover;
     mva <- move_agents;
+    mxa <- max_ages;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -187,7 +189,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                gac,     # 25. The number of selected agents in a ga tournament
                gmu,     # 26. The mutation rate of loci in the genetic algorithm
                gcr,     # 27. The crossover rate in the genetic algorithm
-               mva      # 28. Move agents once per time step
+               mva,     # 28. Move agents once per time step
+               mxa      # 29. Maximum age of resources
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
@@ -286,6 +289,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
             print("Extinction has occurred");
             break;
         }
+        print(c(time, dim(RESOURCES)[1]));
         
         if(hunt == TRUE & time > start_hunting){
             RESOURCES <- be_hunter(OBSERVATION_NEW, AGENTS, RESOURCES, 
@@ -307,7 +311,10 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                      "Resource_age",
                      "Resource_marked",
                      "Resource_tally",
-                     "Consumption_rate"
+                     "Consumption_rate",
+                     "Adjust_removal",
+                     "Adjust_growth",
+                     "Adjust_grown"
     );
     colnames(RESOURCES)    <- res_columns;
     
@@ -390,7 +397,7 @@ cmr_estimate <- function(obs, year){
 # Chapman estimator for capture-mark-recapture
 ################################################################################
 chapman_est <- function(observation, marks = 1, recaptures = 1){
-    mcols  <- seq(from = 17, to = 17 + (marks-1), by = 1);
+    mcols  <- seq(from = 19, to = 19 + (marks-1), by = 1);
     rcols  <- seq(from = max(mcols+1), to = max(mcols+1)+(recaptures-1), by=1);
     if(marks > 1){
         mrked <- apply(X=observation[,mcols], MARGIN = 1, FUN = sum);
@@ -422,8 +429,8 @@ chapman_est <- function(observation, marks = 1, recaptures = 1){
 # Actually put the individuals on the landscape with function below
 ################################################################################
 ind_to_land <- function(inds, landscape){
-    ind_rep <- max(landscape) + 1;
-
+    ind_rep  <- max(landscape) + 1;
+    
     for(i in 1:dim(inds)[1]){
         x <- as.numeric(inds[i,6]);
         y <- as.numeric(inds[i,5]);
@@ -444,7 +451,7 @@ dens_est <- function(observation = obs_t, view = view, land = land, times = 1){
         area <- cells;   
     }
     area    <- area * times;
-    endrow  <- 16 + times;
+    endrow  <- 19 + times;
     tot_obs <- sum(observation[,17:endrow]);
     prp     <- tot_obs / area;
     est     <- prp * cells;
@@ -564,8 +571,12 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
         ages  <- rbind(ages, age_t[,16]);
         par(mfrow=c(3,2),mar=c(0,0,0,0));
         # ------------- Panel 1 (upper left)
-        indis  <- ind_to_land(inds=res_t, landscape=land1);
-        image(indis, col=land_cols, xaxt="n", yaxt="n");
+        if(abun[i] > 0){
+            indis  <- ind_to_land(inds=res_t, landscape=land1);
+            image(indis, col=land_cols, xaxt="n", yaxt="n");
+        }else{
+            image(land1, col=land_cols, xaxt="n", yaxt="n");
+        }
         # ------------- Panel 2 (upper right)
         col_num <- max(land3);
         image(land3, col=topo.colors(col_num), xaxt="n", yaxt="n");
@@ -700,7 +711,7 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, agent_view){
 
 ################################################################################
 
-sim <- gmse( observe_type  = 0,
+sim <- gmse( observe_type  = 1,
              agent_view    = 20,
              res_death_K   = 400,
              plotting      = TRUE,

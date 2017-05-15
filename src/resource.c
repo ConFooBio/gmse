@@ -23,15 +23,14 @@ void add_time(double **res_adding, int time_trait, int rows, int time_para,
  *     add: which row in res_adding is the growth parameter
  *     type: Type of growth (0: , 1: , 2: poisson)
  *     K_add: Carrying capacity applied to the addition of a new resource
+ *     ladj: Adjustment to the growth rate column ('add' above)
+ *     dadj: Adjustment to the offspring number column ('realised' above)
  * ========================================================================== */
-void res_add(double **res_adding, int rows, int add, int type, int K_add){
-    int resource;
-    int realised; /* Where the count of added goes (using add + 1) */
-    int sampled;
-    int added;
-    int loops;
-    double rand_pois;
-    double rand_unif;
+void res_add(double **res_adding, int rows, int add, int type, int K_add, 
+             int ladj, int dadj){
+    
+    int resource, realised, sampled, added, loops;
+    double rand_pois, rand_unif, lambda;
 
     realised = add + 1;
     
@@ -44,7 +43,12 @@ void res_add(double **res_adding, int rows, int add, int type, int K_add){
             added = 0; 
             for(resource = 0; resource < rows; resource++){
                 res_adding[resource][realised] = 0;
-                rand_pois = rpois(res_adding[resource][add]);
+                lambda = res_adding[resource][add] + res_adding[resource][ladj];
+                if(lambda < 0){
+                    lambda = 0;
+                }
+                rand_pois  = rpois(lambda);
+                rand_pois += res_adding[resource][dadj];
                 res_adding[resource][realised] = rand_pois;
                 added += (int) rand_pois;
             }
@@ -106,7 +110,8 @@ void res_place(double **make, double **old, int res_added, int old_number,
             for(trait = 1; trait < traits; trait++){
                 make[newbie][trait] = old[resource][trait];
             }
-            make[newbie][age]   = 0; /* A bit inefficient given loop above */
+            make[newbie][age] = 0; /* A bit inefficient given loop above */
+            make[newbie][10]  = 0; /* Get rid of hard code (offspring = 0) */
             res_index++;
         }
         to_make = to_add;
@@ -125,12 +130,14 @@ void res_place(double **make, double **old, int res_added, int old_number,
  *     rm_row: which col in res_adding is the removal (i.e., death) parameter
  *     type: Type of removal (0: None, 1: uniform, 2: K based)
  *     K: Carrying capacity on removal/death -- only used some cases 
+ *     rm_adj: Which col in res_adding is adjusting removal (i.e. death)
+ *     max_age: What is the maximum age of the resource?
  * ========================================================================== */
-void res_remove(double **res_removing, int rows, int rm_row, int type, int K){
-    int resource;
-    int over_K;
-    double rand_unif;
-    double rm_odds;
+void res_remove(double **res_removing, int rows, int rm_row, int type, int K,
+                int rm_adj, int max_age){
+
+    int resource, over_K;
+    double rand_unif, rm_odds;
 
     switch(type){
         case 0: /* No removal */
@@ -138,7 +145,9 @@ void res_remove(double **res_removing, int rows, int rm_row, int type, int K){
         case 1:
             for(resource = 0; resource < rows; resource++){
                 rand_unif = runif(0, 1);
-                if(rand_unif < res_removing[resource][rm_row]){
+                rm_odds   = res_removing[resource][rm_row] + 
+                            res_removing[resource][rm_adj];
+                if(rand_unif < rm_odds){
                     res_removing[resource][rm_row] = -1;   
                 }
             }
@@ -146,7 +155,8 @@ void res_remove(double **res_removing, int rows, int rm_row, int type, int K){
         case 2: 
             over_K  = rows - K;
             if(over_K > 0){
-                rm_odds = (double) over_K / rows;
+                rm_odds  = (double) over_K / rows;
+                rm_odds += res_removing[resource][rm_adj];
                 for(resource = 0; resource < rows; resource++){
                     rand_unif = runif(0, 1);
                     if(rand_unif < rm_odds){
@@ -158,6 +168,12 @@ void res_remove(double **res_removing, int rows, int rm_row, int type, int K){
         default:
             printf("ERROR: Resource removal/death type set incorrectly \n");
         break;
+    }
+
+    for(resource = 0; resource < rows; resource++){
+        if(res_removing[resource][11] > max_age){
+            res_removing[resource][rm_row] = -1;
+        }
     }
 }
 /* ===========================================================================*/
@@ -242,6 +258,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     int deathtype;           /* The type of death of resources */
     int death_K;             /* Carrying capacity affecting death rate */
     int move_res;            /* Should resources be allowed to move */
+    int max_age;             /* What is the maximum age allowed for resources */
     int *add_resource;       /* Vector of added resources */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
@@ -328,6 +345,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     birth_K   = (int) paras[5];
     death_K   = (int) paras[6];
     move_res  = (int) paras[19]; /* Should the resources be moved?        */
+    max_age   = (int) paras[29];
     
     /* Resource time step and age needs to be increased by one */
     add_time(res_old, 7, res_number, time_para, 11);
@@ -339,7 +357,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     }
 
     /* Identify, and calculate the number of, added individuals */
-    res_add(res_old, res_number, 9, birthtype, birth_K);
+    res_add(res_old, res_number, 9, birthtype, birth_K, 16, 17);
     res_nums_added      = 0; 
     for(resource = 0; resource < res_number; resource++){
         res_nums_added += res_old[resource][10];
@@ -352,7 +370,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
               10, 11);
     
     /* Identify, and calculate the number, of removed individuals */    
-    res_remove(res_old, res_number, 8, deathtype, death_K);
+    res_remove(res_old, res_number, 8, deathtype, death_K, 15, max_age);
     res_nums_subtracted = 0; 
     for(resource = 0; resource < res_number; resource++){
         if(res_old[resource][8] < 0){
@@ -375,6 +393,9 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
             for(trait=0; trait < trait_number; trait++){
                 res_new[resource_new][trait] = res_old[resource][trait];
             }
+            res_new[resource_new][15] = 0;
+            res_new[resource_new][16] = 0;
+            res_new[resource_new][17] = 0;
             resource_new++; /* Move on to the next new resource */
         }
     }
@@ -382,9 +403,12 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
         for(trait = 0; trait < trait_number; trait++){
             res_new[resource_new][trait] = res_make[resource][trait];
         }
+        res_new[resource_new][15] = 0;
+        res_new[resource_new][16] = 0;
+        res_new[resource_new][17] = 0;
         resource_new++;
     }
-
+    
     /* Resources affect the landscape (note the **ORDER** of this -- change? */
     res_landscape_interaction(res_new, 1, 1, 8, res_num_total, 14, land, 1);
         
