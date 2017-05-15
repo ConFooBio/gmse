@@ -33,7 +33,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   land_dim_2     = 100,   # y dimension of the landscape
                   res_movement   = 1,     # How far do resources move
                   remove_pr      = 0.0,   # Density independent resource death
-                  lambda         = 0.0,  # Resource growth rate
+                  lambda         = 0.05,  # Resource growth rate
                   agent_view     = 10,    # Number cells agent view around them
                   agent_move     = 50,    # Number cells agent can move
                   res_birth_K    = 10000, # Carrying capacity applied to birth
@@ -85,7 +85,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                     cell_val_mn = 1,
                                     cell_val_sd = 0,
                                     ownership   = 1:3,
-                                    owner_pr    = c(0.0, 0.5, 0.5)
+                                    owner_pr    = c(0.2, 0.4, 0.4)
     );
     # Set the starting conditions for one resource
     starting_resources <- make_resource( model              = pop_model, 
@@ -127,12 +127,12 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     ACTION[1,5,1]    <- 100;
     ACTION[2,5,2]    <- 100;
     ACTION[2,5,3]    <- 100;
-    ACTION[1,5,1]    <- 0;   ###### CONTROL HOW MUCH MANAGER LIKES RESOURCES
+    ACTION[1,5,1]    <- 200;   ###### CONTROL HOW MUCH MANAGER LIKES RESOURCES
     COST[,8:13,]     <- 1;
     COST[2,8:13,]    <- 1000;
     COST[,8:13,1]    <- 10000;
     COST[3,8:13,1]   <- 1;
-    AGENTS[,17]     <- 500;
+    AGENTS[,17]     <- 300;
     
     time       <- time + 1;  # Ready for the initial time step.
     cells      <- land_dim_1 * land_dim_2; # Number of cells in the landscape
@@ -296,9 +296,6 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
             RESOURCES <- be_hunter(OBSERVATION_NEW, AGENTS, RESOURCES, 
                                    LANDSCAPE_r, agent_view);   
         }
-        
-        print(c(time, dim(RESOURCES)[1]));
-        
     }
     
     res_columns <- c("Resource_ID",
@@ -607,6 +604,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
                 col="lightblue");
         points(x=gens, y=est, pch=20, type="l", lwd=2, col="cyan4");
         abline(h=paras[7], col="red", lwd=0.8, lty="dashed");
+        abline(h=ACTION[[1]][1,5,1], col=topo.colors(1), lwd=0.8, lty="dashed");
         points(x=gens, y=abun, pch=20, type="l", lwd=3, col="black");
         par(new=TRUE);
         plot(x=gens, y=lnds, pch=20, type="l", lwd=3, col="orange", xlab = "",
@@ -636,7 +634,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
             res_costs[j,5] <- ACTION[[j]][3,12,1];
         }
         par(mar=c(4,5,1,4));
-        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, 50),
+        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, 200),
              xlim=c(0,time_max), xlab="Time Step", ylab="Cost of actions",
              cex.lab=1.25);
         points(x=gens, y=res_costs[,1], type="l", col="green", lwd=2);
@@ -656,7 +654,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
             }
         }
         par(mar=c(4,6,1,1));
-        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, 150),
+        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, 300),
              xlim=c(0,time_max), xlab="Time Step", ylab="Actions made",
              cex.lab=1.25);
         points(x=gens, y=res_acts[,1], type="l", col="green", lwd=2);
@@ -718,7 +716,7 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, agent_view){
 sim <- gmse( observe_type  = 1,
              agent_view    = 20,
              res_death_K   = 400,
-             plotting      = FALSE,
+             plotting      = TRUE,
              hunt          = FALSE,
              start_hunting = 95,
              fixed_observe = 10,
