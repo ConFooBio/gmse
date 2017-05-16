@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **MAY** [15](#u-15-MAY-2017), [12](#u-12-MAY-2017), [11](#u-11-MAY-2017), [10](#u-10-MAY-2017), [9](#u-9-MAY-2017), [8](#u-8-MAY-2017), [5](#u-5-MAY-2017), [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
+     - **MAY** [16](#u-16-MAY-2017), [15](#u-15-MAY-2017), [12](#u-12-MAY-2017), [11](#u-11-MAY-2017), [10](#u-10-MAY-2017), [9](#u-9-MAY-2017), [8](#u-8-MAY-2017), [5](#u-5-MAY-2017), [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
      - **APR** [28](#u-28-APR-2017), [26](#u-26-APR-2017), [25](#u-25-APR-2017), [24](#u-24-APR-2017), [20](#u-20-APR-2017), [19](#u-19-APR-2017), [18](#u-18-APR-2017), [17](#u-17-APR-2017), [13](#u-13-APR-2017), [12](#u-12-APR-2017), [11](#u-11-APR-2017), [10](#u-10-APR-2017), [7](#u-7-APR-2017), [6](#u-6-APR-2017), [5](#u-5-APR-2017)
      - **MAR** [23](#u-23-MAR-2017), [22](#u-22-MAR-2017), [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
@@ -75,6 +75,22 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-16-MAY-2017">Update: 16 MAY 2017</a>
+
+**Concrete plans for cleaning up the code**
+
+Now that the main engine of G-MSE is in place, there are a few things that I want to do in the next week or two to clean up the code.
+
+- **Resolve [Issue #22](https://github.com/bradduthie/gmse/issues/22)**: There's still a bug in the user function that is causing a crash when there is more than one type of resource. I doubt that it will take much to resolve the issue once it is found, but it is worth doing this so that multi-resource models can be run later.
+- **Resolve [Issue #21](https://github.com/bradduthie/gmse/issues/21)**: The functions in c all look a bit ugly, and much of this ugliness can go away by simply organising parameters in the `para` vector as originally intended. It shouldn't take too much extra work to do this, and it can be done systematically for each c file by adding any new arguments to `para` if they are not in it already.
+- **Read-in parameters**: Doing this is still a bit clunky within `gmse`. It's not *necessary* for running the model, but it would be very nice to somehow create some options to build the `COST` and `ACTION` arrays for some simple scenarios -- perhaps even have a way to edit these arrays easily within the code (then, eventually, as input into `gmse()`).
+
+Following these things, it would also be helpful to do the following.
+
+- **Unit test every function in c and R.** This is going to need to be done at some point anyway to upload the R [package to CRAN](https://cran.r-project.org/), and I'll have to learn about what it entails. It might be wise to break up some larger functions if possible (though it might not be possible or practical).
+- **Run some key simplified scenarios.** For example, some simple cases with a manager and multiple stake-holders in which the only action options are killing and not killing.
+- **Recreate @Milner-Gulland2011 results**. I still need to read this paper, but it touches on some modelling that G-MSE might be able to recreate.
 
 > <a name="u-15-MAY-2017">Update: 15 MAY 2017</a>
 
