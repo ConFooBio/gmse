@@ -207,7 +207,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                10,      # 38. The column in the resource array for offspring
                16,      # 39. The column to adjust the growth rate resource col
                17,      # 40. The column to adjust the offspring resource col
-               ttr      # 41. Total columns in the resource array
+               ttr,     # 41. Total columns in the resource array
+               15,      # 42. The column to adjust the death resource column
+               8        # 43. The column in resource array affecting removal
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;

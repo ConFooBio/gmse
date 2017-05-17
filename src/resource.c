@@ -144,17 +144,24 @@ void res_place(double **make, double **old, double *paras, int res_added){
  *     rm_adj: Which col in res_adding is adjusting removal (i.e. death)
  *     max_age: What is the maximum age of the resource?
  * ========================================================================== */
-void res_remove(double **res_removing, int rows, int rm_row, int type, int K,
-                int rm_adj, int max_age){
+void res_remove(double **res_removing, double *paras){
 
+    int resource_number, rm_row, type, K, rm_adj, max_age;
     int resource, over_K;
     double rand_unif, rm_from_K, rm_from_Ind, rm_odds;
 
+    type            = (int) paras[4];
+    K               = (int) paras[6];
+    max_age         = (int) paras[29];
+    resource_number = (int) paras[32];
+    rm_adj          = (int) paras[42];
+    rm_row          = (int) paras[43];
+    
     switch(type){
         case 0: /* No removal */
             break;
         case 1:
-            for(resource = 0; resource < rows; resource++){
+            for(resource = 0; resource < resource_number; resource++){
                 rand_unif = runif(0, 1);
                 rm_odds   = res_removing[resource][rm_row] + 
                             res_removing[resource][rm_adj];
@@ -164,17 +171,17 @@ void res_remove(double **res_removing, int rows, int rm_row, int type, int K,
             }
             break;
         case 2: 
-            over_K  = rows - K;
+            over_K  = resource_number - K;
             if(over_K > 0){
-                rm_from_K  = (double) over_K / rows;
-                for(resource = 0; resource < rows; resource++){
+                rm_from_K  = (double) over_K / resource_number;
+                for(resource = 0; resource < resource_number; resource++){
                     rand_unif   = runif(0, 1);
                     if(rand_unif < rm_from_K){
                         res_removing[resource][rm_row] = -1;   
                     }
                 }
             }
-            for(resource = 0; resource < rows; resource++){
+            for(resource = 0; resource < resource_number; resource++){
                 rm_from_Ind = res_removing[resource][rm_adj];
                 rand_unif   = runif(0, 1);
                 if(rand_unif < rm_from_Ind){
@@ -187,7 +194,7 @@ void res_remove(double **res_removing, int rows, int rm_row, int type, int K,
         break;
     }
 
-    for(resource = 0; resource < rows; resource++){
+    for(resource = 0; resource < resource_number; resource++){
         if(res_removing[resource][11] > max_age){
             res_removing[resource][rm_row] = -1;
         }
@@ -385,7 +392,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     res_place(res_make, res_old, paras, res_nums_added);
     
     /* Identify, and calculate the number, of removed individuals */    
-    res_remove(res_old, res_number, 8, deathtype, death_K, 15, 5);
+    res_remove(res_old, paras);
     res_nums_subtracted = 0; 
     for(resource = 0; resource < res_number; resource++){
         if(res_old[resource][8] < 0){
