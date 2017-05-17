@@ -216,22 +216,27 @@ void res_remove(double **res_removing, double *paras){
  *     landscape: landscape array of cell values that affect individuals
  *     landscape_layer: layer of the landscape that is affected
  * ========================================================================== */
-void res_landscape_interaction(double **resource_array, int resource_type_col,
-                               int resource_type, int resource_col, int rows,
-                               int resource_effect, double ***landscape, 
-                               int landscape_layer){
-    
-    int resource;
-    int x_pos, y_pos;
-    double c_rate;
-    double current_val;
+void res_landscape_interaction(double **resource_array, double ***landscape,
+                               double *paras, int resource_number){
+                              
+    int resource_type_col, resource_type, resource_col, resource_effect;
+    int landscape_layer, resource, x_col, y_col, x_pos, y_pos;
+    double c_rate, current_val;
     /* double esize; */
     
-    for(resource = 0; resource < rows; resource++){
+    x_col             = (int) paras[33];
+    y_col             = (int) paras[34];
+    resource_type_col = (int) paras[44];
+    resource_type     = (int) paras[45];
+    resource_col      = (int) paras[46];
+    resource_effect   = (int) paras[47];
+    landscape_layer   = (int) paras[48];
+    
+    for(resource = 0; resource < resource_number; resource++){
         if(resource_array[resource][resource_type_col] == resource_type){
-            x_pos  = resource_array[resource][4];
-            y_pos  = resource_array[resource][5];
-            c_rate = resource_array[resource][14];
+            x_pos  = resource_array[resource][x_col];
+            y_pos  = resource_array[resource][y_col];
+            c_rate = resource_array[resource][resource_effect];
         
             landscape[x_pos][y_pos][landscape_layer] *= (1 - c_rate);
             /* TODO: FIX THIS
@@ -275,13 +280,8 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     int res_num_total;       /* Total number of resources in returned array */
     int protected_n;         /* Number of protected R objects */
     int vec_pos;             /* Vector position for making arrays */
-    int time_para;           /* Time in the simulation the function called */
     int edge_type;           /* The type of edge on the landscape */
     int move_type;           /* How resources move on the landscape */
-    int birthtype;           /* The type of birth of resources */
-    int birth_K;             /* Carrying capacity affecting birth rate */
-    int deathtype;           /* The type of death of resources */
-    int death_K;             /* Carrying capacity affecting death rate */
     int move_res;            /* Should resources be allowed to move */
     int max_age;             /* What is the maximum age allowed for resources */
     int off_col;             /* The column where the offspring are held */
@@ -365,12 +365,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     
     edge_type = (int) paras[1];
     move_type = (int) paras[2];
-    birthtype = (int) paras[3];
-    deathtype = (int) paras[4];
-    birth_K   = (int) paras[5];
-    death_K   = (int) paras[6];
     move_res  = (int) paras[19]; /* Should the resources be moved?        */
-    max_age   = (int) paras[29];
     off_col   = (int) paras[38];
     rm_col    = (int) paras[43];
     
@@ -437,7 +432,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     }
     
     /* Resources affect the landscape (note the **ORDER** of this -- change? */
-    res_landscape_interaction(res_new, 1, 1, 15, res_num_total, 14, land, 1);
+    res_landscape_interaction(res_new, land, paras, res_num_total);
         
     /* This code switches from C back to R */
     /* ====================================================================== */        

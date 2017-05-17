@@ -209,7 +209,12 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                17,      # 40. The column to adjust the offspring resource col
                ttr,     # 41. Total columns in the resource array
                15,      # 42. The column to adjust the death resource column
-               8        # 43. The column in resource array affecting removal
+               8,       # 43. The column in resource array affecting removal
+               1,       # 44. A column to refer to a resource type as needed
+               1,       # 45. A type of resource to do interacting with land
+               15,      # 46. The column in a resource array affected by land
+               14,      # 47. The column in resource array of land effect size
+               1        # 48. The landscape layer interacting with a resource
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
