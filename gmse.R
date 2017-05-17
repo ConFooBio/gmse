@@ -731,20 +731,20 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, agent_view){
 
 ################################################################################
 
-sim <- gmse( observe_type  = 1,
+sim <- gmse( observe_type  = 0,
              agent_view    = 20,
              res_death_K   = 400,
              plotting      = TRUE,
              hunt          = FALSE,
              start_hunting = 95,
-             fixed_observe = 20,
-             times_observe = 40,
+             fixed_observe = 10,
+             times_observe = 20,
              land_dim_1    = 100,
              land_dim_2    = 100,
              res_consume   = 0.5,
              time_max      = 100,
              res_move_obs  = TRUE,
-             max_ages      = 5000
+             max_ages      = 5
 );
 
 ################################################################################
