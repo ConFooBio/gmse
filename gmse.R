@@ -162,6 +162,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     gcr <- ga_crossover;
     mva <- move_agents;
     mxa <- max_ages;
+    rsi <- RESOURCE_ini;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -192,7 +193,10 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                gmu,     # 26. The mutation rate of loci in the genetic algorithm
                gcr,     # 27. The crossover rate in the genetic algorithm
                mva,     # 28. Move agents once per time step
-               mxa      # 29. Maximum age of resources
+               mxa,     # 29. Maximum age of resources
+               7,       # 30. The column of the time trait in the resource array
+               11,      # 31. The column for storing age in the resource array
+               rsi      # 32. The number of resources in the model
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;

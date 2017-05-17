@@ -447,7 +447,6 @@ void policy_to_counts(double ***population, double **merged_acts, int agent,
         new_action  = merged_acts[action_row][col] * cost_change;
         act_change[action_row][col] = floor(new_action);
     }
-    /* printf("%f\t%f\t%f\t%f\n",old_cost,new_cost,cost_change,new_action); */
 }
 
 /* =============================================================================

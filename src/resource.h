@@ -1,7 +1,6 @@
 #include "utilities.h"
 
-void add_time(double **res_adding, int time_trait, int rows, int time_para,
-              int age_trait);
+void add_time(double **res_adding, double *paras);
 
 void res_add(double **res_adding, int rows, int add, int type, int K_add);
 

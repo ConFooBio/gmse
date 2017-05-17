@@ -3,11 +3,16 @@
 /* =============================================================================
  * This function just adds a time step to the relevant individual column 
  * ========================================================================== */
-void add_time(double **res_adding, int time_trait, int rows, int time_para,
-              int age_trait){
-    int resource;
+void add_time(double **res_adding, double *paras){
     
-    for(resource = 0; resource < rows; resource++){
+    int resource, time_para, time_trait, age_trait, resource_number;
+    
+    time_para       = (int) paras[0];
+    time_trait      = (int) paras[30];
+    age_trait       = (int) paras[31];
+    resource_number = (int) paras[32];
+    
+    for(resource = 0; resource < resource_number; resource++){
         res_adding[resource][time_trait] = time_para;
         res_adding[resource][age_trait]++;
     }
@@ -342,7 +347,6 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     /* Do the biology here now */
     /* ====================================================================== */
     
-    time_para = (int) paras[0];
     edge_type = (int) paras[1];
     move_type = (int) paras[2];
     birthtype = (int) paras[3];
@@ -353,7 +357,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     max_age   = (int) paras[29];
     
     /* Resource time step and age needs to be increased by one */
-    add_time(res_old, 7, res_number, time_para, 11);
+    add_time(res_old, paras);
     
     /* Resources move according to move function and parameter) */
     if(move_res == 1){
