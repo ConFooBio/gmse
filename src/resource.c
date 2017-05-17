@@ -98,16 +98,16 @@ void res_add(double **res_adding, double *paras){
  *     realised: The column in the old array that defines number added to new
  *     age: The column in which age is located (always starts at zero)
  * ========================================================================== */
-void res_place(double **make, double **old, int res_added, int old_number, 
-               int traits, int realised, int age){
-    int resource;
-    int newbie;
-    int trait;
-    int to_make;
-    int to_add;
-    int make_res;
-    int last_old;
+void res_place(double **make, double **old, double *paras, int res_added){
+               
+    int old_number, traits, realised, age;
+    int resource, newbie, trait, to_make, to_add, make_res, last_old;
     double res_index;
+    
+    age        = (int) paras[31];
+    old_number = (int) paras[32];
+    realised   = (int) paras[38];
+    traits     = (int) paras[41];
     
     make_res  = 0;
     to_make   = 0;
@@ -381,8 +381,8 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     for(resource = 0; resource < res_nums_added; resource++){
         res_make[resource] = malloc(trait_number * sizeof(double));   
     }
-    res_place(res_make, res_old, res_nums_added, res_number, trait_number, 
-              10, 11);
+    
+    res_place(res_make, res_old, paras, res_nums_added);
     
     /* Identify, and calculate the number, of removed individuals */    
     res_remove(res_old, res_number, 8, deathtype, death_K, 15, 5);

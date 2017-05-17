@@ -163,7 +163,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     gcr <- ga_crossover;
     mva <- move_agents;
     mxa <- max_ages;
-    rsi <- RESOURCE_ini;
+    rsi <- dim(starting_resources)[1];
+    ttr <- dim(starting_resources)[2];
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -205,7 +206,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                9,       # 37. The column in resource array for growth parameter
                10,      # 38. The column in the resource array for offspring
                16,      # 39. The column to adjust the growth rate resource col
-               17      # 40. The column to adjust the offspring resource col
+               17,      # 40. The column to adjust the offspring resource col
+               ttr      # 41. Total columns in the resource array
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
@@ -730,7 +732,7 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, agent_view){
 sim <- gmse( observe_type  = 1,
              agent_view    = 20,
              res_death_K   = 400,
-             plotting      = FALSE,
+             plotting      = TRUE,
              hunt          = FALSE,
              start_hunting = 95,
              fixed_observe = 20,
