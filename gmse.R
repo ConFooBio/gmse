@@ -210,16 +210,17 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     while(time < time_max){
         
         AGENTS[1,5] <- sample(x = 1:ldx, size = 1); # Change this later?
-        AGENTS[1,6] <- sample(x = 1:ldy, size = 1);
-        
+        AGENTS[1,6] <- sample(x = 1:ldy, size = 1); 
+        paras[33] <- dim(RESOURCES)[1]; 
         RESOURCE_NEW      <- resource(resource   = RESOURCES,
                                       landscape  = LANDSCAPE_r,
                                       paras      = paras,
                                       move_res   = TRUE,
                                       model      = "IBM"
-        );
+        ); 
         RESOURCES             <- RESOURCE_NEW[[1]];
         LANDSCAPE_r           <- RESOURCE_NEW[[2]];
+        paras                 <- RESOURCE_NEW[[3]];
         
         RESOURCE_REC[[time]]  <- RESOURCES;
         
@@ -720,7 +721,7 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, agent_view){
 sim <- gmse( observe_type  = 1,
              agent_view    = 20,
              res_death_K   = 400,
-             plotting      = TRUE,
+             plotting      = FALSE,
              hunt          = FALSE,
              start_hunting = 95,
              fixed_observe = 20,

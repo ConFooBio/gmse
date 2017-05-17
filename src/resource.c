@@ -387,7 +387,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
         }
     }
     
-    res_num_total  = res_number + res_nums_added - res_nums_subtracted;
+    res_num_total = res_number + res_nums_added - res_nums_subtracted;
 
     /* Below makes a new array for new RESOURCE, then adds it */
     res_new = malloc(res_num_total * sizeof(double *));
@@ -431,12 +431,13 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     R_ptr_new = REAL(RESOURCE_NEW);
 
     vec_pos = 0;
-    for(trait=0; trait<trait_number; trait++){
-        for(resource=0; resource<res_num_total; resource++){
+    for(trait = 0; trait < trait_number; trait++){
+        for(resource = 0; resource < res_num_total; resource++){
             R_ptr_new[vec_pos] = res_new[resource][trait];
             vec_pos++;
         }
-    }            
+    } 
+    paras[32] = (double) res_num_total;
     
     SEXP LAND_NEW;
     PROTECT( LAND_NEW = alloc3DArray(REALSXP, land_x, land_y, land_z) );
@@ -455,10 +456,11 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     }
     
     SEXP EVERYTHING;
-    EVERYTHING = PROTECT( allocVector(VECSXP, 2) );
+    EVERYTHING = PROTECT( allocVector(VECSXP, 3) );
     protected_n++;
     SET_VECTOR_ELT(EVERYTHING, 0, RESOURCE_NEW);
-    SET_VECTOR_ELT(EVERYTHING, 1, LAND_NEW);    
+    SET_VECTOR_ELT(EVERYTHING, 1, LAND_NEW);
+    SET_VECTOR_ELT(EVERYTHING, 2, PARAMETERS);   
     
     UNPROTECT(protected_n);
     
