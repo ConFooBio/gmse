@@ -146,13 +146,14 @@ void res_place(double **make, double **old, double *paras, int res_added){
  * ========================================================================== */
 void res_remove(double **res_removing, double *paras){
 
-    int resource_number, rm_row, type, K, rm_adj, max_age;
+    int resource_number, rm_row, type, K, rm_adj, max_age, age_col;
     int resource, over_K;
     double rand_unif, rm_from_K, rm_from_Ind, rm_odds;
 
     type            = (int) paras[4];
     K               = (int) paras[6];
     max_age         = (int) paras[29];
+    age_col         = (int) paras[31];
     resource_number = (int) paras[32];
     rm_adj          = (int) paras[42];
     rm_row          = (int) paras[43];
@@ -195,7 +196,7 @@ void res_remove(double **res_removing, double *paras){
     }
 
     for(resource = 0; resource < resource_number; resource++){
-        if(res_removing[resource][11] > max_age){
+        if(res_removing[resource][age_col] > max_age){
             res_removing[resource][rm_row] = -1;
         }
     }
@@ -283,6 +284,8 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     int death_K;             /* Carrying capacity affecting death rate */
     int move_res;            /* Should resources be allowed to move */
     int max_age;             /* What is the maximum age allowed for resources */
+    int off_col;             /* The column where the offspring are held */
+    int rm_col;              /* Column where removal is indiciated */
     int *add_resource;       /* Vector of added resources */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
@@ -368,6 +371,8 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     death_K   = (int) paras[6];
     move_res  = (int) paras[19]; /* Should the resources be moved?        */
     max_age   = (int) paras[29];
+    off_col   = (int) paras[38];
+    rm_col    = (int) paras[43];
     
     /* Resource time step and age needs to be increased by one */
     add_time(res_old, paras);
@@ -382,7 +387,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     res_add(res_old, paras);
     res_nums_added = 0; 
     for(resource = 0; resource < res_number; resource++){
-        res_nums_added += res_old[resource][10];
+        res_nums_added += res_old[resource][off_col];
     }
     res_make = malloc(res_nums_added * sizeof(double *));
     for(resource = 0; resource < res_nums_added; resource++){
@@ -395,7 +400,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     res_remove(res_old, paras);
     res_nums_subtracted = 0; 
     for(resource = 0; resource < res_number; resource++){
-        if(res_old[resource][8] < 0){
+        if(res_old[resource][rm_col] < 0){
             res_nums_subtracted += 1;
         }
     }
@@ -411,7 +416,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     /* Below pastes surviving old and new resources into the new array */
     resource_new = 0;
     for(resource = 0; resource < res_number; resource++){
-        if(res_old[resource][8] >= 0){
+        if(res_old[resource][rm_col] >= 0){
             for(trait = 0; trait < trait_number; trait++){
                 res_new[resource_new][trait] = res_old[resource][trait];
             }
