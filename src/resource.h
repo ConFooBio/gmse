@@ -2,7 +2,7 @@
 
 void add_time(double **res_adding, double *paras);
 
-void res_add(double **res_adding, int rows, int add, int type, int K_add);
+void res_add(double **res_adding, double *paras);
 
 void res_place(double **make, double **old, int res_added, int old_number, 
                int traits, int realised, int age);

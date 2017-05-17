@@ -139,6 +139,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     
     ldx <- land_dim_1;
     ldy <- land_dim_2;
+    ldz <- dim(LANDSCAPE_r)[3];
     rbK <- res_birth_K;
     rdK <- res_death_K;
     edg <- edge_effect;
@@ -196,7 +197,15 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                mxa,     # 29. Maximum age of resources
                7,       # 30. The column of the time trait in the resource array
                11,      # 31. The column for storing age in the resource array
-               rsi      # 32. The number of resources in the model
+               rsi,     # 32. The number of resources in the model
+               4,       # 33. The column for resource x location on landscape
+               5,       # 34. The column for resource y location on landscape
+               6,       # 35. The column for the movement parameter for resource
+               ldz,     # 36. The number of layers (3D depth) in the landscape
+               9,       # 37. The column in resource array for growth parameter
+               10,      # 38. The column in the resource array for offspring
+               16,      # 39. The column to adjust the growth rate resource col
+               17      # 40. The column to adjust the offspring resource col
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;

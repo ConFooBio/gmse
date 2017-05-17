@@ -31,14 +31,20 @@ void add_time(double **res_adding, double *paras){
  *     ladj: Adjustment to the growth rate column ('add' above)
  *     dadj: Adjustment to the offspring number column ('realised' above)
  * ========================================================================== */
-void res_add(double **res_adding, int rows, int add, int type, int K_add, 
-             int ladj, int dadj){
+void res_add(double **res_adding, double *paras){
     
-    int resource, realised, sampled, added, loops;
+    int resource_number, add, realised, type, K_add, ladj, dadj;
+    int resource, sampled, added, loops;
     double rand_pois, rand_unif, lambda;
-
-    realised = add + 1;
     
+    type            = (int) paras[3];
+    K_add           = (int) paras[5];
+    resource_number = (int) paras[32];
+    add             = (int) paras[37];
+    realised        = (int) paras[38];
+    ladj            = (int) paras[39];
+    dadj            = (int) paras[40];
+
     switch(type){
         case 0:
             break;
@@ -46,7 +52,7 @@ void res_add(double **res_adding, int rows, int add, int type, int K_add,
             break; /* Add in a different type of birth here */
         case 2:
             added = 0; 
-            for(resource = 0; resource < rows; resource++){
+            for(resource = 0; resource < resource_number; resource++){
                 res_adding[resource][realised] = 0;
                 lambda = res_adding[resource][add] + res_adding[resource][ladj];
                 if(lambda < 0){
@@ -66,7 +72,7 @@ void res_add(double **res_adding, int rows, int add, int type, int K_add,
         loops = 1000000000;
         while(added > K_add){ 
             rand_unif = runif(0, 1);
-            sampled   = floor(rand_unif * rows);
+            sampled   = floor(rand_unif * resource_number);
             if(res_adding[sampled][realised] > 0){
                 res_adding[sampled][realised]--; /* Less memory used now */
                 added--;
@@ -366,8 +372,8 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     }
 
     /* Identify, and calculate the number of, added individuals */
-    res_add(res_old, res_number, 9, birthtype, birth_K, 16, 17);
-    res_nums_added      = 0; 
+    res_add(res_old, paras);
+    res_nums_added = 0; 
     for(resource = 0; resource < res_number; resource++){
         res_nums_added += res_old[resource][10];
     }

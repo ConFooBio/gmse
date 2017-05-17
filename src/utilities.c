@@ -157,9 +157,9 @@ int edge_effect(int pos, int edge_1, int edge_2, int edge_type){
  *     2: Movement length is poisson(move_para) in x then y direction
  *     3: Movement length is poisson(move_para) in any direction
  * ========================================================================== */
-void res_mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
-           int edge_eff, double ***landscape, int land_x, int land_y, 
-           int type){
+void res_mover(double **res_moving, int xloc, int yloc, int move_para, int rows, 
+               int edge_eff, double ***landscape, int land_x, int land_y, 
+               int type){
     
     int res_num;      /* Resource number index                        */
     int move_len;     /* Length of a move                             */
@@ -169,7 +169,7 @@ void res_mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
     double rand_uni;  /* Random uniform number                        */
     double rand_pois; /* Random poisson number                        */
     double raw_move;  /* Movement length before floor() truncation    */
-    
+
     for(res_num=0; res_num < rows; res_num++){
         /* Move first in the xloc direction --------------------------------- */
         new_pos  = (int) res_moving[res_num][xloc];
