@@ -84,8 +84,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                     cell_types  = 2,
                                     cell_val_mn = 1,
                                     cell_val_sd = 0,
-                                    ownership   = 1:3,
-                                    owner_pr    = c(0.2, 0.4, 0.4)
+                                    ownership   = 1:4,
+                                    owner_pr    = c(0.1, 0.3, 0.3, 0.3)
     );
     # Set the starting conditions for one resource
     starting_resources <- make_resource( model              = pop_model, 
@@ -100,8 +100,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     );
     # This will obviously need to be changed -- new function in initialise.R
     AGENTS   <- make_agents( model        = pop_model,
-                             agent_number = 3,
-                             type_counts  = c(1, 2),
+                             agent_number = 4,
+                             type_counts  = c(1, 3),
                              vision       = agent_view,
                              rows         = land_dim_1,
                              cols         = land_dim_2,
@@ -121,17 +121,18 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     COST[,8,]      <- 1;
     COST[,10,]     <- 1;
     COST[,1:7,]    <- 10000;
-    COST[,11:12,2:3] <- 1000;
+    COST[,11:12,2:4] <- 1000;
     ACTION <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
     ACTION[1:2,5:7,] <- 1;
     ACTION[1,5,1]    <- 100;
-    ACTION[2,5,2:3]  <- 100;
+    ACTION[2,5,2:4]  <- 100;
     ACTION[2,5,3]    <- 100;
     ACTION[1,5,1]    <- 200;   ###### CONTROL HOW MUCH MANAGER LIKES RESOURCES
     COST[,8:13,]     <- 1;
     COST[2,8:13,]    <- 1000;
     COST[,8:13,1]    <- 10000;
-    COST[3:5,8:13,2:3] <- 1000;
+    COST[3:6,8:13,2:4] <- 1000;
+    ACTION[3:6,5:13,2:4]   <- 0;
     COST[3,8:13,1]   <- 1;
     AGENTS[,17]     <- 300;
     

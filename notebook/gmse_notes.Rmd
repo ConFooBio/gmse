@@ -86,7 +86,9 @@ We could introduce a trade-off between observation and allocating costs for the 
 
 For some reason, some initial testing seemed to suggest that resource population growth increases with the number of stake-holders, even if those stake-holders are hostile to the resource. Some further testing confirmed that stake-holders don't engage in actions there are more than two of them -- it's possible that I hard-coded something during testing, but it needs to be fixed. For now, I'm shifting the default testing options to 3 stake-holders to isolate the issue.
 
+**Resolve [Issue #25](https://github.com/bradduthie/gmse/issues/25): Agent's action error**
 
+That was quick. What happened was an issue with the `COST` and `ACTION` array -- I basically had the code to initialise three but not four stake-holders accurately. When a fourth was initialised (or nine, in the case of one test), the stake-holder did nothing because it was devoting itself to costly non-sense actions from the start and couldn't get out of them. Resources then did better because there were fewer agents able to affect them (those agents owning a smaller amount of land). When this is resolved, a fourth stake-holder performs the expected actions and the population dynamics oscillate even more as a result because more *total* actions are being performed (and on more land, as I've set it). 
 
 > <a name="u-17-MAY-2017">Update: 17 MAY 2017</a>
 
