@@ -219,7 +219,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                1,       # 48. The landscape layer interacting with a resource
                4,       # 49. The column for the agent's x location on landscape
                5,       # 50. The column for the agent's y location on landscape
-               6        # 51. The column for the movement parameter for agents
+               6,       # 51. The column for the movement parameter for agents
+               10,      # 52. The column in agent array where marks accumulate
+               12       # 53. The column in resource array where marks accrue
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;

@@ -253,7 +253,7 @@ int binos(int obs_x, int obs_y, int res_x, int res_y,  int view, double *paras){
  *     agent_array: data frame of agents, potentially doing the marking
  *     paras: vector of parameter values
  *     res_rows: Total number of rows in the res_adding data frame
- *     worker: The row of the agent that is doing the working
+ *     agent: The row of the agent that is doing the working
  *     find_proc: The procedure used for finding and marking resources
  *     res_type: The type of resources being marked
  *     obs_col: The number of columns in the observation array
@@ -261,39 +261,30 @@ int binos(int obs_x, int obs_y, int res_x, int res_y,  int view, double *paras){
  *     The resource_array is marked by a particular agent
  * ========================================================================== */
 void mark_in_view(double **resource_array, double **agent_array, double *paras,
-                  int res_rows, int worker, int find_proc, int obs_col){
+                  int agent, int obs_col){
 
-    int xloc;         /* x location of the agent doing work */
-    int yloc;         /* y location of the agent doing work */
-    int view;         /* The 'view' (sampling range) around agent's location */
-    int edge;         /* What type of edge is being used in the simulation */
-    int resource;     /* Index for resource array */
-    int r_x;          /* x location of a resource */
-    int r_y;          /* y location of a resource */
-    int seeme;        /* Test if observer sees/captures the resource */
-    int ldx;          /* Landscape dimension on the x-axis */
-    int ldy;          /* Landscape dimension on the y-axis */
-    int EucD;         /* Is vision based on Euclidean distance? */
-    double min_age;   /* Minimum at which sampling can occur */
+    int resource_number, xloc, yloc, view, resource, r_x, r_y, seeme, min_age; 
+    int res_x, res_y, res_age_col, a_marks, r_marks;
     
-    xloc  = (int) agent_array[worker][4];
-    yloc  = (int) agent_array[worker][5];
-    view  = (int) agent_array[worker][8];
-    edge  = (int) paras[1];
-    ldx   = (int) paras[12];
-    ldy   = (int) paras[13];
-    EucD  = (int) paras[20];
+    xloc            = (int) agent_array[agent][4];
+    yloc            = (int) agent_array[agent][5];
+    view            = (int) agent_array[agent][8];
+    min_age         = (int) paras[16];
+    res_age_col     = (int) paras[31];
+    resource_number = (int) paras[32];
+    res_x           = (int) paras[33];
+    res_y           = (int) paras[34];
+    a_marks         = (int) paras[52];
+    r_marks         = (int) paras[53];
     
-    min_age = paras[16];
-    
-    for(resource = 0; resource < res_rows; resource++){
-        if(resource_array[resource][11] >= min_age){
-            r_x   = resource_array[resource][4];
-            r_y   = resource_array[resource][5];
+    for(resource = 0; resource < resource_number; resource++){
+        if(resource_array[resource][res_age_col] >= min_age){
+            r_x   = resource_array[resource][res_x];
+            r_y   = resource_array[resource][res_y];
             seeme = binos(xloc, yloc, r_x, r_y, view, paras);
-            agent_array[worker][10]           += seeme;
+            agent_array[agent][a_marks]       += seeme;
             resource_array[resource][obs_col] += seeme;
-            resource_array[resource][12]      += seeme;
+            resource_array[resource][r_marks] += seeme;
         }
     }
 }
@@ -327,9 +318,8 @@ void mark_res(double **resource_array, double **agent_array, double ***land,
     sample_num = (int) paras[11];
 
     for(agent = 0; agent < a_row; agent++){
-        if(agent_array[agent][by_type] == a_type){ 
-            mark_in_view(resource_array, agent_array, paras, res_rows, agent, 
-                         find_type, obs_col);
+        if(agent_array[agent][by_type] == a_type){
+            mark_in_view(resource_array, agent_array, paras, agent, obs_col);
         }
         if(sample_num > 1){
             a_mover(agent_array, land, paras, agent);
