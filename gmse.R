@@ -225,7 +225,11 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                10,      # 52. The column in agent array where marks accumulate
                12,      # 53. The column in resource array where marks accrue
                agn,     # 54. The total number of agents in the model
-               agt      # 55. The total number of agent traits (cols)
+               agt,     # 55. The total number of agent traits (cols)
+               1,       # 56. The column of resource type 1
+               2,       # 57. The column of resource type 2
+               3,       # 58. The column of resource type 3
+               13       # 59. The tally column of the resource array
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;

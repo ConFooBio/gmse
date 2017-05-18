@@ -323,16 +323,13 @@ void mark_res(double **resource_array, double **agent_array, double ***land,
     }
 }
 
-
-
 /* =============================================================================
  * This simulates an individual agent marking a fixed number of resources
  * Inputs include:
  *     resource_array: data frame of resources to be marked and/or recaptured
  *     agent_array: data frame of agents, potentially doing the marking
  *     paras: vector of parameter values
- *     res_rows: Total number of rows in the res_adding data frame
- *     worker: The row of the agent that is doing the working
+ *     agent: The row of the agent that is doing the working
  *     obs_col: The number of columns in the observation array
  *     type1: Resource type 1 being marked
  *     type2: Resource type 2 being marked
@@ -341,89 +338,75 @@ void mark_res(double **resource_array, double **agent_array, double ***land,
  *     Specific resources in resource_array are marked by a particular agent
  * ========================================================================== */
 void mark_fixed(double **resource_array, double **agent_array, double *paras,
-                int res_rows, int worker, int obs_col, int type1, int type2, 
-                int type3){
+                int agent, int obs_col, int type1, int type2, int type3){
     
-    int xloc;         /* x location of the agent doing work */
-    int yloc;         /* y location of the agent doing work */
-    int view;         /* The 'view' (sampling range) around agent's location */
-    int edge;         /* What type of edge is being used in the simulation */
-    int resource;     /* Index for resource array */
-    int r_x;          /* x location of a resource */
-    int r_y;          /* y location of a resource */
-    int seeme;        /* Test if observer sees/captures the resource */
-    int ldx;          /* Landscape dimension on the x-axis */
-    int ldy;          /* Landscape dimension on the y-axis */
-    int fixn;         /* If procedure is to sample a fixed number; how many? */
-    int count;        /* Index for sampling a fixed number of resource */
-    int sampled;      /* The resource randomly sampled */
-    int type_num;     /* Number of the type of resource to be fixed sampled */
-    int EucD;         /* Is vision based on Euclidean distance? */
+    int resource, fixn, count, sampled, type_num;  
+    int resource_number, t1_col, t2_col, t3_col, tally_col, age_col;
+    int agent_mark_col, res_marks_col, min_age;
     double sampl;     /* Random uniform sampling of a resource */
-    double min_age;   /* Minimum at which sampling can occur */
 
-    xloc  = (int) agent_array[worker][4];
-    yloc  = (int) agent_array[worker][5];
-    view  = (int) agent_array[worker][8];
-    edge  = (int) paras[1];
-    ldx   = (int) paras[12];
-    ldy   = (int) paras[13];
-    EucD  = (int) paras[20];
-
-    min_age = (int) paras[16];
+    fixn            = (int) paras[10]; /* Number of fixed samples */
+    min_age         = (int) paras[16];
+    age_col         = (int) paras[31];
+    resource_number = (int) paras[32];
+    agent_mark_col  = (int) paras[52];
+    res_marks_col   = (int) paras[53];
+    t1_col          = (int) paras[56];
+    t2_col          = (int) paras[57];
+    t3_col          = (int) paras[58];
+    tally_col       = (int) paras[59]; 
     
-    fixn     = (int) paras[10];
     type_num = 0;
-    for(resource = 0; resource < res_rows; resource++){
-        if(resource_array[resource][1]  == type1 &&
-           resource_array[resource][2]  == type2 &&
-           resource_array[resource][3]  == type3 &&
-           resource_array[resource][11] >= min_age
+    for(resource = 0; resource < resource_number; resource++){
+        if(resource_array[resource][t1_col]  == type1 &&
+           resource_array[resource][t2_col]  == type2 &&
+           resource_array[resource][t3_col]  == type3 &&
+           resource_array[resource][age_col] >= min_age
         ){
             type_num++;
         }
     }
     if(type_num > fixn){ /* If more resources than the sample number */
         /* Temp tallies are used here to sample without replacement */
-        for(resource = 0; resource < res_rows; resource++){
-            if(resource_array[resource][1]  == type1 &&
-               resource_array[resource][2]  == type2 &&
-               resource_array[resource][3]  == type3
+        for(resource = 0; resource < resource_number; resource++){
+            if(resource_array[resource][t1_col]  == type1 &&
+               resource_array[resource][t2_col]  == type2 &&
+               resource_array[resource][t3_col]  == type3
             ){
-                resource_array[resource][13] = 0; /* Start untallied */
+                resource_array[resource][tally_col] = 0; /* Start untallied */
             }
         }
         count = fixn;
         sampl = 0;
         while(count > 0){
             do{ /* Find an un-tallied resource in the array */
-                 sampl   = runif(0, 1) * res_rows;
+                 sampl   = runif(0, 1) * resource_number;
                  sampled = (int) sampl;
-              } while(resource_array[sampled][13] == 1         || 
-                      resource_array[sampled][1]  != type1     ||
-                      resource_array[sampled][2]  != type2     ||
-                      resource_array[sampled][3]  != type3     ||
-                      resource_array[sampled][11] <  min_age   ||
-                      sampled == res_rows /* In case sample returns 1 */
+              } while(resource_array[sampled][tally_col] == 1       || 
+                      resource_array[sampled][t1_col]  != type1     ||
+                      resource_array[sampled][t2_col]  != type2     ||
+                      resource_array[sampled][t3_col]  != type3     ||
+                      resource_array[sampled][age_col] <  min_age   ||
+                      sampled == resource_number /* In case sample returns 1 */
                 );
             resource_array[sampled][obs_col]++; /* Marks accumulate  */
-            resource_array[sampled][12]++;
-            resource_array[sampled][13] = 1;    /* Tally is noted    */
+            resource_array[sampled][res_marks_col]++;
+            resource_array[sampled][tally_col] = 1;    /* Tally is noted    */
             count--;
         }
-        agent_array[worker][10] += fixn;
+        agent_array[agent][agent_mark_col] += fixn;
     }else{ /* Else all of the resources should be marked */
-        for(resource = 0; resource < res_rows; resource++){
-            if(resource_array[resource][1]  == type1 &&
-               resource_array[resource][2]  == type2 &&
-               resource_array[resource][3]  == type3 &&
-               resource_array[resource][11] >= min_age
+        for(resource = 0; resource < resource_number; resource++){
+            if(resource_array[resource][t1_col]  == type1   &&
+               resource_array[resource][t2_col]  == type2   &&
+               resource_array[resource][t3_col]  == type3   &&
+               resource_array[resource][age_col] >= min_age
             ){
                resource_array[resource][obs_col]++;  /* Mark all */
-               resource_array[resource][12]++;
+               resource_array[resource][res_marks_col]++;
              }
         }
-        agent_array[worker][10] += type_num; /* All resources marked */ 
+        agent_array[agent][agent_mark_col] += type_num;
    }
 }
 
@@ -483,8 +466,8 @@ void sample_fixed_res(double **resource_array, double **agent_array,
             while(times_obs > 0){
                 for(agent = 0; agent < agent_number; agent++){
                     if(agent_array[agent][by_type] == a_type){ 
-                        mark_fixed(resource_array, agent_array, paras, res_rows, 
-                                   agent, obs_iter, type1, type2, type3);
+                        mark_fixed(resource_array, agent_array, paras, agent,
+                                   obs_iter, type1, type2, type3);
                     }
                 }
                 obs_iter++;
