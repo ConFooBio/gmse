@@ -164,28 +164,22 @@ void a_mover(double **agent_moving, double ***land, double *paras, int a_row){
  *     obs_y: y location of the observer
  *     res_x: x location of the resource
  *     res_y: y location of the resource
- *     edge:  The type of edge of the landscape (e.g., no edge, torus)
  *     view:  Distance that an agent can view a resource
- *     xdim:  Dimension of the landscape on the x-axis
- *     ydim:  Dimension of the landscape on the y-axis
- *     Euc:   Is the distance calculation Euclidean (1) or cells away (0)
+ *     paras: Vector holding key parameters
  * ========================================================================== */
-int binos(int obs_x, int obs_y, int res_x, int res_y, int edge, int view,
-          int xdim, int ydim, int Euc){
+int binos(int obs_x, int obs_y, int res_x, int res_y,  int view, double *paras){
     
-    int see_it;
-    int sq_view;
-    double sq_xdist;
-    double sq_ydist;
-    double min_sq_x;
-    double min_sq_y;
-    double x_test;
-    double y_test;
-    double distance;
+    int Euc, land_x, land_y, edge, see_it, sq_view;
+    double sq_xdist, sq_ydist, min_sq_x, min_sq_y, x_test, y_test, distance;
     
     see_it  = 0;
     sq_view = view * view;
-    
+
+    edge   = (int) paras[1];  /* Type of edge of the landscape */
+    land_x = (int) paras[12]; /* Dimension of the landscape on the x-axis */
+    land_y = (int) paras[13]; /* Dimension of the landscape on the y-axis */
+    Euc    = (int) paras[20]; /* Is the distance calculation Euclidean */
+
     switch(edge){
         case 0:
             sq_xdist = (obs_x - res_x) * (obs_x - res_x);
@@ -207,22 +201,22 @@ int binos(int obs_x, int obs_y, int res_x, int res_y, int edge, int view,
         case 1: /* There's a cleverer way, but probably not a clearer one */
             /* Get the squared distance on the x dimension */
             min_sq_x = (obs_x - res_x) * (obs_x - res_x);
-            x_test   = ( (obs_x + xdim) - res_x) * ( (obs_x + xdim) - res_x);
+            x_test   = ( (obs_x+land_x) - res_x) * ( (obs_x+land_x) - res_x);
             if(x_test < min_sq_x){
                 min_sq_x = x_test;    
             }
-            x_test   = (obs_x - (res_x + xdim) ) * (obs_x - (res_x + xdim) );
+            x_test   = (obs_x - (res_x+land_x) ) * (obs_x - (res_x+land_x) );
             if(x_test < min_sq_x){
                 min_sq_x = x_test;    
             }
             sq_xdist = min_sq_x; /* Now have the squared x distance on torus */
             /* Get the squared distance on the y dimension */
             min_sq_y = (obs_y - res_y) * (obs_y - res_y);
-            y_test   = ( (obs_y + ydim) - res_y) * ( (obs_y + ydim) - res_y);
+            y_test   = ( (obs_y+land_y) - res_y) * ( (obs_y+land_y) - res_y);
             if(y_test < min_sq_y){
                 min_sq_y = y_test;   
             }
-            y_test   = (obs_y - (res_y + ydim) ) * (obs_y - (res_y + ydim) );
+            y_test   = (obs_y - (res_y+land_y) ) * (obs_y - (res_y+land_y) );
             if(y_test < min_sq_y){
                 min_sq_y = y_test;   
             }    
@@ -249,7 +243,6 @@ int binos(int obs_x, int obs_y, int res_x, int res_y, int edge, int view,
             }
             break;      
     }
-    
     return see_it;
 }
 
@@ -297,7 +290,7 @@ void mark_in_view(double **resource_array, double **agent_array, double *paras,
         if(resource_array[resource][11] >= min_age){
             r_x   = resource_array[resource][4];
             r_y   = resource_array[resource][5];
-            seeme = binos(xloc, yloc, r_x, r_y, edge, view, ldx, ldy, EucD);
+            seeme = binos(xloc, yloc, r_x, r_y, view, paras);
             agent_array[worker][10]           += seeme;
             resource_array[resource][obs_col] += seeme;
             resource_array[resource][12]      += seeme;
@@ -1142,8 +1135,7 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
                 r_x   = (int) resource_array[resource][4];
                 r_y   = (int) resource_array[resource][5];
                 view  = (int) agent_array[agent][8];
-                seeit += binos(a_x, a_y, r_x, r_y, edge, view, land_x, land_y,
-                               EucD);
+                seeit += binos(a_x, a_y, r_x, r_y, view, paras);
                 agent_array[agent][rec_col] = seeit;
             }
         }
