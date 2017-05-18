@@ -121,16 +121,17 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     COST[,8,]      <- 1;
     COST[,10,]     <- 1;
     COST[,1:7,]    <- 10000;
-    #COST[,11:12,2:3] <- 1000;
+    COST[,11:12,2:3] <- 1000;
     ACTION <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
     ACTION[1:2,5:7,] <- 1;
     ACTION[1,5,1]    <- 100;
-    ACTION[2,5,2]    <- 100;
+    ACTION[2,5,2:3]  <- 100;
     ACTION[2,5,3]    <- 100;
     ACTION[1,5,1]    <- 200;   ###### CONTROL HOW MUCH MANAGER LIKES RESOURCES
     COST[,8:13,]     <- 1;
     COST[2,8:13,]    <- 1000;
     COST[,8:13,1]    <- 10000;
+    COST[3:5,8:13,2:3] <- 1000;
     COST[3,8:13,1]   <- 1;
     AGENTS[,17]     <- 300;
     
