@@ -90,6 +90,10 @@ For some reason, some initial testing seemed to suggest that resource population
 
 That was quick. What happened was an issue with the `COST` and `ACTION` array -- I basically had the code to initialise three but not four stake-holders accurately. When a fourth was initialised (or nine, in the case of one test), the stake-holder did nothing because it was devoting itself to costly non-sense actions from the start and couldn't get out of them. Resources then did better because there were fewer agents able to affect them (those agents owning a smaller amount of land). When this is resolved, a fourth stake-holder performs the expected actions and the population dynamics oscillate even more as a result because more *total* actions are being performed (and on more land, as I've set it). 
 
+**More progress toward resolving [Issue #21](https://github.com/bradduthie/gmse/issues/21)**
+
+I've now reduced the number of arguments and hard-coded values in the functions of `observation.c`, leaving only the `transect` and `sample_fixed_res` functions to go. Overall, I do think tha this makes the code more readable, and everything goes back to the `paras` vector, which will be useful later in input and output during software testing and use.
+
 > <a name="u-17-MAY-2017">Update: 17 MAY 2017</a>
 
 **Progress toward resolving [Issue #21](https://github.com/bradduthie/gmse/issues/21)**
