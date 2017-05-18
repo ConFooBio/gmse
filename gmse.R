@@ -167,6 +167,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     mxa <- max_ages;
     rsi <- dim(starting_resources)[1];
     ttr <- dim(starting_resources)[2];
+    agn <- dim(AGENTS)[1];
+    agt <- dim(AGENTS)[2];
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -221,7 +223,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                5,       # 50. The column for the agent's y location on landscape
                6,       # 51. The column for the movement parameter for agents
                10,      # 52. The column in agent array where marks accumulate
-               12       # 53. The column in resource array where marks accrue
+               12,      # 53. The column in resource array where marks accrue
+               agn,     # 54. The total number of agents in the model
+               agt      # 55. The total number of agent traits (cols)
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;

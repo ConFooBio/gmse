@@ -299,25 +299,21 @@ void mark_in_view(double **resource_array, double **agent_array, double *paras,
  *     agent_array: data frame of agents, potentially doing the marking
  *     land: The landscape on which interactions occur
  *     paras: vector of parameter values
- *     res_rows: Total number of resources that can be sampled
- *     a_row: Total number agents that could possibly sample
  *     obs_col: The number of columns in the observational array
- *     a_type: The type of agent that is doing the marking
- *     by_type: The type column that is being used
- *     find_type: The type of finding that observers do (view-based or rand)
  * Output:
  *     Accumlated markings of resources by agents
  * ========================================================================== */
 void mark_res(double **resource_array, double **agent_array, double ***land,
-              double *paras, int res_rows, int a_row, int obs_col, int a_type, 
-              int by_type, int find_type){
-    
-    int agent;
-    int sample_num;   /* Times resources observed during one time step */
+              double *paras, int obs_col){
 
-    sample_num = (int) paras[11];
+    int agent_number, a_type, by_type, agent, sample_num;
 
-    for(agent = 0; agent < a_row; agent++){
+    a_type       = (int) paras[7];  /* Type of agent does the observing      */   
+    by_type      = (int) paras[17]; /* Category (col) of agent type location */
+    sample_num   = (int) paras[11]; /* Times resources observed in time step */
+    agent_number = (int) paras[54];
+
+    for(agent = 0; agent < agent_number; agent++){
         if(agent_array[agent][by_type] == a_type){
             mark_in_view(resource_array, agent_array, paras, agent, obs_col);
         }
@@ -753,8 +749,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
         case 0: /* Simple view-based method of sampling */
             obs_iter = trait_number + 1; /* Skips a_type col added later */
             while(times_obs > 0){
-                mark_res(resource_array, agent_array, land, paras, res_number, 
-                         agent_number, obs_iter, a_type, by_type, 0);
+                mark_res(resource_array, agent_array, land, paras, obs_iter);
                 obs_iter++;
                 times_obs--;
                 if(move_res == 1){ /* Move resources if need for new sample */
@@ -846,8 +841,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
             printf("ERROR: No observation method set: marking all in view \n");
             obs_iter = trait_number + 1; /* The 1 skips over the agent type */
             while(times_obs > 0){
-                mark_res(resource_array, agent_array, land, paras, res_number, 
-                         agent_number, obs_iter, a_type, by_type, 0);
+                mark_res(resource_array, agent_array, land, paras, obs_iter);
                 obs_iter++;
                 times_obs--; /* Then move agents if need be for new sample */ 
                 if(move_res == 1){
