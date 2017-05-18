@@ -5,24 +5,13 @@
  * For now, it is repeated in both c files, but if there are more functions
  * that serve two purposes, then a general utilily c file might be created
  * agent_moving: Agent array
- * xloc: Column indicating the agents' x positions
- * yloc: Column indicating the agents' y positions
- * move_para: Column affecting the distance that an agent can move
- * edge: Defines what happens at the landscape edge:
- *     0: Nothing happens (individual is just off the map)
- *     1: Torus landscape (individual wraps around to the other side)
- * a_row: Row of the agent of interest
- * landscape: The landscape array
- * land_x: Max x dimension of the landscape
- * land_y: Max y dimension of the landscape
- * type: Defines the type of movement allowed:
- *     0: No movement is allowed
- *     1: Movement is random uniform from zero to move_para in any direction
- *     2: Movement is poisson(move_para) in any direction
+ * land: The landscape array
+ * paras: Vector of parameters needed
+ * a_row: The row of the agent of interest
  * ========================================================================== */
-void a_mover(double **agent_moving, int xloc, int yloc, int move_para, int edge,
-             int a_row, double ***landscape, int land_x, int land_y, int type){
-    
+void a_mover(double **agent_moving, double ***land, double *paras, int a_row){
+
+    int xloc, yloc, move_para, edge, land_x, land_y, type;
     int move_len;     /* Length of a move                            */
     int move_dir;     /* Move direction (-1 or 1)                    */
     int new_pos;      /* New position: check if over landscape edge  */
@@ -30,6 +19,14 @@ void a_mover(double **agent_moving, int xloc, int yloc, int move_para, int edge,
     double rand_uni;  /* Random uniform number                       */
     double rand_pois; /* Random poisson number                       */
     double raw_move;  /* Movement length before floor() truncation   */
+
+    edge      = (int) paras[1];  /* Defines what happens at landscape edge */
+    land_x    = (int) paras[12]; /* Max x dimension of the landscape */
+    land_y    = (int) paras[13]; /* Max y dimension of the landscape */
+    type      = (int) paras[14]; /* Defines the type of movement allowed */
+    xloc      = (int) paras[49]; /* Column indicating the agents' x positions */
+    yloc      = (int) paras[50]; /* Column indicating the agents' y positions */
+    move_para = (int) paras[51]; /* Column for distance an agent can move */
 
     /* Move first in the xloc direction --------------------------------- */
     new_pos  = agent_moving[a_row][xloc];
@@ -331,20 +328,10 @@ void mark_res(double **resource_array, double **agent_array, double ***land,
               double *paras, int res_rows, int a_row, int obs_col, int a_type, 
               int by_type, int find_type){
     
-    int resource;
     int agent;
-    int count;
-    int edge;        /* How does edge work? (Effects agent vision & movement) */
-    int samp_res;    /* A randomly sampled resource */
-    int ldx, ldy;
-    int move_t;
     int sample_num;   /* Times resources observed during one time step */
 
-    edge       = (int) paras[1];  /* What type of edge is on the landscape */
     sample_num = (int) paras[11];
-    ldx        = (int) paras[12]; /* dimensions of landscape -- x and y */
-    ldy        = (int) paras[13];
-    move_t     = (int) paras[14]; /* Type of movement being used  */
 
     for(agent = 0; agent < a_row; agent++){
         if(agent_array[agent][by_type] == a_type){ 
@@ -352,7 +339,7 @@ void mark_res(double **resource_array, double **agent_array, double ***land,
                          find_type, obs_col);
         }
         if(sample_num > 1){
-            a_mover(agent_array, 4, 5, 6, edge, agent, land, ldx, ldy, move_t);
+            a_mover(agent_array, land, paras, agent);
         }
     }
 }
@@ -1161,8 +1148,7 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
             }
         }
         if(move_agents == 1){
-            a_mover(agent_array, 4, 5, 6, edge, agent, land, land_x, land_y, 
-                    move_t);
+            a_mover(agent_array, land, paras, agent);
         }
     }
     

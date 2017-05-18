@@ -216,7 +216,10 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                1,       # 45. A type of resource to do interacting with land
                15,      # 46. The column in a resource array affected by land
                14,      # 47. The column in resource array of land effect size
-               1        # 48. The landscape layer interacting with a resource
+               1,       # 48. The landscape layer interacting with a resource
+               4,       # 49. The column for the agent's x location on landscape
+               5,       # 50. The column for the agent's y location on landscape
+               6        # 51. The column for the movement parameter for agents
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
@@ -260,9 +263,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         OBSERVATION_r  <- OBSERVATION_NEW[[1]];
         paras          <- OBSERVATION_NEW[[3]];
         
-  
         # anecdotal is a bit useless right now, but included here anyway. 
-        AGENTS_NEW          <- anecdotal(resource    = RESOURCES,
+        AGENTS_NEW        <- anecdotal(resource    = RESOURCES,
                                        landscape   = LANDSCAPE_r,
                                        paras       = paras,
                                        agent       = AGENTS,
@@ -273,7 +275,6 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                        move_agents = mva
         );
         AGENTS <- AGENTS_NEW[[1]];
-        paras  <- AGENTS_NEW[[2]];
 
         MANAGER  <- manager(resource    = RESOURCES,
                             agent       = AGENTS,
