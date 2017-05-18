@@ -258,9 +258,11 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                          move_res   = rmo
         );
         OBSERVATION_r  <- OBSERVATION_NEW[[1]];
+        paras          <- OBSERVATION_NEW[[3]];
+        
   
         # anecdotal is a bit useless right now, but included here anyway. 
-        AGENTS            <- anecdotal(resource    = RESOURCES,
+        AGENTS_NEW          <- anecdotal(resource    = RESOURCES,
                                        landscape   = LANDSCAPE_r,
                                        paras       = paras,
                                        agent       = AGENTS,
@@ -270,6 +272,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                        type_cat    = 1,
                                        move_agents = mva
         );
+        AGENTS <- AGENTS_NEW[[1]];
+        paras  <- AGENTS_NEW[[2]];
 
         MANAGER  <- manager(resource    = RESOURCES,
                             agent       = AGENTS,

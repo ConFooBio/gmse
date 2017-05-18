@@ -951,10 +951,11 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     }
     
     SEXP EVERYTHING;
-    EVERYTHING = PROTECT( allocVector(VECSXP, 2) );
+    EVERYTHING = PROTECT( allocVector(VECSXP, 3) );
     protected_n++;
     SET_VECTOR_ELT(EVERYTHING, 0, NEW_OBSERVATIONS);
-    SET_VECTOR_ELT(EVERYTHING, 1, NEW_AGENTS);    
+    SET_VECTOR_ELT(EVERYTHING, 1, NEW_AGENTS);
+    SET_VECTOR_ELT(EVERYTHING, 2, PARAMETERS);  
     
     UNPROTECT(protected_n);
     
@@ -1182,6 +1183,12 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
         }
     }   
     
+    SEXP EVERYTHING;
+    EVERYTHING = PROTECT( allocVector(VECSXP, 2) );
+    protected_n++;
+    SET_VECTOR_ELT(EVERYTHING, 0, NEW_AGENT);
+    SET_VECTOR_ELT(EVERYTHING, 1, PARAMETERS);
+    
     UNPROTECT(protected_n);
     
     /* Free all of the allocated memory used in arrays */
@@ -1201,6 +1208,6 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     }
     free(resource_array);
     
-    return(NEW_AGENT); 
+    return(EVERYTHING); 
 }
 /* ===========================================================================*/
