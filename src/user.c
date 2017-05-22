@@ -280,7 +280,7 @@ void do_actions(double ***landscape, double **resources, int land_x, int land_y,
         type3    = action[row][3][owner];  /* Resource type 3 */
         u_loc    = action[row][5][owner];  /* Restricted to owned land? */
 
-        can_act = malloc(res_number * sizeof(int));
+        can_act = malloc(res_number * sizeof(int)); /* TODO: CHECK FOR BUG */
         is_correct_type(res_number, resources, type1, type2, type3, can_act);
 
         if(u_loc == 1){

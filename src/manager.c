@@ -9,10 +9,12 @@
  *     type2:      Resources of type 2 being observed
  *     type3:      Resources of type 3 being observed
  * ========================================================================== */
-int res_obs(double **obs_array, int obs_rows, int obs_cols, int type1, 
-            int type2, int type3){
+int res_obs(double **obs_array, double *paras, int type1, int type2, int type3){
 
-    int i, j, obs_count;
+    int i, j, obs_count, obs_rows, obs_cols;
+    
+    obs_rows  = (int) paras[61];
+    obs_cols  = (int) paras[62];
     
     obs_count = 0;
  
@@ -41,7 +43,7 @@ int res_obs(double **obs_array, int obs_rows, int obs_cols, int type1,
  *     interact_table: Lookup table to get all types of resource values
  *     int_table_rows: The number of rows in the interact_table
  * ========================================================================== */
-void dens_est(double **obs_array, double *para, double **agent_array, 
+void dens_est(double **obs_array, double *paras, double **agent_array, 
               int agents, int obs_array_rows, int obs_array_cols, 
               double *abun_est, int **interact_table, int int_table_rows){
  
@@ -50,10 +52,10 @@ void dens_est(double **obs_array, double *para, double **agent_array,
     int vision, area, cells, times_obs, tot_obs;
     double prop_obs, estimate;
 
-    a_type    = (int) para[7];  /* What type of agent does the observing  */
-    times_obs = (int) para[11];
-    land_x    = (int) para[12];
-    land_y    = (int) para[13];
+    a_type    = (int) paras[7];  /* What type of agent does the observing  */
+    times_obs = (int) paras[11];
+    land_x    = (int) paras[12];
+    land_y    = (int) paras[13];
     
     view = 0;
     for(i = 0; i < agents; i++){
@@ -73,8 +75,7 @@ void dens_est(double **obs_array, double *para, double **agent_array,
             type1   = interact_table[resource][1];
             type2   = interact_table[resource][2];
             type3   = interact_table[resource][3];
-            tot_obs = res_obs(obs_array, obs_array_rows, obs_array_cols, type1, 
-                              type2, type3);
+            tot_obs = res_obs(obs_array, paras, type1, type2, type3);
             prop_obs = (double) tot_obs / area;
             estimate = prop_obs * cells;
             
