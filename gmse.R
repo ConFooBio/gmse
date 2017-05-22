@@ -346,7 +346,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
             HUNT_OUTCOME <- be_hunter(OBSERVATION_r, AGENTS, RESOURCES, 
                                    LANDSCAPE_r, paras, agent_view);
             RESOURCES    <- HUNT_OUTCOME$RESOURCES;
-            PARAS        <- HUNT_OUTCOME$PARAS;
+            paras        <- HUNT_OUTCOME$PARAS;
         }
     }
     
