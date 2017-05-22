@@ -169,6 +169,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     ttr <- dim(starting_resources)[2];
     agn <- dim(AGENTS)[1];
     agt <- dim(AGENTS)[2];
+    lkr <- dim(interaction_tabl)[1];
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -229,7 +230,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                1,       # 56. The column of resource type 1
                2,       # 57. The column of resource type 2
                3,       # 58. The column of resource type 3
-               13       # 59. The tally column of the resource array
+               13,      # 59. The tally column of the resource array
+               lkr      # 60. The number of rows in the lookup array
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;

@@ -422,31 +422,29 @@ void mark_fixed(double **resource_array, double **agent_array, double *paras,
  *     land: The landscape on which interactions occur
  *     paras: vector of parameter values
  *     lookup: The table listing resources and landscape layers to lookup
- *     res_rows: Total number of resources that can be sampled
  *     agent_number: Total number of agents in the agent array
- *     a_type: The type of agent that is doing the marking
- *     trait_number: The number of traits (columns) of the resource array
- *     lookup_rows: The number of rows in the lookup table
  * Output:
  *     Accumlated markings of resources by agents
  * ========================================================================== */
 void sample_fixed_res(double **resource_array, double **agent_array, 
-                      double ***land, double *paras, int **lookup, int res_rows, 
-                      int agent_number, int a_type, int trait_number, 
-                      int lookup_rows){
+                      double ***land, double *paras, int **lookup){
 
     int edge_type, move_type, fixed_sample, times_obs, move_res, by_type;
-    int land_x, land_y;
-    int obs_iter, agent;
-    int row, type1, type2, type3;
+    int land_x, land_y, res_rows, agent_number, trait_number, lookup_rows;
+    int obs_iter, agent, a_type, row, type1, type2, type3;
     
     edge_type    = (int) paras[1];
     move_type    = (int) paras[2];
+    a_type       = (int) paras[7];  /* Type of agent doing observing */
     fixed_sample = (int) paras[10];
     land_x       = (int) paras[12];
     land_y       = (int) paras[13];
     by_type      = (int) paras[17];
     move_res     = (int) paras[19];
+    res_rows     = (int) paras[32]; /* Number of resources can be sampled */
+    agent_number = (int) paras[54]; /* Number of agents in the agent array */
+    trait_number = (int) paras[55]; /* Traits (columns) in the resource array */
+    lookup_rows  = (int) paras[60]; /* Number of rows in the lookup table */
     
     if(fixed_sample < 1){
         printf("ERROR: Fixed sample must be >= 1 \n ... Making = 1 \n");
@@ -502,13 +500,12 @@ void sample_fixed_res(double **resource_array, double **agent_array,
  *     Accumlated markings of resources within a given area of landscape
  * ========================================================================== */
 void transect(double **resource_array, double *paras, int start_x, int start_y, 
-              int end_x, int end_y, int res_rows, int obs_iter){
+              int end_x, int end_y, int obs_iter){
     
-    int resource;
-    int agent;
-    int min_age;
+    int resource, agent, min_age, res_rows;
     
-    min_age = paras[16];
+    min_age   = paras[16];
+    res_rows  = (int) paras[32]; /* Number of resources can be sampled */
     
     for(resource = 0; resource < res_rows; resource++){
         if(resource_array[resource][11] >= min_age   &&
@@ -586,7 +583,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
     int *dim_INTERACT;       /* Dimensions of the INTERACT array incoming */
-    int **interact_table;    /* Lookup table for resource & land interactions */
+    int **lookup;            /* Lookup table for resource & land interactions */
     double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
     double *intr_ptr;        /* Pointer to INTERACT (interface R and C) */
@@ -700,14 +697,14 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     /* Code below remakes the INTERACT table for easier use */
     int_d0  = dim_INTERACT[0];
     int_d1  = dim_INTERACT[1];
-    interact_table  = malloc(int_d0 * sizeof(int *));
+    lookup  = malloc(int_d0 * sizeof(int *));
     for(row = 0; row < int_d0; row++){
-        interact_table[row] = malloc(int_d1 * sizeof(int));
+        lookup[row] = malloc(int_d1 * sizeof(int));
     }
     vec_pos = 0;
     for(col = 0; col < int_d1; col++){
         for(row = 0; row < int_d0; row++){
-            interact_table[row][col] = intr_ptr[vec_pos];
+            lookup[row][col] = intr_ptr[vec_pos];
             vec_pos++;
         }
     }
@@ -742,9 +739,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
             }
             break;
         case 1: /* Sample fixed_sample resources randomly on landscape */
-            sample_fixed_res(resource_array, agent_array, land, paras, 
-                             interact_table, res_number, agent_number, a_type, 
-                             trait_number, int_d0);
+            sample_fixed_res(resource_array, agent_array, land, paras, lookup);
             break;            
         case 2: /* Sample along a linear (y-axis) transect of all rows */
             transect_len   = 0;
@@ -766,8 +761,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
             ty0          = 0;
             ty1          = transect_len;
             while(ty0 < land_y){
-                transect(resource_array, paras, tx0, ty0, tx1, ty1, res_number, 
-                         obs_iter);
+                transect(resource_array, paras, tx0, ty0, tx1, ty1, obs_iter);
                 obs_iter++;
                 ty0 =  ty1;
                 ty1 += transect_len + 1;
@@ -797,8 +791,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
             ty0          = 0;
             ty1          = transect_len;
             while(tx0 < land_x && ty0 < land_y){
-                transect(resource_array, paras, tx0, ty0, tx1, ty1, res_number, 
-                         obs_iter);
+                transect(resource_array, paras, tx0, ty0, tx1, ty1, obs_iter);
                 obs_iter++;
                 tx0 =  tx1;
                 tx1 += transect_len;
@@ -908,9 +901,9 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     
     /* Free all of the allocated memory used in arrays */
     for(row = 0; row < int_d0; row++){
-        free(interact_table[row]);
+        free(lookup[row]);
     }
-    free(interact_table);   
+    free(lookup);   
     for(resource = 0; resource < new_obs; resource++){
         free(obs_array[resource]);
     }
