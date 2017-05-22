@@ -34,28 +34,28 @@ int res_obs(double **obs_array, double *paras, int type1, int type2, int type3){
 /* =============================================================================
  * This function calculates density-based abundance estimates
  *     obs_array:      The observation array
- *     para:           A vector of parameters needed to handle the obs_array
+ *     paras:          A vector of parameters needed to handle the obs_array
  *     agent_array:    Agent array, including managers (agent type 0)
  *     agents:         Total number of agents (rows) in the agents array
- *     obs_array_rows: Number of rows in the observation array obs_array
- *     obs_array_cols: Number of cols in the observation array obs_array
  *     abun_est:       Vector where abundance estimates for each type are placed
  *     interact_table: Lookup table to get all types of resource values
- *     int_table_rows: The number of rows in the interact_table
  * ========================================================================== */
-void dens_est(double **obs_array, double *paras, double **agent_array, 
-              int agents, int obs_array_rows, int obs_array_cols, 
-              double *abun_est, int **interact_table, int int_table_rows){
+void dens_est(double **obs_array, double *paras, double **agent_array,
+              double *abun_est, int **interact_table){
  
-    int i, j, resource;
+    int i, j, resource, agents, int_table_rows, obs_array_rows, obs_array_cols;
     int view, a_type, land_x, land_y, type1, type2, type3;
     int vision, area, cells, times_obs, tot_obs;
     double prop_obs, estimate;
 
-    a_type    = (int) paras[7];  /* What type of agent does the observing  */
-    times_obs = (int) paras[11];
-    land_x    = (int) paras[12];
-    land_y    = (int) paras[13];
+    a_type         = (int) paras[7];  /* Type of agent does the observing */
+    times_obs      = (int) paras[11];
+    land_x         = (int) paras[12];
+    land_y         = (int) paras[13];
+    agents         = (int) paras[54];
+    int_table_rows = (int) paras[60];
+    obs_array_rows = (int) paras[61];
+    obs_array_cols = (int) paras[62];
     
     view = 0;
     for(i = 0; i < agents; i++){
@@ -251,8 +251,7 @@ void estimate_abundances(double **obs_array, double *para, int **interact_table,
 
     switch(estimate_type){
         case 0:
-            dens_est(obs_array, para, agent_array, agents, obs_x, obs_y, 
-                     abun_est, interact_table, int_table_rows);
+            dens_est(obs_array, para, agent_array, abun_est, interact_table);
             break;
         case 1:
             rmr_est(obs_array, para, obs_x, obs_y, abun_est, interact_table, 
