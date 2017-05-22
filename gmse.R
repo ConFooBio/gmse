@@ -231,7 +231,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                2,       # 57. The column of resource type 2
                3,       # 58. The column of resource type 3
                13,      # 59. The tally column of the resource array
-               lkr      # 60. The number of rows in the lookup array
+               lkr,     # 60. The number of rows in the lookup array
+               rsi,     # 61. The number of rows in the observation array
+               ttr+tmo  # 62. The number of cols int he observation array
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
@@ -335,7 +337,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         }
 
         if(hunt == TRUE & time > start_hunting){
-            RESOURCES <- be_hunter(OBSERVATION_NEW, AGENTS, RESOURCES, 
+            RESOURCES <- be_hunter(OBSERVATION_r, AGENTS, RESOURCES, 
                                    LANDSCAPE_r, agent_view);   
         }
     }
