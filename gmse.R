@@ -338,7 +338,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
 
         if(hunt == TRUE & time > start_hunting){
             RESOURCES <- be_hunter(OBSERVATION_r, AGENTS, RESOURCES, 
-                                   LANDSCAPE_r, agent_view);   
+                                   LANDSCAPE_r, paras, agent_view);   
         }
     }
     
@@ -714,7 +714,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
 ####################################################################
 ## A bit of code to read out and allow input to the observation
 ####################################################################
-be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, agent_view){
+be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, PARAS, agent_view){
     seeit    <- AGENT[2,13];
     view     <- agent_view;
     count    <- dens_est(OBSERVATION, agent_view, LAND)$Nc;
@@ -748,10 +748,11 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, agent_view){
         cat("\n");
     }
     if(shooting > 0){
-        ress <- dim(RESOURCES)[1];
-        hunted <- sample(x=1:ress, size = shooting, replace = FALSE);
+        ress      <- dim(RESOURCES)[1];
+        hunted    <- sample(x=1:ress, size = shooting, replace = FALSE);
         RESOURCES <- RESOURCES[-hunted,];
     }
+    PARAS[33] <- dim(RESOURCES)[1];
     return(RESOURCES);
 }
 
@@ -761,7 +762,7 @@ sim <- gmse( observe_type  = 0,
              agent_view    = 20,
              res_death_K   = 400,
              plotting      = TRUE,
-             hunt          = FALSE,
+             hunt          = TRUE,
              start_hunting = 95,
              fixed_observe = 10,
              times_observe = 20,
