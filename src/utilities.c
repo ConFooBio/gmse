@@ -157,11 +157,10 @@ int edge_effect(int pos, int edge_1, int edge_2, int edge_type){
  *     2: Movement length is poisson(move_para) in x then y direction
  *     3: Movement length is poisson(move_para) in any direction
  * ========================================================================== */
-void res_mover(double **res_moving, int xloc, int yloc, int move_para, int rows, 
-               int edge_eff, double ***landscape, int land_x, int land_y, 
-               int type){
+void res_mover(double **res_moving, double ***landscape, double *paras){
     
-    int res_num;      /* Resource number index                        */
+    int edge_eff, type, land_x, land_y, resource_number, xloc, yloc, move_para;
+    int resource;     /* Resource number index                        */
     int move_len;     /* Length of a move                             */
     int move_dir;     /* Move direction (-1 or 1)                     */
     int new_pos;      /* New position: check if over landscape edge   */
@@ -170,9 +169,19 @@ void res_mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
     double rand_pois; /* Random poisson number                        */
     double raw_move;  /* Movement length before floor() truncation    */
 
-    for(res_num=0; res_num < rows; res_num++){
+    edge_eff        = (int) paras[1];
+    type            = (int) paras[2];
+    land_x          = (int) paras[12];
+    land_y          = (int) paras[13];
+    resource_number = (int) paras[32];
+    xloc            = (int) paras[33];
+    yloc            = (int) paras[34];
+    move_para       = (int) paras[35];
+    
+
+    for(resource=0; resource < resource_number; resource++){
         /* Move first in the xloc direction --------------------------------- */
-        new_pos  = (int) res_moving[res_num][xloc];
+        new_pos  = (int) res_moving[resource][xloc];
         rand_num = 0.5;
         do{ /* Note that rand_num can never be exactly 0.5 */
             rand_num = runif(0, 1);
@@ -190,39 +199,39 @@ void res_mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
                 do{ /* Again, so that res_num never moves too far */
                     rand_uni = runif(0, 1);
                 } while(rand_uni == 1.0);
-                raw_move = rand_uni * (res_moving[res_num][move_para] + 1);
+                raw_move = rand_uni * (res_moving[resource][move_para] + 1);
                 move_len = (int) floor(raw_move);
                 break;
             case 2: /* Poisson selection of position change */
-                rand_pois = rpois(res_moving[res_num][move_para]);    
-                raw_move  = rand_pois * (res_moving[res_num][move_para] + 1);
+                rand_pois = rpois(res_moving[resource][move_para]);    
+                raw_move  = rand_pois * (res_moving[resource][move_para] + 1);
                 move_len  = (int) floor(raw_move);
                 break;
             case 3: /* Uniform position movement a Poisson number of times */
-                rand_pois = rpois(res_moving[res_num][move_para]);
+                rand_pois = rpois(res_moving[resource][move_para]);
                 raw_move  = 0;
                 while(rand_pois > 0){
                     do{
                         rand_uni = runif(0, 1);
                     } while(rand_uni == 1.0);
-                    raw_move += rand_uni * (res_moving[res_num][move_para] + 1);
+                    raw_move += rand_uni*(res_moving[resource][move_para] + 1);
                     rand_pois--;
                 }
                 move_len = (int) floor(raw_move);
                 break;
             default:
-                if(res_num == 0){
+                if(resource == 0){
                     printf("Unclear specification of movement type \n");
                 }
                 break;
         }
-        new_pos  = (int) res_moving[res_num][xloc] + (move_dir * move_len);
+        new_pos  = (int) res_moving[resource][xloc] + (move_dir * move_len);
         if(new_pos >= land_x || new_pos < 0){ /* If off the edge */
             new_pos = edge_effect(new_pos, 0, land_x, edge_eff);
         }
-        res_moving[res_num][xloc] = new_pos;
+        res_moving[resource][xloc] = new_pos;
         /* Move next in the yloc direction ---------------------------------- */
-        new_pos  = (int) res_moving[res_num][yloc];
+        new_pos  = (int) res_moving[resource][yloc];
         rand_num = 0.5;
         do{ /* Note that rand_num can never be exactly 0.5 */
             rand_num = runif(0, 1);
@@ -240,22 +249,22 @@ void res_mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
                 do{ /* Again, so that res_num never moves too far */
                     rand_uni = runif(0, 1);
                 } while(rand_uni == 1.0);
-                raw_move = rand_uni * (res_moving[res_num][move_para] + 1);
+                raw_move = rand_uni * (res_moving[resource][move_para] + 1);
                 move_len = (int) floor(raw_move);
                 break;
             case 2: /* Poisson selection of position change */
-                rand_pois = rpois(res_moving[res_num][move_para]);    
-                raw_move  = rand_pois * (res_moving[res_num][move_para] + 1);
+                rand_pois = rpois(res_moving[resource][move_para]);    
+                raw_move  = rand_pois * (res_moving[resource][move_para] + 1);
                 move_len  = (int) floor(raw_move);
                 break;
             case 3: /* Uniform position movement a Poisson number of times */
-                rand_pois = rpois(res_moving[res_num][move_para]);
+                rand_pois = rpois(res_moving[resource][move_para]);
                 raw_move  = 0;
                 while(rand_pois > 0){
                     do{
                         rand_uni = runif(0, 1);
                     } while(rand_uni == 1.0);
-                    raw_move += rand_uni * (res_moving[res_num][move_para] + 1);
+                    raw_move += rand_uni*(res_moving[resource][move_para] + 1);
                     rand_pois--;
                 }
                 move_len = (int) floor(raw_move);
@@ -263,11 +272,11 @@ void res_mover(double **res_moving, int xloc, int yloc, int move_para, int rows,
             default:
                 break;
         }
-        new_pos  = (int) res_moving[res_num][yloc] + (move_dir * move_len); 
+        new_pos  = (int) res_moving[resource][yloc] + (move_dir * move_len); 
         if(new_pos >= land_y || new_pos < 0){ /* If off the edge */
             new_pos = edge_effect(new_pos, 0, land_y, edge_eff);
         }
-        res_moving[res_num][yloc] = new_pos;
+        res_moving[resource][yloc] = new_pos;
     }
 }
 /* ===========================================================================*/

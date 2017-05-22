@@ -24,12 +24,7 @@ void add_time(double **res_adding, double *paras){
  * contributed by each individual resource
  * Inputs include:
  *     res_adding: data frame of individuals doing the adding (e.g., births)
- *     rows: Total number of rows in the res_adding data frame
- *     add: which row in res_adding is the growth parameter
- *     type: Type of growth (0: , 1: , 2: poisson)
- *     K_add: Carrying capacity applied to the addition of a new resource
- *     ladj: Adjustment to the growth rate column ('add' above)
- *     dadj: Adjustment to the offspring number column ('realised' above)
+ *     paras: Global parameters needed
  * ========================================================================== */
 void res_add(double **res_adding, double *paras){
     
@@ -37,13 +32,13 @@ void res_add(double **res_adding, double *paras){
     int resource, sampled, added, loops;
     double rand_pois, rand_unif, lambda;
     
-    type            = (int) paras[3];
-    K_add           = (int) paras[5];
+    type            = (int) paras[3];  /* Type of growth (e.g., poisson) */
+    K_add           = (int) paras[5];  /* Carrying capacity applied  */
     resource_number = (int) paras[32];
     add             = (int) paras[37];
     realised        = (int) paras[38];
-    ladj            = (int) paras[39];
-    dadj            = (int) paras[40];
+    ladj            = (int) paras[39]; /* Adjustment to the growth rate col  */
+    dadj            = (int) paras[40]; /* Adjustment to offspring number col */
 
     switch(type){
         case 0:
@@ -93,10 +88,6 @@ void res_add(double **res_adding, double *paras){
  *     make: The data frame being used to place old and new resources
  *     old: The old data frame that stores the old resources to be retained
  *     res_added: The number of new resources to be added
- *     old_number: The number of old resources to be retained in the add
- *     traits: The number of traits to be added
- *     realised: The column in the old array that defines number added to new
- *     age: The column in which age is located (always starts at zero)
  * ========================================================================== */
 void res_place(double **make, double **old, double *paras, int res_added){
                
@@ -136,13 +127,8 @@ void res_place(double **make, double **old, double *paras, int res_added){
  * This function selects a random uniform and tests whether or not the resource
  * should be removed (e.g., an individual should die at a fixed rate
  * Inputs include:
- *     res_adding: data frame of individuals to potentially be removed
- *     rows: total number of rows in the res_adding data frame
- *     rm_row: which col in res_adding is the removal (i.e., death) parameter
- *     type: Type of removal (0: None, 1: uniform, 2: K based)
- *     K: Carrying capacity on removal/death -- only used some cases 
- *     rm_adj: Which col in res_adding is adjusting removal (i.e. death)
- *     max_age: What is the maximum age of the resource?
+ *     res_removing: data frame of individuals to potentially be removed
+ *     paras: Global parameters needed
  * ========================================================================== */
 void res_remove(double **res_removing, double *paras){
 
@@ -151,11 +137,11 @@ void res_remove(double **res_removing, double *paras){
     double rand_unif, rm_from_K, rm_from_Ind, rm_odds;
 
     type            = (int) paras[4];
-    K               = (int) paras[6];
+    K               = (int) paras[6]; /* Carrying capacity on removal/death */
     max_age         = (int) paras[29];
     age_col         = (int) paras[31];
     resource_number = (int) paras[32];
-    rm_adj          = (int) paras[42];
+    rm_adj          = (int) paras[42]; /* col in res_adding adjusting removal */
     rm_row          = (int) paras[43];
     
     switch(type){
@@ -208,13 +194,8 @@ void res_remove(double **res_removing, double *paras){
  * each should affect the other based on resource position and trait values
  * Inputs include:
  *     resource_array: resource array of individuals to interact
- *     resource_type_col: which type column defines the type of resource
- *     resource_type: type of resources to do the interacting
- *     resource_col: the column of the resources that affects or is affected
- *     rows: the number of resources (represented by rows) in the array
- *     resource_effect: the column of the resources of landscape effect size
  *     landscape: landscape array of cell values that affect individuals
- *     landscape_layer: layer of the landscape that is affected
+ *     paras: Global parameters needed
  * ========================================================================== */
 void res_landscape_interaction(double **resource_array, double ***landscape,
                                double *paras, int resource_number){
@@ -374,8 +355,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     
     /* Resources move according to move function and parameter) */
     if(move_res == 1){
-        res_mover(res_old, 4, 5, 6, res_number, edge_type, land, land_x, land_y, 
-              move_type);
+        res_mover(res_old, land, paras);
     }
 
     /* Identify, and calculate the number of, added individuals */

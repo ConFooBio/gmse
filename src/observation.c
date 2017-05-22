@@ -471,8 +471,7 @@ void sample_fixed_res(double **resource_array, double **agent_array,
                 obs_iter++;
                 times_obs--;
                 if(move_res == 1){ /* Move resources if need for new sample */
-                    res_mover(resource_array, 4, 5, 6, res_rows, edge_type, 
-                              land, land_x, land_y, move_type); 
+                    res_mover(resource_array, land, paras);
                 }
             }
         }
@@ -733,8 +732,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
                 obs_iter++;
                 times_obs--;
                 if(move_res == 1){ /* Move resources if need for new sample */
-                    res_mover(resource_array, 4, 5, 6, res_number, edge_type, 
-                              land, land_x, land_y, move_type); 
+                    res_mover(resource_array, land, paras);
                 }
             }
             break;
@@ -766,8 +764,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
                 ty0 =  ty1;
                 ty1 += transect_len + 1;
                 if(move_res == 1){
-                    res_mover(resource_array, 4, 5, 6, res_number, edge_type, 
-                              land, land_x, land_y, move_type); 
+                    res_mover(resource_array, land, paras);
                 }
             }
             break;
@@ -803,8 +800,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
                 } 
                 transect_eff--;
                 if(move_res == 1 && transect_eff == 0){
-                    res_mover(resource_array, 4, 5, 6, res_number, edge_type, 
-                              land, land_x, land_y, move_type); 
+                    res_mover(resource_array, land, paras); 
                     transect_eff = working_agents;
                 }
                 if( obs_iter > (land_x * land_y) ){
@@ -821,8 +817,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
                 obs_iter++;
                 times_obs--; /* Then move agents if need be for new sample */ 
                 if(move_res == 1){
-                    res_mover(resource_array, 4, 5, 6, res_number, edge_type, 
-                              land, land_x, land_y, move_type); 
+                    res_mover(resource_array, land, paras);
                 }
             }
         break;
