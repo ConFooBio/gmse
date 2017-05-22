@@ -11,19 +11,23 @@
  * ========================================================================== */
 int res_obs(double **obs_array, double *paras, int type1, int type2, int type3){
 
-    int i, j, obs_count, obs_rows, obs_cols;
+    int i, j, res_cols, obs_count, obs_rows, obs_cols, t1_col, t2_col, t3_col;
     
+    res_cols  = (int) paras[41];
+    t1_col    = (int) paras[56];
+    t2_col    = (int) paras[57];
+    t3_col    = (int) paras[58];
     obs_rows  = (int) paras[61];
     obs_cols  = (int) paras[62];
     
     obs_count = 0;
  
     for(i = 0; i < obs_rows; i++){
-        if( (obs_array[i][1] == type1 || obs_array[i][1] < 0) &&
-            (obs_array[i][2] == type2 || obs_array[i][2] < 0) &&
-            (obs_array[i][3] == type3 || obs_array[i][3] < 0)
+        if( (obs_array[i][t1_col] == type1 || obs_array[i][t1_col] < 0) &&
+            (obs_array[i][t2_col] == type2 || obs_array[i][t2_col] < 0) &&
+            (obs_array[i][t3_col] == type3 || obs_array[i][t3_col] < 0)
         ){
-            for(j = 15; j < obs_cols; j++){
+            for(j = res_cols; j < obs_cols; j++){
                 obs_count += obs_array[i][j];
             }
         }
@@ -44,8 +48,8 @@ void dens_est(double **obs_array, double *paras, double **agent_array,
               double *abun_est, int **interact_table){
  
     int i, j, resource, agents, int_table_rows, obs_array_rows, obs_array_cols;
-    int view, a_type, land_x, land_y, type1, type2, type3;
-    int vision, area, cells, times_obs, tot_obs;
+    int view, a_type, land_x, land_y, type1, type2, type3, view_col;
+    int vision, area, cells, times_obs, tot_obs, t1_col, t2_col, t3_col;
     double prop_obs, estimate;
 
     a_type         = (int) paras[7];  /* Type of agent does the observing */
@@ -53,14 +57,18 @@ void dens_est(double **obs_array, double *paras, double **agent_array,
     land_x         = (int) paras[12];
     land_y         = (int) paras[13];
     agents         = (int) paras[54];
+    t1_col         = (int) paras[56];
+    t2_col         = (int) paras[57];
+    t3_col         = (int) paras[58];
     int_table_rows = (int) paras[60];
     obs_array_rows = (int) paras[61];
     obs_array_cols = (int) paras[62];
+    view_col       = (int) paras[67];
     
     view = 0;
     for(i = 0; i < agents; i++){
         if(agent_array[i][1] == a_type){
-            view += agent_array[i][8];
+            view += agent_array[i][view_col];
         }
     }
 
@@ -72,10 +80,10 @@ void dens_est(double **obs_array, double *paras, double **agent_array,
     for(resource = 0; resource < int_table_rows; resource++){
         abun_est[resource] = 0;
         if(interact_table[resource][0] == 0){ /* Change when turn off type? */
-            type1   = interact_table[resource][1];
-            type2   = interact_table[resource][2];
-            type3   = interact_table[resource][3];
-            tot_obs = res_obs(obs_array, paras, type1, type2, type3);
+            type1    = interact_table[resource][t1_col];
+            type2    = interact_table[resource][t2_col];
+            type3    = interact_table[resource][t3_col];
+            tot_obs  = res_obs(obs_array, paras, type1, type2, type3);
             prop_obs = (double) tot_obs / area;
             estimate = prop_obs * cells;
             
@@ -98,12 +106,15 @@ double chapman_est(double **obs_array, double *paras, int type1, int type2,
     
     int row, col, trait_number, obs_array_rows, obs_array_cols;
     int total_marks, recaptures, mark_start, recapture_start;
-    int *marked, sum_marked, n, K, k;
+    int *marked, sum_marked, n, K, k, t1_col, t2_col, t3_col;
     double estimate, floored_est;
     
     total_marks     = (int) paras[11];
     recaptures      = (int) paras[10];
     trait_number    = (int) paras[41];
+    t1_col          = (int) paras[56];
+    t2_col          = (int) paras[57];
+    t3_col          = (int) paras[58];
     obs_array_rows  = (int) paras[61];
     obs_array_cols  = (int) paras[62];
     
@@ -119,9 +130,9 @@ double chapman_est(double **obs_array, double *paras, int type1, int type2,
     marked = malloc(obs_array_rows * sizeof(int));
     for(row = 0; row < obs_array_rows; row++){
         marked[row] = 0;
-        if(obs_array[row][1] == type1 && 
-           obs_array[row][2] == type2 &&
-           obs_array[row][3] == type3
+        if(obs_array[row][t1_col] == type1 && 
+           obs_array[row][t2_col] == type2 &&
+           obs_array[row][t3_col] == type3
         ){
             for(col = mark_start; col < recapture_start; col++){
                 if(obs_array[row][col] > 0){
@@ -136,9 +147,9 @@ double chapman_est(double **obs_array, double *paras, int type1, int type2,
     K = 0;
     k = 0;
     for(row = 0; row < obs_array_rows; row++){
-        if(obs_array[row][1] == type1 && 
-           obs_array[row][2] == type2 &&
-           obs_array[row][3] == type3
+        if(obs_array[row][t1_col] == type1 && 
+           obs_array[row][t2_col] == type2 &&
+           obs_array[row][t3_col] == type3
         ){
             for(col = recapture_start; col < obs_array_cols; col++){
                 if(obs_array[row][col] > 0){
@@ -169,11 +180,14 @@ double chapman_est(double **obs_array, double *paras, int type1, int type2,
  * ========================================================================== */
 void rmr_est(double **obs_array, double *paras, double *abun_est, int **lookup){
     
-    int resource, type1, type2, type3;
+    int resource, type1, type2, type3, t1_col, t2_col, t3_col;
     int trait_number, int_table_rows, obs_array_rows, obs_array_cols;
     double estimate;
     
     trait_number    = (int) paras[41];
+    t1_col          = (int) paras[56];
+    t2_col          = (int) paras[57];
+    t3_col          = (int) paras[58];
     int_table_rows  = (int) paras[60];
     obs_array_rows  = (int) paras[61];
     obs_array_cols  = (int) paras[62];
@@ -181,9 +195,9 @@ void rmr_est(double **obs_array, double *paras, double *abun_est, int **lookup){
     for(resource = 0; resource < int_table_rows; resource++){
         abun_est[resource] = 0;
         if(lookup[resource][0] == 0){ /* Change when turn off type? */
-            type1    = lookup[resource][1];
-            type2    = lookup[resource][2];
-            type3    = lookup[resource][3];
+            type1    = lookup[resource][t1_col];
+            type2    = lookup[resource][t2_col];
+            type3    = lookup[resource][t3_col];
             estimate = chapman_est(obs_array, paras, type1, type2, type3);
             abun_est[resource] = estimate;
         }
@@ -200,24 +214,28 @@ void rmr_est(double **obs_array, double *paras, double *abun_est, int **lookup){
 void transect_est(double **obs_array, double *paras, double *abun_est, 
                   int **lookup){
     
-    int resource, observation, type1, type2, type3;
-    int int_table_rows, obs_array_rows;
+    int resource, observation, type1, type2, type3, t1_col, t2_col, t3_col;
+    int int_table_rows, obs_array_rows, mark_col;
     
+    mark_col        = (int) paras[53];
+    t1_col          = (int) paras[56];
+    t2_col          = (int) paras[57];
+    t3_col          = (int) paras[58];
     int_table_rows  = (int) paras[60];
     obs_array_rows  = (int) paras[61];
     
     for(resource = 0; resource < int_table_rows; resource++){
         abun_est[resource] = 0;
         if(lookup[resource][0] == 0){ /* Change when turn off type? */
-            type1    = lookup[resource][1];
-            type2    = lookup[resource][2];
-            type3    = lookup[resource][3];
+            type1    = lookup[resource][t1_col];
+            type2    = lookup[resource][t2_col];
+            type3    = lookup[resource][t3_col];
             for(observation = 0; observation < obs_array_rows; observation++){
-                if(obs_array[observation][1] == type1 && 
-                   obs_array[observation][2] == type2 && 
-                   obs_array[observation][3] == type3
+                if(obs_array[observation][t1_col] == type1 && 
+                   obs_array[observation][t2_col] == type2 && 
+                   obs_array[observation][t3_col] == type3
                 ){
-                    abun_est[resource] += obs_array[observation][12];
+                    abun_est[resource] += obs_array[observation][mark_col];
                 }
                     
             }
@@ -229,35 +247,30 @@ void transect_est(double **obs_array, double *paras, double *abun_est,
  * This function uses the observation array to estimate resource abundances
  *     obs_array:      The observation array
  *     para:           A vector of parameters needed to handle the obs_array
- *     interact_table: Lookup table to get all types of resource values
+ *     lookup:         Lookup table to get all types of resource values
  *     agent_array:    Agent array, including managers (agent type 0)
- *     agents:         Total number of agents (rows) in the agents array
- *     obs_x:          Number of rows in the observation array
- *     obs_y:          Number of cols in the observation array
  *     abun_est:       Vector where abundance estimates for each type are placed
- *     int_table_rows: The number of rows in the interact_table
  * ========================================================================== */
-void estimate_abundances(double **obs_array, double *para, int **interact_table,
-                         double **agent_array, int agents, int obs_x, int obs_y,
-                         double *abun_est, int int_table_rows, int trait_num){
+void estimate_abundances(double **obs_array, double *paras, int **lookup,
+                         double **agent_array, double *abun_est){
     
     int estimate_type;
     double abun;
     
-    estimate_type = (int) para[8];
+    estimate_type = (int) paras[8];
 
     switch(estimate_type){
         case 0:
-            dens_est(obs_array, para, agent_array, abun_est, interact_table);
+            dens_est(obs_array, paras, agent_array, abun_est, lookup);
             break;
         case 1:
-            rmr_est(obs_array, para, abun_est, interact_table);
+            rmr_est(obs_array, paras, abun_est, lookup);
             break;
         case 2:
-            transect_est(obs_array, para, abun_est, interact_table);
+            transect_est(obs_array, paras, abun_est, lookup);
             break;
         case 3:
-            transect_est(obs_array, para, abun_est, interact_table);
+            transect_est(obs_array, paras, abun_est, lookup);
             break;
         default:
             break;
@@ -269,23 +282,30 @@ void estimate_abundances(double **obs_array, double *para, int **interact_table,
  * This function uses the observation array to estimate resource abundances
  *      COST:        An array of the cost of actions for each agent
  *      ACTION:      An array of the action of agents
- *      manID:       The ID of the managing agent (should usually be 1)
- *      mRow:        The layer of the action column of manager (usually 0) 
  * ========================================================================== */
-void set_action_costs(double ***ACTION, double ***COST, int manID, int mlayer,
-                      int interest_num, int total_layers, double **agent_array){
+void set_action_costs(double ***ACTION, double ***COST, double *paras, 
+                      double **agent_array){
 
     int cost_row, manager_row, type1, type2, type3, layer;
+    int interest_num, manID, mlayer, total_layers, t1_col, t2_col, t3_col;
+    
+    t1_col       = (int) paras[56];
+    t2_col       = (int) paras[57];
+    t3_col       = (int) paras[58];
+    manID        = (int) paras[63];
+    mlayer       = (int) paras[64];
+    total_layers = (int) paras[65];
+    interest_num = (int) paras[66]; /* Note -- only for resources */
     
     for(cost_row = 0; cost_row < interest_num; cost_row++){
         manager_row              = 0;
-        type1                    = ACTION[cost_row][1][mlayer];
-        type2                    = ACTION[cost_row][2][mlayer];
-        type3                    = ACTION[cost_row][3][mlayer];
+        type1                    = ACTION[cost_row][t1_col][mlayer];
+        type2                    = ACTION[cost_row][t2_col][mlayer];
+        type3                    = ACTION[cost_row][t3_col][mlayer];
         while(ACTION[manager_row][0][mlayer] != manID   ||
-              ACTION[manager_row][1][mlayer] != type1   ||
-              ACTION[manager_row][2][mlayer] != type2   ||
-              ACTION[manager_row][3][mlayer] != type3
+              ACTION[manager_row][t1_col][mlayer] != type1   ||
+              ACTION[manager_row][t2_col][mlayer] != type2   ||
+              ACTION[manager_row][t3_col][mlayer] != type3
         ){
             manager_row++;
         }
@@ -358,7 +378,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     int *dim_JACOBIAN;       /* Dimensions of the JACOBIAN matrix incoming */
     int *dim_INTERACT;       /* Dimensions of the INTERACT matrix incoming */
     int *dim_OBSERVATION;    /* Dimensions of the OBSERVATION array incoming */
-    int **interact_table;    /* Lookup table for resource & land interactions */
+    int **lookup;            /* Lookup table for resource & land interactions */
     double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
     double *paras;           /* Pointer to PARAMETER (interface R and C) */
@@ -549,14 +569,14 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     /* Code below remakes the INTERACT table for easier use */
     int_d0  = dim_INTERACT[0];
     int_d1  = dim_INTERACT[1];
-    interact_table  = malloc(int_d0 * sizeof(int *));
+    lookup  = malloc(int_d0 * sizeof(int *));
     for(row = 0; row < int_d0; row++){
-        interact_table[row] = malloc(int_d1 * sizeof(int));
+        lookup[row] = malloc(int_d1 * sizeof(int));
     }
     vec_pos = 0;
     for(col = 0; col < int_d1; col++){
         for(row = 0; row < int_d0; row++){
-            interact_table[row][col] = intr_ptr[vec_pos];
+            lookup[row][col] = intr_ptr[vec_pos];
             vec_pos++;
         }
     }
@@ -583,9 +603,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     temp_util = malloc(int_d0 * sizeof(double));
     marg_util = malloc(int_d0 * sizeof(double));
     
-    estimate_abundances(obs_array, paras, interact_table, agent_array,
-                        agent_number, obs_d0, obs_d1, abun_est, int_d0,
-                        trait_number);
+    estimate_abundances(obs_array, paras, lookup, agent_array, abun_est);
     
     for(row = 0; row < int_d0; row++){
         temp_util[row] = 0;
@@ -605,10 +623,10 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     }
 
     ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
-       interact_table, paras, c_x, c_y, res_number, land_x, land_y, land_z, 
+       lookup, paras, c_x, c_y, res_number, land_x, land_y, land_z, 
        trait_number, 1, 0, 1, a_x, a_y, a_z);
     
-    set_action_costs(actions, costs, 1, 0, jacobian_dim - 1, a_z, agent_array);
+    set_action_costs(actions, costs, paras, agent_array);
     
     free(marg_util);
     free(temp_util);
@@ -711,9 +729,9 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     free(obs_array);
     /* Free all of the allocated memory used in the interaction table */
     for(row = 0; row < int_d0; row++){
-        free(interact_table[row]);
+        free(lookup[row]);
     }
-    free(interact_table);    
+    free(lookup);    
     /* Free all of the allocated memory used in the Jacobian matrix */
     for(row = 0; row < jacobian_dim; row++){
         free(Jacobian_mat[row]);
