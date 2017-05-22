@@ -343,8 +343,10 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         }
 
         if(hunt == TRUE & time > start_hunting){
-            RESOURCES <- be_hunter(OBSERVATION_r, AGENTS, RESOURCES, 
-                                   LANDSCAPE_r, paras, agent_view);   
+            HUNT_OUTCOME <- be_hunter(OBSERVATION_r, AGENTS, RESOURCES, 
+                                   LANDSCAPE_r, paras, agent_view);
+            RESOURCES    <- HUNT_OUTCOME$RESOURCES;
+            PARAS        <- HUNT_OUTCOME$PARAS;
         }
     }
     
@@ -759,7 +761,7 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, PARAS, agent_view){
         RESOURCES <- RESOURCES[-hunted,];
     }
     PARAS[33] <- dim(RESOURCES)[1];
-    return(RESOURCES);
+    return(list(RESOURCES = RESOURCES, PARAS = PARAS));
 }
 
 ################################################################################
@@ -768,7 +770,7 @@ sim <- gmse( observe_type  = 0,
              agent_view    = 20,
              res_death_K   = 400,
              plotting      = TRUE,
-             hunt          = FALSE,
+             hunt          = TRUE,
              start_hunting = 95,
              fixed_observe = 10,
              times_observe = 20,
