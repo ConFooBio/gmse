@@ -89,24 +89,24 @@ void dens_est(double **obs_array, double *paras, double **agent_array,
  * This function calculates RMR (chapman) for one resource type
  *     obs_array:      The observation array
  *     para:           A vector of parameters needed to handle the obs_array
- *     obs_array_rows: Number of rows in the observation array obs_array
- *     obs_array_cols: Number of cols in the observation array obs_array
- *     trait_number:   The number of traits in the resource array
  *     type1:          Resource type 1
  *     type2:          Resource type 2
  *     type3:          Resource type 3
  * ========================================================================== */
-double chapman_est(double **obs_array, double *para, int obs_array_rows, 
-                   int obs_array_cols, int trait_number, int type1, int type2,
+double chapman_est(double **obs_array, double *paras, int type1, int type2,
                    int type3){
     
-    int row, col;
+    int row, col, trait_number, obs_array_rows, obs_array_cols;
     int total_marks, recaptures, mark_start, recapture_start;
     int *marked, sum_marked, n, K, k;
     double estimate, floored_est;
     
-    total_marks     = (int) para[11];
-    recaptures      = (int) para[10];
+    total_marks     = (int) paras[11];
+    recaptures      = (int) paras[10];
+    trait_number    = (int) paras[41];
+    obs_array_rows  = (int) paras[61];
+    obs_array_cols  = (int) paras[62];
+    
     mark_start      = trait_number + 1;
     recapture_start = mark_start + (total_marks - recaptures);
     
@@ -160,61 +160,58 @@ double chapman_est(double **obs_array, double *para, int obs_array_rows,
     return floored_est;
 }
 
-
 /* =============================================================================
  * This function calculates mark-recapture-based (Chapman) abundance estimates
  *     obs_array:      The observation array
- *     para:           A vector of parameters needed to handle the obs_array
- *     obs_array_rows: Number of rows in the observation array obs_array
- *     obs_array_cols: Number of cols in the observation array obs_array
+ *     paras:          A vector of parameters needed to handle the obs_array
  *     abun_est:       Vector where abundance estimates for each type are placed
- *     interact_table: Lookup table to get all types of resource values
- *     int_table_rows: The number of rows in the interact_table
- *     trait_number:   The number of traits in the resouce array
+ *     lookup:         Lookup table to get all types of resource values
  * ========================================================================== */
-void rmr_est(double **obs_array, double *para, int obs_array_rows, 
-             int obs_array_cols, double *abun_est, int **interact_table, 
-             int int_table_rows, int trait_number){
+void rmr_est(double **obs_array, double *paras, double *abun_est, int **lookup){
     
     int resource, type1, type2, type3;
+    int trait_number, int_table_rows, obs_array_rows, obs_array_cols;
     double estimate;
+    
+    trait_number    = (int) paras[41];
+    int_table_rows  = (int) paras[60];
+    obs_array_rows  = (int) paras[61];
+    obs_array_cols  = (int) paras[62];
     
     for(resource = 0; resource < int_table_rows; resource++){
         abun_est[resource] = 0;
-        if(interact_table[resource][0] == 0){ /* Change when turn off type? */
-            type1    = interact_table[resource][1];
-            type2    = interact_table[resource][2];
-            type3    = interact_table[resource][3];
-            estimate = chapman_est(obs_array, para, obs_array_rows, 
-                                   obs_array_cols, trait_number, type1, type2,
-                                   type3);
+        if(lookup[resource][0] == 0){ /* Change when turn off type? */
+            type1    = lookup[resource][1];
+            type2    = lookup[resource][2];
+            type3    = lookup[resource][3];
+            estimate = chapman_est(obs_array, paras, type1, type2, type3);
             abun_est[resource] = estimate;
         }
     }
 }
 
-
-
 /* =============================================================================
  * This function calculates mark-recapture-based (Chapman) abundance estimates
  *     obs_array:      The observation array
- *     para:           A vector of parameters needed to handle the obs_array
- *     obs_array_rows: Number of rows in the observation array obs_array
+ *     paras:          A vector of parameters needed to handle the obs_array
  *     abun_est:       Vector where abundance estimates for each type are placed
- *     interact_table: Lookup table to get all types of resource values
- *     int_table_rows: The number of rows in the interact_table
+ *     lookup:         Lookup table to get all types of resource values
  * ========================================================================== */
-void transect_est(double **obs_array, double *para, int obs_array_rows, 
-                  double *abun_est, int **interact_table, int int_table_rows){
+void transect_est(double **obs_array, double *paras, double *abun_est, 
+                  int **lookup){
     
     int resource, observation, type1, type2, type3;
+    int int_table_rows, obs_array_rows;
+    
+    int_table_rows  = (int) paras[60];
+    obs_array_rows  = (int) paras[61];
     
     for(resource = 0; resource < int_table_rows; resource++){
         abun_est[resource] = 0;
-        if(interact_table[resource][0] == 0){ /* Change when turn off type? */
-            type1    = interact_table[resource][1];
-            type2    = interact_table[resource][2];
-            type3    = interact_table[resource][3];
+        if(lookup[resource][0] == 0){ /* Change when turn off type? */
+            type1    = lookup[resource][1];
+            type2    = lookup[resource][2];
+            type3    = lookup[resource][3];
             for(observation = 0; observation < obs_array_rows; observation++){
                 if(obs_array[observation][1] == type1 && 
                    obs_array[observation][2] == type2 && 
@@ -254,16 +251,13 @@ void estimate_abundances(double **obs_array, double *para, int **interact_table,
             dens_est(obs_array, para, agent_array, abun_est, interact_table);
             break;
         case 1:
-            rmr_est(obs_array, para, obs_x, obs_y, abun_est, interact_table, 
-                    int_table_rows, trait_num);
+            rmr_est(obs_array, para, abun_est, interact_table);
             break;
         case 2:
-            transect_est(obs_array, para, obs_x, abun_est, interact_table, 
-                         int_table_rows);
+            transect_est(obs_array, para, abun_est, interact_table);
             break;
         case 3:
-            transect_est(obs_array, para, obs_x, abun_est, interact_table, 
-                         int_table_rows);
+            transect_est(obs_array, para, abun_est, interact_table);
             break;
         default:
             break;
