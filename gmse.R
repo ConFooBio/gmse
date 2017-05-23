@@ -96,7 +96,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                          move               = movement,
                                          rm_pr              = remove_pr,
                                          lambda             = lambda,
-                                         consumption_rate   = res_consume
+                                         consumption_rate   = res_consume,
+                                         max_age            = max_ages[1]
     );
     # This will obviously need to be changed -- new function in initialise.R
     AGENTS   <- make_agents( model        = pop_model,
@@ -118,22 +119,21 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     
     COST   <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
     COST[COST < 1] <- 1; # Need this until a proper make_cost function is made
-    COST[,8,]      <- 1;
-    COST[,10,]     <- 1;
-    COST[,1:7,]    <- 10000;
+    COST[,1:7,]      <- 10000;
     COST[,11:12,2:4] <- 1000;
-    ACTION <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
-    ACTION[1:2,5:7,] <- 1;
-    ACTION[1,5,1]    <- 100;
-    ACTION[2,5,2:4]  <- 100;
-    ACTION[2,5,3]    <- 100;
-    ACTION[1,5,1]    <- 200;   ###### CONTROL HOW MUCH MANAGER LIKES RESOURCES
     COST[,8:13,]     <- 1;
     COST[2,8:13,]    <- 1000;
     COST[,8:13,1]    <- 10000;
     COST[3:6,8:13,2:4] <- 1000;
+    COST[3,8:12,1]   <- 1;
+    ACTION <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
+    ACTION[1:2,5:7,] <- 1;
+    ACTION[3,5:7,1]  <- 0;
+    ACTION[1,5,1]    <- 100;
+    ACTION[2,5,2:4]  <- 100;
+    ACTION[2,5,3]    <- 100;
+    ACTION[1,5,1]    <- 200;   ###### CONTROL HOW MUCH MANAGER LIKES RESOURCES
     ACTION[3:6,5:13,2:4]   <- 0;
-    COST[3,8:13,1]   <- 1;
     AGENTS[,17]     <- 300;
     
     time       <- time + 1;  # Ready for the initial time step.
@@ -779,6 +779,7 @@ sim <- gmse( observe_type  = 0,
              plotting      = TRUE,
              hunt          = FALSE,
              start_hunting = 95,
+             lambda        = 0.15,
              fixed_observe = 10,
              times_observe = 20,
              land_dim_1    = 100,
@@ -786,9 +787,9 @@ sim <- gmse( observe_type  = 0,
              res_consume   = 0.5,
              time_max      = 100,
              res_move_obs  = TRUE,
-             max_ages      = 5,
+             max_ages      = 5,   
              ga_mingen     = 20,   
-             ga_seedrep    = 20
+             ga_seedrep    = 0
 );
 
 ################################################################################
