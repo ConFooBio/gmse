@@ -171,6 +171,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     agt <- dim(AGENTS)[2];
     lkr <- dim(interaction_tabl)[1];
     lyr <- dim(ACTION)[3];
+    roc <- dim(ACTION)[1];
+    coc <- dim(ACTION)[2];
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -239,7 +241,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                0,       # 64. The layer of ACTION and COST where manager located
                lyr,     # 65. The number of layers in ACTION and COST arrays
                lkr - 1, # 66. The number of rows for setting action costs
-               8        # 67. The view column of the agent array
+               8,       # 67. The view column of the agent array
+               roc,     # 68. The number of rows in the COST and ACTION arrays
+               coc      # 69. The number of cols in the COST and ACTION arrays
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;

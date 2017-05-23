@@ -17,13 +17,16 @@
  *     rows: The total number of rows in the COST array
  *     cols: The total number of cols in the COST array
  * ========================================================================== */
-int min_cost(double ***COST, int layer, double budget, int rows, int cols){
-    int i, j;
+int min_cost(double ***COST, double *paras, int layer, double budget){
+    int i, j, ROWS, COLS;
     double the_min;
     
+    ROWS = (int) paras[68];
+    COLS = (int) paras[69];
+    
     the_min = budget;
-    for(i = 0; i < rows; i++){
-        for(j = 0; j < cols; j++){
+    for(i = 0; i < ROWS; i++){
+        for(j = 0; j < COLS; j++){
             if(COST[i][j][layer] < the_min){
                 the_min = COST[i][j][layer];
             }
@@ -43,20 +46,19 @@ int min_cost(double ***COST, int layer, double budget, int rows, int cols){
  *     pop_size: The size of the total population (layers to population)
  *     carbon_copies: The number of identical agents used as seeds
  *     budget: The budget that random agents have to work with
- *     ROWS: Number of rows in the COST and ACTION arrays
- *     COLS: Number of columns in the COST and ACTION arrays
  *     population: array of the population that is made (malloc needed earlier)
  * ========================================================================== */
-void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
-                    double budget, int carbon_copies, int ROWS, int COLS,
-                    double ***population, int agentID){
+void initialise_pop(double ***ACTION, double ***COST, double *paras, int layer,
+                    double budget, double ***population, int agentID){
     
-    int xpos, ypos;
-    int agent;
+    int xpos, ypos, pop_size, carbon_copies, ROWS, COLS, agent;
     int row, col, start_col, col_check;
-    double lowest_cost;
-    double budget_count;
-    double check_cost;
+    double lowest_cost, budget_count, check_cost;
+    
+    pop_size      = (int) paras[21];
+    carbon_copies = (int) paras[23];
+    ROWS          = (int) paras[68];
+    COLS          = (int) paras[69];
 
     /* First read in pop_size copies of the ACTION layer of interest */
     for(agent = 0; agent < pop_size; agent++){
@@ -83,7 +85,7 @@ void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
                 }
             }
         }
-        lowest_cost  =  min_cost(COST, layer, budget, ROWS, COLS);
+        lowest_cost  =  min_cost(COST, paras, layer, budget);
         budget_count =  budget;
         if(lowest_cost <= 0){
             printf("Lowest cost is too low (must be positive) \n");
@@ -717,8 +719,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         winners[row]   = 0;
     }
     
-    initialise_pop(ACTION, COST, agent, popsize, budget, agent_seed, xdim, ydim, 
-                   POPULATION, agentID);
+    initialise_pop(ACTION, COST, paras, agent, budget, POPULATION, agentID);
     
     gen = 0;
     while(gen < generations){

@@ -1,10 +1,9 @@
 #include "utilities.h"
 
-int min_cost(double ***COST, int layer, double budget, int rows, int cols);
+void min_cost(double ***COST, double *paras, int layer, double budget);
 
-void initialise_pop(double ***ACTION, double ***COST, int layer, int pop_size,
-                    int budget, int carbon_copies, int ROWS, int COLS,
-                    double ***population, int agentID);
+void initialise_pop(double ***ACTION, double ***COST, double *paras, int layer,
+                    double budget, double ***population, int agentID);
 
 void crossover(double ***population, int pop_size, int ROWS, int COLS, 
           double pr, int agentID);

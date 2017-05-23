@@ -302,7 +302,7 @@ void set_action_costs(double ***ACTION, double ***COST, double *paras,
         type1                    = ACTION[cost_row][t1_col][mlayer];
         type2                    = ACTION[cost_row][t2_col][mlayer];
         type3                    = ACTION[cost_row][t3_col][mlayer];
-        while(ACTION[manager_row][0][mlayer] != manID   ||
+        while(ACTION[manager_row][0][mlayer] != manID        ||
               ACTION[manager_row][t1_col][mlayer] != type1   ||
               ACTION[manager_row][t2_col][mlayer] != type2   ||
               ACTION[manager_row][t3_col][mlayer] != type3
