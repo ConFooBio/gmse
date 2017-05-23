@@ -76,6 +76,16 @@ library(rhandsontable)
 <a name="updates">Project updates:</a>
 ================================================================================
 
+> <a name="u-23-MAY-2017">Update: 23 MAY 2017</a>
+
+**Introduce [Issue #26](https://github.com/bradduthie/gmse/issues/26): Genetic algorithm seed reliance**
+
+For some reason, the initial seed of the genetic algorithm appears to be having an effect that it shouldn't. When there are no individuals seeded in the genetic algorithm from the previous generation, the agents appear to go under-budget. It's not clear why this is the case. Oddly, managers appear to use a budget of 250 despite it being set at 300 given any seed greater than zero. When the seed is zero, the budget for setting costs drops to ca 100 for reasons that are not at all clear to me. For stake-holders, the cost drops to a fraction of its set budget (about a 30th of it). Yet, the stake-holder cost is still too low even when a seed of 20 is set; most stake-holders spend ca 1/6 of their budget when they should be forced to spend all of it.
+
+**Stake-holders are helping resources when they should not**
+
+Stake-holders are helping resources. This was caused by some issues in `resource_actions` in the user model which has now been partially resolved in commit [f1ce95e092739e6e53df05b326c491d917679eb9](https://github.com/bradduthie/gmse/commit/f1ce95e092739e6e53df05b326c491d917679eb9). Essentially, resources were being helped out too much (i.e., growth rates went from 0.05 to 1 when helping -- changed now to 0.05 times two -- increasing birth rate 100 percent), and sometimes being helped out even after having been killed or castrated. **This is still happening**, as is evident when looking at `RESOURCE_REC`. Resolving it is priority one.
+
 > <a name="u-22-MAY-2017">Update: 22 MAY 2017</a>
 
 **Cleanup and toward resolving [Issue #21](https://github.com/bradduthie/gmse/issues/21)**
