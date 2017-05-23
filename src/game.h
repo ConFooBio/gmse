@@ -1,6 +1,6 @@
 #include "utilities.h"
 
-void min_cost(double ***COST, double *paras, int layer, double budget);
+double min_cost(double ***COST, double *paras, int layer, double budget);
 
 void initialise_pop(double ***ACTION, double ***COST, double *paras, int layer,
                     double budget, double ***population, int agentID);

@@ -17,7 +17,7 @@
  *     rows: The total number of rows in the COST array
  *     cols: The total number of cols in the COST array
  * ========================================================================== */
-int min_cost(double ***COST, double *paras, int layer, double budget){
+double min_cost(double ***COST, double *paras, int layer, double budget){
     int i, j, ROWS, COLS;
     double the_min;
     
@@ -28,7 +28,7 @@ int min_cost(double ***COST, double *paras, int layer, double budget){
     for(i = 0; i < ROWS; i++){
         for(j = 0; j < COLS; j++){
             if(COST[i][j][layer] < the_min){
-                the_min = COST[i][j][layer];
+                the_min = COST[i][j][layer]; 
             }
         }
     }
@@ -56,7 +56,7 @@ void initialise_pop(double ***ACTION, double ***COST, double *paras, int layer,
     double lowest_cost, budget_count, check_cost;
     
     pop_size        = (int) paras[21];
-    carbon_copies   = (int) paras[23];
+    carbon_copies   = (int) paras[23]; 
     ROWS            = (int) paras[68];
     COLS            = (int) paras[69];
     col_start_other = (int) paras[70];
@@ -88,7 +88,7 @@ void initialise_pop(double ***ACTION, double ***COST, double *paras, int layer,
             }
         }
         lowest_cost  =  min_cost(COST, paras, layer, budget);
-        budget_count =  budget;
+        budget_count =  budget; 
         if(lowest_cost <= 0){
             printf("Lowest cost is too low (must be positive) \n");
             break;
@@ -103,7 +103,7 @@ void initialise_pop(double ***ACTION, double ***COST, double *paras, int layer,
                 }while(ypos == COLS);
             }while(COST[xpos][ypos][layer] > budget_count);
             population[xpos][ypos][agent]++;
-            budget_count -= COST[xpos][ypos][layer];
+            budget_count -= COST[xpos][ypos][layer]; 
         } /* Should now make random actions allowed by budget */
     }
 }
@@ -165,20 +165,27 @@ void crossover(double ***population, double *paras, int agentID){
  *     pr: Probability of a mutation occurring at an element.
  *     agentID: The ID of the agent
  * ========================================================================== */
-void mutation(double ***population, int pop_size, int ROWS, int COLS, 
-               double pr, int agentID){
+void mutation(double ***population, double *paras, int agentID){
     
-    int agent, row, col, start_col, col_check;
-    double do_mutation, agent_val, half_pr;
+    int agent, row, col, start_col, col_check, pop_size, ROWS, COLS;
+    int col_start_other, col_start_self;
+    double do_mutation, agent_val, half_pr, pr;
 
+    pop_size        = (int) paras[21];
+    pr              = paras[26];
+    ROWS            = (int) paras[68];
+    COLS            = (int) paras[69];
+    col_start_other = (int) paras[70];
+    col_start_self  = (int) paras[71];
+    
     half_pr = 0.5 * pr;
     
     for(agent = 0; agent < pop_size; agent++){
         for(row = 0; row < ROWS; row++){
-            start_col = 7;
+            start_col = col_start_self;
             col_check = population[row][0][agent];
             if(col_check > 0 && col_check != agentID){
-                start_col = 4;
+                start_col = col_start_other;
             }
             for(col = start_col; col < COLS; col++){
                 do_mutation = runif(0,1);
@@ -731,7 +738,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         
         crossover(POPULATION, paras, agentID);
         
-        mutation(POPULATION, popsize, xdim, ydim, mutation_rate, agentID);
+        mutation(POPULATION, paras, agentID);
 
         constrain_costs(POPULATION, COST, agent, popsize, xdim, ydim, budget,
                         agentID);
