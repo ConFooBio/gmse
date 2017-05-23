@@ -117,7 +117,7 @@ void resource_actions(double **resources, int row, double ***action, int agent,
         actions[i]     = action[row][action_col][agent];
         total_actions += action[row][action_col][agent];
     }
-    
+   
     resource = 0;
     while(resource < res_number && total_actions > 0){
         if(can_act[resource] == 1){
@@ -132,28 +132,44 @@ void resource_actions(double **resources, int row, double ***action, int agent,
                     resources[resource][4] = xloc;
                     resources[resource][5] = yloc;
                     actions[0]--; 
+                    total_actions--;
                     break;
                 case 1: /* Castrate resource */
-                    resources[resource][16] = -1 * resources[resource][9];
-                    actions[1]--; 
+                    if(resources[resource][16] >= 0){
+                        resources[resource][16] = -1 * resources[resource][9];
+                        actions[1]--;
+                        total_actions--;
+                    }
                     break;
                 case 2: /* Kill resource */
-                    resources[resource][15] = 1;
-                    resources[resource][16] = -1 * resources[resource][9];
-                    actions[2]--;
+                    if(resources[resource][15] < 1){
+                        resources[resource][15] = 1;
+                        resources[resource][16] = -1 * resources[resource][9];
+                        actions[2]--;
+                        total_actions--;
+                    }
                     break;
                 case 3: /* Feed resource (increase birth-rate)*/
-                    resources[resource][16]++;
-                    actions[3]--;
+                    if(resources[resource][15] < 1  && 
+                       resources[resource][16] >= 0
+                    ){
+                        resources[resource][16] += resources[resource][9];
+                        actions[3]--;
+                        total_actions--;
+                    }
                     break;
                 case 4: /* Help resource (increase offspring number directly) */
-                    resources[resource][17]++;
-                    actions[4]--;
+                    if(resources[resource][15] < 1  && 
+                       resources[resource][16] >= 0
+                    ){
+                        resources[resource][17]++;
+                        actions[4]--;
+                        total_actions--;
+                    }
                     break;            
                 default:
                     break;
             }
-            total_actions--;
         }
         resource++;
     }
@@ -282,7 +298,7 @@ void do_actions(double ***landscape, double **resources, int land_x, int land_y,
 
         can_act = malloc(res_number * sizeof(int)); /* TODO: CHECK FOR BUG */
         is_correct_type(res_number, resources, type1, type2, type3, can_act);
-
+        
         if(u_loc == 1){
             on_land = malloc(res_number * sizeof(int));
             is_on_owner_land(res_number, resources, owner, landscape, on_land);
@@ -567,10 +583,11 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
             ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
                interact_table, paras, c_x, c_y, res_number, land_x, land_y, 
                land_z, trait_number, jacobian_dim, agent, 0, a_x, a_y, a_z);
-        
+
             do_actions(land, resource_array, land_x, land_y, actions, a_x, 
                        agent, res_number, a_y, agentID, Jacobian_mat, 
                        interact_table, jacobian_dim);
+ 
         }
     }
     
