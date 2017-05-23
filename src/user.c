@@ -117,14 +117,20 @@ void resource_actions(double **resources, int row, double ***action, int agent,
         actions[i]     = action[row][action_col][agent];
         total_actions += action[row][action_col][agent];
     }
-   
+    /*
+    for(i = 0; i < 5; i++){
+        printf("%d\t",actions[i]);
+    }
+    printf("\n");
+    */
     resource = 0;
     while(resource < res_number && total_actions > 0){
         if(can_act[resource] == 1){
             do{ /* Sampling avoids having some actions always first */
                 sample = floor( runif(0, 5) );
-            }while(actions[sample] <= 0 && sample == 5);
+            }while(actions[sample] <= 0 || sample == 5);
             /* Enact whichever action was randomly sampled */
+            printf("%d\t%d\n",sample, actions[sample]); 
             switch(sample){
                 case 0: /* Move resource */
                     xloc = (int) floor( runif(0, land_x) );
