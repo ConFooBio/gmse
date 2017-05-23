@@ -123,7 +123,7 @@ void resource_actions(double **resources, int row, double ***action, int agent,
         if(can_act[resource] == 1){
             do{ /* Sampling avoids having some actions always first */
                 sample = floor( runif(0, 5) );
-            }while(actions[sample] == 0 && sample == 5);
+            }while(actions[sample] <= 0 && sample == 5);
             /* Enact whichever action was randomly sampled */
             switch(sample){
                 case 0: /* Move resource */
