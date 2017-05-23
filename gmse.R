@@ -243,7 +243,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                lkr - 1, # 66. The number of rows for setting action costs
                8,       # 67. The view column of the agent array
                roc,     # 68. The number of rows in the COST and ACTION arrays
-               coc      # 69. The number of cols in the COST and ACTION arrays
+               coc,     # 69. The number of cols in the COST and ACTION arrays
+               4,       # 70. Col actions vary for other individuals in ga
+               7        # 71. Col actions vary for self individuals in ga
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
@@ -784,7 +786,9 @@ sim <- gmse( observe_type  = 0,
              res_consume   = 0.5,
              time_max      = 100,
              res_move_obs  = TRUE,
-             max_ages      = 5
+             max_ages      = 5,
+             ga_mingen     = 20,   
+             ga_seedrep    = 20
 );
 
 ################################################################################

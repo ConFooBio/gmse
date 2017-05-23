@@ -42,23 +42,25 @@ int min_cost(double ***COST, double *paras, int layer, double budget){
  * Necessary variable inputs include:
  *     ACTION: A 3D array of action values
  *     COST: A 3D array of costs of performing actions
+ *     paras: Vector of global parameters
  *     layer: The 'z' layer of the COST and ACTION arrays to be initialised
- *     pop_size: The size of the total population (layers to population)
- *     carbon_copies: The number of identical agents used as seeds
  *     budget: The budget that random agents have to work with
  *     population: array of the population that is made (malloc needed earlier)
+ *     agentID: The ID of the focal agent
  * ========================================================================== */
 void initialise_pop(double ***ACTION, double ***COST, double *paras, int layer,
                     double budget, double ***population, int agentID){
     
     int xpos, ypos, pop_size, carbon_copies, ROWS, COLS, agent;
-    int row, col, start_col, col_check;
+    int row, col, start_col, col_check, col_start_other, col_start_self;
     double lowest_cost, budget_count, check_cost;
     
-    pop_size      = (int) paras[21];
-    carbon_copies = (int) paras[23];
-    ROWS          = (int) paras[68];
-    COLS          = (int) paras[69];
+    pop_size        = (int) paras[21];
+    carbon_copies   = (int) paras[23];
+    ROWS            = (int) paras[68];
+    COLS            = (int) paras[69];
+    col_start_other = (int) paras[70];
+    col_start_self  = (int) paras[71];
 
     /* First read in pop_size copies of the ACTION layer of interest */
     for(agent = 0; agent < pop_size; agent++){
@@ -75,10 +77,10 @@ void initialise_pop(double ***ACTION, double ***COST, double *paras, int layer,
                 population[row][4][agent] = ACTION[row][4][layer];
                 population[row][5][agent] = ACTION[row][5][layer];
                 population[row][6][agent] = ACTION[row][6][layer];
-                start_col = 7;
+                start_col = col_start_self;
                 col_check = population[row][0][agent];
                 if(col_check > 0 && col_check != agentID){
-                    start_col = 4;
+                    start_col = col_start_other;
                 }             
                 for(col = start_col; col < COLS; col++){
                     population[row][col][agent] = 0;
@@ -112,18 +114,21 @@ void initialise_pop(double ***ACTION, double ***COST, double *paras, int layer,
  * individuals in the population. Note that we'll later keep things in budget
  * Necessary variable inputs include:
  *     population: array of the population that is made (malloc needed earlier)
- *     pop_size: The size of the total population (layers to population)
- *     ROWS: Number of rows in the COST and ACTION arrays
- *     COLS: Number of columns in the COST and ACTION arrays
- *     pr: Probability of a crossover site occurring at an element.
+ *     paras: Vector of global parameters
  *     agentID: The ID of the agent
  * ========================================================================== */
-void crossover(double ***population, int pop_size, int ROWS, int COLS, 
-               double pr, int agentID){
+void crossover(double ***population, double *paras, int agentID){
     
     int agent, row, col, start_col, col_check, cross_partner;
-    double do_cross;
-    double agent_val, partner_val;
+    int pop_size, ROWS, COLS, col_start_other, col_start_self;
+    double do_cross, pr, agent_val, partner_val;
+    
+    pop_size        = (int) paras[21];
+    pr              = paras[27];
+    ROWS            = (int) paras[68];
+    COLS            = (int) paras[69];
+    col_start_other = (int) paras[70];
+    col_start_self  = (int) paras[71];
     
     /* First do the crossovers */
     for(agent = 0; agent < pop_size; agent++){
@@ -131,10 +136,10 @@ void crossover(double ***population, int pop_size, int ROWS, int COLS,
             cross_partner = (int) floor( runif(0, pop_size) );
         }while(cross_partner == agent || cross_partner == pop_size);
         for(row = 0; row < ROWS; row++){
-            start_col = 7;
+            start_col = col_start_self;
             col_check = population[row][0][agent];
             if(col_check > 0 && col_check != agentID){
-                start_col = 4;
+                start_col = col_start_other;
             }
             for(col = start_col; col < COLS; col++){
                 do_cross = runif(0,1);
@@ -724,7 +729,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     gen = 0;
     while(gen < generations){
         
-        crossover(POPULATION, popsize, xdim, ydim, crossover_rate, agentID);
+        crossover(POPULATION, paras, agentID);
         
         mutation(POPULATION, popsize, xdim, ydim, mutation_rate, agentID);
 

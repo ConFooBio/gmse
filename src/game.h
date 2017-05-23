@@ -5,8 +5,7 @@ void min_cost(double ***COST, double *paras, int layer, double budget);
 void initialise_pop(double ***ACTION, double ***COST, double *paras, int layer,
                     double budget, double ***population, int agentID);
 
-void crossover(double ***population, int pop_size, int ROWS, int COLS, 
-          double pr, int agentID);
+void crossover(double ***population, double *paras, int agentID);
 
 void mutation(double ***population, int pop_size, int ROWS, int COLS, 
          double pr, int agentID);
