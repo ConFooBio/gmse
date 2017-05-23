@@ -129,6 +129,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     ACTION <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
     ACTION[1:2,5:7,] <- 1;
     ACTION[3,5:7,1]  <- 0;
+    ACTION[1,5,2:4]  <- 0;
     ACTION[1,5,1]    <- 100;
     ACTION[2,5,2:4]  <- 100;
     ACTION[2,5,3]    <- 100;
@@ -271,8 +272,6 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         LANDSCAPE_r           <- RESOURCE_NEW[[2]];
         paras                 <- RESOURCE_NEW[[3]];
         
-        RESOURCE_REC[[time]]  <- RESOURCES;
-        
         OBSERVATION_NEW   <- observation(resource   = RESOURCES,
                                          landscape  = LANDSCAPE_r,
                                          paras      = paras,
@@ -332,6 +331,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         ACTION       <- USERS[[4]];
         COST         <- USERS[[5]];
         
+        RESOURCE_REC[[time]]     <- RESOURCES;
         OBSERVATION_REC[[time]]  <- OBSERVATION_NEW[[1]];
         AGENT_REC[[time]]        <- AGENTS;
         LANDSCAPE_REC[[time]]    <- LANDSCAPE_r[,,2];
@@ -779,7 +779,7 @@ sim <- gmse( observe_type  = 0,
              plotting      = TRUE,
              hunt          = FALSE,
              start_hunting = 95,
-             lambda        = 0.15,
+             lambda        = 0.17,
              fixed_observe = 10,
              times_observe = 20,
              land_dim_1    = 100,
@@ -789,7 +789,7 @@ sim <- gmse( observe_type  = 0,
              res_move_obs  = TRUE,
              max_ages      = 5,   
              ga_mingen     = 20,   
-             ga_seedrep    = 0
+             ga_seedrep    = 20
 );
 
 ################################################################################
