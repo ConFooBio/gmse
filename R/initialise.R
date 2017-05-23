@@ -22,7 +22,8 @@ make_resource <- function(model              = "IBM",
                           move               = 1, 
                           rm_pr              = 0,
                           lambda             = 0,
-                          consumption_rate   = 0.1
+                          consumption_rate   = 0.1,
+                          max_age            = 5
                           ){
     the_resource   <- NULL;
     if(length(consumption_rate) != resource_types){
@@ -43,7 +44,8 @@ make_resource <- function(model              = "IBM",
         remov_pr <- rep(x = rm_pr, times = resource_quantity);
         growth   <- rep(x = lambda, times = resource_quantity);
         offspr   <- rep(x = 0, times = resource_quantity); # None at init
-        age      <- rep(x = 0, times = resource_quantity); # Start age zero
+        age      <- sample(x = 1:max_age, size = resource_quantity, 
+                           replace = TRUE);
         mark     <- rep(x = 0, times = resource_quantity); # Can be marked
         tally    <- rep(x = 0, times = resource_quantity);
         consume  <- consumption_rate[type1];
