@@ -130,7 +130,6 @@ void resource_actions(double **resources, int row, double ***action, int agent,
                 sample = floor( runif(0, 5) );
             }while(actions[sample] <= 0 || sample == 5);
             /* Enact whichever action was randomly sampled */
-            printf("%d\t%d\n",sample, actions[sample]); 
             switch(sample){
                 case 0: /* Move resource */
                     xloc = (int) floor( runif(0, land_x) );
@@ -582,9 +581,9 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
       
     for(agent = 0; agent < agent_number; agent++){  
       
-        agentID = agent_array[agent][1];
+        agentID = agent_array[agent][0];
       
-        if(agentID > 0 && agent_array[agent][1] > 0){
+        if(agentID > 1 && agent_array[agent][1] > 0){
             
             ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
                interact_table, paras, c_x, c_y, res_number, land_x, land_y, 
