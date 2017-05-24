@@ -686,7 +686,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         int land_y, int land_z, int trait_number, int jaco_dim, int agent,
         int managing, int ACT_rows, int ACT_cols, int ACT_depth){
     
-    int row, col, gen, layer;
+    int row, col, gen, layer, most_fit;
     int sampleK, chooseK;
     int popsize, agent_seed;
     int agentID;
@@ -742,7 +742,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
 
         constrain_costs(POPULATION, COST, agent, popsize, xdim, ydim, budget,
                         agentID);
-
+        
         if(managing == 1){
             manager_fitness(fitnesses, POPULATION, popsize, ACT_rows, AGENT, 
                             JACOBIAN, interact_table, jaco_dim, agentID,
@@ -759,10 +759,17 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         gen++;
     
     }
-        
+    
+    most_fit = 0;
+    for(row = 0; row < xdim; row++){
+        if(fitnesses[row] > fitnesses[most_fit]){
+            most_fit = row;
+        }
+    }
+    
     for(row = 0; row < xdim; row++){
         for(col = 0; col < ydim; col++){
-            ACTION[row][col][agent] = POPULATION[row][col][agent];  
+            ACTION[row][col][agent] = POPULATION[row][col][most_fit];  
         }
     }
 

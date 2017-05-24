@@ -135,7 +135,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     ACTION[2,5,3]    <- 100;
     ACTION[1,5,1]    <- 200;   ###### CONTROL HOW MUCH MANAGER LIKES RESOURCES
     ACTION[3:6,5:13,2:4]   <- 0;
-    AGENTS[,17]     <- 300;
+    AGENTS[,17]     <- 1200;
+    AGENTS[1,17]    <- 300;
     
     time       <- time + 1;  # Ready for the initial time step.
     cells      <- land_dim_1 * land_dim_2; # Number of cells in the landscape
@@ -776,10 +777,10 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, PARAS, view, times){
 sim <- gmse( observe_type  = 0,
              agent_view    = 20,
              res_death_K   = 400,
-             plotting      = FALSE,
+             plotting      = TRUE,
              hunt          = FALSE,
              start_hunting = 95,
-             lambda        = 0.20,
+             lambda        = 0.30,
              fixed_observe = 10,
              times_observe = 20,
              land_dim_1    = 100,
