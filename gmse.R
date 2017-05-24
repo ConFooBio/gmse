@@ -81,11 +81,11 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     LANDSCAPE_r  <- make_landscape( model       = pop_model, 
                                     rows        = land_dim_1, 
                                     cols        = land_dim_2, 
-                                    cell_types  = 3,
+                                    cell_types  = 2,
                                     cell_val_mn = 1,
                                     cell_val_sd = 0,
-                                    ownership   = 1:3,
-                                    owner_pr    = c(0, 0.5, 0.5)
+                                    ownership   = 1:5,
+                                    owner_pr    = c(0, 0.25, 0.25, 0.25, 0.25)
     );
     # Set the starting conditions for one resource
     starting_resources <- make_resource( model              = pop_model, 
@@ -101,8 +101,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     );
     # This will obviously need to be changed -- new function in initialise.R
     AGENTS   <- make_agents( model        = pop_model,
-                             agent_number = 3,
-                             type_counts  = c(1, 2),
+                             agent_number = 5,
+                             type_counts  = c(1, 4),
                              vision       = agent_view,
                              rows         = land_dim_1,
                              cols         = land_dim_2,
@@ -120,21 +120,21 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     COST   <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
     COST[COST < 1] <- 1; # Need this until a proper make_cost function is made
     COST[,1:7,]      <- 10000;
-    COST[,11:12,2:3] <- 10000;
+    COST[,11:12,2:5] <- 10000;
     COST[,8:13,]     <- 1;
     COST[2,8:13,]    <- 10000;
     COST[,8:13,1]    <- 10000;
-    COST[3:5,8:13,2:3] <- 10000;
+    COST[3:7,8:13,2:5] <- 10000;
     COST[3,8:13,1]   <- 1;
     ACTION <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
     ACTION[1:2,5:7,] <- 1;
     ACTION[3,5:7,1]  <- 0;
-    ACTION[1,5,2:3]  <- 0;
+    ACTION[1,5,2:5]  <- 0;
     ACTION[1,5,1]    <- 100;
-    ACTION[2,5,2:3]  <- 100;
+    ACTION[2,5,2:5]  <- 100;
     ACTION[2,5,3]    <- 100;
     ACTION[1,5,1]    <- 200;   ###### CONTROL HOW MUCH MANAGER LIKES RESOURCES
-    ACTION[3:5,5:13,2:3]   <- 0;
+    ACTION[3:7,5:13,2:5]   <- 0;
     AGENTS[,17]     <- 1200;
     AGENTS[1,17]    <- 300;
     
