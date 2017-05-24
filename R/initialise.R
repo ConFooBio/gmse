@@ -176,13 +176,7 @@ utility_layer <- function(agent_IDs, agent_number, res_types){
     static_types  <- cbind(column_1, columns_2_4);
     
     dynamic_types <- matrix(data = 0, nrow = dim(static_types)[1], ncol = 9);
-    
-    dynamic_vals  <- sample(x = 1:10, size = length(dynamic_types), 
-                            replace = TRUE); # TODO: Change me?
-    
-    dynamic_types <- matrix(data = dynamic_vals, nrow = dim(static_types)[1], 
-                            ncol = 9);
-    
+
     colnames(static_types)  <- c("agent", "type1", "type2", "type3");
     colnames(dynamic_types) <- c("util", "u_loc", "u_land", "movem", "castem",
                                  "killem", "feedem", "helpem", "bankem");

@@ -189,7 +189,7 @@ void mutation(double ***population, double *paras, int agentID){
             }
             for(col = start_col; col < COLS; col++){
                 do_mutation = runif(0,1);
-                if( do_mutation < half_pr ){
+                if( do_mutation < half_pr){
                     population[row][col][agent]--;
                 }
                 if( do_mutation > (1 - half_pr) ){
@@ -231,10 +231,15 @@ void constrain_costs(double ***population, double ***COST, int layer,
             col_check = population[row][0][agent];
             if(col_check < 0 || col_check == agentID){
                 start_col = 7;
-            } 
+            }
             for(col = start_col; col < COLS; col++){
                 action_val  = population[row][col][agent];
                 action_cost = COST[row][col][layer];
+                /* Don't allow prohibited actions */
+                if(action_cost > budget){ 
+                    population[row][col][agent] = 0;
+                    action_val                  = 0;
+                }
                 tot_cost   += (action_val * action_cost);
             }
         }
@@ -511,7 +516,7 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
     
     for(i = 0; i < ROWS; i++){ /* Actions > 0 to respond to possible change */
         for(j = 0; j < COLS; j++){
-            merged_acts[i][j] += 10; 
+            merged_acts[i][j] += 1; 
         }
     } 
 
@@ -739,10 +744,10 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         crossover(POPULATION, paras, agentID);
         
         mutation(POPULATION, paras, agentID);
-
+ 
         constrain_costs(POPULATION, COST, agent, popsize, xdim, ydim, budget,
                         agentID);
-        
+ 
         if(managing == 1){
             manager_fitness(fitnesses, POPULATION, popsize, ACT_rows, AGENT, 
                             JACOBIAN, interact_table, jaco_dim, agentID,
@@ -761,10 +766,11 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     }
     
     most_fit = 0;
-    for(row = 0; row < xdim; row++){
-        if(fitnesses[row] > fitnesses[most_fit]){
-            most_fit = row;
+    for(layer = 0; layer < popsize; layer++){
+        if(fitnesses[layer] > fitnesses[most_fit]){
+            most_fit = layer;
         }
+        /* printf("%f\n", fitnesses[layer]); */
     }
     
     for(row = 0; row < xdim; row++){

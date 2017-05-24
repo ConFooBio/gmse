@@ -52,11 +52,11 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   plotting       = TRUE,  # Plot the results
                   hunt           = FALSE, # Does the user hunt resources?
                   start_hunting  = 0,     # What generation hunting starts
-                  res_consume    = 0,     # Pr. landscape cell consumed by res
+                  res_consume    = 0.5,   # Pr. landscape cell consumed by res
                   ga_popsize     = 100,   # Pop size in genetic algorithm
                   ga_mingen      = 20,    # Minimum generations in a ga run
                   ga_seedrep     = 10,    # How many copies to seed a ga with
-                  ga_sampleK     = 5,     # Random sample size in ga tournament
+                  ga_sampleK     = 10,    # Random sample size in ga tournament
                   ga_chooseK     = 2,     # Select from sample in ga tournament
                   ga_mutation    = 0.1,   # Mutation rate in genetic algorithm
                   ga_crossover   = 0.1,   # Crossover rate in genetic algorithm
@@ -81,11 +81,11 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     LANDSCAPE_r  <- make_landscape( model       = pop_model, 
                                     rows        = land_dim_1, 
                                     cols        = land_dim_2, 
-                                    cell_types  = 2,
+                                    cell_types  = 3,
                                     cell_val_mn = 1,
                                     cell_val_sd = 0,
-                                    ownership   = 1:4,
-                                    owner_pr    = c(0.1, 0.3, 0.3, 0.3)
+                                    ownership   = 1:3,
+                                    owner_pr    = c(0, 0.5, 0.5)
     );
     # Set the starting conditions for one resource
     starting_resources <- make_resource( model              = pop_model, 
@@ -101,8 +101,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     );
     # This will obviously need to be changed -- new function in initialise.R
     AGENTS   <- make_agents( model        = pop_model,
-                             agent_number = 4,
-                             type_counts  = c(1, 3),
+                             agent_number = 3,
+                             type_counts  = c(1, 2),
                              vision       = agent_view,
                              rows         = land_dim_1,
                              cols         = land_dim_2,
@@ -120,21 +120,21 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     COST   <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
     COST[COST < 1] <- 1; # Need this until a proper make_cost function is made
     COST[,1:7,]      <- 10000;
-    COST[,11:12,2:4] <- 1000;
+    COST[,11:12,2:3] <- 10000;
     COST[,8:13,]     <- 1;
-    COST[2,8:13,]    <- 1000;
+    COST[2,8:13,]    <- 10000;
     COST[,8:13,1]    <- 10000;
-    COST[3:6,8:13,2:4] <- 1000;
-    COST[3,8:12,1]   <- 1;
+    COST[3:5,8:13,2:3] <- 10000;
+    COST[3,8:13,1]   <- 1;
     ACTION <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
     ACTION[1:2,5:7,] <- 1;
     ACTION[3,5:7,1]  <- 0;
-    ACTION[1,5,2:4]  <- 0;
+    ACTION[1,5,2:3]  <- 0;
     ACTION[1,5,1]    <- 100;
-    ACTION[2,5,2:4]  <- 100;
+    ACTION[2,5,2:3]  <- 100;
     ACTION[2,5,3]    <- 100;
     ACTION[1,5,1]    <- 200;   ###### CONTROL HOW MUCH MANAGER LIKES RESOURCES
-    ACTION[3:6,5:13,2:4]   <- 0;
+    ACTION[3:5,5:13,2:3]   <- 0;
     AGENTS[,17]     <- 1200;
     AGENTS[1,17]    <- 300;
     
@@ -780,7 +780,7 @@ sim <- gmse( observe_type  = 0,
              plotting      = TRUE,
              hunt          = FALSE,
              start_hunting = 95,
-             lambda        = 0.30,
+             lambda        = 0.0,
              fixed_observe = 10,
              times_observe = 20,
              land_dim_1    = 100,
@@ -789,7 +789,7 @@ sim <- gmse( observe_type  = 0,
              time_max      = 100,
              res_move_obs  = TRUE,
              max_ages      = 5,   
-             ga_mingen     = 20,   
+             ga_mingen     = 40,   
              ga_seedrep    = 20
 );
 
