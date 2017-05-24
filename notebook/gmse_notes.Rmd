@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **MAY** [23](#u-23-MAY-2017), [22](#u-22-MAY-2017), [18](#u-18-MAY-2017), [17](#u-17-MAY-2017), [16](#u-16-MAY-2017), [15](#u-15-MAY-2017), [12](#u-12-MAY-2017), [11](#u-11-MAY-2017), [10](#u-10-MAY-2017), [9](#u-9-MAY-2017), [8](#u-8-MAY-2017), [5](#u-5-MAY-2017), [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
+     - **MAY** [24](#u-24-MAY-2017), [23](#u-23-MAY-2017), [22](#u-22-MAY-2017), [18](#u-18-MAY-2017), [17](#u-17-MAY-2017), [16](#u-16-MAY-2017), [15](#u-15-MAY-2017), [12](#u-12-MAY-2017), [11](#u-11-MAY-2017), [10](#u-10-MAY-2017), [9](#u-9-MAY-2017), [8](#u-8-MAY-2017), [5](#u-5-MAY-2017), [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
      - **APR** [28](#u-28-APR-2017), [26](#u-26-APR-2017), [25](#u-25-APR-2017), [24](#u-24-APR-2017), [20](#u-20-APR-2017), [19](#u-19-APR-2017), [18](#u-18-APR-2017), [17](#u-17-APR-2017), [13](#u-13-APR-2017), [12](#u-12-APR-2017), [11](#u-11-APR-2017), [10](#u-10-APR-2017), [7](#u-7-APR-2017), [6](#u-6-APR-2017), [5](#u-5-APR-2017)
      - **MAR** [23](#u-23-MAR-2017), [22](#u-22-MAR-2017), [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
@@ -75,6 +75,16 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-24-MAY-2017">Update: 24 MAY 2017</a>
+
+**Major test fails -- rewrite of `do_actions` needed**
+
+The user function has a major bug that is causing strange things to happen to resources. Consistently, resources are piling up on one or another user's land -- I've found little rhyme or reason why, but it is caused at least partly by the location-specific nature of user actions (in other words, once `u_loc = 0` and users can affect any resource on the landscape, no spatial pattern exists). Note that this happens even when users *cannot* move resources (e.g., only kill on their land), so it's not just that the last agent to act clears all the resources from their landscape. The resources always seem to collect on one owner's land, and it's not consistent whose (nor is there any seeming connection from the spatial distribution and the agent actions).
+
+**This bug gives me an excuse to re-write `do_actions`**, which I probably needed to do anyway because [Issue #22](https://github.com/bradduthie/gmse/issues/22) is still unresolved. A rewrite of `do_actions` and everything down stream might fix the resource type specification error. As of now the `do_actions` function is called for each agent sequentially, and each agent then performs their actions on each type of resource and landscape level by moving through rows of the `ACTION` array ([with error](https://github.com/bradduthie/gmse/issues/22) if there is more than one type of resource). Hence, one user does all of their business, then another, and so on.
+
+It would be much better to do this all simultaneously, and it shouldn't take too much computation time or coding time. Instead of going through agents sequentially, the idea is to copy the entire `ACTION` array (all agents having gone through their genetic algorithms) into a function. Next, calculate the total number of actions to be performed. Then, sample a random row, column, and layer of `ACTION`, which will be associated with a randomly selected agent. The lucky winner will then randomly sample rows of the `RESOURCE` array until they find one that they can affect (e.g., is on their land, has not been killed, and is of the correct type); if they exhaustively search all resources but cannot find one to affect, then they don't perform the action -- *note* the element in the copied `ACTION` array should not necessarily be set to zero because another agent might subsequently kick a resource onto their land to kill; it should decrement the action by one though (else a clear risk of infinite loop). Landscape actions can proceed the same way; the random selection simulates people doing things simultaneously over the course of a season.
 
 > <a name="u-23-MAY-2017">Update: 23 MAY 2017</a>
 
