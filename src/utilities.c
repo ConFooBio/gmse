@@ -10,12 +10,13 @@
 void is_on_owner_land(int res_number, double **resources, int owner,
                       double ***land, int *ident_vector){
 
-    int resource, xloc, yloc;
+    int resource, xloc, yloc, cell;
     
     for(resource = 0; resource < res_number; resource++){
         xloc = (int) resources[resource][4];
         yloc = (int) resources[resource][5];
-        if(land[xloc][yloc][2] == owner){
+        cell = (int) land[xloc][yloc][2];
+        if(cell == owner){
             ident_vector[resource] = 1;
         }else{
             ident_vector[resource] = 0;   

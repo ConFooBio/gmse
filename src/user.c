@@ -135,7 +135,6 @@ void resource_actions(double **resources, int row, double ***action, int agent,
             while(actions[sample] < rand_unif){
                 sample++;
             } /* Enact whichever action was randomly sampled */
-            sample = 5;
             switch(sample){
                 case 0: /* Move resource */
                     xloc = (int) floor( runif(0, land_x) );
@@ -308,14 +307,19 @@ void do_actions(double ***landscape, double **resources, int land_x, int land_y,
         type3    = action[row][3][agent];  /* Resource type 3 */
         u_loc    = action[row][5][agent];  /* Restricted to owned land? */
 
-        on_land = malloc(res_number * sizeof(int));
         can_act = malloc(res_number * sizeof(int));
         is_correct_type(res_number, resources, type1, type2, type3, can_act);
         if(u_loc == 1){
+            on_land = malloc(res_number * sizeof(int));
             is_on_owner_land(res_number, resources, owner, landscape, on_land);
             for(resource = 0; resource < res_number; resource++){
-                can_act[resource] = can_act[resource] * on_land[resource];
+                if(on_land[resource] == 1){
+                    can_act[resource] = 1;
+                }else{
+                    can_act[resource] = 0;
+                }
             }
+            free(on_land);
         }
 
         switch(act_type){
@@ -331,7 +335,6 @@ void do_actions(double ***landscape, double **resources, int land_x, int land_y,
                 break;
         }
         free(can_act);
-        free(on_land);
     }
 }
 
@@ -583,19 +586,16 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     /* Do the biology here now */
     /* ====================================================================== */
     
-    
-    /* PRINT A BEFORE AND AFTER OF THE RESOURCE ARRAY ================================== */
-    
     send_agents_home(agent_array, land, land_x, land_y, agent_number, 2);
-      
-    for(agent = 0; agent < agent_number; agent++){  
-      
-        agentID = agent_array[agent][0];
-            
+    
+    for(agent = 1; agent < agent_number; agent++){  
         ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
            interact_table, paras, c_x, c_y, res_number, land_x, land_y, 
            land_z, trait_number, jacobian_dim, agent, 0, a_x, a_y, a_z);
-
+    }
+    
+    for(agent = 1; agent < agent_number; agent++){  
+        agentID = agent_array[agent][0];
         do_actions(land, resource_array, land_x, land_y, actions, a_x, 
                    agentID, res_number, a_y, Jacobian_mat, interact_table, 
                    jacobian_dim, agent);
