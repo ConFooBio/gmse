@@ -377,7 +377,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                      "Consumption_rate",
                      "Adjust_removal",
                      "Adjust_growth",
-                     "Adjust_grown"
+                     "Adjust_grown",
+                     "temp_adj1",
+                     "temp_adj2"
     );
     colnames(RESOURCES)    <- res_columns;
     
