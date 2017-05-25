@@ -248,7 +248,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                roc,     # 68. The number of rows in the COST and ACTION arrays
                coc,     # 69. The number of cols in the COST and ACTION arrays
                4,       # 70. Col actions vary for other individuals in ga
-               7        # 71. Col actions vary for self individuals in ga
+               7,       # 71. Col actions vary for self individuals in ga
+               0        # 72. Total actions in the action array 
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
