@@ -71,7 +71,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     pop_model       <- "IBM";
     RESOURCE_ini    <- 100;
     movement        <- res_movement;
-    res_types_ini   <- 2; res_consume = c(0.5, 0.5);
+    res_types_ini   <- 1;
     
     time            <- 0;
     
@@ -112,7 +112,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     Jacobian <- make_interaction_array(resources = starting_resources,
                                        landscape = LANDSCAPE_r
     );
-    Jacobian[1,2] <- -1 #* res_consume; # Temporary to fix consumption rate
+    Jacobian[1,2] <- -1 * res_consume; # Temporary to fix consumption rate
     Jacobian[2,1] <- 0;
     
     interaction_tabl <- make_interaction_table(starting_resources, LANDSCAPE_r);

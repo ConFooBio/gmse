@@ -174,8 +174,11 @@ utility_layer <- function(agent_IDs, agent_number, res_types){
     column_1    <- sort( rep(x = agent_IDs, times = unique_types) );
     columns_2_4 <- do.call(what = rbind, args = types_data);
     static_type <- cbind(column_1, columns_2_4);
-    remove      <- which(static_type[,1] == -1 & static_type[,2] > 1);
-    static_type <- static_type[-remove,];
+    removes     <- sum(static_type[,1] == -1 & static_type[,2] > 1);
+    if(removes > 0){
+        which(static_type[,1] == -1 & static_type[,2] > 1);
+        static_type <- static_type[-remove,];
+    }
     
     dynamic_type <- matrix(data = 0, nrow = dim(static_type)[1], ncol = 9);
 
