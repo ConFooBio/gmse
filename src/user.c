@@ -339,6 +339,38 @@ void do_actions(double ***landscape, double **resources, int land_x, int land_y,
 }
 
 
+/* ========================================================================== */
+void do_actions2(double ***action_array, double **resource_array, double *paras,
+                 double **jaco, int **lookup){
+    
+    int layers, ROWS, COLS, resource_number, res_t1, res_t2, res_t3;
+    int lookup_rows;
+    int row, col, layer;
+    
+    resource_number = (int) paras[32];
+    res_t1          = (int) paras[56];
+    res_t2          = (int) paras[57];
+    res_t3          = (int) paras[58];
+    lookup_rows     = (int) paras[60];
+    layers          = (int) paras[65];
+    ROWS            = (int) paras[68];
+    COLS            = (int) paras[69];
+    
+    /* Code to calculate total actions (sum over all actions) */
+    
+    /* Code to randomly select a row, col, and layer in the action array */
+    
+    /* Code to randomly select resource while != selected row, col, and layer */
+    
+    /* Code to perform the action on the randomly selected resource */
+    
+    /* Code to randomly select landscape cell while on_land (if relevant) */
+    
+    /* Code to perform the action on the randomly selected landscape cell */
+    
+}
+
+
 /* =============================================================================
  * MAIN OBSERVATION FUNCTION:
  * ===========================================================================*/
