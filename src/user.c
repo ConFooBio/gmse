@@ -370,7 +370,7 @@ int find_a_resource(double **resource_array, double ***land, double ***action,
                     double *paras, int action_row, int rand_col, int agent){
 
     int the_resource, res_t1, res_t2, res_t3, type1, type2, type3, u_loc;
-    int resource_number, rand_resource, xloc, yloc, res_x, res_y, resource;
+    int resource_number, xloc, yloc, res_x, res_y, resource;
     int agentID, available, *can_act;
     
     can_act = malloc(resource_number * sizeof(int));
@@ -382,57 +382,63 @@ int find_a_resource(double **resource_array, double ***land, double ***action,
     res_t2          = (int) paras[57];
     res_t3          = (int) paras[58];
     
-    type1 = action[action_row][res_t1][agent];
-    type2 = action[action_row][res_t2][agent];
-    type3 = action[action_row][res_t3][agent];
-    u_loc = action[action_row][5][agent];
+    type1 = (int) action[action_row][res_t1][agent];
+    type2 = (int) action[action_row][res_t2][agent];
+    type3 = (int) action[action_row][res_t3][agent];
+    u_loc = (int) action[action_row][5][agent];
     
     agentID   = agent + 1;
     available = 0;
-    
+
+    /* If castrated below -> resource_array[rand_resource][17] == 1 */
     for(resource = 0; resource < resource_number; resource++){
-        xloc              = resource_array[rand_resource][res_x];
-        yloc              = resource_array[rand_resource][res_y];
+        xloc              = resource_array[resource][res_x];
+        yloc              = resource_array[resource][res_y];
         can_act[resource] = 1;
-        if(resource_array[rand_resource][res_t1] != type1){
+        /*
+        if(resource_array[resource][res_t1] != type1){
             can_act[resource] = 0;
         }
-        if(resource_array[rand_resource][res_t2] != type2){
+        if(resource_array[resource][res_t2] != type2){
             can_act[resource] = 0;
         }
-        if(resource_array[rand_resource][res_t3] != type3){
+        if(resource_array[resource][res_t3] != type3){
             can_act[resource] = 0;
         }
-        if(resource_array[rand_resource][res_t3] != type3){
-            can_act[resource] = 0;
-        } 
-        if(resource_array[rand_resource][16] == 1){
-            can_act[resource] = 0;
-        } /* If castrated below -> resource_array[rand_resource][17] == 1 */
-        if(resource_array[rand_resource][17] == 1 && rand_col == 9){ 
-            can_act[resource] = 0;
-        } 
-        if(resource_array[rand_resource][17] == 1 && rand_col == 10){ 
-            can_act[resource] = 0;
-        }
-        if(resource_array[rand_resource][17] == 1 && rand_col == 11){ 
-            can_act[resource] = 0;
-        } 
         if(land[xloc][yloc][2] != agentID){
             can_act[resource] = 0;
         }
+        if(resource_array[resource][16] == 1){
+            can_act[resource] = 0;
+        }  
+        if(resource_array[resource][17] == 1 && rand_col == 10){ 
+            can_act[resource] = 0;
+        }
+        if(resource_array[resource][17] == 1 && rand_col == 9){ 
+            can_act[resource] = 0;
+        } 
+        if(resource_array[resource][17] == 1 && rand_col == 10){ 
+            can_act[resource] = 0;
+        }
+        if(resource_array[resource][17] == 1 && rand_col == 11){ 
+            can_act[resource] = 0;
+        }
+         */
         available += can_act[resource];
     }
-    
-    the_resource = -1;
-    if(available > 0){
+         
+    if(available == -1){
         do{
             the_resource = get_rand_int(0, resource_number);
         }while(can_act[the_resource] == 0);
+    }else{
+        the_resource = -1;   
     }
     
     free(can_act);
-    
+
+    the_resource = available;
+        
     return the_resource;
 }
 
@@ -443,12 +449,8 @@ void act_on_resource(double **resource_array, double ***action, double *paras,
     
     int the_resource;
     
-    the_resource = 5;
-    /*
     the_resource = find_a_resource(resource_array, land, action, paras, 
                                    action_row, action_col, agent);
-    */
-    printf("Found %d\n", the_resource);
 
 }
 /* ========================================================================== */
@@ -485,24 +487,24 @@ void do_actions2(double ***action_array, double **resource_array, double *paras,
         do{
             rand_layer = get_rand_int(0, layers);
             rand_row   = get_rand_int(0, ROWS);
-            rand_col   = get_rand_int(0, COLS);
+            rand_col   = get_rand_int(4, COLS);
         }while(action_clone[rand_row][rand_col][rand_layer] <= 0);
     
         act_type = (int) action_clone[rand_row][0][rand_layer];
-
+        
         switch(act_type){
             case -2:
+                /*
                 act_on_resource(resource_array, action_clone, paras, land, 
                                 rand_row, rand_col, rand_layer);
+                 */
+                action_clone[rand_row][rand_col][rand_layer]--;
                 break;
             default:
                 break;
         }
-        action_clone[rand_row][rand_col][rand_layer]--;
         total_actions--;
     }
-
-    
     
     /* Code to randomly select resource while != selected row, col, and layer */
     
