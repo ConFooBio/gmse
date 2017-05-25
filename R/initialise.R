@@ -171,17 +171,19 @@ utility_layer <- function(agent_IDs, agent_number, res_types){
     types_data    <- lapply(X   = 1:agent_number, 
                             FUN = function(quick_rep_list) res_types);
     
-    column_1      <- sort( rep(x = agent_IDs, times = unique_types) );
-    columns_2_4   <- do.call(what = rbind, args = types_data);
-    static_types  <- cbind(column_1, columns_2_4);
+    column_1    <- sort( rep(x = agent_IDs, times = unique_types) );
+    columns_2_4 <- do.call(what = rbind, args = types_data);
+    static_type <- cbind(column_1, columns_2_4);
+    remove      <- which(static_type[,1] == -1 & static_type[,2] > 1);
+    static_type <- static_type[-remove,];
     
-    dynamic_types <- matrix(data = 0, nrow = dim(static_types)[1], ncol = 9);
+    dynamic_type <- matrix(data = 0, nrow = dim(static_type)[1], ncol = 9);
 
-    colnames(static_types)  <- c("agent", "type1", "type2", "type3");
-    colnames(dynamic_types) <- c("util", "u_loc", "u_land", "movem", "castem",
+    colnames(static_type)  <- c("agent", "type1", "type2", "type3");
+    colnames(dynamic_type) <- c("util", "u_loc", "u_land", "movem", "castem",
                                  "killem", "feedem", "helpem", "bankem");
     
-    LAYER <- cbind(static_types, dynamic_types);
+    LAYER <- cbind(static_type, dynamic_type);
     
     return( LAYER ); 
 }
@@ -234,7 +236,4 @@ make_interaction_table <- function(resources, landscape){
     
     the_table <- rbind(resource_part, landscape_part);
 }
-                                   
-                                   
-                                   
                                    

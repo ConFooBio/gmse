@@ -330,12 +330,8 @@ void land_to_counts(double ***population, int **interact_table, int int_num,
     foc_effect  -= population[row][9][agent];  /* Kill the crop */
     foc_effect  += population[row][10][agent]; /* Feed the crop */
     interest_row = 0;
-    while(interest_row < int_num){
-        if(interact_table[interest_row][0] == 1     &&
-           interact_table[interest_row][1] == population[row][1][agent] &&
-           interact_table[interest_row][2] == population[row][2][agent] &&
-           interact_table[interest_row][3] == population[row][3][agent]
-          ){
+    while(interest_row < int_num){ /* THIS LOOP IS THE PROBLEM */
+        if(interact_table[interest_row][0] == 1){
                break;
            }else{
                interest_row++;
@@ -384,7 +380,7 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
                 case -1:
                     land_to_counts(population, interact_table, interest_num,
                                    utilities, row, agent, jaco, count_change);
-                    break; 
+                    break;
                 default:
                     break;
             }
@@ -770,7 +766,6 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         if(fitnesses[layer] > fitnesses[most_fit]){
             most_fit = layer;
         }
-        /* printf("%f\n", fitnesses[layer]); */
     }
     
     for(row = 0; row < xdim; row++){

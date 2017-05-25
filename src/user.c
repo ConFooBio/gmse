@@ -594,12 +594,14 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
            land_z, trait_number, jacobian_dim, agent, 0, a_x, a_y, a_z);
     }
     
+    /*
     for(agent = 1; agent < agent_number; agent++){  
         agentID = agent_array[agent][0];
         do_actions(land, resource_array, land_x, land_y, actions, a_x, 
                    agentID, res_number, a_y, Jacobian_mat, interact_table, 
                    jacobian_dim, agent);
     }
+     */
     
     count_cell_yield(agent_array, land, land_x, land_y, agent_number, 1, 2, 15);
     
