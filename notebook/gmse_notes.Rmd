@@ -94,6 +94,8 @@ There are a few things that are definitely left to do.
 
 **One weird thing to address, which I actually don't think is a bug:** Sometimes when resource movement is very low (ca 1), the resources become highly autocorrelated on the landcape. I hypothesise that this is caused by some stake-holders doing a relatively poor job of killing resources at some point in the past and leading to a threshold of population growth that is localised and out of control. This happens often, but not consistently to the same agent, and sometimes to more than one agent in a simulation; it would be good to check to make sure that this is the correct interpretation of the patterns from the model. 
 
+**One potential idea** is to also give the manager a bit more information, in addition to allowing them to see growth rates of species empirically measured, to also see the *enactment* of policy in relation to how it is set. For example, if a manager sets a cost of 10 for killing, does that over or undershoot the target -- the degree to which the target is over or undershot could be multiplied by the existing value to get a clearer prediction (e.g., if the manager wants 50 resources to die, but the way that those resources are distributed only allows 30 deaths because some resources are autocorrelated among different user's land).
+
 > <a name="u-25-MAY-2017">Update: 25 MAY 2017</a>
 
 **Resolved [Issue #22](https://github.com/bradduthie/gmse/issues/22)**
