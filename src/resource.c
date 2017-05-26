@@ -28,8 +28,8 @@ void add_time(double **res_adding, double *paras){
  * ========================================================================== */
 void res_add(double **res_adding, double *paras){
     
-    int resource_number, add, realised, type, K_add, ladj, dadj;
-    int resource, sampled, added, loops;
+    int resource_number, add, realised, type, K_add, gadj, oadj, cadj;
+    int resource, sampled, added, loops, castrated;
     double rand_pois, rand_unif, base_lambda, add_lambda, lambda;
     
     type            = (int) paras[3];  /* Type of growth (e.g., poisson) */
@@ -37,8 +37,9 @@ void res_add(double **res_adding, double *paras){
     resource_number = (int) paras[32];
     add             = (int) paras[37];
     realised        = (int) paras[38];
-    ladj            = (int) paras[39]; /* Adjustment to the growth rate col  */
-    dadj            = (int) paras[40]; /* Adjustment to offspring number col */
+    gadj            = (int) paras[39]; /* Adjustment to the growth rate col  */
+    oadj            = (int) paras[40]; /* Adjustment to offspring number col */
+    cadj            = (int) paras[73]; /* Adjust to castrate */
 
     switch(type){
         case 0:
@@ -49,15 +50,20 @@ void res_add(double **res_adding, double *paras){
             added = 0; 
             for(resource = 0; resource < resource_number; resource++){
                 res_adding[resource][realised] = 0;
-                base_lambda = res_adding[resource][add];
-                add_lambda  = base_lambda * res_adding[resource][ladj];
-                lambda      = base_lambda + add_lambda;
-                if(lambda < 0){
-                    lambda = 0;
+                castrated = res_adding[resource][cadj];
+                if(castrated == 1){
+                    rand_pois = 0;
+                }else{
+                    base_lambda = res_adding[resource][add];
+                    add_lambda  = base_lambda * res_adding[resource][gadj];
+                    lambda      = base_lambda + add_lambda;
+                    if(lambda < 0){
+                        lambda = 0;
+                    }
+                    rand_pois  = rpois(lambda);
+                    rand_pois += res_adding[resource][oadj];
+                    res_adding[resource][realised] = rand_pois;
                 }
-                rand_pois  = rpois(lambda);
-                rand_pois += res_adding[resource][dadj];
-                res_adding[resource][realised] = rand_pois;
                 added += (int) rand_pois;
             }
             break;
