@@ -142,7 +142,7 @@ void res_remove(double **res_removing, double *paras){
 
     int resource_number, rm_row, type, K, rm_adj, max_age, age_col;
     int resource, over_K;
-    double rand_unif, rm_from_K, rm_from_Ind, rm_odds;
+    double rand_unif, rm_from_K, rm_from_Ind, base_rm, adj_rm, rm_odds;
 
     type            = (int) paras[4];
     K               = (int) paras[6]; /* Carrying capacity on removal/death */
@@ -157,9 +157,10 @@ void res_remove(double **res_removing, double *paras){
             break;
         case 1:
             for(resource = 0; resource < resource_number; resource++){
+                base_rm   = res_removing[resource][rm_row];
+                adj_rm    = res_removing[resource][rm_adj];
+                rm_odds   = base_rm + adj_rm;
                 rand_unif = runif(0, 1);
-                rm_odds   = res_removing[resource][rm_row] + 
-                            res_removing[resource][rm_adj];
                 if(rand_unif < rm_odds){
                     res_removing[resource][rm_row] = -1;   
                 }
@@ -188,7 +189,6 @@ void res_remove(double **res_removing, double *paras){
             printf("ERROR: Resource removal/death type set incorrectly \n");
         break;
     }
-
     for(resource = 0; resource < resource_number; resource++){
         if(res_removing[resource][age_col] > max_age){
             res_removing[resource][rm_row] = -1;
