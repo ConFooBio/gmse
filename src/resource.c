@@ -406,6 +406,8 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
             res_new[resource_new][15] = 0;
             res_new[resource_new][16] = 0;
             res_new[resource_new][17] = 0;
+            res_new[resource_new][18] = 0;
+            res_new[resource_new][19] = 0;
             resource_new++; /* Move on to the next new resource */
         }
     }
@@ -416,6 +418,8 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
         res_new[resource_new][15] = 0;
         res_new[resource_new][16] = 0;
         res_new[resource_new][17] = 0;
+        res_new[resource_new][18] = 0;
+        res_new[resource_new][19] = 0;
         resource_new++;
     }
     
