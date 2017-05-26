@@ -30,7 +30,7 @@ void res_add(double **res_adding, double *paras){
     
     int resource_number, add, realised, type, K_add, ladj, dadj;
     int resource, sampled, added, loops;
-    double rand_pois, rand_unif, lambda;
+    double rand_pois, rand_unif, base_lambda, add_lambda, lambda;
     
     type            = (int) paras[3];  /* Type of growth (e.g., poisson) */
     K_add           = (int) paras[5];  /* Carrying capacity applied  */
@@ -49,7 +49,9 @@ void res_add(double **res_adding, double *paras){
             added = 0; 
             for(resource = 0; resource < resource_number; resource++){
                 res_adding[resource][realised] = 0;
-                lambda = res_adding[resource][add] + res_adding[resource][ladj];
+                base_lambda = res_adding[resource][add];
+                add_lambda  = base_lambda * res_adding[resource][ladj];
+                lambda      = base_lambda + add_lambda;
                 if(lambda < 0){
                     lambda = 0;
                 }
