@@ -389,8 +389,7 @@ int find_a_resource(double **resource_array, double ***land, double ***action,
     
     agentID   = agent + 1;
     available = 0;
-
-    /* If castrated below -> resource_array[rand_resource][17] == 1 */
+    
     for(resource = 0; resource < resource_number; resource++){
         xloc              = resource_array[resource][res_x];
         yloc              = resource_array[resource][res_y];
@@ -409,23 +408,14 @@ int find_a_resource(double **resource_array, double ***land, double ***action,
         }
         if(resource_array[resource][16] == 1){
             can_act[resource] = 0;
-        }  
-        if(resource_array[resource][17] == 1 && rand_col == 10){ 
-            can_act[resource] = 0;
-        }
-        if(resource_array[resource][17] == 1 && rand_col == 9){ 
-            can_act[resource] = 0;
         } 
-        if(resource_array[resource][17] == 1 && rand_col == 10){ 
-            can_act[resource] = 0;
-        }
-        if(resource_array[resource][17] == 1 && rand_col == 11){ 
+        if(resource_array[resource][17] == 1 && rand_col != 9){ 
             can_act[resource] = 0;
         }
         available += can_act[resource];
     }
-         
-    if(available == -1){
+
+    if(available > 0){
         do{
             the_resource = get_rand_int(0, resource_number);
         }while(can_act[the_resource] == 0);
@@ -435,21 +425,50 @@ int find_a_resource(double **resource_array, double ***land, double ***action,
     
     free(can_act);
 
-    the_resource = available;
-        
     return the_resource;
 }
 
-
+/* ========================================================================== */
 
 void act_on_resource(double **resource_array, double ***action, double *paras,
                      double ***land, int action_row, int action_col, int agent){
     
-    int the_resource;
+    int samp, xloc, yloc, land_x, land_y;
     
-    the_resource = find_a_resource(resource_array, land, action, paras, 
-                                   action_row, action_col, agent);
+    samp = find_a_resource(resource_array, land, action, paras, action_row, 
+                           action_col, agent);
+    
+    if(samp < 0){
+        return;
+    }
+    
+    land_x = (int) paras[12];
+    land_y = (int) paras[13];
 
+    
+    switch(action_col){
+        case 7: /* Move resource */
+            xloc                    = get_rand_int(0, land_x);
+            yloc                    = get_rand_int(0, land_y);
+            resource_array[samp][4] = xloc;
+            resource_array[samp][5] = yloc;
+            resource_array[samp][15]++;
+            break;
+        case 8: /* Castrate resource */
+            resource_array[samp][16]++;
+            break;
+        case 9: /* Kill resource */
+            resource_array[samp][17]++;
+            break;
+        case 10: /* Feed resource (increase birth-rate)*/
+            resource_array[samp][18]++;
+            break;
+        case 11: /* Help resource (increase offspring number directly) */
+            resource_array[samp][19]++;
+            break;            
+        default:
+            break;
+    }
 }
 /* ========================================================================== */
 
@@ -458,7 +477,7 @@ void act_on_resource(double **resource_array, double ***action, double *paras,
 void do_actions2(double ***action_array, double **resource_array, double *paras,
                  double **jaco, int **lookup, double ***land){
     
-    int layers, ROWS, COLS, resource_number;
+    int layers, ROWS, COLS, resource_number, start_col;
     int lookup_rows, total_actions, rand_row, rand_col, rand_layer;
     int row, col, layer, act_type, t1, t2, t3, agentID;
     double ***action_clone;
@@ -468,6 +487,7 @@ void do_actions2(double ***action_array, double **resource_array, double *paras,
     layers          = (int) paras[65];
     ROWS            = (int) paras[68];
     COLS            = (int) paras[69];
+    start_col       = (int) paras[71];
     
     action_clone = malloc(ROWS * sizeof(double *));
     for(row = 0; row < ROWS; row++){
@@ -485,32 +505,25 @@ void do_actions2(double ***action_array, double **resource_array, double *paras,
         do{
             rand_layer = get_rand_int(0, layers);
             rand_row   = get_rand_int(0, ROWS);
-            rand_col   = get_rand_int(4, COLS);
+            rand_col   = get_rand_int(start_col, COLS);
         }while(action_clone[rand_row][rand_col][rand_layer] <= 0);
     
         act_type = (int) action_clone[rand_row][0][rand_layer];
+        action_clone[rand_row][rand_col][rand_layer]--;
         
         switch(act_type){
             case -2:
                 act_on_resource(resource_array, action_clone, paras, land, 
                                 rand_row, rand_col, rand_layer);
-                action_clone[rand_row][rand_col][rand_layer]--;
                 break;
             default:
-                action_clone[rand_row][rand_col][rand_layer]--;
                 break;
         }
         total_actions--;
     }
-    
-    /* Code to randomly select resource while != selected row, col, and layer */
-    
-    /* Code to perform the action on the randomly selected resource */
-    
+
     /* Code to randomly select landscape cell while on_land (if relevant) */
-    
     /* Code to perform the action on the randomly selected landscape cell */
-    
     
     for(row = 0; row < ROWS; row++){
         for(col = 0; col < COLS; col++){
@@ -519,7 +532,6 @@ void do_actions2(double ***action_array, double **resource_array, double *paras,
         free(action_clone[row]); 
     }
     free(action_clone);
-
 }
 
 
