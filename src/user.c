@@ -207,7 +207,7 @@ void clone_action_array(double ***action_array, double ***clone, double *paras){
 }
 /* ========================================================================== */
 
-
+/* ========================================================================== */
 int find_a_resource(double **resource_array, double ***land, double ***action, 
                     double *paras, int action_row, int rand_col, int agent){
 
@@ -236,6 +236,9 @@ int find_a_resource(double **resource_array, double ***land, double ***action,
         xloc              = resource_array[resource][res_x];
         yloc              = resource_array[resource][res_y];
         can_act[resource] = 1;
+        if(u_loc == 1 && land[xloc][yloc][2] != agentID){
+            can_act[resource] = 0;
+        }
         if(resource_array[resource][res_t1] != type1){
             can_act[resource] = 0;
         }
