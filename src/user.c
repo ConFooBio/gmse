@@ -406,12 +406,12 @@ int find_a_resource(double **resource_array, double ***land, double ***action,
         if(land[xloc][yloc][2] != agentID){
             can_act[resource] = 0;
         }
-        if(resource_array[resource][16] == 1){
-            can_act[resource] = 0;
-        } 
-        if(resource_array[resource][17] == 1 && rand_col != 9){ 
+        if(resource_array[resource][16] == 1 && rand_col != 9){ 
             can_act[resource] = 0;
         }
+        if(resource_array[resource][17] == 1){
+            can_act[resource] = 0;
+        } 
         available += can_act[resource];
     }
 

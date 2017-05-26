@@ -50,14 +50,13 @@ make_resource <- function(model              = "IBM",
         tally    <- rep(x = 0, times = resource_quantity);
         consume  <- consumption_rate[type1];
         adj_mv   <- rep(x = 0, times = resource_quantity);
-        adj_rm   <- rep(x = 0, times = resource_quantity);
-        adj_gr1  <- rep(x = 0, times = resource_quantity);
-        adj_gr2  <- rep(x = 0, times = resource_quantity);
-        adj_off  <- rep(x = 0, times = resource_quantity);
+        adj_c    <- rep(x = 0, times = resource_quantity);
+        adj_k    <- rep(x = 0, times = resource_quantity);
+        adj_gr   <- rep(x = 0, times = resource_quantity);
+        adj_h    <- rep(x = 0, times = resource_quantity);
         the_resource <- cbind(IDs, type1, type2, type3, xloc, yloc, mover, time,
                               remov_pr, growth, offspr, age, mark, tally,
-                              consume, adj_mv, adj_rm, adj_gr1, adj_gr2, 
-                              adj_off);
+                              consume, adj_mv, adj_c, adj_k, adj_gr, adj_h);
     }
     if( is.null(the_resource) ){
         stop("Invalid model selected (Must be 'IBM')");
