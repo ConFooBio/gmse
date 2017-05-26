@@ -29,7 +29,7 @@ void add_time(double **res_adding, double *paras){
 void res_add(double **res_adding, double *paras){
     
     int resource_number, add, realised, type, K_add, gadj, oadj, cadj;
-    int resource, sampled, added, loops, castrated;
+    int resource, sampled, added, loops, castrated, killed, klld;
     double rand_pois, rand_unif, base_lambda, add_lambda, lambda;
     
     type            = (int) paras[3];  /* Type of growth (e.g., poisson) */
@@ -39,6 +39,7 @@ void res_add(double **res_adding, double *paras){
     realised        = (int) paras[38];
     gadj            = (int) paras[39]; /* Adjustment to the growth rate col  */
     oadj            = (int) paras[40]; /* Adjustment to offspring number col */
+    klld            = (int) paras[42]; /* Adjustment to kill */
     cadj            = (int) paras[73]; /* Adjust to castrate */
 
     switch(type){
@@ -51,7 +52,8 @@ void res_add(double **res_adding, double *paras){
             for(resource = 0; resource < resource_number; resource++){
                 res_adding[resource][realised] = 0;
                 castrated = res_adding[resource][cadj];
-                if(castrated == 1){
+                killed    = res_adding[resource][klld];
+                if(castrated == 1 || killed == 1){
                     rand_pois = 0;
                 }else{
                     base_lambda = res_adding[resource][add];
