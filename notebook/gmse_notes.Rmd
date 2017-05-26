@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
  
-     - **MAY** [25](#u-25-MAY-2017), [24](#u-24-MAY-2017), [23](#u-23-MAY-2017), [22](#u-22-MAY-2017), [18](#u-18-MAY-2017), [17](#u-17-MAY-2017), [16](#u-16-MAY-2017), [15](#u-15-MAY-2017), [12](#u-12-MAY-2017), [11](#u-11-MAY-2017), [10](#u-10-MAY-2017), [9](#u-9-MAY-2017), [8](#u-8-MAY-2017), [5](#u-5-MAY-2017), [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
+     - **MAY** [26](#u-26-MAY-2017), [25](#u-25-MAY-2017), [24](#u-24-MAY-2017), [23](#u-23-MAY-2017), [22](#u-22-MAY-2017), [18](#u-18-MAY-2017), [17](#u-17-MAY-2017), [16](#u-16-MAY-2017), [15](#u-15-MAY-2017), [12](#u-12-MAY-2017), [11](#u-11-MAY-2017), [10](#u-10-MAY-2017), [9](#u-9-MAY-2017), [8](#u-8-MAY-2017), [5](#u-5-MAY-2017), [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
      - **APR** [28](#u-28-APR-2017), [26](#u-26-APR-2017), [25](#u-25-APR-2017), [24](#u-24-APR-2017), [20](#u-20-APR-2017), [19](#u-19-APR-2017), [18](#u-18-APR-2017), [17](#u-17-APR-2017), [13](#u-13-APR-2017), [12](#u-12-APR-2017), [11](#u-11-APR-2017), [10](#u-10-APR-2017), [7](#u-7-APR-2017), [6](#u-6-APR-2017), [5](#u-5-APR-2017)
      - **MAR** [23](#u-23-MAR-2017), [22](#u-22-MAR-2017), [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
@@ -75,6 +75,24 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-26-MAY-2017">Update: 26 MAY 2017</a>
+
+**Rewritten `do_actions` successful**
+
+I am largely satisfied with a rewrite of the `do_actions` function, which affects the way that users perform actions on resources by changing the rules to make actions simultaneous instead of sequential by user. Instead of having one user perform actions on resources, then another user perform actions, etc., the new `do_actions` program instead just grabs the `ACTIONS` array after the genetic algorithm is called for all users and *randomly performs actions until no more actions exist*. In other words, the order in which the actions of all users are performed is effectively randomised so that, for example, one user does not have an advantage of acting last and therefore moving all of their resources to a neighbour's territory after their neighbour has performed all of their actions in a time step. This implementation is probably slightly less efficient, but probably not too much.
+
+Landscape actions are not implemented at the moment, and will need to be rewritten, though this should be considerably easier as their are fewer actions to perform and the actions occur directly on the landscape. The existing `landscape_actions` (still not deleted from `user.c`) might be easy to edit even.  Once this is done, the whole model should be in place without any major issues; I'm not sure if [Issue #26](https://github.com/bradduthie/gmse/issues/26) is actually a bug, or just a consequence to be expected from a low-seeded genetic algorithm, but the algorithm works either way, and not having a seed is probably always a bad idea.
+
+There are a few things that are definitely left to do.
+
+- Write the `landscape_actions` function in the `user.c` file.
+- Clean up the code to help resolve [Issue #21](https://github.com/bradduthie/gmse/issues/21) with `paras`. Some added elements might even help with the plotting later and the management function (predicting growth rates) -- maybe make a `paras_rec` that is a two dimensional array with `time_max` rows.
+- Make it easier to change parameter input options so that others can try this out.
+- Put the whole G-MSE bundle in an Rpackage.
+- Document all of the code that has yet to be documented properly.
+
+**One weird thing to address, which I actually don't think is a bug:** Sometimes when resource movement is very low (ca 1), the resources become highly autocorrelated on the landcape. I hypothesise that this is caused by some stake-holders doing a relatively poor job of killing resources at some point in the past and leading to a threshold of population growth that is localised and out of control. This happens often, but not consistently to the same agent, and sometimes to more than one agent in a simulation; it would be good to check to make sure that this is the correct interpretation of the patterns from the model. 
 
 > <a name="u-25-MAY-2017">Update: 25 MAY 2017</a>
 
