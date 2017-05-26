@@ -254,7 +254,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                0,       # 74. Manager's projected change if resource moved
                -1,      # 75. Manager's projected change if resource killed
                -0.5,    # 76. Manager's projected change if resource castrated
-               2,       # 77. Manager's projected change if resource growth +
+               1,       # 77. Manager's projected change if resource growth +
                1        # 78. Manager's projected change if resource offspring +
     );
     RESOURCE_REC    <- NULL;
@@ -705,7 +705,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
             res_costs[j,5] <- ACTION[[j]][3,12,1];
         }
         par(mar=c(4,5,1,4));
-        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, 200),
+        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, 80),
              xlim=c(0,time_max), xlab="Time Step", ylab="Cost of actions",
              cex.lab=1.25);
         points(x=gens, y=res_costs[,1], type="l", col="green", lwd=2);
@@ -792,7 +792,7 @@ sim <- gmse( observe_type  = 0,
              hunt          = FALSE,
              res_movement  = 10,
              start_hunting = 95,
-             lambda        = 0.26,
+             lambda        = 0.32,
              fixed_observe = 10,
              times_observe = 20,
              land_dim_1    = 100,
