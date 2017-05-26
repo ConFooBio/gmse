@@ -250,7 +250,12 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                4,       # 70. Col actions vary for other individuals in ga
                7,       # 71. Col actions vary for self individuals in ga
                0,       # 72. Total actions in the action array
-               16       # 73. The columnto adjust the castration of a resource
+               16,      # 73. The column to adjust the castration of a resource
+               0,       # 74. Manager's projected change if resource moved
+               -1,      # 75. Manager's projected change if resource killed
+               -0.5,    # 76. Manager's projected change if resource castrated
+               2,       # 77. Manager's projected change if resource growth +
+               1        # 78. Manager's projected change if resource offspring +
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
@@ -786,7 +791,7 @@ sim <- gmse( observe_type  = 0,
              plotting      = TRUE,
              hunt          = FALSE,
              start_hunting = 95,
-             lambda        = 0.25,
+             lambda        = 0.23,
              fixed_observe = 10,
              times_observe = 20,
              land_dim_1    = 100,
@@ -795,7 +800,7 @@ sim <- gmse( observe_type  = 0,
              time_max      = 100,
              res_move_obs  = TRUE,
              max_ages      = 5,   
-             ga_mingen     = 40,   
+             ga_mingen     = 20,   
              ga_seedrep    = 20
 );
 

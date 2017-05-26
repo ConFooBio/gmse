@@ -479,7 +479,8 @@ void policy_to_counts(double ***population, double **merged_acts, int agent,
 void manager_fitness(double *fitnesses, double ***population, int pop_size, 
                      int ROWS, double **agent_array, double **jaco,
                      int **interact_table, int interest_num, int agentID,
-                     double ***COST, double ***ACTION, int COLS, int layers){
+                     double ***COST, double ***ACTION, int COLS, int layers,
+                     double *paras){
     
     int agent, i, j, m_lyr, action_row, manager_row, type1, type2, type3;
     double agent_fitness, *count_change, foc_effect, change_dev, max_dev;
@@ -535,10 +536,11 @@ void manager_fitness(double *fitnesses, double ***population, int pop_size,
             policy_to_counts(population, merged_acts, agent, merged_costs, 
                              act_change, action_row, manager_row, COLS);
             foc_effect  = 0.0;
-            foc_effect -= act_change[action_row][8]; 
-            foc_effect -= act_change[action_row][9];  
-            foc_effect += act_change[action_row][10]; 
-            foc_effect += act_change[action_row][11]; 
+            foc_effect += (paras[74] * act_change[action_row][7]);
+            foc_effect += (paras[75] * act_change[action_row][8]); 
+            foc_effect += (paras[76] * act_change[action_row][9]);  
+            foc_effect += (paras[77] * act_change[action_row][10]); 
+            foc_effect += (paras[78] * act_change[action_row][11]);
             for(i = 0; i < interest_num; i++){
                 count_change[i] += foc_effect * jaco[action_row][i];
             }
@@ -747,7 +749,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         if(managing == 1){
             manager_fitness(fitnesses, POPULATION, popsize, ACT_rows, AGENT, 
                             JACOBIAN, interact_table, jaco_dim, agentID,
-                            COST, ACTION, ACT_cols, ACT_depth);
+                            COST, ACTION, ACT_cols, ACT_depth, paras);
         }else{
             strategy_fitness(fitnesses, POPULATION, popsize, xdim, AGENT, 
                              JACOBIAN, interact_table, jaco_dim);
