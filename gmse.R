@@ -126,7 +126,6 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     COST[,8:13,1]    <- 10000;
     COST[3:7,8:13,2:5] <- 10000;
     COST[3,8:13,1]   <- 1;
-    COST[COST < 1]   <- 1;
     ACTION <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
     ACTION[1:2,5:7,] <- 1;
     ACTION[3,5:7,1]  <- 0;
@@ -248,8 +247,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                roc,     # 68. The number of rows in the COST and ACTION arrays
                coc,     # 69. The number of cols in the COST and ACTION arrays
                4,       # 70. Col actions vary for other individuals in ga
-               7,       # 71. Col actions vary for self individuals in ga
-               0        # 72. Total actions in the action array 
+               7        # 71. Col actions vary for self individuals in ga
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
@@ -317,7 +315,6 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         );
         ACTION <- MANAGER[[4]];
         COST   <- MANAGER[[5]];
-        COST[COST < 1] <- 1;
         
         USERS <- user(resource   = RESOURCES,
                       agent      = AGENTS,
@@ -378,9 +375,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                      "Consumption_rate",
                      "Adjust_removal",
                      "Adjust_growth",
-                     "Adjust_grown",
-                     "temp_adj1",
-                     "temp_adj2"
+                     "Adjust_grown"
     );
     colnames(RESOURCES)    <- res_columns;
     

@@ -3,8 +3,6 @@
 #include <Rinternals.h>
 #include <Rmath.h>
 
-int get_rand_int(int from, int to);
-
 void is_on_owner_land(int res_number, double **resources, int owner,
                       double ***land, int *ident_vector);
 

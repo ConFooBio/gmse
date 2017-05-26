@@ -49,15 +49,12 @@ make_resource <- function(model              = "IBM",
         mark     <- rep(x = 0, times = resource_quantity); # Can be marked
         tally    <- rep(x = 0, times = resource_quantity);
         consume  <- consumption_rate[type1];
-        adj_mv   <- rep(x = 0, times = resource_quantity);
         adj_rm   <- rep(x = 0, times = resource_quantity);
-        adj_gr1  <- rep(x = 0, times = resource_quantity);
-        adj_gr2  <- rep(x = 0, times = resource_quantity);
+        adj_gr   <- rep(x = 0, times = resource_quantity);
         adj_off  <- rep(x = 0, times = resource_quantity);
         the_resource <- cbind(IDs, type1, type2, type3, xloc, yloc, mover, time,
                               remov_pr, growth, offspr, age, mark, tally,
-                              consume, adj_mv, adj_rm, adj_gr1, adj_gr2, 
-                              adj_off);
+                              consume, adj_rm, adj_gr, adj_off);
     }
     if( is.null(the_resource) ){
         stop("Invalid model selected (Must be 'IBM')");
@@ -174,22 +171,17 @@ utility_layer <- function(agent_IDs, agent_number, res_types){
     types_data    <- lapply(X   = 1:agent_number, 
                             FUN = function(quick_rep_list) res_types);
     
-    column_1    <- sort( rep(x = agent_IDs, times = unique_types) );
-    columns_2_4 <- do.call(what = rbind, args = types_data);
-    static_type <- cbind(column_1, columns_2_4);
-    removes     <- sum(static_type[,1] == -1 & static_type[,2] > 1);
-    if(removes > 0){
-        which(static_type[,1] == -1 & static_type[,2] > 1);
-        static_type <- static_type[-remove,];
-    }
+    column_1      <- sort( rep(x = agent_IDs, times = unique_types) );
+    columns_2_4   <- do.call(what = rbind, args = types_data);
+    static_types  <- cbind(column_1, columns_2_4);
     
-    dynamic_type <- matrix(data = 0, nrow = dim(static_type)[1], ncol = 9);
+    dynamic_types <- matrix(data = 0, nrow = dim(static_types)[1], ncol = 9);
 
-    colnames(static_type)  <- c("agent", "type1", "type2", "type3");
-    colnames(dynamic_type) <- c("util", "u_loc", "u_land", "movem", "castem",
+    colnames(static_types)  <- c("agent", "type1", "type2", "type3");
+    colnames(dynamic_types) <- c("util", "u_loc", "u_land", "movem", "castem",
                                  "killem", "feedem", "helpem", "bankem");
     
-    LAYER <- cbind(static_type, dynamic_type);
+    LAYER <- cbind(static_types, dynamic_types);
     
     return( LAYER ); 
 }
@@ -242,4 +234,7 @@ make_interaction_table <- function(resources, landscape){
     
     the_table <- rbind(resource_part, landscape_part);
 }
+                                   
+                                   
+                                   
                                    
