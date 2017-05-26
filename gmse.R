@@ -136,7 +136,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     ACTION[2,5,3]    <- 100;
     ACTION[1,5,1]    <- 200;   ###### CONTROL HOW MUCH MANAGER LIKES RESOURCES
     ACTION[3:7,5:13,2:5]   <- 0;
-    AGENTS[,17]     <- 1200;
+    AGENTS[,17]     <- 300;
     AGENTS[1,17]    <- 300;
     
     time       <- time + 1;  # Ready for the initial time step.
@@ -216,10 +216,10 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                ldz,     # 36. The number of layers (3D depth) in the landscape
                9,       # 37. The column in resource array for growth parameter
                10,      # 38. The column in the resource array for offspring
-               16,      # 39. The column to adjust the growth rate resource col
-               17,      # 40. The column to adjust the offspring resource col
+               18,      # 39. The column to adjust the growth rate helpem
+               19,      # 40. The column to adjust the offspring feedem
                ttr,     # 41. Total columns in the resource array
-               15,      # 42. The column to adjust the death resource column
+               17,      # 42. The column to adjust the death resource column
                8,       # 43. The column in resource array affecting removal
                1,       # 44. A column to refer to a resource type as needed
                1,       # 45. A type of resource to do interacting with land
@@ -249,7 +249,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                coc,     # 69. The number of cols in the COST and ACTION arrays
                4,       # 70. Col actions vary for other individuals in ga
                7,       # 71. Col actions vary for self individuals in ga
-               0        # 72. Total actions in the action array 
+               0,       # 72. Total actions in the action array
+               16       # 73. The columnto adjust the castration of a resource
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
@@ -785,7 +786,7 @@ sim <- gmse( observe_type  = 0,
              plotting      = TRUE,
              hunt          = FALSE,
              start_hunting = 95,
-             lambda        = 0.3,
+             lambda        = 0.25,
              fixed_observe = 10,
              times_observe = 20,
              land_dim_1    = 100,

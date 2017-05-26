@@ -95,100 +95,6 @@ void count_cell_yield(double **agent_array, double ***landscape, int xdim,
 
 /* =============================================================================
  * This function enacts all user actions in a random order
- *     resources: The resource array
- *     row: The row of the action array (should be 0)
- *     action: The action array
- *     agent: The agent doing the acting (row and ID)
- *     can_act: Binary vector length res_number where 1 if resource actionable
- *     res_number: The number of rows in the resource array
- *     land_x: The x dimension of the landscape
- *     land_y: The y dimension of the landscape
- * ========================================================================== */
-void resource_actions(double **resources, int row, double ***action, int agent, 
-                      int *can_act, int res_number, int land_x, int land_y){
-    
-    int resource, xloc, yloc, i;
-    int *actions, total_actions, action_col, sample, *res_check, res_sample;
-    double rand_unif;
-    
-    actions       = malloc(5 * sizeof(int));
-    total_actions = 0;
-    for(i = 0; i < 5; i++){
-        action_col     = i + 7;
-        total_actions += action[row][action_col][agent];
-        actions[i]     = total_actions;
-    }
-    
-    res_check  = malloc(res_number * sizeof(int));
-    for(resource = 0; resource < res_number; resource++){
-        res_check[resource] = 0;
-    }
-    resource = res_number;
-    while(resource > 0 && total_actions > 0){
-        do{
-            res_sample = (int) floor( runif(0, res_number) );
-        }while(res_sample == res_number && res_check[res_sample] == 1);    
-        res_check[res_sample] = 1;
-        if(can_act[res_sample] == 1){
-            rand_unif = runif(0, total_actions);
-            sample    = 0;
-            while(actions[sample] < rand_unif){
-                sample++;
-            } /* Enact whichever action was randomly sampled */
-            switch(sample){
-                case 0: /* Move resource */
-                    xloc = (int) floor( runif(0, land_x) );
-                    yloc = (int) floor( runif(0, land_y) );
-                    resources[res_sample][4] = xloc;
-                    resources[res_sample][5] = yloc;
-                    actions[0]--; 
-                    total_actions--;
-                    break;
-                case 1: /* Castrate resource */
-                    if(resources[res_sample][16] >= 0){
-                        resources[res_sample][16] = -1*resources[res_sample][9];
-                        actions[1]--;
-                        total_actions--;
-                    }
-                    break;
-                case 2: /* Kill resource */
-                    if(resources[res_sample][15] < 1){
-                        resources[res_sample][15] = 1;
-                        resources[res_sample][16] = -1*resources[res_sample][9];
-                        actions[2]--;
-                        total_actions--;
-                    }
-                    break;
-                case 3: /* Feed resource (increase birth-rate)*/
-                    if(resources[res_sample][15] < 1  && 
-                       resources[res_sample][16] >= 0
-                    ){
-                        resources[res_sample][16] += resources[res_sample][9];
-                        actions[3]--;
-                        total_actions--;
-                    }
-                    break;
-                case 4: /* Help resource (increase offspring number directly) */
-                    if(resources[res_sample][15] < 1  && 
-                       resources[res_sample][16] >= 0
-                    ){
-                        resources[res_sample][17]++;
-                        actions[4]--;
-                        total_actions--;
-                    }
-                    break;            
-                default:
-                    break;
-            }
-        }
-        resource--;
-    }
-    free(actions);
-    free(res_check);
-}
-
-/* =============================================================================
- * This function enacts all user actions in a random order
  *     land: The landscape array
  *     row: The row of the action array 
  *     action: The action array
@@ -273,70 +179,7 @@ void landscape_actions(double ***land, int row, double ***action, int agent,
     free(actions);
 }
 
-/* =============================================================================
- * This function causes the agents to actually do the actions
- *     landscape: The landscape array
- *     resources: The resource array
- *     land_x: The x dimension of the landscape
- *     land_y: The y dimension of the landscape
- *     action: The action array
- *     ROWS: Number of rows in the COST and ACTION arrays
- *     owner: The agent ID of interest -- also the landowner
- *     res_number: The number of rows in the resource array
- *     COLS: Number of columns in the COST and ACTION arrays
- *     agentID: The ID of an agent (should be owner + 1)
- *     jaco: The interaction matrix of how resources/landscape affect each other
- *     interact_table: The look-up table to process the interaction matrix
- *     interest_num: The dimensions n by n of jaco and rows in interact_table
- * ========================================================================== */
-void do_actions(double ***landscape, double **resources, int land_x, int land_y,
-                double ***action, int ROWS, int owner, int res_number,
-                int COLS, double **jaco, int **interact_table,
-                int interest_num, int agent){
-    
-    int xpos, ypos, xloc, yloc;
-    int row, col;
-    int act_type, type1, type2, type3, u_loc;
-    int resource, cell, move, land_action_num;
-    int *can_act, *on_land;
-    
-    for(row = 0; row < ROWS; row++){
-        act_type = action[row][0][agent];  /* Agent of interest (-2 = self) */
-        type1    = action[row][1][agent];  /* Resource type 1 */
-        type2    = action[row][2][agent];  /* Resource type 2 */
-        type3    = action[row][3][agent];  /* Resource type 3 */
-        u_loc    = action[row][5][agent];  /* Restricted to owned land? */
 
-        can_act = malloc(res_number * sizeof(int));
-        is_correct_type(res_number, resources, type1, type2, type3, can_act);
-        if(u_loc == 1){
-            on_land = malloc(res_number * sizeof(int));
-            is_on_owner_land(res_number, resources, owner, landscape, on_land);
-            for(resource = 0; resource < res_number; resource++){
-                if(on_land[resource] == 1){
-                    can_act[resource] = 1;
-                }else{
-                    can_act[resource] = 0;
-                }
-            }
-            free(on_land);
-        }
-
-        switch(act_type){
-            case -2:
-                resource_actions(resources, row, action, agent, can_act, 
-                                 res_number, land_x, land_y);
-                break;
-            case -1:
-                landscape_actions(landscape, row, action, agent, land_x, land_y, 
-                                  owner, jaco);
-                break;
-            default:
-                break;
-        }
-        free(can_act);
-    }
-}
 
 /* ========================================================================== */
 void clone_action_array(double ***action_array, double ***clone, double *paras){
@@ -360,7 +203,6 @@ void clone_action_array(double ***action_array, double ***clone, double *paras){
             }
         }
     }
-    
     paras[72] = (double) total_actions;
 }
 /* ========================================================================== */
@@ -445,7 +287,6 @@ void act_on_resource(double **resource_array, double ***action, double *paras,
     land_x = (int) paras[12];
     land_y = (int) paras[13];
 
-    
     switch(action_col){
         case 7: /* Move resource */
             xloc                    = get_rand_int(0, land_x);
@@ -474,7 +315,7 @@ void act_on_resource(double **resource_array, double ***action, double *paras,
 
 
 /* ========================================================================== */
-void do_actions2(double ***action_array, double **resource_array, double *paras,
+void do_actions(double ***action_array, double **resource_array, double *paras,
                  double **jaco, int **lookup, double ***land){
     
     int layers, ROWS, COLS, resource_number, start_col;
@@ -790,16 +631,7 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
            land_z, trait_number, jacobian_dim, agent, 0, a_x, a_y, a_z);
     }
     
-    /*
-    for(agent = 1; agent < agent_number; agent++){  
-        agentID = agent_array[agent][0];
-        do_actions(land, resource_array, land_x, land_y, actions, a_x, 
-                   agentID, res_number, a_y, Jacobian_mat, interact_table, 
-                   jacobian_dim, agent);
-    }
-    */
-    
-    do_actions2(actions, resource_array, paras, Jacobian_mat, interact_table, 
+    do_actions(actions, resource_array, paras, Jacobian_mat, interact_table, 
                 land);
     
     count_cell_yield(agent_array, land, land_x, land_y, agent_number, 1, 2, 15);
