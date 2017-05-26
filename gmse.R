@@ -137,7 +137,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     ACTION[1,5,1]    <- 200;   ###### CONTROL HOW MUCH MANAGER LIKES RESOURCES
     ACTION[3:7,5:13,2:5]   <- 0;
     AGENTS[,17]     <- 300;
-    AGENTS[1,17]    <- 300;
+    AGENTS[1,17]    <- 100;
     
     time       <- time + 1;  # Ready for the initial time step.
     cells      <- land_dim_1 * land_dim_2; # Number of cells in the landscape
@@ -713,7 +713,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
         points(x=gens, y=res_costs[,3], type="l", col="indianred3", lwd=2);
         points(x=gens, y=res_costs[,4], type="l", col="deepskyblue1", lwd=2);
         points(x=gens, y=res_costs[,5], type="l", col="deepskyblue2", lwd=2);
-        # ------------- Panel 5 (lower left)
+        # ------------- Panel 6 (lower right)
         res_acts <- matrix(data = 0, nrow = i, ncol = 5);
         for(j in 1:i){
             for(k in 2:dim(ACTION[[j]])[3]){
@@ -725,7 +725,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
             }
         }
         par(mar=c(4,6,1,1));
-        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, 300),
+        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, 4*paras[73]),
              xlim=c(0,time_max), xlab="Time Step", ylab="Actions made",
              cex.lab=1.25);
         points(x=gens, y=res_acts[,1], type="l", col="green", lwd=2);
@@ -790,8 +790,9 @@ sim <- gmse( observe_type  = 0,
              res_death_K   = 400,
              plotting      = TRUE,
              hunt          = FALSE,
+             res_movement  = 10,
              start_hunting = 95,
-             lambda        = 0.23,
+             lambda        = 0.26,
              fixed_observe = 10,
              times_observe = 20,
              land_dim_1    = 100,
