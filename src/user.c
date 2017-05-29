@@ -4,8 +4,8 @@
  * This function puts an agent somewhere (a random cell) on its own landscape,
  * but  only if the agent does in fact own some land
  * Inputs include:
- *     AGENTS: The array of agents
- *     LANDSCAPE: The landscape array
+ *     agent_array: The array of agents
+ *     landscape: The landscape array
  *     xdim: The length of the x dimension of the landscape
  *     ydim: The length of the y dimension of the landscape
  *     agent_number: The total number of agents in the agent array
@@ -93,94 +93,6 @@ void count_cell_yield(double **agent_array, double ***landscape, int xdim,
     
 }
 
-/* =============================================================================
- * This function enacts all user actions in a random order
- *     land: The landscape array
- *     row: The row of the action array 
- *     action: The action array
- *     agent: The agent doing the acting (row and ID)
- *     land_x: The x dimension of the landscape
- *     land_y: The y dimension of the landscape
- *     agentID: The ID of an agent (should be agent + 1)
- * ========================================================================== */
-void landscape_actions(double ***land, int row, double ***action, int agent, 
-                       int land_x, int land_y, int agentID, double **jaco){
-    
-    int resource, xloc, yloc, i;
-    int util, u_loc, u_land;
-    int *actions, total_actions, action_col, sample;
-
-    actions       = malloc(5 * sizeof(int));
-    total_actions = 0;
-    for(i = 0; i < 5; i++){
-        action_col     = i + 7;
-        actions[i]     = action[row][action_col][agent];
-        total_actions += action[row][action_col][agent];
-    }
-    
-    u_loc = action[row][5][agent];
-    
-    xloc = 0;
-    yloc = 0;
-    i    = 0;
-    while(total_actions > 0 && yloc < land_y){
-        /* Find an appropriate cell on the landscape */
-        switch(u_loc){
-            case 1:
-                do{
-                    xloc++;
-                    if(xloc == land_x){
-                        xloc = 0;
-                        yloc++;
-                    }
-                    if(yloc == land_y){
-                        total_actions = 0;
-                        yloc = 0;
-                    }
-                }while(total_actions > 0 && land[xloc][yloc][2] != agentID);
-                break;
-            default:
-                xloc++;
-                if(xloc == land_x){
-                    xloc = 0;
-                    yloc++;
-                }
-        }
-        if(total_actions == 0){
-            break;
-        }
-        /* Act on the cell */
-        while(actions[i] == 0){
-            i++;
-        }
-        switch(i){
-            case 0:
-                actions[0]--;
-                break;
-            case 1:
-                actions[1]--;
-                break;
-            case 2:
-                land[xloc][yloc][1] = 0;
-                actions[2]--;
-                break;
-            case 3: /* Might need to multiply by effect in Jaco matrix */
-                land[xloc][yloc][1] += land[xloc][yloc][1] * jaco[row][row];
-                actions[3]--;
-            case 4:
-                actions[4]--;
-            default:        
-                break;
-        }
-        
-        total_actions--;
-    }
-
-    free(actions);
-}
-
-
-
 /* ========================================================================== */
 void clone_action_array(double ***action_array, double ***clone, double *paras){
     
@@ -206,6 +118,65 @@ void clone_action_array(double ***action_array, double ***clone, double *paras){
     paras[72] = (double) total_actions;
 }
 /* ========================================================================== */
+
+/*=========================================================================== */
+int check_owns_land(double ***land, double *paras, int agentID){
+    
+    int xpos, ypos, land_x, land_y;
+    
+    land_x = (int) paras[12];
+    land_y = (int) paras[13];
+    
+    for(xpos = 0; xpos < land_x; xpos++){
+        for(ypos = 0; ypos < land_y; ypos++){
+            if(land[xpos][ypos][2] == agentID){
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+
+/*=========================================================================== */
+void act_on_landscape(double ***land, double *paras, double ***action_array,
+                      int action_row, int action_col, int agent){
+    
+    int land_x, land_y, xpos, ypos, need_to_own, does_own_land, agentID;
+    double feedin;
+    
+    land_x = (int) paras[12];
+    land_y = (int) paras[13];
+    feedin = paras[79];
+    
+    agentID = agent + 1;
+    
+    does_own_land = check_owns_land(land, paras, agentID);
+    need_to_own   = (int) action_array[action_row][5][agent];
+    
+    if(does_own_land == 1  || need_to_own == 0){
+        do{
+            xpos = get_rand_int(0, land_x);
+            ypos = get_rand_int(0, land_y);
+        }while(land[xpos][ypos][2] != agentID);
+        switch(action_col){
+        case 7:
+            break;
+        case 8:
+            break;
+        case 9: /* Kill resource */
+            land[xpos][ypos][1] = 0;
+            break;
+        case 10: /* Feed resource (increase birth-rate)*/
+            land[xpos][ypos][1] += (land[xpos][ypos][1] * feedin);
+            break;
+        case 11: /* Help resource (increase offspring number directly) */
+            break;
+        default:
+            break;
+        }
+    }
+}
 
 /* ========================================================================== */
 int find_a_resource(double **resource_array, double ***land, double ***action, 
@@ -360,15 +331,15 @@ void do_actions(double ***action_array, double **resource_array, double *paras,
                 act_on_resource(resource_array, action_clone, paras, land, 
                                 rand_row, rand_col, rand_layer);
                 break;
+            case -1:
+                act_on_landscape(land,paras, action_clone, rand_row, rand_col, 
+                                 rand_layer);
             default:
                 break;
         }
         total_actions--;
     }
 
-    /* Code to randomly select landscape cell while on_land (if relevant) */
-    /* Code to perform the action on the randomly selected landscape cell */
-    
     for(row = 0; row < ROWS; row++){
         for(col = 0; col < COLS; col++){
             free(action_clone[row][col]);   
@@ -636,7 +607,7 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     
     do_actions(actions, resource_array, paras, Jacobian_mat, interact_table, 
                 land);
-    
+
     count_cell_yield(agent_array, land, land_x, land_y, agent_number, 1, 2, 15);
     
     /* This code switches from C back to R */

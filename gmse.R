@@ -255,7 +255,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                -1,      # 75. Manager's projected change if resource killed
                -0.5,    # 76. Manager's projected change if resource castrated
                1,       # 77. Manager's projected change if resource growth +
-               1        # 78. Manager's projected change if resource offspring +
+               1,       # 78. Manager's projected change if resource offspring +
+               0.5      # 79. User's improvement of land (proportion)
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
@@ -792,7 +793,7 @@ sim <- gmse( observe_type  = 0,
              hunt          = FALSE,
              res_movement  = 10,
              start_hunting = 95,
-             lambda        = 0.32,
+             lambda        = 0.30,
              fixed_observe = 10,
              times_observe = 20,
              land_dim_1    = 100,

@@ -321,14 +321,16 @@ void res_to_counts(double ***population, int **interact_table, int int_num,
  * ========================================================================== */
 void land_to_counts(double ***population, int **interact_table, int int_num,
                     double *utilities, int row, int agent, double **jaco,
-                    double *count_change){
+                    double *count_change, double *paras){
     
     int i, act_type, interest_row;
-    double foc_effect;
+    double foc_effect, feedin;
+    
+    feedin = paras[79];
     
     foc_effect   = 0.0;
-    foc_effect  -= population[row][9][agent];  /* Kill the crop */
-    foc_effect  += population[row][10][agent]; /* Feed the crop */
+    foc_effect  -= population[row][9][agent];             /* Kill the crop */
+    foc_effect  += (population[row][10][agent] * feedin); /* Feed the crop */
     interest_row = 0;
     while(interest_row < int_num){ /* THIS LOOP IS THE PROBLEM */
         if(interact_table[interest_row][0] == 1){
@@ -357,7 +359,7 @@ void land_to_counts(double ***population, int **interact_table, int int_num,
  * ========================================================================== */
 void strategy_fitness(double *fitnesses, double ***population, int pop_size, 
                       int ROWS, double **agent_array, double **jaco,
-                      int **interact_table, int interest_num){
+                      int **interact_table, int interest_num, double *paras){
     
     int agent, i, row, act_type;
     double *count_change, *utilities;
@@ -379,7 +381,8 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
                     break;
                 case -1:
                     land_to_counts(population, interact_table, interest_num,
-                                   utilities, row, agent, jaco, count_change);
+                                   utilities, row, agent, jaco, count_change, 
+                                   paras);
                     break;
                 default:
                     break;
@@ -752,7 +755,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
                             COST, ACTION, ACT_cols, ACT_depth, paras);
         }else{
             strategy_fitness(fitnesses, POPULATION, popsize, xdim, AGENT, 
-                             JACOBIAN, interact_table, jaco_dim);
+                             JACOBIAN, interact_table, jaco_dim, paras);
         }
   
         tournament(fitnesses, winners, popsize, sampleK, chooseK);
