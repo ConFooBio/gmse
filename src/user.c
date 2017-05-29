@@ -5,13 +5,10 @@
  * but  only if the agent does in fact own some land
  * Inputs include:
  *     agent_array: The array of agents
- *     landscape: The landscape array
- *     xdim: The length of the x dimension of the landscape
- *     ydim: The length of the y dimension of the landscape
- *     agent_number: The total number of agents in the agent array
- *     layer: The layer on which ownership is defined (should be 2)
+ *     land: The landscape array
+ *     paras: Vector of global parameters used in the model
  * ========================================================================== */
-void send_agents_home(double **agent_array, double ***landscape, double *paras){
+void send_agents_home(double **agent_array, double ***land, double *paras){
 
     int land_x, land_y, agent_number, ownership, agent, owned, landowner;
     int agent_xloc, agent_yloc, agent_ID, xval, yval, land_num;
@@ -26,7 +23,7 @@ void send_agents_home(double **agent_array, double ***landscape, double *paras){
         owned     = 0;
         for(xval = 0; xval < land_x; xval++){
             for(yval = 0; yval < land_y; yval++){
-                land_num = (int) landscape[xval][yval][ownership];
+                land_num = (int) land[xval][yval][ownership];
                 if(land_num == agent_ID){
                     owned++;   
                 }
@@ -41,7 +38,7 @@ void send_agents_home(double **agent_array, double ***landscape, double *paras){
             if(agent_yloc < 0 || agent_yloc >= land_y){
                 agent_yloc = 0;
             }
-            landowner  = (int) landscape[agent_xloc][agent_yloc][ownership];
+            landowner  = (int) land[agent_xloc][agent_yloc][ownership];
             while(agent_ID != landowner){
                 do{
                     agent_xloc = (int) floor( runif(0, land_x) );
@@ -49,7 +46,7 @@ void send_agents_home(double **agent_array, double ***landscape, double *paras){
                 do{
                     agent_yloc = (int) floor( runif(0, land_y) );
                 }while(agent_yloc == land_y);
-                landowner = (int) landscape[agent_xloc][agent_yloc][ownership];
+                landowner = (int) land[agent_xloc][agent_yloc][ownership];
             }
             agent_array[agent][4] = (double) agent_xloc;
             agent_array[agent][5] = (double) agent_yloc;
@@ -62,26 +59,26 @@ void send_agents_home(double **agent_array, double ***landscape, double *paras){
  * Inputs include:
  *     agent_array: The array of agents
  *     land: The landscape array
- *     xdim: The length of the x dimension of the landscape
- *     ydim: The length of the y dimension of the landscape
- *     agent_number: The total number of agents in the agent array
- *     yield_layer: The layer on which cell yield is defined (should be 1)
- *     own_layer: The layer on which cell ownership is defined (should be 2)
- *     yield_column: The colum of agent_array used for putting the yield
+ *     paras: Vector of global parameters used in the model
  * ========================================================================== */
-void count_cell_yield(double **agent_array, double ***land, int xdim, int ydim, 
-                      int agent_number, int yield_layer,
-                      int own_layer, int yield_column){
-    int xpos, ypos;
-    int agent;
-    int agent_ID;
+void count_cell_yield(double **agent_array, double ***land, double *paras){
+
+    int land_x, land_y, agent_number, yield_layer, own_layer, yield_column;
+    int xpos, ypos, agent, agent_ID;
     double agent_yield;
+    
+    land_x       = (int) paras[12];
+    land_y       = (int) paras[13];
+    agent_number = (int) paras[54];
+    yield_layer  = (int) paras[80];
+    own_layer    = (int) paras[81];
+    yield_column = (int) paras[82];
     
     for(agent = 0; agent < agent_number; agent++){
         agent_ID    = agent_array[agent][0];
         agent_yield = 0.0; 
-        for(xpos = 0; xpos < xdim; xpos++){
-            for(ypos = 0; ypos < ydim; ypos++){
+        for(xpos = 0; xpos < land_x; xpos++){
+            for(ypos = 0; ypos < land_y; ypos++){
                 if(land[xpos][ypos][own_layer] == agent_ID){
                     agent_yield += land[xpos][ypos][yield_layer];    
                 }
@@ -288,8 +285,8 @@ void act_on_resource(double **resource_array, double ***action, double *paras,
 
 
 /* ========================================================================== */
-void do_actions(double ***action_array, double **resource_array, double *paras,
-                 double **jaco, int **lookup, double ***land){
+void do_acts(double ***action_array, double **resource_array, double *paras,
+             double **jaco, int **lookup, double ***land){
     
     int layers, ROWS, COLS, resource_number, start_col;
     int lookup_rows, total_actions, rand_row, rand_col, rand_layer;
@@ -604,10 +601,9 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
            land_z, trait_number, jacobian_dim, agent, 0, a_x, a_y, a_z);
     }
     
-    do_actions(actions, resource_array, paras, Jacobian_mat, interact_table, 
-                land);
+    do_acts(actions, resource_array, paras, Jacobian_mat, interact_table, land);
 
-    count_cell_yield(agent_array, land, land_x, land_y, agent_number, 1, 2, 15);
+    count_cell_yield(agent_array, land, paras);
     
     /* This code switches from C back to R */
     /* ====================================================================== */        

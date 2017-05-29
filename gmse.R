@@ -253,7 +253,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                1,       # 78. Manager's projected change if resource offspring +
                0.00,    # 79. User's improvement of land (proportion)
                1,       # 80. Landscape layer on which crop yield is located
-               2        # 81. Landscape layer on which ownership is defined
+               2,       # 81. Landscape layer on which ownership is defined
+               15       # 82. Column in agent array where cell yield recorded
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
