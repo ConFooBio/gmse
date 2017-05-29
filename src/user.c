@@ -86,7 +86,6 @@ void count_cell_yield(double **agent_array, double ***land, double *paras){
         }
         agent_array[agent][yield_column] = agent_yield; 
     }
-    
 }
 
 /* =============================================================================

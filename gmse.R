@@ -257,7 +257,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                15,      # 82. Column in agent array where cell yield recorded
                0,       # 83. Temporary element to hold action array row
                0,       # 84. Temporary element to hold action array col
-               0        # 85. Temporary element to hold action array layer
+               0,       # 85. Temporary element to hold action array layer
+               0,       # 86. Effect of landscape cell on resource growth rate
+               0        # 87. Effect of landscape cell on resource death rate
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;

@@ -53,7 +53,7 @@ void res_add(double **res_adding, double *paras){
                 res_adding[resource][realised] = 0;
                 castrated = res_adding[resource][cadj];
                 killed    = res_adding[resource][klld];
-                if(castrated == 1 || killed == 1){
+                if(castrated >= 1 || killed >= 1){
                     rand_pois = 0;
                 }else{
                     base_lambda = res_adding[resource][add];
@@ -211,31 +211,32 @@ void res_landscape_interaction(double **resource_array, double ***landscape,
                                double *paras, int resource_number){
                               
     int resource_type_col, resource_type, resource_col, resource_effect;
-    int landscape_layer, resource, x_col, y_col, x_pos, y_pos;
-    double c_rate, current_val;
-    /* double esize; */
+    int landscape_layer, resource, x_col, y_col, x_pos, y_pos, gadj, klld;
+    double c_rate, current_val, esize_grow, esize_death, land_grow, land_die;
     
     x_col             = (int) paras[33];
     y_col             = (int) paras[34];
+    gadj              = (int) paras[39]; /* Adjustment to the growth rate col */
+    klld              = (int) paras[42]; /* Adjustment to kill                */
     resource_type_col = (int) paras[44];
     resource_type     = (int) paras[45];
     resource_col      = (int) paras[46];
     resource_effect   = (int) paras[47];
     landscape_layer   = (int) paras[48];
+    esize_grow        = paras[86];
+    esize_death       = paras[87];
     
     for(resource = 0; resource < resource_number; resource++){
         if(resource_array[resource][resource_type_col] == resource_type){
             x_pos  = resource_array[resource][x_col];
             y_pos  = resource_array[resource][y_col];
             c_rate = resource_array[resource][resource_effect];
-        
             landscape[x_pos][y_pos][landscape_layer] *= (1 - c_rate);
-            /* TODO: FIX THIS
-            current_val = resource_array[resource][resource_col];
-            esize       = resource_array[resource][resource_effect];
-            resource_array[resource][resource_col] += (1 - current_val) * esize;
-            */
-        }                
+            land_grow = (c_rate * esize_grow)  * resource_array[resource][9];
+            land_die  = (c_rate * esize_death) * resource_array[resource][10];
+            resource_array[resource][gadj] += land_grow;
+            resource_array[resource][klld] += land_die;
+        } 
     }
 }
 
