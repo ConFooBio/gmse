@@ -118,15 +118,10 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     interaction_tabl <- make_interaction_table(starting_resources, LANDSCAPE_r);
     
     COST   <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
-    COST[COST < 1] <- 1; # Need this until a proper make_cost function is made
-    COST[,1:7,]      <- 10000;
-    COST[,11:12,2:5] <- 10000;
-    COST[,8:13,]     <- 1;
-    COST[2,8:13,]    <- 10000;
-    COST[,8:13,1]    <- 10000;
-    COST[3:7,8:13,2:5] <- 10000;
-    COST[3,8:13,1]   <- 1;
-    COST[COST < 1]   <- 1;
+    COST[,,]  <- 10000; # Need until a proper make_cost function is made
+    COST[1,8:13,2:5]  <- 1;
+    COST[2,10:11,2:5] <- 1;
+    COST[3,8:13,1]    <- 1;
     ACTION <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
     ACTION[1:2,5:7,] <- 1;
     ACTION[3,5:7,1]  <- 0;
@@ -256,7 +251,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                -0.5,    # 76. Manager's projected change if resource castrated
                1,       # 77. Manager's projected change if resource growth +
                1,       # 78. Manager's projected change if resource offspring +
-               0.5      # 79. User's improvement of land (proportion)
+               0.00     # 79. User's improvement of land (proportion)
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
@@ -715,7 +710,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
         points(x=gens, y=res_costs[,4], type="l", col="deepskyblue1", lwd=2);
         points(x=gens, y=res_costs[,5], type="l", col="deepskyblue2", lwd=2);
         # ------------- Panel 6 (lower right)
-        res_acts <- matrix(data = 0, nrow = i, ncol = 5);
+        res_acts <- matrix(data = 0, nrow = i, ncol = 7);
         for(j in 1:i){
             for(k in 2:dim(ACTION[[j]])[3]){
                 res_acts[j,1] <- res_acts[j,1] + ACTION[[j]][1,8,k];
@@ -723,6 +718,8 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
                 res_acts[j,3] <- res_acts[j,3] + ACTION[[j]][1,10,k];
                 res_acts[j,4] <- res_acts[j,4] + ACTION[[j]][1,11,k];
                 res_acts[j,5] <- res_acts[j,5] + ACTION[[j]][1,12,k];
+                res_acts[j,6] <- res_acts[j,6] + ACTION[[j]][2,10,k];
+                res_acts[j,7] <- res_acts[j,7] + ACTION[[j]][2,11,k];
             }
         }
         par(mar=c(4,6,1,1));
@@ -734,6 +731,10 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
         points(x=gens, y=res_acts[,3], type="l", col="indianred3", lwd=2);
         points(x=gens, y=res_acts[,4], type="l", col="deepskyblue1", lwd=2);
         points(x=gens, y=res_acts[,5], type="l", col="deepskyblue2", lwd=2);
+        points(x=gens, y=res_acts[,6], type="l", lty= "dotted", col="purple", 
+               lwd=3);
+        points(x=gens, y=res_acts[,7], type="l", lty= "dotted", col="orange", 
+               lwd=3);
         # -------------
         Sys.sleep(0.1);
     }
