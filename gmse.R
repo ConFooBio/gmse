@@ -251,7 +251,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                -0.5,    # 76. Manager's projected change if resource castrated
                1,       # 77. Manager's projected change if resource growth +
                1,       # 78. Manager's projected change if resource offspring +
-               0.00     # 79. User's improvement of land (proportion)
+               0.00,    # 79. User's improvement of land (proportion)
+               1,       # 80. Landscape layer on which crop yield is located
+               2        # 81. Landscape layer on which ownership is defined
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
