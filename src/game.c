@@ -679,31 +679,41 @@ void place_winners(double ****population, int *winners, double *paras){
 }
 
 
-/* 
- * This function will eventually call all of the other functions used in the
- * genetic algorithm. For now, it is being used just to call the other functions
- * and therefore test out whether or not they work.
- */
+/* =============================================================================
+ * This function calls all of the sub-functions used in the genetic algorithm;
+ * it returns a new agent with updated actions based on its goals (utility)
+ *  Inputs include:
+ *      ACTION:    An array of the action of agents
+ *      COST:      An array of the cost of actions for each agent
+ *      AGENT:     An array of *row agents and *col traits for each agent
+ *      RESOURCES: An array of *row resources & *col traits for each resource
+ *      LANDSCAPE: An array of *row by *col size that makes up the landscape
+ *      JACOBIAN:  A Jacobian matrix of resource type and landscape effects
+ *      lookup:    A table indexing types with rows of interaction array
+ *      paras:     Parameters read into the function for population processes
+ *      agent:     The row of the agent undergoing a genetic algorithm
+ *      managing:  Whether or not the agent is managing a population
+ * ========================================================================== */
 void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
-        double ***LANDSCAPE, double **JACOBIAN, int **interact_table, 
-        double *paras, int xdim, int ydim, int res_number, int land_x, 
-        int land_y, int land_z, int trait_number, int jaco_dim, int agent,
-        int managing, int ACT_rows, int ACT_cols, int ACT_depth){
+        double ***LANDSCAPE, double **JACOBIAN, int **lookup, double *paras, 
+        int agent, int managing){
     
-    int row, col, gen, layer, most_fit;
-    int sampleK, chooseK;
-    int popsize, agent_seed;
-    int agentID;
-    int generations;
-    int *winners;
-    double budget;
-    double mutation_rate, crossover_rate;
-    double ***POPULATION;
-    double ***NEW_POP;
-    double *fitnesses;
+    int row, col, gen, layer, most_fit, land_x, land_y, land_z, popsize;
+    int generations, res_number, trait_number, jaco_dim, xdim, ydim, agentID;
+    int sampleK, chooseK, agent_seed, *winners;
+    double budget, mutation_rate, crossover_rate;
+    double ***POPULATION, ***NEW_POP, *fitnesses;
 
+    land_x         = (int) paras[12];
+    land_y         = (int) paras[13];
     popsize        = (int) paras[21];
     generations    = (int) paras[22];
+    res_number     = (int) paras[32];
+    land_z         = (int) paras[36];
+    trait_number   = (int) paras[41];
+    jaco_dim       = (int) paras[60];
+    xdim           = (int) paras[68];
+    ydim           = (int) paras[69];
     budget         = (double) AGENT[agent][16];
     agentID        = AGENT[agent][0];
 
@@ -742,11 +752,11 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         constrain_costs(POPULATION, COST, paras, agent, budget, agentID);
  
         if(managing == 1){
-            manager_fitness(fitnesses, POPULATION, JACOBIAN, AGENT,
-                            interact_table, agentID, COST, ACTION, paras);
+            manager_fitness(fitnesses, POPULATION, JACOBIAN, AGENT, lookup, 
+                            agentID, COST, ACTION, paras);
         }else{
             strategy_fitness(AGENT, POPULATION, paras, fitnesses, JACOBIAN, 
-                             interact_table);
+                             lookup);
         }
   
         tournament(fitnesses, winners, paras);
@@ -754,7 +764,6 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         place_winners(&POPULATION, winners, paras);
 
         gen++;
-    
     }
     
     most_fit = 0;

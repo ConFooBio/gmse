@@ -440,7 +440,7 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     int *dim_ACTION;         /* Dimensions of the ACTION array incoming */
     int *dim_JACOBIAN;       /* Dimensions of the JACOBIAN matrix incoming */
     int *dim_INTERACT;       /* Dimensions of the INTERACT matrix incoming */
-    int **interact_table;    /* Lookup table for resource & land interactions */
+    int **lookup;            /* Lookup table for resource & land interactions */
     double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
     double *paras;           /* Pointer to PARAMETER (interface R and C) */
@@ -621,14 +621,14 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     /* Code below remakes the INTERACT table for easier use */
     int_d0  = dim_INTERACT[0];
     int_d1  = dim_INTERACT[1];
-    interact_table  = malloc(int_d0 * sizeof(int *));
+    lookup  = malloc(int_d0 * sizeof(int *));
     for(row = 0; row < int_d0; row++){
-        interact_table[row] = malloc(int_d1 * sizeof(int));
+        lookup[row] = malloc(int_d1 * sizeof(int));
     }
     vec_pos = 0;
     for(col = 0; col < int_d1; col++){
         for(row = 0; row < int_d0; row++){
-            interact_table[row][col] = intr_ptr[vec_pos];
+            lookup[row][col] = intr_ptr[vec_pos];
             vec_pos++;
         }
     }
@@ -638,10 +638,9 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     
     send_agents_home(agent_array, land, paras);
     
-    for(agent = 1; agent < agent_number; agent++){  
-        ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
-           interact_table, paras, c_x, c_y, res_number, land_x, land_y, 
-           land_z, trait_number, jacobian_dim, agent, 0, a_x, a_y, a_z);
+    for(agent = 1; agent < agent_number; agent++){ 
+        ga(actions, costs, agent_array, resource_array, land, Jacobian_mat,
+           lookup, paras, agent, 0);
     }
     
     do_acts(actions, resource_array, paras, land);
@@ -740,9 +739,9 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
 
     /* Free all of the allocated memory used in the interaction table */
     for(row = 0; row < int_d0; row++){
-        free(interact_table[row]);
+        free(lookup[row]);
     }
-    free(interact_table);    
+    free(lookup);    
     /* Free all of the allocated memory used in the Jacobian matrix */
     for(row = 0; row < jacobian_dim; row++){
         free(Jacobian_mat[row]);

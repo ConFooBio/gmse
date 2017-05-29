@@ -31,6 +31,4 @@ void place_winners(double ****population, int *winners, int pop_size, int ROWS,
 
 void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double **JACOBIAN, int **interact_table, 
-        double *paras, int xdim, int ydim, int res_number, int land_x, 
-        int land_y, int land_z, int trait_number, int jaco_dim, int agent,
-        int managing, int ACT_rows, int ACT_cols, int ACT_depth);
+        double *paras, int agent, int managing);
