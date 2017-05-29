@@ -1,21 +1,12 @@
 #include "resource.h"
 
 /* =============================================================================
- * This file is a work in progress, which will have all of the necessary
- * functions for running the genetic algorithm. Separate functions will 
- * call the genetic algorithm from R and C (C is default in G-MSE), and this
- * file will link with the user.c file to run a genetic algorithm for each
- * unique individual agent.
- * ========================================================================== */
-
-/* =============================================================================
  * This function will find the minimum cost of an action in the COST array
  * for a particular agent (layer). Inputs include:
  *     COST: A full 3D COST array
+ *     paras: Vector of global parameters
  *     layer: The layer on which the minimum is going to be found
  *     budget: The total budget that the agent has to work with (initliases)
- *     rows: The total number of rows in the COST array
- *     cols: The total number of cols in the COST array
  * ========================================================================== */
 double min_cost(double ***COST, double *paras, int layer, double budget){
     
@@ -39,7 +30,7 @@ double min_cost(double ***COST, double *paras, int layer, double budget){
 /* =============================================================================
  * This function will initialise a population from the ACTION and COST arrays, a
  * particular focal agent, and specification of how many times an agent should
- * be exactly replicated versus how many times random values shoudl be used.
+ * be exactly replicated versus how many times random values should be used.
  * Necessary variable inputs include:
  *     ACTION: A 3D array of action values
  *     COST: A 3D array of costs of performing actions
@@ -110,9 +101,9 @@ void initialise_pop(double ***ACTION, double ***COST, double *paras, int layer,
 }
 
 /* =============================================================================
- * This function will use the initialised population from intialise_pop to make
+ * This function uses the initialised population from intialise_pop to make
  * the population array undergo crossing over and random locations for 
- * individuals in the population. Note that we'll later keep things in budget
+ * individuals in the population. Note that we later keep things in budget
  * Necessary variable inputs include:
  *     population: array of the population that is made (malloc needed earlier)
  *     paras: Vector of global parameters
@@ -160,10 +151,7 @@ void crossover(double ***population, double *paras, int agentID){
  * the population array undergo mutations at random elements in their array
  * Necessary variable inputs include:
  *     population: array of the population that is made (malloc needed earlier)
- *     pop_size: The size of the total population (layers to population)
- *     ROWS: Number of rows in the COST and ACTION arrays
- *     COLS: Number of columns in the COST and ACTION arrays
- *     pr: Probability of a mutation occurring at an element.
+ *     paras: Vector of global parameters
  *     agentID: The ID of the agent
  * ========================================================================== */
 void mutation(double ***population, double *paras, int agentID){
@@ -205,13 +193,15 @@ void mutation(double ***population, double *paras, int agentID){
 }
 
 /* =============================================================================
- * This function will ensure that the actions of individuals in the population
+ * This function ensures that the actions of individuals in the population
  * are within the cost budget after crossover and mutation has taken place
  * Necessary variable inputs include:
  *     population: array of the population that is made (malloc needed earlier)
  *     COST: A 3D array of costs of performing actions
+ *     paras: Vector of global parameters
  *     layer: The 'z' layer of the COST and ACTION arrays to be initialised
  *     budget: The budget that random agents have to work with
+ *     agentID: The ID of the agent
  * ========================================================================== */
 void constrain_costs(double ***population, double ***COST, double *paras, 
                      int layer, double budget, int agentID){
@@ -269,7 +259,7 @@ void constrain_costs(double ***population, double ***COST, double *paras,
  * resources
  *     population: The population array of agents in the genetic algorithm
  *     interact_table: The lookup table for figuring out how resources interact
- *     int_num: The number of rows and cols in jac, and rows in the lookup
+ *     paras: Vector of global parameters
  *     count_change: A vector of how counts have changed as a result of actions
  *     utilities: A vector of the utilities of each resource/landscape level
  *     jaco: The interaction table itself (i.e., Jacobian matrix)
@@ -314,10 +304,12 @@ void res_to_counts(double ***population, int **interact_table, double *paras,
  * a landscape
  *     population: The population array of agents in the genetic algorithm
  *     interact_table: The lookup table for figuring out how resources interact
- *     int_num: The number of rows and cols in jac, and rows in the lookup
+ *     paras: Vector of global parameters
  *     utilities: A vector of the utilities of each resource/landscape level
  *     row: The row of the interaction and lookup table being examined
  *     agent: The agent in the population whose fitness is being assessed
+ *     jaco: The interaction table itself (i.e., Jacobian matrix)
+ *     count_change: A vector of how counts have changed as a result of actions
  * ========================================================================== */
 void land_to_counts(double ***population, int **interact_table, double *paras,
                     double *utilities, int row, int agent, double **jaco,
@@ -347,16 +339,13 @@ void land_to_counts(double ***population, int **interact_table, double *paras,
 }
 
 /* =============================================================================
- * This is a preliminary function that checks the fitness of each agent by 
- * passing through a loop to payoffs_to_fitness
- *     fitnesses: Array to order fitnesses of the agents in the population
+ * This function checks the fitness of each agent
+ *     agent_array: The array of agents
  *     population: array of the population that is made (malloc needed earlier)
- *     pop_size: The size of the total population (layers to population)
- *     ROWS: Number of rows in the COST and ACTION arrays
- *     agent_array: The agent array
+ *     paras: Vector of global parameters
+ *     fitnesses: Array to order fitnesses of the agents in the population
  *     jaco: The jacobian matrix of resource and landscape interactions
  *     interact_table: Lookup table for figuring out rows of jaco and types
- *     interest_num: The number of rows and cols in jac, and rows in lookup
  * ========================================================================== */
 void strategy_fitness(double **agent_array, double ***population, double *paras,
                       double *fitnesses, double **jaco, int **interact_table){
@@ -475,16 +464,16 @@ void policy_to_counts(double ***population, double **merged_acts, int agent,
 }
 
 /* =============================================================================
- * This is a preliminary function that checks the fitness of each agent by 
- * passing through a loop to payoffs_to_fitness
+ * This is a preliminary function that checks the fitness of a manager
  *     fitnesses: Array to order fitnesses of the agents in the population
  *     population: array of the population that is made (malloc needed earlier)
- *     pop_size: The size of the total population (layers to population)
- *     ROWS: Number of rows in the COST and ACTION arrays
- *     agent_array: The agent array
  *     jaco: The jacobian matrix of resource and landscape interactions
+ *     agent_array: The agent array
  *     interact_table: Lookup table for figuring out rows of jaco and types
- *     interest_num: The number of rows and cols in jac, and rows in lookup
+ *     agentID: The ID of the agent
+ *     COST: A 3D array of costs of performing actions
+ *     ACTION: A 3D array of action values
+ *     paras: Vector of global parameters
  * ========================================================================== */
 void manager_fitness(double *fitnesses, double ***population, double **jaco,
                      double **agent_array, int **interact_table, int agentID, 
@@ -591,8 +580,6 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
     free(count_change);
 }
 
-
-
 /* =============================================================================
  * This function takes an array of fitnesses and returns an equal size array of
  * indices, the values of which will define which new individuals will make it
@@ -651,10 +638,7 @@ void tournament(double *fitnesses, int *winners, double *paras){
  * in a new population array. 
  *     population: array of the population
  *     winners: Array of the winners of the tournament
- *     pop_size: The size of the total population (layers to population)
- *     new_pop: Array of the new population to be made
- *     ROWS: Number of rows in the COST and ACTION arrays
- *     COLS: Number of columns in the COST and ACTION arrays
+ *     paras: Vector of global parameters
  * ========================================================================== */
 void place_winners(double ****population, int *winners, double *paras){
 
