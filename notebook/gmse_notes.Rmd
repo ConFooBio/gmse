@@ -82,6 +82,20 @@ library(rhandsontable)
 
 I have added the function `act_on_landscape` in `user.c` so that users can perform actions on the landscape. The only two actions that the users can do, at the moment are `killem` and `feedem` which effectively kill the crop yield and increase it, respectively. All other action columns do nothing. I've also added a new element to `paras` that modifies how much a user can increase crop yield (previously, I was allowing users to double crop production on a cell only). Testing confirmst that when users value crop yield and can greatly increase it by `feedem`, they will find this option and do so to increase crop yield.
 
+**Resolution of [Issue #21](https://github.com/bradduthie/gmse/issues/22): `paras` now used everywhere**
+
+I have now cleaned the code so that `paras` is effectively used across all G-MSE functions. This effectively resolves [Issue #21](https://github.com/bradduthie/gmse/issues/22) and makes the code more readable. Likewise, I have also cleaned up the functions in a few places and introduced `get_rand_int` for easier sampling.
+
+**Next steps: Making it easier for users**
+
+The next steps as outlined on [Friday](#u-26-MAY-2017) are to do the following:
+
+- Make it easier to change parameter input options so that others can try this out.
+- Put the whole G-MSE bundle in an Rpackage.
+- Document all of the code that has yet to be documented properly.
+
+I don't think that this will be too time-consuming because there is likely to be very little trouble-shooting and debugging for the above. Once all of this is done though, I will want to add the browser interface for G-MSE. This will be challinging, but the recently developed [elementR](https://github.com/charlottesirot/elementR) package can provide some inspiration for working with shiny in a package that requires a lot of options to be set.
+
 > <a name="u-26-MAY-2017">Update: 26 MAY 2017</a>
 
 **Rewritten `do_actions` successful**
