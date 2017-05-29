@@ -89,7 +89,13 @@ void count_cell_yield(double **agent_array, double ***land, double *paras){
     
 }
 
-/* ========================================================================== */
+/* =============================================================================
+ *  This function clones action arrays so actions can be decremented temporarily
+ *  Inputs include:
+ *      action_array: The array of actions to be cloned
+ *      clone: The array of same dimensions to put action_array values in
+ *      paras: Vector of global parameters used in the model
+ * ========================================================================== */
 void clone_action_array(double ***action_array, double ***clone, double *paras){
     
     int layers, ROWS, COLS, layer, row, col, total_actions, start_count;
@@ -113,9 +119,14 @@ void clone_action_array(double ***action_array, double ***clone, double *paras){
     }
     paras[72] = (double) total_actions;
 }
-/* ========================================================================== */
 
-/*=========================================================================== */
+/* =============================================================================
+ *  This function checks to see if an agent owns any land
+ *  Inputs include:
+ *      land: The landscape a
+ *      paras: Vector of global parameters used in the model
+ *      agentID: The ID number of the agent being checked
+ * ========================================================================== */
 int check_owns_land(double ***land, double *paras, int agentID){
     
     int xpos, ypos, land_x, land_y;
@@ -133,18 +144,26 @@ int check_owns_land(double ***land, double *paras, int agentID){
     return 0;
 }
 
-
-/*=========================================================================== */
-void act_on_landscape(double ***land, double *paras, double ***action_array,
-                      int action_row, int action_col, int agent){
+/* =============================================================================
+ *  This function causes an agent to perform actions on a landscape
+ *  Inputs include:
+ *      land: The landscape array
+ *      paras: Vector of global parameters used in the model
+ *      action_array: An array of the action of agents
+ * ========================================================================== */
+void act_on_landscape(double ***land, double *paras, double ***action_array){
     
     int land_x, land_y, xpos, ypos, need_to_own, does_own_land, agentID;
+    int action_row, action_col, agent;
     double feedin;
     
-    land_x = (int) paras[12];
-    land_y = (int) paras[13];
-    feedin = paras[79];
-    
+    land_x     = (int) paras[12];
+    land_y     = (int) paras[13];
+    feedin     = paras[79];
+    action_row = (int) paras[83];
+    action_col = (int) paras[84];
+    agent      = (int) paras[85];
+
     agentID = agent + 1;
     
     does_own_land = check_owns_land(land, paras, agentID);
@@ -174,13 +193,20 @@ void act_on_landscape(double ***land, double *paras, double ***action_array,
     }
 }
 
-/* ========================================================================== */
-int find_a_resource(double **resource_array, double ***land, double ***action, 
-                    double *paras, int action_row, int rand_col, int agent){
+/* =============================================================================
+ *  This function causes an agent to perform actions on a landscape
+ *  Inputs include:
+ *      resource_array: The array of resources in the model
+ *      land: The landscape array
+ *      paras: Vector of global parameters used in the model
+ *      action_array: An array of the action of agents
+ * ========================================================================== */
+int find_a_resource(double **resource_array, double ***land, double *paras,
+                    double ***action_array){
 
     int the_resource, res_t1, res_t2, res_t3, type1, type2, type3, u_loc;
     int resource_number, xloc, yloc, res_x, res_y, resource;
-    int agentID, available, *can_act;
+    int agentID, available, action_row, action_col, agent, *can_act;
 
     resource_number = (int) paras[32];
     res_x           = (int) paras[33];
@@ -188,11 +214,14 @@ int find_a_resource(double **resource_array, double ***land, double ***action,
     res_t1          = (int) paras[56];
     res_t2          = (int) paras[57];
     res_t3          = (int) paras[58];
+    action_row      = (int) paras[83];
+    action_col      = (int) paras[84];
+    agent           = (int) paras[85];
     
-    type1 = (int) action[action_row][res_t1][agent];
-    type2 = (int) action[action_row][res_t2][agent];
-    type3 = (int) action[action_row][res_t3][agent];
-    u_loc = (int) action[action_row][5][agent];
+    type1 = (int) action_array[action_row][res_t1][agent];
+    type2 = (int) action_array[action_row][res_t2][agent];
+    type3 = (int) action_array[action_row][res_t3][agent];
+    u_loc = (int) action_array[action_row][5][agent];
     
     can_act = malloc(resource_number * sizeof(int));
     
@@ -218,7 +247,7 @@ int find_a_resource(double **resource_array, double ***land, double ***action,
         if(land[xloc][yloc][2] != agentID){
             can_act[resource] = 0;
         }
-        if(resource_array[resource][16] == 1 && rand_col != 9){ 
+        if(resource_array[resource][16] == 1 && action_col != 9){ 
             can_act[resource] = 0;
         }
         if(resource_array[resource][17] == 1){
@@ -240,22 +269,30 @@ int find_a_resource(double **resource_array, double ***land, double ***action,
     return the_resource;
 }
 
-/* ========================================================================== */
-
-void act_on_resource(double **resource_array, double ***action, double *paras,
-                     double ***land, int action_row, int action_col, int agent){
+/* =============================================================================
+ *  This function causes an agent to perform actions on resources
+ *  Inputs include:
+ *      resource_array: The array of resources in the model
+ *      paras: Vector of global parameters used in the model
+ *      land: The landscape array
+ *      action_array: An array of the action of agents
+ * ========================================================================== */
+void act_on_resource(double **resource_array, double *paras, double ***land,
+                     double ***action_array){
     
-    int samp, xloc, yloc, land_x, land_y;
+    int samp, xloc, yloc, land_x, land_y, action_row, action_col, agent;
     
-    samp = find_a_resource(resource_array, land, action, paras, action_row, 
-                           action_col, agent);
+    samp = find_a_resource(resource_array, land, paras, action_array);
     
     if(samp < 0){
         return;
     }
     
-    land_x = (int) paras[12];
-    land_y = (int) paras[13];
+    land_x     = (int) paras[12];
+    land_y     = (int) paras[13];
+    action_row = (int) paras[83];
+    action_col = (int) paras[84];
+    agent      = (int) paras[85];
 
     switch(action_col){
         case 7: /* Move resource */
@@ -281,12 +318,17 @@ void act_on_resource(double **resource_array, double ***action, double *paras,
             break;
     }
 }
-/* ========================================================================== */
 
-
-/* ========================================================================== */
+/* =============================================================================
+ *  This function causes an agent to perform actions on resources
+ *  Inputs include:
+ *      action_array: An array of the action of agents
+ *      resource_array: The array of resources in the model
+ *      paras: Vector of global parameters used in the model
+ *      land: The landscape array
+ * ========================================================================== */
 void do_acts(double ***action_array, double **resource_array, double *paras,
-             double **jaco, int **lookup, double ***land){
+             double ***land){
     
     int layers, ROWS, COLS, resource_number, start_col;
     int lookup_rows, total_actions, rand_row, rand_col, rand_layer;
@@ -321,15 +363,17 @@ void do_acts(double ***action_array, double **resource_array, double *paras,
     
         act_type = (int) action_clone[rand_row][0][rand_layer];
         action_clone[rand_row][rand_col][rand_layer]--;
+    
+        paras[83] = (double) rand_row;
+        paras[84] = (double) rand_col;
+        paras[85] = (double) rand_layer;
         
         switch(act_type){
             case -2:
-                act_on_resource(resource_array, action_clone, paras, land, 
-                                rand_row, rand_col, rand_layer);
+                act_on_resource(resource_array, paras, land, action_clone);
                 break;
             case -1:
-                act_on_landscape(land,paras, action_clone, rand_row, rand_col, 
-                                 rand_layer);
+                act_on_landscape(land, paras, action_clone);
             default:
                 break;
         }
@@ -601,7 +645,7 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
            land_z, trait_number, jacobian_dim, agent, 0, a_x, a_y, a_z);
     }
     
-    do_acts(actions, resource_array, paras, Jacobian_mat, interact_table, land);
+    do_acts(actions, resource_array, paras, land);
 
     count_cell_yield(agent_array, land, paras);
     

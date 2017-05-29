@@ -254,7 +254,10 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                0.00,    # 79. User's improvement of land (proportion)
                1,       # 80. Landscape layer on which crop yield is located
                2,       # 81. Landscape layer on which ownership is defined
-               15       # 82. Column in agent array where cell yield recorded
+               15,      # 82. Column in agent array where cell yield recorded
+               0,       # 83. Temporary element to hold action array row
+               0,       # 84. Temporary element to hold action array col
+               0        # 85. Temporary element to hold action array layer
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
