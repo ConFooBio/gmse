@@ -40,12 +40,8 @@ void send_agents_home(double **agent_array, double ***land, double *paras){
             }
             landowner  = (int) land[agent_xloc][agent_yloc][ownership];
             while(agent_ID != landowner){
-                do{
-                    agent_xloc = (int) floor( runif(0, land_x) );
-                }while(agent_xloc == land_x);
-                do{
-                    agent_yloc = (int) floor( runif(0, land_y) );
-                }while(agent_yloc == land_y);
+                agent_xloc = get_rand_int(0, land_x);
+                agent_yloc = get_rand_int(0, land_y);
                 landowner = (int) land[agent_xloc][agent_yloc][ownership];
             }
             agent_array[agent][4] = (double) agent_xloc;

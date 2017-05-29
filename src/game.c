@@ -87,12 +87,8 @@ void initialise_pop(double ***ACTION, double ***COST, double *paras, int layer,
         }
         while(budget_count > lowest_cost){
             do{
-                do{ /* This do assures xpos never equals ROWS (unlikely) */
-                    xpos = (int) floor( runif(0,ROWS) );
-                }while(xpos == ROWS);
-                do{
-                    ypos = (int) floor( runif(4,COLS) );
-                }while(ypos == COLS);
+                xpos = get_rand_int(0, ROWS);
+                ypos = get_rand_int(0, COLS);
             }while(COST[xpos][ypos][layer] > budget_count);
             population[xpos][ypos][agent]++;
             budget_count -= COST[xpos][ypos][layer]; 
@@ -233,18 +229,12 @@ void constrain_costs(double ***population, double ***COST, double *paras,
             }
         }
         while(tot_cost > budget){
-            do{ /* This do assures xpos never equals ROWS (unlikely) */
-                xpos = (int) floor( runif(0,ROWS) );
-            }while(xpos == ROWS);
+            xpos = get_rand_int(0, ROWS);
             col_check = population[xpos][0][agent];
             if(col_check > 0 && col_check != agentID){
-                do{
-                    ypos = (int) floor( runif(4,COLS) );
-                }while(ypos == COLS);
+                ypos = get_rand_int(4, COLS);
             }else{
-                do{
-                    ypos = (int) floor( runif(7,COLS) );
-                }while(ypos == COLS);               
+                ypos = get_rand_int(7, COLS);
             }
             if(population[xpos][ypos][agent] > 0){
                 population[xpos][ypos][agent]--;
