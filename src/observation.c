@@ -343,8 +343,7 @@ void mark_fixed(double **resource_array, double **agent_array, double *paras,
     int resource, fixn, count, sampled, type_num;  
     int resource_number, t1_col, t2_col, t3_col, tally_col, age_col;
     int agent_mark_col, res_marks_col, min_age;
-    double sampl;     /* Random uniform sampling of a resource */
-
+    
     fixn            = (int) paras[10]; /* Number of fixed samples */
     min_age         = (int) paras[16];
     age_col         = (int) paras[31];
@@ -377,11 +376,9 @@ void mark_fixed(double **resource_array, double **agent_array, double *paras,
             }
         }
         count = fixn;
-        sampl = 0;
         while(count > 0){
             do{ /* Find an un-tallied resource in the array */
-                 sampl   = runif(0, 1) * resource_number;
-                 sampled = (int) sampl;
+                 sampled = get_rand_int(0, resource_number);
               } while(resource_array[sampled][tally_col] == 1       || 
                       resource_array[sampled][t1_col]  != type1     ||
                       resource_array[sampled][t2_col]  != type2     ||

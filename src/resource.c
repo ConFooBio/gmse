@@ -1,7 +1,10 @@
 #include "utilities.h"
 
 /* =============================================================================
- * This function just adds a time step to the relevant individual column 
+ * This function just adds a time step to the relevant individual column
+ * Inputs include:
+ *     res_adding: data frame of individuals doing the adding (e.g., births)
+ *     paras: Global parameters needed
  * ========================================================================== */
 void add_time(double **res_adding, double *paras){
     
@@ -17,7 +20,6 @@ void add_time(double **res_adding, double *paras){
         res_adding[resource][age_trait]++;
     }
 }
-/* ===========================================================================*/
 
 /* =============================================================================
  * This function determines the number of new resources to be added, as
@@ -76,8 +78,7 @@ void res_add(double **res_adding, double *paras){
     if(K_add > 0){ /* If there is a carrying capacity applied to adding */
         loops = 1000000000;
         while(added > K_add){ 
-            rand_unif = runif(0, 1);
-            sampled   = floor(rand_unif * resource_number);
+            get_rand_int(0, resource_number);
             if(res_adding[sampled][realised] > 0){
                 res_adding[sampled][realised]--; /* Less memory used now */
                 added--;
@@ -90,13 +91,13 @@ void res_add(double **res_adding, double *paras){
         }
     }
 }
-/* ===========================================================================*/
 
 /* =============================================================================
  * This function adds in the new resource to their own array
  * Inputs include:
  *     make: The data frame being used to place old and new resources
  *     old: The old data frame that stores the old resources to be retained
+ *     paras: Global parameters needed
  *     res_added: The number of new resources to be added
  * ========================================================================== */
 void res_place(double **make, double **old, double *paras, int res_added){
@@ -206,6 +207,7 @@ void res_remove(double **res_removing, double *paras){
  *     resource_array: resource array of individuals to interact
  *     landscape: landscape array of cell values that affect individuals
  *     paras: Global parameters needed
+ *     resource_number: The number of resources in the resource_array
  * ========================================================================== */
 void res_landscape_interaction(double **resource_array, double ***landscape,
                                double *paras, int resource_number){
