@@ -312,8 +312,10 @@ void land_to_counts(double ***population, int **interact_table, double *paras,
     feedin  = paras[79];
     
     foc_effect   = 0.0;
-    foc_effect  -= population[row][9][agent];             /* Kill the crop */
     foc_effect  += (population[row][10][agent] * feedin); /* Feed the crop */
+    if(population[row][9][agent] == 1){                   /* Kill the crop */
+        foc_effect = -1;
+    }
     interest_row = 0;
     while(interest_row < int_num){ /* THIS LOOP IS THE PROBLEM */
         if(interact_table[interest_row][0] == 1){
@@ -506,11 +508,11 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
     sum_array_layers(COST,  merged_costs, 1, paras, agent_array);
     
     for(i = 0; i < ROWS; i++){ /* Actions > 0 to respond to possible change */
-        for(j = 0; j < COLS; j++){
-            merged_acts[i][j] += 1; 
+        for(j = 7; j < COLS; j++){
+            merged_acts[i][j] += 1;
         }
-    } 
-
+    }
+    
     max_dev = 0;
     for(agent = 0; agent < pop_size; agent++){
         for(action_row = 0; action_row < int_num; action_row++){
@@ -530,11 +532,11 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
             policy_to_counts(population, merged_acts, agent, merged_costs, 
                              act_change, action_row, manager_row, paras);
             foc_effect  = 0.0;
-            foc_effect += (paras[74] * act_change[action_row][7]);
-            foc_effect += (paras[75] * act_change[action_row][8]); 
-            foc_effect += (paras[76] * act_change[action_row][9]);  
-            foc_effect += (paras[77] * act_change[action_row][10]); 
-            foc_effect += (paras[78] * act_change[action_row][11]);
+            foc_effect  += (paras[74] * act_change[action_row][7]);
+            foc_effect  += (paras[75] * act_change[action_row][8]);
+            foc_effect  += (paras[76] * act_change[action_row][9]);
+            foc_effect  += (paras[77] * act_change[action_row][10]);
+            foc_effect  += (paras[78] * act_change[action_row][11]);
             for(i = 0; i < int_num; i++){
                 count_change[i] += foc_effect * jaco[action_row][i];
             }

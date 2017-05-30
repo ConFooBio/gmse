@@ -226,7 +226,7 @@ int find_a_resource(double **resource_array, double ***land, double *paras,
     for(resource = 0; resource < resource_number; resource++){
         xloc              = resource_array[resource][res_x];
         yloc              = resource_array[resource][res_y];
-        can_act[resource] = 1;
+        can_act[resource] = 1; 
         if(u_loc == 1 && land[xloc][yloc][2] != agentID){
             can_act[resource] = 0;
         }
@@ -237,9 +237,6 @@ int find_a_resource(double **resource_array, double ***land, double *paras,
             can_act[resource] = 0;
         }
         if(resource_array[resource][res_t3] != type3){
-            can_act[resource] = 0;
-        }
-        if(land[xloc][yloc][2] != agentID){
             can_act[resource] = 0;
         }
         if(resource_array[resource][16] == 1 && action_col != 9){ 

@@ -78,7 +78,7 @@ void res_add(double **res_adding, double *paras){
     if(K_add > 0){ /* If there is a carrying capacity applied to adding */
         loops = 1000000000;
         while(added > K_add){ 
-            get_rand_int(0, resource_number);
+            sampled = get_rand_int(0, resource_number);
             if(res_adding[sampled][realised] > 0){
                 res_adding[sampled][realised]--; /* Less memory used now */
                 added--;

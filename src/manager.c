@@ -316,7 +316,7 @@ void set_action_costs(double ***ACTION, double ***COST, double *paras,
                 COST[cost_row][9][layer]  = ACTION[manager_row][9][mlayer];
                 COST[cost_row][10][layer] = ACTION[manager_row][10][mlayer];
                 COST[cost_row][11][layer] = ACTION[manager_row][11][mlayer];
-                COST[cost_row][12][layer] = 1; /* Do nothing never costly */
+                COST[cost_row][12][layer] = ACTION[manager_row][12][mlayer];
             }
         }
     }
