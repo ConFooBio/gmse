@@ -723,7 +723,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
             res_costs[j,5] <- ACTION[[j]][3,12,1];
         }
         par(mar=c(4,5,1,4));
-        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, 80),
+        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, 200),
              xlim=c(0,time_max), xlab="Time Step", ylab="Cost of actions",
              cex.lab=1.25);
         points(x=gens, y=res_costs[,1], type="l", col="green", lwd=2);
@@ -745,7 +745,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
             }
         }
         par(mar=c(4,6,1,1));
-        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, 4*paras[73]),
+        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, paras[73]),
              xlim=c(0,time_max), xlab="Time Step", ylab="Actions made",
              cex.lab=1.25);
         points(x=gens, y=res_acts[,1], type="l", col="green", lwd=2);
@@ -809,14 +809,14 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, PARAS, view, times){
 
 ################################################################################
 
-sim <- gmse( observe_type  = 0,
+sim <- gmse( observe_type  = 1,
              agent_view    = 20,
              res_death_K   = 400,
              plotting      = TRUE,
              hunt          = FALSE,
              res_movement  = 4,
              start_hunting = 95,
-             lambda        = 0.38,
+             lambda        = 0.8,
              fixed_observe = 10,
              times_observe = 20,
              land_dim_1    = 100,
@@ -829,7 +829,7 @@ sim <- gmse( observe_type  = 0,
              ga_seedrep    = 20,
              ga_mutation   = 0.1,   # Mutation rate in genetic algorithm
              ga_crossover  = 0.1,   # Crossover rate in genetic algorithm
-             user_res_opts = c(1, 1, 0, 0, 0),
+             user_res_opts = c(0, 1, 0, 0, 0),
              user_lnd_opts = c(0, 0)
 );
 
