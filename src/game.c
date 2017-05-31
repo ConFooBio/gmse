@@ -220,8 +220,7 @@ void constrain_costs(double ***population, double ***COST, double *paras,
             for(col = start_col; col < COLS; col++){
                 action_val  = population[row][col][agent];
                 action_cost = COST[row][col][layer];
-                /* Don't allow prohibited actions */
-                if(action_cost > budget){ 
+                if(action_cost > budget){  /* Don't allow prohibited actions */
                     population[row][col][agent] = 0;
                     action_val                  = 0;
                 }
@@ -509,7 +508,7 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
     
     for(i = 0; i < ROWS; i++){ /* Actions > 0 to respond to possible change */
         for(j = 7; j < COLS; j++){
-            merged_acts[i][j] += 1;
+            merged_acts[i][j] += paras[95];
         }
     }
     
@@ -532,11 +531,11 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
             policy_to_counts(population, merged_acts, agent, merged_costs, 
                              act_change, action_row, manager_row, paras);
             foc_effect  = 0.0;
-            foc_effect  += (paras[74] * act_change[action_row][7]);
-            foc_effect  += (paras[75] * act_change[action_row][8]);
-            foc_effect  += (paras[76] * act_change[action_row][9]);
-            foc_effect  += (paras[77] * act_change[action_row][10]);
-            foc_effect  += (paras[78] * act_change[action_row][11]);
+            foc_effect  += (paras[74] * paras[88] * act_change[action_row][7]);
+            foc_effect  += (paras[75] * paras[89] * act_change[action_row][8]);
+            foc_effect  += (paras[76] * paras[90] * act_change[action_row][9]);
+            foc_effect  += (paras[77] * paras[91] * act_change[action_row][10]);
+            foc_effect  += (paras[78] * paras[92] * act_change[action_row][11]);
             for(i = 0; i < int_num; i++){
                 count_change[i] += foc_effect * jaco[action_row][i];
             }

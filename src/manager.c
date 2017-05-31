@@ -311,12 +311,24 @@ void set_action_costs(double ***ACTION, double ***COST, double *paras,
         }
         for(layer = 0; layer < total_layers; layer++){
             if(agent_array[layer][1] > 0){ /* Managers can't affect self */
-                COST[cost_row][7][layer]  = ACTION[manager_row][7][mlayer];
-                COST[cost_row][8][layer]  = ACTION[manager_row][8][mlayer];
-                COST[cost_row][9][layer]  = ACTION[manager_row][9][mlayer];
-                COST[cost_row][10][layer] = ACTION[manager_row][10][mlayer];
-                COST[cost_row][11][layer] = ACTION[manager_row][11][mlayer];
-                COST[cost_row][12][layer] = ACTION[manager_row][12][mlayer];
+                if(paras[88] > 0){
+                    COST[cost_row][7][layer]  = ACTION[manager_row][7][mlayer];
+                }
+                if(paras[89] > 0){
+                    COST[cost_row][8][layer]  = ACTION[manager_row][8][mlayer];
+                }
+                if(paras[90] > 0){
+                    COST[cost_row][9][layer]  = ACTION[manager_row][9][mlayer];
+                }
+                if(paras[91] > 0){
+                    COST[cost_row][10][layer] = ACTION[manager_row][10][mlayer];
+                }
+                if(paras[92] > 0){
+                    COST[cost_row][11][layer] = ACTION[manager_row][11][mlayer];
+                }
+                if(paras[93] > 0){
+                    COST[cost_row][12][layer] = ACTION[manager_row][12][mlayer];
+                }
             }
         }
     }
