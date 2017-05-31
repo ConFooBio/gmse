@@ -135,7 +135,7 @@ make_agents <- function(model        = "IBM",
 #'@param AGENTS The agent array 
 #'@param RESOURCES The resource array
 #'@export
-make_costs <- function(AGENTS, RESOURCES, res_opts, lnd_opts){
+make_costs <- function(AGENTS, RESOURCES, res_opts, lnd_opts, min_cost){
     
     agent_IDs     <- c(-2, -1, unique(AGENTS[,1]) );
     agent_number  <- length(agent_IDs);
@@ -160,12 +160,12 @@ make_costs <- function(AGENTS, RESOURCES, res_opts, lnd_opts){
     lnd_opts <- t(as.matrix(lnd_opts));
     
     for(i in 2:dim(COST)[3]){ # Exclude the manager for now
-        COST[COST[,1,i]==-2,8:12,i]  <- res_opts[1:res_num,];
-        COST[COST[,1,i]==-1,10:11,i] <- lnd_opts[1:lnd_num,];
+        COST[COST[,1,i]==-2,8:12,i]  <- min_cost * res_opts[1:res_num,];
+        COST[COST[,1,i]==-1,10:11,i] <- min_cost * lnd_opts[1:lnd_num,];
     }
-    COST[COST[,1,1] == 1, 8:12,1] <- res_opts[1:res_num,];
-    COST[COST[,1,1] == 1, 13, 1]  <- 1;
-    COST[COST[,1,1] <  0, 13,  ]  <- 1;
+    COST[COST[,1,1] == 1, 8:12,1] <- min_cost * res_opts[1:res_num,];
+    COST[COST[,1,1] == 1, 13, 1]  <- min_cost;
+    COST[COST[,1,1] <  0, 13,  ]  <- min_cost;
     
     COST[,1:7,]    <- 10000;
     COST[COST < 1] <- 10000;

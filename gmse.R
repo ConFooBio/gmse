@@ -61,7 +61,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   ga_mutation    = 0.1,   # Mutation rate in genetic algorithm
                   ga_crossover   = 0.1,   # Crossover rate in genetic algorithm
                   move_agents    = TRUE,  # Move agents once per time step
-                  max_ages       = 2,     # Maximum age of any resource(s)
+                  max_ages       = 5,     # Maximum age of any resource(s)
+                  minimum_cost   = 10,    # Minimum cost value
                   user_res_opts  = c(1, 1, 1, 1, 1),
                   user_lnd_opts  = c(1, 1)
 ){
@@ -120,7 +121,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     interaction_tabl <- make_interaction_table(starting_resources, LANDSCAPE_r);
     
     COST   <- make_costs( AGENTS = AGENTS, RESOURCES = starting_resources,
-                          res_opts = user_res_opts, lnd_opts = user_lnd_opts);
+                          res_opts = user_res_opts, lnd_opts = user_lnd_opts,
+                          min_cost = minimum_cost);
     ACTION <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
     ACTION[1,5:7,]   <- 0; # ON LAND?
     ACTION[2,5:7,]   <- 1; # ON LAND?
@@ -131,8 +133,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     ACTION[2,5,3]    <- 100;
     ACTION[1,5,1]    <- 200;   ###### CONTROL HOW MUCH MANAGER LIKES RESOURCES
 
-    AGENTS[,17]     <- 100;
-    AGENTS[1,17]    <- 100;
+    AGENTS[,17]     <- 1000;
+    AGENTS[1,17]    <- 1000;
     
     time       <- time + 1;  # Ready for the initial time step.
     cells      <- land_dim_1 * land_dim_2; # Number of cells in the landscape
@@ -173,6 +175,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     coc <- dim(ACTION)[2];
     aav <- user_res_opts;
     alv <- user_lnd_opts;
+    mnc <- minimum_cost;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -269,7 +272,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                aav[5],  # 92. Is the helpem option availabe?
                alv[1],  # 93. Is the kill crop production option available?
                alv[2],  # 94. Is the increase crop growth option available?
-               0        # 95. How many actions should managers assume exist?
+               0,       # 95. How many actions should managers assume exist?
+               mnc      # 96. What is the minimum cost for any action?
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
@@ -337,7 +341,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         );
         ACTION <- MANAGER[[4]];
         COST   <- MANAGER[[5]];
-        COST[COST < 1] <- 1;
+        #COST[COST < 1] <- 1;
         
         USERS <- user(resource   = RESOURCES,
                       agent      = AGENTS,
@@ -812,7 +816,7 @@ sim <- gmse( observe_type  = 0,
              hunt          = FALSE,
              res_movement  = 4,
              start_hunting = 95,
-             lambda        = 0.8,
+             lambda        = 0.38,
              fixed_observe = 10,
              times_observe = 20,
              land_dim_1    = 100,
@@ -825,7 +829,7 @@ sim <- gmse( observe_type  = 0,
              ga_seedrep    = 20,
              ga_mutation   = 0.1,   # Mutation rate in genetic algorithm
              ga_crossover  = 0.1,   # Crossover rate in genetic algorithm
-             user_res_opts = c(0, 1, 1, 0, 0),
+             user_res_opts = c(1, 1, 0, 0, 0),
              user_lnd_opts = c(0, 0)
 );
 

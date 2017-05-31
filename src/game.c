@@ -18,7 +18,7 @@ double min_cost(double ***COST, double *paras, int layer, double budget){
     
     the_min = budget;
     for(i = 0; i < ROWS; i++){
-        for(j = 0; j < COLS; j++){
+        for(j = 7; j < COLS; j++){
             if(COST[i][j][layer] < the_min){
                 the_min = COST[i][j][layer]; 
             }
@@ -154,7 +154,7 @@ void mutation(double ***population, double *paras, int agentID){
     
     int agent, row, col, start_col, col_check, pop_size, ROWS, COLS;
     int col_start_other, col_start_self;
-    double do_mutation, agent_val, half_pr, pr;
+    double do_mutation, agent_val, half_pr, pr, min_cost;
 
     pop_size        = (int) paras[21];
     pr              = paras[26];
@@ -162,6 +162,7 @@ void mutation(double ***population, double *paras, int agentID){
     COLS            = (int) paras[69];
     col_start_other = (int) paras[70];
     col_start_self  = (int) paras[71];
+    min_cost        = paras[96];
     
     half_pr = 0.5 * pr;
     
@@ -378,6 +379,34 @@ void strategy_fitness(double **agent_array, double ***population, double *paras,
     }
     free(utilities);
     free(count_change);
+}
+
+
+/* =============================================================================
+ * This function ensures that managers cannot make some actions too cheap
+ *    population: array of the population that is made
+ *    paras: Vector of global parameters
+ *    agentID: The ID of the agent
+ * ========================================================================== */
+void apply_min_costs(double ***population, double *paras, int agentID){
+    
+    int row, col, ROWS, COLS, layer, pop_size;
+    double min_cost;
+    
+    pop_size = (int) paras[21];
+    ROWS     = (int) paras[68];
+    COLS     = (int) paras[69];
+    min_cost = paras[96];
+    
+    for(row = 0; row < ROWS; row++){
+        for(col = 7; col < COLS; col++){
+            for(layer = 0; layer < pop_size; layer++){
+                if(population[row][0][layer]  == agentID){
+                    population[row][col][layer] += min_cost;
+                }
+            }
+        }
+    }
 }
 
 /* =============================================================================
@@ -743,6 +772,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         constrain_costs(POPULATION, COST, paras, agent, budget, agentID);
  
         if(managing == 1){
+            apply_min_costs(POPULATION, paras, agentID);
             manager_fitness(fitnesses, POPULATION, JACOBIAN, AGENT, lookup, 
                             agentID, COST, ACTION, paras);
         }else{
