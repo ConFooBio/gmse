@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **MAY** [29](#u-29-MAY-2017), [26](#u-26-MAY-2017), [25](#u-25-MAY-2017), [24](#u-24-MAY-2017), [23](#u-23-MAY-2017), [22](#u-22-MAY-2017), [18](#u-18-MAY-2017), [17](#u-17-MAY-2017), [16](#u-16-MAY-2017), [15](#u-15-MAY-2017), [12](#u-12-MAY-2017), [11](#u-11-MAY-2017), [10](#u-10-MAY-2017), [9](#u-9-MAY-2017), [8](#u-8-MAY-2017), [5](#u-5-MAY-2017), [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
+     - **MAY** [31](#u-31-MAY-2017), [30](#u-30-MAY-2017), [29](#u-29-MAY-2017), [26](#u-26-MAY-2017), [25](#u-25-MAY-2017), [24](#u-24-MAY-2017), [23](#u-23-MAY-2017), [22](#u-22-MAY-2017), [18](#u-18-MAY-2017), [17](#u-17-MAY-2017), [16](#u-16-MAY-2017), [15](#u-15-MAY-2017), [12](#u-12-MAY-2017), [11](#u-11-MAY-2017), [10](#u-10-MAY-2017), [9](#u-9-MAY-2017), [8](#u-8-MAY-2017), [5](#u-5-MAY-2017), [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
      - **APR** [28](#u-28-APR-2017), [26](#u-26-APR-2017), [25](#u-25-APR-2017), [24](#u-24-APR-2017), [20](#u-20-APR-2017), [19](#u-19-APR-2017), [18](#u-18-APR-2017), [17](#u-17-APR-2017), [13](#u-13-APR-2017), [12](#u-12-APR-2017), [11](#u-11-APR-2017), [10](#u-10-APR-2017), [7](#u-7-APR-2017), [6](#u-6-APR-2017), [5](#u-5-APR-2017)
      - **MAR** [23](#u-23-MAR-2017), [22](#u-22-MAR-2017), [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
      - **FEB** [24](#u-24-FEB-2017), [23](#u-23-FEB-2017), [22](#u-22-FEB-2017), [17](#u-17-FEB-2017), [16](#u-16-FEB-2017), [13](#u-13-FEB-2017), [8](#u-8-FEB-2017), [7](#u-7-FEB-2017), [6](#u-6-FEB-2017), [3](#u-3-FEB-2017), [2](#u-2-FEB-2017), [1](#u-1-FEB-2017)
@@ -75,6 +75,25 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-31-MAY-2017">Update: 31 MAY 2017</a>
+
+**Code is finally stable**
+
+I have now deliberately tried to crash G-MSE in multiple ways -- the goal being to throw parameter combinations or options at the model in such a way as to cause the model to not work accurately. At first, I was successful at this when I forced managers to only allow for one management option (culling, scaring, etc.). After much debugging and testing, I have fixed this so that I am confident that the code runs as advertised, for the moment. Features that have now been included to G-MSE as a consequence of this process include the following.
+
+- User ability to specify which of the five key actions (`movem`, `killem`, `castem`, `feedem`, and `helpem`) are allowed; actions that are not allowed can never be performed. At the moment, these actions are still plotted as zeros, but soon they will be removed from the plots.
+- User ability to specify some minimum cost that is incurred for performing any action on resources or the landscape. Previously, this minimum was hard-coded at one, but this became problematic in some cases because it allowed too much sensitivity for managers in setting policy, and this reduced manager precision in setting costs. For example, managers would believe (typically correctly) that they could double culling number by setting user actions `killem` at 1 instead of 0. Yet if they wanted something between keeping culing the same and doubling it, they were out of luck. If actions always cost at least some value (default = 10), then some increment just above that value is always available -- hence it is better to simply give everyone a bigger budget and set a minimum cost, giving more precision to managers to fine tune policy.
+
+**Finally shift to [Friday's](#u-26-MAY-2017) goals**
+
+I have started to change some parameter inputs to make it easier to play with parameters, but I'm going to do more of this now that I'm much more confident in the G-MSE software. Once this is done, I will make the whole thing an Rpackage that can be downloaded using github developer tools, and I'll add documentation before sending instructions around. Additionally, I will then start to write up some sample case studies (e.g., hunters on a public landscape or farmers trying to maximise yield) to show what G-MSE can do. Writing these out into an Rmarkdown file, I'll have the start of a methods paper introducing the software.
+
+> <a name="u-30-MAY-2017">Update: 30 MAY 2017</a>
+
+**Minor debugging**
+
+There are still a few minor bugs to work out, some of which I was able to take care of (see commit history if need be). I'm now trying to give the option to restric the number of possible actions, but restricting them seems to still produce some errors -- namely, the genetic algorithm for managers doesn't seem to be responding appropriately.
 
 > <a name="u-29-MAY-2017">Update: 29 MAY 2017</a>
 

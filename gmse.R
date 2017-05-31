@@ -63,6 +63,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   move_agents    = TRUE,  # Move agents once per time step
                   max_ages       = 5,     # Maximum age of any resource(s)
                   minimum_cost   = 10,    # Minimum cost value
+                  user_budget    = 1000,  # What is the budget of a user
+                  manager_budget = 1000,  # The budget of a manager
+                  manage_target  = 200,   # The target resource abundance
                   user_res_opts  = c(1, 1, 1, 1, 1),
                   user_lnd_opts  = c(1, 1)
 ){
@@ -124,17 +127,17 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                           res_opts = user_res_opts, lnd_opts = user_lnd_opts,
                           min_cost = minimum_cost);
     ACTION <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
-    ACTION[1,5:7,]   <- 0; # ON LAND?
+    ACTION[1,5:7,]   <- 1; # ON LAND?
     ACTION[2,5:7,]   <- 1; # ON LAND?
     ACTION[3,5:7,1]  <- 0;
     ACTION[1,5,2:5]  <- 0;
     ACTION[1,5,1]    <- 100;
     ACTION[2,5,2:5]  <- 100;
     ACTION[2,5,3]    <- 100;
-    ACTION[1,5,1]    <- 200;   ###### CONTROL HOW MUCH MANAGER LIKES RESOURCES
+    ACTION[1,5,1]    <- manage_target;
 
-    AGENTS[,17]     <- 1000;
-    AGENTS[1,17]    <- 1000;
+    AGENTS[,17]     <- user_budget;
+    AGENTS[1,17]    <- manager_budget;
     
     time       <- time + 1;  # Ready for the initial time step.
     cells      <- land_dim_1 * land_dim_2; # Number of cells in the landscape
@@ -176,6 +179,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     aav <- user_res_opts;
     alv <- user_lnd_opts;
     mnc <- minimum_cost;
+    usb <- user_budget;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -273,7 +277,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                alv[1],  # 93. Is the kill crop production option available?
                alv[2],  # 94. Is the increase crop growth option available?
                0,       # 95. How many actions should managers assume exist?
-               mnc      # 96. What is the minimum cost for any action?
+               mnc,     # 96. What is the minimum cost for any action?
+               usb      # 97. The user budget
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
@@ -745,7 +750,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
             }
         }
         par(mar=c(4,6,1,1));
-        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, paras[73]),
+        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, paras[98]),
              xlim=c(0,time_max), xlab="Time Step", ylab="Actions made",
              cex.lab=1.25);
         points(x=gens, y=res_acts[,1], type="l", col="green", lwd=2);
@@ -809,28 +814,32 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, PARAS, view, times){
 
 ################################################################################
 
-sim <- gmse( observe_type  = 1,
-             agent_view    = 20,
-             res_death_K   = 400,
-             plotting      = TRUE,
-             hunt          = FALSE,
-             res_movement  = 4,
-             start_hunting = 95,
-             lambda        = 0.8,
-             fixed_observe = 10,
-             times_observe = 20,
-             land_dim_1    = 100,
-             land_dim_2    = 100,
-             res_consume   = 0.5,
-             time_max      = 100,
-             res_move_obs  = TRUE,
-             max_ages      = 5,   
-             ga_mingen     = 40,   
-             ga_seedrep    = 20,
-             ga_mutation   = 0.1,   # Mutation rate in genetic algorithm
-             ga_crossover  = 0.1,   # Crossover rate in genetic algorithm
-             user_res_opts = c(0, 1, 0, 0, 0),
-             user_lnd_opts = c(0, 0)
+sim <- gmse( observe_type   = 1,
+             agent_view     = 20,
+             res_death_K    = 400,
+             plotting       = TRUE,
+             hunt           = FALSE,
+             res_movement   = 4,
+             start_hunting  = 95,
+             lambda         = 0.8,
+             fixed_observe  = 10,
+             times_observe  = 20,
+             land_dim_1     = 100,
+             land_dim_2     = 100,
+             res_consume    = 0.5,
+             time_max       = 100,
+             res_move_obs   = TRUE,
+             max_ages       = 5,   
+             ga_mingen      = 40,   
+             ga_seedrep     = 20,
+             ga_mutation    = 0.1,   # Mutation rate in genetic algorithm
+             ga_crossover   = 0.1,   # Crossover rate in genetic algorithm
+             minimum_cost   = 10,    # Minimum cost value
+             user_budget    = 1000,  # What is the budget of a user
+             manager_budget = 1000,  # The budget of a manager
+             manage_target  = 200,   # The target resource abundance
+             user_res_opts  = c(0, 1, 0, 0, 0),
+             user_lnd_opts  = c(0, 0)
 );
 
 ################################################################################
