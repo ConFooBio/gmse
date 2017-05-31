@@ -32,3 +32,5 @@ ga_mutation    = 0.1;   # Mutation rate in genetic algorithm
 ga_crossover   = 0.1;   # Crossover rate in genetic algorithm
 move_agents    = TRUE   # Move agents once per time step
 max_ages       = 5      # Maximum age of any resource(s)
+user_res_opts  = c(0, 1, 0, 0, 0)
+user_lnd_opts  = c(1, 1)

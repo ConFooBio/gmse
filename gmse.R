@@ -61,7 +61,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   ga_mutation    = 0.1,   # Mutation rate in genetic algorithm
                   ga_crossover   = 0.1,   # Crossover rate in genetic algorithm
                   move_agents    = TRUE,  # Move agents once per time step
-                  max_ages       = 5      # Maximum age of any resource(s)
+                  max_ages       = 2,     # Maximum age of any resource(s)
+                  user_res_opts  = c(1, 1, 1, 1, 1),
+                  user_lnd_opts  = c(1, 1)
 ){
     
     if(observe_type == 1 & times_observe < 2){
@@ -117,21 +119,19 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     
     interaction_tabl <- make_interaction_table(starting_resources, LANDSCAPE_r);
     
-    COST   <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
-    COST[,,]  <- 10000; # Need until a proper make_cost function is made
-    COST[1,8:13,2:5]  <- 1;
-    COST[2,10:11,2:5] <- 1;
-    COST[3,8:13,1]    <- 1;
+    COST   <- make_costs( AGENTS = AGENTS, RESOURCES = starting_resources,
+                          res_opts = user_res_opts, lnd_opts = user_lnd_opts);
     ACTION <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
-    ACTION[1:2,5:7,] <- 1;
+    ACTION[1,5:7,]   <- 0; # ON LAND?
+    ACTION[2,5:7,]   <- 1; # ON LAND?
     ACTION[3,5:7,1]  <- 0;
     ACTION[1,5,2:5]  <- 0;
     ACTION[1,5,1]    <- 100;
     ACTION[2,5,2:5]  <- 100;
     ACTION[2,5,3]    <- 100;
     ACTION[1,5,1]    <- 200;   ###### CONTROL HOW MUCH MANAGER LIKES RESOURCES
-    ACTION[3:7,5:13,2:5]   <- 0;
-    AGENTS[,17]     <- 300;
+
+    AGENTS[,17]     <- 100;
     AGENTS[1,17]    <- 100;
     
     time       <- time + 1;  # Ready for the initial time step.
@@ -171,6 +171,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     lyr <- dim(ACTION)[3];
     roc <- dim(ACTION)[1];
     coc <- dim(ACTION)[2];
+    aav <- user_res_opts;
+    alv <- user_lnd_opts;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -247,10 +249,10 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                0,       # 72. Total actions in the action array
                16,      # 73. The column to adjust the castration of a resource
                0,       # 74. Manager's projected change if resource moved
-               -1,      # 75. Manager's projected change if resource killed
-               -0.5,    # 76. Manager's projected change if resource castrated
-               1,       # 77. Manager's projected change if resource growth +
-               1,       # 78. Manager's projected change if resource offspring +
+               -0.05,   # 75. Manager's projected change if resource killed
+               -0.05,   # 76. Manager's projected change if resource castrated
+               0.05,    # 77. Manager's projected change if resource growth +
+               0.05,    # 78. Manager's projected change if resource offspring +
                0.00,    # 79. User's improvement of land (proportion)
                1,       # 80. Landscape layer on which crop yield is located
                2,       # 81. Landscape layer on which ownership is defined
@@ -259,7 +261,15 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                0,       # 84. Temporary element to hold action array col
                0,       # 85. Temporary element to hold action array layer
                0,       # 86. Effect of landscape cell on resource growth rate
-               0        # 87. Effect of landscape cell on resource death rate
+               0,       # 87. Effect of landscape cell on resource death rate
+               aav[1],  # 88. Is the movement option available?
+               aav[2],  # 89. Is the killing option available?
+               aav[3],  # 90. Is the castration option available?
+               aav[4],  # 91. Is the feedem option available?
+               aav[5],  # 92. Is the helpem option availabe?
+               alv[1],  # 93. Is the kill crop production option available?
+               alv[2],  # 94. Is the increase crop growth option available?
+               0        # 95. How many actions should managers assume exist?
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
@@ -802,7 +812,7 @@ sim <- gmse( observe_type  = 0,
              hunt          = FALSE,
              res_movement  = 4,
              start_hunting = 95,
-             lambda        = 0.30,
+             lambda        = 0.8,
              fixed_observe = 10,
              times_observe = 20,
              land_dim_1    = 100,
@@ -811,8 +821,12 @@ sim <- gmse( observe_type  = 0,
              time_max      = 100,
              res_move_obs  = TRUE,
              max_ages      = 5,   
-             ga_mingen     = 20,   
-             ga_seedrep    = 20
+             ga_mingen     = 40,   
+             ga_seedrep    = 20,
+             ga_mutation   = 0.1,   # Mutation rate in genetic algorithm
+             ga_crossover  = 0.1,   # Crossover rate in genetic algorithm
+             user_res_opts = c(0, 1, 1, 0, 0),
+             user_lnd_opts = c(0, 0)
 );
 
 ################################################################################
