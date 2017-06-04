@@ -87,6 +87,10 @@ The case 0 observation type is consistently underestimating the true population 
 
 I have made some of the simulation inputs easier to work with on the user end and played around with different variable combinations on a relatively low-power laptop ([Lenovo X201 Thinkpad](https://support.lenovo.com/gb/en/solutions/pd010141)). The simulation is a bit slower than desirable, but not so slow as to cause major issues (takes about a minute ore so to simulate a fairly big population of ca 200 with 12 stake-holders).
 
+**Introduce [Issue #28](https://github.com/bradduthie/gmse/issues/28): More stake-holders have fewer actions**
+
+For some reason, having more stakeholders appears to lead to less culling of resources even when all of them are attempting to do it. If there are more stakeholders to act, then actions should happen more often because each has the same budget.
+
 > <a name="u-31-MAY-2017">Update: 31 MAY 2017</a>
 
 **Code is finally stable**
