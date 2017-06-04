@@ -66,20 +66,26 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   user_budget    = 1000,  # What is the budget of a user
                   manager_budget = 1000,  # The budget of a manager
                   manage_target  = 200,   # The target resource abundance
-                  user_res_opts  = c(1, 1, 1, 1, 1),
-                  user_lnd_opts  = c(1, 1)
+                  RESOURCE_ini   = 100,   # Number of initial resources
+                  scaring        = FALSE, # Scaring allowed in simulations
+                  culling        = TRUE,  # Culling/hunting allowed
+                  castration     = FALSE, # Castration allowed
+                  feeding        = FALSE, # Feeding resources allowed
+                  help_offspring = FALSE, # Helping offspring allowed
+                  tend_crops     = FALSE, # Tending crops allowed
+                  kill_crops     = FALSE  # Killing crops allowed
 ){
     
     if(observe_type == 1 & times_observe < 2){
         stop("Need to observe at least twice for mark-recapture");   
     }
     
-    pop_model       <- "IBM";
-    RESOURCE_ini    <- 100;
-    movement        <- res_movement;
-    res_types_ini   <- 1;
-    
-    time            <- 0;
+    user_res_opts  <- c(scaring, culling, castration, feeding, help_offspring);
+    user_lnd_opts  <- c(tend_crops, kill_crops);
+    pop_model      <- "IBM";
+    movement       <- res_movement;
+    res_types_ini  <- 1;
+    time           <- 0;
     
     proc_start <- proc.time();
     
@@ -838,8 +844,13 @@ sim <- gmse( observe_type   = 1,
              user_budget    = 1000,  # What is the budget of a user
              manager_budget = 1000,  # The budget of a manager
              manage_target  = 200,   # The target resource abundance
-             user_res_opts  = c(0, 1, 0, 0, 0),
-             user_lnd_opts  = c(0, 0)
+             scaring        = FALSE, # Scaring allowed in simulations
+             culling        = TRUE,  # Culling/hunting allowed
+             castration     = FALSE, # Castration allowed
+             feeding        = FALSE, # Feeding resources allowed
+             help_offspring = FALSE, # Helping offspring allowed
+             tend_crops     = FALSE, # Tending crops allowed
+             kill_crops     = FALSE  # Killing crops allowed
 );
 
 ################################################################################
