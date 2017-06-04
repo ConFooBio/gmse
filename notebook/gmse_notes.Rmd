@@ -93,6 +93,10 @@ For some reason, having more stakeholders appears to lead to less culling of res
 
 Note that this appears to even occur when users are not restricted to their landscape; it might be something to do with double killing? There just aren't enough resources dying in the model to match with the actions.
 
+**Resoved [Issue #28](https://github.com/bradduthie/gmse/issues/28):**
+
+Resolved -- just input the stakeholder number incorrectly. See commit [6b63439b384cab90680f6a36a79f2c94eba46c45](https://github.com/bradduthie/gmse/commit/6b63439b384cab90680f6a36a79f2c94eba46c45)
+
 > <a name="u-31-MAY-2017">Update: 31 MAY 2017</a>
 
 **Code is finally stable**
