@@ -116,8 +116,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     );
     # This will obviously need to be changed -- new function in initialise.R
     AGENTS   <- make_agents( model        = pop_model,
-                             agent_number = 5,
-                             type_counts  = c(1, 4),
+                             agent_number = 1 + stakeholders,
+                             type_counts  = c(1, stakeholders),
                              vision       = agent_view,
                              rows         = land_dim_1,
                              cols         = land_dim_2,
@@ -136,8 +136,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                           res_opts = user_res_opts, lnd_opts = user_lnd_opts,
                           min_cost = minimum_cost);
     ACTION <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
-    ACTION[1,5:7,]   <- 1; # ON LAND?
-    ACTION[2,5:7,]   <- 1; # ON LAND?
+    ACTION[1,5:7,]   <- 0; # ON LAND?
+    ACTION[2,5:7,]   <- 0; # ON LAND?
     ACTION[3,5:7,1]  <- 0;
     ACTION[1,5,2:5]  <- 0;
     ACTION[1,5,1]    <- 100;
@@ -300,7 +300,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     
     while(time < time_max){
         
-        AGENTS[1,5] <- sample(x = 1:ldx, size = 1); # Change this later?
+        AGENTS[1,5] <- sample(x = 1:ldx, size = 1); # Move manager randomly
         AGENTS[1,6] <- sample(x = 1:ldy, size = 1); 
         
         RESOURCE_NEW      <- resource(resource   = RESOURCES,
@@ -355,7 +355,6 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         );
         ACTION <- MANAGER[[4]];
         COST   <- MANAGER[[5]];
-        #COST[COST < 1] <- 1;
         
         USERS <- user(resource   = RESOURCES,
                       agent      = AGENTS,
@@ -486,7 +485,6 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         }
     }
 
-    
     return(sim_results);
 }
 ################################################################################
@@ -834,7 +832,7 @@ sim <- gmse( observe_type   = 1,
              res_death_K    = 400,
              plotting       = TRUE,
              hunt           = FALSE,
-             res_movement   = 4,
+             res_movement   = 40,
              start_hunting  = 95,
              lambda         = 1.0,
              fixed_observe  = 10,
@@ -860,7 +858,7 @@ sim <- gmse( observe_type   = 1,
              help_offspring = FALSE, # Helping offspring allowed
              tend_crops     = FALSE, # Tending crops allowed
              kill_crops     = FALSE, # Killing crops allowed
-             stakeholders   = 8      # Number of stakeholders
+             stakeholders   = 12      # Number of stakeholders
 );
 
 ################################################################################

@@ -91,6 +91,8 @@ I have made some of the simulation inputs easier to work with on the user end an
 
 For some reason, having more stakeholders appears to lead to less culling of resources even when all of them are attempting to do it. If there are more stakeholders to act, then actions should happen more often because each has the same budget.
 
+Note that this appears to even occur when users are not restricted to their landscape; it might be something to do with double killing? There just aren't enough resources dying in the model to match with the actions.
+
 > <a name="u-31-MAY-2017">Update: 31 MAY 2017</a>
 
 **Code is finally stable**
