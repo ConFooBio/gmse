@@ -88,7 +88,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     res_types_ini  <- 1;
     time           <- 0;
     
-    proc_start <- proc.time();
+    proc_start       <- proc.time();
+    proc_check_start <- proc_start;
     
     # Set the landscape
     land_alloc   <- c(0, rep(x = 1/stakeholders, times = stakeholders));
@@ -388,6 +389,12 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
             print("Extinction has occurred");
             break;
         }
+        proc_check_end  <- proc.time();
+        time_taken      <- proc_check_end - proc_check_start;
+        if(time_taken[3] > 5){
+            print(paste("Generation ", time, "of ", time_max));
+            proc_check_start <- proc.time();
+        }
 
         if(hunt == TRUE & time > start_hunting){
             HUNT_OUTCOME <- be_hunter(OBSERVATION_r, AGENTS, RESOURCES, 
@@ -422,7 +429,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     colnames(RESOURCES)    <- res_columns;
     
     proc_end   <- proc.time();
-    time_taken <- proc_end - proc_start;
+    total_time <- proc_end - proc_start;
     
     sim_results <- list(resource    = RESOURCE_REC,
                         observation = OBSERVATION_REC,
@@ -829,7 +836,7 @@ sim <- gmse( observe_type   = 1,
              hunt           = FALSE,
              res_movement   = 4,
              start_hunting  = 95,
-             lambda         = 0.8,
+             lambda         = 1.0,
              fixed_observe  = 10,
              times_observe  = 20,
              land_dim_1     = 100,
@@ -853,7 +860,7 @@ sim <- gmse( observe_type   = 1,
              help_offspring = FALSE, # Helping offspring allowed
              tend_crops     = FALSE, # Tending crops allowed
              kill_crops     = FALSE, # Killing crops allowed
-             stakeholders   = 4      # Number of stakeholders
+             stakeholders   = 8      # Number of stakeholders
 );
 
 ################################################################################
