@@ -81,7 +81,29 @@ library(rhandsontable)
 
 **Resolve [Issue #27](https://github.com/bradduthie/gmse/issues/27)**
 
-The start column (and, because observation column number equals `times` observed, the end column) was specified incorrectly in the density and mark-recapture esetimates in R. This meant that three columns were sampled with values all equalling zero, and three columns were not sampled with values equalling one and zero, to estimate population size. Hence, this produced an underestimate of population size in plots. The issue has now been resolved.
+The start column (and, because observation column number equals `times` observed, the end column) was specified incorrectly in the density and mark-recapture estimates in R. This meant that three columns were sampled with values all equaling zero, and three columns were not sampled with values equaling one and zero, to estimate population size. Hence, this produced an underestimate of population size in plots. The issue has now been resolved.
+
+**Additional user options**
+
+Additional user options now include the following (defaults shown):
+
+```
+ stakeholders   = 4,     # Number of stake-holders
+ manage_caution = 1,     # Caution rate of the manager
+ land_ownership = FALSE, # Do stake-holders act on their land?
+ manage_freq    = 1      # Frequency that management enacted
+```
+
+Within the week the following features will be added:
+
+- Full six by two plots for `case 2` and `case 3` observation functions
+- A new array paras_REC to more easily keep track of everything
+- 95% confidence intervals calculated in `manager.c` instead of in R (and saved in `paras`)
+
+The above points should not take more than a day to complete, at most, and **upon completing them I will then make G-MSE into a package that can be downloaded using [devtools](https://cran.r-project.org/web/packages/devtools/index.html) from GitHub.** More long-term, I want to do the following, but this might not happen until after a draft of the methods paper is written.
+
+- Write an algorithm to automatically adjust the caution that the manager has when changing actions (i.e., should they assume that some actions will or will not occur if they change costs through management -- this might be done based on previous uncertainty or user actions).
+- Write an algorithm to dynamically modify the assumed effect of manager actions using regression. In other words, give the manager some way of figuring out how many additional culls halving the cost of culling will translate into based on past experience -- perhaps some culling is missed reguarly because some resources are distributed differently in space.
 
 > <a name="u-4-JUN-2017">Update: 4 JUN 2017</a>
 
