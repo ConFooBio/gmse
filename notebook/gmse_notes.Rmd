@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **JUN** [4](#u-4-JUN-2017) 
+     - **JUN** [5](#u-5-JUN-2017), [4](#u-4-JUN-2017) 
      - **MAY** [31](#u-31-MAY-2017), [30](#u-30-MAY-2017), [29](#u-29-MAY-2017), [26](#u-26-MAY-2017), [25](#u-25-MAY-2017), [24](#u-24-MAY-2017), [23](#u-23-MAY-2017), [22](#u-22-MAY-2017), [18](#u-18-MAY-2017), [17](#u-17-MAY-2017), [16](#u-16-MAY-2017), [15](#u-15-MAY-2017), [12](#u-12-MAY-2017), [11](#u-11-MAY-2017), [10](#u-10-MAY-2017), [9](#u-9-MAY-2017), [8](#u-8-MAY-2017), [5](#u-5-MAY-2017), [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
      - **APR** [28](#u-28-APR-2017), [26](#u-26-APR-2017), [25](#u-25-APR-2017), [24](#u-24-APR-2017), [20](#u-20-APR-2017), [19](#u-19-APR-2017), [18](#u-18-APR-2017), [17](#u-17-APR-2017), [13](#u-13-APR-2017), [12](#u-12-APR-2017), [11](#u-11-APR-2017), [10](#u-10-APR-2017), [7](#u-7-APR-2017), [6](#u-6-APR-2017), [5](#u-5-APR-2017)
      - **MAR** [23](#u-23-MAR-2017), [22](#u-22-MAR-2017), [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
@@ -76,6 +76,34 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-5-JUN-2017">Update: 5 JUN 2017</a>
+
+**Resolve [Issue #27](https://github.com/bradduthie/gmse/issues/27)**
+
+The start column (and, because observation column number equals `times` observed, the end column) was specified incorrectly in the density and mark-recapture estimates in R. This meant that three columns were sampled with values all equaling zero, and three columns were not sampled with values equaling one and zero, to estimate population size. Hence, this produced an underestimate of population size in plots. The issue has now been resolved.
+
+**Additional user options**
+
+Additional user options now include the following (defaults shown):
+
+```
+ stakeholders   = 4,     # Number of stake-holders
+ manage_caution = 1,     # Caution rate of the manager
+ land_ownership = FALSE, # Do stake-holders act on their land?
+ manage_freq    = 1      # Frequency that management enacted
+```
+
+Within the week the following features will be added:
+
+- Full six by two plots for `case 2` and `case 3` observation functions
+- A new array paras_REC to more easily keep track of everything
+- 95% confidence intervals calculated in `manager.c` instead of in R (and saved in `paras`)
+
+The above points should not take more than a day to complete, at most, and **upon completing them I will then make G-MSE into a package that can be downloaded using [devtools](https://cran.r-project.org/web/packages/devtools/index.html) from GitHub.** More long-term, I want to do the following, but this might not happen until after a draft of the methods paper is written.
+
+- Write an algorithm to automatically adjust the caution that the manager has when changing actions (i.e., should they assume that some actions will or will not occur if they change costs through management -- this might be done based on previous uncertainty or user actions).
+- Write an algorithm to dynamically modify the assumed effect of manager actions using regression. In other words, give the manager some way of figuring out how many additional culls halving the cost of culling will translate into based on past experience -- perhaps some culling is missed reguarly because some resources are distributed differently in space.
 
 > <a name="u-4-JUN-2017">Update: 4 JUN 2017</a>
 
