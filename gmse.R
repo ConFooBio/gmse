@@ -77,7 +77,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   kill_crops     = FALSE, # Killing crops allowed
                   stakeholders   = 4,     # Number of stake-holders
                   manage_caution = 1,     # Caution rate of the manager
-                  land_ownership = FALSE  # Do stake-holders act on their land?
+                  land_ownership = FALSE, # Do stake-holders act on their land?
+                  manage_freq    = 1      # Frequency that management enacted
 ){
     
     if(observe_type == 1 & times_observe < 2){
@@ -349,19 +350,21 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         );
         AGENTS <- AGENTS_NEW[[1]];
 
-        MANAGER  <- manager(resource    = RESOURCES,
-                            agent       = AGENTS,
-                            landscape   = LANDSCAPE_r, 
-                            paras       = paras,
-                            cost        = COST,
-                            action      = ACTION,
-                            Jacobian    = Jacobian,
-                            inter_tabl  = interaction_tabl,
-                            observation = OBSERVATION_r,
-                            model       = "IBM"
-        );
-        ACTION <- MANAGER[[4]];
-        COST   <- MANAGER[[5]];
+        if(time %% manage_freq == 0){
+            MANAGER  <- manager(resource    = RESOURCES,
+                                agent       = AGENTS,
+                                landscape   = LANDSCAPE_r, 
+                                paras       = paras,
+                                cost        = COST,
+                                action      = ACTION,
+                                Jacobian    = Jacobian,
+                                inter_tabl  = interaction_tabl,
+                                observation = OBSERVATION_r,
+                                model       = "IBM"
+            );
+            ACTION <- MANAGER[[4]];
+            COST   <- MANAGER[[5]];
+        }
         
         USERS <- user(resource   = RESOURCES,
                       agent      = AGENTS,
