@@ -552,15 +552,16 @@ ind_to_land <- function(inds, landscape){
 ################################################################################
 # Density estimator
 ################################################################################
-dens_est <- function(observation = obs_t, view = view, land = land, times = 1){
+dens_est <- function(observation = obs_t, paras, view = view, land = land){
     vision  <- (2*view) + 1;
     area    <- vision * vision;
     cells   <- dim(land)[1] * dim(land)[2];
     if(area > cells){
         area <- cells;   
     }
-    area    <- area * times;
-    endrow  <- 21 + times;
+    area    <- area * paras[12];
+    ob_strt <- paras[42] + 1;
+    endrow  <- dim(observation)[2];
     tot_obs <- sum(observation[,21:endrow]);
     prp     <- tot_obs / area;
     est     <- prp * cells;
@@ -569,7 +570,7 @@ dens_est <- function(observation = obs_t, view = view, land = land, times = 1){
     lci     <- cells * lcp
     uci     <- cells * ucp;
     return(list(Nc=est, lci=lci, uci=uci, test = tot_obs));
-}
+} 
 
 ###########################################################
 ## Plot this way when looking at transect type sampling
@@ -702,8 +703,8 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
             uci      <- c(uci, analysis$uci);
         }
         if(!is.null(obs_t) & !is.null(view) & case == 0){
-            analysis <- dens_est(observation=obs_t, view=view, land=land1, 
-                                 times = times);
+            analysis <- dens_est(observation=obs_t, paras=paras, view=view, 
+                                 land=land1);
             est      <- c(est, analysis$Nc);
             lci      <- c(lci, analysis$lci);
             uci      <- c(uci, analysis$uci);
@@ -828,7 +829,7 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, PARAS, view, times){
 
 ################################################################################
 
-sim <- gmse( observe_type   = 0,
+sim <- gmse( observe_type   = 1,
              agent_view     = 20,
              res_death_K    = 400,
              plotting       = TRUE,
@@ -836,8 +837,8 @@ sim <- gmse( observe_type   = 0,
              res_movement   = 40,
              start_hunting  = 95,
              lambda         = 0.4,
-             fixed_observe  = 20,
-             times_observe  = 40,
+             fixed_observe  = 10,
+             times_observe  = 20,
              land_dim_1     = 100,
              land_dim_2     = 100,
              res_consume    = 0.5,
@@ -849,8 +850,8 @@ sim <- gmse( observe_type   = 0,
              ga_mutation    = 0.1,   # Mutation rate in genetic algorithm
              ga_crossover   = 0.1,   # Crossover rate in genetic algorithm
              minimum_cost   = 10,    # Minimum cost value
-             user_budget    = 2000,  # What is the budget of a user
-             manager_budget = 2000,  # The budget of a manager
+             user_budget    = 1000,  # What is the budget of a user
+             manager_budget = 1000,  # The budget of a manager
              manage_target  = 200,   # The target resource abundance
              scaring        = FALSE, # Scaring allowed in simulations
              culling        = TRUE,  # Culling/hunting allowed
@@ -859,7 +860,7 @@ sim <- gmse( observe_type   = 0,
              help_offspring = FALSE, # Helping offspring allowed
              tend_crops     = FALSE, # Tending crops allowed
              kill_crops     = FALSE, # Killing crops allowed
-             RESOURCE_ini   = 1000,   # Number of initial resources
+             RESOURCE_ini   = 200,   # Number of initial resources
              stakeholders   = 4      # Number of stakeholders
 );
 
