@@ -581,7 +581,8 @@ sim <- gmse( observe_type   = 1,
              RESOURCE_ini   = 200,   # Number of initial resources
              stakeholders   = 4,     # Number of stakeholders
              manage_caution = 1,     # Caution rate of the manager
-             land_ownership = TRUE   # Do stake-holders only act on their land  
+             land_ownership = TRUE,  # Do stake-holders only act on their land
+             manage_freq    = 2
 );
 
 ################################################################################
