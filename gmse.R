@@ -264,10 +264,10 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                0,       # 72. Total actions in the action array
                16,      # 73. The column to adjust the castration of a resource
                0,       # 74. Manager's projected change if resource moved
-               -0.05,   # 75. Manager's projected change if resource killed
-               -0.05,   # 76. Manager's projected change if resource castrated
-               0.05,    # 77. Manager's projected change if resource growth +
-               0.05,    # 78. Manager's projected change if resource offspring +
+               -0.40,   # 75. Manager's projected change if resource killed
+               -0.40,   # 76. Manager's projected change if resource castrated
+               0.40,    # 77. Manager's projected change if resource growth +
+               0.40,    # 78. Manager's projected change if resource offspring +
                0.00,    # 79. User's improvement of land (proportion)
                1,       # 80. Landscape layer on which crop yield is located
                2,       # 81. Landscape layer on which ownership is defined
@@ -430,7 +430,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     
     proc_end   <- proc.time();
     total_time <- proc_end - proc_start;
-    
+       
     sim_results <- list(resource    = RESOURCE_REC,
                         observation = OBSERVATION_REC,
                         paras       = paras,
@@ -505,9 +505,13 @@ cmr_estimate <- function(obs, year){
 ################################################################################
 # Chapman estimator for capture-mark-recapture
 ################################################################################
-chapman_est <- function(observation, marks = 1, recaptures = 1){
-    mcols  <- seq(from = 21, to = 21 + (marks-1), by = 1);
-    rcols  <- seq(from = max(mcols+1), to = max(mcols+1)+(recaptures-1), by=1);
+chapman_est <- function(observation, paras){
+    marks       <- paras[12];
+    recaptures  <- paras[11];
+    obs_start   <- paras[42] + 1;
+    marks_end   <- obs_start + paras[11];
+    mcols       <- obs_start:marks_end;
+    rcols       <- (marks_end + 1):dim(observation)[2];
     if(marks > 1){
         mrked <- apply(X=observation[,mcols], MARGIN = 1, FUN = sum);
         mrked <- mrked > 0;
@@ -696,8 +700,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
              xlim=c(0,time_max), xlab="Time Step", ylab="Abundance",
              cex.lab=1.25);
         if(!is.null(obs_t) & case == 1){
-            analysis <- chapman_est(observation=obs_t, marks=mrk, 
-                                    recaptures=rcp);
+            analysis <- chapman_est(observation=obs_t, paras = paras);
             est      <- c(est, analysis$Nc);
             lci      <- c(lci, analysis$lci);
             uci      <- c(uci, analysis$uci);
