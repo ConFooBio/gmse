@@ -128,7 +128,6 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                        landscape = LANDSCAPE_r
     );
     Jacobian[1,2] <- -1 * res_consume; # Temporary to fix consumption rate
-    Jacobian[2,1] <- 0;
     
     interaction_tabl <- make_interaction_table(starting_resources, LANDSCAPE_r);
     
@@ -297,6 +296,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     LANDSCAPE_REC   <- NULL;
     COST_REC        <- NULL;
     ACTION_REC      <- NULL;
+    
+    print("Initialising simulations ... ");
     
     while(time < time_max){
         
@@ -505,7 +506,7 @@ cmr_estimate <- function(obs, year){
 # Chapman estimator for capture-mark-recapture
 ################################################################################
 chapman_est <- function(observation, marks = 1, recaptures = 1){
-    mcols  <- seq(from = 19, to = 19 + (marks-1), by = 1);
+    mcols  <- seq(from = 21, to = 21 + (marks-1), by = 1);
     rcols  <- seq(from = max(mcols+1), to = max(mcols+1)+(recaptures-1), by=1);
     if(marks > 1){
         mrked <- apply(X=observation[,mcols], MARGIN = 1, FUN = sum);
@@ -559,8 +560,8 @@ dens_est <- function(observation = obs_t, view = view, land = land, times = 1){
         area <- cells;   
     }
     area    <- area * times;
-    endrow  <- 19 + times;
-    tot_obs <- sum(observation[,17:endrow]);
+    endrow  <- 21 + times;
+    tot_obs <- sum(observation[,21:endrow]);
     prp     <- tot_obs / area;
     est     <- prp * cells;
     lcp     <- prp - 1.96 * sqrt((1/(vision*vision))*prp*(1-prp));
@@ -827,16 +828,16 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, PARAS, view, times){
 
 ################################################################################
 
-sim <- gmse( observe_type   = 1,
+sim <- gmse( observe_type   = 0,
              agent_view     = 20,
              res_death_K    = 400,
              plotting       = TRUE,
              hunt           = FALSE,
              res_movement   = 40,
              start_hunting  = 95,
-             lambda         = 1.0,
-             fixed_observe  = 10,
-             times_observe  = 20,
+             lambda         = 0.4,
+             fixed_observe  = 20,
+             times_observe  = 40,
              land_dim_1     = 100,
              land_dim_2     = 100,
              res_consume    = 0.5,
@@ -848,8 +849,8 @@ sim <- gmse( observe_type   = 1,
              ga_mutation    = 0.1,   # Mutation rate in genetic algorithm
              ga_crossover   = 0.1,   # Crossover rate in genetic algorithm
              minimum_cost   = 10,    # Minimum cost value
-             user_budget    = 1000,  # What is the budget of a user
-             manager_budget = 1000,  # The budget of a manager
+             user_budget    = 2000,  # What is the budget of a user
+             manager_budget = 2000,  # The budget of a manager
              manage_target  = 200,   # The target resource abundance
              scaring        = FALSE, # Scaring allowed in simulations
              culling        = TRUE,  # Culling/hunting allowed
@@ -858,7 +859,8 @@ sim <- gmse( observe_type   = 1,
              help_offspring = FALSE, # Helping offspring allowed
              tend_crops     = FALSE, # Tending crops allowed
              kill_crops     = FALSE, # Killing crops allowed
-             stakeholders   = 12      # Number of stakeholders
+             RESOURCE_ini   = 1000,   # Number of initial resources
+             stakeholders   = 4      # Number of stakeholders
 );
 
 ################################################################################
