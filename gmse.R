@@ -76,7 +76,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   tend_crops     = FALSE, # Tending crops allowed
                   kill_crops     = FALSE, # Killing crops allowed
                   stakeholders   = 4,     # Number of stake-holders
-                  manage_caution = 1      # Caution rate of the manager
+                  manage_caution = 1,     # Caution rate of the manager
+                  land_ownership = FALSE  # Do stake-holders act on their land?
 ){
     
     if(observe_type == 1 & times_observe < 2){
@@ -137,8 +138,10 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                           res_opts = user_res_opts, lnd_opts = user_lnd_opts,
                           min_cost = minimum_cost);
     ACTION <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
-    ACTION[1,5:7,]   <- 0; # ON LAND?
-    ACTION[2,5:7,]   <- 0; # ON LAND?
+    if(land_ownership == TRUE){
+        ACTION[1,5:7,] <- 1;
+        ACTION[2,5:7,] <- 1;
+    }
     ACTION[3,5:7,1]  <- 0;
     ACTION[1,5,2:5]  <- 0;
     ACTION[1,5,1]    <- 100;
@@ -574,7 +577,8 @@ sim <- gmse( observe_type   = 1,
              kill_crops     = FALSE, # Killing crops allowed
              RESOURCE_ini   = 200,   # Number of initial resources
              stakeholders   = 4,     # Number of stakeholders
-             manage_caution = 1      # Caution rate of the manager
+             manage_caution = 1,     # Caution rate of the manager
+             land_ownership = TRUE   # Do stake-holders only act on their land  
 );
 
 ################################################################################
