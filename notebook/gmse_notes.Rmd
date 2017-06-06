@@ -77,6 +77,20 @@ library(rhandsontable)
 <a name="updates">Project updates:</a>
 ================================================================================
 
+> <a name="u-6-JUN-2017">Update: 6 JUN 2017</a>
+
+**Progess on new features**
+
+A new six by two plot for for `case 2` and `case 3` observation functions has been added. Additionally, G-MSE now records a new array `PARAS_REC`, which holds parameters each generation, including observation estimates and confidence intervals. The `PARAS_REC` will allow me to simplify the plotting functions because the relevant data will be calculated in C on the fly and neatly held in `PARAS_REC`. Additionally, I will add in the total actions for all stake-holders as seven elements in `paras` (five actions on resource `type1` and two landscape actions), and also the cost of each action. This will not only make all of the plotting code much simpler, it will also allow the potential for the *history* of actions and costs to affect manager and stake-holder actions in future software development.
+
+It's always tempting to push the model a bit further with new features or more efficient algorithms and code, but **I think that now is the time to turn G-MSE into a package** and send it off to colleagues to experiment with, which I will do tomorrow. Nevertheless, I want to hit a few points that will be very useful for future G-MSE features:
+
+- Adjust the caution that the manager has when changing actions (e.g., should a manager always assume that 10 of each action will be performed -- or maybe just one of each, or zero).
+- Dynamically modify the assumed effect of manager actions using regression (e.g., what's the *real* change based on historical knowledge within the simulation?).
+- Incorporate stake-holder and manager long-term histories into genetic algorithm fitness functions -- the data can be easily made available in `PARAS_REC`, but *using* these data will be tricky.
+
+Each of the above will take a bit of planning in addition to coding. I'm not sure if they would also require the addition of new data arrays, but I think they are worth considering.
+
 > <a name="u-5-JUN-2017">Update: 5 JUN 2017</a>
 
 **Resolve [Issue #27](https://github.com/bradduthie/gmse/issues/27)**

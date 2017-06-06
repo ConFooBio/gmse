@@ -344,7 +344,6 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         OBSERVATION_r  <- OBSERVATION_NEW[[1]];
         paras          <- OBSERVATION_NEW[[3]];
         
-        # anecdotal is a bit useless right now, but included here anyway. 
         AGENTS_NEW        <- anecdotal(resource    = RESOURCES,
                                        landscape   = LANDSCAPE_r,
                                        paras       = paras,
@@ -557,7 +556,7 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, PARAS, view, times){
 
 ################################################################################
 
-sim <- gmse( observe_type   = 1,
+sim <- gmse( observe_type   = 0,
              agent_view     = 20,
              res_death_K    = 1200,
              plotting       = TRUE,
