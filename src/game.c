@@ -720,8 +720,8 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     
     int row, col, gen, layer, most_fit, land_x, land_y, land_z, popsize;
     int generations, res_number, trait_number, jaco_dim, xdim, ydim, agentID;
-    int sampleK, chooseK, agent_seed, *winners;
-    double budget, mutation_rate, crossover_rate;
+    int sampleK, chooseK, agent_seed, old_fitness, fit_change, *winners;
+    double budget, mutation_rate, crossover_rate, converge_crit;
     double ***POPULATION, ***NEW_POP, *fitnesses;
 
     land_x         = (int) paras[12];
@@ -734,6 +734,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     jaco_dim       = (int) paras[60];
     xdim           = (int) paras[68];
     ydim           = (int) paras[69];
+    converge_crit  = paras[98];
     budget         = (double) AGENT[agent][16];
     agentID        = AGENT[agent][0];
 
@@ -762,8 +763,10 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     
     initialise_pop(ACTION, COST, paras, agent, budget, POPULATION, agentID);
     
-    gen = 0;
-    while(gen < generations){
+    gen          = 0;
+    old_fitness  = -1.0;
+    fit_change   = 10000;
+    while(gen < generations || fit_change > converge_crit){
         
         crossover(POPULATION, paras, agentID);
         
@@ -783,15 +786,17 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         tournament(fitnesses, winners, paras);
    
         place_winners(&POPULATION, winners, paras);
+        
+        most_fit = 0;
+        for(layer = 0; layer < popsize; layer++){
+            if(fitnesses[layer] > fitnesses[most_fit]){
+                most_fit = layer;
+            }
+        }
+        fit_change  = (fitnesses[most_fit] - old_fitness) / old_fitness;
+        old_fitness = fitnesses[most_fit];
 
         gen++;
-    }
-    
-    most_fit = 0;
-    for(layer = 0; layer < popsize; layer++){
-        if(fitnesses[layer] > fitnesses[most_fit]){
-            most_fit = layer;
-        }
     }
     
     for(row = 0; row < xdim; row++){
@@ -809,5 +814,4 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         free(POPULATION[row]); 
     }
     free(POPULATION);
-
 }

@@ -78,7 +78,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   stakeholders   = 4,     # Number of stake-holders
                   manage_caution = 1,     # Caution rate of the manager
                   land_ownership = FALSE, # Do stake-holders act on their land?
-                  manage_freq    = 1      # Frequency that management enacted
+                  manage_freq    = 1,     # Frequency that management enacted
+                  converge_crit  = 100    # Convergence criteria
 ){
     
     if(observe_type == 1 & times_observe < 2){
@@ -195,6 +196,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     mnc <- minimum_cost;
     usb <- user_budget;
     mac <- manage_caution;
+    cnv <- converge_crit;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -293,7 +295,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                alv[2],  # 94. Is the increase crop growth option available?
                mac,     # 95. How many actions should managers assume exist?
                mnc,     # 96. What is the minimum cost for any action?
-               usb      # 97. The user budget
+               usb,     # 97. The user budget
+               cnv      # 98. The convergence criteria of the genetic algorithm
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
@@ -562,8 +565,10 @@ sim <- gmse( observe_type   = 1,
              res_consume    = 0.5,
              time_max       = 100,
              res_move_obs   = TRUE,
-             max_ages       = 5,   
-             ga_mingen      = 40,   
+             max_ages       = 5,
+             ga_sampleK     = 20,    # Random sample size in ga tournament
+             ga_chooseK     = 2,     # Select from sample in ga tournament
+             ga_mingen      = 20,   
              ga_seedrep     = 20,
              ga_mutation    = 0.1,   # Mutation rate in genetic algorithm
              ga_crossover   = 0.1,   # Crossover rate in genetic algorithm
@@ -582,7 +587,8 @@ sim <- gmse( observe_type   = 1,
              stakeholders   = 4,     # Number of stakeholders
              manage_caution = 1,     # Caution rate of the manager
              land_ownership = TRUE,  # Do stake-holders only act on their land
-             manage_freq    = 2
+             manage_freq    = 1,
+             converge_crit  = 100
 );
 
 ################################################################################
