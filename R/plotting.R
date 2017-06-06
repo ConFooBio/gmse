@@ -85,7 +85,7 @@ dens_est <- function(observation = obs_t, paras, view = view, land = land){
 ###########################################################
 ## Plot this way when looking at transect type sampling
 ###########################################################
-case23plot <- function(res, obs, land1, land2, land3, agents, paras){
+case23plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION){
     gens <- NULL;
     abun <- NULL;
     est  <- NULL;
@@ -111,7 +111,7 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras){
         abun  <- c(abun, dim(res_t)[1]);
         lnds  <- c(lnds, mean(lnd_t));
         ages  <- rbind(ages, age_t[,16]);
-        par(mfrow=c(2,2),mar=c(0,0,0,0));
+        par(mfrow=c(3,2),mar=c(0,0,0,0));
         # ------------- Panel 1 (upper left)
         indis  <- ind_to_land(inds=res_t, landscape=land1);
         image(indis, col=land_cols, xaxt="n", yaxt="n");
@@ -127,6 +127,7 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras){
         est       <- c(est, new_est);
         points(x=gens, y=est, pch=20, type="l", lwd=2, col="cyan4");
         abline(h=paras[7], col="red", lwd=0.8, lty="dashed");
+        abline(h=ACTION[[1]][1,5,1], col=topo.colors(1), lwd=0.8, lty="dashed");
         points(x=gens, y=abun, pch=20, type="l", lwd=3, col="black");
         par(new=TRUE);
         plot(x=gens, y=lnds, pch=20, type="l", lwd=3, col="orange", xlab = "",
@@ -146,6 +147,51 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras){
             points(x=gens, y=ages[,stakeholder], type="l", lwd=2, 
                    col = stake_colors[stakeholder]);
         }
+        # ------------- Panel 5 (lower left)
+        res_costs <- matrix(data = 0, nrow = i, ncol = 5);
+        for(j in 1:i){
+            res_costs[j,1] <- ACTION[[j]][3,8,1];
+            res_costs[j,2] <- ACTION[[j]][3,9,1];
+            res_costs[j,3] <- ACTION[[j]][3,10,1];
+            res_costs[j,4] <- ACTION[[j]][3,11,1];
+            res_costs[j,5] <- ACTION[[j]][3,12,1];
+        }
+        par(mar=c(4,5,1,4));
+        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, 200),
+             xlim=c(0,time_max), xlab="Time Step", ylab="Cost of actions",
+             cex.lab=1.25);
+        points(x=gens, y=res_costs[,1], type="l", col="green", lwd=2);
+        points(x=gens, y=res_costs[,2], type="l", col="indianred1", lwd=2);
+        points(x=gens, y=res_costs[,3], type="l", col="indianred3", lwd=2);
+        points(x=gens, y=res_costs[,4], type="l", col="deepskyblue1", lwd=2);
+        points(x=gens, y=res_costs[,5], type="l", col="deepskyblue2", lwd=2);
+        # ------------- Panel 6 (lower right)
+        res_acts <- matrix(data = 0, nrow = i, ncol = 7);
+        for(j in 1:i){
+            for(k in 2:dim(ACTION[[j]])[3]){
+                res_acts[j,1] <- res_acts[j,1] + ACTION[[j]][1,8,k] - paras[96];
+                res_acts[j,2] <- res_acts[j,2] + ACTION[[j]][1,9,k] - paras[96];
+                res_acts[j,3] <- res_acts[j,3] + ACTION[[j]][1,10,k]- paras[96];
+                res_acts[j,4] <- res_acts[j,4] + ACTION[[j]][1,11,k]- paras[96];
+                res_acts[j,5] <- res_acts[j,5] + ACTION[[j]][1,12,k]- paras[96];
+                res_acts[j,6] <- res_acts[j,6] + ACTION[[j]][2,10,k]- paras[96];
+                res_acts[j,7] <- res_acts[j,7] + ACTION[[j]][2,11,k]- paras[96];
+            }
+        }
+        par(mar=c(4,6,1,1));
+        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, paras[98]),
+             xlim=c(0,time_max), xlab="Time Step", ylab="Actions made",
+             cex.lab=1.25);
+        points(x=gens, y=res_acts[,1], type="l", col="green", lwd=2);
+        points(x=gens, y=res_acts[,2], type="l", col="indianred1", lwd=2);
+        points(x=gens, y=res_acts[,3], type="l", col="indianred3", lwd=2);
+        points(x=gens, y=res_acts[,4], type="l", col="deepskyblue1", lwd=2);
+        points(x=gens, y=res_acts[,5], type="l", col="deepskyblue2", lwd=2);
+        points(x=gens, y=res_acts[,6], type="l", lty= "dotted", col="purple", 
+               lwd=3);
+        points(x=gens, y=res_acts[,7], type="l", lty= "dotted", col="orange", 
+               lwd=3);
+        # -------------
         Sys.sleep(0.1);
     }
 }
@@ -264,13 +310,13 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
         res_acts <- matrix(data = 0, nrow = i, ncol = 7);
         for(j in 1:i){
             for(k in 2:dim(ACTION[[j]])[3]){
-                res_acts[j,1] <- res_acts[j,1] + ACTION[[j]][1,8,k];
-                res_acts[j,2] <- res_acts[j,2] + ACTION[[j]][1,9,k];
-                res_acts[j,3] <- res_acts[j,3] + ACTION[[j]][1,10,k];
-                res_acts[j,4] <- res_acts[j,4] + ACTION[[j]][1,11,k];
-                res_acts[j,5] <- res_acts[j,5] + ACTION[[j]][1,12,k];
-                res_acts[j,6] <- res_acts[j,6] + ACTION[[j]][2,10,k];
-                res_acts[j,7] <- res_acts[j,7] + ACTION[[j]][2,11,k];
+                res_acts[j,1] <- res_acts[j,1] + ACTION[[j]][1,8,k] - paras[96];
+                res_acts[j,2] <- res_acts[j,2] + ACTION[[j]][1,9,k] - paras[96];
+                res_acts[j,3] <- res_acts[j,3] + ACTION[[j]][1,10,k]- paras[96];
+                res_acts[j,4] <- res_acts[j,4] + ACTION[[j]][1,11,k]- paras[96];
+                res_acts[j,5] <- res_acts[j,5] + ACTION[[j]][1,12,k]- paras[96];
+                res_acts[j,6] <- res_acts[j,6] + ACTION[[j]][2,10,k]- paras[96];
+                res_acts[j,7] <- res_acts[j,7] + ACTION[[j]][2,11,k]- paras[96];
             }
         }
         par(mar=c(4,6,1,1));

@@ -484,7 +484,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                        land1  = LANDSCAPE_r[,,1], 
                        land2  = LANDSCAPE_REC,
                        land3  = LANDSCAPE_r[,,3],
-                       agents = AGENT_REC,                       
+                       agents = AGENT_REC,
+                       ACTION = ACTION_REC,
                        paras  = paras);
         }
         if(obt == 3){
@@ -493,7 +494,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                        land1  = LANDSCAPE_r[,,1], 
                        land2  = LANDSCAPE_REC,
                        land3  = LANDSCAPE_r[,,3],
-                       agents = AGENT_REC,                       
+                       agents = AGENT_REC,
+                       ACTION = ACTION_REC,
                        paras  = paras);
         }
     }
@@ -550,16 +552,16 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, PARAS, view, times){
 
 ################################################################################
 
-sim <- gmse( observe_type   = 1,
+sim <- gmse( observe_type   = 3,
              agent_view     = 20,
-             res_death_K    = 400,
+             res_death_K    = 1200,
              plotting       = TRUE,
              hunt           = FALSE,
              res_movement   = 40,
              start_hunting  = 95,
-             lambda         = 0.4,
-             fixed_observe  = 10,
-             times_observe  = 20,
+             lambda         = 0.24,
+             fixed_observe  = 20,
+             times_observe  = 40,
              land_dim_1     = 100,
              land_dim_2     = 100,
              res_consume    = 0.5,
@@ -575,7 +577,7 @@ sim <- gmse( observe_type   = 1,
              minimum_cost   = 10,    # Minimum cost value
              user_budget    = 1000,  # What is the budget of a user
              manager_budget = 1000,  # The budget of a manager
-             manage_target  = 200,   # The target resource abundance
+             manage_target  = 600,   # The target resource abundance
              scaring        = FALSE, # Scaring allowed in simulations
              culling        = TRUE,  # Culling/hunting allowed
              castration     = FALSE, # Castration allowed
@@ -583,10 +585,10 @@ sim <- gmse( observe_type   = 1,
              help_offspring = FALSE, # Helping offspring allowed
              tend_crops     = FALSE, # Tending crops allowed
              kill_crops     = FALSE, # Killing crops allowed
-             RESOURCE_ini   = 200,   # Number of initial resources
+             RESOURCE_ini   = 600,   # Number of initial resources
              stakeholders   = 4,     # Number of stakeholders
              manage_caution = 1,     # Caution rate of the manager
-             land_ownership = TRUE,  # Do stake-holders only act on their land
+             land_ownership = TRUE, # Do stake-holders only act on their land
              manage_freq    = 1,
              converge_crit  = 100
 );
