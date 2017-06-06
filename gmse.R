@@ -296,7 +296,10 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                mac,     # 95. How many actions should managers assume exist?
                mnc,     # 96. What is the minimum cost for any action?
                usb,     # 97. The user budget
-               cnv      # 98. The convergence criteria of the genetic algorithm
+               cnv,     # 98. The convergence criteria of the genetic algorithm
+               rsi,     # 99. Estimate of res type 1 from the observation model
+               0,       # 100. Upper CI for res type 1 estimate
+               0        # 101. Lower CI for res type 1 estimate
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
@@ -306,6 +309,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     LANDSCAPE_REC   <- NULL;
     COST_REC        <- NULL;
     ACTION_REC      <- NULL;
+    PARAS_REC       <- matrix(data=0, ncol = length(paras), nrow = time_max-1);
     
     print("Initialising simulations ... ");
     
@@ -391,6 +395,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         LANDSCAPE_REC[[time]]    <- LANDSCAPE_r[,,2];
         COST_REC[[time]]         <- COST;
         ACTION_REC[[time]]       <- ACTION;
+        PARAS_REC[time,]         <- paras;
         
         LANDSCAPE_r <- age_land(landscape = LANDSCAPE_r, 
                                 landscape_ini = LANDSCAPE_INI, layer = 2);
@@ -445,7 +450,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
        
     sim_results <- list(resource    = RESOURCE_REC,
                         observation = OBSERVATION_REC,
-                        paras       = paras,
+                        paras       = PARAS_REC,
                         land        = LANDSCAPE_REC,
                         time_taken  = time_taken,
                         agents      = AGENTS,
@@ -552,7 +557,7 @@ be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, PARAS, view, times){
 
 ################################################################################
 
-sim <- gmse( observe_type   = 3,
+sim <- gmse( observe_type   = 1,
              agent_view     = 20,
              res_death_K    = 1200,
              plotting       = TRUE,
