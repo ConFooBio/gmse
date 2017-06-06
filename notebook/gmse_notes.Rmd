@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **JUN** [5](#u-5-JUN-2017), [4](#u-4-JUN-2017) 
+     - **JUN** [6](#u-6-JUN-2017), [5](#u-5-JUN-2017), [4](#u-4-JUN-2017) 
      - **MAY** [31](#u-31-MAY-2017), [30](#u-30-MAY-2017), [29](#u-29-MAY-2017), [26](#u-26-MAY-2017), [25](#u-25-MAY-2017), [24](#u-24-MAY-2017), [23](#u-23-MAY-2017), [22](#u-22-MAY-2017), [18](#u-18-MAY-2017), [17](#u-17-MAY-2017), [16](#u-16-MAY-2017), [15](#u-15-MAY-2017), [12](#u-12-MAY-2017), [11](#u-11-MAY-2017), [10](#u-10-MAY-2017), [9](#u-9-MAY-2017), [8](#u-8-MAY-2017), [5](#u-5-MAY-2017), [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
      - **APR** [28](#u-28-APR-2017), [26](#u-26-APR-2017), [25](#u-25-APR-2017), [24](#u-24-APR-2017), [20](#u-20-APR-2017), [19](#u-19-APR-2017), [18](#u-18-APR-2017), [17](#u-17-APR-2017), [13](#u-13-APR-2017), [12](#u-12-APR-2017), [11](#u-11-APR-2017), [10](#u-10-APR-2017), [7](#u-7-APR-2017), [6](#u-6-APR-2017), [5](#u-5-APR-2017)
      - **MAR** [23](#u-23-MAR-2017), [22](#u-22-MAR-2017), [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
@@ -76,6 +76,20 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-6-JUN-2017">Update: 6 JUN 2017</a>
+
+**Progess on new features**
+
+A new six by two plot for for `case 2` and `case 3` observation functions has been added. Additionally, G-MSE now records a new array `PARAS_REC`, which holds parameters each generation, including observation estimates and confidence intervals. The `PARAS_REC` will allow me to simplify the plotting functions because the relevant data will be calculated in C on the fly and neatly held in `PARAS_REC`. Additionally, I will add in the total actions for all stake-holders as seven elements in `paras` (five actions on resource `type1` and two landscape actions), and also the cost of each action. This will not only make all of the plotting code much simpler, it will also allow the potential for the *history* of actions and costs to affect manager and stake-holder actions in future software development.
+
+It's always tempting to push the model a bit further with new features or more efficient algorithms and code, but **I think that now is the time to turn G-MSE into a package** and send it off to colleagues to experiment with, which I will do tomorrow. Nevertheless, I want to hit a few points that will be very useful for future G-MSE features:
+
+- Adjust the caution that the manager has when changing actions (e.g., should a manager always assume that 10 of each action will be performed -- or maybe just one of each, or zero).
+- Dynamically modify the assumed effect of manager actions using regression (e.g., what's the *real* change based on historical knowledge within the simulation?).
+- Incorporate stake-holder and manager long-term histories into genetic algorithm fitness functions -- the data can be easily made available in `PARAS_REC`, but *using* these data will be tricky.
+
+Each of the above will take a bit of planning in addition to coding. I'm not sure if they would also require the addition of new data arrays, but I think they are worth considering.
 
 > <a name="u-5-JUN-2017">Update: 5 JUN 2017</a>
 
