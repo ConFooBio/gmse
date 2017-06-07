@@ -4,33 +4,33 @@
 \alias{user}
 \title{User model}
 \usage{
-user(resource = NULL, agent = NULL, landscape = NULL, paras = NULL,
-  cost = NULL, action = NULL, Jacobian = NULL, inter_tabl = NULL,
+user(RESOURCES = NULL, AGENTS = NULL, LAND = NULL, PARAS = NULL,
+  COST = NULL, ACTION = NULL, INTERACT = NULL, inter_tabl = NULL,
   model = "IBM")
 }
 \arguments{
-\item{resource}{Resource data frame at the start of the time step}
+\item{RESOURCES}{The resources array produced by the resource function within GMSE}
 
-\item{agent}{Agent array at the start of the the time step}
+\item{AGENTS}{The array of agents produced in the main gmse() function}
 
-\item{landscape}{Landscape array at the start of the time step}
+\item{LAND}{The landscape array on which interactions between resources and agents occur}
 
-\item{paras}{Vector of parameter values to read into the model}
+\item{PARAS}{The vector of parameters that hold global and dynamic parameter values used by GMSE}
 
-\item{cost}{Array of the costs associated with each agent actions}
+\item{COST}{A three dimensional array of cost values for agent (manager and stakeholder) actions}
 
-\item{action}{Array of each agents actions}
+\item{ACTION}{ACTION A three dimensional array of agent (manager and stakeholder) actions}
 
-\item{Jacobian}{Jacobian matrix of resources & landscape layer effects}
+\item{INTERACT}{An interaction (Jacobian) matrix of resources & landscape layer effects}
 
 \item{model}{The type of model being applied (Currently only individual-based
 -- i.e., 'agent-based' -- models are allowed)}
 
-\item{inter_table}{Interaction table indexing types with Jacobian matrix}
+\item{inter_table}{Interaction table indexing types with the INTERACT matrix}
 }
 \value{
-Data frames of user output at the end of the time step
+The user function outputs an R list that includes five separate arrays, including (1) an new RESOURCES array, (2) a new AGENTS array, (3) a new LAND array, (4) a new ACTIONS array, and a new (5) COST array, each of which might be affected by the user function. The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the resource, observation, and management models.
 }
 \description{
-A model of user decisions for a single time step
+A model of user decisions for a single time step. These decisions result in stakeholder actions that can potentially affect resources and the landscape in a GMSE simulation.
 }

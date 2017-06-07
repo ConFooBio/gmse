@@ -12,21 +12,21 @@ make_resource(model = "IBM", resource_quantity = 100, resource_types = 1,
 \item{model}{The type of model being applied (Currently only individual-based
 -- i.e., 'agent-based' -- models are allowed)}
 
-\item{resource_quantity}{Number of resources being model}
+\item{resource_quantity}{The total number of resources being initialised (e.g., the population size of the resource at the first time step)}
 
-\item{resource_types}{Number of different types of resources}
+\item{resource_types}{The number of resource types that exist. Currently, only one resource type is recommended, but future versions of GMSE will include multiple resource types if requested}
 
-\item{rows}{Location of resource on LANDSCAPE (y-axis)}
+\item{rows}{The number of rows (y-axis) on the simulated landscape; resources are randomly placed somewhere on the landscape array}
 
-\item{cols}{Location of resource on LANDSCAPE (x-axis)}
+\item{cols}{The number of columns (x-axis) on the simulated landscape; resources are randomly placed somewhere on the landscape array}
 
-\item{move}{Parameter affecting individual movement}
+\item{move}{This parameter affects the movement of resources each time step. There are multiple types of movement (see res_move_type in the gmse function), but this parameter determines the distance in cells that a resource will move}
 
-\item{rm_pr}{Probability of resource removal (death) per time step}
+\item{rm_pr}{This parameter sets the baseline probability of resource removal (death) per time step; this probability can be affected by user actions or carrying capacity, so a probability of zero does not ensure that resources will necessarily persist until the end of the simulation}
 
-\item{lambda}{Rate parameter for Poisson random sampling affecting birthrate}
+\item{lambda}{This is the parameter for Poisson random sampling affecting birthrate; each resource gives birth to Poisson(lambda) offspring in the resource model}
 
-\item{consumption_rate}{Rate at which resource consumes crops on landscape}
+\item{consumption_rate}{Rate at which resource consumes crops on landscape; consumption affects the landscape by decreasing values on the landscape array (which may, e.g., be interpreted as crop production being decreased), and might also affect resource demographic parameters depending on other global options set in GMSE}
 }
 \value{
 the_resources Initialised data frame of resources being modelled

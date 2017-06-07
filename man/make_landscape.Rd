@@ -25,6 +25,12 @@ make_landscape(model, rows, cols, cell_types, cell_val_mn, cell_val_sd,
 \item{cell_val_max}{The maximum value of a cell}
 
 \item{cell_val_min}{The minimum value of a cell}
+
+\item{layers}{The number of layers in the 3D landscape (should usually be 3)}
+
+\item{ownership}{A scalar or vector of agent IDs that own land}
+
+\item{owner_pr}{The proportion of land owned by each agent with a unique ID. Note that `owner_pr` must be of the same size as `ownership`, and the order of `owner_pr` reflects the order of agent IDs to which owned land is being assigned}
 }
 \value{
 the_land A cols by rows landscape with randomly distributed cell types

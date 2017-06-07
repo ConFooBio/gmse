@@ -7,9 +7,12 @@
 make_utilities(AGENTS, RESOURCES)
 }
 \arguments{
-\item{AGENTS}{The agent array}
+\item{AGENTS}{The array of agents produced in the main gmse() function}
 
-\item{RESOURCES}{The resource array}
+\item{RESOURCES}{The resources array produced by the resource function within GMSE}
+}
+\value{
+A three dimensional ACTION array of initialised agent (manager and stakeholder) actions of the same dimensions as the COST array in GMSE
 }
 \description{
 Function to initialise the utilities of the G-MSE model

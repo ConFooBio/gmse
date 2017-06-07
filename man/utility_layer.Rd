@@ -7,11 +7,14 @@
 utility_layer(agent_IDs, agent_number, res_types)
 }
 \arguments{
-\item{agent_IDs}{Vector of agent IDs to use (including -1 and -2)}
+\item{agent_IDs}{Vector of agent IDs to use (including -1 and -2, which indicate direct actions to the landscape and resources, respectively)}
 
 \item{agent_number}{The number of agents to use (length of agent_IDs)}
 
-\item{res_types}{The number of unique resource types (cols 2-4 of RESOURCES)}
+\item{res_types}{The number of unique resource types (cols 2-4 of RESOURCES); for now, this should always be 1}
+}
+\value{
+A layer of the COST or ACTION array, as called in building either make_costs or make_utilities, respectively. This layer corresponds to the costs or actions of a single agent, with the larger array in in which it is placed including all agents
 }
 \description{
 Function to initialise a layer of the UTILITY array of the G-MSE model

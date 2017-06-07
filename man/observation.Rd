@@ -4,43 +4,41 @@
 \alias{observation}
 \title{Observation model}
 \usage{
-observation(resource = NULL, landscape = NULL, paras = NULL,
-  agent = NULL, inter_tabl = NULL, fix_mark = FALSE, times = 1,
-  samp_age = 1, agent_type = 0, type_cat = 1, obs_method = 0,
-  move_res = FALSE, model = "IBM")
+observation(RESOURCES = NULL, LAND = NULL, PARAS = NULL, AGENTS = NULL,
+  inter_tabl = NULL, fix_mark = FALSE, times = 1, samp_age = 1,
+  agent_type = 0, type_cat = 1, obs_method = 0, move_res = FALSE,
+  model = "IBM")
 }
 \arguments{
-\item{resource}{Resource data frame at the start of the time step}
+\item{RESOURCES}{The resources array produced by the resource function within GMSE}
 
-\item{landscape}{Data frame at the start of the time step}
+\item{LAND}{The landscape array on which interactions between resources and agents occur}
 
-\item{paras}{Vector of parameter values to read into the model}
+\item{PARAS}{The vector of parameters that hold global and dynamic parameter values used by GMSE}
 
-\item{agent}{Agent data frame at the start of the time step}
+\item{AGENTS}{The array of agents produced in the main gmse() function}
 
 \item{fix_mark}{Fixed number of individuals marked? (A number, or FALSE)}
 
-\item{times}{Number of times that the observations are made}
+\item{times}{Number of times that the observations are made (e.g., managers go out sampling n times in an area of the landscape)}
 
 \item{samp_age}{Minimum age of the resource being sampled (default = 1)}
 
 \item{agent_type}{The type of agent doing the observing (default = 0)}
 
-\item{type_cat}{The category of agent type (first 4 columns) doing observing}
+\item{type_cat}{The category of agent type (first 4 columns) doing observing; this will almost always be 1, so type 0 agents (managers, of which there is always one by default) will perform the observations}
 
-\item{obs_method}{The type of method used to do the observing}
+\item{obs_method}{The type of method used to do the observing. For types of observation exist: (1) Density based observation, where observers count all of the resources within a subset of the landscape (the manager function can then later estimate total resource number from this estimate). (2) Mark-recapture based observation, where observers tag a fixed number of randomly sampled resources on the landscape some number of `times`; some of these resources marks are later interpreted as marks ('fix_mark') while the rest are interpreted as recaptures. (3) Transect based observation, where observers sample a linear transect, observing all resources on the transect one row of landscape cells at a time, until all landscape cells are sampled; between samples, resources might move generating observation error. (4) Block based sampling, which is very similar to Transect based sampling; here observers instead sample square blocks of a landscape, counting resources one block at a time, until the whole landscape is sampled; between samples resources might move generating observation error.}
 
-\item{move_res}{Should resources be moved during observation (default = FALSE)}
+\item{move_res}{Defines whether or not resources move during observation (default = FALSE). Note that if this is FALSE, then observation methods (obs_method) 3 and 4 produce no observation error}
 
 \item{model}{The type of model being applied (Currently only individual-based
 -- i.e., 'agent-based' -- models are allowed)}
 
-\item{inter_table}{Interaction table indexing types with Jacobian matrix}
-
-\item{types}{The types of data being observed}
+\item{inter_table}{Interaction table indexing types with the INTERACT matrix}
 }
 \value{
-Data frame observations at the end of the time step
+The observation function outputs an R list that includes three separate arrays, including (1) an new OBSERVATION array that holds observed resources and their traits with additional columns indicating when the resources were observed (relevant, e.g., for mark-recapture), (2) a new AGENTS array, and (3) a new PARAS array, each of which might be affected by the user function.  The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the management, user, and resource models.
 }
 \description{
 A simulation of techniques (e.g., capture-mark-recapture) for estimating

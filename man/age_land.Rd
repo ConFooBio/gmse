@@ -4,19 +4,17 @@
 \alias{age_land}
 \title{Age landscape}
 \usage{
-age_land(landscape, landscape_ini, layer)
+age_land(LAND, landscape_ini, layer)
 }
 \arguments{
-\item{landscape}{The name of the landscape being changed}
+\item{LAND}{The name of the landscape being changed}
 
 \item{landscape_ini}{The name of the original landscape replacing}
 
 \item{layer}{The layer that is being affected on the landscape}
-
-\item{model}{The type of model being applied (Currently only individual-based
--- i.e., 'agent-based' -- models are allowed)}
 }
 \description{
-How does the landscape change on its own over generations?
+How does the landscape change on its own over time steps?
 For now, simply reverts a specified layer back to its original values
+In other words, e.g., crops are annual and regrow undamaged each year
 }

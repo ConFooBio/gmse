@@ -4,12 +4,12 @@
 \alias{make_interaction_array}
 \title{Initialise array of resource and landscape-level interactions}
 \usage{
-make_interaction_array(resources, landscape)
+make_interaction_array(RESOURCES, LAND)
 }
 \arguments{
-\item{resources}{the resource array}
+\item{RESOURCES}{The resources array produced by the resource function within GMSE}
 
-\item{landscape}{the landscape array}
+\item{LAND}{The landscape array on which interactions between resources and agents occur}
 }
 \description{
 Initialise array of resource and landscape-level interactions

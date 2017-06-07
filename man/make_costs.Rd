@@ -2,15 +2,24 @@
 % Please edit documentation in R/initialise.R
 \name{make_costs}
 \alias{make_costs}
-\title{cOST initialisation}
+\title{COST initialisation}
 \usage{
 make_costs(AGENTS, RESOURCES, res_opts, lnd_opts, min_cost)
 }
 \arguments{
-\item{AGENTS}{The agent array}
+\item{AGENTS}{The array of agents produced in the main gmse() function}
 
-\item{RESOURCES}{The resource array}
+\item{RESOURCES}{The resources array produced by the resource function within GMSE}
+
+\item{res_opts}{A binary vector produced by the GMSE function defining what types of stakeholder interactions with resources (scaring, culling, castration, feeding, help_offspring) are permitted}
+
+\item{lnd_opts}{A binary vector produced by the GMSE function defining what types of stakeholder interactions with the landscape (tend_crops, kill_crops) are permitted}
+
+\item{min_cost}{The minimum cost that any agent (stakeholder or manager) incurrs for performing one action. This value is also set as an option in the main gmse() function (minimum_cost). This cost is recommended to be set to a value of 10, which gives managers increased precision when adjusting costs. For example, if the mimimum cost for a stakeholder performing an action is low, then a small change in the mimimum cost could halve or double the number of actions performed from the manager's perspective, with no options in between; hence the benefit of having a high mimimum cost combined with a higher agent budget (see the main gmse() function)}
+}
+\value{
+A three dimensional array of initialised cost values for agent (manager and stakeholder) actions of the same dimensions as the ACTION array in GMSE
 }
 \description{
-Function to initialise the utilities of the G-MSE model
+Function to initialise the cost array of the G-MSE model
 }

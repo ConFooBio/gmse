@@ -4,23 +4,20 @@
 \alias{resource}
 \title{Resource model}
 \usage{
-resource(resource = NULL, landscape = NULL, paras = NULL,
-  move_res = TRUE, model = "IBM")
+resource(RESOURCES = NULL, LAND = NULL, PARAS = NULL, model = "IBM")
 }
 \arguments{
-\item{resource}{Resource data frame at the start of the time step}
+\item{RESOURCES}{The resources array produced by the resource function within GMSE}
 
-\item{landscape}{Data frame at the start of the time step}
+\item{LAND}{The landscape array on which interactions between resources and agents occur}
 
-\item{paras}{Vector of parameter values to read into the model}
-
-\item{move_res}{Determining whether or not resources should move}
+\item{PARAS}{The vector of parameters that hold global and dynamic parameter values used by GMSE}
 
 \item{model}{The type of model being applied (Currently only individual-based
 -- i.e., 'agent-based' -- models are allowed)}
 }
 \value{
-Data frame of Resource 2 at the end of the time step
+The resource function outputs an R list that includes three separate arrays, including (1) an new RESOURCES array, (2) a new LAND array, (3) a new PARAS array, each of which might be affected by the user function. The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the observation, management, and user models.
 }
 \description{
 A population model of resource (including population) dynamics for 

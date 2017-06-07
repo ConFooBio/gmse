@@ -4,29 +4,24 @@
 \alias{make_agents}
 \title{Agent initialisation}
 \usage{
-make_agents(model = "IBM", agent_number = 2, by_type = FALSE,
-  type_counts = c(1, 1), move = 0, vision = 20, rows = 100,
-  cols = 100)
+make_agents(model = "IBM", agent_number = 2, type_counts = c(1, 1),
+  move = 0, vision = 20, rows = 100, cols = 100)
 }
 \arguments{
 \item{model}{The type of model being applied (Currently only individual-based
 -- i.e., 'agent-based' -- models are allowed)}
 
-\item{agent_number}{Number of agents in the model}
+\item{agent_number}{This is the number of agents that are set in the model; agent number does not change during the simulation, and each agent has a unique ID}
 
-\item{by_type}{Whether individuals are defined by type (FALSE) or row (TRUE)}
+\item{type_counts}{A vector of how many agents there are of each type (element). The sum of this vector needs to equal the agent_number so that each agent can correctly be assigned a type. Currently, GMSE assumes that there are only two types of agents: managers (type 0) and stakeholders (type 1), and only one manager exists. Future versions of GMSE will allow for different options as requested.}
 
-\item{type_counts}{Vector of how many agents of each type (element)}
+\item{move}{This parameter affects the movement of agents each time step. There are multiple types of movement (see obs_move_type in the gmse function), but this parameter determines the distance in cells that an agent will move. Agent movement is generally less important than resource movement, and typically does not affect how agents interact with resources}
 
-\item{move}{A parameter that affects agent movement}
+\item{vision}{This parameter determines the distance around an agent's location within which it can observe resources. This is relevant for some (but not not all) types of observation in the observation model, particularly for density-based estimation (observe_type = 0 in the gmse() function).}
 
-\item{vision}{A parameter affecting the area around its location it perceives}
+\item{rows}{The number of rows (y-axis) on the simulated landscape; agents are randomly placed somewhere on the landscape array}
 
-\item{rows}{Location of agent on LANDSCAPE (y-axis)}
-
-\item{cols}{Location of agent on LANDSCAPE (x-axis)}
-
-\item{move}{Parameter affecting individual movement}
+\item{cols}{The number of columns (x-axis) on the simulated landscape; agents are randomly placed somewhere on the landscape array}
 }
 \value{
 the_agents Initialised data frame of agents being modelled
