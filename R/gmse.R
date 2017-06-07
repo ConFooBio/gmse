@@ -1,7 +1,8 @@
 #' General function for now
 #'
 #' Function to run G-MSE model
-#'
+#'@param
+#'@return
 #'@useDynLib GMSE
 #'@export
 gmse <- function( time_max       = 100,   # Max number of time steps in sim
