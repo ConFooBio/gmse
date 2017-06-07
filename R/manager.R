@@ -1,66 +1,71 @@
 #' Manager model
 #'
-#' A model of manager decisions for a single time step
+#' A model of manager decisions for a single time step. Managers set costs for user actions.
 #'
-#'@param resource Resource data frame at the start of the time step
-#'@param agent Agent array at the start of the the time step
-#'@param landscape Landscape array at the start of the time step
-#'@param paras Vector of parameter values to read into the model
-#'@param cost Array of the costs associated with each agent actions
-#'@param action Array of each agents actions
-#'@param Jacobian Jacobian matrix of resources & landscape layer effects
-#'@param inter_table Interaction table indexing types with Jacobian matrix
-#'@param observation The data table of observations to estimate abundance
+#'@param RESOURCES The resources array produced by the resource function within GMSE
+#'@param AGENTS The array of agents produced in the main gmse() function
+#'@param LAND The landscape array on which interactions between resources and agents occur
+#'@param PARAS The vector of parameters that hold global and dynamic parameter values used by GMSE
+#'@param COST A three dimensional array of cost values for agent (manager and stakeholder) actions
+#'@param ACTION A three dimensional array of agent (manager and stakeholder) actions
+#'@param INTERACT An interaction (Jacobian) matrix of resources & landscape layer effects
+#'@param inter_table Interaction table indexing types with the INTERACT matrix
+#'@param OBSERVATION The array of resource observations from the observation model, used to estimate abundance of resources
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
-#'@return Data frames of user output at the end of the time step
-#'@export
-manager <- function(resource    = NULL,
-                    agent       = NULL,
-                    landscape   = NULL, 
-                    paras       = NULL,
-                    cost        = NULL,
-                    action      = NULL,
-                    Jacobian    = NULL,
+#'@return The manager function outputs an R list that includes five separate arrays, including (1) an new RESOURCES array, (2) a new AGENTS array, (3) a new LAND array, (4) a new ACTIONS array, and a new (5) COST array, each of which might be affected by the user function. The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the user, resource, and observation models.
+#'@export 
+manager <- function(RESOURCES   = NULL,
+                    AGENTS      = NULL,
+                    LAND        = NULL, 
+                    PARAS       = NULL,
+                    COST        = NULL,
+                    ACTION      = NULL,
+                    INTERACT    = NULL,
                     inter_tabl  = NULL,
-                    observation = NULL,
+                    OBSERVATION = NULL,
                     model       = "IBM"
 ) {
     check_model <- 0;
     if(model == "IBM"){
         # Relevant warnings below if the inputs are not of the right type
-        if(!is.array(resource)){
+        if(!is.array(RESOURCES)){
             stop("Warning: Resources need to be in an array");   
         }
-        if(!is.array(agent)){
+        if(!is.array(AGENTS)){
             stop("Warning: Agents need to be in an array");   
         }
-        if(!is.array(landscape)){
+        if(!is.array(LAND)){
             stop("Warning: Landscape needs to be in an array");
-        } # TODO: make sure paras is right length below
-        if(!is.vector(paras) | !is.numeric(paras)){
+        } # TODO: make sure PARAS is right length below
+        if(!is.vector(PARAS) | !is.numeric(PARAS)){
             stop("Warning: Parameters must be in a numeric vector");
         }
-        if(!is.array(action)){
-            stop("Warning: Action needs to be in an array");
+        if(!is.array(COST)){
+            stop("Warning: COST needs to be in an array");
         } 
-        if(!is.array(Jacobian)){
+        if(!is.array(ACTION)){
+            stop("Warning: ACTION needs to be in an array");
+        } 
+        if(!is.array(INTERACT)){
             stop("Warning: Interaction matrix needs to be in an array");
         }
         if(!is.array(inter_tabl)){
             stop("Warning: Look-up table for interactions needs to be array");
-        }         
+        }
+        if(!is.array(OBSERVATION)){
+            stop("Warning: Observation needs to be in an array");
+        }
         # If all checks out, then run the manager model
-        
-        MANAGER_OUT <- run_manage(RESOURCE_c    = resource,
-                                  LANDSCAPE_c   = landscape,
-                                  PARAMETERS_c  = paras,
-                                  AGENT_c       = agent,
-                                  COST_c        = cost,
-                                  ACTION_c      = action,
-                                  JACOBIAN_c    = Jacobian,
+        MANAGER_OUT <- run_manage(RESOURCE_c    = RESOURCES,
+                                  LANDSCAPE_c   = LAND,
+                                  PARAMETERS_c  = PARAS,
+                                  AGENT_c       = AGENTS,
+                                  COST_c        = COST,
+                                  ACTION_c      = ACTION,
+                                  JACOBIAN_c    = INTERACT,
                                   INTERACT_c    = inter_tabl,
-                                  OBSERVATION_c = observation
+                                  OBSERVATION_c = OBSERVATION
         );
    
         check_model <- 1;

@@ -7,7 +7,7 @@
 #'@param LAND The landscape array on which interactions between resources and agents occur
 #'@param PARAS The vector of parameters that hold global and dynamic parameter values used by GMSE
 #'@param COST A three dimensional array of cost values for agent (manager and stakeholder) actions
-#'@param ACTION Array of each agents actions
+#'@param ACTION ACTION A three dimensional array of agent (manager and stakeholder) actions
 #'@param INTERACT An interaction (Jacobian) matrix of resources & landscape layer effects
 #'@param inter_table Interaction table indexing types with the INTERACT matrix
 #'@param model The type of model being applied (Currently only individual-based
