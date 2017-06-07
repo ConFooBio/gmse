@@ -2,55 +2,59 @@
 #'
 #' A model of user decisions for a single time step
 #'
-#'@param resource Resource data frame at the start of the time step
-#'@param agent Agent array at the start of the the time step
-#'@param landscape Landscape array at the start of the time step
-#'@param paras Vector of parameter values to read into the model
-#'@param cost Array of the costs associated with each agent actions
-#'@param action Array of each agents actions
-#'@param Jacobian Jacobian matrix of resources & landscape layer effects
-#'@param inter_table Interaction table indexing types with Jacobian matrix
+#'@param RESOURCES The resources array produced by the resource function within GMSE
+#'@param AGENTS The array of agents produced in the main gmse() function
+#'@param LAND The landscape array on which interactions between resources and agents occur
+#'@param PARAS The vector of parameters that hold global and dynamic parameter values used by GMSE
+#'@param COST A three dimensional array of cost values for agent (manager and stakeholder) actions
+#'@param ACTION Array of each agents actions
+#'@param INTERACT An interaction (Jacobian) matrix of resources & landscape layer effects
+#'@param inter_table Interaction table indexing types with the INTERACT matrix
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
-#'@return Data frames of user output at the end of the time step
+#'@return The user function outputs an R list that includes five separate arrays, including (1) an new RESOURCES array, (2) a new AGENTS array, (3) a new LAND array, (4) a new ACTIONS array, and a new (5) COST array, each of which might be affected by the user function. The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the resource, observation, and management models.
 #'@export
-user <- function(resource   = NULL,
-                 agent      = NULL,
-                 landscape  = NULL, 
-                 paras      = NULL,
-                 cost       = NULL,
-                 action     = NULL,
-                 Jacobian   = NULL,
+user <- function(RESOURCES  = NULL,
+                 AGENTS     = NULL,
+                 LAND       = NULL, 
+                 PARAS      = NULL,
+                 COST       = NULL,
+                 ACTION     = NULL,
+                 INTERACT   = NULL,
                  inter_tabl = NULL,
                  model      = "IBM"
 ) {
     check_model <- 0;
     if(model == "IBM"){
         # Relevant warnings below if the inputs are not of the right type
-        if(!is.array(resource)){
-            stop("Warning: Resources need to be in an array");   
+        if(!is.array(RESOURCES)){
+            stop("Warning: RESOURCES needs to be in an array");   
         }
-        if(!is.array(agent)){
-            stop("Warning: Agents need to be in an array");   
+        if(!is.array(AGENTS)){
+            stop("Warning: AGENTS needs to be in an array");   
         }
-        if(!is.array(landscape)){
-            stop("Warning: Landscape need to be in an array");
-        } # TODO: make sure paras is right length below
-        if(!is.vector(paras) | !is.numeric(paras)){
+        if(!is.array(LAND)){
+            stop("Warning: LAND needs to be in an array");
+        }
+        if(!is.array(COST)){
+            stop("Warning: COST needs to be in an array");
+        } 
+        if(!is.array(ACTION)){
+            stop("Warning: ACTION needs to be in an array");
+        } 
+        if(!is.vector(PARAS) | !is.numeric(PARAS)){
             stop("Warning: Parameters must be in a numeric vector");
         }
         # If all checks out, then run the user model
-        
-        USER_OUT <- run_user(RESOURCE_c    = resource,
-                             LANDSCAPE_c   = landscape,
-                             PARAMETERS_c  = paras,
-                             AGENT_c       = agent,
-                             COST_c        = cost,
-                             ACTION_c      = action,
-                             JACOBIAN_c    = Jacobian,
+        USER_OUT <- run_user(RESOURCE_c    = RESOURCES,
+                             LANDSCAPE_c   = LAND,
+                             PARAMETERS_c  = PARAS,
+                             AGENT_c       = AGENTS,
+                             COST_c        = COST,
+                             ACTION_c      = ACTION,
+                             JACOBIAN_c    = INTERACT,
                              INTERACT_c    = inter_tabl
         );
-   
         check_model <- 1;
     }
     if(check_model == 0){

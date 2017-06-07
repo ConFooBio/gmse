@@ -245,13 +245,13 @@ utility_layer <- function(agent_IDs, agent_number, res_types){
 
 #' Initialise array of resource and landscape-level interactions
 #'
-#'@param resources the resource array
-#'@param landscape the landscape array
+#'@param RESOURCES The resources array produced by the resource function within GMSE
+#'@param LAND The landscape array on which interactions between resources and agents occur
 #'@export
-make_interaction_array <- function(resources, landscape){
-    resource_types  <- unique(resources[,2:4]);
+make_interaction_array <- function(RESOURCES, LAND){
+    resource_types  <- unique(RESOURCES[,2:4]);
     resource_count  <- dim(resource_types)[1];
-    landscape_count <- dim(landscape)[3] - 2; # Maybe put all of them in later?
+    landscape_count <- dim(LAND)[3] - 2; # Maybe put all of them in later?
     total_dims      <- resource_count + landscape_count;
     INTERACTIONS    <- matrix(data = 0, nrow = total_dims, ncol = total_dims);
     
