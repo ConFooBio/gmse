@@ -8,10 +8,10 @@
 gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   land_dim_1     = 100,   # x dimension of the landscape
                   land_dim_2     = 100,   # y dimension of the landscape
-                  res_movement   = 1,     # How far do resources move
+                  res_movement   = 4,     # How far do resources move
                   remove_pr      = 0.0,   # Density independent resource death
-                  lambda         = 0.05,  # Resource growth rate
-                  agent_view     = 10,    # Number cells agent view around them
+                  lambda         = 0.25,  # Resource growth rate
+                  agent_view     = 20,    # Number cells agent view around them
                   agent_move     = 50,    # Number cells agent can move
                   res_birth_K    = 10000, # Carrying capacity applied to birth
                   res_death_K    = 400,   # Carrying capacity applied to death
@@ -20,8 +20,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   res_birth_type = 2,     # What type of birth for resources
                   res_death_type = 2,     # What type of death for resources
                   observe_type   = 0,     # Type of observation used
-                  fixed_observe  = 1,     # How many obs (if type = 1)
-                  times_observe  = 1,     # How many times obs (if type = 0)
+                  fixed_observe  = 20,    # How many obs (if type = 1)
+                  times_observe  = 40,    # How many times obs (if type = 0)
                   obs_move_type  = 1,     # Type of movement for agents
                   res_min_age    = 1,     # Minimum age recorded and observed
                   res_move_obs   = TRUE,  # Move resources while observing
@@ -32,8 +32,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   res_consume    = 0.5,   # Pr. landscape cell consumed by res
                   ga_popsize     = 100,   # Pop size in genetic algorithm
                   ga_mingen      = 20,    # Minimum generations in a ga run
-                  ga_seedrep     = 10,    # How many copies to seed a ga with
-                  ga_sampleK     = 10,    # Random sample size in ga tournament
+                  ga_seedrep     = 20,    # How many copies to seed a ga with
+                  ga_sampleK     = 20,    # Random sample size in ga tournament
                   ga_chooseK     = 2,     # Select from sample in ga tournament
                   ga_mutation    = 0.1,   # Mutation rate in genetic algorithm
                   ga_crossover   = 0.1,   # Crossover rate in genetic algorithm
@@ -105,8 +105,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                              move         = agent_move
     ); 
     
-    Jacobian <- make_interaction_array(resources = starting_resources,
-                                       landscape = LANDSCAPE_r
+    Jacobian <- make_interaction_array(RESOURCES = starting_resources,
+                                       LAND      = LANDSCAPE_r
     );
     Jacobian[1,2] <- -1 * res_consume; # Temporary to fix consumption rate
     
@@ -294,20 +294,19 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         AGENTS[1,5] <- sample(x = 1:ldx, size = 1); # Move manager randomly
         AGENTS[1,6] <- sample(x = 1:ldy, size = 1); 
         
-        RESOURCE_NEW      <- resource(resource   = RESOURCES,
-                                      landscape  = LANDSCAPE_r,
-                                      paras      = paras,
-                                      move_res   = TRUE,
+        RESOURCE_NEW      <- resource(RESOURCES  = RESOURCES,
+                                      LAND       = LANDSCAPE_r,
+                                      PARAS      = paras,
                                       model      = "IBM"
         ); 
         RESOURCES             <- RESOURCE_NEW[[1]];
         LANDSCAPE_r           <- RESOURCE_NEW[[2]];
         paras                 <- RESOURCE_NEW[[3]];
         
-        OBSERVATION_NEW   <- observation(resource   = RESOURCES,
-                                         landscape  = LANDSCAPE_r,
-                                         paras      = paras,
-                                         agent      = AGENTS,
+        OBSERVATION_NEW   <- observation(RESOURCES  = RESOURCES,
+                                         LAND       = LANDSCAPE_r,
+                                         PARAS      = paras,
+                                         AGENTS     = AGENTS,
                                          inter_tabl = interaction_tabl,
                                          fix_mark   = fxo,
                                          times      = tmo,
@@ -320,10 +319,10 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         OBSERVATION_r  <- OBSERVATION_NEW[[1]];
         paras          <- OBSERVATION_NEW[[3]];
         
-        AGENTS_NEW        <- anecdotal(resource    = RESOURCES,
-                                       landscape   = LANDSCAPE_r,
-                                       paras       = paras,
-                                       agent       = AGENTS,
+        AGENTS_NEW        <- anecdotal(RESOURCES   = RESOURCES,
+                                       LAND        = LANDSCAPE_r,
+                                       PARAS       = paras,
+                                       AGENTS      = AGENTS,
                                        res_type    = 1,
                                        samp_age    = rma,
                                        agent_type  = -1,
@@ -333,28 +332,28 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         AGENTS <- AGENTS_NEW[[1]];
 
         if(time %% manage_freq == 0){
-            MANAGER  <- manager(resource    = RESOURCES,
-                                agent       = AGENTS,
-                                landscape   = LANDSCAPE_r, 
-                                paras       = paras,
-                                cost        = COST,
-                                action      = ACTION,
-                                Jacobian    = Jacobian,
+            MANAGER  <- manager(RESOURCES   = RESOURCES,
+                                AGENTS      = AGENTS,
+                                LAND        = LANDSCAPE_r, 
+                                PARAS       = paras,
+                                COST        = COST,
+                                ACTION      = ACTION,
+                                INTERACT    = Jacobian,
                                 inter_tabl  = interaction_tabl,
-                                observation = OBSERVATION_r,
+                                OBSERVATION = OBSERVATION_r,
                                 model       = "IBM"
             );
             ACTION <- MANAGER[[4]];
             COST   <- MANAGER[[5]];
         }
         
-        USERS <- user(resource   = RESOURCES,
-                      agent      = AGENTS,
-                      landscape  = LANDSCAPE_r, 
-                      paras      = paras,
-                      cost       = COST,
-                      action     = ACTION,
-                      Jacobian   = Jacobian,
+        USERS <- user(RESOURCES  = RESOURCES,
+                      AGENTS     = AGENTS,
+                      LAND       = LANDSCAPE_r, 
+                      PARAS      = paras,
+                      COST       = COST,
+                      ACTION     = ACTION,
+                      INTERACT   = Jacobian,
                       inter_tabl = interaction_tabl,
                       model      = "IBM"
         );
@@ -372,7 +371,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         ACTION_REC[[time]]       <- ACTION;
         PARAS_REC[time,]         <- paras;
         
-        LANDSCAPE_r <- age_land(landscape = LANDSCAPE_r, 
+        LANDSCAPE_r <- age_land(LAND          = LANDSCAPE_r, 
                                 landscape_ini = LANDSCAPE_INI, layer = 2);
         
         time              <- time + 1;
