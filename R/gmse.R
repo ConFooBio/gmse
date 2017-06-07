@@ -3,31 +3,12 @@
 #' Function to run G-MSE model
 #'
 #'@export
-rm(list=ls(all=TRUE));
+
 
 ################################################################################
-
-setwd("~/Dropbox/projects/gmse");
-
 # Compiled using the following
 # R CMD SHLIB -o gmse.so resource.c observation.c user.c game.c utilities.c
 #   manager.c
-dyn.load('src/gmse.so') # Just keep this here for now.
-
-source("R/initialise.R");
-source("R/landscape.R");
-source("R/resource.R");
-source("R/observation.R");
-source("R/user.R");
-source("R/anecdotal.R");
-source("R/manager.R");
-source("R/plotting.R");
-
-################################################################################
-
-################################################################################
-# PRIMARY FUNCTION (gmse) FOR RUNNING A SIMULATION
-# NOTE: RELIES ON SOME OTHER FUNCTIONS BELOW: MIGHT WANT TO READ WHOLE FILE
 ################################################################################
 gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   land_dim_1     = 100,   # x dimension of the landscape
@@ -506,95 +487,4 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
 
     return(sim_results);
 }
-################################################################################
-################################################################################
-
-####################################################################
-## A bit of code to read out and allow input to the observation
-####################################################################
-be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, PARAS, view, times){
-    seeit    <- AGENT[2,13];
-    view     <- view;
-    count    <- dens_est(OBSERVATION, view, LAND, times)$Nc;
-    count    <- floor(count);
-    line0    <- paste("Year: ", RESOURCES[1,8]);
-    line1    <- paste("The manager says the population size is ",count);
-    line2    <- paste("You observe ",seeit," animals on the farm");
-    line3    <- paste("Enter the number of animals to shoot");
-    cat("\n");
-    cat(line0);
-    cat("\n");
-    cat(line1);
-    cat("\n");
-    cat(line2);
-    cat("\n");
-    cat(line3);
-    cat("\n");
-    shot_char   <- readLines(con=stdin(),1);
-    shooting    <- as.numeric(shot_char);
-    while(is.na(shooting)){
-        cat("Need to shoot a natural number -- try again");
-        shot_char   <- readLines(con=stdin(),1);
-        shooting    <- as.numeric(shot_char);
-    }
-    if(shooting > seeit){
-        shooting <- seeit;
-        cat("You can't shoot animals that you can't see");
-        cat("\n");
-        response <- paste(seeit," animals shot");
-        cat(response);
-        cat("\n");
-    }
-    if(shooting > 0){
-        ress      <- dim(RESOURCES)[1];
-        hunted    <- sample(x=1:ress, size = shooting, replace = FALSE);
-        RESOURCES <- RESOURCES[-hunted,];
-    }
-    PARAS[33] <- dim(RESOURCES)[1];
-    return(list(RESOURCES = RESOURCES, PARAS = PARAS));
-}
-
-################################################################################
-
-sim <- gmse( observe_type   = 0,
-             agent_view     = 20,
-             res_death_K    = 1200,
-             plotting       = TRUE,
-             hunt           = FALSE,
-             res_movement   = 40,
-             start_hunting  = 95,
-             lambda         = 0.24,
-             fixed_observe  = 20,
-             times_observe  = 40,
-             land_dim_1     = 100,
-             land_dim_2     = 100,
-             res_consume    = 0.5,
-             time_max       = 100,
-             res_move_obs   = TRUE,
-             max_ages       = 5,
-             ga_sampleK     = 20,    # Random sample size in ga tournament
-             ga_chooseK     = 2,     # Select from sample in ga tournament
-             ga_mingen      = 20,   
-             ga_seedrep     = 20,
-             ga_mutation    = 0.1,   # Mutation rate in genetic algorithm
-             ga_crossover   = 0.1,   # Crossover rate in genetic algorithm
-             minimum_cost   = 10,    # Minimum cost value
-             user_budget    = 1000,  # What is the budget of a user
-             manager_budget = 1000,  # The budget of a manager
-             manage_target  = 600,   # The target resource abundance
-             scaring        = FALSE, # Scaring allowed in simulations
-             culling        = TRUE,  # Culling/hunting allowed
-             castration     = FALSE, # Castration allowed
-             feeding        = FALSE, # Feeding resources allowed
-             help_offspring = FALSE, # Helping offspring allowed
-             tend_crops     = FALSE, # Tending crops allowed
-             kill_crops     = FALSE, # Killing crops allowed
-             RESOURCE_ini   = 600,   # Number of initial resources
-             stakeholders   = 4,     # Number of stakeholders
-             manage_caution = 1,     # Caution rate of the manager
-             land_ownership = TRUE, # Do stake-holders only act on their land
-             manage_freq    = 1,
-             converge_crit  = 100
-);
-
 ################################################################################
