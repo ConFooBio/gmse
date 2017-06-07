@@ -1,6 +1,6 @@
 #' User model
 #'
-#' A model of user decisions for a single time step
+#' A model of user decisions for a single time step. These decisions result in stakeholder actions that can potentially affect resources and the landscape in a GMSE simulation.
 #'
 #'@param RESOURCES The resources array produced by the resource function within GMSE
 #'@param AGENTS The array of agents produced in the main gmse() function
