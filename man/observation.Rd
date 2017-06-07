@@ -5,7 +5,7 @@
 \title{Observation model}
 \usage{
 observation(resource = NULL, landscape = NULL, paras = NULL,
-  agent = NULL, res_type = 1, fix_mark = FALSE, times = 1,
+  agent = NULL, inter_tabl = NULL, fix_mark = FALSE, times = 1,
   samp_age = 1, agent_type = 0, type_cat = 1, obs_method = 0,
   move_res = FALSE, model = "IBM")
 }
@@ -34,6 +34,8 @@ observation(resource = NULL, landscape = NULL, paras = NULL,
 
 \item{model}{The type of model being applied (Currently only individual-based
 -- i.e., 'agent-based' -- models are allowed)}
+
+\item{inter_table}{Interaction table indexing types with Jacobian matrix}
 
 \item{types}{The types of data being observed}
 }

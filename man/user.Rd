@@ -5,17 +5,28 @@
 \title{User model}
 \usage{
 user(resource = NULL, agent = NULL, landscape = NULL, paras = NULL,
-  cost = NULL, action = NULL, model = "IBM")
+  cost = NULL, action = NULL, Jacobian = NULL, inter_tabl = NULL,
+  model = "IBM")
 }
 \arguments{
 \item{resource}{Resource data frame at the start of the time step}
 
-\item{landscape}{Data frame at the start of the time step}
+\item{agent}{Agent array at the start of the the time step}
+
+\item{landscape}{Landscape array at the start of the time step}
 
 \item{paras}{Vector of parameter values to read into the model}
 
+\item{cost}{Array of the costs associated with each agent actions}
+
+\item{action}{Array of each agents actions}
+
+\item{Jacobian}{Jacobian matrix of resources & landscape layer effects}
+
 \item{model}{The type of model being applied (Currently only individual-based
 -- i.e., 'agent-based' -- models are allowed)}
+
+\item{inter_table}{Interaction table indexing types with Jacobian matrix}
 }
 \value{
 Data frames of user output at the end of the time step

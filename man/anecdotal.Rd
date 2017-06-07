@@ -6,7 +6,7 @@
 \usage{
 anecdotal(resource = NULL, landscape = NULL, paras = NULL, agent = NULL,
   res_type = 1, samp_age = 1, agent_type = 0, type_cat = 1,
-  model = "IBM")
+  move_agents = FALSE, model = "IBM")
 }
 \arguments{
 \item{resource}{Resource data frame at the start of the time step}
@@ -22,6 +22,8 @@ anecdotal(resource = NULL, landscape = NULL, paras = NULL, agent = NULL,
 \item{agent_type}{The type of agent doing the observing (default = 0)}
 
 \item{type_cat}{The category of agent type (first 4 columns) doing observing}
+
+\item{move_agents}{Whether or not agents are moved during the run of anecodtal}
 
 \item{model}{The type of model being applied (Currently only individual-based
 -- i.e., 'agent-based' -- models are allowed)}

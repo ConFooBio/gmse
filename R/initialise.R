@@ -4,14 +4,14 @@
 #'
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
-#'@param resource_quantity Number of resources being model
-#'@param resource_types Number of different types of resources
-#'@param rows Location of resource on LANDSCAPE (y-axis)
-#'@param cols Location of resource on LANDSCAPE (x-axis)
-#'@param move Parameter affecting individual movement
-#'@param rm_pr Probability of resource removal (death) per time step
-#'@param lambda Rate parameter for Poisson random sampling affecting birthrate
-#'@param consumption_rate Rate at which resource consumes crops on landscape
+#'@param resource_quantity The total number of resources being initialised (e.g., the population size of the resource at the first time step)
+#'@param resource_types The number of resource types that exist. Currently, only one resource type is recommended, but future versions of GMSE will include multiple resource types if requested
+#'@param rows The number of rows (y-axis) on the simulated landscape; resources are randomly placed somewhere on the landscape array
+#'@param cols The number of columns (x-axis) on the simulated landscape; resources are randomly placed somewhere on the landscape array
+#'@param move This parameter affects the movement of resources each time step. There are multiple types of movement (see res_move_type in the gmse function), but this parameter determines the distance in cells that a resource will move
+#'@param rm_pr This parameter sets the baseline probability of resource removal (death) per time step; this probability can be affected by user actions or carrying capacity, so a probability of zero does not ensure that resources will necessarily persist until the end of the simulation
+#'@param lambda This is the parameter for Poisson random sampling affecting birthrate; each resource gives birth to Poisson(lambda) offspring in the resource model
+#'@param consumption_rate Rate at which resource consumes crops on landscape; consumption affects the landscape by decreasing values on the landscape array (which may, e.g., be interpreted as crop production being decreased), and might also affect resource demographic parameters depending on other global options set in GMSE
 #'@return the_resources Initialised data frame of resources being modelled
 #'@export
 make_resource <- function(model              = "IBM", 
@@ -70,19 +70,16 @@ make_resource <- function(model              = "IBM",
 #'
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
-#'@param agent_number Number of agents in the model
-#'@param by_type Whether individuals are defined by type (FALSE) or row (TRUE)
-#'@param type_counts Vector of how many agents of each type (element)
-#'@param move A parameter that affects agent movement
-#'@param vision A parameter affecting the area around its location it perceives
-#'@param rows Location of agent on LANDSCAPE (y-axis)
-#'@param cols Location of agent on LANDSCAPE (x-axis)
-#'@param move Parameter affecting individual movement
+#'@param agent_number This is the number of agents that are set in the model; agent number does not change during the simulation, and each agent has a unique ID
+#'@param type_counts A vector of how many agents there are of each type (element). The sum of this vector needs to equal the agent_number so that each agent can correctly be assigned a type. Currently, GMSE assumes that there are only two types of agents: managers (type 0) and stakeholders (type 1), and only one manager exists. Future versions of GMSE will allow for different options as requested.
+#'@param move This parameter affects the movement of agents each time step. There are multiple types of movement (see obs_move_type in the gmse function), but this parameter determines the distance in cells that an agent will move. Agent movement is generally less important than resource movement, and typically does not affect how agents interact with resources
+#'@param vision This parameter determines the distance around an agent's location within which it can observe resources. This is relevant for some (but not not all) types of observation in the observation model, particularly for density-based estimation (observe_type = 0 in the gmse() function). 
+#'@param rows The number of rows (y-axis) on the simulated landscape; agents are randomly placed somewhere on the landscape array
+#'@param cols The number of columns (x-axis) on the simulated landscape; agents are randomly placed somewhere on the landscape array
 #'@return the_agents Initialised data frame of agents being modelled
 #'@export
 make_agents <- function(model        = "IBM",
                         agent_number = 2,
-                        by_type      = FALSE,
                         type_counts  = c(1,1),
                         move         = 0,
                         vision       = 20,
@@ -128,12 +125,15 @@ make_agents <- function(model        = "IBM",
     return( the_agents );
 }
 
-#' cOST initialisation
+#' COST initialisation
 #'
-#' Function to initialise the utilities of the G-MSE model
+#' Function to initialise the cost array of the G-MSE model
 #'
-#'@param AGENTS The agent array 
-#'@param RESOURCES The resource array
+#'@param AGENTS The array of agents produced in the main gmse() function
+#'@param RESOURCES The resources array produced by the resource function within GMSE
+#'@param res_opts A binary vector produced by the GMSE function defining what types of stakeholder interactions with resources (scaring, culling, castration, feeding, help_offspring) are permitted
+#'@param lnd_opts A binary vector produced by the GMSE function defining what types of stakeholder interactions with the landscape (tend_crops, kill_crops) are permitted
+#'@param min_cost The minimum cost that any agent (stakeholder or manager) incurrs for performing one action. This value is also set as an option in the main gmse() function (minimum_cost). This cost is recommended to be set to a value of 10, which gives managers increased precision when adjusting costs. For example, if the mimimum cost for a stakeholder performing an action is low, then a small change in the mimimum cost could halve or double the number of actions performed from the manager's perspective, with no options in between; hence the benefit of having a high mimimum cost combined with a higher agent budget (see the main gmse() function)
 #'@export
 make_costs <- function(AGENTS, RESOURCES, res_opts, lnd_opts, min_cost){
     

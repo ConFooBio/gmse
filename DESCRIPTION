@@ -1,7 +1,7 @@
-Package: G-MSE
+Package: GMSE
 Type: Package
 Title: Game-theoretic management strategy evaluation simulator
-Version: 0.0.1
+Version: 0.1.1
 Author: A. Bradley Duthie
 Maintainer: A. Bradley Duthie <alexander.duthie@stir.ac.uk>
 Description: Simulates G-MSE (more on this later)
