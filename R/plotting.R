@@ -237,6 +237,9 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION){
 #'@param agents The array of agents produced in the main gmse() function
 #'@param paras The vector of parameters that hold global and dynamic parameter values used by GMSE
 #'@param ACTION A three dimensional array of agent (manager and stakeholder) actions
+#'@param COST A three dimensional array of cost values for agent (manager and stakeholder) actions
+#'@param view The distance that an agent can see on a landscape
+#'@param times The number of times that resources are sampled per time step
 #'@importFrom grDevices topo.colors
 #'@importFrom graphics abline axis image mtext par plot points polygon
 #'@importFrom stats rnorm rpois

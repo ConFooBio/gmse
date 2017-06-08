@@ -12,6 +12,7 @@
 #'@param rm_pr This parameter sets the baseline probability of resource removal (death) per time step; this probability can be affected by user actions or carrying capacity, so a probability of zero does not ensure that resources will necessarily persist until the end of the simulation
 #'@param lambda This is the parameter for Poisson random sampling affecting birthrate; each resource gives birth to Poisson(lambda) offspring in the resource model
 #'@param consumption_rate Rate at which resource consumes crops on landscape; consumption affects the landscape by decreasing values on the landscape array (which may, e.g., be interpreted as crop production being decreased), and might also affect resource demographic parameters depending on other global options set in GMSE
+#'@param max_age Maximum age allowed for a resource to be (in time steps)
 #'@return the_resources Initialised data frame of resources being modelled
 #'@export
 make_resource <- function(model              = "IBM", 
