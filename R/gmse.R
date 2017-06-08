@@ -17,6 +17,46 @@
 #'@param res_birth_K This value is the carrying capacity on new resources added per time step (e.g., birth). If more offspring are born in a time step than res_birth_K, then offspring are randomly removed from the population until offspring born equals res_birth_K. By default, carrying capacity is effectively applied to death instead of birth, so the default value of res_birth_K is set to 10000 (and hence not enacted because the number of births is never this high).
 #'@param res_death_K This value is the carrying capacity on resources in the population. Carrying capacity is realised by an increase in mortality probability as resource abundance approaches res_death_K. In each time step, realised mortality probability equals the number of resources over carrying capacity divided by the number of resources (i.e., [resource count - carrying capacity] / resource count). Hence, as the resource abundance increases above carrying capcity, mortality probability also increases in proportion, generating some stochasticity in resource survival. Note that carrying capacity is independent of user actions; if a user culls a resource this culling is applied after mortality probability due to carrying capacity has already been calculated. The default value for res_death_K is 400.
 #'@param edge_effect This determines what happens at the edge of the landscape. Currently there is only one option (value 1), which causes the landscape to wrap around as a torus (effectively removing the edge); resources that leave off of one side of the landscape will reappear on the other side of the landscape. 
+#'@param res_move_type This determines the type of movement that resources do. There are four different movement options: (0) No movement -- resources are sessile, (1) Uniform movement in any direction up to `res_movement` cells away during a time step. Movement direction is random and the cell distance moved is randomly selected from zero to `res_movement`. (2) Poisson selected movement in the x and y dimensions where distance in each direction is determined by Poisson(res_movement) and direction (e.g., left versus right) is randomly selected for each dimension. This type of movement tends to look a bit odd with low `res_movement` values because it results in very little diagonal movement. It also is not especially biologically realistic, so should probably not be used without a good reason. (3) Uniform movement in any direction up to `res_movement` cells away during a a time step `res_movement` times. In other words, the `res_movement` variable of each resource is acting to determine the times that a resource moves in a time step and the maximum distance it travels each time it moves. This type of movement has been simulated in ecological models, particularly plant-pollinator systems. The default movement type is (1).
+#'@param res_birth_type The type of resource addition (birth) that occurs. Currently, the only value allowed is 2, which causes all resources to produce Poisson(lambda) offspring each time step, where `lambda` is the population growth rate also set as an argument in gmse simulations.
+#'@param res_death_type The type of resource removal (death) that occurs. A value of (1) causes death to be entirely density-independent and with a probability of `removal_pr` for each resource (which may be further affected by agent actions or interactions with landscape cells). A value of (2) causes death to be density-dependent (though potentially independently affected by agents and landscape), with mortality probability calculated based on the carrying capacity `res_death_K` set in as an argument in gmse simulations. The default `res_death_type` is (2), as values of (1) must be used carefully because it can result in exponential growth that leads to massive population sizes that slow down simulations.
+#'@param observe_type The type of observation sampling of resources being done by managers in the observation model. There are currently four options for sampling. (0) Density-based sampling, in which managers sample all resources within some subset of the landscape; the size of this subset is all of the resources within a distance of `agent_view` from the cell of the manager. Managers sample `times_observe` subsets, where `times_observe` is a parameter value set in the gmse simulation. Managers then extrapolate the density of resources in the subset to estimate the total number of resources on a landscape. (1) Mark-recapture estimate of the popuation, in which managers randomly sample `times_observe` resources in the population without any spatial bias (if there are fewer than `times_observe` resources, managers sample all resources) `times_observe` times with replacement. The first `fixed_observe` times are interpreted as marks, while the remaining times are interpreted as recaptures (note that `fixed_observe` must be less than `times_observe`). Hence if a resource is observed at any time in `fixed_observe` independent observations, then it is considered marked; if it is observed again at any time in `times_observe - fixed_observe` independent observations, then it is considered recaptured. A Chapman estimate is used in the manager model to estimate population size from these observation data. (2) Transect-based sampling (linear), in which a manager samples an entire row of the landscape and counts the resources on the row, then moves onto the next row of the landscape until the entire landscape has been covered. The number of cells in each row (i.e., the height) equals `agent_view`, so fewer transects are needed if agents can see farther. If `res_move_obs == TRUE`, then resources can move on the landscape between each transect sampling, potentially causing observation error if some resources are double counted or not counted at all due to movement. If `res_move_obs == FALSE`, then this type of observation should produce no error, and resource estimation will be exact. (3) Transect-based sampling (block), in which a manager samples a block of the landscape and counts the resources in the block, then moves on to the next (equally sized) block until the entire landscape has been covered. Blocks are square, with the length of each side equaling `agent_view`, so fewer blocks are needed if agents can see farther. If `res_move_obs == TRUE`, then resources can move on the landscape between each block sampling, potentially causing observation error if some resources are double counted or not counted at all due to movement. If `res_move_obs == FALSE`, then this type of observation should produce no error, and resource estimation will be exact.
+#'@param fixed_observe This parameter affects mark-recapture observation (i.e., applies only when observe_type == 0).
+#'@param times_observe
+#'@param obs_move_type
+#'@param res_min_age
+#'@param res_move_obs
+#'@param Euclidean_dist
+#'@param plotting
+#'@param hunt
+#'@param start_hunting
+#'@param res_consume
+#'@param ga_popsize
+#'@param ga_mingen
+#'@param ga_seedrep
+#'@param ga_sampleK
+#'@param ga_chooseK
+#'@param ga_mutation
+#'@param ga_crossover
+#'@param move_agents
+#'@param max_ages
+#'@param minimum_cost
+#'@param user_budget
+#'@param manager_budget
+#'@param manage_target
+#'@param RESOURCE_ini
+#'@param scaring
+#'@param culling
+#'@param castration
+#'@param feeding
+#'@param help_offspring
+#'@param tend_crops
+#'@param kill_crops
+#'@param stakeholders
+#'@param manage_caution
+#'@param land_ownership
+#'@param manage_freq
+#'@param converge_crit
 #'@return simulations
 #'@useDynLib GMSE
 #'@importFrom grDevices topo.colors
