@@ -82,7 +82,6 @@ void initialise_pop(double ***ACTION, double ***COST, double *paras, int layer,
         lowest_cost  =  min_cost(COST, paras, layer, budget);
         budget_count =  budget; 
         if(lowest_cost <= 0){
-            printf("Lowest cost is too low (must be positive) \n");
             break;
         }
         while(budget_count > lowest_cost){
@@ -623,8 +622,6 @@ void tournament(double *fitnesses, int *winners, double *paras){
     placed   = 0;
     
     if(chooseK > sampleK){
-        printf("ERROR: Can't choose more winners than sampled in tournament\n");
-        printf("Defaulting to sampleK = chooseK \n");
         chooseK = sampleK;
     }
     while(placed < pop_size){ /* Note sampling is done with replacement */

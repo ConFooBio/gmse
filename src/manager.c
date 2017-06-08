@@ -129,7 +129,6 @@ double chapman_est(double **obs_array, double *paras, int type1, int type2,
     recapture_start = mark_start + (total_marks - recaptures);
     
     if(total_marks < 2 || recaptures < 1){
-        printf("ERROR: Not enough marks or recaptures for management");
         return 0;
     }
     

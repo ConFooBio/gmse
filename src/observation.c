@@ -68,9 +68,6 @@ void a_mover(double **agent_moving, double ***land, double *paras, int a_row){
             move_len = (int) floor(raw_move);
             break;            
         default:
-            if(a_row == 0){
-                printf("Unclear specification of movement type \n");
-            }
             break;
     }
     new_pos  = agent_moving[a_row][xloc] + (move_dir * move_len); 
@@ -87,9 +84,6 @@ void a_mover(double **agent_moving, double ***land, double *paras, int a_row){
                 }
                 break;
             default:
-                if(a_row == 0){
-                    printf("ERROR: Edge effects set incorrectly \n");
-                }
                 break;
         }
     }
@@ -444,7 +438,6 @@ void sample_fixed_res(double **resource_array, double **agent_array,
     lookup_rows  = (int) paras[60]; /* Number of rows in the lookup table */
     
     if(fixed_sample < 1){
-        printf("ERROR: Fixed sample must be >= 1 \n ... Making = 1 \n");
         paras[10]    = 1;
         fixed_sample = 1;
     }
@@ -748,7 +741,6 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
             transect_len *= working_agents;
             if(transect_len < 1){
                 transect_len = 1;
-                printf("ERROR: Transect length was < 1; changing to 1");
             }
             obs_iter     = 0;
             tx0          = 0;
@@ -777,7 +769,6 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
             transect_eff = working_agents;
             if(transect_len < 1){
                 transect_len = 1;
-                printf("ERROR: Transect length was < 1; changing to 1");
             }
             obs_iter     = 0;
             tx0          = 0;
@@ -801,13 +792,11 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
                     transect_eff = working_agents;
                 }
                 if( obs_iter > (land_x * land_y) ){
-                    printf("ERROR: Too many samples (Inf loop possible)");
                     break;   
                 }
             }
             break;            
         default:
-            printf("ERROR: No observation method set: marking all in view \n");
             obs_iter = trait_number + 1; /* The 1 skips over the agent type */
             while(times_obs > 0){
                 mark_res(resource_array, agent_array, land, paras, obs_iter);
@@ -844,8 +833,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
             }
             obs_array[add_obs][13] = (double) a_type; /* Re-purpose tally col */
             add_obs++;
-            if(add_obs > new_obs){ /* Below should not every happen */
-                printf("\n\nFATAL ERROR: Added observes exceed expected\n\n");  
+            if(add_obs > new_obs){ /* Below should not ever happen */
                 break;
             }
         }

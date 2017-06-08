@@ -160,7 +160,6 @@ int edge_effect(int pos, int edge_1, int edge_2, int edge_type){
                 while(pos < edge_1){
                     pos = pos + edge_2;   
                 }
-                printf("ERROR: Edge effects set incorrectly \n");
                 break;
         }
     }
@@ -241,9 +240,6 @@ void res_mover(double **res_moving, double ***landscape, double *paras){
                 move_len = (int) floor(raw_move);
                 break;
             default:
-                if(resource == 0){
-                    printf("Unclear specification of movement type \n");
-                }
                 break;
         }
         new_pos  = (int) res_moving[resource][xloc] + (move_dir * move_len);

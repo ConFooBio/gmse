@@ -72,7 +72,6 @@ void res_add(double **res_adding, double *paras){
             }
             break;
         default:
-            printf("ERROR: Resource growth/birth type set incorrectly \n"); 
             break;
     }
     if(K_add > 0){ /* If there is a carrying capacity applied to adding */
@@ -85,7 +84,6 @@ void res_add(double **res_adding, double *paras){
             }
             loops--;
             if(loops < 0){
-                printf("ERROR: Possible infinite loop in res_add");
                 break;
             }
         }
@@ -128,9 +126,6 @@ void res_place(double **make, double **old, double *paras, int res_added){
             res_index++;
         }
         to_make = to_add;
-    }
-    if(to_make > res_added){
-        printf("WARNING: Non-conformable arrays placing new resources");   
     }
 }
 
@@ -189,8 +184,7 @@ void res_remove(double **res_removing, double *paras){
             }
             break;
         default:
-            printf("ERROR: Resource removal/death type set incorrectly \n");
-        break;
+            break;
     }
     for(resource = 0; resource < resource_number; resource++){
         if(res_removing[resource][age_col] > max_age){
