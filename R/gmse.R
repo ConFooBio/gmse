@@ -28,36 +28,36 @@
 #'@param res_move_obs This is a TRUE or FALSE value that defines whether or not resources are to move between `times_observe` times being observed. The default value is TRUE, but if the option is set to FALSE then it shuts down all resource movement during sampling (making `observe_type = 2` and `observe_type = 3` error free). 
 #'@param Euclidean_dist This is a TRUE or FALSE value that defines whether distance in the simulation should be judged as number of cells away or the actual Euclidean distance between points (e.g., if the landscape were interpreted as a map). The default is set to FALSE, and until GMSE is capable of reading in real-world maps, I don't think there is any good reason to set it to TRUE.
 #'@param plotting This is a TRUE or FALSE value that determines whether or not the simulation results will be plotted. The default is TRUE. If plotted, then a function is called to show the dynamics of resources and agent actinos over time. The plotted function plots the dynamics of GMSE resource, observation, managemer, and user models in six separate sub-panels. (1) Upper left panel: Shows the locations of resources on the landscape (black dots); landscape terrain is also shown in brown, but at the moment, this is only cosmetic and does not reflect anything occurring in the model. (2) Upper right panel: Shows ownership of land by agents; land is divided proportional based on parameters set in gmse() and colours correspond with other subplots. If agent utilities and actions are restricted to land (`land_ownership` in the gmse() function), then this gives some idea of where actions are being performed and where resources are affecting the landscape. (3) Middle left panel: Shows the actual population abundance (black solid line) and the population abundance estimated by the manager (blue solid line) over time. The dotted red line shows the resource carrying capacity (death-based) and the dotted blue line shows the target for resource abundance as set in the gmse() function; the orange line shows the total percent yield of the landscape (i.e., 100 percent means that resources have not decreased yield at all, 0 percent means that resources have completely destroyed all yield). (4) Middle right panel: Shows the raw landscape yield for each stakeholder (can be ignored if `land_ownership` is FALSE) over time; colours correspond to land ownership shown in the upper right panel. (5) Lower left panel: The cost of stakeholders performing actions over time, as set by the manager. (6) Lower right panel: The total number of actions performed by all stakeholders over time.
-#'@param hunt This is a TRUE or FALSE value that determines whether the simulation will be halted each time step after `start_hunting` time steps to ask the user how many resources they want to hunt (some management information is given to help make this choice). This feature will be expanded upon in later versions.
-#'@param start_hunting
-#'@param res_consume
-#'@param ga_popsize
-#'@param ga_mingen
-#'@param ga_seedrep
-#'@param ga_sampleK
-#'@param ga_chooseK
-#'@param ga_mutation
-#'@param ga_crossover
-#'@param move_agents
-#'@param max_ages
-#'@param minimum_cost
-#'@param user_budget
-#'@param manager_budget
-#'@param manage_target
-#'@param RESOURCE_ini
-#'@param scaring
-#'@param culling
-#'@param castration
-#'@param feeding
-#'@param help_offspring
-#'@param tend_crops
-#'@param kill_crops
-#'@param stakeholders
-#'@param manage_caution
-#'@param land_ownership
-#'@param manage_freq
-#'@param converge_crit
-#'@return simulations
+#'@param hunt This is a TRUE or FALSE value that determines whether the simulation will be halted each time step after `start_hunting` time steps to ask the user how many resources they want to hunt (some management information is given to help make this choice). This feature will be expanded upon in later versions. Right now, the human is playing the role of agent number 2, the first stake-holder in the simulation. By default, this value is set to FALSE.
+#'@param start_hunting The time step in which the human (*not* the simulated agent) is allowed to start hunting if `hunt = TRUE`. The default value is 95.
+#'@param res_consume The fraction of remaining biomass (e.g. crop production) that a resource consumes while occupying a landscape cell. The default value is 0.5, so if one resource occupies the cell, then landscape production is halved, if two resources occupy the cell, then landscape production drops to 0.25; if three, then production drops to 0.125, etc.
+#'@param ga_popsize The size of populations of agents in the genetic algorithm (not resources in the simulation). The actions of each agent in the simulation are duplicated `ga_popsize` times, and this population of individual agent actions undergoes a process of natural selection to find an adaptive strategy. Selection is naturally stronger in larger populations, but a default population size of 100 is more than sufficient to find adaptive strategies. 
+#'@param ga_mingen The minimum number of generations in the genetic algorithms of the simulation (*not* the number of time steps in the simulation itself). The actions of each agent in the simulation are duplicated `ga_popsize` times, and this population of individual agent actions undergoes a process of natural selection at least `ga_mingen` times to find an adaptive strategy. If convergence criteria `converge_crit` is set to a default value of 100, then the genetic algorithm will almost always continue for exactly `ga_mingen` generations. The default value is 20, which is usually plenty for finding adaptive agent strategies -- the objective is not to find optimal strategies, but strategies that are strongly in line with agent interests.
+#'@param ga_seedrep At the start of each genetic algorithm, `ga_popsize` replicate agents are produced; `ga_seedrep` of these replicates are *exact* replicates, while the rest have random actions to introduce variation into the population. Because adaptive agent strategies are not likely to change wildly from one generation to the next, it is highly recommended to use some value of `ga_seedrep` greater than zero; the default value is 20, which does a good job of finding adaptive strategies.
+#'@param ga_sampleK In the genetic algorithm, fitnesses are assgined to different agent strategies and compete in a tournament to be selected into the next generation. The tournament samples `ga_sampleK` strategies at random and with replacement from the population of `ga_popsize` to be included in the torunament. The default value is 20.
+#'@param ga_chooseK In the genetic algorithm, fitnesses are assgined to different agent strategies and compete in a tournament to be selected into the next generation. The tournament samples `ga_sampleK` strategies at random and with replacement from the population of `ga_popsize` to be included in the torunament, and from these randomly selected strategies, the top `ga_chooseK` strategies are selected. The default value is 2, so the top 10 percent of the random sample in a tournament makes it into the next generation (note that multiple tournaments are run until `ga_popsize` strategies are selected for the next generation). 
+#'@param ga_mutation In the genetic algorithm, this is the mutation rate of any action within an agent's strategy. When a mutation occurs, the action is either increased or decreased by a value of 1. If the action drops below zero, then the value after mutation is multiplied by -1.
+#'@param ga_crossover In the genetic algorithm, this is the crossover rate of any action within an agent's strategy with a randomly selected different strategy in the population of size `ga_popsize`.
+#'@param move_agents This is a TRUE or FALSE value that defines whether or not agents should move at the end of each time step. The default value is TRUE.
+#'@param max_ages This is the maximum age of resources. If resources reach this age, then they are removed in the resource model with a probability of 1. The default `max_ages` is 5.
+#'@param minimum_cost This is the mimimum cost of any action in the manager and user models. Higher values allow managers to have greater precision when setting policy. For example, managers believe (typically correctly) that they will double culling number by setting the cost of culling at 1 instead of 2. If actions always cost at least some minium value, then some increment just above that value is always available to more precisely affect user actions. Hence it is generally better to simply give everyone a bigger budget and set a minimum cost, giving more precision to managers to fine tune policy. The default value of minimum_cost is therefore set to 10.
+#'@param user_budget This is the total budget of each stakeholder for performing actions. The cost of performing an action is determined by the `miminimum_cost` of actions, and the policy set by the manager. The default `user_budget` is 1000.
+#'@param manager_budget This is the total budget for the manager when setting policy. Higher budgets make it easier to restrict the actions of stakeholders; lower budgets make it more difficult for managers to limit the actions of stakeholders by setting policy. The default `manager_budget` is 1000.
+#'@param manage_target This is the target resource abundance that the manager attempts to keep the population at; the default value is 200.
+#'@param RESOURCE_ini This is the initial abundance of resources at the start of the simulation; the default is 200.
+#'@param scaring This is a TRUE or FALSE value determining whether or not scaring is an option for managers and stakeholders. If so, then stakeholders that scare cause resources to be moved from their current landscape cell to a random cell on the landscape (note, it is possible that the resource could be scared back onto the stakeholder's own land again). The default value of this is FALSE.
+#'@param culling This is a TRUE or FALSE value determining whether or not culling is an option for managers and stakeholders. If so, then stakeholders that cull cause the resource to be removed from the simulation permanently (i.e., killing the resource). The default value of this is TRUE.
+#'@param castration This is a TRUE or FALSE value determining whether or not castration is an option for managers and stakeholders. If so, then stakeholders that castrate do not remove the resource from the simulation, but prohibit the resource from reproducing by setting its `lambda` value to zero. The default value of this is FALSE.
+#'@param feeding This is a TRUE or FALSE value determining whether or not feeding is an option for managers and stakeholders. If so, then stakeholders that feed increase a resource's growth rate (lambda) for one time step by 100 percent. The default value of this is FALSE.
+#'@param help_offspring This is a TRUE or FALSE value determining whether or not feeding is an option for managers and stakeholders. If so, then stakeholders that help_offspring increase a resource's offspring production for one time step by one (i.e., one more offspring is produced). The default value of this is FALSE.
+#'@param tend_crops This is a TRUE or FALSE value determining whether or not tending crops on the landscape is allowed for stakehodlers. If so, then stakeholders can increase one cells yield by 50 percent for each action to `tend_crops`. Actions on the landscape cannot be regulated by managers, so the cost of this action is always `minimum_cost`. The default value of this is FALSE.
+#'@param kill_crops This is a TRUE or FALSE value determining whether or not killing crops on the landscape is allowed for stakehodlers. If so, then stakeholders can remove the crop yield on a cell completely for each action to `tend_crops`. Actions on the landscape cannot be regulated by managers, so the cost of this action is always `minimum_cost`.
+#'@param stakeholders This is the number of stakeholders in a simulation; there is always one manager, and any natural number of stakeholders.
+#'@param manage_caution This value moderates the caution a manager has when changing policy by assuming that at least `manage_caution` of each possible action will always be performed by stakeholders. I manager will therefore not ignore policy for one action because no stakeholder is engaging in it; the default value of `manage_caution` is 1.
+#'@param land_ownership This value defines whether stakeholders own land and their actions are restricted to land that they own. If FALSE, then stakeholders can act on any landscape cell; if TRUE, then agents can only act on their own cells. The default of this value is TRUE.
+#'@param manage_freq This is the frequency with which policy is set by managers; a value of 1 means that policy is set in the manager model every time step; a value of 2 means that poilcy is set in the manager model every other time step, etc. The default value is 1.
+#'@param converge_crit This is the convergence criteria for terminating a genetic algorithm. After continuing for the minimum number of generations, `ga_mingen`, the genetic algorithm will terminate if the convergence criteria is met. Usually making this criteria low doesn't do much to improve adaptive strategies, so the default value is 100, which in practice cases the genetic algorithm to simply terminate after `ga_mingen` generations.
+#'@return A large list is returned that includes detailed simulation histories for the resource, observation, management, and user models. This list includes eight elements, most of which are themselves complex lists of arrays: (1) A list of length `time_max` in which each element is an array of resources as they exist at the end of each time step. Resource arrays include all resources and their attributes (e.g., locations, growth rates, offspring, how they are affected by stakeholders, etc.). (2) A list of length `time_max` in which each element is an array of resource observations from the observation model. Observation arrays are similar to resource arrays, except that they can have a smaller number of rows if not all resources are observed, and they have additional columns that show the history of each resource being observed over the course of `times_observe` observations in the observation model. (3) A 2D array showing parameter values at each time step (unique rows); most of these values are static but some (e.g., resource number) change over time steps. (4) A list of length `time_max` in which each element is an array of the landscape that identifies proportion of crop production per cell. This allows for looking at where crop production is increased or decreased over time steps as a consequence of resource and stakeholder actions. (5) The total time the simulation took to run (not counting plotting time). (6) A 2D array of agents and their traits. (7) A list of length `time_max` in which each element is a 3D array of the costs of performing each action for managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in costs of particular actions can therefore be be examined over time. (8) A list of length `time_max` in which each element is a 3D array of the actions performed by managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in actions of agents can therefore be examined over time. Because the above lists cannot possibly be interpreted by eye all at once in the simulation output, it is highly recommended that the contents of a simulation be stored and interprted individually if need be; alternativley, simulations can more easily be interpreted through plots when `plotting = TRUE`.
 #'@useDynLib GMSE
 #'@importFrom grDevices topo.colors
 #'@importFrom graphics abline axis image mtext par plot points polygon
@@ -86,7 +86,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   Euclidean_dist = FALSE, # Use Euclidean distance in view
                   plotting       = TRUE,  # Plot the results
                   hunt           = FALSE, # Does the user hunt resources?
-                  start_hunting  = 0,     # What generation hunting starts
+                  start_hunting  = 95,    # What generation hunting starts
                   res_consume    = 0.5,   # Pr. landscape cell consumed by res
                   ga_popsize     = 100,   # Pop size in genetic algorithm
                   ga_mingen      = 20,    # Minimum generations in a ga run
@@ -311,7 +311,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                -0.10,   # 76. Manager's projected change if resource castrated
                0.10,    # 77. Manager's projected change if resource growth +
                0.10,    # 78. Manager's projected change if resource offspring +
-               0.00,    # 79. User's improvement of land (proportion)
+               0.50,    # 79. User's improvement of land (proportion)
                1,       # 80. Landscape layer on which crop yield is located
                2,       # 81. Landscape layer on which ownership is defined
                15,      # 82. Column in agent array where cell yield recorded
@@ -484,7 +484,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                         observation = OBSERVATION_REC,
                         paras       = PARAS_REC,
                         land        = LANDSCAPE_REC,
-                        time_taken  = time_taken,
+                        time_taken  = total_time,
                         agents      = AGENTS,
                         cost        = COST_REC,
                         action      = ACTION_REC
