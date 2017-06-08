@@ -154,6 +154,12 @@ int edge_effect(int pos, int edge_1, int edge_2, int edge_type){
                 }
                 break;
             default:
+                while(pos >= edge_2){
+                    pos = pos - edge_2;   
+                }
+                while(pos < edge_1){
+                    pos = pos + edge_2;   
+                }
                 printf("ERROR: Edge effects set incorrectly \n");
                 break;
         }
