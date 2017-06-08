@@ -77,6 +77,12 @@ library(rhandsontable)
 <a name="updates">Project updates:</a>
 ================================================================================
 
+> <a name="u-8-JUN-2017">Update: 8 JUN 2017</a>
+
+**Introduce [Issue #29](https://github.com/bradduthie/gmse/issues/29): No edge effect causes crash**
+
+When `edge_effect = 0`, and therefore nothing happens when resources and agents move off of the edge of the landscape, R crashes. This is almost certainly due to some sort of memory leak. This is a low priority issue at the moment because I cannot think of a reason why anyone explicitly want the model to just ignore resources moving off of the landscape if someone wants something other than a torus (`edge_effect = 1`), such as a reflective edge or emigration upon leaving the landscape, this should be explicitly coded into the `edge_effect` function in `utilities.c`. Until someone asks for it, I'll stick with a torus.
+
 > <a name="u-7-JUN-2017">Update: 7 JUN 2017</a>
 
 **GMSE is now a package**
