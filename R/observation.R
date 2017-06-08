@@ -7,7 +7,7 @@
 #'@param LAND The landscape array on which interactions between resources and agents occur
 #'@param PARAS The vector of parameters that hold global and dynamic parameter values used by GMSE
 #'@param AGENTS The array of agents produced in the main gmse() function
-#'@param inter_table Interaction table indexing types with the INTERACT matrix
+#'@param inter_tabl Interaction table indexing types with the INTERACT matrix
 #'@param fix_mark Fixed number of individuals marked? (A number, or FALSE)
 #'@param times Number of times that the observations are made (e.g., managers go out sampling n times in an area of the landscape)
 #'@param samp_age Minimum age of the resource being sampled (default = 1)

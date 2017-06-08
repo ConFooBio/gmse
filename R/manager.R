@@ -9,7 +9,7 @@
 #'@param COST A three dimensional array of cost values for agent (manager and stakeholder) actions
 #'@param ACTION A three dimensional array of agent (manager and stakeholder) actions
 #'@param INTERACT An interaction (Jacobian) matrix of resources & landscape layer effects
-#'@param inter_table Interaction table indexing types with the INTERACT matrix
+#'@param inter_tabl Interaction table indexing types with the INTERACT matrix
 #'@param OBSERVATION The array of resource observations from the observation model, used to estimate abundance of resources
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
