@@ -45,19 +45,19 @@ chapman_est <- function(observation, paras){
 #' Actually put the individuals on the landscape with function below
 #'
 #'@param inds A single time step of resources from GMSE
-#'@param paras The vector of parameters that hold global and dynamic parameter values used by GMSE
+#'@param land The landscape array on which interactions between resources and agents occur
 #'@return Returns a landscape in which resources are embedded for a timestep for plotting purposes
 #'@export
-ind_to_land <- function(inds, landscape){
-    ind_rep  <- max(landscape) + 1;
+ind_to_land <- function(inds, land){
+    ind_rep  <- max(land) + 1;
     
     for(i in 1:dim(inds)[1]){
         x <- as.numeric(inds[i,6]);
         y <- as.numeric(inds[i,5]);
-        landscape[y,x] <- ind_rep;
+        land[y,x] <- ind_rep;
     }
     
-    return(landscape);
+    return(land);
 }
 
 #' Density estimator of resource abundance
@@ -138,7 +138,7 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION){
         ages  <- rbind(ages, age_t[,16]);
         par(mfrow=c(3,2),mar=c(0,0,0,0));
         # ------------- Panel 1 (upper left)
-        indis  <- ind_to_land(inds=res_t, landscape=land1);
+        indis  <- ind_to_land(inds=res_t, land=land1);
         image(indis, col=land_cols, xaxt="n", yaxt="n");
         # ------------- Panel 2 (upper right)
         col_num <- max(land3);
@@ -283,7 +283,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
         par(mfrow=c(3,2),mar=c(0,0,0,0));
         # ------------- Panel 1 (upper left)
         if(abun[i] > 0){
-            indis  <- ind_to_land(inds=res_t, landscape=land1);
+            indis  <- ind_to_land(inds=res_t, land=land1);
             image(indis, col=land_cols, xaxt="n", yaxt="n");
         }else{
             image(land1, col=land_cols, xaxt="n", yaxt="n");

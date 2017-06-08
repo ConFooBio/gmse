@@ -23,12 +23,12 @@ manager(RESOURCES = NULL, AGENTS = NULL, LAND = NULL, PARAS = NULL,
 
 \item{INTERACT}{An interaction (Jacobian) matrix of resources & landscape layer effects}
 
+\item{inter_tabl}{Interaction table indexing types with the INTERACT matrix}
+
 \item{OBSERVATION}{The array of resource observations from the observation model, used to estimate abundance of resources}
 
 \item{model}{The type of model being applied (Currently only individual-based
 -- i.e., 'agent-based' -- models are allowed)}
-
-\item{inter_table}{Interaction table indexing types with the INTERACT matrix}
 }
 \value{
 The manager function outputs an R list that includes five separate arrays, including (1) an new RESOURCES array, (2) a new AGENTS array, (3) a new LAND array, (4) a new ACTIONS array, and a new (5) COST array, each of which might be affected by the user function. The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the user, resource, and observation models.

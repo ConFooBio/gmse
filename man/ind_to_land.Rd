@@ -4,12 +4,12 @@
 \alias{ind_to_land}
 \title{Plot resource position on a landscape image output}
 \usage{
-ind_to_land(inds, landscape)
+ind_to_land(inds, land)
 }
 \arguments{
 \item{inds}{A single time step of resources from GMSE}
 
-\item{paras}{The vector of parameters that hold global and dynamic parameter values used by GMSE}
+\item{land}{The landscape array on which interactions between resources and agents occur}
 }
 \value{
 Returns a landscape in which resources are embedded for a timestep for plotting purposes

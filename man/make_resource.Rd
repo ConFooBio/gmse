@@ -27,6 +27,8 @@ make_resource(model = "IBM", resource_quantity = 100, resource_types = 1,
 \item{lambda}{This is the parameter for Poisson random sampling affecting birthrate; each resource gives birth to Poisson(lambda) offspring in the resource model}
 
 \item{consumption_rate}{Rate at which resource consumes crops on landscape; consumption affects the landscape by decreasing values on the landscape array (which may, e.g., be interpreted as crop production being decreased), and might also affect resource demographic parameters depending on other global options set in GMSE}
+
+\item{max_age}{Maximum age allowed for a resource to be (in time steps)}
 }
 \value{
 the_resources Initialised data frame of resources being modelled

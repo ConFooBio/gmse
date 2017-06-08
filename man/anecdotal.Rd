@@ -17,6 +17,8 @@ anecdotal(RESOURCES = NULL, LAND = NULL, PARAS = NULL, AGENTS = NULL,
 
 \item{AGENTS}{The array of agents produced in the main gmse() function}
 
+\item{res_type}{The type of resources being observed (default = 1)}
+
 \item{samp_age}{Minimum age of the resource being sampled (default = 1)}
 
 \item{agent_type}{The type of agent doing the observing (default = 0)}
