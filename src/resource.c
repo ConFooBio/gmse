@@ -72,6 +72,26 @@ void res_add(double **res_adding, double *paras){
             }
             break;
         default:
+            added = 0; 
+            for(resource = 0; resource < resource_number; resource++){
+                res_adding[resource][realised] = 0;
+                castrated = res_adding[resource][cadj];
+                killed    = res_adding[resource][klld];
+                if(castrated >= 1 || killed >= 1){
+                    rand_pois = 0;
+                }else{
+                    base_lambda = res_adding[resource][add];
+                    add_lambda  = base_lambda * res_adding[resource][gadj];
+                    lambda      = base_lambda + add_lambda;
+                    if(lambda < 0){
+                        lambda = 0;
+                    }
+                    rand_pois  = rpois(lambda);
+                    rand_pois += res_adding[resource][oadj];
+                    res_adding[resource][realised] = rand_pois;
+               }
+               added += (int) rand_pois;
+            }
             break;
     }
     if(K_add > 0){ /* If there is a carrying capacity applied to adding */
@@ -184,6 +204,23 @@ void res_remove(double **res_removing, double *paras){
             }
             break;
         default:
+            over_K  = resource_number - K;
+            if(over_K > 0){
+                rm_from_K  = (double) over_K / resource_number;
+                for(resource = 0; resource < resource_number; resource++){
+                    rand_unif   = runif(0, 1);
+                    if(rand_unif < rm_from_K){
+                        res_removing[resource][rm_row] = -1;   
+                    }
+                }
+            }
+            for(resource = 0; resource < resource_number; resource++){
+                rm_from_Ind = res_removing[resource][rm_adj];
+                rand_unif   = runif(0, 1);
+                if(rand_unif < rm_from_Ind){
+                   res_removing[resource][rm_row] = -1;   
+                }
+            }
             break;
     }
     for(resource = 0; resource < resource_number; resource++){
