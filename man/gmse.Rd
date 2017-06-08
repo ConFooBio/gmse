@@ -2,25 +2,54 @@
 % Please edit documentation in R/gmse.R
 \name{gmse}
 \alias{gmse}
-\title{General function for now}
+\title{GMSE simulation}
 \usage{
 gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
-  res_movement = 1, remove_pr = 0, lambda = 0.05, agent_view = 10,
+  res_movement = 4, remove_pr = 0, lambda = 0.3, agent_view = 20,
   agent_move = 50, res_birth_K = 10000, res_death_K = 400,
-  edge_effect = 1, res_move_type = 2, res_birth_type = 2,
-  res_death_type = 2, observe_type = 0, fixed_observe = 1,
-  times_observe = 1, obs_move_type = 1, res_min_age = 1,
+  edge_effect = 1, res_move_type = 1, res_birth_type = 2,
+  res_death_type = 2, observe_type = 0, fixed_observe = 20,
+  times_observe = 40, obs_move_type = 1, res_min_age = 1,
   res_move_obs = TRUE, Euclidean_dist = FALSE, plotting = TRUE,
   hunt = FALSE, start_hunting = 0, res_consume = 0.5, ga_popsize = 100,
-  ga_mingen = 20, ga_seedrep = 10, ga_sampleK = 10, ga_chooseK = 2,
+  ga_mingen = 20, ga_seedrep = 20, ga_sampleK = 20, ga_chooseK = 2,
   ga_mutation = 0.1, ga_crossover = 0.1, move_agents = TRUE,
   max_ages = 5, minimum_cost = 10, user_budget = 1000,
-  manager_budget = 1000, manage_target = 200, RESOURCE_ini = 100,
+  manager_budget = 1000, manage_target = 200, RESOURCE_ini = 200,
   scaring = FALSE, culling = TRUE, castration = FALSE, feeding = FALSE,
   help_offspring = FALSE, tend_crops = FALSE, kill_crops = FALSE,
   stakeholders = 4, manage_caution = 1, land_ownership = FALSE,
   manage_freq = 1, converge_crit = 100)
 }
+\arguments{
+\item{time_max}{This value sets the maximum number of time steps for a simulation. There are no constraints for length of time that a simulation can run. The default is 100 time steps.}
+
+\item{land_dim_1}{This value sets the number of cells on the x dimension of the landscape (i.e., the number of columns in the landscape array; this can also be thought of as the x-axis when the landscape image is plotted). There is no maximum, but the minimum dimension of a landscape is 2 cells. The default is 100 cells.}
+
+\item{land_dim_2}{This value sets the number of cells on the x dimension of the landscape (i.e., the number of columns in the landscape array; this can also be thought of as the x-axis when the landscape image is plotted). There is no maximum, but the minimum dimension of a landscape is 2 cells. The default is 100 cells.}
+
+\item{res_movement}{This value determines how far resources move during a time step. Exact movement is probabilistic and partly affected by `res_move_type` settings. Under default settings, during each time step, resources move from zero to res_movement cells away from their starting cell in any direction. Hence res_movement is the maximum distance away from a resources starting cell that it can move in a time step; other types of resource movement, however, interpret res_movement differently to get the raw distance moved (see res_move_type). The default value is 4.}
+
+\item{remove_pr}{This value is the density-independent and user-independent probability of a resource being removed (e.g., dying) during a time step in the resource model. Under default settings, this value is set to zero, with resource removal being determined entirely by carrying capcity on resource survival, and by user actions.}
+
+\item{lambda}{This value is the baseline population growth rate of resources. Each resource in the simulation produces Poisson(lambda) offspring in one time step within the resource model. The value of lambda might be increased or decreased by user actions, and juvenile survival can potentially be decreased by a carrying capacity placed on birth. The default value is 0.3, meaning that the average resource produces one offspring every three time steps.}
+
+\item{agent_view}{This value determines how far agents (managers and stakeholders) can see on the landscape. At the moment, this affects only the sampling ability of managers in the observation model for density-based and transect-based estimates of resource abundance. In these types of estimates, when managers have a higher agent_view, they are capable of observing a larger area of landscape and therefore of getting a larger (in the case of density-based estimation) or more efficient (in the case of transect-based estimation) sample of resources from which to estimate total resource abundance. The default value of agent_view is 20, so agents can see 20 cells away from their current cell in any direction.}
+
+\item{agent_move}{This value determines how far agents can move. At the moment, this does not affect much in the simulation because agent movement does not affect agent actions (interactions with resources can be limited to stakeholder's owned land, but do not currently depend on where an agent is on the landscape -- effectively assuming that agents are mobile enough to do what they want to do to resources). The one exception is for density-based estimation, which can be biased by low values of agent_move by causing the manager to sample the same (or nearby) landscape cells to estimate total resource abundance; if resources are spatially autocorrelated, then managers might over or under-estimate total abundance. Therefore, as a default, this value is set to 50 so that managers can move to any cell on a (torus) landscape in a time step, removing any bias for density sampling.}
+
+\item{res_birth_K}{This value is the carrying capacity on new resources added per time step (e.g., birth). If more offspring are born in a time step than res_birth_K, then offspring are randomly removed from the population until offspring born equals res_birth_K. By default, carrying capacity is effectively applied to death instead of birth, so the default value of res_birth_K is set to 10000 (and hence not enacted because the number of births is never this high).}
+
+\item{res_death_K}{This value is the carrying capacity on resources in the population. Carrying capacity is realised by an increase in mortality probability as resource abundance approaches res_death_K. In each time step, realised mortality probability equals the number of resources over carrying capacity divided by the number of resources (i.e., [resource count - carrying capacity] / resource count). Hence, as the resource abundance increases above carrying capcity, mortality probability also increases in proportion, generating some stochasticity in resource survival. Note that carrying capacity is independent of user actions; if a user culls a resource this culling is applied after mortality probability due to carrying capacity has already been calculated. The default value for res_death_K is 400.}
+
+\item{edge_effect}{This determines what happens at the edge of the landscape. Currently there is only one option (value 1), which causes the landscape to wrap around as a torus (effectively removing the edge); resources that leave off of one side of the landscape will reappear on the other side of the landscape.}
+}
+\value{
+simulations
+}
 \description{
-Function to run G-MSE model
+The gmse function is the the primary function to call to run a simulation.
+It calls other functions that run resource, observation, management, and user
+models in each time step. Hence while individual models can be used on their
+own, gmse() is really all that is needed to run a simulation.
 }

@@ -9,7 +9,7 @@
 #'@param COST A three dimensional array of cost values for agent (manager and stakeholder) actions
 #'@param ACTION ACTION A three dimensional array of agent (manager and stakeholder) actions
 #'@param INTERACT An interaction (Jacobian) matrix of resources & landscape layer effects
-#'@param inter_table Interaction table indexing types with the INTERACT matrix
+#'@param inter_tabl Interaction table indexing types with the INTERACT matrix
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
 #'@return The user function outputs an R list that includes five separate arrays, including (1) an new RESOURCES array, (2) a new AGENTS array, (3) a new LAND array, (4) a new ACTIONS array, and a new (5) COST array, each of which might be affected by the user function. The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the resource, observation, and management models.

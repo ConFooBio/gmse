@@ -8,6 +8,7 @@
 #'@param LAND The landscape array on which interactions between resources and agents occur
 #'@param PARAS The vector of parameters that hold global and dynamic parameter values used by GMSE
 #'@param AGENTS The array of agents produced in the main gmse() function
+#'@param res_type The type of resources being observed (default = 1)
 #'@param samp_age Minimum age of the resource being sampled (default = 1)
 #'@param agent_type The type of agent doing the observing (default = 0)
 #'@param type_cat The category of agent type (first 4 columns) doing observing; this will almost always be 1, so type 0 agents (managers, of which there is always one by default) will be affected
