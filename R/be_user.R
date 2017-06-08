@@ -11,10 +11,10 @@
 #'@param times The number of times that resources are observed in the observation model of GMSE
 #'@return the_land A cols by rows landscape with randomly distributed cell types
 #'@export
-be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, PARAS, view, times){
+be_hunte2r <- function(OBSERVATION, AGENT, RESOURCES, LAND, PARAS, view, times){
     seeit    <- AGENT[2,13];
     view     <- view;
-    count    <- dens_est(OBSERVATION, view, LAND, times)$Nc;
+    count    <- dens_est(OBSERVATION, paras, view, LAND)$Nc;
     count    <- floor(count);
     line0    <- paste("Year: ", RESOURCES[1,8]);
     line1    <- paste("The manager says the population size is ",count);
