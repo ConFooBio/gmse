@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **JUN** [8](#u-7-JUN-2017), [7](#u-7-JUN-2017), [6](#u-6-JUN-2017), [5](#u-5-JUN-2017), [4](#u-4-JUN-2017) 
+     - **JUN** [9](#u-9-JUN-2017), [8](#u-7-JUN-2017), [7](#u-7-JUN-2017), [6](#u-6-JUN-2017), [5](#u-5-JUN-2017), [4](#u-4-JUN-2017) 
      - **MAY** [31](#u-31-MAY-2017), [30](#u-30-MAY-2017), [29](#u-29-MAY-2017), [26](#u-26-MAY-2017), [25](#u-25-MAY-2017), [24](#u-24-MAY-2017), [23](#u-23-MAY-2017), [22](#u-22-MAY-2017), [18](#u-18-MAY-2017), [17](#u-17-MAY-2017), [16](#u-16-MAY-2017), [15](#u-15-MAY-2017), [12](#u-12-MAY-2017), [11](#u-11-MAY-2017), [10](#u-10-MAY-2017), [9](#u-9-MAY-2017), [8](#u-8-MAY-2017), [5](#u-5-MAY-2017), [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
      - **APR** [28](#u-28-APR-2017), [26](#u-26-APR-2017), [25](#u-25-APR-2017), [24](#u-24-APR-2017), [20](#u-20-APR-2017), [19](#u-19-APR-2017), [18](#u-18-APR-2017), [17](#u-17-APR-2017), [13](#u-13-APR-2017), [12](#u-12-APR-2017), [11](#u-11-APR-2017), [10](#u-10-APR-2017), [7](#u-7-APR-2017), [6](#u-6-APR-2017), [5](#u-5-APR-2017)
      - **MAR** [23](#u-23-MAR-2017), [22](#u-22-MAR-2017), [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
@@ -76,6 +76,45 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-9-JUN-2017">Update: 9 JUN 2017</a>
+
+<a name="v0.2.1.0">**Some initial notes: GMSE (beta) package `v0.2.1.0`**</a>
+
+A beta version of GMSE is now available, and is ready to be experimented with and tested as an R package. To download and begin using GMSE, it is necessary to first download the `devtools` library.
+
+```
+install.packages("devtools")
+library(devtools)
+```
+
+Use `install_github` to install using `devtools`.
+
+```
+install_github("bradduthie/gmse")
+```
+
+From here, it is possible to run GMSE simulations using the `gmse()` function. For help using this function, all [documentation](#gmse_init_doc) can be accessed by simply calling the help files.
+
+```
+help(gmse)
+```
+
+The [documentation](#gmse_init_doc) contains a basic description of the `gmse()` function (the only one that is needed to run simulations -- subfunctions for resource, observation, manager, and user models are all accessible as independent R functions, but are not very useful at the moment without the initialisation in the main function -- nevertheless, the documentation for these can be accessed with `help(resource)`, `help(observation)`, `help(manager)`, and `help(user)`). It also contains arguments for most of the variables that might be usefully changed to simulate different types of management scenarios; additional options are not shown for the moment either because more coding is needed to make them useful or because I don't expect they will be needed. The explanations of the arguments are detailed, along with documentation explaining the (extensive) amount of data that is returned after running a simulation. To get started though, the default simulation can be run simply.
+
+```
+sim <- gmse();
+```
+
+Parameter values can then be adjust by varying the options in the `gmse()` function.
+
+**R vignette, and the beginning of a methods paper**
+
+I will soon begin work on an [R vignette](http://r-pkgs.had.co.nz/vignettes.html), which is essentially a long form documentation that can also be a manuscript to submit to a journal. 
+
+**Add some formal testing functions for future development**
+
+I will also need to add some formal [R tests](http://r-pkgs.had.co.nz/tests.html), which are basically ways of automating the kind of testing that is done continually while writing the code. The idea with formal unit tests is to have a process that checks to see if the code breaks when a new feature (and therefore new coded) is added. Since the results of the simulation are stochastic, I think the best way to test is to set a seed and use default parameter values, then check to make sure that the results match the `expect_equal_to_reference()` function in `devtools`. It might be useful to do this for each of the `resource()`, `observation()`, `manager()`, `user()`, and `gmse()` models -- perhaps testing the *i*th time step for each of the sub-functions, but then the `gmse()` function also as a whole (perhaps using just 10 time steps would be sufficient for this instead of a default of 100).
 
 > <a name="u-8-JUN-2017">Update: 8 JUN 2017</a>
 
