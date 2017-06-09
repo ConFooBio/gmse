@@ -81,7 +81,26 @@ library(rhandsontable)
 
 **Some initial notes: GMSE (beta) package `v0.2.1.0`**
 
-A beta version of GMSE is now available, and is ready to be experimented with and tested as an R package. 
+A beta version of GMSE is now available, and is ready to be experimented with and tested as an R package. To download and begin using GMSE, it is necessary to first download the `devtools` library.
+
+```
+install.packages("devtools")
+library(devtools)
+```
+
+Use `install_github` to install using `devtools`.
+
+```
+install_github("bradduthie/gmse")
+```
+
+From here, it is possible to run GMSE simulations using the `gmse()` function. For help using this function, all [documentation](#gmse_init_doc) can be accessed by simply calling the help files.
+
+```
+help(gmse)
+```
+
+The [documentation](#gmse_init_doc) contains a basic description of the `gmse()` function (the only one that is needed to run simulations -- subfunctions for resource, observation, manager, and user models are all accessible as independent R functions, but are not very useful at the moment without the initialisation in the main function -- nevertheless, the documentation for these can be accessed with `help(resource)`, `help(observation)`, `help(manager)`, and `help(user)`). It also contains arguments for most of the variables that might be usefully changed to simulate different types of management scenarios; additional options are not shown for the moment either because more coding is needed to make them useful or because I don't expect they will be needed. The explanations of the arguments are detailed, along with documentation explaining the (extensive) amount of data that is returned after running a simulation.
 
 **R vignette, and the beginning of a methods paper**
 
@@ -97,7 +116,7 @@ I will also need to add some formal [R tests](http://r-pkgs.had.co.nz/tests.html
 
 When `edge_effect = 0`, and therefore nothing happens when resources and agents move off of the edge of the landscape, R crashes. This is almost certainly due to some sort of memory leak. This is a low priority issue at the moment because I cannot think of a reason why anyone explicitly want the model to just ignore resources moving off of the landscape if someone wants something other than a torus (`edge_effect = 1`), such as a reflective edge or emigration upon leaving the landscape, this should be explicitly coded into the `edge_effect` function in `utilities.c`. Until someone asks for it, I'll stick with a torus.
 
-**New (draft) documentation for the `gmse()` function**
+<a name="gmse_init_doc">**New (draft) documentation for the `gmse()` function**</a>
 
 ********************************************************************************
 
