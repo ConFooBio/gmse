@@ -5,8 +5,7 @@ Version: 0.2.0.0
 Imports: grDevices (>= 3.3.3), graphics (>= 3.3.3), stats (>= 3.3.3)
 Author: person("A. Bradley", "Duthie", email = "brad.duthie@gmail.com",
                   role = c("aut", "cre"))
-Maintainer: person("A. Bradley", "Duthie", email = "brad.duthie@gmail.com",
-                  role = c("aut", "cre"))
+Maintainer: A. Bradley Duthie <brad.duthie@gmail.com>
 Description: This package integrates game theory and ecological theory to
     construct social-ecological models that simulate the management of
     populations and stakeholder actions. These models build off of a previously 
