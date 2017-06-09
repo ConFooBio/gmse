@@ -79,7 +79,7 @@ library(rhandsontable)
 
 > <a name="u-9-JUN-2017">Update: 9 JUN 2017</a>
 
-**Some initial notes: GMSE (beta) package `v0.2.1.0`**
+<a name="v0.2.1.0">**Some initial notes: GMSE (beta) package `v0.2.1.0`**</a>
 
 A beta version of GMSE is now available, and is ready to be experimented with and tested as an R package. To download and begin using GMSE, it is necessary to first download the `devtools` library.
 
@@ -100,7 +100,13 @@ From here, it is possible to run GMSE simulations using the `gmse()` function. F
 help(gmse)
 ```
 
-The [documentation](#gmse_init_doc) contains a basic description of the `gmse()` function (the only one that is needed to run simulations -- subfunctions for resource, observation, manager, and user models are all accessible as independent R functions, but are not very useful at the moment without the initialisation in the main function -- nevertheless, the documentation for these can be accessed with `help(resource)`, `help(observation)`, `help(manager)`, and `help(user)`). It also contains arguments for most of the variables that might be usefully changed to simulate different types of management scenarios; additional options are not shown for the moment either because more coding is needed to make them useful or because I don't expect they will be needed. The explanations of the arguments are detailed, along with documentation explaining the (extensive) amount of data that is returned after running a simulation.
+The [documentation](#gmse_init_doc) contains a basic description of the `gmse()` function (the only one that is needed to run simulations -- subfunctions for resource, observation, manager, and user models are all accessible as independent R functions, but are not very useful at the moment without the initialisation in the main function -- nevertheless, the documentation for these can be accessed with `help(resource)`, `help(observation)`, `help(manager)`, and `help(user)`). It also contains arguments for most of the variables that might be usefully changed to simulate different types of management scenarios; additional options are not shown for the moment either because more coding is needed to make them useful or because I don't expect they will be needed. The explanations of the arguments are detailed, along with documentation explaining the (extensive) amount of data that is returned after running a simulation. To get started though, the default simulation can be run simply.
+
+```
+sim <- gmse();
+```
+
+Parameter values can then be adjust by varying the options in the `gmse()` function.
 
 **R vignette, and the beginning of a methods paper**
 
