@@ -14,11 +14,11 @@
 be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, PARAS, view, times){
     seeit    <- AGENT[2,13];
     view     <- view;
-    count    <- dens_est(OBSERVATION, paras, view, LAND)$Nc;
+    count    <- dens_est(OBSERVATION, PARAS, view, LAND)$Nc;
     count    <- floor(count);
     line0    <- paste("Year: ", RESOURCES[1,8]);
-    line1    <- paste("The manager says the population size is ",count);
-    line2    <- paste("You observe ",seeit," animals on the farm");
+    line1    <- paste("The manager says the population size is ", count);
+    line2    <- paste("You observe ", seeit, " animals on the farm");
     line3    <- paste("Enter the number of animals to shoot");
     cat("\n");
     cat(line0);
