@@ -115,7 +115,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   manage_caution = 1,     # Caution rate of the manager
                   land_ownership = FALSE, # Do stake-holders act on their land?
                   manage_freq    = 1,     # Frequency that management enacted
-                  converge_crit  = 100    # Convergence criteria
+                  converge_crit  = 100,   # Convergence criteria
+                  manager_sense  = 0.1    # Manager sensitivity
 ){
     
     if(observe_type == 1 & times_observe < 2){
@@ -236,6 +237,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     usb <- user_budget;
     mac <- manage_caution;
     cnv <- converge_crit;
+    mas <- manager_sense;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -312,10 +314,10 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                0,       # 72. Total actions in the action array
                16,      # 73. The column to adjust the castration of a resource
                0,       # 74. Manager's projected change if resource moved
-               -0.10,   # 75. Manager's projected change if resource killed
-               -0.10,   # 76. Manager's projected change if resource castrated
-               0.10,    # 77. Manager's projected change if resource growth +
-               0.10,    # 78. Manager's projected change if resource offspring +
+               -1*mas,  # 75. Manager's projected change if resource killed
+               -1*mas,  # 76. Manager's projected change if resource castrated
+               1*mas,   # 77. Manager's projected change if resource growth +
+               1*mas,   # 78. Manager's projected change if resource offspring +
                0.50,    # 79. User's improvement of land (proportion)
                1,       # 80. Landscape layer on which crop yield is located
                2,       # 81. Landscape layer on which ownership is defined
