@@ -765,19 +765,19 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     fit_change   = 10000;
     while(gen < generations || fit_change > converge_crit){
         
-        crossover(POPULATION, paras, agentID);
+        crossover(POPULATION, paras, agentID); 
         
-        mutation(POPULATION, paras, agentID);
- 
+        mutation(POPULATION, paras, agentID); 
+        
         constrain_costs(POPULATION, COST, paras, agent, budget, agentID);
- 
+        
         if(managing == 1){
             apply_min_costs(POPULATION, paras, agentID);
             manager_fitness(fitnesses, POPULATION, JACOBIAN, AGENT, lookup, 
-                            agentID, COST, ACTION, paras);
+                            agentID, COST, ACTION, paras); 
         }else{
             strategy_fitness(AGENT, POPULATION, paras, fitnesses, JACOBIAN, 
-                             lookup);
+                             lookup); 
         }
   
         tournament(fitnesses, winners, paras);
@@ -801,7 +801,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
             ACTION[row][col][agent] = POPULATION[row][col][most_fit];  
         }
     }
-
+    
     free(winners);
     free(fitnesses);
     for(row = 0; row < xdim; row++){

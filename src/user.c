@@ -168,19 +168,19 @@ void act_on_landscape(double ***land, double *paras, double ***action_array){
         do{
             xpos = get_rand_int(0, land_x);
             ypos = get_rand_int(0, land_y);
-        }while(land[xpos][ypos][2] != agentID);
+        }while(need_to_own == 1 && land[xpos][ypos][2] != agentID);
         switch(action_col){
         case 7:
             break;
         case 8:
             break;
-        case 9: /* Kill resource */
+        case 9:  /* Kill resource */ 
             land[xpos][ypos][1] = 0;
             break;
-        case 10: /* Feed resource (increase birth-rate)*/
+        case 10: /* Feed resource (increase birth-rate) */
             land[xpos][ypos][1] += (land[xpos][ypos][1] * feedin);
             break;
-        case 11: /* Help resource (increase offspring number directly) */
+        case 11: /* Help resource (increase offspring number directly) */ 
             break;
         default:
             break;
