@@ -264,6 +264,24 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
     mrk <- floor(tiobs / 2);
     rcp <- tiobs - mrk;
     
+    max_action <- 0;
+    max_cost   <- 0;
+    for(i in 1:length(res)){
+        act_check <- ACTION[[i]][,8:12,];
+        act_check[act_check > 10000] <- -1;
+        act_comb <- apply(X = act_check, MARGIN = c(1,2), FUN = sum);
+        gen_max_action <- max(act_comb);
+        if(gen_max_action > max_action){
+            max_action <- gen_max_action;
+        }
+        cost_check <- COST[[i]][,8:12,];
+        cost_check[cost_check >= 10000] <- -1;
+        gen_max_cost   <- max(cost_check);
+        if(gen_max_cost > max_cost){
+            max_cost <- gen_max_cost;
+        }
+    }
+    
     minK <- min(paras[6:7]);
     
     ymaxi    <- 2 * minK;
@@ -343,7 +361,8 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
             res_costs[j,5] <- ACTION[[j]][3,12,1];
         }
         par(mar=c(4,5,1,4));
-        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, 200),
+        y_upper_limit <- max_cost + (0.25 * max_cost);
+        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, y_upper_limit),
              xlim=c(0,time_max), xlab="Time Step", ylab="Cost of actions",
              cex.lab=1.25);
         points(x=gens, y=res_costs[,1], type="l", col="green", lwd=2);
@@ -365,7 +384,8 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
             }
         }
         par(mar=c(4,6,1,1));
-        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, paras[98]),
+        y_upper_limit <- max_action + (0.25 * max_action);
+        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, y_upper_limit),
              xlim=c(0,time_max), xlab="Time Step", ylab="Actions made",
              cex.lab=1.25);
         points(x=gens, y=res_acts[,1], type="l", col="green", lwd=2);

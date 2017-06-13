@@ -169,8 +169,8 @@ make_costs <- function(AGENTS, RESOURCES, res_opts, lnd_opts, min_cost){
     COST[COST[,1,1] == 1, 13, 1]  <- min_cost;
     COST[COST[,1,1] <  0, 13,  ]  <- min_cost;
     
-    COST[,1:7,]    <- 10000;
-    COST[COST < 1] <- 10000;
+    COST[,1:7,]    <- 10001;
+    COST[COST < 1] <- 10001;
     
     return( COST );
 }

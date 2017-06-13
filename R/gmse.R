@@ -41,8 +41,8 @@
 #'@param move_agents This is a TRUE or FALSE value that defines whether or not agents should move at the end of each time step. The default value is TRUE.
 #'@param max_ages This is the maximum age of resources. If resources reach this age, then they are removed in the resource model with a probability of 1. The default `max_ages` is 5.
 #'@param minimum_cost This is the mimimum cost of any action in the manager and user models. Higher values allow managers to have greater precision when setting policy. For example, managers believe (typically correctly) that they will double culling number by setting the cost of culling at 1 instead of 2. If actions always cost at least some minium value, then some increment just above that value is always available to more precisely affect user actions. Hence it is generally better to simply give everyone a bigger budget and set a minimum cost, giving more precision to managers to fine tune policy. The default value of minimum_cost is therefore set to 10.
-#'@param user_budget This is the total budget of each stakeholder for performing actions. The cost of performing an action is determined by the `miminimum_cost` of actions, and the policy set by the manager. The default `user_budget` is 1000.
-#'@param manager_budget This is the total budget for the manager when setting policy. Higher budgets make it easier to restrict the actions of stakeholders; lower budgets make it more difficult for managers to limit the actions of stakeholders by setting policy. The default `manager_budget` is 1000.
+#'@param user_budget This is the total budget of each stakeholder for performing actions. The cost of performing an action is determined by the `miminimum_cost` of actions, and the policy set by the manager. The default `user_budget` is 1000. The maximum budget is 10000.
+#'@param manager_budget This is the total budget for the manager when setting policy. Higher budgets make it easier to restrict the actions of stakeholders; lower budgets make it more difficult for managers to limit the actions of stakeholders by setting policy. The default `manager_budget` is 1000. The maximum budget is 10000.
 #'@param manage_target This is the target resource abundance that the manager attempts to keep the population at; the default value is 200.
 #'@param RESOURCE_ini This is the initial abundance of resources at the start of the simulation; the default is 200.
 #'@param scaring This is a TRUE or FALSE value determining whether or not scaring is an option for managers and stakeholders. If so, then stakeholders that scare cause resources to be moved from their current landscape cell to a random cell on the landscape (note, it is possible that the resource could be scared back onto the stakeholder's own land again). The default value of this is FALSE.
@@ -121,6 +121,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     if(observe_type == 1 & times_observe < 2){
         stop("Need to observe at least twice for mark-recapture");   
     }
+    if(user_budget > 10000 | manager_budget > 10000){
+        stop("User and manager budgets cannot exceed 10000");
+    }
     
     user_res_opts  <- c(scaring, culling, castration, feeding, help_offspring);
     user_lnd_opts  <- c(tend_crops, kill_crops);
@@ -137,7 +140,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     LANDSCAPE_r  <- make_landscape( model       = pop_model, 
                                     rows        = land_dim_1, 
                                     cols        = land_dim_2, 
-                                    cell_types  = 2,
+                                    cell_types  = 1,
                                     cell_val_mn = 1,
                                     cell_val_sd = 0,
                                     ownership   = 1:(stakeholders + 1),
@@ -351,8 +354,10 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     
     while(time < time_max){
         
-        AGENTS[1,5] <- sample(x = 1:ldx, size = 1); # Move manager randomly
-        AGENTS[1,6] <- sample(x = 1:ldy, size = 1); 
+        if(move_agents == TRUE){
+            AGENTS[1,5] <- sample(x = 1:ldx, size = 1); # Move manager randomly
+            AGENTS[1,6] <- sample(x = 1:ldy, size = 1); 
+        }
         
         RESOURCE_NEW      <- resource(RESOURCES  = RESOURCES,
                                       LAND       = LANDSCAPE_r,
