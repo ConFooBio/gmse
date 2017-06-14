@@ -172,15 +172,15 @@ void act_on_landscape(double ***land, double *paras, double ***action_array){
         switch(action_col){
         case 7:
             break;
-        case 8:
-            break;
-        case 9:  /* Kill resource */ 
+        case 8: /* Kill crop yield */ 
             land[xpos][ypos][1] = 0;
             break;
-        case 10: /* Feed resource (increase birth-rate) */
+        case 9:  /* Tend the crop to increase yield */ 
             land[xpos][ypos][1] += (land[xpos][ypos][1] * feedin);
             break;
-        case 11: /* Help resource (increase offspring number directly) */ 
+        case 10: 
+            break;
+        case 11: 
             break;
         default:
             break;

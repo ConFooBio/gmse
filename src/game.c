@@ -311,17 +311,17 @@ void land_to_counts(double ***population, int **interact_table, double *paras,
     feedin  = paras[79];
     
     foc_effect   = 0.0;
-    foc_effect  += (population[row][10][agent] * feedin); /* Feed the crop */
-    if(population[row][9][agent] == 1){                   /* Kill the crop */
+    foc_effect  += (population[row][9][agent] * feedin); /* Feed the crop */
+    if(population[row][10][agent] == 1){                 /* Kill the crop */
         foc_effect = -1;
     }
     interest_row = 0;
     while(interest_row < int_num){ /* THIS LOOP IS THE PROBLEM */
         if(interact_table[interest_row][0] == 1){
-               break;
-           }else{
-               interest_row++;
-           }
+            break;
+        }else{
+            interest_row++;
+        }
     }
     for(i = 0; i < int_num; i++){
         count_change[i] += foc_effect * jaco[interest_row][i];
