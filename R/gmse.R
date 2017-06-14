@@ -51,6 +51,7 @@
 #'@param feeding This is a TRUE or FALSE value determining whether or not feeding is an option for managers and stakeholders. If so, then stakeholders that feed increase a resource's growth rate (lambda) for one time step by 100 percent. The default value of this is FALSE.
 #'@param help_offspring This is a TRUE or FALSE value determining whether or not feeding is an option for managers and stakeholders. If so, then stakeholders that help_offspring increase a resource's offspring production for one time step by one (i.e., one more offspring is produced). The default value of this is FALSE.
 #'@param tend_crops This is a TRUE or FALSE value determining whether or not tending crops on the landscape is allowed for stakehodlers. If so, then stakeholders can increase one cells yield by 50 percent for each action to `tend_crops`. Actions on the landscape cannot be regulated by managers, so the cost of this action is always `minimum_cost`. The default value of this is FALSE.
+#'@param tend_crop_yld The per landscape cell proportional increase in crop yield when stakeholders take one action to increase yield on their landscape. The default value is set to 0.5 (i.e., a 50 percent increase in yield on a cell).
 #'@param kill_crops This is a TRUE or FALSE value determining whether or not killing crops on the landscape is allowed for stakehodlers. If so, then stakeholders can remove the crop yield on a cell completely for each action to `tend_crops`. Actions on the landscape cannot be regulated by managers, so the cost of this action is always `minimum_cost`.
 #'@param stakeholders This is the number of stakeholders in a simulation; there is always one manager, and any natural number of stakeholders.
 #'@param manage_caution This value moderates the caution a manager has when changing policy by assuming that at least `manage_caution` of each possible action will always be performed by stakeholders. I manager will therefore not ignore policy for one action because no stakeholder is engaging in it; the default value of `manage_caution` is 1.
@@ -111,6 +112,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   feeding        = FALSE, # Feeding resources allowed
                   help_offspring = FALSE, # Helping offspring allowed
                   tend_crops     = FALSE, # Tending crops allowed
+                  tend_crop_yld  = 0.5,   # Additional yield from tending crops
                   kill_crops     = FALSE, # Killing crops allowed
                   stakeholders   = 4,     # Number of stake-holders
                   manage_caution = 1,     # Caution rate of the manager
@@ -239,6 +241,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     mac <- manage_caution;
     cnv <- converge_crit;
     mas <- manager_sense;
+    tcy <- tend_crop_yld;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -319,7 +322,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                -1*mas,  # 76. Manager's projected change if resource castrated
                1*mas,   # 77. Manager's projected change if resource growth +
                1*mas,   # 78. Manager's projected change if resource offspring +
-               0.50,    # 79. User's improvement of land (proportion)
+               tcy,     # 79. User's improvement of land (proportion)
                1,       # 80. Landscape layer on which crop yield is located
                2,       # 81. Landscape layer on which ownership is defined
                15,      # 82. Column in agent array where cell yield recorded

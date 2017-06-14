@@ -367,15 +367,25 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
         plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, y_upper_limit),
              xlim=c(0,time_max), xlab="Time Step", ylab="Cost of actions",
              cex.lab=1.25);
-        points(x=gens, y=res_costs[,1], type="l", col=cols[1], lwd=2);
-        points(x=gens, y=res_costs[,2], type="l", col=cols[2], lwd=2);
-        points(x=gens, y=res_costs[,3], type="l", col=cols[3], lwd=2);
-        points(x=gens, y=res_costs[,4], type="l", col=cols[4], lwd=2);
-        points(x=gens, y=res_costs[,5], type="l", col=cols[5], lwd=2);
+        if(paras[89] == 1){
+            points(x=gens, y=res_costs[,1], type="l", col=cols[1], lwd=2);
+        }
+        if(paras[90] == 1){
+            points(x=gens, y=res_costs[,2], type="l", col=cols[2], lwd=2);
+        }
+        if(paras[91] == 1){
+            points(x=gens, y=res_costs[,3], type="l", col=cols[3], lwd=2);
+        }
+        if(paras[92] == 1){
+            points(x=gens, y=res_costs[,4], type="l", col=cols[4], lwd=2);
+        }
+        if(paras[93] == 1){
+            points(x=gens, y=res_costs[,5], type="l", col=cols[5], lwd=2);
+        }
         legend(x = time_max + (time_max * 0.02), y = y_upper_limit, 
                fill = c(cols[1:5], "purple", "orange"), horiz = FALSE,
                legend = c("scaring", "culling", "castration", "feeding", 
-               "helping", "kill crop", "garden"), bty = "n");
+               "helping", "tend crop", "kill crop"), bty = "n");
         par(xpd = FALSE);
         # ------------- Panel 6 (lower right)
         res_acts <- matrix(data = 0, nrow = i, ncol = 7);
@@ -395,15 +405,29 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
         plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, y_upper_limit),
              xlim=c(0,time_max), xlab="Time Step", ylab="Actions made",
              cex.lab=1.25);
-        points(x=gens, y=res_acts[,1], type="l", col=cols[1], lwd=2);
-        points(x=gens, y=res_acts[,2], type="l", col=cols[2], lwd=2);
-        points(x=gens, y=res_acts[,3], type="l", col=cols[3], lwd=2);
-        points(x=gens, y=res_acts[,4], type="l", col=cols[4], lwd=2);
-        points(x=gens, y=res_acts[,5], type="l", col=cols[5], lwd=2);
-        points(x=gens, y=res_acts[,6], type="l", lty= "dashed", col="purple", 
-               lwd=3);
-        points(x=gens, y=res_acts[,7], type="l", lty= "dashed", col="orange", 
-               lwd=3);
+        if(paras[89] == 1){
+            points(x=gens, y=res_acts[,1], type="l", col=cols[1], lwd=2);
+        }
+        if(paras[90] == 1){
+            points(x=gens, y=res_acts[,2], type="l", col=cols[2], lwd=2);
+        }
+        if(paras[91] == 1){
+            points(x=gens, y=res_acts[,3], type="l", col=cols[3], lwd=2);
+        }
+        if(paras[92] == 1){
+            points(x=gens, y=res_acts[,4], type="l", col=cols[4], lwd=2);
+        }
+        if(paras[93] == 1){
+            points(x=gens, y=res_acts[,5], type="l", col=cols[5], lwd=2);
+        }
+        if(paras[94] == 1){
+            points(x=gens, y=res_acts[,6], type="l", lty= "solid", col="purple", 
+                   lwd=3);
+        }
+        if(paras[95] == 1){
+            points(x=gens, y=res_acts[,7], type="l", lty= "solid", col="orange", 
+                   lwd=3);
+        }
         # -------------
         Sys.sleep(0.1);
     }
