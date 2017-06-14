@@ -255,7 +255,9 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
     lnds <- NULL;
     ages <- NULL;
     land_cols <- c("#F2F2F2FF", "#ECB176FF", "#000000"); 
-    
+    cols      <- c("green", "indianred1", "indianred3", "deepskyblue1",
+                   "deepskyblue2");
+   
     case  <- paras[9];
     tiobs <- paras[12];
     if(case == 1 & tiobs < 2){
@@ -310,7 +312,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
         col_num <- max(land3);
         image(land3, col=topo.colors(col_num), xaxt="n", yaxt="n");
         # ------------- Panel 3 (middle left)
-        par(mar=c(4,5,1,4));
+        par(mar=c(4,5,1,5));
         plot(x=gens, y=abun, pch=20, type="l", lwd=2, ylim=c(0, ymaxi),
              xlim=c(0,time_max), xlab="Time Step", ylab="Abundance",
              cex.lab=1.25);
@@ -340,7 +342,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
         axis(side=4, at=c(0, 25, 50, 75, 100));
         mtext("Mean % Yield", side = 4, line = 2.4);
         # ------------ Panel 4 (middle right);
-        par(mar=c(4,6,1,1));
+        par(mar=c(4,5,1,1));
         cell_number <- dim(land3)[1] * dim(land3)[2];
         max_yield   <- cell_number; #floor( cell_number / (dim(age_t)[1]) )
         plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, max_yield),
@@ -360,16 +362,21 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
             res_costs[j,4] <- ACTION[[j]][3,11,1];
             res_costs[j,5] <- ACTION[[j]][3,12,1];
         }
-        par(mar=c(4,5,1,4));
+        par(mar=c(4,5,1,5), xpd = TRUE);
         y_upper_limit <- max_cost + (0.25 * max_cost);
         plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, y_upper_limit),
              xlim=c(0,time_max), xlab="Time Step", ylab="Cost of actions",
              cex.lab=1.25);
-        points(x=gens, y=res_costs[,1], type="l", col="green", lwd=2);
-        points(x=gens, y=res_costs[,2], type="l", col="indianred1", lwd=2);
-        points(x=gens, y=res_costs[,3], type="l", col="indianred3", lwd=2);
-        points(x=gens, y=res_costs[,4], type="l", col="deepskyblue1", lwd=2);
-        points(x=gens, y=res_costs[,5], type="l", col="deepskyblue2", lwd=2);
+        points(x=gens, y=res_costs[,1], type="l", col=cols[1], lwd=2);
+        points(x=gens, y=res_costs[,2], type="l", col=cols[2], lwd=2);
+        points(x=gens, y=res_costs[,3], type="l", col=cols[3], lwd=2);
+        points(x=gens, y=res_costs[,4], type="l", col=cols[4], lwd=2);
+        points(x=gens, y=res_costs[,5], type="l", col=cols[5], lwd=2);
+        legend(x = time_max + (time_max * 0.02), y = y_upper_limit, 
+               fill = c(cols[1:5], "purple", "orange"), horiz = FALSE,
+               legend = c("scaring", "culling", "castration", "feeding", 
+               "helping", "kill crop", "garden"), bty = "n");
+        par(xpd = FALSE);
         # ------------- Panel 6 (lower right)
         res_acts <- matrix(data = 0, nrow = i, ncol = 7);
         for(j in 1:i){
@@ -383,19 +390,19 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
                 res_acts[j,7] <- res_acts[j,7] + ACTION[[j]][2,11,k]- paras[96];
             }
         }
-        par(mar=c(4,6,1,1));
+        par(mar=c(4,5,1,1));
         y_upper_limit <- max_action + (0.25 * max_action);
         plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, y_upper_limit),
              xlim=c(0,time_max), xlab="Time Step", ylab="Actions made",
              cex.lab=1.25);
-        points(x=gens, y=res_acts[,1], type="l", col="green", lwd=2);
-        points(x=gens, y=res_acts[,2], type="l", col="indianred1", lwd=2);
-        points(x=gens, y=res_acts[,3], type="l", col="indianred3", lwd=2);
-        points(x=gens, y=res_acts[,4], type="l", col="deepskyblue1", lwd=2);
-        points(x=gens, y=res_acts[,5], type="l", col="deepskyblue2", lwd=2);
-        points(x=gens, y=res_acts[,6], type="l", lty= "dotted", col="purple", 
+        points(x=gens, y=res_acts[,1], type="l", col=cols[1], lwd=2);
+        points(x=gens, y=res_acts[,2], type="l", col=cols[2], lwd=2);
+        points(x=gens, y=res_acts[,3], type="l", col=cols[3], lwd=2);
+        points(x=gens, y=res_acts[,4], type="l", col=cols[4], lwd=2);
+        points(x=gens, y=res_acts[,5], type="l", col=cols[5], lwd=2);
+        points(x=gens, y=res_acts[,6], type="l", lty= "dashed", col="purple", 
                lwd=3);
-        points(x=gens, y=res_acts[,7], type="l", lty= "dotted", col="orange", 
+        points(x=gens, y=res_acts[,7], type="l", lty= "dashed", col="orange", 
                lwd=3);
         # -------------
         Sys.sleep(0.1);
