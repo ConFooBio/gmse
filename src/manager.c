@@ -85,7 +85,7 @@ void dens_est(double **obs_array, double *paras, double **agent_array,
             type3    = interact_table[resource][t3_col];
             tot_obs  = res_obs(obs_array, paras, type1, type2, type3);
             prop_obs = (double) tot_obs / area;
-            cp_err   = 1.965 * sqrt((1/(vision*vision))*prop_obs*(1-prop_obs));
+            cp_err   = 1.965 * sqrt(prop_obs / (vision * vision));
             lcp      = prop_obs - cp_err;
             ucp      = prop_obs + cp_err;
             estimate = prop_obs * cells;

@@ -86,8 +86,8 @@ dens_est <- function(observation = obs_t, paras, view = view, land = land){
     tot_obs <- sum(observation[,21:endrow]);
     prp     <- tot_obs / area;
     est     <- prp * cells;
-    lcp     <- prp - 1.96 * sqrt((1/(vision*vision))*prp*(1-prp));
-    ucp     <- prp + 1.96 * sqrt((1/(vision*vision))*prp*(1-prp));
+    lcp     <- prp - 1.96 * sqrt(prp / (vision * vision));
+    ucp     <- prp + 1.96 * sqrt(prp / (vision * vision));
     lci     <- cells * lcp
     uci     <- cells * ucp;
     return(list(Nc=est, lci=lci, uci=uci, test = tot_obs));
