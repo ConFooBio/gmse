@@ -157,9 +157,9 @@ make_costs <- function(AGENTS, RESOURCES, res_opts, lnd_opts, min_cost){
     COST <- array(data = unlist(COST_LIST), dim = dim_u);
     
     res_num  <- sum(COST[,1,1] == -2);
-    res_opts <- t(as.matrix(res_opts));
+    res_opts <- as.matrix(res_opts);
     lnd_num  <- sum(COST[,1,1] == -1);
-    lnd_opts <- t(as.matrix(lnd_opts));
+    lnd_opts <- as.matrix(lnd_opts);
     
     for(i in 2:dim(COST)[3]){ # Exclude the manager for now
         COST[COST[,1,i]==-2,8:12,i]  <- min_cost * res_opts[1:res_num,];
@@ -228,7 +228,7 @@ utility_layer <- function(agent_IDs, agent_number, res_types){
     static_type <- cbind(column_1, columns_2_4);
     removes     <- sum(static_type[,1] == -1 & static_type[,2] > 1);
     if(removes > 0){
-        which(static_type[,1] == -1 & static_type[,2] > 1);
+        remove      <- which(static_type[,1] == -1 & static_type[,2] > 1);
         static_type <- static_type[-remove,];
     }
     
@@ -242,7 +242,6 @@ utility_layer <- function(agent_IDs, agent_number, res_types){
     
     return( LAYER ); 
 }
-
 
 #' Initialise array of resource and landscape-level interactions
 #'
