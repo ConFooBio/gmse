@@ -1,7 +1,7 @@
 Package: GMSE
 Type: Package
 Title: Game-theoretic management strategy evaluation simulator
-Version: 0.2.0.0
+Version: 0.2.1.1
 Imports: grDevices (>= 3.3.3), graphics (>= 3.3.3), stats (>= 3.3.3)
 Author: person("A. Bradley", "Duthie", email = "brad.duthie@gmail.com",
                   role = c("aut", "cre"))
@@ -23,5 +23,6 @@ License: Unlicensed and private for the moment
 LazyData: TRUE
 RoxygenNote: 6.0.1
 Suggests: knitr,
-    rmarkdown
+    rmarkdown,
+    testthat
 VignetteBuilder: knitr
