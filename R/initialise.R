@@ -156,16 +156,16 @@ make_costs <- function(AGENTS, RESOURCES, res_opts, lnd_opts, min_cost){
     
     COST <- array(data = unlist(COST_LIST), dim = dim_u);
     
-    res_num  <- sum(COST[,1,1] == -2);
-    res_opts <- as.matrix(res_opts);
-    lnd_num  <- sum(COST[,1,1] == -1);
-    lnd_opts <- as.matrix(lnd_opts);
+    res_num    <- sum(COST[,1,1] == -2);
+    res_opts_m <- matrix(data = rep(res_opts, res_num), nrow = res_num);
+    lnd_num    <- sum(COST[,1,1] == -1);
+    lnd_opts_m <- matrix(data = rep(lnd_opts, lnd_num), nrow = lnd_num);
     
     for(i in 2:dim(COST)[3]){ # Exclude the manager for now
-        COST[COST[,1,i]==-2,8:12,i]  <- min_cost * res_opts[1:res_num,];
-        COST[COST[,1,i]==-1,10:11,i] <- min_cost * lnd_opts[1:lnd_num,];
+        COST[COST[,1,i]==-2,8:12,i]  <- min_cost * res_opts_m[1:res_num,];
+        COST[COST[,1,i]==-1,10:11,i] <- min_cost * lnd_opts_m[1:lnd_num,];
     }
-    COST[COST[,1,1] == 1, 8:12,1] <- min_cost * res_opts[1:res_num,];
+    COST[COST[,1,1] == 1, 8:12,1] <- min_cost * res_opts_m[1:res_num,];
     COST[COST[,1,1] == 1, 13, 1]  <- min_cost;
     COST[COST[,1,1] <  0, 13,  ]  <- min_cost;
     
