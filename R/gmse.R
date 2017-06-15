@@ -361,8 +361,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     while(time < time_max){
         
         if(move_agents == TRUE){
-            AGENTS[1,5] <- sample(x = 1:ldx, size = 1); # Move manager randomly
-            AGENTS[1,6] <- sample(x = 1:ldy, size = 1); 
+            AGENTS[1,5] <- sample(x = 0:(ldx - 1), size = 1); # Move manager
+            AGENTS[1,6] <- sample(x = 0:(ldy - 1), size = 1); 
         }
         
         RESOURCE_NEW      <- resource(RESOURCES  = RESOURCES,
