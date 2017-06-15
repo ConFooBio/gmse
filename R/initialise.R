@@ -36,9 +36,9 @@ make_resource <- function(model              = "IBM",
                            replace = TRUE);
         type2    <- rep(x = 0, times = resource_quantity);
         type3    <- rep(x = 0, times = resource_quantity);
-        xloc     <- sample(x = 1:rows, size = resource_quantity, 
+        xloc     <- sample(x = 0:(rows-1), size = resource_quantity, 
                            replace = TRUE);
-        yloc     <- sample(x = 1:cols, size = resource_quantity, 
+        yloc     <- sample(x = 0:(cols-1), size = resource_quantity, 
                            replace = TRUE);
         mover    <- rep(x = move, times = resource_quantity);
         time     <- rep(x = 0, times = resource_quantity);
