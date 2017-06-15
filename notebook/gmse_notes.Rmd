@@ -41,7 +41,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **JUN** [14](#u-14-JUN-2017), [13](#u-13-JUN-2017), [9](#u-9-JUN-2017), [8](#u-7-JUN-2017), [7](#u-7-JUN-2017), [6](#u-6-JUN-2017), [5](#u-5-JUN-2017), [4](#u-4-JUN-2017) 
+     - **JUN** [15](#u-15-JUN-2017), [14](#u-14-JUN-2017), [13](#u-13-JUN-2017), [9](#u-9-JUN-2017), [8](#u-7-JUN-2017), [7](#u-7-JUN-2017), [6](#u-6-JUN-2017), [5](#u-5-JUN-2017), [4](#u-4-JUN-2017) 
      - **MAY** [31](#u-31-MAY-2017), [30](#u-30-MAY-2017), [29](#u-29-MAY-2017), [26](#u-26-MAY-2017), [25](#u-25-MAY-2017), [24](#u-24-MAY-2017), [23](#u-23-MAY-2017), [22](#u-22-MAY-2017), [18](#u-18-MAY-2017), [17](#u-17-MAY-2017), [16](#u-16-MAY-2017), [15](#u-15-MAY-2017), [12](#u-12-MAY-2017), [11](#u-11-MAY-2017), [10](#u-10-MAY-2017), [9](#u-9-MAY-2017), [8](#u-8-MAY-2017), [5](#u-5-MAY-2017), [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
      - **APR** [28](#u-28-APR-2017), [26](#u-26-APR-2017), [25](#u-25-APR-2017), [24](#u-24-APR-2017), [20](#u-20-APR-2017), [19](#u-19-APR-2017), [18](#u-18-APR-2017), [17](#u-17-APR-2017), [13](#u-13-APR-2017), [12](#u-12-APR-2017), [11](#u-11-APR-2017), [10](#u-10-APR-2017), [7](#u-7-APR-2017), [6](#u-6-APR-2017), [5](#u-5-APR-2017)
      - **MAR** [23](#u-23-MAR-2017), [22](#u-22-MAR-2017), [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
@@ -76,6 +76,14 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-15-JUN-2017">Update: 15 JUN 2017</a>
+
+**Unit testing for long-term code maintenance**
+
+To ensure that the `gmse` package functions as intended in the long term, I am writing an extensive battery of unit tests that will need to be passed to ensure that any new features do not introduce bugs or break existing functions. To do this, I will use the [`testthat`](https://cran.r-project.org/web/packages/testthat/index.html) package in R and follow the advice in [Hadley Wickham's chapter on unit testing](http://r-pkgs.had.co.nz/tests.html) R code. I've done this already for the [gamesGA](https://github.com/bradduthie/gamesGA) package, which is now [on CRAN](https://cran.r-project.org/web/packages/gamesGA/), though the `gmse` package will require much more tests simply because there are many more functions to test. 
+
+The unit testing already helped by identifying a potential bug later on down the line when initialising cost arrays for simulations with more than two resources (see commit [65088054481266e67f06513dc368c515e4a9fed0](https://github.com/bradduthie/gmse/commit/65088054481266e67f06513dc368c515e4a9fed0). Unit tests for all initialisation functions except landscape functions are now complete. Next, I will need to do landscape functions and perhaps some (but probably not all) functions associated with plotting, then the four main GMSE model functions.
 
 > <a name="u-14-JUN-2017">Update: 14 JUN 2017</a>
 
