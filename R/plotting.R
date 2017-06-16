@@ -73,7 +73,7 @@ ind_to_land <- function(inds, land){
 #'@param land The landscape array on which interactions between resources and agents occur
 #'@return The density estimator (which is also performed GMSE in the manager function) returns a list that includes resource population size estimates along with 95% confidence intervals
 #'@export
-dens_est <- function(observation = obs_t, paras, view = view, land = land){
+dens_est <- function(observation, paras, view = view, land = land){
     vision  <- (2*view) + 1;
     area    <- vision * vision;
     cells   <- dim(land)[1] * dim(land)[2];
@@ -104,13 +104,15 @@ dens_est <- function(observation = obs_t, paras, view = view, land = land){
 #'@param land3 The third layer of the 3D landscape array, which indicates agent ownership of the land
 #'@param agents The array of agents produced in the main gmse() function
 #'@param paras The vector of parameters that hold global and dynamic parameter values used by GMSE
+#'@param COST A three dimensional array of cost values for agent (manager and stakeholder) actions
 #'@param ACTION A three dimensional array of agent (manager and stakeholder) actions
 #'@importFrom grDevices topo.colors
 #'@importFrom graphics abline axis image mtext par plot points polygon legend
 #'@importFrom stats rnorm rpois
 #'@return This function plots the dynamics of GMSE resource, observation, managemer, and user models in six separate sub-panels. (1) Upper left panel: Shows the locations of resources on the landscape (black dots); landscape terrain is also shown in brown, but at the moment, this is only cosmetic and does not reflect anything occurring in the model. (2) Upper right panel: Shows ownership of land by agents; land is divided proportional based on parameters set in gmse() and colours correspond with other subplots. If agent utilities and actions are restricted to land (`land_ownership` in the gmse() function), then this gives some idea of where actions are being performed and where resources are affecting the landscape. (3) Middle left panel: Shows the actual population abundance (black solid line) and the population abundance estimated by the manager (blue solid line) over time. The dotted red line shows the resource carrying capacity (death-based) and the dotted blue line shows the target for resource abundance as set in the gmse() function; the orange line shows the total percent yield of the landscape (i.e., 100 percent means that resources have not decreased yield at all, 0 percent means that resources have completely destroyed all yield). (4) Middle right panel: Shows the raw landscape yield for each stakeholder (can be ignored if `land_ownership` is FALSE) over time; colours correspond to land ownership shown in the upper right panel. (5) Lower left panel: The cost of stakeholders performing actions over time, as set by the manager. (6) Lower right panel: The total number of actions performed by all stakeholders over time.
 #'@export
-case23plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION){
+case23plot <- function(res, obs, land1, land2, land3, agents, paras, COST,
+                       ACTION){
     gens <- NULL;
     abun <- NULL;
     est  <- NULL;
@@ -119,6 +121,26 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION){
     lnds <- NULL;
     ages <- NULL;
     land_cols <- c("#F2F2F2FF", "#ECB176FF", "#000000"); 
+    cols      <- c("green", "indianred1", "indianred3", "deepskyblue1",
+                   "deepskyblue2");
+    
+    max_action <- 0;
+    max_cost   <- 0;
+    for(i in 1:length(res)){
+        act_check <- ACTION[[i]][,8:12,];
+        act_check[act_check > 10000] <- -1;
+        act_comb <- apply(X = act_check, MARGIN = c(1,2), FUN = sum);
+        gen_max_action <- max(act_comb);
+        if(gen_max_action > max_action){
+            max_action <- gen_max_action;
+        }
+        cost_check <- COST[[i]][,8:12,];
+        cost_check[cost_check >= 10000] <- -1;
+        gen_max_cost   <- max(cost_check);
+        if(gen_max_cost > max_cost){
+            max_cost <- gen_max_cost;
+        }
+    }
     
     minK <- min(paras[6:7]);
     
@@ -160,10 +182,10 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION){
              ylab = "");
         axis(side=4, at=c(0, 25, 50, 75, 100));
         mtext("Mean % Yield", side = 4, line = 2.4);
-        # ------------ Panel 4 (lower right);
+        # ------------ Panel 4 (middle right);
         par(mar=c(4,6,1,1));
-        cell_number <- dim(land3)[1] * dim(land3)[2]
-        max_yield   <- floor( cell_number / (dim(age_t)[1]) )
+        cell_number <- dim(land3)[1] * dim(land3)[2];
+        max_yield   <- cell_number;
         plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, max_yield),
              xlim=c(0,time_max), xlab="Time Step", ylab="Stake-holder yield",
              cex.lab=1.25);
@@ -181,15 +203,31 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION){
             res_costs[j,4] <- ACTION[[j]][3,11,1];
             res_costs[j,5] <- ACTION[[j]][3,12,1];
         }
-        par(mar=c(4,5,1,4));
-        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, 200),
+        par(mar=c(4,5,1,5), xpd = TRUE);
+        y_upper_limit <- max_cost + (0.25 * max_cost);
+        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, y_upper_limit),
              xlim=c(0,time_max), xlab="Time Step", ylab="Cost of actions",
              cex.lab=1.25);
-        points(x=gens, y=res_costs[,1], type="l", col="green", lwd=2);
-        points(x=gens, y=res_costs[,2], type="l", col="indianred1", lwd=2);
-        points(x=gens, y=res_costs[,3], type="l", col="indianred3", lwd=2);
-        points(x=gens, y=res_costs[,4], type="l", col="deepskyblue1", lwd=2);
-        points(x=gens, y=res_costs[,5], type="l", col="deepskyblue2", lwd=2);
+        if(paras[89] == 1){
+            points(x=gens, y=res_costs[,1], type="l", col=cols[1], lwd=2);
+        }
+        if(paras[90] == 1){
+            points(x=gens, y=res_costs[,2], type="l", col=cols[2], lwd=2);
+        }
+        if(paras[91] == 1){
+            points(x=gens, y=res_costs[,3], type="l", col=cols[3], lwd=2);
+        }
+        if(paras[92] == 1){
+            points(x=gens, y=res_costs[,4], type="l", col=cols[4], lwd=2);
+        }
+        if(paras[93] == 1){
+            points(x=gens, y=res_costs[,5], type="l", col=cols[5], lwd=2);
+        }
+        legend(x = time_max + (time_max * 0.02), y = y_upper_limit, 
+               fill = c(cols[1:5], "purple", "orange"), horiz = FALSE,
+               legend = c("scaring", "culling", "castration", "feeding", 
+                          "helping", "tend crop", "kill crop"), bty = "n");
+        par(xpd = FALSE);
         # ------------- Panel 6 (lower right)
         res_acts <- matrix(data = 0, nrow = i, ncol = 7);
         for(j in 1:i){
@@ -203,19 +241,34 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION){
                 res_acts[j,7] <- res_acts[j,7] + ACTION[[j]][2,11,k]- paras[96];
             }
         }
-        par(mar=c(4,6,1,1));
-        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, paras[98]),
+        par(mar=c(4,5,1,1));
+        y_upper_limit <- max_action + (0.25 * max_action);
+        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, y_upper_limit),
              xlim=c(0,time_max), xlab="Time Step", ylab="Actions made",
              cex.lab=1.25);
-        points(x=gens, y=res_acts[,1], type="l", col="green", lwd=2);
-        points(x=gens, y=res_acts[,2], type="l", col="indianred1", lwd=2);
-        points(x=gens, y=res_acts[,3], type="l", col="indianred3", lwd=2);
-        points(x=gens, y=res_acts[,4], type="l", col="deepskyblue1", lwd=2);
-        points(x=gens, y=res_acts[,5], type="l", col="deepskyblue2", lwd=2);
-        points(x=gens, y=res_acts[,6], type="l", lty= "dotted", col="purple", 
-               lwd=3);
-        points(x=gens, y=res_acts[,7], type="l", lty= "dotted", col="orange", 
-               lwd=3);
+        if(paras[89] == 1){
+            points(x=gens, y=res_acts[,1], type="l", col=cols[1], lwd=2);
+        }
+        if(paras[90] == 1){
+            points(x=gens, y=res_acts[,2], type="l", col=cols[2], lwd=2);
+        }
+        if(paras[91] == 1){
+            points(x=gens, y=res_acts[,3], type="l", col=cols[3], lwd=2);
+        }
+        if(paras[92] == 1){
+            points(x=gens, y=res_acts[,4], type="l", col=cols[4], lwd=2);
+        }
+        if(paras[93] == 1){
+            points(x=gens, y=res_acts[,5], type="l", col=cols[5], lwd=2);
+        }
+        if(paras[94] == 1){
+            points(x=gens, y=res_acts[,6], type="l", lty= "solid", col="purple", 
+                   lwd=3);
+        }
+        if(paras[95] == 1){
+            points(x=gens, y=res_acts[,7], type="l", lty= "solid", col="orange", 
+                   lwd=3);
+        }
         # -------------
         Sys.sleep(0.1);
     }
