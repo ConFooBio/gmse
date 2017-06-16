@@ -12,11 +12,11 @@ agents  <-  make_agents(model        = "IBM",
 )
 
 test_that("Dimensions of agent array are correct", {
-    expect_equal(dim(res), c(2, 17));
+    expect_equal(dim(agents), c(2, 17));
 })
 
 test_that("Resource IDs are correct", {
-    expect_equal(res[,1], 1:2);
+    expect_equal(agents[,1], 1:2);
 })
 
 set.seed(Sys.time())
