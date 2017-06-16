@@ -1,54 +1,47 @@
 library(GMSE);
-context("Main gmse function");
+context("Action array initialisation");
 
 set.seed(1);
-sim <- gmse(time_max = 3, plotting = FALSE);
+agents  <-  make_agents(model        = "IBM",
+                        agent_number = 2,
+                        type_counts  = c(1,1),
+                        move         = 0,
+                        vision       = 20,
+                        rows         = 100,
+                        cols         = 100
+)
+set.seed(1);
+res <- make_resource(model              = "IBM", 
+                     resource_quantity  = 10, 
+                     resource_types     = 2, 
+                     rows               = 10, 
+                     cols               = 10, 
+                     move               = 1, 
+                     rm_pr              = 0,
+                     lambda             = 0,
+                     consumption_rate   = c(0.1, 0.2),
+                     max_age            = 5
+);
 
-test_that("Dimensions of simulation list output are correct", {
-    expect_equal(length(sim), 8);
+res_opts  <- c(1, 1, 1, 1, 1);
+lnd_opts  <- c(1, 1);
+min_cost  <- 10;
+
+set.seed(1);
+action <- make_utilities(agents, res);
+
+test_that("Dimensions of action array are correct", {
+    expect_equal(dim(action), c(7, 13, 2));
 })
 
-test_that("Dimensions of simulation resource output are correct", {
-    expect_equal(length(sim[[1]]), 2);
-    expect_equal(dim(sim[[1]][[1]]), c(208, 20));
-    expect_equal(dim(sim[[1]][[2]]), c(219, 20));
+test_that("Values on the action array are accurate", {
+    expect_equal(sum(action[,3:13,]), 0);
 })
 
-test_that("Dimensions of simulation observation output are correct", {
-    expect_equal(length(sim[[2]]), 2);
-    expect_equal(dim(sim[[2]][[1]]), c(151, 61));
-    expect_equal(dim(sim[[2]][[2]]), c(169, 61));
-})
-
-test_that("Dimensions of simulation paras output are correct", {
-    expect_equal(length(sim[[3]]), 204);
-    expect_equal(dim(sim[[3]]), c(2, 102));
-})
-
-test_that("Dimensions of simulation landscape output are correct", {
-    expect_equal(length(sim[[4]]), 2);
-    expect_equal(dim(sim[[4]][[1]]), c(100, 100));
-    expect_equal(dim(sim[[4]][[2]]), c(100, 100));
-})
-
-test_that("Dimensions of time elapsed are correct", {
-    expect_equal(length(sim[[5]]), 5);
-})
-
-test_that("Dimensions of simulation agent output are correct", {
-     expect_equal(dim(sim[[6]]), c(5, 17));
-})
-
-test_that("Dimensions of simulation cost array output are correct", {
-    expect_equal(length(sim[[7]]), 2);
-    expect_equal(dim(sim[[7]][[1]]), c(7, 13, 5));
-    expect_equal(dim(sim[[7]][[2]]), c(7, 13, 5));
-})
-
-test_that("Dimensions of simulation cost array output are correct", {
-    expect_equal(length(sim[[8]]), 2);
-    expect_equal(dim(sim[[8]][[1]]), c(7, 13, 5));
-    expect_equal(dim(sim[[8]][[2]]), c(7, 13, 5));
+ID_vec <- c(-2, -2, -1, 1, 1, 2, 2);
+test_that("IDs on the action array are accurate", {
+    expect_equal(action[,1,1], ID_vec);
+    expect_equal(action[,1,2], ID_vec);
 })
 
 set.seed(Sys.time())
