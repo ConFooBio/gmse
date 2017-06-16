@@ -4,7 +4,7 @@
 \alias{dens_est}
 \title{Density estimator of resource abundance}
 \usage{
-dens_est(observation = obs_t, paras, view = view, land = land)
+dens_est(observation, paras, view = view, land = land)
 }
 \arguments{
 \item{observation}{The array of resource observations from the observation model, used to estimate abundance of resources}

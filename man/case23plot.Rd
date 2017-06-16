@@ -4,7 +4,7 @@
 \alias{case23plot}
 \title{Plot results for transect-based sampling}
 \usage{
-case23plot(res, obs, land1, land2, land3, agents, paras, ACTION)
+case23plot(res, obs, land1, land2, land3, agents, paras, COST, ACTION)
 }
 \arguments{
 \item{res}{The resources array produced by the resource function within GMSE}
@@ -20,6 +20,8 @@ case23plot(res, obs, land1, land2, land3, agents, paras, ACTION)
 \item{agents}{The array of agents produced in the main gmse() function}
 
 \item{paras}{The vector of parameters that hold global and dynamic parameter values used by GMSE}
+
+\item{COST}{A three dimensional array of cost values for agent (manager and stakeholder) actions}
 
 \item{ACTION}{A three dimensional array of agent (manager and stakeholder) actions}
 }

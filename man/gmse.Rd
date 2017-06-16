@@ -139,5 +139,5 @@ models in each time step. Hence while individual models can be used on their
 own, gmse() is really all that is needed to run a simulation.
 }
 \examples{
-sim <- gmse(lambda = 0.3, stakeholders = 10, land_ownership = TRUE);
+sim <- gmse(lambda = 0.3, land_ownership = TRUE, time_max = 10);
 }
