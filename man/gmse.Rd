@@ -17,9 +17,10 @@ gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
   max_ages = 5, minimum_cost = 10, user_budget = 1000,
   manager_budget = 1000, manage_target = 200, RESOURCE_ini = 200,
   scaring = FALSE, culling = TRUE, castration = FALSE, feeding = FALSE,
-  help_offspring = FALSE, tend_crops = FALSE, kill_crops = FALSE,
-  stakeholders = 4, manage_caution = 1, land_ownership = FALSE,
-  manage_freq = 1, converge_crit = 100, manager_sense = 0.1)
+  help_offspring = FALSE, tend_crops = FALSE, tend_crop_yld = 0.5,
+  kill_crops = FALSE, stakeholders = 4, manage_caution = 1,
+  land_ownership = FALSE, manage_freq = 1, converge_crit = 100,
+  manager_sense = 0.1)
 }
 \arguments{
 \item{time_max}{This value sets the maximum number of time steps for a simulation. There are no constraints for length of time that a simulation can run. The default is 100 time steps.}
@@ -111,6 +112,8 @@ gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
 \item{help_offspring}{This is a TRUE or FALSE value determining whether or not feeding is an option for managers and stakeholders. If so, then stakeholders that help_offspring increase a resource's offspring production for one time step by one (i.e., one more offspring is produced). The default value of this is FALSE.}
 
 \item{tend_crops}{This is a TRUE or FALSE value determining whether or not tending crops on the landscape is allowed for stakehodlers. If so, then stakeholders can increase one cells yield by 50 percent for each action to `tend_crops`. Actions on the landscape cannot be regulated by managers, so the cost of this action is always `minimum_cost`. The default value of this is FALSE.}
+
+\item{tend_crop_yld}{The per landscape cell proportional increase in crop yield when stakeholders take one action to increase yield on their landscape. The default value is set to 0.5 (i.e., a 50 percent increase in yield on a cell).}
 
 \item{kill_crops}{This is a TRUE or FALSE value determining whether or not killing crops on the landscape is allowed for stakehodlers. If so, then stakeholders can remove the crop yield on a cell completely for each action to `tend_crops`. Actions on the landscape cannot be regulated by managers, so the cost of this action is always `minimum_cost`.}
 
