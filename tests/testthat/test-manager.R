@@ -1,5 +1,5 @@
 library(GMSE);
-context("Observation model");
+context("Manager model");
 
 set.seed(1);
 res <- make_resource(model              = "IBM", 
@@ -45,6 +45,7 @@ agents  <-  make_agents(model        = "IBM",
 
 
 interaction_tabl <- make_interaction_table(res, land);
+int_array        <- make_interaction_array(res, land);
 
 obs   <- observation(RESOURCES  = res,
                      LAND       = land,
@@ -60,35 +61,39 @@ obs   <- observation(RESOURCES  = res,
                      move_res   = paras[20]
 );
 
+res_opts  <- c(1, 1, 1, 1, 1);
+lnd_opts  <- c(1, 1);
+min_cost  <- 10;
+cost      <- make_costs(agents, res, res_opts, lnd_opts, min_cost);
+action    <- make_utilities(agents, res);
 
-test_that("Dimensions of observation arrays in returned list are correct", {
-    expect_equal(dim(obs[[1]]), c(100, 41));
-    expect_equal(dim(obs[[2]]), c(2, 17));
-    expect_equal(length(obs[[3]]), 102);
+mana <- manager(RESOURCES   = res,
+                AGENTS      = agents,
+                LAND        = land, 
+                PARAS       = paras,
+                COST        = cost,
+                ACTION      = action,
+                INTERACT    = int_array,
+                inter_tabl  = interaction_tabl,
+                OBSERVATION = obs[[1]],
+                model       = "IBM"
+);
+
+test_that("Dimensions of observation arrays in manager model are correct", {
+    expect_equal(length(mana), 5);
+    expect_equal(dim(mana[[1]]), c(100, 20));
+    expect_equal(dim(mana[[2]]), c(2, 17));
+    expect_equal(dim(mana[[3]]), c(10, 10, 3));
+    expect_equal(dim(mana[[4]]), c(7, 13, 2));
+    expect_equal(dim(mana[[5]]), c(7, 13, 2));
 })
 
-test_that("Observation model updates new parameters", {
-    expect_equal(sum(obs[[3]][1:61] - paras[1:61]), 0);
-    expect_equal(obs[[3]][62] - paras[62], 101);
-    expect_equal(obs[[3]][63] - paras[63], 42);
-    expect_equal(sum(obs[[3]][64:102] - paras[64:102]), 0);
-})
-
-test_that("Observation model has managers marking resources", {
-    expect_equal(obs[[2]][1,11], 1483);
-    expect_equal(obs[[2]][2,11], 0);
-})
-
-test_that("Resources are marked correctly", {
-    expect_equal(min(obs[[1]][,28:41]), 1);
-    expect_equal(max(obs[[1]][,28:41]), 1);
-})
-
-test_that("Resources can move during observation", {
-    expect_equal(min(obs[[1]][,5] - res[,5]), -8);
-    expect_equal(min(obs[[1]][,6] - res[,6]), -9);
-    expect_equal(max(obs[[1]][,5] - res[,5]),  8);
-    expect_equal(max(obs[[1]][,6] - res[,6]),  9);
+test_that("Manager sets costs of acting on resources", {
+    expect_equal(min(mana[[5]][,1:7,1]), 10001);
+    expect_equal(max(mana[[5]][,1:7,2]), 10001);
+    expect_equal(min(mana[[5]]), 10);
+    expect_equal(max(mana[[5]]), 10001);
+    expect_equal(mana[[4]][4:5,8:13,1], mana[[5]][1:2,8:13,2]);
 })
 
 set.seed(Sys.time())
