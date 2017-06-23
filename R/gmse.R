@@ -74,10 +74,10 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   res_movement   = 4,     # How far do resources move
                   remove_pr      = 0.0,   # Density independent resource death
                   lambda         = 0.30,  # Resource growth rate
-                  agent_view     = 20,    # Number cells agent view around them
+                  agent_view     = 10,    # Number cells agent view around them
                   agent_move     = 50,    # Number cells agent can move
                   res_birth_K    = 10000, # Carrying capacity applied to birth
-                  res_death_K    = 400,   # Carrying capacity applied to death
+                  res_death_K    = 600,   # Carrying capacity applied to death
                   edge_effect    = 1,     # What type of edge on the landscape
                   res_move_type  = 1,     # What type of movement for resources
                   res_birth_type = 2,     # What type of birth for resources
@@ -85,7 +85,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   observe_type   = 0,     # Type of observation used
                   fixed_mark     = 50,    # How many marked (if obs type = 1)
                   fixed_recapt   = 150,   # How many recaptured (if type = 1)
-                  times_observe  = 40,    # How many times obs (if type = 0)
+                  times_observe  = 8,    # How many times obs (if type = 0)
                   obs_move_type  = 1,     # Type of movement for agents
                   res_min_age    = 1,     # Minimum age recorded and observed
                   res_move_obs   = TRUE,  # Move resources while observing
@@ -93,9 +93,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   plotting       = TRUE,  # Plot the results
                   hunt           = FALSE, # Does the user hunt resources?
                   start_hunting  = 95,    # What generation hunting starts
-                  res_consume    = 0.5,   # Pr. landscape cell consumed by res
+                  res_consume    = 1.0,   # Pr. landscape cell consumed by res
                   ga_popsize     = 100,   # Pop size in genetic algorithm
-                  ga_mingen      = 20,    # Minimum generations in a ga run
+                  ga_mingen      = 40,    # Minimum generations in a ga run
                   ga_seedrep     = 20,    # How many copies to seed a ga with
                   ga_sampleK     = 20,    # Random sample size in ga tournament
                   ga_chooseK     = 2,     # Select from sample in ga tournament
@@ -106,8 +106,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   minimum_cost   = 10,    # Minimum cost value
                   user_budget    = 1000,  # What is the budget of a user
                   manager_budget = 1000,  # The budget of a manager
-                  manage_target  = 200,   # The target resource abundance
-                  RESOURCE_ini   = 200,   # Number of initial resources
+                  manage_target  = 300,   # The target resource abundance
+                  RESOURCE_ini   = 300,   # Number of initial resources
                   scaring        = FALSE, # Scaring allowed in simulations
                   culling        = TRUE,  # Culling/hunting allowed
                   castration     = FALSE, # Castration allowed
