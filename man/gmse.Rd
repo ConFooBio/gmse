@@ -8,19 +8,19 @@ gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
   res_movement = 4, remove_pr = 0, lambda = 0.3, agent_view = 20,
   agent_move = 50, res_birth_K = 10000, res_death_K = 400,
   edge_effect = 1, res_move_type = 1, res_birth_type = 2,
-  res_death_type = 2, observe_type = 0, fixed_observe = 20,
-  times_observe = 40, obs_move_type = 1, res_min_age = 1,
-  res_move_obs = TRUE, Euclidean_dist = FALSE, plotting = TRUE,
-  hunt = FALSE, start_hunting = 95, res_consume = 0.5, ga_popsize = 100,
-  ga_mingen = 20, ga_seedrep = 20, ga_sampleK = 20, ga_chooseK = 2,
-  ga_mutation = 0.1, ga_crossover = 0.1, move_agents = TRUE,
-  max_ages = 5, minimum_cost = 10, user_budget = 1000,
-  manager_budget = 1000, manage_target = 200, RESOURCE_ini = 200,
-  scaring = FALSE, culling = TRUE, castration = FALSE, feeding = FALSE,
-  help_offspring = FALSE, tend_crops = FALSE, tend_crop_yld = 0.5,
-  kill_crops = FALSE, stakeholders = 4, manage_caution = 1,
-  land_ownership = FALSE, manage_freq = 1, converge_crit = 100,
-  manager_sense = 0.1)
+  res_death_type = 2, observe_type = 0, fixed_mark = 20,
+  fixed_recapt = 40, times_observe = 40, obs_move_type = 1,
+  res_min_age = 1, res_move_obs = TRUE, Euclidean_dist = FALSE,
+  plotting = TRUE, hunt = FALSE, start_hunting = 95, res_consume = 0.5,
+  ga_popsize = 100, ga_mingen = 20, ga_seedrep = 20, ga_sampleK = 20,
+  ga_chooseK = 2, ga_mutation = 0.1, ga_crossover = 0.1,
+  move_agents = TRUE, max_ages = 5, minimum_cost = 10,
+  user_budget = 1000, manager_budget = 1000, manage_target = 200,
+  RESOURCE_ini = 200, scaring = FALSE, culling = TRUE,
+  castration = FALSE, feeding = FALSE, help_offspring = FALSE,
+  tend_crops = FALSE, tend_crop_yld = 0.5, kill_crops = FALSE,
+  stakeholders = 4, manage_caution = 1, land_ownership = FALSE,
+  manage_freq = 1, converge_crit = 100, manager_sense = 0.1)
 }
 \arguments{
 \item{time_max}{This value sets the maximum number of time steps for a simulation. There are no constraints for length of time that a simulation can run. The default is 100 time steps.}
@@ -53,7 +53,9 @@ gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
 
 \item{observe_type}{The type of observation sampling of resources being done by managers in the observation model. There are currently four options for sampling. (0) Density-based sampling, in which managers sample all resources within some subset of the landscape; the size of this subset is all of the resources within a distance of `agent_view` from the cell of the manager. Managers sample `times_observe` subsets, where `times_observe` is a parameter value set in the gmse simulation. Managers then extrapolate the density of resources in the subset to estimate the total number of resources on a landscape. (1) Mark-recapture estimate of the popuation, in which managers randomly sample `times_observe` resources in the population without any spatial bias (if there are fewer than `times_observe` resources, managers sample all resources) `times_observe` times with replacement. The first `fixed_observe` times are interpreted as marks, while the remaining times are interpreted as recaptures (note that `fixed_observe` must be less than `times_observe`). Hence if a resource is observed at any time in `fixed_observe` independent observations, then it is considered marked; if it is observed again at any time in `times_observe - fixed_observe` independent observations, then it is considered recaptured. A Chapman estimate is used in the manager model to estimate population size from these observation data. (2) Transect-based sampling (linear), in which a manager samples an entire row of the landscape and counts the resources on the row, then moves onto the next row of the landscape until the entire landscape has been covered. The number of cells in each row (i.e., the height) equals `agent_view`, so fewer transects are needed if agents can see farther. If `res_move_obs == TRUE`, then resources can move on the landscape between each transect sampling, potentially causing observation error if some resources are double counted or not counted at all due to movement. If `res_move_obs == FALSE`, then this type of observation should produce no error, and resource estimation will be exact. (3) Transect-based sampling (block), in which a manager samples a block of the landscape and counts the resources in the block, then moves on to the next (equally sized) block until the entire landscape has been covered. Blocks are square, with the length of each side equaling `agent_view`, so fewer blocks are needed if agents can see farther. If `res_move_obs == TRUE`, then resources can move on the landscape between each block sampling, potentially causing observation error if some resources are double counted or not counted at all due to movement. If `res_move_obs == FALSE`, then this type of observation should produce no error, and resource estimation will be exact. The default observation type is 0 for density-based sampling.}
 
-\item{fixed_observe}{This parameter affects mark-recapture observation (i.e., applies only when observe_type == 1). Its value defines how many observations within the observation model for a single time step are interpreted as marks instead of recaptures; hence, this value must be less than `times_observe`.}
+\item{fixed_mark}{This parameter affects mark-recapture observation (i.e., applies only when observe_type == 1). Its value defines how many resources will be marked in each time step as part of a mark-recapture population size estimate.}
+
+\item{fixed_recapt}{This parameter affects mark-recapture observation (i.e., applies only when observe_type == 1). Its value defines how many resources will be (re)captured in each time step as part of a mark-recapture population size estimate.}
 
 \item{times_observe}{This parameter defines how many times a manager will make observations within the observation model; it applies only to density-based sampling (`observe_type = 0`) and mark-recapture sampling (`observe_type = 1`). In the former case, the value determines how many times the manager goes out to sample resources from a subset of the landscape. In the latter case, the value determines how many times the manager goes out to attempt to find new resources to mark or recapture (hence its value must be greater than `fixed_observe`).}
 

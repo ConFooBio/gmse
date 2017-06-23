@@ -113,8 +113,8 @@ double chapman_est(double **obs_array, double *paras, int type1, int type2,
     
     int row, col, trait_number, obs_array_rows, obs_array_cols;
     int total_marks, recaptures, mark_start, recapture_start;
-    int *marked, sum_marked, n, K, k, t1_col, t2_col, t3_col;
-    double estimate, floored_est, a, b, varNc, lci, uci;
+    int n, K, k, t1_col, t2_col, t3_col;
+    double estimate, floored_est, a, b, varNc;
     
     total_marks     = (int) paras[11];
     trait_number    = (int) paras[41];
@@ -123,33 +123,16 @@ double chapman_est(double **obs_array, double *paras, int type1, int type2,
     t3_col          = (int) paras[58];
     obs_array_rows  = (int) paras[61];
     obs_array_cols  = (int) paras[62];
+    recaptures      = (int) paras[102];
     
-    recaptures      = (int) total_marks - 1;
     mark_start      = trait_number + 1;
-    recapture_start = mark_start + (total_marks - recaptures);
+    recapture_start = mark_start + 1;
     
-    if(total_marks < 2 || recaptures < 1){
+    if(total_marks < 1 || recaptures < 1){
         return 0;
     }
     
-    n      = 0;
-    marked = malloc(obs_array_rows * sizeof(int));
-    for(row = 0; row < obs_array_rows; row++){
-        marked[row] = 0;
-        if(obs_array[row][t1_col] == type1 && 
-           obs_array[row][t2_col] == type2 &&
-           obs_array[row][t3_col] == type3
-        ){
-            for(col = mark_start; col < recapture_start; col++){
-                if(obs_array[row][col] > 0){
-                    marked[row] = 1;
-                    n++;
-                    break;
-                }
-            }
-        }
-    }
-    
+    n = 0;
     K = 0;
     k = 0;
     for(row = 0; row < obs_array_rows; row++){
@@ -157,10 +140,13 @@ double chapman_est(double **obs_array, double *paras, int type1, int type2,
            obs_array[row][t2_col] == type2 &&
            obs_array[row][t3_col] == type3
         ){
+            if(obs_array[row][mark_start] > 0){
+                n++;
+            }
             for(col = recapture_start; col < obs_array_cols; col++){
                 if(obs_array[row][col] > 0){
                     K++;
-                    if(marked[row] > 0){
+                    if(obs_array[row][mark_start] > 0){
                         k++;
                     }
                     break;
@@ -168,7 +154,7 @@ double chapman_est(double **obs_array, double *paras, int type1, int type2,
             }
         }
     }
-    
+
     estimate    = ((n + 1) * (K + 1) / (k + 1)) - 1;
     floored_est = floor(estimate);
 
@@ -180,8 +166,6 @@ double chapman_est(double **obs_array, double *paras, int type1, int type2,
         paras[100] = floored_est + (1.965 * sqrt(varNc));
         paras[101] = floored_est - (1.965 * sqrt(varNc));
     }
-    
-    free(marked);  
     
     return floored_est;
 }
