@@ -83,8 +83,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   res_birth_type = 2,     # What type of birth for resources
                   res_death_type = 2,     # What type of death for resources
                   observe_type   = 0,     # Type of observation used
-                  fixed_mark     = 20,    # How many marked (if obs type = 1)
-                  fixed_recapt   = 40,    # How many recaptured (if type = 1)
+                  fixed_mark     = 50,    # How many marked (if obs type = 1)
+                  fixed_recapt   = 150,   # How many recaptured (if type = 1)
                   times_observe  = 40,    # How many times obs (if type = 0)
                   obs_move_type  = 1,     # Type of movement for agents
                   res_min_age    = 1,     # Minimum age recorded and observed

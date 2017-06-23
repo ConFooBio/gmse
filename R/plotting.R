@@ -19,17 +19,19 @@ chapman_est <- function(observation, paras){
     }else{
         recpt <- observation[,rcols];   
     }
-    n      <- sum(mrked);
-    K      <- sum(recpt);
-    recapt <- mrked + recpt;
-    k      <- sum(recapt == 2);
-    Nc     <- ((n + 1) * (K + 1) / (k + 1)) - 1;
-    Nc     <- floor(Nc);
+    n       <- sum(mrked);
+    K       <- sum(recpt);
+    recapt  <- mrked + recpt;
+    k       <- sum(recapt == 2);
+    Nc      <- ((n + 1) * (K + 1) / (k + 1)) - 1;
+    Nc      <- floor(Nc);
+    
     a      <- ((n+1)*(K+1)*(n-k)*(K-k));
     b      <- ((k+1)*(k+1)*(k+2));
     varNc  <- a/b;
     lci    <- Nc - (1.965 * sqrt(varNc));
     uci    <- Nc + (1.965 * sqrt(varNc));
+
     return(list(Nc=Nc,lci=lci,uci=uci));
 }
 
