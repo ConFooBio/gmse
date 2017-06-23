@@ -77,6 +77,41 @@ library(rhandsontable)
 <a name="updates">Project updates:</a>
 ================================================================================
 
+> <a name="u-24-JUN-2017">Update: 24 JUN 2017</a>
+
+**A better mark-recapture observation model estimator**
+
+Setting the parameters for the mark-recapture observation model (`observe_type = 1`) was confusing, so much so that I had to remember how to do it. In `v0.2.1.3`, I have fixed this so that the sampling is clearer. Rather than having a `fixed_observe` argument in `gmse()`, I've included a `fixed_mark` and `fixed_recapt`; arguments that only apply when `observe_type = 1`. Under these conditions, `times_observe` is ignored and `fixed_mark` defines how many resources will be marked in each time step; `fixed_recapt` defines how many recaptures will be made. If the value of `fixed_mark` or `fixed_recapt` is greater than the actual size of the resource popuation, then all resources in the population will be sampled.
+
+**Get a better confidence interval for the density estimator**
+
+The density estimator is giving too few Type 1 errors because of `times_observe > 1`. This doesn't affect anything but the visualisation, since managers don't make decisions based on confidence intervals. Still, fixing the CIs would be a good idea. The CIs should also be correct when `times_observe = 1`. Really, the `times_observe > 1` is simulating a weird case in which the central limit theorem would apply to the `times_observe` estimates, and hence the mean estimate among time times observed should be normally distributed around the mean.
+
+**Double-check for memory leaks with Valgrind**
+
+Running Valgrind on the R package GMSE revealed no memory leaks.
+
+```
+==15438== 
+==15438== HEAP SUMMARY:
+==15438==     in use at exit: 67,722,174 bytes in 20,290 blocks
+==15438==   total heap usage: 6,398,005 allocs, 6,377,715 frees, 1,211,596,543 bytes allocated
+==15438== 
+==15438== LEAK SUMMARY:
+==15438==    definitely lost: 0 bytes in 0 blocks
+==15438==    indirectly lost: 0 bytes in 0 blocks
+==15438==      possibly lost: 0 bytes in 0 blocks
+==15438==    still reachable: 67,722,174 bytes in 20,290 blocks
+==15438==         suppressed: 0 bytes in 0 blocks
+==15438== Reachable blocks (those to which a pointer was found) are not shown.
+==15438== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==15438== 
+==15438== For counts of detected and suppressed errors, rerun with: -v
+==15438== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+```
+
+**I have changed some default parameters** so that when I write up the default example, it provides a description that will be useful to new users.
+
 > <a name="u-20-JUN-2017">Update: 20 JUN 2017</a>
 
 I am in the process of organising the [vignette](https://github.com/bradduthie/gmse/blob/master/vignettes/gmse_vignette.Rmd). As I've done in a [previous manuscript](https://github.com/bradduthie/Inbreeding_Care), I'll start with notes and an outline and update now on the Rmarkdown file. The vignette will therefore evolve and be tracked through git, just like the code.
