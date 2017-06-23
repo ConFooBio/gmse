@@ -8,18 +8,11 @@
 #'@return The Chapman estimator (which is also performed GMSE in the manager function) returns a list that includes resource population size estimates along with 95% confidence intervals
 #'@export
 chapman_est <- function(observation, paras){
-    marks       <- paras[12];
-    recaptures  <- paras[11];
-    obs_start   <- paras[42] + 1;
-    marks_end   <- obs_start + paras[11];
-    mcols       <- obs_start:marks_end;
-    rcols       <- (marks_end + 1):dim(observation)[2];
-    if(marks > 1){
-        mrked <- apply(X=observation[,mcols], MARGIN = 1, FUN = sum);
-        mrked <- mrked > 0;
-    }else{
-        mrked <- observation[,mcols];   
-    }
+    marks       <- 1;
+    recaptures  <- paras[12] - 1;
+    mcols       <- paras[42] + 2;
+    rcols       <- (paras[42] + 3):dim(observation)[2];
+    mrked       <- observation[,mcols];
     if(recaptures > 1){
         recpt <- apply(X=observation[,rcols], MARGIN = 1, FUN = sum);
         recpt <- recpt > 0;

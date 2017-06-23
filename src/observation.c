@@ -434,7 +434,7 @@ void sample_fixed_res(double **resource_array, double **agent_array,
     move_res     = (int) paras[19];
     res_rows     = (int) paras[32]; /* Number of resources can be sampled */
     agent_number = (int) paras[54]; /* Number of agents in the agent array */
-    trait_number = (int) paras[55]; /* Traits (columns) in the resource array */
+    trait_number = (int) paras[41]; /* Traits (columns) in the resource array */
     lookup_rows  = (int) paras[60]; /* Number of rows in the lookup table */
     
     if(fixed_sample < 1){

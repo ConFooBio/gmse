@@ -117,7 +117,6 @@ double chapman_est(double **obs_array, double *paras, int type1, int type2,
     double estimate, floored_est, a, b, varNc, lci, uci;
     
     total_marks     = (int) paras[11];
-    recaptures      = (int) paras[10];
     trait_number    = (int) paras[41];
     t1_col          = (int) paras[56];
     t2_col          = (int) paras[57];
@@ -125,6 +124,7 @@ double chapman_est(double **obs_array, double *paras, int type1, int type2,
     obs_array_rows  = (int) paras[61];
     obs_array_cols  = (int) paras[62];
     
+    recaptures      = (int) total_marks - 1;
     mark_start      = trait_number + 1;
     recapture_start = mark_start + (total_marks - recaptures);
     
