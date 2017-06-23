@@ -85,7 +85,12 @@ dens_est <- function(observation, paras, view = view, land = land){
     ucp     <- prp + 1.96 * sqrt(prp / (vision * vision));
     lci     <- cells * lcp
     uci     <- cells * ucp;
-    return(list(Nc=est, lci=lci, uci=uci, test = tot_obs));
+    # sum_vec <- apply(X = observation[,21:endrow], MARGIN = 2, FUN = sum);
+    # pr_vec  <- sum_vec / (area / paras[12]);
+    # mn_pr   <- mean(pr_vec) * cells;
+    # CI_pr   <- 1.96 * sd(pr_vec) / sqrt( length(pr_vec) );
+
+    return(list(Nc = est, lci = lci, uci = uci, test = tot_obs));
 } 
 
 #' Plot results for transect-based sampling
@@ -178,16 +183,19 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, COST,
         axis(side=4, at=c(0, 25, 50, 75, 100));
         mtext("Mean % Yield", side = 4, line = 2.4);
         # ------------ Panel 4 (middle right);
-        par(mar=c(4,6,1,1));
+        par(mar=c(4,5,1,1));
         cell_number <- dim(land3)[1] * dim(land3)[2];
-        max_yield   <- cell_number;
-        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, max_yield),
-             xlim=c(0,time_max), xlab="Time Step", ylab="Stake-holder yield",
+        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, 100),
+             xlim=c(0,time_max), xlab="Time Step", ylab="Stake-holder % yield",
              cex.lab=1.25);
         stake_colors <- topo.colors( dim(age_t)[1] );
         for(stakeholder in 1:dim(ages)[2]){
-            points(x=gens, y=ages[,stakeholder], type="l", lwd=2, 
-                   col = stake_colors[stakeholder]);
+            max_yield   <- sum(land3 == stakeholder);
+            if(max_yield > 0){
+                agent_yield <- 100 * (ages[,stakeholder] / max_yield);
+                points(x = gens, y = agent_yield, type="l", lwd=2, 
+                       col = stake_colors[stakeholder]);
+            }
         }
         # ------------- Panel 5 (lower left)
         res_costs <- matrix(data = 0, nrow = i, ncol = 5);
@@ -392,14 +400,17 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
         # ------------ Panel 4 (middle right);
         par(mar=c(4,5,1,1));
         cell_number <- dim(land3)[1] * dim(land3)[2];
-        max_yield   <- cell_number; #floor( cell_number / (dim(age_t)[1]) )
-        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, max_yield),
-             xlim=c(0,time_max), xlab="Time Step", ylab="Stake-holder yield",
+        plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, 100),
+             xlim=c(0,time_max), xlab="Time Step", ylab="Stake-holder % yield",
              cex.lab=1.25);
         stake_colors <- topo.colors( dim(age_t)[1] );
         for(stakeholder in 1:dim(ages)[2]){
-            points(x=gens, y=ages[,stakeholder], type="l", lwd=2, 
-                   col = stake_colors[stakeholder]);
+            max_yield   <- sum(land3 == stakeholder);
+            if(max_yield > 0){
+                agent_yield <- 100 * (ages[,stakeholder] / max_yield);
+                points(x = gens, y = agent_yield, type="l", lwd=2, 
+                       col = stake_colors[stakeholder]);
+            }
         }
         # ------------- Panel 5 (lower left)
         res_costs <- matrix(data = 0, nrow = i, ncol = 5);
