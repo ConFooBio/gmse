@@ -1,6 +1,6 @@
 ---
-title: "Vignette Title"
-author: "Vignette Author"
+title: "gmse: Generalised management strategy evaluation"
+author: "A. Bradley Duthie"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -9,50 +9,74 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
 
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+## Introduction
 
-## Vignette Info
+- Broad paragraph about managing populations and conservation given uncertainty and conflict among stakeholders.
 
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+- Paragraph introducing adaptive management, then management strategy evaluation framework; introduce this *generalised* management strategy evaluation framework and R package as filling an important gap in tools available for modelling mangement.
 
-## Styles
+- More details about what types of problems *GMSE* was developed to solve and (very generally) how it can solve them through individual-based modelling and a game-theoretic approach that uses genetic algorithms to simulate manager and stakeholder decision making.
 
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+## GMSE model structure
 
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
+Introduce the general mode of generalised management strategy evaluation (e.g., below), and the idea of simulating the package simulating the whole process of management.
 
-## Figures
-
-The figure sizes have been customised so that you can easily put two images side-by-side. 
-
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
+```{r, echo=FALSE, fig.height=4, fig.width=4}
+mbox <- function(x0, x1, y0, y1){
+    xx <- seq(from=x0, to=x1, length.out = 100);
+    yy <- seq(from=y0, to=y1, length.out = 100);
+    xd <- c(rep(x0, 100), xx, rep(x1,100), rev(xx));
+    yd <- c(yy, rep(y1,100), rev(yy), rep(y0, 100));
+    return(list(x=xd, y=yd));
+}
+par(mar=c(0,0,0,0));
+plot(x=0, y=0, type="n", xlim=c(0,100), ylim=c(0,100), xaxt="n", yaxt="n",
+     xlab="",ylab="");
+manger_model_box <- mbox(x0 = 1, x1 = 30, y0 = 70, y1 = 99);
+polygon(x = manger_model_box$x, y = manger_model_box$y, lwd = 3);
+# User model box
+polygon(x=c(rep(70,30),70:99,rep(99,30),99:70), # box
+        y=c(70:99,rep(99,30),99:70,rep(70,30)),
+        lwd=3,border="orange");
+# Obeservation model box
+polygon(x=c(rep(1,30),1:30,rep(30,30),30:1), # box
+        y=c(1:30,rep(30,30),30:1,rep(1,30)),
+        lwd=3,border="yellow");
+# Natural resources model
+polygon(x=c(rep(70,30),70:99,rep(99,30),99:70), # box
+        y=c(1:30,rep(30,30),30:1,rep(1,30)),
+        lwd=3,border="blue");
+# Natural resources model
+polygon(x=c(rep(36,30),36:65,rep(65,30),65:36), # box
+        y=c(36:65,rep(65,30),65:36,rep(36,30)),
+        lwd=3,border="green");
+arrows(x0=15, x1=15, y0=30, y1=70, lwd=2, length=0.15);
+arrows(x0=30, x1=70, y0=85, y1=85, lwd=2, length=0.15);
+arrows(x0=85, x1=85, y0=70, y1=30, lwd=2, length=0.15);
+arrows(x0=70, x1=30, y0=15, y1=15, lwd=2, length=0.15);
+arrows(x0=30, x1=36, y0=70, y1=65, lwd=2, length=0.075, code=3);
+arrows(x0=65, x1=70, y0=65, y1=70, lwd=2, length=0.075, code=3);
+text(x=50, y=90, labels="Policy");
+text(x=50, y=20, labels="Monitoring");
+text(x=10, y=48, labels="Indicators", srt=90);
+text(x=90, y=52, labels="Off-take", srt=-90);
+text(x=50, y=70, labels="Genetic algorithm", cex=0.8, col="darkgreen");
+# Manager model details: 
+text(x=15, y=95, cex=0.75,labels="Manager model");
+text(x=15, y=90, cex=0.75,labels="file: manager.c");
+# Bayesion priors details: 
+text(x=50, y=55, cex=0.75,labels="Update manager");
+text(x=50, y=50, cex=0.75,labels="or user strategy");
+text(x=50, y=45, cex=0.75,labels="file: game.c");
+# Manager model details: 
+text(x=85, y=95, cex=0.75,labels="User model");
+text(x=85, y=90, cex=0.75,labels="file: user.c");
+# Natural resources model details: 
+text(x=85, y=25, cex=0.75,labels="Natural");
+text(x=85, y=20, cex=0.75,labels="resources model");
+text(x=85, y=15, cex=0.75,labels="file: resources.c");
+# Natural resources model details: 
+text(x=15, y=25, cex=0.75,labels="Observ. model");
+text(x=15, y=20, cex=0.75,labels="file: observe.c");
 ```
-
-You can enable figure captions by `fig_caption: yes` in YAML:
-
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
-
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
-
-## More Examples
-
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
-```
-
-Also a quote using `>`:
-
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
