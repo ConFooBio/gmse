@@ -10,7 +10,7 @@ vignette: >
 ---
 
 
-## Introduction
+# Introduction
 
 - Broad paragraph about managing populations and conservation given uncertainty and conflict among stakeholders.
 
@@ -18,7 +18,7 @@ vignette: >
 
 - More details about what types of problems *GMSE* was developed to solve and (very generally) how it can solve them through individual-based modelling and a game-theoretic approach that uses genetic algorithms to simulate manager and stakeholder decision making.
 
-## GMSE model structure
+# GMSE model structure
 
 Introduce the general mode of generalised management strategy evaluation (e.g., below), and the idea of simulating the package simulating the whole process of management.
 
@@ -31,52 +31,71 @@ mbox <- function(x0, x1, y0, y1){
     return(list(x=xd, y=yd));
 }
 par(mar=c(0,0,0,0));
-plot(x=0, y=0, type="n", xlim=c(0,100), ylim=c(0,100), xaxt="n", yaxt="n",
-     xlab="",ylab="");
+plot(x = 0, y = 0, type = "n", xlim = c(0, 100), ylim = c(0, 100), 
+     xaxt = "n", yaxt = "n", xlab = "", ylab = "");
+# Manager model 
 manger_model_box <- mbox(x0 = 1, x1 = 30, y0 = 70, y1 = 99);
 polygon(x = manger_model_box$x, y = manger_model_box$y, lwd = 3);
-# User model box
-polygon(x=c(rep(70,30),70:99,rep(99,30),99:70), # box
-        y=c(70:99,rep(99,30),99:70,rep(70,30)),
-        lwd=3,border="orange");
-# Obeservation model box
-polygon(x=c(rep(1,30),1:30,rep(30,30),30:1), # box
-        y=c(1:30,rep(30,30),30:1,rep(1,30)),
-        lwd=3,border="yellow");
-# Natural resources model
-polygon(x=c(rep(70,30),70:99,rep(99,30),99:70), # box
-        y=c(1:30,rep(30,30),30:1,rep(1,30)),
-        lwd=3,border="blue");
-# Natural resources model
-polygon(x=c(rep(36,30),36:65,rep(65,30),65:36), # box
-        y=c(36:65,rep(65,30),65:36,rep(36,30)),
-        lwd=3,border="green");
+text(x = 15, y = 90, cex = 1.0, labels = "Manager");
+text(x = 15, y = 83, cex = 1.0, labels = "model");
+# User model
+user_model_box <- mbox(x0 = 70, x1 = 99, y0 = 70, y1 = 99);
+polygon(x = user_model_box$x, y = user_model_box$y, lwd = 3);
+text(x = 85, y = 90, cex = 1.0, labels = "User");
+text(x = 85, y = 83, cex = 1.0, labels = "model");
+# Observation model
+observe_model_box <- mbox(x0 = 1, x1 = 30, y0 = 1, y1 = 30);
+polygon(x = observe_model_box$x, y = observe_model_box$y, lwd = 3);
+text(x = 15, y = 23, cex = 1.0, labels = "Observation");
+text(x = 15, y = 15, cex = 1.0, labels = "model");
+# Resource model
+resource_model_box <- mbox(x0 = 70, x1 = 99, y0 = 1, y1 = 30);
+polygon(x = resource_model_box$x, y = resource_model_box$y, lwd = 3);
+text(x = 85, y = 23, cex = 1.0, labels = "Natural");
+text(x = 85, y = 15, cex = 1.0, labels = "resources");
+text(x = 85, y = 7,  cex = 1.0, labels = "model");
+# Game-theoretic (genetic algorithm) model
+game_model_box <- mbox(x0 = 36, x1 = 65, y0 = 36, y1 = 65);
+polygon(x = game_model_box$x, y = game_model_box$y, lwd = 3);
+text(x=50, y=55, labels="Genetic", cex=1.0);
+text(x=50, y=48, labels="algorithm", cex=1.0);
+# Arrows indicating direction of GMSE model
 arrows(x0=15, x1=15, y0=30, y1=70, lwd=2, length=0.15);
 arrows(x0=30, x1=70, y0=85, y1=85, lwd=2, length=0.15);
 arrows(x0=85, x1=85, y0=70, y1=30, lwd=2, length=0.15);
 arrows(x0=70, x1=30, y0=15, y1=15, lwd=2, length=0.15);
 arrows(x0=30, x1=36, y0=70, y1=65, lwd=2, length=0.075, code=3);
 arrows(x0=65, x1=70, y0=65, y1=70, lwd=2, length=0.075, code=3);
-text(x=50, y=90, labels="Policy");
-text(x=50, y=20, labels="Monitoring");
-text(x=10, y=48, labels="Indicators", srt=90);
-text(x=90, y=52, labels="Off-take", srt=-90);
-text(x=50, y=70, labels="Genetic algorithm", cex=0.8, col="darkgreen");
-# Manager model details: 
-text(x=15, y=95, cex=0.75,labels="Manager model");
-text(x=15, y=90, cex=0.75,labels="file: manager.c");
-# Bayesion priors details: 
-text(x=50, y=55, cex=0.75,labels="Update manager");
-text(x=50, y=50, cex=0.75,labels="or user strategy");
-text(x=50, y=45, cex=0.75,labels="file: game.c");
-# Manager model details: 
-text(x=85, y=95, cex=0.75,labels="User model");
-text(x=85, y=90, cex=0.75,labels="file: user.c");
-# Natural resources model details: 
-text(x=85, y=25, cex=0.75,labels="Natural");
-text(x=85, y=20, cex=0.75,labels="resources model");
-text(x=85, y=15, cex=0.75,labels="file: resources.c");
-# Natural resources model details: 
-text(x=15, y=25, cex=0.75,labels="Observ. model");
-text(x=15, y=20, cex=0.75,labels="file: observe.c");
+text(x=50, y=90, labels="Policy", cex = 1.0);
+text(x=50, y=20, labels="Monitoring", cex = 1.0);
+text(x=10, y=48, labels="Indicators", srt=90, cex = 1.0);
+text(x=90, y=52, labels="Off-take", srt=-90, cex = 1.0);
 ```
+
+**Figure 1:** *Description of the generalised management strategy evaluation framework*
+
+Next there will be some general explanation of what it is that each sub-model does. The subfunction called in R will be mentioned, but with emphasis that the software user need not do this themselves. I will emphasise that each model can be built upon as desired to include more (or less) detail.
+
+## Natural resource model
+
+- Explanation of what's going on in the natural resource model
+- Individual-based
+- Spatially explicit
+- Models processes of birth, movement, interaction with landscape, and death, with simulated carrying capacities on birth or death. Note that the individual-based nature of the model naturally gives rise to some stochasticity.
+
+## Observation model
+
+- Explanation of what's going on in the observation model (manager does some observing)
+- Also individual based in the sense that the manager is an individual doing work
+- Four different types of observation are permitted
+    1. Density-based observation
+    2. Mark-recapture based observation
+    3. Linear transect based observation
+    4. Blocked transect based observation
+- Note that the observation model mimics the sampling of resources (i.e., data collection), but not data analysis.
+- Uncertainty in the observation model is created naturally by imposed sampling limitations and resource movement during sampling
+
+
+
+
+
