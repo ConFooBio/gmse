@@ -81,6 +81,42 @@ library(rhandsontable)
 
 The `fixed_recapt` is now running as intended as of commit [ad9d9e10ead215a703f9accdfbd149d35b350567](https://github.com/bradduthie/gmse/commit/ad9d9e10ead215a703f9accdfbd149d35b350567).
 
+**New issues -- proposed enhancements for the future GMSE**
+
+Before I lose track of all the proposed ideas for improving upon the GMSE package, I want to get all of them up as issues on GitHub. For completeness, I have also included the unresolved [Issue 9](https://github.com/bradduthie/gmse/issues/9). I will add to the below to form an organised list of future ideas to work on, all laid out as [enhancement issues](https://github.com/bradduthie/gmse/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement) on GitHub. Anyone should be able to add to this list, or comment on the issues (e.g., if they would be especially useful ones to resolve).
+
+**[Issue 9](https://github.com/bradduthie/gmse/issues/9): Observation Error**
+
+It would be useful to incorporate observation error into the simulations more directly. This could be affected by one or more variables attached to each agent, which would potentially cause the mis-identification (e.g., incorrect return of `seeme`) or mis-labelling (incorrect traits read into the observation array) of resources. This could be done in either of two ways:
+
+ 1. Cause the errors to happen in 'real time' -- that is, while the observations are happening in the simulation. This would probably be slightly inefficient, but have the benefit of being able to assign errors specifically to agents more directly.
+
+ 2. Wait until the `resource_array` is marked in the `observation` function, then introduce errors to the array itself, including errors to whether or not resources are recorded and what their trait values are. These errors would then be read into the `obs_array`, which is returned by the function.
+
+**[Issue 30](https://github.com/bradduthie/gmse/issues/30): Manager assumptions about user actions**
+
+It would be useful to allow for simulations to dynamically adjust the caution that the manager has when changing actions. At the moment, managers always assume that some specified number of `actions` will be performed by users, and this number does not change over the course of the simulation. But managers might be able to use the history of user actions to learn to be more or less cautious when setting new policy.
+
+**[Issue 31](https://github.com/bradduthie/gmse/issues/31): Modify manager's predicted effects**
+
+Currently, the predicted effects of a manager's actions are set to values that, heuristically, appear to work in the genetic algorithm. This is adjusted with the `manager_sense` parameter, which has a default of 0.1, such that the manager assumes that if they set costs to increase culling by 100 percent, it will actually only increase by 10 percent (as not all users are going to necessarily cull if given the opportunity). Like real-world management, this is heuristic and results in uncertainty, but future versions of GMSE could dynamically modify this value during the course of the simulation based on real knowledge of how policy changes have affected user actions in previous time steps.
+
+**[Issue 32](https://github.com/bradduthie/gmse/issues/32): Long-term histories affect genetic algorithm**
+
+Currently, only the history of interactions from the previous time step directly affects the genetic algorithm for stakeholders and managers. For managers especially, this could be made a bit more nuanced. The entire history of total actions and resource dynamics is recorded, and this could easily be made available (e.g., in `PARAS_REC`) for managers to make decisions. Incorporating these data into the genetic algorithm, and therefore into agent decision making, could be tricky, but one simple example of this could be having managers use the per-time step mean number of stakeholder actions in the last 2-3 time steps to predict future user actions with a bit more inertia. Managers could also use stakeholder action history from earlier time steps, but weighting each by how long ago they occurred.
+
+**[Issue 33](https://github.com/bradduthie/gmse/issues/33): Non fixed mark-recapture sampling number**
+
+Currently, to simulate mark-recapture observation and analysis, values for `fixed_mark` and `fixed_recapt` need to be specified in GMSE, and the manager would have exactly these numbers of marks and recaptures in each generation, respectively. It would also be useful to, instead of specifying exact numbers, to have the manager search a general area, then mark all resources in that area. Next, the manager could search again and recapture, so the exact number is not always set and the observation process probably mimics more closely what happens in the field. This type of sampling is actually already available (`observe_type = 0`), so I would just need to add some code to have managers interpret some observations as marks and others as recaptures.
+
+**[Issue 34](https://github.com/bradduthie/gmse/issues/34): Resource interactions**
+
+Currently, more than one resource type is permitted, but this is not offered/visible to users of the software. A next major version of GMSE could have multiple resource types with resources actually interacting with one another (could borrow future development code from [EcoEdu](https://github.com/bradduthie/EcoEdu)). Simple interactions could include competition and predator-prey functions in the resource model. The code is also already ready for managers and users to consider multiple resources in making policy decisions and actions, respectively.
+
+**[Issue 35](https://github.com/bradduthie/gmse/issues/35): Stakeholder lobbying**
+
+Currently, GMSE assumes that stakeholders have a negative relationship with resources -- they either want to hunt them or scare them from their land. Future versions of GMSE should include an option for a stakeholder type (e.g., activist) that lobbies the manager to adjust the manager's utilities, effectively increasing or decreasing the `target`. The data structure to do this already exists, it's just a matter of figuring out how best to enact it and why. For example, would adding this have any actual effect that differs from just assuming that the manager is being lobbied by conservationists continuously, and that their `target` is a reflection of that.
+
 > <a name="u-25-JUN-2017">Update: 25 JUN 2017</a>
 
 I need to double check that `fixed_recapt` is doing what I said it did on [23 JUN](#u-23-JUN-2017). My concern is that it is not being implemented properly in the observation model -- there needs to be a difference between the first and second `times_obs`, or `times_obs` might need to be redefined for the first and second rounds of observation. It looks like the observation model is just doing `times_obs` observations with the same number of samples in each one.
