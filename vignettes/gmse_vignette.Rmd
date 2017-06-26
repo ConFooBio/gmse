@@ -95,6 +95,28 @@ Next there will be some general explanation of what it is that each sub-model do
 - Note that the observation model mimics the sampling of resources (i.e., data collection), but not data analysis.
 - Uncertainty in the observation model is created naturally by imposed sampling limitations and resource movement during sampling
 
+## Manager model
+
+- Explanation of what's going on in the manager model (analysing observations and setting policy)
+- Manager analyses data from one of the four observation models used, then estimates the resource abundance
+- Manager compares the estimated resource abundance with the target abundance, then uses the difference between the estimate and the target to develop a policy
+- Policy is developed by calling the genetic algorithm, which takes in parameters governing the manager's constraints on developing policy, the options of policy available for the manager to set (e.g., culling, scaring, etc.), and user actions from the previous time step to predict the consequences of the policy
+- The genetic algorithm finds an adaptive solution that is predicted to move the resource population abundance to its target
+- The new policy is set for all stakeholders in the user model
+
+## User model
+
+- Explanation of what's going on in the user model (users respond to policy with actions affecting resources and landscape)
+- Users take the new policy and then respond to it by attempting to maximise their utilities for resource abundance and landscape yield
+- Each user individually calls the genetic algorithm, which takes in parameters governing constraints on user actions and options of actions available to the user (e.g., culling, scaring, etc.) to predict the consequences of the user's actions on their own utility
+- The genetic finds an adaptive solution for each stakeholder
+- The resource and landscape are affected by the stakeholders taking actions
+
+
+
+
+
+
 
 
 
