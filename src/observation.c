@@ -420,14 +420,14 @@ void mark_fixed(double **resource_array, double **agent_array, double *paras,
 void sample_fixed_res(double **resource_array, double **agent_array, 
                       double ***land, double *paras, int **lookup){
 
-    int edge_type, move_type, fixed_sample, times_obs, move_res, by_type;
+    int edge_type, move_type, marks, recaptures, times_obs, move_res, by_type;
     int land_x, land_y, res_rows, agent_number, trait_number, lookup_rows;
     int obs_iter, agent, a_type, row, type1, type2, type3;
     
     edge_type    = (int) paras[1];
     move_type    = (int) paras[2];
     a_type       = (int) paras[7];  /* Type of agent doing observing */
-    fixed_sample = (int) paras[10];
+    marks        = (int) paras[10];
     land_x       = (int) paras[12];
     land_y       = (int) paras[13];
     by_type      = (int) paras[17];
@@ -436,32 +436,21 @@ void sample_fixed_res(double **resource_array, double **agent_array,
     agent_number = (int) paras[54]; /* Number of agents in the agent array */
     trait_number = (int) paras[41]; /* Traits (columns) in the resource array */
     lookup_rows  = (int) paras[60]; /* Number of rows in the lookup table */
+    recaptures   = (int) paras[102];
     
-    if(fixed_sample < 1){
-        paras[10]    = 1;
-        fixed_sample = 1;
-    }
-    
-
     for(row = 0; row < lookup_rows; row++){
         if(lookup[row][0] == 0){
-            obs_iter     = trait_number + 1; 
-            times_obs    = (int) paras[11];
-            
             type1 = lookup[row][1];    
             type2 = lookup[row][2];
             type3 = lookup[row][3];
-            while(times_obs > 0){
-                for(agent = 0; agent < agent_number; agent++){
-                    if(agent_array[agent][by_type] == a_type){ 
-                        mark_fixed(resource_array, agent_array, paras, agent,
-                                   obs_iter, type1, type2, type3);
-                    }
-                }
-                obs_iter++;
-                times_obs--;
-                if(move_res == 1){ /* Move resources if need for new sample */
-                    res_mover(resource_array, land, paras);
+            for(agent = 0; agent < agent_number; agent++){
+                if(agent_array[agent][by_type] == a_type){
+                    mark_fixed(resource_array, agent_array, paras, agent, 
+                               trait_number + 1, type1, type2, type3); 
+                    paras[10] = (double) recaptures;
+                    mark_fixed(resource_array, agent_array, paras, agent, 
+                               trait_number + 2, type1, type2, type3);
+                    paras[10] = (double) marks;
                 }
             }
         }
