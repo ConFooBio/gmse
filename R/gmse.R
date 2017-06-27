@@ -71,7 +71,7 @@
 gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   land_dim_1     = 100,   # x dimension of the landscape
                   land_dim_2     = 100,   # y dimension of the landscape
-                  res_movement   = 4,     # How far do resources move
+                  res_movement   = 8,     # How far do resources move
                   remove_pr      = 0.0,   # Density independent resource death
                   lambda         = 0.30,  # Resource growth rate
                   agent_view     = 10,    # Number cells agent view around them
@@ -85,15 +85,15 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   observe_type   = 0,     # Type of observation used
                   fixed_mark     = 50,    # How many marked (if obs type = 1)
                   fixed_recapt   = 150,   # How many recaptured (if type = 1)
-                  times_observe  = 8,    # How many times obs (if type = 0)
+                  times_observe  = 8,     # How many times obs (if type = 0)
                   obs_move_type  = 1,     # Type of movement for agents
-                  res_min_age    = 1,     # Minimum age recorded and observed
+                  res_min_age    = 0,     # Minimum age recorded and observed
                   res_move_obs   = TRUE,  # Move resources while observing
                   Euclidean_dist = FALSE, # Use Euclidean distance in view
                   plotting       = TRUE,  # Plot the results
                   hunt           = FALSE, # Does the user hunt resources?
                   start_hunting  = 95,    # What generation hunting starts
-                  res_consume    = 1.0,   # Pr. landscape cell consumed by res
+                  res_consume    = 0.5,   # Pr. landscape cell consumed by res
                   ga_popsize     = 100,   # Pop size in genetic algorithm
                   ga_mingen      = 40,    # Minimum generations in a ga run
                   ga_seedrep     = 20,    # How many copies to seed a ga with
@@ -121,7 +121,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   land_ownership = FALSE, # Do stake-holders act on their land?
                   manage_freq    = 1,     # Frequency that management enacted
                   converge_crit  = 100,   # Convergence criteria
-                  manager_sense  = 0.1    # Manager sensitivity
+                  manager_sense  = 0.1,   # Manager sensitivity
+                  public_land    = 0      # Proportion of landscape public
 ){
     
     if(observe_type == 1){
@@ -143,7 +144,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     
     # Set the landscape
     if(land_ownership == TRUE){
-        land_alloc  <- c(0, rep(x = 1/stakeholders, times = stakeholders));
+        stake_pr    <- (1 - public_land) / stakeholders;
+        land_alloc  <- c(public_land, rep(x = stake_pr, times = stakeholders));
     }else{
         land_alloc  <- c(1, rep(x = 0, times = stakeholders)); 
     }
