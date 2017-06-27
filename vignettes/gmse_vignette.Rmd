@@ -10,6 +10,9 @@ vignette: >
 bibliography: gmse.bib
 ---
 
+```{r, echo = FALSE}
+library(GMSE);
+```
 
 # Introduction
 
@@ -23,7 +26,7 @@ bibliography: gmse.bib
 
 Introduce the general mode of generalised management strategy evaluation (e.g., below), and the idea of simulating the package simulating the whole process of management.
 
-```{r, echo=FALSE, fig.height=4, fig.width=4}
+```{r, echo = FALSE, fig.height = 4, fig.width = 4}
 mbox <- function(x0, x1, y0, y1){
     xx <- seq(from=x0, to=x1, length.out = 100);
     yy <- seq(from=y0, to=y1, length.out = 100);
@@ -127,6 +130,13 @@ Next there will be some general explanation of what it is that each sub-model do
 # Some examples
 
 ## The default case of hunting management
+
+```{r, echo = FALSE, fig.width = 7, fig.height = 8}
+sim <- gmse(plotting = FALSE);
+case01plot_sim(res = sim$resource, obs = sim$observation, land = sim$land, 
+               agents = sim$agents, paras = sim$paras[1,], ACTION = sim$action, 
+               COST = sim$cost);
+```
 
 ## A case of resource management for farmers
 
