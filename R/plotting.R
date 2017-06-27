@@ -342,7 +342,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
     
     minK <- min(paras[6:7]);
     
-    ymaxi    <- 2 * minK;
+    ymaxi    <- minK + (minK * (1 + res[[1]][1,10])); # Add for birth rate
     time_max <- length(res);
     for(i in 1:(time_max-1)){
         res_t    <- res[[i]];

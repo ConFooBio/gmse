@@ -115,7 +115,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   feeding        = FALSE, # Feeding resources allowed
                   help_offspring = FALSE, # Helping offspring allowed
                   tend_crops     = FALSE, # Tending crops allowed
-                  tend_crop_yld  = 0.5,   # Additional yield from tending crops
+                  tend_crop_yld  = 0.2,   # Additional yield from tending crops
                   kill_crops     = FALSE, # Killing crops allowed
                   stakeholders   = 4,     # Number of stake-holders
                   manage_caution = 1,     # Caution rate of the manager
@@ -201,10 +201,10 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     ACTION[3, 5:7 , manager_row] <- 0;
     
     if(land_ownership == TRUE){ # Set up utilities for land owning farmers
-        ACTION[1, 6:7, stakeholder_rows] <- 1;
-        ACTION[2, 6:7, stakeholder_rows] <- 1;
         ACTION[1, 5, stakeholder_rows]   <- 0;
         ACTION[2, 5, stakeholder_rows]   <- 100;
+        ACTION[1, 6:7, stakeholder_rows] <- 1;
+        ACTION[2, 6:7, stakeholder_rows] <- 1;
     }else{                      # Set up utilities for hunters of resources
         ACTION[1, 5, stakeholder_rows]   <- -1;
         ACTION[2, 5, stakeholder_rows]   <- 0;
