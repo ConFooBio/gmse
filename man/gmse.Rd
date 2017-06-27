@@ -5,13 +5,13 @@
 \title{GMSE simulation}
 \usage{
 gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
-  res_movement = 4, remove_pr = 0, lambda = 0.3, agent_view = 10,
+  res_movement = 8, remove_pr = 0, lambda = 0.3, agent_view = 10,
   agent_move = 50, res_birth_K = 10000, res_death_K = 600,
   edge_effect = 1, res_move_type = 1, res_birth_type = 2,
   res_death_type = 2, observe_type = 0, fixed_mark = 50,
   fixed_recapt = 150, times_observe = 8, obs_move_type = 1,
-  res_min_age = 1, res_move_obs = TRUE, Euclidean_dist = FALSE,
-  plotting = TRUE, hunt = FALSE, start_hunting = 95, res_consume = 1,
+  res_min_age = 0, res_move_obs = TRUE, Euclidean_dist = FALSE,
+  plotting = TRUE, hunt = FALSE, start_hunting = 95, res_consume = 0.5,
   ga_popsize = 100, ga_mingen = 40, ga_seedrep = 20, ga_sampleK = 20,
   ga_chooseK = 2, ga_mutation = 0.1, ga_crossover = 0.1,
   move_agents = TRUE, max_ages = 5, minimum_cost = 10,
@@ -20,7 +20,8 @@ gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
   castration = FALSE, feeding = FALSE, help_offspring = FALSE,
   tend_crops = FALSE, tend_crop_yld = 0.5, kill_crops = FALSE,
   stakeholders = 4, manage_caution = 1, land_ownership = FALSE,
-  manage_freq = 1, converge_crit = 100, manager_sense = 0.1)
+  manage_freq = 1, converge_crit = 100, manager_sense = 0.1,
+  public_land = 0)
 }
 \arguments{
 \item{time_max}{This value sets the maximum number of time steps for a simulation. There are no constraints for length of time that a simulation can run. The default is 100 time steps.}
@@ -130,6 +131,8 @@ gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
 \item{converge_crit}{This is the convergence criteria for terminating a genetic algorithm. After continuing for the minimum number of generations, `ga_mingen`, the genetic algorithm will terminate if the convergence criteria is met. Usually making this criteria low doesn't do much to improve adaptive strategies, so the default value is 100, which in practice cases the genetic algorithm to simply terminate after `ga_mingen` generations.}
 
 \item{manager_sense}{This adjusts the sensitivity that a manager assumes their actions have with respect to changes in costs (their policy). For example, given a `manage_sense` value of 0.1, if the cost of culling resources doubles, then instead of a manager assuming the the number of culled resources will be cut in half, the manager will instead assume that the number of resources culled will be cut by one half times one tenth. As a general rule, a value of ca 0.1 allows the manager to predict stake-holder responses to policy accurately; future versions of GMSE could allow managers to adjust this dynamically based on simulation history.}
+
+\item{public_land}{The proportion of the landscape that will be public, and not owned by stakeholders. The remaining proportion of the landscape will be evenly divided among stakeholders. Note that this option is only available when land_ownership == TRUE.}
 }
 \value{
 A large list is returned that includes detailed simulation histories for the resource, observation, management, and user models. This list includes eight elements, most of which are themselves complex lists of arrays: (1) A list of length `time_max` in which each element is an array of resources as they exist at the end of each time step. Resource arrays include all resources and their attributes (e.g., locations, growth rates, offspring, how they are affected by stakeholders, etc.). (2) A list of length `time_max` in which each element is an array of resource observations from the observation model. Observation arrays are similar to resource arrays, except that they can have a smaller number of rows if not all resources are observed, and they have additional columns that show the history of each resource being observed over the course of `times_observe` observations in the observation model. (3) A 2D array showing parameter values at each time step (unique rows); most of these values are static but some (e.g., resource number) change over time steps. (4) A list of length `time_max` in which each element is an array of the landscape that identifies proportion of crop production per cell. This allows for looking at where crop production is increased or decreased over time steps as a consequence of resource and stakeholder actions. (5) The total time the simulation took to run (not counting plotting time). (6) A 2D array of agents and their traits. (7) A list of length `time_max` in which each element is a 3D array of the costs of performing each action for managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in costs of particular actions can therefore be be examined over time. (8) A list of length `time_max` in which each element is a 3D array of the actions performed by managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in actions of agents can therefore be examined over time. Because the above lists cannot possibly be interpreted by eye all at once in the simulation output, it is highly recommended that the contents of a simulation be stored and interprted individually if need be; alternativley, simulations can more easily be interpreted through plots when `plotting = TRUE`.
