@@ -7,6 +7,7 @@ vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+bibliography: gmse.bib
 ---
 
 
@@ -14,7 +15,7 @@ vignette: >
 
 - Broad paragraph about managing populations and conservation given uncertainty and conflict among stakeholders.
 
-- Paragraph introducing adaptive management, then management strategy evaluation framework; introduce this *generalised* management strategy evaluation framework and R package as filling an important gap in tools available for modelling mangement.
+- Paragraph introducing adaptive management, then management strategy evaluation framework [@Bunnefeld2011]; introduce this *generalised* management strategy evaluation framework and R package as filling an important gap in tools available for modelling mangement.
 
 - More details about what types of problems *GMSE* was developed to solve and (very generally) how it can solve them through individual-based modelling and a game-theoretic approach that uses genetic algorithms to simulate manager and stakeholder decision making.
 
@@ -112,12 +113,26 @@ Next there will be some general explanation of what it is that each sub-model do
 - The genetic finds an adaptive solution for each stakeholder
 - The resource and landscape are affected by the stakeholders taking actions
 
+## Genetic Algorithm
 
+- Brief introduction to the use of genetic algorithms, and the goal of using one in GMSE
+- Explain that the genetic algorithm is called in both the manager and user models to find strategic solutions to particular scenarios
+- Further explain that each agent (stakeholder or manager) is constrained to certain costs in allocating their actions or policy
 
+## Model output
 
+- List all of the output that the model is capable of producing -- i.e., all of the data from each model over all time steps
+- Explain that plots show the movement of resource, land allocation, resource population dynamics and population estimates, crop yield on a landscape, manager policy, and stakeholder actions
 
+# Some examples
 
+## The default case of hunting management
 
+## A case of resource management for farmers
+
+# Summary
+
+# References
 
 
 
