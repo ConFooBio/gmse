@@ -15,12 +15,6 @@ void find_descending_order(int *order_array, double *by_array, int length);
 
 void swap_arrays(void **ARRAY_A, void **ARRAY_B);
 
-void swap_int(int *a, int *b);
-
-void swap_double(double *a, double *b);
-
-void sort_vector(int *vector, int vector_length);
-
 int edge_effect(int pos, int edge_1, int edge_2, int edge_type);
 
 void res_mover(double **res_moving, double ***landscape, double *paras);

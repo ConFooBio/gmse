@@ -60,7 +60,7 @@ void is_correct_type(int res_number, double **resources, int type1, int type2,
 }
 
 /* =============================================================================
- * Swap pointers to rewrite ARRAY_B into ARRAY_A for a an array of any dimension
+ * Find the descending order of positions in an array of length 'length'
  * ========================================================================== */
 void find_descending_order(int *order_array, double *by_array, int length){
     int i, k, max_index;
@@ -98,43 +98,6 @@ void swap_arrays(void **ARRAY_A, void **ARRAY_B){
     TEMP_ARRAY = *ARRAY_A;
     *ARRAY_A   = *ARRAY_B;
     *ARRAY_B   = TEMP_ARRAY;
-}
-
-/* =============================================================================
- * Swap two values (avoiding the XOR trick deliberately here)
- * ========================================================================== */
-void swap_int(int *a, int *b){
-    int temp; 
-    
-    temp   = *a;
-    *a     = *b;
-    *b     = temp;
-}
-
-/* =============================================================================
- * Swap two values (avoiding the XOR trick deliberately here)
- * ========================================================================== */
-void swap_double(double *a, double *b){
-    double temp; 
-    
-    temp   = *a;
-    *a     = *b;
-    *b     = temp;
-}
-
-/* =============================================================================
- * Sort a vector of integers
- * ========================================================================== */
-void sort_vector(int *vector, int vector_length){
-    int i, j, temp;
-    
-    for(i = 0; i < vector_length; i++){
-        for(j = i + 1; j < vector_length; j++){
-            if(vector[i] < vector[j]){
-                swap_int(&vector[i], &vector[j]);
-            }
-        }
-    }
 }
 
 /* =============================================================================
