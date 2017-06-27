@@ -188,19 +188,25 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     COST   <- make_costs( AGENTS = AGENTS, RESOURCES = starting_resources,
                           res_opts = user_res_opts, lnd_opts = user_lnd_opts,
                           min_cost = minimum_cost);
+    
     ACTION <- make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
-    if(land_ownership == TRUE){
-        ACTION[1,5:7,] <- 1;
-        ACTION[2,5:7,] <- 1;
-        
-    }
-    ACTION[3,5:7,1]  <- 0;
-    ACTION[1,5,2:5]  <- 0;
-    ACTION[1,5,1]    <- 100;
-    ACTION[2,5,2:5]  <- 100;
-    ACTION[2,5,3]    <- 100;
-    ACTION[1,5,1]    <- manage_target;
 
+    stakeholder_rows <- 2:dim(ACTION)[3];
+    manager_row      <- 1;
+    
+    ACTION[1, 5, manager_row]    <- manage_target;
+    ACTION[3, 5:7 , manager_row] <- 0;
+    
+    if(land_ownership == TRUE){ # Set up utilities for land owning farmers
+        ACTION[1, 6:7, stakeholder_rows] <- 1;
+        ACTION[2, 6:7, stakeholder_rows] <- 1;
+        ACTION[1, 5, stakeholder_rows]   <- 0;
+        ACTION[2, 5, stakeholder_rows]   <- 100;
+    }else{                      # Set up utilities for hunters of resources
+        ACTION[1, 5, stakeholder_rows]   <- -1;
+        ACTION[2, 5, stakeholder_rows]   <- 0;
+    }
+    
     AGENTS[,17]     <- user_budget;
     AGENTS[1,17]    <- manager_budget;
     
