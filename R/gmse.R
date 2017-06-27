@@ -72,7 +72,7 @@
 gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   land_dim_1     = 100,   # x dimension of the landscape
                   land_dim_2     = 100,   # y dimension of the landscape
-                  res_movement   = 8,     # How far do resources move
+                  res_movement   = 20,    # How far do resources move
                   remove_pr      = 0.0,   # Density independent resource death
                   lambda         = 0.30,  # Resource growth rate
                   agent_view     = 10,    # Number cells agent view around them

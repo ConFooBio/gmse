@@ -5,7 +5,7 @@
 \title{GMSE simulation}
 \usage{
 gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
-  res_movement = 8, remove_pr = 0, lambda = 0.3, agent_view = 10,
+  res_movement = 20, remove_pr = 0, lambda = 0.3, agent_view = 10,
   agent_move = 50, res_birth_K = 10000, res_death_K = 600,
   edge_effect = 1, res_move_type = 1, res_birth_type = 2,
   res_death_type = 2, observe_type = 0, fixed_mark = 50,
@@ -18,7 +18,7 @@ gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
   user_budget = 1000, manager_budget = 1000, manage_target = 300,
   RESOURCE_ini = 300, scaring = FALSE, culling = TRUE,
   castration = FALSE, feeding = FALSE, help_offspring = FALSE,
-  tend_crops = FALSE, tend_crop_yld = 0.5, kill_crops = FALSE,
+  tend_crops = FALSE, tend_crop_yld = 0.2, kill_crops = FALSE,
   stakeholders = 4, manage_caution = 1, land_ownership = FALSE,
   manage_freq = 1, converge_crit = 100, manager_sense = 0.1,
   public_land = 0)
