@@ -260,6 +260,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     mas <- manager_sense;
     tcy <- tend_crop_yld;
     ldo <- land_ownership;
+    pub <- public_land;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -364,7 +365,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                0,       # 100. Upper CI for res type 1 estimate
                0,       # 101. Lower CI for res type 1 estimate
                fxr,     # 102. The number of recaptures in RMR estimation
-               ldo      # 103. Is there land ownership among stakeholders
+               ldo,     # 103. Is there land ownership among stakeholders
+               pub      # 104. How much public land is there (proportion)
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
@@ -457,7 +459,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         RESOURCE_REC[[time]]     <- RESOURCES;
         OBSERVATION_REC[[time]]  <- OBSERVATION_NEW[[1]];
         AGENT_REC[[time]]        <- AGENTS;
-        LANDSCAPE_REC[[time]]    <- LANDSCAPE_r[,,2];
+        LANDSCAPE_REC[[time]]    <- LANDSCAPE_r;
         COST_REC[[time]]         <- COST;
         ACTION_REC[[time]]       <- ACTION;
         PARAS_REC[time,]         <- paras;
@@ -518,7 +520,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                         paras       = PARAS_REC,
                         land        = LANDSCAPE_REC,
                         time_taken  = total_time,
-                        agents      = AGENTS,
+                        agents      = AGENT_REC,
                         cost        = COST_REC,
                         action      = ACTION_REC
                         );
