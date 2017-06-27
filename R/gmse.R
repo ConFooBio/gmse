@@ -142,7 +142,11 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     proc_check_start <- proc_start;
     
     # Set the landscape
-    land_alloc   <- c(0, rep(x = 1/stakeholders, times = stakeholders));
+    if(land_ownership == TRUE){
+        land_alloc  <- c(0, rep(x = 1/stakeholders, times = stakeholders));
+    }else{
+        land_alloc  <- c(1, rep(x = 0, times = stakeholders)); 
+    }
     LANDSCAPE_r  <- make_landscape( model       = pop_model, 
                                     rows        = land_dim_1, 
                                     cols        = land_dim_2, 
@@ -188,6 +192,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     if(land_ownership == TRUE){
         ACTION[1,5:7,] <- 1;
         ACTION[2,5:7,] <- 1;
+        
     }
     ACTION[3,5:7,1]  <- 0;
     ACTION[1,5,2:5]  <- 0;
@@ -245,6 +250,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     cnv <- converge_crit;
     mas <- manager_sense;
     tcy <- tend_crop_yld;
+    ldo <- land_ownership;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -348,7 +354,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                rsi,     # 99. Estimate of res type 1 from the observation model
                0,       # 100. Upper CI for res type 1 estimate
                0,       # 101. Lower CI for res type 1 estimate
-               fxr      # 102. The number of recaptures in RMR estimation
+               fxr,     # 102. The number of recaptures in RMR estimation
+               ldo      # 103. Is there land ownership among stakeholders
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;

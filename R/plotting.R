@@ -191,7 +191,7 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, COST,
         stake_colors <- topo.colors( dim(age_t)[1] );
         for(stakeholder in 1:dim(ages)[2]){
             max_yield   <- sum(land3 == stakeholder);
-            if(max_yield > 0){
+            if(max_yield > 0 & paras[104] > 0){
                 agent_yield <- 100 * (ages[,stakeholder] / max_yield);
                 points(x = gens, y = agent_yield, type="l", lwd=2, 
                        col = stake_colors[stakeholder]);
@@ -406,7 +406,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
         stake_colors <- topo.colors( dim(age_t)[1] );
         for(stakeholder in 1:dim(ages)[2]){
             max_yield   <- sum(land3 == stakeholder);
-            if(max_yield > 0){
+            if(max_yield > 0 & paras[104] > 0){
                 agent_yield <- 100 * (ages[,stakeholder] / max_yield);
                 points(x = gens, y = agent_yield, type="l", lwd=2, 
                        col = stake_colors[stakeholder]);
