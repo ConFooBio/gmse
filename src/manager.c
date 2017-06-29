@@ -47,10 +47,10 @@ int res_obs(double **obs_array, double *paras, int type1, int type2, int type3){
 void dens_est(double **obs_array, double *paras, double **agent_array,
               double *abun_est, int **interact_table){
  
-    int i, j, resource, agents, int_table_rows, obs_array_rows, obs_array_cols;
+    int i, resource, agents, int_table_rows;
     int view, a_type, land_x, land_y, type1, type2, type3, view_col;
     int area, cells, times_obs, tot_obs, t1_col, t2_col, t3_col;
-    double prop_obs, estimate, cp_err, lcp, ucp, lci, uci, vision;
+    double prop_obs, estimate, cp_err, lcp, ucp, vision;
 
     a_type         = (int) paras[7];  /* Type of agent does the observing */
     times_obs      = (int) paras[11];
@@ -61,8 +61,6 @@ void dens_est(double **obs_array, double *paras, double **agent_array,
     t2_col         = (int) paras[57];
     t3_col         = (int) paras[58];
     int_table_rows = (int) paras[60];
-    obs_array_rows = (int) paras[61];
-    obs_array_cols = (int) paras[62];
     view_col       = (int) paras[67];
     
     view = 0;
@@ -179,17 +177,13 @@ double chapman_est(double **obs_array, double *paras, int type1, int type2,
  * ========================================================================== */
 void rmr_est(double **obs_array, double *paras, double *abun_est, int **lookup){
     
-    int resource, type1, type2, type3, t1_col, t2_col, t3_col;
-    int trait_number, int_table_rows, obs_array_rows, obs_array_cols;
+    int resource, type1, type2, type3, t1_col, t2_col, t3_col, int_table_rows;
     double estimate;
     
-    trait_number    = (int) paras[41];
     t1_col          = (int) paras[56];
     t2_col          = (int) paras[57];
     t3_col          = (int) paras[58];
     int_table_rows  = (int) paras[60];
-    obs_array_rows  = (int) paras[61];
-    obs_array_cols  = (int) paras[62];
     
     for(resource = 0; resource < int_table_rows; resource++){
         abun_est[resource] = 0;
@@ -258,7 +252,6 @@ void estimate_abundances(double **obs_array, double *paras, int **lookup,
                          double **agent_array, double *abun_est){
     
     int estimate_type;
-    double abun;
     
     estimate_type = (int) paras[8];
 
@@ -376,7 +369,6 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     int resource;            /* Index for resource (rows of RESOURCE) */
     int res_trait;           /* Index for resource traits (cols of RESOURCE) */
     int agent;               /* Index for agent in the array (rows) */
-    int agentID;             /* Index for the ID of an agent */
     int agent_trait;         /* Index for agent traits (cols of agent_array) */
     int res_number;          /* Number of resources included (default = 1) */
     int trait_number;        /* Number of traits included in the resource */
