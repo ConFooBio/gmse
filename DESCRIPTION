@@ -1,6 +1,6 @@
 Package: GMSE
 Type: Package
-Title: Generalised management strategy evaluation simulator
+Title: Generalised Management Strategy Evaluation Simulator
 Version: 0.2.2.1
 Imports: grDevices (>= 3.3.3), graphics (>= 3.3.3), stats (>= 3.3.3)
 Authors@R: person("A. Bradley", "Duthie", email = "brad.duthie@gmail.com",
@@ -25,4 +25,3 @@ RoxygenNote: 6.0.1
 Suggests: knitr,
     rmarkdown,
     testthat
-VignetteBuilder: knitr
