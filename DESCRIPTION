@@ -1,25 +1,25 @@
 Package: GMSE
 Type: Package
-Title: Game-theoretic management strategy evaluation simulator
-Version: 0.2.2.0
+Title: Generalised management strategy evaluation simulator
+Version: 0.2.2.1
 Imports: grDevices (>= 3.3.3), graphics (>= 3.3.3), stats (>= 3.3.3)
-Author: person("A. Bradley", "Duthie", email = "brad.duthie@gmail.com",
+Authors@R: person("A. Bradley", "Duthie", email = "brad.duthie@gmail.com",
                   role = c("aut", "cre"))
 Maintainer: A. Bradley Duthie <brad.duthie@gmail.com>
-Description: This package integrates game theory and ecological theory to
-    construct social-ecological models that simulate the management of
-    populations and stakeholder actions. These models build off of a previously 
-    developed management strategy evaluation (MSE) framework to simulate all 
-    aspects of management: population dynamics, manager observation of 
-    populations, manager decision making, and stakeholder responses to 
-    management decisions. The newly developed game-theoretic management strategy
-    evaluation (GMSE) framework uses genetic algorithms to mimic the decision-
-    making process of managers and stakeholders under conditions of change, 
-    uncertainty, and conflict.
+Description: Integrates game theory and ecological theory to construct 
+    social-ecological models that simulate the management of populations and 
+    stakeholder actions. These models build off of a previously developed 
+    management strategy evaluation (MSE) framework to simulate all aspects of 
+    management: population dynamics, manager observation of populations, manager
+    decision making, and stakeholder responses to management decisions. The 
+    newly developed game-theoretic management strategy evaluation (GMSE) 
+    framework uses genetic algorithms to mimic the decision-making process of 
+    managers and stakeholders under conditions of change, uncertainty, and 
+    conflict.
 URL: https://bradduthie.github.io/gmse/
 BugReports: https://github.com/bradduthie/gmse/issues
 Depends: R (>= 3.3.3)
-License: Unlicensed and private for the moment
+License: GPL (>=2)
 LazyData: TRUE
 RoxygenNote: 6.0.1
 Suggests: knitr,

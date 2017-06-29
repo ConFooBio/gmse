@@ -1,4 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 notebook*
+vignettes*
 tests/testthat/test-make_gmse.R
