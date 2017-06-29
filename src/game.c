@@ -45,7 +45,7 @@ void initialise_pop(double ***ACTION, double ***COST, double *paras, int layer,
     
     int xpos, ypos, pop_size, carbon_copies, ROWS, COLS, agent;
     int row, col, start_col, col_check, col_start_other, col_start_self;
-    double lowest_cost, budget_count, check_cost;
+    double lowest_cost, budget_count;
     
     pop_size        = (int) paras[21];
     carbon_copies   = (int) paras[23]; 
@@ -153,7 +153,7 @@ void mutation(double ***population, double *paras, int agentID){
     
     int agent, row, col, start_col, col_check, pop_size, ROWS, COLS;
     int col_start_other, col_start_self;
-    double do_mutation, agent_val, half_pr, pr, min_cost;
+    double do_mutation, half_pr, pr;
 
     pop_size        = (int) paras[21];
     pr              = paras[26];
@@ -161,8 +161,7 @@ void mutation(double ***population, double *paras, int agentID){
     COLS            = (int) paras[69];
     col_start_other = (int) paras[70];
     col_start_self  = (int) paras[71];
-    min_cost        = paras[96];
-    
+
     half_pr = 0.5 * pr;
     
     for(agent = 0; agent < pop_size; agent++){
@@ -304,7 +303,7 @@ void land_to_counts(double ***population, int **interact_table, double *paras,
                     double *utilities, int row, int agent, double **jaco,
                     double *count_change){
     
-    int i, act_type, interest_row, int_num;
+    int i, interest_row, int_num;
     double foc_effect, feedin;
     
     int_num = (int) paras[60];
@@ -425,8 +424,8 @@ void sum_array_layers(double ***array, double **out, int get_mean,
     ROWS   = (int) paras[68];
     COLS   = (int) paras[69];
     
+    layer_count = 0;
     if(get_mean == 1){
-        layer_count = 0;
         for(layer = 0; layer < layers; layer++){
             if(agent_array[layer][1] > 0){
                 layer_count++;
@@ -499,14 +498,12 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
                      double ***COST, double ***ACTION, double *paras){
     
     int agent, i, j, m_lyr, action_row, manager_row, type1, type2, type3;
-    int pop_size, int_num, ROWS, COLS, layers;
-    double agent_fitness, *count_change, foc_effect, change_dev, max_dev;
-    double movem, castem, killem, feedem, helpem, *dev_from_util;
-    double utility, *utils, **merged_acts, **merged_costs, **act_change;
+    int pop_size, int_num, ROWS, COLS;
+    double *count_change, foc_effect, change_dev, max_dev;
+    double *dev_from_util, *utils, **merged_acts, **merged_costs, **act_change;
     
     pop_size = (int) paras[21];
     int_num  = (int) paras[60];
-    layers   = (int) paras[65];
     ROWS     = (int) paras[68];
     COLS     = (int) paras[69];
     
@@ -609,7 +606,7 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
  * ========================================================================== */
 void tournament(double *fitnesses, int *winners, double *paras){
 
-    int samp, i, left_to_place, placed, pop_size, rand_samp, sampleK, chooseK;
+    int samp, placed, pop_size, rand_samp, sampleK, chooseK;
     int *samples;
     double *samp_fit;
     
@@ -659,7 +656,7 @@ void tournament(double *fitnesses, int *winners, double *paras){
  * ========================================================================== */
 void place_winners(double ****population, int *winners, double *paras){
 
-    int i, row, col, layer, winner, pop_size, ROWS, COLS;
+    int i, row, col, winner, pop_size, ROWS, COLS;
     double a_value, ***NEW_POP;
     
     pop_size = (int) paras[21];
@@ -715,26 +712,21 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double **JACOBIAN, int **lookup, double *paras, 
         int agent, int managing){
     
-    int row, col, gen, layer, most_fit, land_x, land_y, land_z, popsize;
-    int generations, res_number, trait_number, jaco_dim, xdim, ydim, agentID;
-    int sampleK, chooseK, agent_seed, old_fitness, fit_change, *winners;
-    double budget, mutation_rate, crossover_rate, converge_crit;
-    double ***POPULATION, ***NEW_POP, *fitnesses;
+    int row, col, gen, layer, most_fit, popsize;
+    int generations, trait_number, xdim, ydim, agentID;
+    int old_fitness, fit_change, *winners;
+    double budget, converge_crit, ***POPULATION, *fitnesses;
 
-    land_x         = (int) paras[12];
-    land_y         = (int) paras[13];
     popsize        = (int) paras[21];
     generations    = (int) paras[22];
-    res_number     = (int) paras[32];
-    land_z         = (int) paras[36];
     trait_number   = (int) paras[41];
-    jaco_dim       = (int) paras[60];
     xdim           = (int) paras[68];
     ydim           = (int) paras[69];
     converge_crit  = paras[98];
     budget         = (double) AGENT[agent][16];
     agentID        = AGENT[agent][0];
-
+    most_fit       = 0;
+    
     POPULATION = malloc(xdim * sizeof(double *));
     for(row = 0; row < xdim; row++){
         POPULATION[row] = malloc(ydim * sizeof(double *));
