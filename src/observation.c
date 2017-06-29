@@ -27,6 +27,7 @@ void a_mover(double **agent_moving, double ***land, double *paras, int a_row){
     xloc      = (int) paras[49]; /* Column indicating the agents' x positions */
     yloc      = (int) paras[50]; /* Column indicating the agents' y positions */
     move_para = (int) paras[51]; /* Column for distance an agent can move */
+    move_len  = 0;
 
     /* Move first in the xloc direction --------------------------------- */
     new_pos  = agent_moving[a_row][xloc];
@@ -401,7 +402,6 @@ void mark_fixed(double **resource_array, double **agent_array, double *paras,
    }
 }
 
-
 /* =============================================================================
  * Mark re-capture method of estimation
  * ===========================================================================*/
@@ -420,19 +420,12 @@ void mark_fixed(double **resource_array, double **agent_array, double *paras,
 void sample_fixed_res(double **resource_array, double **agent_array, 
                       double ***land, double *paras, int **lookup){
 
-    int edge_type, move_type, marks, recaptures, times_obs, move_res, by_type;
-    int land_x, land_y, res_rows, agent_number, trait_number, lookup_rows;
-    int obs_iter, agent, a_type, row, type1, type2, type3;
+    int agent, marks, recaptures, by_type, agent_number;
+    int trait_number, lookup_rows, a_type, row, type1, type2, type3;
     
-    edge_type    = (int) paras[1];
-    move_type    = (int) paras[2];
     a_type       = (int) paras[7];  /* Type of agent doing observing */
     marks        = (int) paras[10];
-    land_x       = (int) paras[12];
-    land_y       = (int) paras[13];
     by_type      = (int) paras[17];
-    move_res     = (int) paras[19];
-    res_rows     = (int) paras[32]; /* Number of resources can be sampled */
     agent_number = (int) paras[54]; /* Number of agents in the agent array */
     trait_number = (int) paras[41]; /* Traits (columns) in the resource array */
     lookup_rows  = (int) paras[60]; /* Number of rows in the lookup table */
@@ -480,7 +473,7 @@ void sample_fixed_res(double **resource_array, double **agent_array,
 void transect(double **resource_array, double *paras, int start_x, int start_y, 
               int end_x, int end_y, int obs_iter){
     
-    int resource, agent, min_age, res_rows;
+    int resource, min_age, res_rows;
     
     min_age   = paras[16];
     res_rows  = (int) paras[32]; /* Number of resources can be sampled */
@@ -537,7 +530,6 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     int obs_columns;         /* Columns for the observation array */
     int agent_number;        /* Number of agents that can potentially observe */
     int agent_traits;        /* Number of traits that each agent has */
-    int para_number;         /* Number of parameters included */
     int protected_n;         /* Number of protected R objects */
     int vec_pos;             /* Vector position for making arrays */
     int new_obs;             /* New observations made */
@@ -547,16 +539,11 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     int obs_iter;            /* To count up -- which observation iteration */
     int a_type;              /* Type of agent doing observing (manager = 0) */
     int by_type;             /* Type category for observing (default = 1)*/
-    int time_para;           /* Time in the simulation the function called */
-    int edge_type;           /* The type of edge on the landscape */
-    int move_type;           /* How resources move on the landscape */
     int move_res;            /* Should the resources move between obs */
-    int fixed_sample;        /* The fixed number of resources sampled */
     int tx0, tx1, ty0, ty1;  /* Variables that define a transect sampled */
     int working_agents;      /* How many agents are helping out? */
     int transect_len;        /* The length of a transect sampled */
     int transect_eff;        /* Transect efficiency: How many observers help */
-    int *add_resource;       /* Vector of added resources */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
@@ -690,9 +677,6 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     /* Do the biology here now */
     /* ====================================================================== */
 
-    time_para = (int) paras[0];
-    edge_type = (int) paras[1];
-    move_type = (int) paras[2];
     a_type    = (int) paras[7];  /* What type of agent does the observing    */   
     by_type   = (int) paras[17]; /* Category (column) of agent type location */
     move_res  = (int) paras[19]; /* Should the resources be moved?           */
@@ -922,7 +906,7 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     
     /* SOME STANDARD DECLARATIONS OF KEY VARIABLES AND POINTERS               */
     /* ====================================================================== */
-    int xloc, yloc;          /* Index of x & y location on the landscape */ 
+    int xloc, yloc, zloc;    /* Index of x & y location on the landscape */ 
     int land_x, land_y;      /* x and y maximum location given LANDSCAPE */
     int land_z;              /* Number of layers in the landscape */
     int resource;            /* Index for resource (rows of RESOURCE) */
@@ -941,8 +925,6 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int by_type_a;           /* Agent type category for observing */
     int min_age;             /* Minimum age of resources viewed (default = 1) */
     int view;                /* How far an agent views resources (dynamic) */
-    int edge;                /* Type of edge modelled on the landscape */
-    int EucD;                /* Is an agent viewing by Euclidean distance */
     int a_x;                 /* Agent's x location */
     int a_y;                 /* Agent's y location */
     int r_x;                 /* Resource x location */
@@ -951,7 +933,6 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     int rec_col;             /* Agent col where seen resources are recorded */
     int a_check;             /* Check agent to see if they view (dynamic) */
     int move_agents;         /* Do the agents move once */
-    int move_t;              /* Movement type of the agents */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
@@ -1039,15 +1020,12 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     /* Do the biology here now */
     /* ====================================================================== */
 
-    edge         = (int) paras[1];  /* What kind of edge is on the landscape  */ 
     a_type       = (int) paras[7];  /* What type of agent is observing        */
     res_type     = (int) paras[9];  /* What type of resources are observed    */
-    move_t       = (int) paras[14]; /* Type of movement being used            */
     by_type_r    = (int) paras[15]; /* Category (column) of res type loc      */
     min_age      = (int) paras[16]; /* Minimum age of resources viewed        */
     by_type_a    = (int) paras[17]; /* Category (column) of agent type loc    */
     rec_col      = (int) paras[18]; /* Column where viewed resources recorded */
-    EucD         = (int) paras[20]; /* Do individuals view by Euclidean dist  */
     move_agents  = (int) paras[28]; /* Do the agents move once?               */
     
     for(agent = 0; agent < agent_number; agent++){
@@ -1092,11 +1070,28 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
         }
     }   
     
+    SEXP LAND_NEW;
+    PROTECT( LAND_NEW = alloc3DArray(REALSXP, land_x, land_y, land_z) );
+    protected_n++;
+    
+    land_ptr = REAL(LAND_NEW);
+    
+    vec_pos = 0;
+    for(zloc=0; zloc<land_z; zloc++){
+        for(yloc=0; yloc<land_y; yloc++){
+            for(xloc=0; xloc<land_x; xloc++){
+                land_ptr[vec_pos] = land[xloc][yloc][zloc];
+                vec_pos++;
+            }
+        }
+    }
+    
     SEXP EVERYTHING;
-    EVERYTHING = PROTECT( allocVector(VECSXP, 2) );
+    EVERYTHING = PROTECT( allocVector(VECSXP, 3) );
     protected_n++;
     SET_VECTOR_ELT(EVERYTHING, 0, NEW_AGENT);
     SET_VECTOR_ELT(EVERYTHING, 1, PARAMETERS);
+    SET_VECTOR_ELT(EVERYTHING, 2, LAND_NEW);
     
     UNPROTECT(protected_n);
     
