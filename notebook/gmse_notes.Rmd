@@ -1,5 +1,5 @@
 ---
-title: "Game-theoretic management strategy evaluation (G-MSE)"
+title: "Generalised management strategy evaluation (GMSE)"
 author: "Brad Duthie"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -30,7 +30,7 @@ library(rhandsontable)
 
 ********************************************************************************
 
-> **This notebook tracks progress on the development of [G-MSE software](https://bradduthie.github.io/gmse/), for game-theoretic management strategy evaluation, and related issues surrounding the development and application of game theory for addressing questions of biodiversity and food security.**
+> **This notebook tracks progress on the development of [GMSE software](https://bradduthie.github.io/gmse/) R package, for game-theoretic management strategy evaluation, and related issues surrounding the development and application of game theory for addressing questions of biodiversity and food security.**
 
 ********************************************************************************
 
