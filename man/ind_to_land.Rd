@@ -17,3 +17,8 @@ Returns a landscape in which resources are embedded for a timestep for plotting 
 \description{
 Actually put the individuals on the landscape with function below
 }
+\examples{
+\dontrun{
+indis  <- ind_to_land(inds=res_t, land=land1);
+}
+}

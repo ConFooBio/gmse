@@ -17,3 +17,8 @@ A three dimensional ACTION array of initialised agent (manager and stakeholder) 
 \description{
 Function to initialise the utilities of the G-MSE model
 }
+\examples{
+\dontrun{
+ACTION <- make_utilities(AGENTS = AGENTS, RESOURCES = starting_resources);
+}
+}

@@ -13,6 +13,12 @@
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
 #'@return The user function outputs an R list that includes five separate arrays, including (1) an new RESOURCES array, (2) a new AGENTS array, (3) a new LAND array, (4) a new ACTIONS array, and a new (5) COST array, each of which might be affected by the user function. The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the resource, observation, and management models.
+#'@examples
+#'\dontrun{
+#'USERS <- user(RESOURCES = RESOURCES, AGENTS = AGENTS, LAND = LANDSCAPE_r,
+#'PARAS = paras, COST = COST, ACTION = ACTION, INTERACT = Jacobian, 
+#'inter_tabl = interaction_tabl, model = "IBM");
+#'}
 #'@export
 user <- function(RESOURCES  = NULL,
                  AGENTS     = NULL,

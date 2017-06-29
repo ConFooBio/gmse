@@ -19,3 +19,8 @@ A layer of the COST or ACTION array, as called in building either make_costs or 
 \description{
 Function to initialise a layer of the UTILITY array of the G-MSE model
 }
+\examples{
+\dontrun{
+UTIL_LIST <- utility_layer(agent_IDs, agent_number, res_types);
+}
+}

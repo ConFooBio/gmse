@@ -27,3 +27,9 @@ the_land A cols by rows landscape with randomly distributed cell types
 \description{
 This function allows the user of the GMSE software to insert themselves as a hunter in the simulation, allowing them to cull some number of resources in a time step as observed by the agent whose ID is 2
 }
+\examples{
+\dontrun{
+HUNT_OUTCOME <- be_hunter(OBSERVATION_r, AGENTS, RESOURCES, LANDSCAPE_r, 
+paras, agent_view, times_observe);
+}
+}

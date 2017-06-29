@@ -29,3 +29,7 @@ the_agents Initialised data frame of agents being modelled
 \description{
 Function to initialise the agents of the G-MSE model
 }
+\examples{
+agents <- make_agents(model = "IBM", agent_number = 2, type_counts = c(1, 1), 
+move = 0, vision = 20, rows = 100, cols = 100);
+}

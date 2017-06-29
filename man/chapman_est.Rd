@@ -18,3 +18,8 @@ The Chapman estimator (which is also performed GMSE in the manager function) ret
 Estimates population size using simulated mark-recapture data produced by the
 observation model of GMSE
 }
+\examples{
+\dontrun{
+analysis <- chapman_est(observation=obs_t, paras = paras);
+}
+}

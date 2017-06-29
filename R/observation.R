@@ -18,6 +18,13 @@
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
 #'@return The observation function outputs an R list that includes three separate arrays, including (1) an new OBSERVATION array that holds observed resources and their traits with additional columns indicating when the resources were observed (relevant, e.g., for mark-recapture), (2) a new AGENTS array, and (3) a new PARAS array, each of which might be affected by the user function.  The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the management, user, and resource models.
+#'@examples
+#'\dontrun{
+#'OBSERVATION_NEW <- observation(RESOURCES = RESOURCES, LAND = LANDSCAPE_r,
+#'PARAS = paras, AGENTS = AGENTS, inter_tabl = interaction_tabl, fix_mark = fxo,
+#'times = tmo, samp_age = rma, agent_type = 0, type_cat   = 1, obs_method = obt,
+#'move_res   = rmo);
+#'}
 #'@export
 observation <- function(RESOURCES  = NULL, 
                         LAND       = NULL, 

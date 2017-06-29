@@ -34,3 +34,10 @@ The user function outputs an R list that includes five separate arrays, includin
 \description{
 A model of user decisions for a single time step. These decisions result in stakeholder actions that can potentially affect resources and the landscape in a GMSE simulation.
 }
+\examples{
+\dontrun{
+USERS <- user(RESOURCES = RESOURCES, AGENTS = AGENTS, LAND = LANDSCAPE_r,
+PARAS = paras, COST = COST, ACTION = ACTION, INTERACT = Jacobian, 
+inter_tabl = interaction_tabl, model = "IBM");
+}
+}

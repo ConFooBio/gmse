@@ -15,6 +15,9 @@
 #'@param ownership A scalar or vector of agent IDs that own land
 #'@param owner_pr The proportion of land owned by each agent with a unique ID. Note that `owner_pr` must be of the same size as `ownership`, and the order of `owner_pr` reflects the order of agent IDs to which owned land is being assigned
 #'@return the_land A cols by rows landscape with randomly distributed cell types
+#'@examples
+#'land <- make_landscape(model = "IBM", rows = 10, cols = 10, cell_types = 1, 
+#'cell_val_mn = 1, cell_val_sd =  0)
 #'@export
 make_landscape <- function(model, rows, cols, cell_types, cell_val_mn, 
                            cell_val_sd, cell_val_max = 1, cell_val_min = 0,
@@ -61,6 +64,12 @@ make_landscape <- function(model, rows, cols, cell_types, cell_val_mn,
 #'@param LAND The name of the landscape being changed
 #'@param landscape_ini The name of the original landscape replacing
 #'@param layer The layer that is being affected on the landscape
+#'@return the_land with one layer reset to its original cell values
+#'@examples
+#'\dontrun{
+#'LANDSCAPE_r <- age_land(LAND = LANDSCAPE_r, landscape_ini = LANDSCAPE_INI, 
+#'layer = 2);
+#'}
 #'@export
 age_land <- function(LAND, landscape_ini, layer){
 

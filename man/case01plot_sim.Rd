@@ -27,3 +27,9 @@ This function plots the dynamics of GMSE resource, observation, managemer, and u
 \description{
 Produce six panels on a plot showing resource distribution, owned land, resource dynamics and estimates, stake-holder yield, and action costs and actions made.
 }
+\examples{
+\dontrun{
+case01plot_sim(res = sim$resource, obs = sim$observation, land = sim$land, 
+sim$agents, sim$paras[1,], ACTION = sim$action, COST = sim$cost);
+}
+}

@@ -23,3 +23,9 @@ The resource function outputs an R list that includes three separate arrays, inc
 A population model of resource (including population) dynamics for 
 a single time step.
 }
+\examples{
+\dontrun{
+RESOURCE_NEW <- resource(RESOURCES = RESOURCES, LAND = LANDSCAPE_r, 
+PARAS = paras, model = "IBM");
+}
+}

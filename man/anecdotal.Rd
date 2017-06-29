@@ -38,3 +38,10 @@ A simulation of how many resources of a particular type are round each
 agent -- this produces a kind of anecdotal evidence for each agent around
 their circle of view. It also potentially moves the agents during a time step
 }
+\examples{
+\dontrun{
+AGENTS_NEW <- anecdotal(RESOURCES = RESOURCES, LAND = LANDSCAPE_r, 
+PARAS = paras, AGENTS = AGENTS, res_type = 1, samp_age = rma, agent_type = -1,
+type_cat = 1, move_agents = mva);
+}
+}

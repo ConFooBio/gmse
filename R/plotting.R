@@ -6,6 +6,10 @@
 #'@param observation The array of resource observations from the observation model, used to estimate abundance of resources
 #'@param paras The vector of parameters that hold global and dynamic parameter values used by GMSE
 #'@return The Chapman estimator (which is also performed GMSE in the manager function) returns a list that includes resource population size estimates along with 95% confidence intervals
+#'@examples
+#'\dontrun{
+#'analysis <- chapman_est(observation=obs_t, paras = paras);
+#'}
 #'@export
 chapman_est <- function(observation, paras){
     marks       <- 1;
@@ -42,6 +46,10 @@ chapman_est <- function(observation, paras){
 #'@param inds A single time step of resources from GMSE
 #'@param land The landscape array on which interactions between resources and agents occur
 #'@return Returns a landscape in which resources are embedded for a timestep for plotting purposes
+#'@examples
+#'\dontrun{
+#'indis  <- ind_to_land(inds=res_t, land=land1);
+#'}
 #'@export
 ind_to_land <- function(inds, land){
     ind_rep  <- max(land) + 1;
@@ -67,6 +75,11 @@ ind_to_land <- function(inds, land){
 #'@param view This parameter determines the distance around an agent's location within which it can observe resources. 
 #'@param land The landscape array on which interactions between resources and agents occur
 #'@return The density estimator (which is also performed GMSE in the manager function) returns a list that includes resource population size estimates along with 95% confidence intervals
+#'@examples
+#'\dontrun{
+#'analysis <- dens_est(observation = obs_t, paras = paras, view = view,
+#'land = land1);
+#'}
 #'@export
 dens_est <- function(observation, paras, view = view, land = land){
     vision  <- (2*view) + 1;
@@ -110,6 +123,12 @@ dens_est <- function(observation, paras, view = view, land = land){
 #'@importFrom graphics abline axis image mtext par plot points polygon legend
 #'@importFrom stats rnorm rpois
 #'@return This function plots the dynamics of GMSE resource, observation, managemer, and user models in six separate sub-panels. (1) Upper left panel: Shows the locations of resources on the landscape (black dots); landscape terrain is also shown in brown, but at the moment, this is only cosmetic and does not reflect anything occurring in the model. (2) Upper right panel: Shows ownership of land by agents; land is divided proportional based on parameters set in gmse() and colours correspond with other subplots. If agent utilities and actions are restricted to land (`land_ownership` in the gmse() function), then this gives some idea of where actions are being performed and where resources are affecting the landscape. (3) Middle left panel: Shows the actual population abundance (black solid line) and the population abundance estimated by the manager (blue solid line) over time. The dotted red line shows the resource carrying capacity (death-based) and the dotted blue line shows the target for resource abundance as set in the gmse() function; the orange line shows the total percent yield of the landscape (i.e., 100 percent means that resources have not decreased yield at all, 0 percent means that resources have completely destroyed all yield). (4) Middle right panel: Shows the raw landscape yield for each stakeholder (can be ignored if `land_ownership` is FALSE) over time; colours correspond to land ownership shown in the upper right panel. (5) Lower left panel: The cost of stakeholders performing actions over time, as set by the manager. (6) Lower right panel: The total number of actions performed by all stakeholders over time.
+#'@examples
+#'\dontrun{
+#'case23plot(res = RESOURCE_REC, obs = OBSERVATION_REC, 
+#'land1 = LANDSCAPE_r[,,1], land2 = LANDSCAPE_REC, land3  = LANDSCAPE_r[,,3], 
+#'agents = AGENT_REC, COST = COST_REC, ACTION = ACTION_REC, paras  = paras);
+#'}
 #'@export
 case23plot <- function(res, obs, land1, land2, land3, agents, paras, COST,
                        ACTION){
@@ -300,6 +319,13 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, COST,
 #'@importFrom graphics abline axis image mtext par plot points polygon legend
 #'@importFrom stats rnorm rpois
 #'@return This function plots the dynamics of GMSE resource, observation, managemer, and user models in six separate sub-panels. (1) Upper left panel: Shows the locations of resources on the landscape (black dots); landscape terrain is also shown in brown, but at the moment, this is only cosmetic and does not reflect anything occurring in the model. (2) Upper right panel: Shows ownership of land by agents; land is divided proportional based on parameters set in gmse() and colours correspond with other subplots. If agent utilities and actions are restricted to land (`land_ownership` in the gmse() function), then this gives some idea of where actions are being performed and where resources are affecting the landscape. (3) Middle left panel: Shows the actual population abundance (black solid line) and the population abundance estimated by the manager (blue solid line; shading indicates 95 percent confidence intervals) over time. The dotted red line shows the resource carrying capacity (death-based) and the dotted blue line shows the target for resource abundance as set in the gmse() function; the orange line shows the total percent yield of the landscape (i.e., 100 percent means that resources have not decreased yield at all, 0 percent means that resources have completely destroyed all yield). (4) Middle right panel: Shows the raw landscape yield for each stakeholder (can be ignored if `land_ownership` is FALSE) over time; colours correspond to land ownership shown in the upper right panel. (5) Lower left panel: The cost of stakeholders performing actions over time, as set by the manager. (6) Lower right panel: The total number of actions performed by all stakeholders over time.
+#'@examples
+#'\dontrun{
+#'case01plot(res = RESOURCE_REC, obs = OBSERVATION_REC, 
+#'land1 = LANDSCAPE_r[,,1], land2  = LANDSCAPE_REC, land3  = LANDSCAPE_r[,,3], 
+#'agents = AGENT_REC, paras = paras, ACTION = ACTION_REC, COST = COST_REC, 
+#'view = agent_view, times = times_observe);
+#'}
 #'@export
 case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
                        COST, view = NULL, times = 1){
@@ -359,7 +385,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
         par(mfrow=c(3,2),mar=c(0,0,0,0));
         # ------------- Panel 1 (upper left)
         if(abun[i] > 0){
-            indis  <- ind_to_land(inds=res_t, land=land1);
+            indis  <- ind_to_land(inds = res_t, land = land1);
             image(indis, col=land_cols, xaxt="n", yaxt="n");
         }else{
             image(land1, col=land_cols, xaxt="n", yaxt="n");
@@ -511,6 +537,11 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
 #'@importFrom graphics abline axis image mtext par plot points polygon legend
 #'@importFrom stats rnorm rpois
 #'@return This function plots the dynamics of GMSE resource, observation, managemer, and user models in six separate sub-panels. (1) Upper left panel: Shows the locations of resources on the landscape (black dots); landscape terrain is also shown in brown, but at the moment, this is only cosmetic and does not reflect anything occurring in the model. (2) Upper right panel: Shows ownership of land by agents; land is divided proportional based on parameters set in gmse() and colours correspond with other subplots. If agent utilities and actions are restricted to land (`land_ownership` in the gmse() function), then this gives some idea of where actions are being performed and where resources are affecting the landscape. (3) Middle left panel: Shows the actual population abundance (black solid line) and the population abundance estimated by the manager (blue solid line; shading indicates 95 percent confidence intervals) over time. The dotted red line shows the resource carrying capacity (death-based) and the dotted blue line shows the target for resource abundance as set in the gmse() function; the orange line shows the total percent yield of the landscape (i.e., 100 percent means that resources have not decreased yield at all, 0 percent means that resources have completely destroyed all yield). (4) Middle right panel: Shows the raw landscape yield for each stakeholder (can be ignored if `land_ownership` is FALSE) over time; colours correspond to land ownership shown in the upper right panel. (5) Lower left panel: The cost of stakeholders performing actions over time, as set by the manager. (6) Lower right panel: The total number of actions performed by all stakeholders over time.
+#'@examples
+#'\dontrun{
+#'case01plot_sim(res = sim$resource, obs = sim$observation, land = sim$land, 
+#'sim$agents, sim$paras[1,], ACTION = sim$action, COST = sim$cost);
+#'}
 #'@export
 case01plot_sim <- function(res, obs, land, agents, paras, ACTION, COST){
     
@@ -723,13 +754,3 @@ case01plot_sim <- function(res, obs, land, agents, paras, ACTION, COST){
                lwd=3);
     }
 }
-
-
-
-
-
-
-
-
-
-

@@ -24,3 +24,9 @@ observation model of GMSE -- it assumes that the density of resources
 observed on the subset of the landscape sampled equals the density on the 
 whole landscape
 }
+\examples{
+\dontrun{
+analysis <- dens_est(observation = obs_t, paras = paras, view = view,
+land = land1);
+}
+}

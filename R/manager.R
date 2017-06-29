@@ -14,6 +14,12 @@
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
 #'@return The manager function outputs an R list that includes five separate arrays, including (1) an new RESOURCES array, (2) a new AGENTS array, (3) a new LAND array, (4) a new ACTIONS array, and a new (5) COST array, each of which might be affected by the user function. The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the user, resource, and observation models.
+#'@examples
+#'\dontrun{
+#'MANAGER_OUT <- run_manage(RESOURCE_c = RESOURCES, LANDSCAPE_c = LAND, 
+#'PARAMETERS_c = PARAS, AGENT_c = AGENTS, COST_c = COST, ACTION_c = ACTION, 
+#'JACOBIAN_c = INTERACT, INTERACT_c = inter_tabl, OBSERVATION_c = OBSERVATION);
+#'}
 #'@export 
 manager <- function(RESOURCES   = NULL,
                     AGENTS      = NULL,

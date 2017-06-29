@@ -36,3 +36,10 @@ The manager function outputs an R list that includes five separate arrays, inclu
 \description{
 A model of manager decisions for a single time step. Managers set costs for user actions.
 }
+\examples{
+\dontrun{
+MANAGER_OUT <- run_manage(RESOURCE_c = RESOURCES, LANDSCAPE_c = LAND, 
+PARAMETERS_c = PARAS, AGENT_c = AGENTS, COST_c = COST, ACTION_c = ACTION, 
+JACOBIAN_c = INTERACT, INTERACT_c = inter_tabl, OBSERVATION_c = OBSERVATION);
+}
+}

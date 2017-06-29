@@ -14,3 +14,9 @@ make_interaction_array(RESOURCES, LAND)
 \description{
 Initialise array of resource and landscape-level interactions
 }
+\examples{
+\dontrun{
+Jacobian <- make_interaction_array(RESOURCES = starting_resources, 
+LAND = LANDSCAPE_r);
+}
+}

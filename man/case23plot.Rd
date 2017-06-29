@@ -31,3 +31,10 @@ This function plots the dynamics of GMSE resource, observation, managemer, and u
 \description{
 Produce six panels on a plot showing resource distribution, owned land, resource dynamics and estimates, stake-holder yield, and action costs and actions made.
 }
+\examples{
+\dontrun{
+case23plot(res = RESOURCE_REC, obs = OBSERVATION_REC, 
+land1 = LANDSCAPE_r[,,1], land2 = LANDSCAPE_REC, land3  = LANDSCAPE_r[,,3], 
+agents = AGENT_REC, COST = COST_REC, ACTION = ACTION_REC, paras  = paras);
+}
+}

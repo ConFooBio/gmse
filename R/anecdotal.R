@@ -16,6 +16,12 @@
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
 #'@return The anecdotal function outputs an R list that includes two separate arrays, including (1) a new AGENTS array and (3) a new PARAS array, each of which might be affected by the anecdotal function.  The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the management, user, resource, and observation models.
+#'@examples
+#'\dontrun{
+#'AGENTS_NEW <- anecdotal(RESOURCES = RESOURCES, LAND = LANDSCAPE_r, 
+#'PARAS = paras, AGENTS = AGENTS, res_type = 1, samp_age = rma, agent_type = -1,
+#'type_cat = 1, move_agents = mva);
+#'}
 #'@export
 anecdotal <- function(RESOURCES   = NULL, 
                       LAND        = NULL, 

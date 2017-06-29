@@ -14,3 +14,8 @@ make_interaction_table(RESOURCES, LAND)
 \description{
 Initialise array of resource and landscape-level interactions
 }
+\examples{
+\dontrun{
+interaction_tabl <- make_interaction_table(starting_resources, LANDSCAPE_r);
+}
+}

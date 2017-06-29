@@ -44,3 +44,11 @@ The observation function outputs an R list that includes three separate arrays, 
 A simulation of techniques (e.g., capture-mark-recapture) for estimating
 population size and poperties.
 }
+\examples{
+\dontrun{
+OBSERVATION_NEW <- observation(RESOURCES = RESOURCES, LAND = LANDSCAPE_r,
+PARAS = paras, AGENTS = AGENTS, inter_tabl = interaction_tabl, fix_mark = fxo,
+times = tmo, samp_age = rma, agent_type = 0, type_cat   = 1, obs_method = obt,
+move_res   = rmo);
+}
+}

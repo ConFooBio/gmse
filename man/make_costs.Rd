@@ -23,3 +23,9 @@ A three dimensional array of initialised cost values for agent (manager and stak
 \description{
 Function to initialise the cost array of the G-MSE model
 }
+\examples{
+\dontrun{
+COST <- make_costs( AGENTS = AGENTS, RESOURCES = starting_resources,
+res_opts = user_res_opts, lnd_opts = user_lnd_opts, min_cost = minimum_cost);
+}
+}
