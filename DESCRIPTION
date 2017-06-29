@@ -1,7 +1,7 @@
 Package: GMSE
 Type: Package
 Title: Generalised Management Strategy Evaluation Simulator
-Version: 0.2.2.1
+Version: 0.2.2.2
 Imports: grDevices (>= 3.3.3), graphics (>= 3.3.3), stats (>= 3.3.3)
 Authors@R: person("A. Bradley", "Duthie", email = "brad.duthie@gmail.com",
                   role = c("aut", "cre"))
