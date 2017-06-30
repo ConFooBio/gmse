@@ -43,7 +43,7 @@ void is_on_owner_land(int res_number, double **resources, int owner,
 void is_correct_type(int res_number, double **resources, int type1, int type2, 
                      int type3, int *ident_vector){
     
-    int resource, total;
+    int resource;
     
     for(resource = 0; resource < res_number; resource++){
         if(resources[resource][1] == type1 &&
@@ -158,7 +158,7 @@ void res_mover(double **res_moving, double ***landscape, double *paras){
     xloc            = (int) paras[33];
     yloc            = (int) paras[34];
     move_para       = (int) paras[35];
-    
+    move_len        = 0;
 
     for(resource=0; resource < resource_number; resource++){
         /* Move first in the xloc direction --------------------------------- */
@@ -174,7 +174,6 @@ void res_mover(double **res_moving, double ***landscape, double *paras){
         } /* Now we have the direction the resource is moving */
         switch(type){
             case 0: /* No change in position */
-                move_len = 0;
                 break;
             case 1: /* Uniform selection of position change */
                 do{ /* Again, so that res_num never moves too far */
@@ -211,6 +210,7 @@ void res_mover(double **res_moving, double ***landscape, double *paras){
         /* Move next in the yloc direction ---------------------------------- */
         new_pos  = (int) res_moving[resource][yloc];
         rand_num = 0.5;
+        move_len = 0;
         do{ /* Note that rand_num can never be exactly 0.5 */
             rand_num = runif(0, 1);
         } while(rand_num == 0.5);
@@ -221,7 +221,6 @@ void res_mover(double **res_moving, double ***landscape, double *paras){
         } /* Now we have the direction the resource is moving */
         switch(type){
             case 0: /* No change in position */
-                move_len = 0;
                 break;
             case 1: /* Uniform selection of position change */
                 do{ /* Again, so that res_num never moves too far */
