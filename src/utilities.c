@@ -17,7 +17,6 @@ int get_rand_int(int from, int to){
     return rand_value;
 }
 
-
 /* =============================================================================
  * This function checks to see if a resource is of the correct type combination
  * ========================================================================== */
@@ -37,7 +36,6 @@ void is_on_owner_land(int res_number, double **resources, int owner,
         }
     }
 }
-
 
 /* =============================================================================
  * This function checks to see if a resource is of the correct type combination
