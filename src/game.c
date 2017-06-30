@@ -692,7 +692,6 @@ void place_winners(double ****population, int *winners, double *paras){
     free(NEW_POP);
 }
 
-
 /* =============================================================================
  * This function calls all of the sub-functions used in the genetic algorithm;
  * it returns a new agent with updated actions based on its goals (utility)
@@ -713,13 +712,11 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         int agent, int managing){
     
     int row, col, gen, layer, most_fit, popsize;
-    int generations, trait_number, xdim, ydim, agentID;
-    int old_fitness, fit_change, *winners;
+    int generations, xdim, ydim, agentID, old_fitness, fit_change, *winners;
     double budget, converge_crit, ***POPULATION, *fitnesses;
 
     popsize        = (int) paras[21];
     generations    = (int) paras[22];
-    trait_number   = (int) paras[41];
     xdim           = (int) paras[68];
     ydim           = (int) paras[69];
     converge_crit  = paras[98];
