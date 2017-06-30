@@ -272,7 +272,7 @@ int find_a_resource(double **resource_array, double ***land, double *paras,
 void act_on_resource(double **resource_array, double *paras, double ***land,
                      double ***action_array){
     
-    int samp, xloc, yloc, land_x, land_y, action_row, action_col, agent;
+    int samp, xloc, yloc, land_x, land_y, action_col;
     
     samp = find_a_resource(resource_array, land, paras, action_array);
     
@@ -282,9 +282,7 @@ void act_on_resource(double **resource_array, double *paras, double ***land,
     
     land_x     = (int) paras[12];
     land_y     = (int) paras[13];
-    action_row = (int) paras[83];
     action_col = (int) paras[84];
-    agent      = (int) paras[85];
 
     switch(action_col){
         case 7: /* Move resource */
@@ -322,13 +320,10 @@ void act_on_resource(double **resource_array, double *paras, double ***land,
 void do_acts(double ***action_array, double **resource_array, double *paras,
              double ***land){
     
-    int layers, ROWS, COLS, resource_number, start_col;
-    int lookup_rows, total_actions, rand_row, rand_col, rand_layer;
-    int row, col, layer, act_type, t1, t2, t3, agentID;
+    int layers, ROWS, COLS, start_col, row, col;
+    int total_actions, rand_row, rand_col, rand_layer, act_type;
     double ***action_clone;
 
-    resource_number = (int) paras[32];
-    lookup_rows     = (int) paras[60];
     layers          = (int) paras[65];
     ROWS            = (int) paras[68];
     COLS            = (int) paras[69];
@@ -417,7 +412,6 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     int resource;            /* Index for resource (rows of RESOURCE) */
     int res_trait;           /* Index for resource traits (cols of RESOURCE) */
     int agent;               /* Index for agent in the array (rows) */
-    int agentID;             /* Index for the ID of an agent */
     int agent_trait;         /* Index for agent traits (cols of agent_array) */
     int res_number;          /* Number of resources included (default = 1) */
     int trait_number;        /* Number of traits included in the resource */
