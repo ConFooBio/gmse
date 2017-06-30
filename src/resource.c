@@ -32,7 +32,7 @@ void res_add(double **res_adding, double *paras){
     
     int resource_number, add, realised, type, K_add, gadj, oadj, cadj;
     int resource, sampled, added, loops, castrated, killed, klld;
-    double rand_pois, rand_unif, base_lambda, add_lambda, lambda;
+    double rand_pois, base_lambda, add_lambda, lambda;
     
     type            = (int) paras[3];  /* Type of growth (e.g., poisson) */
     K_add           = (int) paras[5];  /* Carrying capacity applied  */
@@ -44,13 +44,13 @@ void res_add(double **res_adding, double *paras){
     klld            = (int) paras[42]; /* Adjustment to kill */
     cadj            = (int) paras[73]; /* Adjust to castrate */
 
+    added = 0; 
     switch(type){
         case 0:
             break;
         case 1:
             break; /* Add in a different type of birth here */
         case 2:
-            added = 0; 
             for(resource = 0; resource < resource_number; resource++){
                 res_adding[resource][realised] = 0;
                 castrated = res_adding[resource][cadj];
@@ -72,7 +72,6 @@ void res_add(double **res_adding, double *paras){
             }
             break;
         default:
-            added = 0; 
             for(resource = 0; resource < resource_number; resource++){
                 res_adding[resource][realised] = 0;
                 castrated = res_adding[resource][cadj];
@@ -121,7 +120,7 @@ void res_add(double **res_adding, double *paras){
 void res_place(double **make, double **old, double *paras, int res_added){
                
     int old_number, traits, realised, age;
-    int resource, newbie, trait, to_make, to_add, make_res, last_old;
+    int resource, newbie, trait, to_make, to_add, last_old;
     double res_index;
     
     age        = (int) paras[31];
@@ -129,7 +128,6 @@ void res_place(double **make, double **old, double *paras, int res_added){
     realised   = (int) paras[38];
     traits     = (int) paras[41];
     
-    make_res  = 0;
     to_make   = 0;
     to_add    = 0; /* Maybe try to cut down the loops here later? */
     last_old  = old_number - 1;
@@ -243,9 +241,9 @@ void res_remove(double **res_removing, double *paras){
 void res_landscape_interaction(double **resource_array, double ***landscape,
                                double *paras, int resource_number){
                               
-    int resource_type_col, resource_type, resource_col, resource_effect;
+    int resource_type_col, resource_type, resource_effect;
     int landscape_layer, resource, x_col, y_col, x_pos, y_pos, gadj, klld;
-    double c_rate, current_val, esize_grow, esize_death, land_grow, land_die;
+    double c_rate, esize_grow, esize_death, land_grow, land_die;
     
     x_col             = (int) paras[33];
     y_col             = (int) paras[34];
@@ -253,7 +251,6 @@ void res_landscape_interaction(double **resource_array, double ***landscape,
     klld              = (int) paras[42]; /* Adjustment to kill                */
     resource_type_col = (int) paras[44];
     resource_type     = (int) paras[45];
-    resource_col      = (int) paras[46];
     resource_effect   = (int) paras[47];
     landscape_layer   = (int) paras[48];
     esize_grow        = paras[86];
@@ -299,22 +296,16 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     int trait;               /* Index for resource traits (cols of RESOURCE) */
     int res_number;          /* Number of resources included (default = 1) */
     int trait_number;        /* Number of traits included */
-    int para_number;         /* Number of parameters included */
     int res_nums_added;      /* Number of resources to be added */
     int res_nums_subtracted; /* Number of resoruces to be removed */
     int res_num_total;       /* Total number of resources in returned array */
     int protected_n;         /* Number of protected R objects */
     int vec_pos;             /* Vector position for making arrays */
-    int edge_type;           /* The type of edge on the landscape */
-    int move_type;           /* How resources move on the landscape */
     int move_res;            /* Should resources be allowed to move */
-    int max_age;             /* What is the maximum age allowed for resources */
     int off_col;             /* The column where the offspring are held */
     int rm_col;              /* Column where removal is indiciated */
-    int *add_resource;       /* Vector of added resources */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
-    int *len_PARAMETERS;     /* Length of the PARAMETERS vector incoming */
     double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
     double *R_ptr_new;       /* Pointer to RESOURCE_NEW (interface R and C) */
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
@@ -388,8 +379,6 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     /* Do the biology here now */
     /* ====================================================================== */
     
-    edge_type = (int) paras[1];
-    move_type = (int) paras[2];
     move_res  = (int) paras[19]; /* Should the resources be moved?        */
     off_col   = (int) paras[38];
     rm_col    = (int) paras[43];
