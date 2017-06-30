@@ -55,22 +55,21 @@ make_landscape <- function(model, rows, cols, cell_types, cell_val_mn,
     return(the_land);
 }
 
-#' Age landscape
-#'
-#' How does the landscape change on its own over time steps?
-#' For now, simply reverts a specified layer back to its original values
-#' In other words, e.g., crops are annual and regrow undamaged each year
-#'
-#'@param LAND The name of the landscape being changed
-#'@param landscape_ini The name of the original landscape replacing
-#'@param layer The layer that is being affected on the landscape
-#'@return the_land with one layer reset to its original cell values
-#'@examples
-#'\dontrun{
-#'LANDSCAPE_r <- age_land(LAND = LANDSCAPE_r, landscape_ini = LANDSCAPE_INI, 
-#'layer = 2);
-#'}
-#'@export
+# Age landscape
+#
+# How does the landscape change on its own over time steps?
+# For now, simply reverts a specified layer back to its original values
+# In other words, e.g., crops are annual and regrow undamaged each year
+#
+#@param LAND The name of the landscape being changed
+#@param landscape_ini The name of the original landscape replacing
+#@param layer The layer that is being affected on the landscape
+#@return the_land with one layer reset to its original cell values
+#@examples
+#\dontrun{
+#LANDSCAPE_r <- age_land(LAND = LANDSCAPE_r, landscape_ini = LANDSCAPE_INI, 
+#layer = 2);
+#}
 age_land <- function(LAND, landscape_ini, layer){
 
     LAND[,,layer] <- landscape_ini[,,layer];

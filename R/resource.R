@@ -1,20 +1,19 @@
-#' Resource model
-#'
-#' A population model of resource (including population) dynamics for 
-#' a single time step.
-#'
-#'@param RESOURCES The resources array produced by the resource function within GMSE
-#'@param LAND The landscape array on which interactions between resources and agents occur
-#'@param PARAS The vector of parameters that hold global and dynamic parameter values used by GMSE
-#'@param model The type of model being applied (Currently only individual-based
-#' -- i.e., 'agent-based' -- models are allowed)
-#'@return The resource function outputs an R list that includes three separate arrays, including (1) an new RESOURCES array, (2) a new LAND array, (3) a new PARAS array, each of which might be affected by the user function. The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the observation, management, and user models.
-#'@examples
-#'\dontrun{
-#'RESOURCE_NEW <- resource(RESOURCES = RESOURCES, LAND = LANDSCAPE_r, 
-#'PARAS = paras, model = "IBM");
-#'}
-#'@export
+# Resource model
+#
+# A population model of resource (including population) dynamics for 
+# a single time step.
+#
+#@param RESOURCES The resources array produced by the resource function within GMSE
+#@param LAND The landscape array on which interactions between resources and agents occur
+#@param PARAS The vector of parameters that hold global and dynamic parameter values used by GMSE
+#@param model The type of model being applied (Currently only individual-based
+# -- i.e., 'agent-based' -- models are allowed)
+#@return The resource function outputs an R list that includes three separate arrays, including (1) an new RESOURCES array, (2) a new LAND array, (3) a new PARAS array, each of which might be affected by the user function. The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the observation, management, and user models.
+#@examples
+#\dontrun{
+#RESOURCE_NEW <- resource(RESOURCES = RESOURCES, LAND = LANDSCAPE_r, 
+#PARAS = paras, model = "IBM");
+#}
 resource <- function(RESOURCES = NULL, 
                      LAND      = NULL, 
                      PARAS     = NULL,

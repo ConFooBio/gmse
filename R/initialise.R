@@ -133,22 +133,21 @@ make_agents <- function(model        = "IBM",
     return( the_agents );
 }
 
-#' COST initialisation
-#'
-#' Function to initialise the cost array of the G-MSE model
-#'
-#'@param AGENTS The array of agents produced in the main gmse() function
-#'@param RESOURCES The resources array produced by the resource function within GMSE
-#'@param res_opts A binary vector produced by the GMSE function defining what types of stakeholder interactions with resources (scaring, culling, castration, feeding, help_offspring) are permitted
-#'@param lnd_opts A binary vector produced by the GMSE function defining what types of stakeholder interactions with the landscape (tend_crops, kill_crops) are permitted
-#'@param min_cost The minimum cost that any agent (stakeholder or manager) incurrs for performing one action. This value is also set as an option in the main gmse() function (minimum_cost). This cost is recommended to be set to a value of 10, which gives managers increased precision when adjusting costs. For example, if the mimimum cost for a stakeholder performing an action is low, then a small change in the mimimum cost could halve or double the number of actions performed from the manager's perspective, with no options in between; hence the benefit of having a high mimimum cost combined with a higher agent budget (see the main gmse() function)
-#'@return A three dimensional array of initialised cost values for agent (manager and stakeholder) actions of the same dimensions as the ACTION array in GMSE
-#'@examples
-#'\dontrun{
-#'COST <- make_costs( AGENTS = AGENTS, RESOURCES = starting_resources,
-#'res_opts = user_res_opts, lnd_opts = user_lnd_opts, min_cost = minimum_cost);
-#'}
-#'@export
+# COST initialisation
+#
+# Function to initialise the cost array of the G-MSE model
+#
+#@param AGENTS The array of agents produced in the main gmse() function
+#@param RESOURCES The resources array produced by the resource function within GMSE
+#@param res_opts A binary vector produced by the GMSE function defining what types of stakeholder interactions with resources (scaring, culling, castration, feeding, help_offspring) are permitted
+#@param lnd_opts A binary vector produced by the GMSE function defining what types of stakeholder interactions with the landscape (tend_crops, kill_crops) are permitted
+#@param min_cost The minimum cost that any agent (stakeholder or manager) incurrs for performing one action. This value is also set as an option in the main gmse() function (minimum_cost). This cost is recommended to be set to a value of 10, which gives managers increased precision when adjusting costs. For example, if the mimimum cost for a stakeholder performing an action is low, then a small change in the mimimum cost could halve or double the number of actions performed from the manager's perspective, with no options in between; hence the benefit of having a high mimimum cost combined with a higher agent budget (see the main gmse() function)
+#@return A three dimensional array of initialised cost values for agent (manager and stakeholder) actions of the same dimensions as the ACTION array in GMSE
+#@examples
+#\dontrun{
+#COST <- make_costs( AGENTS = AGENTS, RESOURCES = starting_resources,
+#res_opts = user_res_opts, lnd_opts = user_lnd_opts, min_cost = minimum_cost);
+#}
 make_costs <- function(AGENTS, RESOURCES, res_opts, lnd_opts, min_cost){
     
     agent_IDs     <- c(-2, -1, unique(AGENTS[,1]) );
@@ -188,18 +187,17 @@ make_costs <- function(AGENTS, RESOURCES, res_opts, lnd_opts, min_cost){
 }
 
 
-#' Utility initialisation
-#'
-#' Function to initialise the utilities of the G-MSE model
-#'
-#'@param AGENTS The array of agents produced in the main gmse() function
-#'@param RESOURCES The resources array produced by the resource function within GMSE
-#'@return A three dimensional ACTION array of initialised agent (manager and stakeholder) actions of the same dimensions as the COST array in GMSE
-#'@examples
-#'\dontrun{
-#'ACTION <- make_utilities(AGENTS = AGENTS, RESOURCES = starting_resources);
-#'}
-#'@export
+# Utility initialisation
+#
+# Function to initialise the utilities of the G-MSE model
+#
+#@param AGENTS The array of agents produced in the main gmse() function
+#@param RESOURCES The resources array produced by the resource function within GMSE
+#@return A three dimensional ACTION array of initialised agent (manager and stakeholder) actions of the same dimensions as the COST array in GMSE
+#@examples
+#\dontrun{
+#ACTION <- make_utilities(AGENTS = AGENTS, RESOURCES = starting_resources);
+#}
 make_utilities <- function(AGENTS, RESOURCES){
 
     agent_IDs     <- c(-2, -1, unique(AGENTS[,1]) );
@@ -222,19 +220,18 @@ make_utilities <- function(AGENTS, RESOURCES){
     return( UTILITY );
 }
 
-#' Utility layer for initialisation
-#'
-#' Function to initialise a layer of the UTILITY array of the G-MSE model
-#'
-#'@param agent_IDs Vector of agent IDs to use (including -1 and -2, which indicate direct actions to the landscape and resources, respectively)
-#'@param agent_number The number of agents to use (length of agent_IDs)
-#'@param res_types The number of unique resource types (cols 2-4 of RESOURCES); for now, this should always be 1
-#'@return A layer of the COST or ACTION array, as called in building either make_costs or make_utilities, respectively. This layer corresponds to the costs or actions of a single agent, with the larger array in in which it is placed including all agents
-#'@examples
-#'\dontrun{
-#'UTIL_LIST <- utility_layer(agent_IDs, agent_number, res_types);
-#'}
-#'@export
+# Utility layer for initialisation
+#
+# Function to initialise a layer of the UTILITY array of the G-MSE model
+#
+#@param agent_IDs Vector of agent IDs to use (including -1 and -2, which indicate direct actions to the landscape and resources, respectively)
+#@param agent_number The number of agents to use (length of agent_IDs)
+#@param res_types The number of unique resource types (cols 2-4 of RESOURCES); for now, this should always be 1
+#@return A layer of the COST or ACTION array, as called in building either make_costs or make_utilities, respectively. This layer corresponds to the costs or actions of a single agent, with the larger array in in which it is placed including all agents
+#@examples
+#\dontrun{
+#UTIL_LIST <- utility_layer(agent_IDs, agent_number, res_types);
+#}
 utility_layer <- function(agent_IDs, agent_number, res_types){
  
     LAYER <- NULL;
@@ -263,16 +260,15 @@ utility_layer <- function(agent_IDs, agent_number, res_types){
     return( LAYER ); 
 }
 
-#' Initialise array of resource and landscape-level interactions
-#'
-#'@param RESOURCES The resources array produced by the resource function within GMSE
-#'@param LAND The landscape array on which interactions between resources and agents occur
-#'@examples
-#'\dontrun{
-#'Jacobian <- make_interaction_array(RESOURCES = starting_resources, 
-#'LAND = LANDSCAPE_r);
-#'}
-#'@export
+# Initialise array of resource and landscape-level interactions
+#
+#@param RESOURCES The resources array produced by the resource function within GMSE
+#@param LAND The landscape array on which interactions between resources and agents occur
+#@examples
+#\dontrun{
+#Jacobian <- make_interaction_array(RESOURCES = starting_resources, 
+#LAND = LANDSCAPE_r);
+#}
 make_interaction_array <- function(RESOURCES, LAND){
     resource_types  <- unique(RESOURCES[,2:4]);
     resource_count  <- dim(resource_types)[1];
@@ -297,15 +293,14 @@ make_interaction_array <- function(RESOURCES, LAND){
     return(INTERACTIONS);
 }
                                    
-#' Initialise array of resource and landscape-level interactions
-#'
-#'@param RESOURCES The resources array produced by the resource function within GMSE
-#'@param LAND The landscape array on which interactions between resources and agents occur
-#'@examples
-#'\dontrun{
-#'interaction_tabl <- make_interaction_table(starting_resources, LANDSCAPE_r);
-#'}
-#'@export
+# Initialise array of resource and landscape-level interactions
+#
+#@param RESOURCES The resources array produced by the resource function within GMSE
+#@param LAND The landscape array on which interactions between resources and agents occur
+#@examples
+#\dontrun{
+#interaction_tabl <- make_interaction_table(starting_resources, LANDSCAPE_r);
+#}
 make_interaction_table <- function(RESOURCES, LAND){
     
     resource_types      <- unique(RESOURCES[,2:4]);
