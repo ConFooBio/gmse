@@ -7,7 +7,7 @@ Generalised Management Strategy Evaluation
 
 --------------------------------------------------------------------------------
 
-## Installation and use
+## Installation
 
 **Install from CRAN**
 
