@@ -779,6 +779,10 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
                 most_fit = layer;
             }
         }
+        
+        if(old_fitness == 0){
+            old_fitness = -1;
+        }
         fit_change  = (fitnesses[most_fit] - old_fitness) / old_fitness;
         old_fitness = fitnesses[most_fit];
 
