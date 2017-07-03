@@ -133,9 +133,9 @@ Next there will be some general explanation of what it is that each sub-model do
 
 ```{r, echo = FALSE, fig.width = 7, fig.height = 8}
 sim <- gmse(plotting = FALSE);
-case01plot_sim(res = sim$resource, obs = sim$observation, land = sim$land, 
-               agents = sim$agents, paras = sim$paras[1,], ACTION = sim$action, 
-               COST = sim$cost);
+plot_gmse_results(res = sim$resource, obs = sim$observation, land = sim$land, 
+                  agents = sim$agents, paras = sim$paras, ACTION = sim$action, 
+                  COST = sim$cost);
 ```
 
 ## A case of resource management for farmers
