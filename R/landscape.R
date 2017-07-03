@@ -57,7 +57,7 @@ make_landscape <- function(model, rows, cols, cell_types, cell_val_mn,
 
 #' Age landscape
 #'
-#' How does the landscape change on its own over time steps?
+#' Determines how the landscape will change over the course of one time step.
 #' For now, simply reverts a specified layer back to its original values
 #' In other words, e.g., crops are annual and regrow undamaged each year
 #'

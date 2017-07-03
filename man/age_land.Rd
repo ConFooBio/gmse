@@ -17,7 +17,7 @@ age_land(LAND, landscape_ini, layer)
 the_land with one layer reset to its original cell values
 }
 \description{
-How does the landscape change on its own over time steps?
+Determines how the landscape will change over the course of one time step.
 For now, simply reverts a specified layer back to its original values
 In other words, e.g., crops are annual and regrow undamaged each year
 }
