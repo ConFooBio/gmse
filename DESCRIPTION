@@ -1,7 +1,7 @@
 Package: GMSE
 Type: Package
 Title: Generalised Management Strategy Evaluation Simulator
-Version: 0.2.2.5
+Version: 0.2.2.6
 Imports: grDevices (>= 3.3.3), graphics (>= 3.3.3), stats (>= 3.3.3)
 Authors@R: person("A. Bradley", "Duthie", email = "brad.duthie@gmail.com",
                   role = c("aut", "cre"))
@@ -12,10 +12,10 @@ Description: Integrates game theory and ecological theory to construct
     management strategy evaluation (MSE) framework to simulate all aspects of 
     management: population dynamics, manager observation of populations, manager
     decision making, and stakeholder responses to management decisions. The 
-    newly developed game-theoretic management strategy evaluation (GMSE) 
+    newly developed generalised management strategy evaluation (GMSE) 
     framework uses genetic algorithms to mimic the decision-making process of 
     managers and stakeholders under conditions of change, uncertainty, and 
-    conflict.
+    conflict. All simulations can be run using the `gmse` function.
 URL: https://bradduthie.github.io/gmse/
 BugReports: https://github.com/bradduthie/gmse/issues
 Depends: R (>= 3.3.3)
