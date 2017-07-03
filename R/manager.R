@@ -1,25 +1,25 @@
-# Manager model
-#
-# A model of manager decisions for a single time step. Managers set costs for user actions.
-#
-#@param RESOURCES The resources array produced by the resource function within GMSE
-#@param AGENTS The array of agents produced in the main gmse() function
-#@param LAND The landscape array on which interactions between resources and agents occur
-#@param PARAS The vector of parameters that hold global and dynamic parameter values used by GMSE
-#@param COST A three dimensional array of cost values for agent (manager and stakeholder) actions
-#@param ACTION A three dimensional array of agent (manager and stakeholder) actions
-#@param INTERACT An interaction (Jacobian) matrix of resources & landscape layer effects
-#@param inter_tabl Interaction table indexing types with the INTERACT matrix
-#@param OBSERVATION The array of resource observations from the observation model, used to estimate abundance of resources
-#@param model The type of model being applied (Currently only individual-based
-# -- i.e., 'agent-based' -- models are allowed)
-#@return The manager function outputs an R list that includes five separate arrays, including (1) an new RESOURCES array, (2) a new AGENTS array, (3) a new LAND array, (4) a new ACTIONS array, and a new (5) COST array, each of which might be affected by the user function. The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the user, resource, and observation models.
-#@examples
-#\dontrun{
-#MANAGER_OUT <- run_manage(RESOURCE_c = RESOURCES, LANDSCAPE_c = LAND, 
-#PARAMETERS_c = PARAS, AGENT_c = AGENTS, COST_c = COST, ACTION_c = ACTION, 
-#JACOBIAN_c = INTERACT, INTERACT_c = inter_tabl, OBSERVATION_c = OBSERVATION);
-#}
+#' Manager model
+#'
+#' A model of manager decisions for a single time step. Managers set costs for user actions.
+#'
+#'@param RESOURCES The resources array produced by the resource function within GMSE
+#'@param AGENTS The array of agents produced in the main gmse() function
+#'@param LAND The landscape array on which interactions between resources and agents occur
+#'@param PARAS The vector of parameters that hold global and dynamic parameter values used by GMSE
+#'@param COST A three dimensional array of cost values for agent (manager and stakeholder) actions
+#'@param ACTION A three dimensional array of agent (manager and stakeholder) actions
+#'@param INTERACT An interaction (Jacobian) matrix of resources & landscape layer effects
+#'@param inter_tabl Interaction table indexing types with the INTERACT matrix
+#'@param OBSERVATION The array of resource observations from the observation model, used to estimate abundance of resources
+#'@param model The type of model being applied (Currently only individual-based
+#' -- i.e., 'agent-based' -- models are allowed)
+#'@return The manager function outputs an R list that includes five separate arrays, including (1) an new RESOURCES array, (2) a new AGENTS array, (3) a new LAND array, (4) a new ACTIONS array, and a new (5) COST array, each of which might be affected by the user function. The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the user, resource, and observation models.
+#'@examples
+#'\dontrun{
+#'MANAGER_OUT <- run_manage(RESOURCE_c = RESOURCES, LANDSCAPE_c = LAND, 
+#'PARAMETERS_c = PARAS, AGENT_c = AGENTS, COST_c = COST, ACTION_c = ACTION, 
+#'JACOBIAN_c = INTERACT, INTERACT_c = inter_tabl, OBSERVATION_c = OBSERVATION);
+#'}
 manager <- function(RESOURCES   = NULL,
                     AGENTS      = NULL,
                     LAND        = NULL, 

@@ -1,24 +1,24 @@
-# User model
-#
-# A model of user decisions for a single time step. These decisions result in stakeholder actions that can potentially affect resources and the landscape in a GMSE simulation.
-#
-#@param RESOURCES The resources array produced by the resource function within GMSE
-#@param AGENTS The array of agents produced in the main gmse() function
-#@param LAND The landscape array on which interactions between resources and agents occur
-#@param PARAS The vector of parameters that hold global and dynamic parameter values used by GMSE
-#@param COST A three dimensional array of cost values for agent (manager and stakeholder) actions
-#@param ACTION ACTION A three dimensional array of agent (manager and stakeholder) actions
-#@param INTERACT An interaction (Jacobian) matrix of resources & landscape layer effects
-#@param inter_tabl Interaction table indexing types with the INTERACT matrix
-#@param model The type of model being applied (Currently only individual-based
-# -- i.e., 'agent-based' -- models are allowed)
-#@return The user function outputs an R list that includes five separate arrays, including (1) an new RESOURCES array, (2) a new AGENTS array, (3) a new LAND array, (4) a new ACTIONS array, and a new (5) COST array, each of which might be affected by the user function. The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the resource, observation, and management models.
-#@examples
-#\dontrun{
-#USERS <- user(RESOURCES = RESOURCES, AGENTS = AGENTS, LAND = LANDSCAPE_r,
-#PARAS = paras, COST = COST, ACTION = ACTION, INTERACT = Jacobian, 
-#inter_tabl = interaction_tabl, model = "IBM");
-#}
+#' User model
+#'
+#' A model of user decisions for a single time step. These decisions result in stakeholder actions that can potentially affect resources and the landscape in a GMSE simulation.
+#'
+#'@param RESOURCES The resources array produced by the resource function within GMSE
+#'@param AGENTS The array of agents produced in the main gmse() function
+#'@param LAND The landscape array on which interactions between resources and agents occur
+#'@param PARAS The vector of parameters that hold global and dynamic parameter values used by GMSE
+#'@param COST A three dimensional array of cost values for agent (manager and stakeholder) actions
+#'@param ACTION ACTION A three dimensional array of agent (manager and stakeholder) actions
+#'@param INTERACT An interaction (Jacobian) matrix of resources & landscape layer effects
+#'@param inter_tabl Interaction table indexing types with the INTERACT matrix
+#'@param model The type of model being applied (Currently only individual-based
+#' -- i.e., 'agent-based' -- models are allowed)
+#'@return The user function outputs an R list that includes five separate arrays, including (1) an new RESOURCES array, (2) a new AGENTS array, (3) a new LAND array, (4) a new ACTIONS array, and a new (5) COST array, each of which might be affected by the user function. The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the resource, observation, and management models.
+#'@examples
+#'\dontrun{
+#'USERS <- user(RESOURCES = RESOURCES, AGENTS = AGENTS, LAND = LANDSCAPE_r,
+#'PARAS = paras, COST = COST, ACTION = ACTION, INTERACT = Jacobian, 
+#'inter_tabl = interaction_tabl, model = "IBM");
+#'}
 user <- function(RESOURCES  = NULL,
                  AGENTS     = NULL,
                  LAND       = NULL, 
