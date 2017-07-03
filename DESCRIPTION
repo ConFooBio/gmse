@@ -15,7 +15,7 @@ Description: Integrates game theory and ecological theory to construct
     newly developed generalised management strategy evaluation (GMSE) 
     framework uses genetic algorithms to mimic the decision-making process of 
     managers and stakeholders under conditions of change, uncertainty, and 
-    conflict. All simulations can be run using the `gmse()` function.
+    conflict. All simulations can be run using the gmse() function.
 URL: https://bradduthie.github.io/gmse/
 BugReports: https://github.com/bradduthie/gmse/issues
 Depends: R (>= 3.3.3)
