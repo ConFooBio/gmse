@@ -1,6 +1,6 @@
 #' Landscape initialisation
 #'
-#' Function to initialise the landscape of the G-MSE model
+#' Initialise the landscape of the G-MSE model.
 #'
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
@@ -59,7 +59,7 @@ make_landscape <- function(model, rows, cols, cell_types, cell_val_mn,
 #'
 #' Determines how the landscape will change over the course of one time step.
 #' For now, simply reverts a specified layer back to its original values
-#' In other words, e.g., crops are annual and regrow undamaged each year
+#' In other words, e.g., crops are annual and regrow undamaged each year.
 #'
 #'@param LAND The name of the landscape being changed
 #'@param landscape_ini The name of the original landscape replacing

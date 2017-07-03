@@ -34,9 +34,10 @@ anecdotal(RESOURCES = NULL, LAND = NULL, PARAS = NULL, AGENTS = NULL,
 The anecdotal function outputs an R list that includes two separate arrays, including (1) a new AGENTS array and (3) a new PARAS array, each of which might be affected by the anecdotal function.  The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the management, user, resource, and observation models.
 }
 \description{
-A simulation of how many resources of a particular type are round each 
-agent -- this produces a kind of anecdotal evidence for each agent around
-their circle of view. It also potentially moves the agents during a time step
+A simulation of how many resources of a particular type are in the vicinity 
+of each agent -- this produces a kind of anecdotal evidence for each agent 
+around their circle of view. It also potentially moves the agents during a 
+time step.
 }
 \examples{
 \dontrun{

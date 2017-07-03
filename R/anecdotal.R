@@ -1,8 +1,9 @@
 #' Anecdotal model
 #'
-#' A simulation of how many resources of a particular type are round each 
-#' agent -- this produces a kind of anecdotal evidence for each agent around
-#' their circle of view. It also potentially moves the agents during a time step
+#' A simulation of how many resources of a particular type are in the vicinity 
+#' of each agent -- this produces a kind of anecdotal evidence for each agent 
+#' around their circle of view. It also potentially moves the agents during a 
+#' time step.
 #'
 #'@param RESOURCES The resources array produced by the resource function within GMSE
 #'@param LAND The landscape array on which interactions between resources and agents occur

@@ -1,6 +1,6 @@
 #' Resource initialisation
 #'
-#' Function to initialise the resources of the G-MSE model
+#' Initialise the resources of the G-MSE model.
 #'
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
@@ -71,7 +71,7 @@ make_resource <- function(model              = "IBM",
 
 #' Agent initialisation
 #'
-#' Function to initialise the agents of the G-MSE model
+#' Initialise the agents of the G-MSE model.
 #'
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
@@ -135,7 +135,7 @@ make_agents <- function(model        = "IBM",
 
 #' COST initialisation
 #'
-#' Function to initialise the cost array of the G-MSE model
+#' Initialise the cost array of the G-MSE model.
 #'
 #'@param AGENTS The array of agents produced in the main gmse() function
 #'@param RESOURCES The resources array produced by the resource function within GMSE
@@ -190,7 +190,7 @@ make_costs <- function(AGENTS, RESOURCES, res_opts, lnd_opts, min_cost){
 
 #' Utility initialisation
 #'
-#' Function to initialise the utilities of the G-MSE model
+#' Initialise the utilities of the G-MSE model.
 #'
 #'@param AGENTS The array of agents produced in the main gmse() function
 #'@param RESOURCES The resources array produced by the resource function within GMSE
@@ -222,9 +222,9 @@ make_utilities <- function(AGENTS, RESOURCES){
     return( UTILITY );
 }
 
-#' Utility layer for initialisation
+#' Utility layer for initialisation.
 #'
-#' Function to initialise a layer of the UTILITY array of the G-MSE model
+#' Function to initialise a layer of the UTILITY array of the G-MSE model.
 #'
 #'@param agent_IDs Vector of agent IDs to use (including -1 and -2, which indicate direct actions to the landscape and resources, respectively)
 #'@param agent_number The number of agents to use (length of agent_IDs)
@@ -263,7 +263,7 @@ utility_layer <- function(agent_IDs, agent_number, res_types){
     return( LAYER ); 
 }
 
-#' Initialise array of resource and landscape-level interactions
+#' Initialise array of resource and landscape-level interactions.
 #'
 #'@param RESOURCES The resources array produced by the resource function within GMSE
 #'@param LAND The landscape array on which interactions between resources and agents occur
@@ -297,7 +297,7 @@ make_interaction_array <- function(RESOURCES, LAND){
     return(INTERACTIONS);
 }
                                    
-#' Initialise array of resource and landscape-level interactions
+#' Initialise array of resource and landscape-level interactions.
 #'
 #'@param RESOURCES The resources array produced by the resource function within GMSE
 #'@param LAND The landscape array on which interactions between resources and agents occur

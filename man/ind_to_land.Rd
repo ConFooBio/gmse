@@ -15,7 +15,7 @@ ind_to_land(inds, land)
 Returns a landscape in which resources are embedded for a timestep for plotting purposes
 }
 \description{
-Actually put the individuals on the landscape with function below
+Places individuals (simulated resources) on the landscape for plotting.
 }
 \examples{
 \dontrun{

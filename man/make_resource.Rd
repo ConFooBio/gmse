@@ -34,7 +34,7 @@ make_resource(model = "IBM", resource_quantity = 100, resource_types = 1,
 the_resources Initialised data frame of resources being modelled
 }
 \description{
-Function to initialise the resources of the G-MSE model
+Initialise the resources of the G-MSE model.
 }
 \examples{
 resource <- make_resource(model = "IBM", resource_quantity = 100, 

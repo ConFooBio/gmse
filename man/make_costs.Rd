@@ -21,7 +21,7 @@ make_costs(AGENTS, RESOURCES, res_opts, lnd_opts, min_cost)
 A three dimensional array of initialised cost values for agent (manager and stakeholder) actions of the same dimensions as the ACTION array in GMSE
 }
 \description{
-Function to initialise the cost array of the G-MSE model
+Initialise the cost array of the G-MSE model.
 }
 \examples{
 \dontrun{

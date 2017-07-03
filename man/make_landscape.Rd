@@ -36,7 +36,7 @@ make_landscape(model, rows, cols, cell_types, cell_val_mn, cell_val_sd,
 the_land A cols by rows landscape with randomly distributed cell types
 }
 \description{
-Function to initialise the landscape of the G-MSE model
+Initialise the landscape of the G-MSE model.
 }
 \examples{
 land <- make_landscape(model = "IBM", rows = 10, cols = 10, cell_types = 1, 

@@ -19,7 +19,7 @@ the_land with one layer reset to its original cell values
 \description{
 Determines how the landscape will change over the course of one time step.
 For now, simply reverts a specified layer back to its original values
-In other words, e.g., crops are annual and regrow undamaged each year
+In other words, e.g., crops are annual and regrow undamaged each year.
 }
 \examples{
 \dontrun{

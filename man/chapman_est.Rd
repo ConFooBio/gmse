@@ -16,7 +16,7 @@ The Chapman estimator (which is also performed GMSE in the manager function) ret
 }
 \description{
 Estimates population size using simulated mark-recapture data produced by the
-observation model of GMSE
+observation model of GMSE.
 }
 \examples{
 \dontrun{

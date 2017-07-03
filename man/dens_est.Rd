@@ -22,7 +22,7 @@ The density estimator (which is also performed GMSE in the manager function) ret
 Estimates population size using simulated data produced by the
 observation model of GMSE -- it assumes that the density of resources
 observed on the subset of the landscape sampled equals the density on the 
-whole landscape
+whole landscape.
 }
 \examples{
 \dontrun{

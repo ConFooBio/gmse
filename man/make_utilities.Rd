@@ -15,7 +15,7 @@ make_utilities(AGENTS, RESOURCES)
 A three dimensional ACTION array of initialised agent (manager and stakeholder) actions of the same dimensions as the COST array in GMSE
 }
 \description{
-Function to initialise the utilities of the G-MSE model
+Initialise the utilities of the G-MSE model.
 }
 \examples{
 \dontrun{

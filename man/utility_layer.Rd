@@ -2,7 +2,7 @@
 % Please edit documentation in R/initialise.R
 \name{utility_layer}
 \alias{utility_layer}
-\title{Utility layer for initialisation}
+\title{Utility layer for initialisation.}
 \usage{
 utility_layer(agent_IDs, agent_number, res_types)
 }
@@ -17,7 +17,7 @@ utility_layer(agent_IDs, agent_number, res_types)
 A layer of the COST or ACTION array, as called in building either make_costs or make_utilities, respectively. This layer corresponds to the costs or actions of a single agent, with the larger array in in which it is placed including all agents
 }
 \description{
-Function to initialise a layer of the UTILITY array of the G-MSE model
+Function to initialise a layer of the UTILITY array of the G-MSE model.
 }
 \examples{
 \dontrun{

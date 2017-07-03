@@ -1,7 +1,7 @@
 #' Chapman estimator of mark-recapture
 #'
 #' Estimates population size using simulated mark-recapture data produced by the
-#' observation model of GMSE
+#' observation model of GMSE.
 #'
 #'@param observation The array of resource observations from the observation model, used to estimate abundance of resources
 #'@param paras The vector of parameters that hold global and dynamic parameter values used by GMSE
@@ -41,7 +41,7 @@ chapman_est <- function(observation, paras){
 
 #' Plot resource position on a landscape image output
 #'
-#' Actually put the individuals on the landscape with function below
+#' Places individuals (simulated resources) on the landscape for plotting.
 #'
 #'@param inds A single time step of resources from GMSE
 #'@param land The landscape array on which interactions between resources and agents occur
@@ -68,7 +68,7 @@ ind_to_land <- function(inds, land){
 #' Estimates population size using simulated data produced by the
 #' observation model of GMSE -- it assumes that the density of resources
 #' observed on the subset of the landscape sampled equals the density on the 
-#' whole landscape
+#' whole landscape.
 #'
 #'@param observation The array of resource observations from the observation model, used to estimate abundance of resources
 #'@param paras The vector of parameters that hold global and dynamic parameter values used by GMSE
@@ -108,7 +108,7 @@ dens_est <- function(observation, paras, view = view, land = land){
 
 #' Plot results for transect-based sampling
 #'
-#' Produce six panels on a plot showing resource distribution, owned land, resource dynamics and estimates, stake-holder yield, and action costs and actions made.
+#' Produce six panels on a plot showing resource distribution, owned land, resource dynamics and estimates, stake-holder yield, and action costs and actions made. This plot is run internally within the gmse function, and should not be used to plot results stored after running the gmse function (for this, use plot_gmse_results).
 #' 
 #'@param res The resources array produced by the resource function within GMSE
 #'@param obs The array of resource observations from the observation model, used to estimate abundance of resources
@@ -302,7 +302,7 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, COST,
 ####################################################################
 #' Plot results for density-based or mark-recapture sampling
 #'
-#' Produce six panels on a plot showing resource distribution, owned land, resource dynamics and estimates, stake-holder yield, and action costs and actions made.
+#' Produce six panels on a plot showing resource distribution, owned land, resource dynamics and estimates, stake-holder yield, and action costs and actions made. This plot is run internally within the gmse function, and should not be used to plot results stored after running the gmse function (for this, use plot_gmse_results).
 #' 
 #'@param res The resources array produced by the resource function within GMSE
 #'@param obs The array of resource observations from the observation model, used to estimate abundance of resources

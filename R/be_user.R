@@ -1,6 +1,6 @@
 #' Become a hunter on the landscape
 #' 
-#' This function allows the user of the GMSE software to insert themselves as a hunter in the simulation, allowing them to cull some number of resources in a time step as observed by the agent whose ID is 2
+#' This function allows the user of the GMSE software to insert themselves as a hunter in the simulation, allowing them to cull some number of resources in a time step as observed by the agent whose ID is 2.
 #' 
 #'@param OBSERVATION The observation array produced by the observation function within GMSE
 #'@param AGENT The array of agents produced in the main gmse() function

@@ -2,7 +2,7 @@
 % Please edit documentation in R/initialise.R
 \name{make_interaction_table}
 \alias{make_interaction_table}
-\title{Initialise array of resource and landscape-level interactions}
+\title{Initialise array of resource and landscape-level interactions.}
 \usage{
 make_interaction_table(RESOURCES, LAND)
 }
@@ -12,7 +12,7 @@ make_interaction_table(RESOURCES, LAND)
 \item{LAND}{The landscape array on which interactions between resources and agents occur}
 }
 \description{
-Initialise array of resource and landscape-level interactions
+Initialise array of resource and landscape-level interactions.
 }
 \examples{
 \dontrun{
