@@ -6,6 +6,7 @@ Generalised Management Strategy Evaluation
 
 [![](http://www.r-pkg.org/badges/version/GMSE?color=yellowgreen)](https://cran.r-project.org/package=GMSE) [![](http://cranlogs.r-pkg.org/badges/grand-total/GMSE?color=yellowgreen)](http://cranlogs.r-pkg.org/badges/grand-total/GMSE)
 [![](http://cranlogs.r-pkg.org/badges/last-month/GMSE?color=yellowgreen)](http://cranlogs.r-pkg.org/badges/last-month/GMSE)
+[![CRAN](https://img.shields.io/cran/l/devtools.svg)](https://cran.r-project.org/package=GMSE)
 
 <hr>
 
