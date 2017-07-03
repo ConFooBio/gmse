@@ -10,6 +10,7 @@
 #'\dontrun{
 #'analysis <- chapman_est(observation=obs_t, paras = paras);
 #'}
+#'@export
 chapman_est <- function(observation, paras){
     marks       <- 1;
     recaptures  <- paras[12] - 1;
@@ -49,6 +50,7 @@ chapman_est <- function(observation, paras){
 #'\dontrun{
 #'indis  <- ind_to_land(inds=res_t, land=land1);
 #'}
+#'@export
 ind_to_land <- function(inds, land){
     ind_rep  <- max(land) + 1;
     
@@ -78,6 +80,7 @@ ind_to_land <- function(inds, land){
 #'analysis <- dens_est(observation = obs_t, paras = paras, view = view,
 #'land = land1);
 #'}
+#'@export
 dens_est <- function(observation, paras, view = view, land = land){
     vision  <- (2*view) + 1;
     area    <- vision * vision;
@@ -126,6 +129,7 @@ dens_est <- function(observation, paras, view = view, land = land){
 #'land1 = LANDSCAPE_r[,,1], land2 = LANDSCAPE_REC, land3  = LANDSCAPE_r[,,3], 
 #'agents = AGENT_REC, COST = COST_REC, ACTION = ACTION_REC, paras  = paras);
 #'}
+#'@export
 case23plot <- function(res, obs, land1, land2, land3, agents, paras, COST,
                        ACTION){
     gens <- NULL;
@@ -322,6 +326,7 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, COST,
 #'agents = AGENT_REC, paras = paras, ACTION = ACTION_REC, COST = COST_REC, 
 #'view = agent_view, times = times_observe);
 #'}
+#'@export
 case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
                        COST, view = NULL, times = 1){
     gens <- NULL;

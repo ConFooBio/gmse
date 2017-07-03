@@ -19,6 +19,7 @@
 #'PARAS = paras, COST = COST, ACTION = ACTION, INTERACT = Jacobian, 
 #'inter_tabl = interaction_tabl, model = "IBM");
 #'}
+#'@export
 user <- function(RESOURCES  = NULL,
                  AGENTS     = NULL,
                  LAND       = NULL, 

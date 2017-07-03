@@ -15,6 +15,7 @@
 #'HUNT_OUTCOME <- be_hunter(OBSERVATION_r, AGENTS, RESOURCES, LANDSCAPE_r, 
 #'paras, agent_view, times_observe);
 #'}
+#'@export
 be_hunter <- function(OBSERVATION, AGENT, RESOURCES, LAND, PARAS, view, times){
     seeit    <- AGENT[2,13];
     view     <- view;

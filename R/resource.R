@@ -14,6 +14,7 @@
 #'RESOURCE_NEW <- resource(RESOURCES = RESOURCES, LAND = LANDSCAPE_r, 
 #'PARAS = paras, model = "IBM");
 #'}
+#'@export
 resource <- function(RESOURCES = NULL, 
                      LAND      = NULL, 
                      PARAS     = NULL,

@@ -22,6 +22,7 @@
 #'PARAS = paras, AGENTS = AGENTS, res_type = 1, samp_age = rma, agent_type = -1,
 #'type_cat = 1, move_agents = mva);
 #'}
+#'@export
 anecdotal <- function(RESOURCES   = NULL, 
                       LAND        = NULL, 
                       PARAS       = NULL, 

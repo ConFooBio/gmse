@@ -14,7 +14,7 @@
 #'@param agent_type The type of agent doing the observing (default = 0)
 #'@param type_cat The category of agent type (first 4 columns) doing observing; this will almost always be 1, so type 0 agents (managers, of which there is always one by default) will perform the observations
 #'@param obs_method The type of method used to do the observing. For types of observation exist: (1) Density based observation, where observers count all of the resources within a subset of the landscape (the manager function can then later estimate total resource number from this estimate). (2) Mark-recapture based observation, where observers tag a fixed number of randomly sampled resources on the landscape some number of `times`; some of these resources marks are later interpreted as marks ('fix_mark') while the rest are interpreted as recaptures. (3) Transect based observation, where observers sample a linear transect, observing all resources on the transect one row of landscape cells at a time, until all landscape cells are sampled; between samples, resources might move generating observation error. (4) Block based sampling, which is very similar to Transect based sampling; here observers instead sample square blocks of a landscape, counting resources one block at a time, until the whole landscape is sampled; between samples resources might move generating observation error.
-#@param move_res Defines whether or not resources move during observation (default = FALSE). Note that if this is FALSE, then observation methods (obs_method) 3 and 4 produce no observation error 
+#'@param move_res Defines whether or not resources move during observation (default = FALSE). Note that if this is FALSE, then observation methods (obs_method) 3 and 4 produce no observation error 
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
 #'@return The observation function outputs an R list that includes three separate arrays, including (1) an new OBSERVATION array that holds observed resources and their traits with additional columns indicating when the resources were observed (relevant, e.g., for mark-recapture), (2) a new AGENTS array, and (3) a new PARAS array, each of which might be affected by the user function.  The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the management, user, and resource models.
@@ -25,6 +25,7 @@
 #'times = tmo, samp_age = rma, agent_type = 0, type_cat   = 1, obs_method = obt,
 #'move_res   = rmo);
 #'}
+#'@export
 observation <- function(RESOURCES  = NULL, 
                         LAND       = NULL, 
                         PARAS      = NULL, 

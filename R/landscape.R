@@ -70,6 +70,7 @@ make_landscape <- function(model, rows, cols, cell_types, cell_val_mn,
 #'LANDSCAPE_r <- age_land(LAND = LANDSCAPE_r, landscape_ini = LANDSCAPE_INI, 
 #'layer = 2);
 #'}
+#'@export
 age_land <- function(LAND, landscape_ini, layer){
 
     LAND[,,layer] <- landscape_ini[,,layer];

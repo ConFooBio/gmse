@@ -148,6 +148,7 @@ make_agents <- function(model        = "IBM",
 #'COST <- make_costs( AGENTS = AGENTS, RESOURCES = starting_resources,
 #'res_opts = user_res_opts, lnd_opts = user_lnd_opts, min_cost = minimum_cost);
 #'}
+#'@export
 make_costs <- function(AGENTS, RESOURCES, res_opts, lnd_opts, min_cost){
     
     agent_IDs     <- c(-2, -1, unique(AGENTS[,1]) );
@@ -198,6 +199,7 @@ make_costs <- function(AGENTS, RESOURCES, res_opts, lnd_opts, min_cost){
 #'\dontrun{
 #'ACTION <- make_utilities(AGENTS = AGENTS, RESOURCES = starting_resources);
 #'}
+#'@export
 make_utilities <- function(AGENTS, RESOURCES){
 
     agent_IDs     <- c(-2, -1, unique(AGENTS[,1]) );
@@ -232,6 +234,7 @@ make_utilities <- function(AGENTS, RESOURCES){
 #'\dontrun{
 #'UTIL_LIST <- utility_layer(agent_IDs, agent_number, res_types);
 #'}
+#'@export
 utility_layer <- function(agent_IDs, agent_number, res_types){
  
     LAYER <- NULL;
@@ -269,6 +272,7 @@ utility_layer <- function(agent_IDs, agent_number, res_types){
 #'Jacobian <- make_interaction_array(RESOURCES = starting_resources, 
 #'LAND = LANDSCAPE_r);
 #'}
+#'@export
 make_interaction_array <- function(RESOURCES, LAND){
     resource_types  <- unique(RESOURCES[,2:4]);
     resource_count  <- dim(resource_types)[1];
@@ -301,6 +305,7 @@ make_interaction_array <- function(RESOURCES, LAND){
 #'\dontrun{
 #'interaction_tabl <- make_interaction_table(starting_resources, LANDSCAPE_r);
 #'}
+#'@export
 make_interaction_table <- function(RESOURCES, LAND){
     
     resource_types      <- unique(RESOURCES[,2:4]);

@@ -20,6 +20,7 @@
 #'PARAMETERS_c = PARAS, AGENT_c = AGENTS, COST_c = COST, ACTION_c = ACTION, 
 #'JACOBIAN_c = INTERACT, INTERACT_c = inter_tabl, OBSERVATION_c = OBSERVATION);
 #'}
+#'@export
 manager <- function(RESOURCES   = NULL,
                     AGENTS      = NULL,
                     LAND        = NULL, 
