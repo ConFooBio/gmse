@@ -1,5 +1,5 @@
 ---
-title: "Generalised management strategy evaluation (GMSE)"
+title: "Generalised management strategy evaluation"
 author: "Brad Duthie"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -27,6 +27,15 @@ bibliography: references.bib
 library(shiny)
 library(rhandsontable)
 ```
+
+<br>
+
+![](https://raw.githubusercontent.com/bradduthie/gmse/1727ea37f32f0f40df8ee6e8277d0d1723c88639/notebook/images/GMSE_logo_name.png)
+
+<br>
+
+[![](http://www.r-pkg.org/badges/version/GMSE?color=yellowgreen)](https://cran.r-project.org/package=GMSE) [![](http://cranlogs.r-pkg.org/badges/grand-total/GMSE?color=yellowgreen)](http://cranlogs.r-pkg.org/badges/grand-total/GMSE)
+[![](http://cranlogs.r-pkg.org/badges/last-month/GMSE?color=yellowgreen)](http://cranlogs.r-pkg.org/badges/last-month/GMSE)
 
 ********************************************************************************
 
@@ -81,6 +90,14 @@ library(rhandsontable)
 > <a name="u-3-JUL-2017">Update: 3 JUL 2017</a>
 
 GMSE `v0.2.2.5` is [now up on CRAN](https://cran.r-project.org/web/packages/GMSE/) (13:32 GMT), and my hope is that `v0.2.2.7` will replace it soon following some clarification of the documentation. I am avoiding a public announcement of the package on CRAN until I receive confirmation that the new version is accepted.
+
+**New logo**
+
+<br><br>
+
+![](https://raw.githubusercontent.com/bradduthie/gmse/c96f4af201b1db5c37d3964d6603eeee07a1a257/notebook/images/GMSE_Logo_Goose_300.png)
+
+<br><br>
 
 > <a name="u-27-JUN-2017">Update: 27 JUN 2017</a>
 
