@@ -1,6 +1,6 @@
 ---
-title: "gmse: Generalised management strategy evaluation"
-author: "A. Bradley Duthie"
+title: "gmse: an R package for generalised management strategy evaluation"
+author: "A. Bradley Duthie, Jeremy J. Cusack, Roc&#0237;o Pozo, O. Sarobidy Rakotonarivo, and Nils Bunnefeld"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -12,9 +12,232 @@ bibliography: gmse.bib
 
 ```{r, echo = FALSE}
 library(GMSE);
+plot_gmse_results_vign <- function(res, obs, land, agents, paras, ACTION, COST){
+    
+    para_vec <- paras[1,]
+    
+    times <- 1;
+    view  <- agents[[1]][1, 9];
+    
+    land1 <- NULL;
+    land3 <- NULL;
+    land2 <- land;
+    
+    for(i in 1:length(land2)){
+        land1 <- land2[[i]][,,1];
+        land3 <- land2[[i]][,,3];
+    }
+    
+    max_time <- length(res) - 1;
+        
+    gens <- NULL;
+    abun <- NULL;
+    est  <- NULL;
+    lci  <- NULL;
+    uci  <- NULL;
+    lnds <- NULL;
+    ages <- NULL;
+    stky <- NULL;
+    land_cols <- c("#F2F2F2FF", "#ECB176FF", "#000000"); 
+    cols      <- c("green", "indianred1", "indianred3", "deepskyblue1",
+                   "deepskyblue2");
+    
+    case  <- para_vec[9];
+    tiobs <- para_vec[12];
+    if(case == 1 & tiobs < 2){
+        return("No RMR possible"); 
+    }
+    mrk <- floor(tiobs / 2);
+    rcp <- tiobs - mrk;
+    
+    max_action <- 0;
+    max_cost   <- 0;
+    for(i in 1:length(res)){
+        act_check <- ACTION[[i]][,8:12,];
+        act_check[act_check > 10000] <- -1;
+        act_comb <- apply(X = act_check, MARGIN = c(1,2), FUN = sum);
+        gen_max_action <- max(act_comb);
+        if(gen_max_action > max_action){
+            max_action <- gen_max_action;
+        }
+        cost_check <- COST[[i]][,8:12,];
+        cost_check[cost_check >= 10000] <- -1;
+        gen_max_cost   <- max(cost_check);
+        if(gen_max_cost > max_cost){
+            max_cost <- gen_max_cost;
+        }
+    }
+    
+    minK <- min(para_vec[6:7]);
+    
+    ymaxi    <- minK + (minK * (1 + res[[1]][1,10])); # Add for birth rate
+    time_max <- length(res);
+    for(i in 1:(time_max-1)){
+        res_t    <- res[[i]];
+        obs_t    <- obs[[i]];
+        lnd_t    <- land2[[i]][,,2] * 100;
+        age_t    <- agents[[i]];
+        if(i > 1){
+            res_t <- res_t[res_t[,12] >= para_vec[17],];
+        }
+        gens  <- c(gens, i);
+        abun  <- c(abun, dim(res_t)[1]);
+        lnds  <- c(lnds, mean(lnd_t));
+        ages  <- rbind(ages, age_t[,16]);
+        if(!is.null(obs_t) & case == 1){
+            analysis <- chapman_est(observation = obs_t, paras = para_vec);
+            est      <- c(est, analysis$Nc);
+            lci      <- c(lci, analysis$lci);
+            uci      <- c(uci, analysis$uci);
+        }
+        if(!is.null(obs_t) & !is.null(view) & case == 0){
+            analysis <- dens_est(observation = obs_t, paras = para_vec, 
+                                 view = view, land = land1);
+            est      <- c(est, analysis$Nc);
+            lci      <- c(lci, analysis$lci);
+            uci      <- c(uci, analysis$uci);
+        }
+        for(stakeholder in 1:dim(ages)[2]){
+            max_yield   <- sum(land3 == stakeholder);
+            agent_yield <- rep(x = NA, max_time);
+            if(max_yield > 0 & para_vec[104] > 0){
+                agent_yield <- 100 * (ages[,stakeholder] / max_yield);
+            }
+            stky[[stakeholder]] <- agent_yield;
+        }
+    }
+    if(case > 1){
+        est <- paras[,100];
+    }
+    par(mfrow=c(3,2),mar=c(0,0,0,0));
+    # ------------- Panel 1 (upper left)
+    if(abun[max_time] > 0){
+        indis  <- ind_to_land(inds = res_t, land = land1);
+        image(indis, col = land_cols, xaxt="n", yaxt="n");
+    }else{
+        image(land1, col = land_cols, xaxt="n", yaxt="n");
+    }
+    # ------------- Panel 2 (upper right)
+    col_num <- max(land3);
+    image(land3, col = topo.colors(col_num), xaxt="n", yaxt="n");
+    # ------------- Panel 3 (middle left)
+    par(mar = c(4, 5, 1, 5));
+    plot(x = gens, y = abun, pch = 20, type="l", lwd = 2, ylim = c(0, ymaxi),
+         xlim=c(0, time_max), xlab = "Time Step", ylab = "Abundance",
+         cex.lab=1.25);
+    if(case == 0 | case == 1){
+        polygon(y = c(lci,rev(uci)), x = c(gens, rev(gens)), border = NA,
+                col="lightblue");
+        points(x = gens, y = est, pch = 20, type = "l", lwd = 2, col = "cyan4");
+    }else{
+        points(x = gens, y = est[-time_max], pch = 20, type = "l", lwd = 2, 
+               col = "cyan4");
+    }
+    abline(h = para_vec[7], col = "red", lwd = 0.8, lty = "dashed");
+    abline(h = ACTION[[1]][1,5,1], col = topo.colors(1), lwd = 0.8, 
+           lty = "dashed");
+    points(x = gens, y = abun, pch = 20, type = "l", lwd = 3, col = "black");
+    par(new = TRUE);
+    plot(x = gens, y = lnds, pch = 20, type = "l", lwd = 3, col = "orange", 
+         xlab = "", xlim = c(0, time_max), ylim = c(0, 100), xaxt="n", yaxt="n", 
+         ylab = "");
+    axis(side = 4, at = c(0, 25, 50, 75, 100));
+    mtext("Mean % Yield", side = 4, line = 2.4);
+    # ------------ Panel 4 (middle right);
+    par(mar = c(4, 4.5, 1, 1));
+    cell_number <- dim(land3)[1] * dim(land3)[2];
+    plot(x = gens, y = gens, pch = 20, type = "n", lwd = 2, ylim = c(0, 100),
+         xlim = c(0, time_max), xlab = "Time Step", 
+         ylab = "Stake-holder % yield", cex.lab = 1.25);
+    stake_colors <- topo.colors( dim(age_t)[1] );
+    if(para_vec[104] > 0){
+        for(stakeholder in 1:dim(ages)[2]){
+            points(x = gens, y = stky[[stakeholder]], type="l", lwd=2, 
+                   col = stake_colors[stakeholder]);
+        }
+    }
+    # ------------- Panel 5 (lower left)
+    res_costs <- matrix(data = 0, nrow = max_time, ncol = 5);
+    for(j in 1:max_time){
+        res_costs[j,1] <- ACTION[[j]][3,8,1];
+        res_costs[j,2] <- ACTION[[j]][3,9,1];
+        res_costs[j,3] <- ACTION[[j]][3,10,1];
+        res_costs[j,4] <- ACTION[[j]][3,11,1];
+        res_costs[j,5] <- ACTION[[j]][3,12,1];
+    }
+    par(mar = c(4, 5, 1, 5.5), xpd = TRUE);
+    y_upper_limit <- max_cost + (0.25 * max_cost);
+    plot(x = gens, y = gens, pch = 20, type = "n", lwd = 2, 
+         ylim = c(0, y_upper_limit), xlim = c(0, time_max), xlab = "Time Step", 
+         ylab = "Cost of actions", cex.lab = 1.25);
+    if(para_vec[89] == 1){
+        points(x = gens, y = res_costs[,1], type = "l", col = cols[1], lwd = 2);
+    }
+    if(para_vec[90] == 1){
+        points(x = gens, y = res_costs[,2], type = "l", col = cols[2], lwd = 2);
+    }
+    if(para_vec[91] == 1){
+        points(x = gens, y = res_costs[,3], type = "l", col = cols[3], lwd = 2);
+    }
+    if(para_vec[92] == 1){
+        points(x = gens, y = res_costs[,4], type = "l", col = cols[4], lwd = 2);
+    }
+    if(para_vec[93] == 1){
+        points(x = gens, y = res_costs[,5], type = "l", col = cols[5], lwd = 2);
+    }
+    legend(x = time_max + (time_max * 0.02), y = y_upper_limit, 
+           fill = c(cols[1:5], "purple", "orange"), horiz = FALSE,
+           legend = c("scaring", "culling", "castration", "feeding", 
+                      "helping", "tend crop", "kill crop"), bty = "n");
+    par(xpd = FALSE);
+    # ------------- Panel 6 (lower right)
+    res_acts <- matrix(data = 0, nrow = time_max, ncol = 7);
+    gens     <- 1:time_max;
+    for(j in 1:time_max){
+        for(k in 2:dim(ACTION[[j]])[3]){
+            res_acts[j,1] <- res_acts[j,1] + ACTION[[j]][1,8,k] - para_vec[96];
+            res_acts[j,2] <- res_acts[j,2] + ACTION[[j]][1,9,k] - para_vec[96];
+            res_acts[j,3] <- res_acts[j,3] + ACTION[[j]][1,10,k]- para_vec[96];
+            res_acts[j,4] <- res_acts[j,4] + ACTION[[j]][1,11,k]- para_vec[96];
+            res_acts[j,5] <- res_acts[j,5] + ACTION[[j]][1,12,k]- para_vec[96];
+            res_acts[j,6] <- res_acts[j,6] + ACTION[[j]][2,10,k]- para_vec[96];
+            res_acts[j,7] <- res_acts[j,7] + ACTION[[j]][2,11,k]- para_vec[96];
+        }
+    }
+    par(mar=c(4, 4.5, 1, 1));
+    y_upper_limit <- max_action + (0.25 * max_action);
+    plot(x = gens, y = gens, pch = 20, type = "n", lwd = 2, 
+         ylim = c(0, y_upper_limit), xlim = c(0, time_max), xlab = "Time Step", 
+         ylab = "Actions made", cex.lab = 1.25);
+    if(para_vec[89] == 1){
+        points(x = gens, y = res_acts[,1], type = "l", col = cols[1], lwd = 2);
+    }
+    if(para_vec[90] == 1){
+        points(x = gens, y = res_acts[,2], type = "l", col = cols[2], lwd = 2);
+    }
+    if(para_vec[91] == 1){
+        points(x = gens, y = res_acts[,3], type = "l", col = cols[3], lwd=2);
+    }
+    if(para_vec[92] == 1){
+        points(x=gens, y=res_acts[,4], type="l", col=cols[4], lwd=2);
+    }
+    if(para_vec[93] == 1){
+        points(x = gens, y = res_acts[,5], type = "l", col = cols[5], lwd = 2);
+    }
+    if(para_vec[94] == 1){
+        points(x = gens, y = res_acts[,6], type = "l", lty = "solid", 
+               col = "purple", lwd = 3);
+    }
+    if(para_vec[95] == 1){
+        points(x = gens, y = res_acts[,7], type = "l", lty = "solid", 
+               col = "orange", lwd = 3);
+    }
+}
 ```
 
 # Introduction
+
+Management of 
 
 - Broad paragraph about managing populations and conservation given uncertainty and conflict among stakeholders.
 
@@ -118,6 +341,9 @@ Next there will be some general explanation of what it is that each sub-model do
 
 ## Genetic Algorithm
 
+Game theory is the standard tool for understanding conflict bewteen rational agents, and is therefore the appropriate tool for modelling manager and stakeholder actions and to address issues of cooperation and conflict in conservation [@Colyvan2011; @Lee2012; @Kark2015; @Adami2016; @Tilman2016]. A game-theoretic approach is entirely compatible with agent-based modelling [@An2012, @Tesfatsion2017]. When modelled strategies are complex, machine learning techniques such as the use of genetic algorithms can be used to find adaptive strategies for games [e.g., @Balmann2000; @Tu2000; @Hamblin2013]. In keeping with the MSE approach [@Bunnefeld2011], GMSE does not attempt to find optimal strategies or solutions for managers or stakeholders. Instead, a genetic algorithm is used to find manager and stakeholder strategies that are well-adapted to achieving agent goals.
+
+
 - Brief introduction to the use of genetic algorithms, and the goal of using one in GMSE
 - Explain that the genetic algorithm is called in both the manager and user models to find strategic solutions to particular scenarios
 - Further explain that each agent (stakeholder or manager) is constrained to certain costs in allocating their actions or policy
@@ -127,15 +353,19 @@ Next there will be some general explanation of what it is that each sub-model do
 - List all of the output that the model is capable of producing -- i.e., all of the data from each model over all time steps
 - Explain that plots show the movement of resource, land allocation, resource population dynamics and population estimates, crop yield on a landscape, manager policy, and stakeholder actions
 
-# Some examples
+# An example of crop management
 
-## The default case of hunting management
-
+```{r, echo = TRUE}
+sim <- gmse(land_ownership = TRUE, stakeholders = 10, observe_type = 1, 
+            res_death_K = 2000, manage_target = 1000, RESOURCE_ini = 1000, 
+            user_budget = 5000, manager_budget = 5000, res_consume = 1, 
+            scaring = TRUE, fixed_mark = 50, fixed_recapt = 300, 
+            plotting = FALSE);
+```
 ```{r, echo = FALSE, fig.width = 7, fig.height = 8}
-sim <- gmse(plotting = FALSE);
-plot_gmse_results(res = sim$resource, obs = sim$observation, land = sim$land, 
-                  agents = sim$agents, paras = sim$paras, ACTION = sim$action, 
-                  COST = sim$cost);
+plot_gmse_results_vign(res = sim$resource, obs = sim$observation, 
+                       land = sim$land, agents = sim$agents, paras = sim$paras,
+                       ACTION = sim$action, COST = sim$cost);
 ```
 
 ## A case of resource management for farmers
