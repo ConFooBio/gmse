@@ -355,6 +355,8 @@ Game theory is the standard tool for understanding conflict bewteen rational age
 
 # An example of crop management
 
+Here we consider the example of a managed natural resources whose abundance affects a group of stakeholders by temporarily decreasing the value of stakeholder land. This scenario could be interpreted in multiple ways, such as a protected population of waterfowl that exploits agricultural lands causing a conservation conflict with farmers [e.g., @Tuvendal2015; @Fox2017a; @Fox2016a]. Managers in this example might want to keep the abundance of waterfowl at a target level, while farmers might want to minimise the damage to their crops inflicted by waterfowl. Using GMSE, we can simulate the dynamics of waterfowl, along with the continued monitoring and policy setting by managers, and the actions that farmers take to protect their crop yields given the constraints of policy. All parameter values for this simulation can be set with the `gmse()` function. Here we consider a population of waterfowl with an initial abundance and manager target abundance of 1000, but whose carrying capacity (applied to mortality) is 2000. These waterfowl will consume and destroy all crop yield upon arrival to a landscape cell. Managers estimate population size in each time step using mark-recapture techniques, and use their estimates to set costs of culling and scaring waterfowl for ten farmers. Farmers attempt to reduce the negative impact of waterfowl on the cropland that they own, working within the constraints of culling and scaring costs and their budget for performing these actions.
+
 ```{r, echo = TRUE}
 sim <- gmse(land_ownership = TRUE, stakeholders = 10, observe_type = 1, 
             res_death_K = 2000, manage_target = 1000, RESOURCE_ini = 1000, 
@@ -362,17 +364,50 @@ sim <- gmse(land_ownership = TRUE, stakeholders = 10, observe_type = 1,
             scaring = TRUE, fixed_mark = 50, fixed_recapt = 300, 
             plotting = FALSE);
 ```
+
+Parameters in `gmse()` not listed are set to default values. By plotting the output with `plot_gmse_results`, simulation results can be interpreted visually.
+
 ```{r, echo = FALSE, fig.width = 7, fig.height = 8}
 plot_gmse_results_vign(res = sim$resource, obs = sim$observation, 
                        land = sim$land, agents = sim$agents, paras = sim$paras,
                        ACTION = sim$action, COST = sim$cost);
 ```
 
+
+
+
+
+
 ## A case of resource management for farmers
 
 # Summary
 
 # References
+
+
+
+
+
+
+
+
+
+Fox and Madsen 2017, Tuvendal and Elmberg 2015; Fox et al. 2017
+
+Fox, A. D. and Madsen, J. 2017. Threatened species to super-abundance: The unexpected international implications of successful goose conservation. - Ambio 46: 179–187. 
+
+Fox, A. D. et al. 2017. Agriculture and herbivorous waterfowl: a review of the scientific basis for improved management. - Biol. Rev. Camb. Philos. Soc. 0: 00–00. 
+
+Tuvendal, M. and Elmberg, J. 2015. A Handshake between Markets and Hierarchies: Geese as an Example of Successful Collaborative Management of Ecosystem Services. - Sustainability 7: 15937–15954. 
+
+
+
+
+
+
+
+
+
 
 
 
