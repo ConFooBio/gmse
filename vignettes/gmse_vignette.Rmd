@@ -1,5 +1,5 @@
 ---
-title: "gmse: an R package for generalised management strategy evaluation"
+title: "GMSE: an R package for generalised management strategy evaluation"
 author: "A. Bradley Duthie, Jeremy J. Cusack, Roc&#0237;o Pozo, O. Sarobidy Rakotonarivo, and Nils Bunnefeld"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -235,6 +235,14 @@ plot_gmse_results_vign <- function(res, obs, land, agents, paras, ACTION, COST){
 }
 ```
 
+# Abstract
+
+1. FIXIT: General statment about population management and biodiversity, social-ecological complexity, uncertainty, etc.
+2. We present the R package `GMSE`, which generalises traditional Management Strategy Evaluation using genetic algorithms to simulate adaptive management scenarios under complex social-ecological interactions and uncertainty.
+3. FIXIT: `GMSE` is individual/agent-based and spatially explicit, and incorporates more social-ecological realism and uncertainty through mechanistic modelling than previous models
+4. FIXIT: We show how `GMSE` can be used to simulate a social-ecological system
+5. The R package `GMSE` is open source under GNU Public License; source code and documents are freely available on GitHub.
+
 # Introduction
 
 Management of 
@@ -242,6 +250,8 @@ Management of
 - Broad paragraph about managing populations and conservation given uncertainty and conflict among stakeholders.
 
 - Paragraph introducing adaptive management, then management strategy evaluation framework [@Bunnefeld2011]; introduce this *generalised* management strategy evaluation framework and R package as filling an important gap in tools available for modelling mangement.
+
+- Get uncertainty and stochasticity in here somehow (Nil's book)
 
 - More details about what types of problems *GMSE* was developed to solve and (very generally) how it can solve them through individual-based modelling and a game-theoretic approach that uses genetic algorithms to simulate manager and stakeholder decision making.
 
@@ -350,10 +360,49 @@ Game theory is the standard tool for understanding conflict bewteen rational age
 - Explain that the genetic algorithm is called in both the manager and user models to find strategic solutions to particular scenarios
 - Further explain that each agent (stakeholder or manager) is constrained to certain costs in allocating their actions or policy
 
-## Model output
+## `GMSE` arguments and output
 
+- Refer to table 1 for important inputs, and generally note that this is a range of different options that will be of interest to management.
 - List all of the output that the model is capable of producing -- i.e., all of the data from each model over all time steps
 - Explain that plots show the movement of resource, land allocation, resource population dynamics and population estimates, crop yield on a landscape, manager policy, and stakeholder actions
+
+
+|  Argument       | Default | Description                                                                                      |
+|-----------------|---------|--------------------------------------------------------------------------------------------------|
+|  time_max       |  100    | Maximum time steps in simulation                                                                 |
+|  land_dim_1     |  100    | Width of the landscape (horizontal cells)                                                        |
+|  land_dim_1     |  100    | Height of the landscape (vertical cells)                                                         |
+|  res_movement   |  1      |                                                                                                  |
+|  remove_pr      |  0      |                                                                                                  |
+|  lambda         |  0.3    |                                                                                                  |
+|  agent_view     |  10     |                                                                                                  |
+|  res_birth_K    |  10000  |                                                                                                  |
+|  res_death_K    |  600    |                                                                                                  |
+|  res_move_type  |  1      |                                                                                                  |
+|  observe_type   |  0      |                                                                                                  |
+|  fixed_mark     |  50     |                                                                                                  |
+|  fixed_recapt   |  150    |                                                                                                  |
+|  times_observe  |  8      |                                                                                                  |
+|  res_consume    |  0.5    |                                                                                                  |
+|  max_ages       |  5      |                                                                                                  |
+|  minimum_cost   |  10     |                                                                                                  |
+|  user_budget    |  1000   |                                                                                                  |
+|  manager_budget |  1000   |                                                                                                  |
+|  manage_target  |  300    |                                                                                                  |
+|  RESOURCE_ini   |  300    |                                                                                                  |
+|  scaring        |  FALSE  |                                                                                                  |
+|  culling        |  TRUE   |                                                                                                  |
+|  castration     |  FALSE  |                                                                                                  |
+|  feeding        |  FALSE  |                                                                                                  |
+|  help_offspring |  FALSE  |                                                                                                  |
+|  tend_crops     |  FALSE  |                                                                                                  |
+|  tend_crop_yld  |  FALSE  |                                                                                                  |
+|  kill_crops     |  FALSE  |                                                                                                  |
+|  stakeholders   |  4      |                                                                                                  |
+|  land_ownership |  FALSE  |                                                                                                  |
+|  manage_freq    |  1      |                                                                                                  |
+|  public_land    |  0      |                                                                                                  |
+
 
 # An example of crop management
 
@@ -381,12 +430,19 @@ plot_gmse_results_vign(res = sim$resource, obs = sim$observation,
 
 Figure 2 shows the landscape broken down by resource position and stakeholder ownership in the upper left and right hand panels, respectively. The waterfowl population fluctuates around the manager's target size of 1000, but the manager's estimate of population size deviates from its actual size due to uncertainty caused by the observation process (compare black and blue lines the middle left panel). Because the waterfowl have a direct negative effect on landscape yield, total landscape yield (orange line of the middle left panel), along with the yield of individual farmers (right middle panel), is low when waterfowl abundance is high, and vice versa.
 
-Only the estimates of population size from the observation model are available to the manager, so policy change at any time step is driven primarily by the deviation of the currently estimated population size from the manager's target and the actions of farmers in the previous time step. Hence, when the population size is estimated to be below (above) the manager's target, the manager increases (decreases) the cost of culling and decreases (increases) the cost of scaring. Because the manager does not know in advance how stakeholders will react to policy change, they assume a proportional response in total actions with respect to a change in cost (e.g., doubling the cost of culling will decrease stakeholder culling by $1/2$). Farmers responding to policy are interested only in mitigating waterfowl's exploitation of their crops, so they will either cull or scare to remove the waterfowl from their land, depending on which ever option is cheaper. This is reflected in the bottom left versus right panels of Figure 2; 
-- sentence about general trends
+Only the estimates of population size from the observation model are available to the manager, so policy change at any time step is driven primarily by the deviation of the currently estimated population size from the manager's target and the actions of farmers in the previous time step. Hence, when the population size is estimated to be below (above) the manager's target, the manager increases (decreases) the cost of culling and decreases (increases) the cost of scaring. Because the manager does not know in advance how stakeholders will react to policy change, they assume a proportional response in total actions with respect to a change in cost (e.g., doubling the cost of culling will decrease stakeholder culling by $1/2$). Farmers responding to policy are interested only in mitigating waterfowl's exploitation of their crops, so they will either cull or scare to remove the waterfowl from their land, depending on which option is more effective (i.e., cheaper). This is reflected in the bottom left versus right panels of Figure 2; when managers decrease culling costs relative to scaring, farmers respond with more total culling, and vice versa. Farmer decisions then affect waterfowl distribution and abundance, impacting future crop yield and policy.
 
-- paragraph about how we might change things to explore new questions.
+# Utility of GMSE simulations
 
-# Summary
+GMSE incorporates feedback between resource dynamcs, management policy, and stakeholder actions over time given multiple sources of uncertainty. By simulating complex systems of adaptive management in GMSE, it is possible to gain new insights into questions relevant to conservation. One obvious application of our software is to parameterise simulations with initial conditions similar to those from empirical populations of conservation interest. Running replicate simulations using empirically derived starting conditions could facilitate the prediction of key social-ecological outcomes (e.g., resource extinction, agricultural yield) given uncertainty, and the sensitivity of such outcomes to different management options (e.g., population target, policies available, observation methods, etc.), realised through results from replicate simulations, could inform management decisions. 
+
+Additionally, GMSE might be useful for developing adaptive management theory by allowing researchers to explore general questions concerning management *in silico* through simulation. Such questions might include the following: How is population persistence affected by management frequency or observation intensity? How does variation in stakeholder actions affect the distribution of resources or landscape properties? How do asymmetries in manager and stakeholder influence (i.e., budgets) affect resource dynamics? All of these questions can be explored through simulation using GMSE.
+
+# Conclusion and future development
+
+We have described the initial release of GMSE.
+
+The `GMSE` package is under further development to include additional features that will be of interest to conservation biologists.
 
 # References
 
