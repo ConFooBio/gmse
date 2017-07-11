@@ -372,36 +372,36 @@ Game theory is the standard tool for understanding conflict bewteen rational age
 |  time_max       |  100    | Maximum time steps in simulation                                                                 |
 |  land_dim_1     |  100    | Width of the landscape (horizontal cells)                                                        |
 |  land_dim_1     |  100    | Height of the landscape (vertical cells)                                                         |
-|  res_movement   |  1      |                                                                                                  |
-|  remove_pr      |  0      |                                                                                                  |
-|  lambda         |  0.3    |                                                                                                  |
-|  agent_view     |  10     |                                                                                                  |
-|  res_birth_K    |  10000  |                                                                                                  |
-|  res_death_K    |  600    |                                                                                                  |
-|  res_move_type  |  1      |                                                                                                  |
-|  observe_type   |  0      |                                                                                                  |
-|  fixed_mark     |  50     |                                                                                                  |
-|  fixed_recapt   |  150    |                                                                                                  |
-|  times_observe  |  8      |                                                                                                  |
-|  res_consume    |  0.5    |                                                                                                  |
-|  max_ages       |  5      |                                                                                                  |
-|  minimum_cost   |  10     |                                                                                                  |
-|  user_budget    |  1000   |                                                                                                  |
-|  manager_budget |  1000   |                                                                                                  |
-|  manage_target  |  300    |                                                                                                  |
-|  RESOURCE_ini   |  300    |                                                                                                  |
-|  scaring        |  FALSE  |                                                                                                  |
-|  culling        |  TRUE   |                                                                                                  |
-|  castration     |  FALSE  |                                                                                                  |
-|  feeding        |  FALSE  |                                                                                                  |
-|  help_offspring |  FALSE  |                                                                                                  |
-|  tend_crops     |  FALSE  |                                                                                                  |
-|  tend_crop_yld  |  FALSE  |                                                                                                  |
-|  kill_crops     |  FALSE  |                                                                                                  |
-|  stakeholders   |  4      |                                                                                                  |
-|  land_ownership |  FALSE  |                                                                                                  |
-|  manage_freq    |  1      |                                                                                                  |
-|  public_land    |  0      |                                                                                                  |
+|  res_movement   |  20     | Distance (cells) a resource can move in any direct (for movement rules, see res_move_type)       |
+|  remove_pr      |  0      | Density-indepdent probability of resource mortality during a time step                           |
+|  lambda         |  0.3    | Poisson rate parameter for resource offspring number produced during a time step                 |
+|  agent_view     |  10     | How far managers can see on the landscape for resource counting when observe_type = 0            |
+|  res_birth_K    |  10000  | Carrying capacity applied to the number of resources added during a time step                    |
+|  res_death_K    |  600    | Carrying capacity applied to the number of resources removed during a time step                  |
+|  res_move_type  |  1      | Type of resource movement (default up to res_movement cells in any direction)                    |
+|  observe_type   |  0      | Type of resource observation (default is density-based; i.e, counting a subset on the landscape) |
+|  fixed_mark     |  50     | For mark-recapture observation (observe_type = 1), number of marked resources                    |
+|  fixed_recapt   |  150    | For mark-recapture observation (observe_type = 1), number of recaptured resources                |
+|  times_observe  |  8      | For density-based observation (observe_type = 0), landscape subsets viewed during observation    |
+|  res_consume    |  0.5    | Proportion of a landscape cell's value reduced by the presence of a resource in a time step      |
+|  max_ages       |  5      | The maximum number of time steps a resource can persist before it is removed                     |
+|  minimum_cost   |  10     | The minimum cost of a stakeholder performing any action                                          |
+|  user_budget    |  1000   | A stakeholder's budget per time step for performing any number of actions                        |
+|  manager_budget |  1000   | A manager's budget per time step for setting policy                                              |
+|  manage_target  |  300    | The manager's target resource abundance                                                          |
+|  RESOURCE_ini   |  300    | The initial abundance of resources                                                               |
+|  scaring        |  FALSE  | Resource scaring is a policy option                                                              |
+|  culling        |  TRUE   | Resource culling is a policy option                                                              |
+|  castration     |  FALSE  | Resource castration is a policy option                                                           |
+|  feeding        |  FALSE  | Resource feeding (increases lambda) is a policy option                                           |
+|  help_offspring |  FALSE  | Resource helping (increases offspring number) is a policy option                                 |
+|  tend_crops     |  FALSE  | Stakeholders can increase landscape cell values                                                  |
+|  tend_crop_yld  |  FALSE  | Proportional increase per landscape cell from tend_crops action                                  |
+|  kill_crops     |  FALSE  | Stakeholders can decrease landscape cell values to zero                                          |
+|  stakeholders   |  4      | Number of stakeholders in the simulation                                                         |
+|  land_ownership |  FALSE  | Stakeholders own land and increase utility indirectly from landscape instead of resource use     |
+|  manage_freq    |  1      | Frequency (in time steps) with which managers enact policy                                       |
+|  public_land    |  0      | Proportion of land that is public (un-owned by stakeholders) if land_ownership = TRUE            |
 
 
 # An example of crop management
