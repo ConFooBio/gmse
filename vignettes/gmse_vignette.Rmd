@@ -245,11 +245,11 @@ plot_gmse_results_vign <- function(res, obs, land, agents, paras, ACTION, COST){
 
 # Introduction
 
-Management of 
+Many global natural resources, including the biodiversity on which critical ecosystem services depend, are in a state of severe decline [@Dirzo2014; @Hautier2015; @Ceballos2017; @OConnell2017]. Conservation of biodiversity can be complicated by the immediate need to allocate natural resources and land area for human food production, causing real or perceived conflicts between conservation and food security and creating a challenge for the management of many natural resources [@Redpath2015a]. Given an increasing human population [@Crist2017], the number and intensity of such conflicts are likely to increase into the twenty first century. Effective management tools are therefore needed for the long-term maintenance of natural resources under the rising demand for food production.
 
-- Broad paragraph about managing populations and conservation given uncertainty and conflict among stakeholders.
+To effectively manage natural resources, an adaptive approach allows managers to iteratively update their models of resource dynamics and respond flexibly to changing conditions. This approach can be further improved by considering all aspects of the social-ecological system being managed, including the dynamics of resources, monitoring, and the decision-making processes of managers and stakeholders [@Bunnefeld2011; Bunnefeld2014]. 
 
-- Paragraph introducing adaptive management, then management strategy evaluation framework [@Bunnefeld2011]; introduce this *generalised* management strategy evaluation framework and R package as filling an important gap in tools available for modelling mangement.
+- Paragraph introducing the uncertainty inherent to social-ecological systems. Introduce adaptive management, then management strategy evaluation framework [@Bunnefeld2011]; introduce this *generalised* management strategy evaluation framework and R package as filling an important gap in tools available for modelling mangement.
 
 - Get uncertainty and stochasticity in here somehow (Nil's book)
 
