@@ -67,7 +67,7 @@ plot_gmse_results_vign <- function(res, obs, land, agents, paras, ACTION, COST){
             max_cost <- gen_max_cost;
         }
     }
-    
+
     minK <- min(para_vec[6:7]);
     
     ymaxi    <- minK + (minK * (1 + res[[1]][1,10])); # Add for birth rate
@@ -237,27 +237,24 @@ plot_gmse_results_vign <- function(res, obs, land, agents, paras, ACTION, COST){
 
 # Abstract
 
-1. FIXIT: General statment about population management and biodiversity, social-ecological complexity, uncertainty, etc.
-2. We present the R package GMSE, which generalises traditional Management Strategy Evaluation using genetic algorithms to simulate adaptive management scenarios under complex social-ecological interactions and uncertainty.
-3. FIXIT: GMSE is individual/agent-based and spatially explicit, and incorporates more social-ecological realism and uncertainty through mechanistic modelling than previous models
-4. FIXIT: We show how GMSE can be used to simulate a social-ecological system
+1. Management strategy evaluation (MSE) is a powerful tool for simulating all aspects of natural resource mangement under conditions of uncertainty.
+2. We present the R package GMSE, which generalises MSE using a game-theoretic approach to simulate adaptive management scenarios under complex social-ecological interactions and uncertainty.
+3. GMSE is agent-based and spatially explicit, and incorporates a high degree of realism and uncertainty through mechanistic modelling of the social-ecological system.
+4. We show how GMSE can be used to simulate a social-ecological system, providing the example of management of a waterfowl population that exploits agricultural land, whose conservation is there in conflict with stakeholders.
 5. The R package GMSE is open source under GNU Public License; source code and documents are freely available on GitHub.
 
 # Introduction
 
 Many global natural resources, including the biodiversity on which critical ecosystem services depend, are in a state of severe decline [@Dirzo2014; @Hautier2015; @Ceballos2017; @OConnell2017]. Conservation of biodiversity can be complicated by the immediate need to allocate natural resources and land area for human food production, causing real or perceived conflicts between conservation and food security and creating a challenge for the management of many natural resources [@Redpath2015a]. Given an increasing human population [@Crist2017], the number and intensity of such conflicts are likely to increase into the twenty first century. Effective management tools are therefore needed for the long-term maintenance of natural resources under the rising demand for food production.
 
-To effectively manage natural resources, an adaptive approach allows managers to iteratively update their models of resource dynamics and respond flexibly to changing conditions. This approach can be further improved by considering all aspects of the social-ecological system being managed, including the dynamics of resources, monitoring, and the decision-making processes of managers and stakeholders [@Bunnefeld2011; Bunnefeld2014]. 
+To effectively manage natural resources, an adaptive approach allows managers to iteratively update their models of resource dynamics and respond flexibly to changing conditions. This approach can be further improved by considering all aspects of the social-ecological system being managed, including the dynamics of resources, monitoring, and the decision-making processes of managers and stakeholders [@Bunnefeld2011; @Bunnefeld2014]. Management strategy evaluation (MSE) is a modelling framework for simulating all of these aspects of resource management in a way that uniquely considers the uncertainties inherent to every stage of the management process [@Bunnefeld2011; @Punt2016]. Nevertheless, MSE remains limited in its ability to model human decision-making; manager decisions are typically based on simple rules, and stakeholder behaviour remains fixed over time instead of dynamically responding to changing resource availability and management decisions. Here we introduce a generalised management strategy evaluation (GMSE), which incorporates a game-theoretic perspective to model the goal-oriented, dynamic decision-making processes of managers and stakeholders. 
 
-- Paragraph introducing the uncertainty inherent to social-ecological systems. Introduce adaptive management, then management strategy evaluation framework [@Bunnefeld2011]; introduce this *generalised* management strategy evaluation framework and R package as filling an important gap in tools available for modelling mangement.
-
-- Get uncertainty and stochasticity in here somehow (Nil's book)
-
-- More details about what types of problems *GMSE* was developed to solve and (very generally) how it can solve them through individual-based modelling and a game-theoretic approach that uses genetic algorithms to simulate manager and stakeholder decision making.
+The GMSE R package is a flexible, highly mechanistic, agent-based modelling tool to simulate all aspects of natural resource management. GMSE considers a range of parameters to simulate resource dynamics and management policy options, and uses genetic algorithms to dynamically model manager and stake-holder decision-making. Genetic algorithms allow managers and stakeholders to find adaptive solutions to any simulated conditions given unique individual goals, allowing GMSE to model scenarios of conservation conflict. 
 
 # GMSE model structure
 
-Introduce the general mode of generalised management strategy evaluation (e.g., below), and the idea of simulating the package simulating the whole process of management.
+GMSE builds off of the traditional MSE framework, which includes four sub-models, each of which runs once in a single time step of the broader model (Figure 1). (1) A natural resources sub-model considers a population of discrete resources with individual traits (e.g., location, age) on a spatially-explicit landscape. This sub-model can include processes of resource birth, movement, interaction with the landscape, and death. The discrete nature of resource demographics naturally gives rise to stochasticity, and therefore uncertainty. Although the resource sub-model can interact with other sub-models, it is unique in not relying on them because ecological dynamics can be simulated in the absence of observation and management. (2) An observation sub-model simulates the process of data collection peformed by a manager to estimate resource abundance. Four types of data collection are permitted, including exhaustive resource counting on a subset of landscape cells [e.g., @Nuno2013], marking and recapturing a fixed number of resources, and exhaustive sampling of the whole landscape iteratively (during which resources might move). Imperfect sampling from all of these mechanisms of data collections generates observation uncertainty. (3) A manager sub-model simulates a manager's analysis of collected data to estimate resource abundance, then compares this estimated abundance with the manager's target abundance. Policy is developed by calling the genetic algorithm (see below), which works within a manager's constraints to find costs for stakeholder actions (e.g., culling, scaring, etc.) that minimise resource deviation from the target abundance, as informed by the predicted consequences of stakeholder actions and stakeholder action histories. After an adaptive policy is found, (4) a user sub-model is run that allows each stakeholder to perform actions that affect resources or landscape cells. Stakeholders respond to policy individually, each calling the genetic algorithm to find actions that maximise their own utilities (e.g., maximise resource use or landscape yield) within their imposed constraints. Once each stakeholder has found an adaptive strategy, stakeholder actions affect resources and landscape cells, feeding back into the resource sub-model.
+
 
 ********************************************************************************
 
@@ -313,52 +310,11 @@ text(x=90, y=52, labels="Off-take", srt=-90, cex = 1.0);
 
 ********************************************************************************
 
-Next there will be some general explanation of what it is that each sub-model does. The subfunction called in R will be mentioned, but with emphasis that the software user need not do this themselves. I will emphasise that each model can be built upon as desired to include more (or less) detail.
-
-## Natural resource model
-
-- Explanation of what's going on in the natural resource model
-- Individual-based
-- Spatially explicit
-- Models processes of birth, movement, interaction with landscape, and death, with simulated carrying capacities on birth or death. Note that the individual-based nature of the model naturally gives rise to some stochasticity.
-
-## Observation model
-
-- Explanation of what's going on in the observation model (manager does some observing)
-- Also individual based in the sense that the manager is an individual doing work
-- Four different types of observation are permitted
-    1. Density-based observation
-    2. Mark-recapture based observation
-    3. Linear transect based observation
-    4. Blocked transect based observation
-- Note that the observation model mimics the sampling of resources (i.e., data collection), but not data analysis.
-- Uncertainty in the observation model is created naturally by imposed sampling limitations and resource movement during sampling
-
-## Manager model
-
-- Explanation of what's going on in the manager model (analysing observations and setting policy)
-- Manager analyses data from one of the four observation models used, then estimates the resource abundance
-- Manager compares the estimated resource abundance with the target abundance, then uses the difference between the estimate and the target to develop a policy
-- Policy is developed by calling the genetic algorithm, which takes in parameters governing the manager's constraints on developing policy, the options of policy available for the manager to set (e.g., culling, scaring, etc.), and user actions from the previous time step to predict the consequences of the policy
-- The genetic algorithm finds an adaptive solution that is predicted to move the resource population abundance to its target
-- The new policy is set for all stakeholders in the user model
-
-## User model
-
-- Explanation of what's going on in the user model (users respond to policy with actions affecting resources and landscape)
-- Users take the new policy and then respond to it by attempting to maximise their utilities for resource abundance and landscape yield
-- Each user individually calls the genetic algorithm, which takes in parameters governing constraints on user actions and options of actions available to the user (e.g., culling, scaring, etc.) to predict the consequences of the user's actions on their own utility
-- The genetic finds an adaptive solution for each stakeholder
-- The resource and landscape are affected by the stakeholders taking actions
-
 ## Genetic Algorithm
 
-Game theory is the standard tool for understanding conflict bewteen rational agents, and is therefore the appropriate tool for modelling manager and stakeholder actions and to address issues of cooperation and conflict in conservation [@Colyvan2011; @Lee2012; @Kark2015; @Adami2016; @Tilman2016]. A game-theoretic approach is entirely compatible with agent-based modelling [@An2012, @Tesfatsion2017]. When modelled strategies are complex, machine learning techniques such as the use of genetic algorithms can be used to find adaptive strategies for games [e.g., @Balmann2000; @Tu2000; @Hamblin2013]. In keeping with the MSE approach [@Bunnefeld2011], GMSE does not attempt to find optimal strategies or solutions for managers or stakeholders. Instead, a genetic algorithm is used to find manager and stakeholder strategies that are well-adapted to achieving agent goals.
+Game theory is the standard tool for understanding conflict bewteen rational agents, and is therefore the appropriate tool for modelling manager and stakeholder actions and addressing issues of cooperation and conflict in conservation [@Colyvan2011; @Lee2012; @Kark2015; @Adami2016; @Tilman2016]. A game-theoretic approach is compatible with agent-based modelling [@An2012, @Tesfatsion2017], but given the number of possible strategies available to agents, identifying optimal strategies is often intractable. Instead, genetic algorithms, which mimic the process of natural selection (mutation, recombination, selection, replacement), are useful to find adaptive solutions for game strategies [e.g., @Balmann2000; @Tu2000; @Hamblin2013].
 
-
-- Brief introduction to the use of genetic algorithms, and the goal of using one in GMSE
-- Explain that the genetic algorithm is called in both the manager and user models to find strategic solutions to particular scenarios
-- Further explain that each agent (stakeholder or manager) is constrained to certain costs in allocating their actions or policy
+In keeping with the MSE approach [@Bunnefeld2011], GMSE does not attempt to find optimal strategies or solutions for managers or stakeholders. Instead, within each time step of a simulation (Figure 1), a new genetic algorithm is called for each agent to heuristically find strategies that are well-adapted to achieving agent goals. Hence for the manager and each stakeholder, a unique population with a random set of possible values affecting policy or actions, respectively, is initialised. In each generation of the genetic algorithm, strategies crossover and mutate; when this results in strategies that are over-budget, values are iteratively decreased at random until budget constraints are satisfied. A fitness function then evaluates each strategy in the population, and a tournament is used to select the next generation of strategies [@Hamblin2013]. The genetic algorithm terminates when a minimum number of generations has passed and the increase in the fittest strategy between the current and previous generation is below some threshold. The highest fitness strategy in the population then becomes the agent's strategy in the current time step.
 
 ## GMSE arguments and output
 
