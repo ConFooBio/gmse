@@ -312,15 +312,13 @@ text(x=90, y=52, labels="Off-take", srt=-90, cex = 1.0);
 
 ## Genetic Algorithm
 
-Game theory is the standard tool for understanding conflict bewteen rational agents, and is therefore the appropriate tool for modelling manager and stakeholder actions and addressing issues of cooperation and conflict in conservation [@Colyvan2011; @Lee2012; @Kark2015; @Adami2016; @Tilman2016]. A game-theoretic approach is compatible with agent-based modelling [@An2012, @Tesfatsion2017], but given the number of possible strategies available to agents, identifying optimal strategies is often intractable. Instead, genetic algorithms, which mimic the process of natural selection (mutation, recombination, selection, replacement), are useful to find adaptive solutions for game strategies [e.g., @Balmann2000; @Tu2000; @Hamblin2013].
+Game theory is the standard tool for understanding conflict bewteen rational agents, and is therefore the appropriate tool for modelling manager and stakeholder actions and addressing issues of cooperation and conflict in conservation [@Colyvan2011; @Lee2012; @Kark2015; @Adami2016; @Tilman2016]. A game-theoretic approach is compatible with agent-based modelling [@An2012; @Tesfatsion2017], but given the number of possible strategies available to agents, identifying optimal strategies is often intractable. Instead, genetic algorithms, which mimic the process of natural selection (mutation, recombination, selection, replacement), are useful to find adaptive solutions for game strategies [e.g., @Balmann2000; @Tu2000; @Hamblin2013].
 
 In keeping with the MSE approach [@Bunnefeld2011], GMSE does not attempt to find optimal strategies or solutions for managers or stakeholders. Instead, within each time step of a simulation (Figure 1), a new genetic algorithm is called for each agent to heuristically find strategies that are well-adapted to achieving agent goals. Hence for the manager and each stakeholder, a unique population with a random set of possible values affecting policy or actions, respectively, is initialised. In each generation of the genetic algorithm, strategies crossover and mutate; when this results in strategies that are over-budget, values are iteratively decreased at random until budget constraints are satisfied. A fitness function then evaluates each strategy in the population, and a tournament is used to select the next generation of strategies [@Hamblin2013]. The genetic algorithm terminates when a minimum number of generations has passed and the increase in the fittest strategy between the current and previous generation is below some threshold. The highest fitness strategy in the population then becomes the agent's strategy in the current time step.
 
 ## GMSE arguments and output
 
-- Refer to table 1 for important inputs, and generally note that this is a range of different options that will be of interest to management.
-- List all of the output that the model is capable of producing -- i.e., all of the data from each model over all time steps
-- Explain that plots show the movement of resource, land allocation, resource population dynamics and population estimates, crop yield on a landscape, manager policy, and stakeholder actions
+Simulations are run using the gmse() function, which offers a range of options for setting parameter values (see Table 1 for some select examples). Output of gmse() is an exhaustive list that includes all resources and observations, all manager and stakeholder decisions and actions, and all landscape properties in each time step of the simulation. Results are most easily interpreted visually, so a summary of simulation dynamics is plotted by default (the plot can also be called using the plot_gmse_results function). An example below shows how simulations are set and interprted.
 
 
 |  Argument       | Default | Description                                                                                      |
@@ -359,10 +357,11 @@ In keeping with the MSE approach [@Bunnefeld2011], GMSE does not attempt to find
 |  manage_freq    |  1      | Frequency (in time steps) with which managers enact policy                                       |
 |  public_land    |  0      | Proportion of land that is public (un-owned by stakeholders) if land_ownership = TRUE            |
 
+**Table 1:** Select parameter values for initialising generalised management strategy evaluation simulations
 
 # An example of crop management
 
-Here we consider the example of a managed natural resources whose abundance affects a group of stakeholders by temporarily decreasing the value of stakeholder land. This scenario could be interpreted in multiple ways; we consider a protected population of waterfowl that exploits agricultural land causing a conservation conflict with farmers [e.g., @Tuvendal2015; @Fox2017a; @Fox2016a]. Managers in this example might want to keep the abundance of waterfowl at a target level, while farmers might want to minimise the damage inflicted on their crops. Using GMSE, we can simulate waterfowl population dynamics, along with the continued monitoring and policy set by managers, and the actions that farmers take to protect their crop yields given the constraints of policy. All parameter values for this simulation can be set with the gmse() function. Here we consider a population of waterfowl with an initial abundance and manager target abundance of 1000, but whose carrying capacity (applied to mortality) is 2000. Waterfowl consume and destroy all crop yield upon arrival to a landscape cell. Managers estimate population size in each time step using mark-recapture techniques, and use their estimates to set costs of culling and scaring waterfowl (i.e., 'policy') for ten farmers. Farmers attempt to reduce the negative impact of waterfowl on the cropland that they own, working within the constraints of culling and scaring costs and their budget for performing these actions.
+Here we consider the example of a managed natural resources whose abundance affects a group of stakeholders by temporarily decreasing the value of stakeholder land. This scenario could be interpreted in multiple ways; we consider a protected population of waterfowl that exploits agricultural land causing a conservation conflict with farmers [e.g., @Tuvendal2015; @Fox2017a; @Fox2016a]. Managers in this example might want to keep the abundance of waterfowl at a target level, while farmers might want to minimise the damage inflicted on their crops. Using GMSE, we can simulate waterfowl population dynamics, along with the continued monitoring and policy set by managers, and the actions that farmers take to protect their crop yields given the constraints of policy. Here we consider a population of waterfowl with an initial abundance and manager target abundance of 1000, but whose carrying capacity (applied to mortality) is 2000. Waterfowl consume and destroy all crop yield upon arrival to a landscape cell. Managers estimate population size in each time step using mark-recapture techniques, and use their estimates to set costs of culling and scaring waterfowl (i.e., 'policy') for ten farmers. Farmers attempt to reduce the negative impact of waterfowl on the cropland that they own, working within the constraints of culling and scaring costs and their budget for performing these actions.
 
 ```{r, echo = TRUE}
 sim <- gmse(land_ownership = TRUE, stakeholders = 10, observe_type = 1, 
@@ -373,6 +372,12 @@ sim <- gmse(land_ownership = TRUE, stakeholders = 10, observe_type = 1,
 ```
 
 Parameters in gmse() not listed are set to default values. By plotting the output with plot_gmse_results, simulation results can be interpreted visually.
+
+```{r, eval = FALSE}
+plot_gmse_results(res = sim$resource, obs = sim$observation, land = sim$land, 
+                  agents = sim$agents, paras = sim$paras, ACTION = sim$action, 
+                  COST = sim$cost);
+```
 
 ********************************************************************************
 
@@ -399,22 +404,6 @@ Additionally, GMSE might be useful for developing adaptive management theory by 
 The GMSE package is under further development to include additional features that will be of interest to conservation biologists, managers, and the general public. Such features will include multiple (interacting) resource types and sub-types (e.g., structured populations), improved manager and stakeholder decision-making and prediction based on multiple time steps of simulation history, incorporation of empirical data (e.g., landscape features), and a browser-based graphical user interface. Additionally, future versions of GMSE will allow software users to take the place of managers or stakeholders in decision-making during simulations (replacing the genetic algorithm as desired), facilitating the collection of data to test sociological hypotheses and further improve the realism of the genetic algorithm (for a preliminary example of this, see the 'hunt' argument in the gmse() function). Code underlying GMSE is publicly available on GitHub < https://github.com/bradduthie/gmse > and highly modular, meaning that GMSE model components (black boxes in Figure 1) can be developed freely and independently, then integrated into the broader GMSE framework. The GMSE R package is therefore a versatile and collaborative tool with widespread applications for adaptive resource management.
 
 # References
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
