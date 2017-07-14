@@ -1,17 +1,17 @@
 ---
 title: "Generalised management strategy evaluation"
 author: "Brad Duthie"
-date: "`r format(Sys.time(), '%d %B, %Y')`"
+date: '`r format(Sys.time(), ''%d %B, %Y'')`'
 output:
-  html_document: default
-  pdf_document:
-    fig_caption: yes
   word_document:
     fig_caption: yes
     pandoc_args:
     - --csl
     - evolution.csl
     reference_docx: docx_template.docx
+  pdf_document:
+    fig_caption: yes
+  html_document: default
 header-includes:
 - \usepackage{amsmath}
 - \usepackage{natbib}
