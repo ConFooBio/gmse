@@ -4,12 +4,12 @@ author: A. Bradley Duthie, Jeremy J. Cusack, Roc&#0237;o Pozo, O. Sarobidy Rakot
   and Nils Bunnefeld
 date: '`r Sys.Date()`'
 output:
+  html_document: default
+  pdf_document:
+    fig_caption: yes
   word_document:
     fig_caption: yes
     reference_docx: docx_template.docx
-  pdf_document:
-    fig_caption: yes
-  html_document: default
 linestretch: 1
 header-includes:
 - \usepackage{natbib}
