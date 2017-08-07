@@ -251,20 +251,20 @@ plot_gmse_results_vign <- function(res, obs, land, agents, paras, ACTION, COST){
 Abstract
 ===================================================
 
-1. Management strategy evaluation (MSE) is a powerful tool for simulating all aspects of natural resource mangement under conditions of uncertainty.
-2. We present the R package GMSE, which generalises MSE using a game-theoretic approach to simulate adaptive management scenarios under complex social-ecological interactions and uncertainty.
-3. GMSE is agent-based and spatially explicit, and incorporates a high degree of realism and uncertainty through mechanistic modelling of the social-ecological system.
-4. We show how GMSE simulates a social-ecological system using the example of a waterfowl population that is adaptively managed; simulated waterfowl exploit agricultural land, causing conflict between conservation interests and the interest of stakeholders (farmers) in maximising crop yield.
+1. Management strategy evaluation (MSE) is a powerful tool for simulating all key aspects of natural resource management under conditions of uncertainty.
+2. We present the R package GMSE, which generalises MSE using a game-theoretic approach to simulate adaptive decision-making management scenarios between stakeholders with competing objectives under complex social-ecological interactions and uncertainty.
+3. GMSE is agent-based and spatially explicit, and incorporates a high degree of realism through mechanistic modelling of links and feedbacks among stakeholders and with the ecosystem.
+4. We show how GMSE simulates a social-ecological system using the example of a waterfowl population in an agricultural landscape that is adaptively managed; simulated waterfowl exploit agricultural land, causing conflict between conservation interests and the interest of food producers maximising their crop yield.
 5. The R package GMSE is open source under GNU Public License; source code and documents are freely available on GitHub.
 
 Introduction
 ===================================================
 
-Many global natural resources, including the biodiversity on which critical ecosystem services depend, are in a state of severe decline [@Dirzo2014; @Hautier2015; @Ceballos2017; @OConnell2017]. Conservation of biodiversity can be complicated by the immediate need to use natural resources and land area for human food production, causing real or perceived conflicts between conservation and food security and creating a challenge for the management of many natural resources [@Redpath2015a]. Given an increasing human population [@Crist2017], the number and intensity of such conflicts are likely to increase into the twenty first century. Effective management tools are therefore needed for the long-term maintenance of natural resources under the rising demand for food production.
+Many global natural resources, including the biodiversity on which critical ecosystem services depend, are in a state of severe decline [@Dirzo2014; @Hautier2015; @Ceballos2017; @OConnell2017]. Conservation of biodiversity can be complicated by the immediate need to use natural resources and land area for human food production, causing real or perceived conflicts between conservation and food security and creating a challenge for the management of many natural resources [@Redpath2015a]. Given an increasing human population [@Crist2017], the number and intensity of such conflicts are likely to increase into the twenty first century. Effective management tools are therefore needed for the long-term maintenance of natural resources under the rising demand for food production [@Fischer2017].
 
-To effectively manage natural resources, an adaptive approach allows managers to iteratively update their models of resource dynamics and respond flexibly to changing conditions. This approach is especially effective when considering all aspects of the social-ecological system being managed, including the dynamics of resources, monitoring, and the decision-making processes of managers and stakeholders [@Bunnefeld2011; @Bunnefeld2014]. Management strategy evaluation (MSE) is a modelling framework for simulating all of these aspects of resource management in a way that uniquely considers the uncertainties inherent to every stage of the management process [@Bunnefeld2011; @Punt2016]. Nevertheless, MSE remains limited in its ability to model human decision-making; manager decisions are typically based on simple rules, and stakeholder behaviour remains fixed over time instead of dynamically responding to changing resource availability and management decisions. Here we introduce a generalised management strategy evaluation (GMSE), which incorporates a game-theoretic perspective to model the goal-oriented, dynamic decision-making processes of managers and stakeholders. 
+To effectively manage natural resources, an adaptive approach allows managers to iteratively update their models of resource dynamics and respond flexibly to changing conditions [@Keith2011]. This approach is especially effective when considering all aspects of the social-ecological system being managed, including the dynamics of resources, monitoring, and the decision-making processes of stakeholders [e.g., managers, users; @Bunnefeld2011; @Bunnefeld2014]. Management strategy evaluation (MSE) is a modelling framework, first developed in fisheries, for simulating all of these aspects of resource management in a way that uniquely considers the uncertainties inherent to every stage of the management process [@Bunnefeld2011; @Punt2016]. Nevertheless, MSE remains limited in its ability to model human decision-making [@Fulton2011a; @Dichmont2017]; manager decisions are typically based on simple rules, and stakeholder behaviour remains fixed over time instead of dynamically responding to changing resource availability and management decisions [@Schluter2012; @Melbourne-Thomas2017]. Here we introduce a generalised management strategy evaluation (GMSE), which incorporates a game-theoretic perspective to model the goal-oriented, dynamic decision-making processes of managers and stakeholders. 
 
-The GMSE R package is a flexible, highly mechanistic, agent-based modelling tool to simulate all aspects of natural resource management. GMSE considers a range of parameters to simulate resource dynamics and management policy options, and uses genetic algorithms to dynamically model manager and stakeholder decision-making. Genetic algorithms allow managers and stakeholders to find adaptive solutions to any simulated conditions given unique agent goals, allowing GMSE to model scenarios of conservation conflict. 
+The GMSE R package is a flexible, highly mechanistic, agent-based modelling tool to simulate all key aspects of natural resource management. GMSE considers a range of parameters to simulate resource dynamics and management policy options, and uses genetic algorithms to dynamically model manager and stakeholder decision-making. Genetic algorithms allow managers and stakeholders to find adaptive solutions to any simulated conditions given unique agent goals, allowing GMSE to model scenarios of conservation conflict. 
 
 GMSE model structure
 ===================================================
@@ -326,7 +326,7 @@ arrows(x0=65, x1=70, y0=65, y1=70, lwd=2, length=0.075, code=3);
 text(x=50, y=90, labels="Policy", cex = 1.0);
 text(x=50, y=20, labels="Monitoring", cex = 1.0);
 text(x=10, y=48, labels="Indicators", srt=90, cex = 1.0);
-text(x=90, y=52, labels="Off-take", srt=-90, cex = 1.0);
+text(x=90, y=52, labels="Actions", srt=-90, cex = 1.0);
 ```
 
 
@@ -388,10 +388,10 @@ An example of resource management
 Here we consider the example of a managed natural resource whose abundance affects a group of stakeholders by temporarily decreasing the value of stakeholder land. This scenario could be interpreted in multiple ways; we consider a protected population of waterfowl that exploits agricultural land causing a conservation conflict with farmers [e.g., @Tuvendal2015; @Fox2016a; @Fox2017a]. Managers in this example might want to keep the abundance of waterfowl at a target level, while farmers might want to minimise the damage inflicted on their crops. Using GMSE, it is possible to simulate waterfowl population dynamics, along with the continued monitoring and policy set by managers, and the actions that farmers take to protect their crop yields given the constraints of policy. Here we consider a population of waterfowl with an initial abundance and manager target abundance of 1000, but whose carrying capacity (applied to mortality) is 2000. Waterfowl consume and destroy all crop yield upon arrival to a landscape cell. Managers estimate population size in each time step using mark-recapture techniques, and use their estimates to set costs of culling and scaring (non-lethal) waterfowl (i.e., 'policy') for ten farmers. Farmers attempt to reduce the negative impact of waterfowl on the cropland that they own, working within the constraints of culling and scaring costs and their budget for performing these actions.
 
 ```{r, echo = TRUE}
-sim <- gmse(land_ownership = TRUE, stakeholders = 10, observe_type = 1, 
+sim <- gmse(land_ownership = TRUE, stakeholders = 10, observe_type = 0, 
             res_death_K = 2000, manage_target = 1000, RESOURCE_ini = 1000, 
             user_budget = 5000, manager_budget = 5000, res_consume = 1, 
-            scaring = TRUE, fixed_mark = 50, fixed_recapt = 300, 
+            scaring = TRUE, times_observe = 1, agent_view = 10, 
             plotting = FALSE);
 ```
 
