@@ -19,52 +19,44 @@ sidebar <-   dashboardSidebar(
     useShinyjs(),
     sidebarMenu(id = "tab",
                 div(style = "background: rgb(60, 141, 188); height: 50px",
-                    p(icon("star-half-o"),"element-R", 
+                    p(icon("cogs"),"GMSE", 
                       style = "font-size: 200%; padding-left:50px;padding-top:5px")),
                 
                 menuItem("Global parameters", tabName = "start", 
-                         icon = icon("globe", class=menuIconClass), 
-                         badgeLabel="Step 1", badgeColor="blue"),
+                         icon = icon("globe", class=menuIconClass)),
                 
                 div(align="center"),
                 
                 menuItem("Resource model", tabName = "Standards", 
-                         icon = icon("thermometer-1", class=menuIconClass), 
-                         badgeLabel="Step 2", badgeColor="green"),
-                
-                uiOutput("renderProgress2"),
+                         icon = icon("tree", class=menuIconClass)),
                 
                 div(align="center"),
                 
                 menuItem("Observation model", tabName = "MachDrift", 
-                         icon = icon("binoculars", class=menuIconClass), 
-                         badgeLabel="Step 3", badgeColor="purple"),
+                         icon = icon("binoculars", class=menuIconClass)),
                 
                 div(align="center"),
                 
                 menuItem("Manager model", tabName = "Samples", 
-                         icon = icon("thermometer-3", class=menuIconClass), 
-                         badgeLabel="Step 4", badgeColor="maroon"),
+                         icon = icon("balance-scale", class=menuIconClass)),
                 
                 div(align="center"),
                 
                 menuItem("User model", tabName = "realign", 
-                         icon = icon("thermometer-4", class=menuIconClass), 
-                         badgeLabel="Step 5", badgeColor="orange"),
+                         icon = icon("users", class=menuIconClass)),
                 
                 div(align="center"),
                 
                 menuItem("Run simulation", tabName = "realign", 
-                         icon = icon("thermometer-4", class=menuIconClass), 
-                         badgeLabel="Go!", badgeColor="orange"),
+                         icon = icon("play", class=menuIconClass)),
                 
                 uiOutput("sim_output"),
                 
                 hr(style ="width: 70%; color: white; align: center"),
                 
-                menuItem("Plotting", icon = icon("line-chart"), tabName = "Config"),
+                menuItem(" Plotting", icon = icon("line-chart"), tabName = "Config"),
 
-                menuItem("Source code for app", icon = icon("file-code-o"),
+                menuItem("Source code for app", icon = icon("code"),
                          href = "https://github.com/bradduthie/gmse"
                 ),
                 div(uiOutput("Export"), style = "text-align: center")
@@ -179,7 +171,7 @@ body <- dashboardBody(
 
 # This function builds the fancy title at the top of the browser
 header <- dashboardHeader(
-    title = list(icon("star-half-o"),"element-R"), disable = TRUE, titleWidth = 260
+    title = list(icon("cogs"),"GMSE"), disable = TRUE, titleWidth = 260
 )
 
 
