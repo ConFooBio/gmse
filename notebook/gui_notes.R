@@ -68,13 +68,35 @@ sidebar <-   dashboardSidebar(
 body <- dashboardBody(
     tabItems(
         tabItem("global",
-
-                sliderInput("time",
-                            "Number of generations",
-                            min = 10,
-                            max = 200,
-                            step  = 10,
-                            value = 100)
+               
+                headerPanel(title = "Global GMSE parameters"),
+                
+                column(width = 6, offset = 0, style='padding:0px;',
+                
+                    hr(),
+                       
+                    sliderInput("time",
+                                "Number of generations",
+                                min = 10,
+                                max = 200,
+                                step  = 10,
+                                value = 100),
+                    
+                    sliderInput("land_dim_1",
+                                "X dimension length (in cells)",
+                                min = 10,
+                                max = 400,
+                                step = 10,
+                                value = 100),
+                    
+                    sliderInput("land_dim_2",
+                                "Y dimension length (in cells)",
+                                min = 10,
+                                max = 400,
+                                step = 10,
+                                value = 100)
+                
+                )
                 
         ),
         tabItem("resource",
@@ -129,24 +151,24 @@ ui <- dashboardPage(header, sidebar, body, skin = skin)
 # server <- function(input, output, session){}
 server <- function(input){
 
-    observe({
-        if(input$tab == "global"){
-            # LEFT OFF HERE ------------------------------------
-            output$start1 <-  renderUI({
-                fluidRow(
-                    box(
-                        background = "light-blue",
-                        height = 85,
-                        width = 12,
-                        column(9,
-                               div(h3(icon("cogs"),"Set the global parameters here"), style = "display: inline-block;")
-                        )
-                    )
-                )
-            })
-            
-        }
-    })
+    # observe({
+    #     if(input$tab == "global"){
+    #         # LEFT OFF HERE ------------------------------------
+    #         output$start1 <-  renderUI({
+    #             fluidRow(
+    #                 box(
+    #                     background = "light-blue",
+    #                     height = 85,
+    #                     width = 12,
+    #                     column(9,
+    #                            div(h3(icon("cogs"),"Set the global parameters here"), style = "display: inline-block;")
+    #                     )
+    #                 )
+    #             )
+    #         })
+    #         
+    #     }
+    # })
     
 }    
 
