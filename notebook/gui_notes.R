@@ -11,43 +11,43 @@ run_gmse <- function(){ # nocov start
 #skyn
 skin <- Sys.getenv("DASHBOARD_SKIN")
 skin <- tolower(skin)
-if (skin == "") skin <- "blue"
+if (skin == "") skin <- "green"
 
 menuIconClass <- "fa-lg" 
 # This makes the sidebar of options and settings (e.g., parameters)
 sidebar <-   dashboardSidebar(
     useShinyjs(),
     sidebarMenu(id = "tab",
-                div(style = "background: rgb(60, 141, 188); height: 50px",
+                div(style = "background: rgb(0, 100, 0); height: 50px",
                     p(icon("cogs"),"GMSE", 
                       style = "font-size: 200%; padding-left:50px;padding-top:5px")),
                 
-                menuItem("Global parameters", tabName = "start", 
+                menuItem("Global parameters", tabName = "global", 
                          icon = icon("globe", class=menuIconClass)),
                 
                 div(align="center"),
                 
-                menuItem("Resource model", tabName = "Standards", 
+                menuItem("Resource model", tabName = "resource", 
                          icon = icon("tree", class=menuIconClass)),
                 
                 div(align="center"),
                 
-                menuItem("Observation model", tabName = "MachDrift", 
+                menuItem("Observation model", tabName = "observation", 
                          icon = icon("binoculars", class=menuIconClass)),
                 
                 div(align="center"),
                 
-                menuItem("Manager model", tabName = "Samples", 
+                menuItem("Manager model", tabName = "manager", 
                          icon = icon("balance-scale", class=menuIconClass)),
                 
                 div(align="center"),
                 
-                menuItem("User model", tabName = "realign", 
+                menuItem("User model", tabName = "user", 
                          icon = icon("users", class=menuIconClass)),
                 
                 div(align="center"),
                 
-                menuItem("Run simulation", tabName = "realign", 
+                menuItem("Run simulation", tabName = "run", 
                          icon = icon("play", class=menuIconClass)),
                 
                 uiOutput("sim_output"),
@@ -70,17 +70,17 @@ body <- dashboardBody(
     includeCSS(system.file("www/elementR.css", package="elementR")),
     
     div(style = "min-height:100vh; min-width: (100vw - 230); display:flex",
-        div(style = "background-color: #666666; width: 31px;",
-            div(style = "background-color: #666666; width: 30px;position:fixed",
-                div(style = "background: rgb(60, 141, 188); height: 50px"),
+        div(style = "background-color: #726a5e; width: 31px;",
+            div(style = "background-color: #726a5e; width: 30px;position:fixed",
+                div(style = "background: rgb(0, 100, 0); height: 50px"),
                 uiOutput('ValidFlag1'),
-                div(style = "background-color: #666666; height: 30px; width: 30px"),
+                div(style = "background-color: #726a5e; height: 30px; width: 30px"),
                 uiOutput('ValidFlag2'),
-                div(style = "background-color: #666666; height: 30px; width: 30px"),
+                div(style = "background-color: #726a5e; height: 30px; width: 30px"),
                 uiOutput('ValidFlag3'),
-                div(style = "background-color: #666666; height: 30px; width: 30px"),
+                div(style = "background-color: #726a5e; height: 30px; width: 30px"),
                 uiOutput('ValidFlag4'),
-                div(style = "background-color: #666666; height: 30px; width: 30px"),
+                div(style = "background-color: #726a5e; height: 30px; width: 30px"),
                 uiOutput('ValidFlag5')
             )
         ),
@@ -115,7 +115,7 @@ body <- dashboardBody(
                 ), #eo tab MachDrift
                 
                 tabItem("Samples", style = "padding-right: 0px; padding-left: 0px",
-                        box(width = 12,background = "aqua", style = "background-color: #85735D;margin-bottom:10px",
+                        box(width = 12,background = "aqua", style = "background-color: #726a5e;margin-bottom:10px",
                             column(5,
                                    uiOutput("sample1")
                             ),
@@ -180,8 +180,55 @@ ui <- dashboardPage(header, sidebar, body, skin = skin)
 
 #The server function itself contains everything else to get the program to run
 # server <- function(input, output, session){}
-server <- function(){
-    hist(rnorm(1000));
+server <- function(input){
+
+    observe({
+        if(input$tab == "global"){
+            # LEFT OFF HERE ------------------------------------
+            output$start1 <-  renderUI({
+                fluidRow(
+                    box(
+                        background = "light-blue",
+                        height = 85,
+                        width = 12,
+                        column(9,
+                               div(h3(icon("cogs"),"Step 1. Create a new project or load an existing one"), style = "display: inline-block;")
+                        )
+                    )
+                )
+            })
+            
+            output$start2 <- renderUI({
+                
+                div(
+                    box(
+                        title = list(icon("folder-o"),"New Project"),
+                        width = 6,
+                        status="primary",
+                        solidHeader = TRUE,
+                        p("1. Choose the project folder"),
+                        actionButton("createProjButton", "Create your project !"),
+                        actionButton("runExampleNew", "Run Example")
+                    ),
+                    box(
+                        title = list(icon("folder"),"Load Project"),
+                        width = 6,
+                        solidHeader = TRUE,
+                        status="primary",
+                        p("1. Choose a project to load"),
+                        actionButton("loadProjButton","Load your Project"),
+                        actionButton("runExampleLoad", "Load Example")
+                        
+                    )
+                    
+                )
+                
+                
+                
+            })
+        }
+    
+    
 }    
 
 
