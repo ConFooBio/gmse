@@ -89,8 +89,7 @@ library(rhandsontable)
 
 > <a name="u-15-AUG-2017">Update: 15 AUG 2017</a>
 
-I am currently trying to get a handle on creating a GMSE GUI in shiny by looking at the [elementR package](https://github.com/charlottesirot/elementR). The authors of this package, to get their very impressive shiny application running, need to nest multiple sub-functions inside the long (10000+ line) `runElementR` function.
-
+I am currently trying to get a handle on creating a GMSE GUI in shiny by looking at the [elementR package](https://github.com/charlottesirot/elementR). The authors of this package, to get their very impressive shiny application running, need to nest multiple sub-functions inside the long (10000+ line) `runElementR` function. GMSE won't need to have this much code for the user interface -- I have figured out roughly how to make the input look good and functional in a browser, but a tricky part will be to link that input with the `gmse()` function paramters, then run things.
 
 > <a name="u-7-AUG-2017">Update: 7 AUG 2017</a>
 
