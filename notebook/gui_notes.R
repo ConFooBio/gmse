@@ -47,6 +47,11 @@ sidebar <-   dashboardSidebar(
                 
                 div(align="center"),
                 
+                menuItem("Genetic algorithm", tabName = "ga", 
+                         icon = icon("gamepad", class=menuIconClass)),
+                
+                div(align="center"),
+                
                 menuItem("Run simulation", tabName = "run", 
                          icon = icon("play", class=menuIconClass)),
                 
@@ -54,11 +59,17 @@ sidebar <-   dashboardSidebar(
                 
                 hr(style ="width: 70%; color: white; align: center"),
                 
-                menuItem("Plotting", icon = icon("line-chart"), tabName = "plotting"),
+                menuItem("Plotting", icon = icon("line-chart"), 
+                         tabName = "plotting"),
 
                 menuItem("Source code for app", icon = icon("code"),
                          href = "https://github.com/bradduthie/gmse"
                 ),
+                
+                menuItem("ConFooBio project", icon = icon("circle"),
+                         href = "https://sti-cs.org/confoobio/"
+                ),
+                
                 div(uiOutput("Export"), style = "text-align: center")
     )
 )
@@ -94,7 +105,14 @@ body <- dashboardBody(
                                 min = 10,
                                 max = 400,
                                 step = 10,
-                                value = 100)
+                                value = 100),
+                    
+                    sliderInput("public_land",
+                                "Proportion of land that is public",
+                                min = 0,
+                                max = 1,
+                                step = 0.01,
+                                value = 0)
                 
                 )
                 
@@ -108,12 +126,17 @@ body <- dashboardBody(
                     hr(),
                       
                     selectInput("res_move_type", "Resource movement type:",
-                               c("No movement"        = 0, 
-                                  "Uniform movement in any direction" = 1,
+                               c( "Uniform movement in any direction" = 1,
                                   "Poisson movement in x and y" = 2,
-                                  "Uniform movement in any direct N times" = 3)
+                                  "Uniform movement in any direct N times" = 3,
+                                  "No movement"        = 0)
                                ),
                 
+                    selectInput("res_death_type", "Resource death type:",
+                                c("Density-dependent" = 1, 
+                                  "Density-independent"   = 0)
+                    ),
+                    
                     sliderInput("res_movement",
                                 "Resource movement",
                                 min   = 10,
@@ -133,21 +156,28 @@ body <- dashboardBody(
                                 min   = 0,
                                 max   = 4,
                                 step  = 0.01,
-                                value = 0),
+                                value = 0.30),
                 
                     sliderInput("res_birth_K",
                                 "Carrying capacity applied to birth",
-                                min   = 0,
-                                max   = 1,
-                                step  = 0.01,
+                                min   = 10,
+                                max   = 10000,
+                                step  = 10,
                                 value = 0),
                 
                     sliderInput("res_death_K",
                                 "Carrying capacity applied to death",
+                                min   = 10,
+                                max   = 10000,
+                                step  = 10,
+                                value = 600),
+                    
+                    sliderInput("res_consume",
+                                "Proportion of landscape cell consumed",
                                 min   = 0,
                                 max   = 1,
                                 step  = 0.01,
-                                value = 0)
+                                value = 0.5)
                 
                 )
                 
@@ -160,10 +190,26 @@ body <- dashboardBody(
                        
                     hr(),
                 
-                    selectInput("variable", "Model type:",
-                                c("Numerical Model"        = "Numer", 
-                                  "Individual-Based Model" = "IBM")),
+                    selectInput("observe_type", "Type of observation made",
+                                c("Density-based observation"  = 0, 
+                                  "Mark-recapture sampling"    = 1,
+                                  "Sampling a linear transect" = 2,
+                                  "Sampling a block transect"  = 3)
+                    ),
                 
+                    selectInput("obs_move_type", 
+                                "Agent movement while observing",
+                                c("No movement"        = 0, 
+                                  "Uniform movement in any direction" = 1,
+                                  "Poisson movement in x and y" = 2,
+                                  "Uniform movement in any direct N times" = 3)
+                    ),
+                    
+                    radioButtons("res_move_obs", 
+                                 "Resources can move during observation",
+                                 c("True" = "TRUE",
+                                   "False" = "FALSE")),
+                    
                     sliderInput("agent_view",
                                 "Number of cells agents can view around them",
                                 min   = 1,
@@ -176,7 +222,50 @@ body <- dashboardBody(
                                 min   = 1,
                                 max   = 50,
                                 step  = 1,
-                                value = 50)
+                                value = 50),
+                    
+                    sliderInput("times_observe",
+                                "Times observations made (if density-based)",
+                                min   = 1,
+                                max   = 20,
+                                step  = 1,
+                                value = 8),
+                    
+                    sliderInput("fixed_mark",
+                                "Resources marked (if mark-recapture)",
+                                min   = 1,
+                                max   = 100,
+                                step  = 1,
+                                value = 50),
+                    
+                    sliderInput("fixed_recapt",
+                                "Resources recaptured (if mark-recapture)",
+                                min   = 10,
+                                max   = 200,
+                                step  = 5,
+                                value = 150),
+                    
+                    sliderInput("res_min_age",
+                                "Minimum age of resource observation",
+                                min   = 0,
+                                max   = 5,
+                                step  = 1,
+                                value = 0),
+                    
+                    sliderInput("max_ages",
+                                "Maximum age of a resource",
+                                min   = 1,
+                                max   = 50,
+                                step  = 1,
+                                value = 5),
+                    
+                    sliderInput("RESOURCE_ini",
+                                "Initial population size",
+                                min   = 10,
+                                max   = 10000,
+                                step  = 10,
+                                value = 300)
+                    
                 )
                 
         ),
@@ -186,25 +275,204 @@ body <- dashboardBody(
                 
                 column(width = 6, offset = 0, style='padding:0px;',
                        
-                       hr()
+                       hr(),
+                       
+                       sliderInput("manager_budget",
+                                   "Total manager policy-setting budget",
+                                   min   = 100,
+                                   max   = 10000,
+                                   step  = 100,
+                                   value = 1000),
+                       
+                       sliderInput("manage_target",
+                                   "Target size of the resource population",
+                                   min   = 10,
+                                   max   = 10000,
+                                   step  = 10,
+                                   value = 300),
+                       
+                       sliderInput("manage_freq",
+                                   "Frequency management decisions are enacted",
+                                   min   = 1,
+                                   max   = 5,
+                                   step  = 1,
+                                   value = 1)
                        
                 )
                 
         ),
         tabItem("user",
                 
-                headerPanel(title = "Manager model parameters"),
+                headerPanel(title = "User model parameters"),
+                
+                column(width = 6, offset = 0, style='padding:0px;',
+                       
+                       hr(),
+                       
+                       radioButtons("land_ownership", 
+                                    "Users own and act on their patch of land",
+                                    c("True" = "TRUE",
+                                      "False" = "FALSE")),
+                       
+                       radioButtons("move_agents", 
+                                    "Agents move in each time step",
+                                    c("True" = "TRUE",
+                                      "False" = "FALSE")),
+                       
+                       radioButtons("scaring", 
+                                    "Scaring is a possible action",
+                                    c("True" = "TRUE",
+                                      "False" = "FALSE")),
+                       
+                       radioButtons("culling", 
+                                    "Culling is a possible action",
+                                    c("True" = "TRUE",
+                                      "False" = "FALSE")),
+                       
+                       radioButtons("castration", 
+                                    "Castration is a possible action",
+                                    c("True" = "TRUE",
+                                      "False" = "FALSE")),
+                       
+                       radioButtons("feeding", 
+                                    "Feeding resources is a possible action",
+                                    c("True" = "TRUE",
+                                      "False" = "FALSE")),
+                       
+                       radioButtons("help_offspring", 
+                                    "Helping offspring is a possible action",
+                                    c("True" = "TRUE",
+                                      "False" = "FALSE")),
+                       
+                       radioButtons("kill_crops", 
+                                    "Destroying crops is a possible action",
+                                    c("True" = "TRUE",
+                                      "False" = "FALSE")),
+                       
+                       radioButtons("tend_crops", 
+                                    "Tending crops is a possible action",
+                                    c("True" = "TRUE",
+                                      "False" = "FALSE")),
+                       
+                       sliderInput("tend_crop_yld",
+                                   "Pr. additional yield from tending crops",
+                                   min   = 0,
+                                   max   = 2,
+                                   step  = 0.01,
+                                   value = 0.2),
+                       
+                       sliderInput("stakeholders",
+                                   "Total number of users",
+                                   min   = 1,
+                                   max   = 100,
+                                   step  = 1,
+                                   value = 4),
+                       
+                       sliderInput("minimum_cost",
+                                   "Minimum cost of agent actions",
+                                   min   = 1,
+                                   max   = 50,
+                                   step  = 1,
+                                   value = 10),
+                       
+                       sliderInput("user_budget",
+                                   "Total user action budget",
+                                   min   = 100,
+                                   max   = 10000,
+                                   step  = 100,
+                                   value = 1000)
+                       
+                )
+        ),
+        tabItem("ga",
+                
+                headerPanel(title = "Genetic algorithm parameters"),
+                
+                column(width = 6, offset = 0, style='padding:0px;',
+                       
+                       hr(),
+                       
+                       sliderInput("ga_popsize",
+                                   "Population size",
+                                   min   = 10,
+                                   max   = 200,
+                                   step  = 5,
+                                   value = 100),
+                       
+                       sliderInput("ga_mingen",
+                                   "Minimum generations per run",
+                                   min   = 10,
+                                   max   = 200,
+                                   step  = 5,
+                                   value = 40),
+                       
+                       sliderInput("converge_crit",
+                                   "Convergence criteria before termination",
+                                   min   = 1,
+                                   max   = 200,
+                                   step  = 1,
+                                   value = 100),
+                       
+                       sliderInput("ga_seedrep",
+                                   "Copies of agent used to seed population",
+                                   min   = 0,
+                                   max   = 100,
+                                   step  = 1,
+                                   value = 20),
+                       
+                       sliderInput("ga_sampleK",
+                                   "Random sample size in fitness tournament",
+                                   min   = 10,
+                                   max   = 100,
+                                   step  = 1,
+                                   value = 20),
+                       
+                       sliderInput("ga_chooseK",
+                                   "Selections from sample in tournament",
+                                   min   = 1,
+                                   max   = 20,
+                                   step  = 1,
+                                   value = 2),
+                       
+                       sliderInput("ga_mutation",
+                                   "Mutation rate",
+                                   min   = 0,
+                                   max   = 0.5,
+                                   step  = 0.01,
+                                   value = 0.1),
+                       
+                       sliderInput("ga_crossover",
+                                   "Crossover rate",
+                                   min   = 0,
+                                   max   = 0.5,
+                                   step  = 0.01,
+                                   value = 0.1)
+                       
+                )
+        ),
+        
+        tabItem("run",
+                
+                headerPanel(title = "Run a simulation"),
+                
+                column(width = 6, offset = 0, style='padding:0px;',
+                       
+                       hr(),
+                       
+                actionButton("go", "Run")
+                
+                )
+        ),
+        
+        tabItem("plotting",
+                
+                headerPanel(title = "Plotting options (coming soon)"),
                 
                 column(width = 6, offset = 0, style='padding:0px;',
                        
                        hr()
-                       
-                )
-        ),
-        tabItem("run",
-                actionButton("go", "Run"),
                 
-                actionButton("reset", "Reset")
+                )
         )
     )
 )
@@ -224,24 +492,13 @@ ui <- dashboardPage(header, sidebar, body, skin = skin)
 # server <- function(input, output, session){}
 server <- function(input){
 
-    # observe({
-    #     if(input$tab == "global"){
-    #         # LEFT OFF HERE ------------------------------------
-    #         output$start1 <-  renderUI({
-    #             fluidRow(
-    #                 box(
-    #                     background = "light-blue",
-    #                     height = 85,
-    #                     width = 12,
-    #                     column(9,
-    #                            div(h3(icon("cogs"),"Set the global parameters here"), style = "display: inline-block;")
-    #                     )
-    #                 )
-    #             )
-    #         })
-    #         
-    #     }
-    # })
+    randomVals <- eventReactive(input$go, {
+        runif(1000)
+    })
+    
+    output$plot <- renderPlot({
+        hist(randomVals())
+    })
     
 }    
 
