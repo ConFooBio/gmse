@@ -59,7 +59,7 @@ sidebar <-   dashboardSidebar(
                 
                 hr(style ="width: 70%; color: white; align: center"),
                 
-                menuItem("Plotting", icon = icon("line-chart"), 
+                menuItem("Results", icon = icon("line-chart"), 
                          tabName = "plotting"),
 
                 menuItem("Source code for app", icon = icon("code"),
@@ -460,16 +460,17 @@ body <- dashboardBody(
                     hr(),
                        
                     actionButton("go", "Run"),
-                    numericInput("n", "n", 50),
-                    fluidRow(
-                        box(plotOutput("plot1", height = 800, width = 600))
-                    )
+                    numericInput("n", "n", 50)
                 
                 )
         ),
         
         tabItem("plotting",
+                
+                headerPanel(title = "Simulation output"),
 
+                hr(),
+                
                 plotOutput("plot1", height = 800, width = 600)
         )
         
@@ -503,9 +504,6 @@ server <- function(input, output){
 
 
 # The app is called with the below
-######################
-######## CALL shinyApp
-######################
 app <- shinyApp(ui, server)
     runApp(app, launch.browser = TRUE)
 } #
