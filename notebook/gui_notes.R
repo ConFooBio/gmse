@@ -457,23 +457,22 @@ body <- dashboardBody(
                 
                 column(width = 6, offset = 0, style='padding:0px;',
                        
-                       hr(),
+                    hr(),
                        
-                actionButton("go", "Run")
+                    actionButton("go", "Run"),
+                    numericInput("n", "n", 50),
+                    fluidRow(
+                        box(plotOutput("plot1", height = 800, width = 600))
+                    )
                 
                 )
         ),
         
         tabItem("plotting",
-                
-                headerPanel(title = "Plotting options (coming soon)"),
-                
-                column(width = 6, offset = 0, style='padding:0px;',
-                       
-                       hr()
-                
-                )
+
+                plotOutput("plot1", height = 800, width = 600)
         )
+        
     )
 )
 
@@ -490,13 +489,13 @@ ui <- dashboardPage(header, sidebar, body, skin = skin)
 
 #The server function itself contains everything else to get the program to run
 # server <- function(input, output, session){}
-server <- function(input){
+server <- function(input, output){
 
     randomVals <- eventReactive(input$go, {
-        runif(1000)
+        runif(input$n)
     })
     
-    output$plot <- renderPlot({
+    output$plot1 <- renderPlot({
         hist(randomVals())
     })
     
