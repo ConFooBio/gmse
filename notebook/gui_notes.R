@@ -1,14 +1,14 @@
-# Relevant functions from elementR that might help
-# These go *within* the main shiny function
+library(shiny)
+library(shinydashboard)
+library(shinyjs)
+library(GMSE)
 
+# Calling the function below will call the gmse function in a browser
 
+gmse_gui <- function(){ 
 
+#-------------------------------------------------------------------------------
 
-gmse_gui <- function(){ # nocov start
-
-
-
-#skyn
 skin <- Sys.getenv("DASHBOARD_SKIN")
 skin <- tolower(skin)
 if (skin == "") skin <- "green"
@@ -75,7 +75,6 @@ sidebar <-   dashboardSidebar(
 )
 
 
-
 body <- dashboardBody(
     tabItems(
         tabItem("global",
@@ -126,23 +125,23 @@ body <- dashboardBody(
                     hr(),
                       
                     selectInput("res_move_type", "Resource movement type:",
-                               c( "Uniform movement in any direction" = 1,
-                                  "Poisson movement in x and y" = 2,
-                                  "Uniform movement in any direct N times" = 3,
-                                  "No movement"        = 0)
+                               c( "Uniform movement in any direction" = "1",
+                                  "Poisson movement in x and y" = "2",
+                                  "Uniform movement in any direct N times"= "3",
+                                  "No movement"        = "0")
                                ),
                 
                     selectInput("res_death_type", "Resource death type:",
-                                c("Density-dependent" = 1, 
-                                  "Density-independent"   = 0)
+                                c("Density-dependent" = "1", 
+                                  "Density-independent"   = "0")
                     ),
                     
                     sliderInput("res_movement",
                                 "Resource movement",
-                                min   = 10,
-                                max   = 200,
-                                step  = 10,
-                                value = 100),
+                                min   = 0,
+                                max   = 50,
+                                step  = 1,
+                                value = 20),
                 
                     sliderInput("remove_pr",
                                 "Density-independent resource death",
@@ -151,7 +150,7 @@ body <- dashboardBody(
                                  step  = 0.01,
                                  value = 0),                
                 
-                    sliderInput("lambda",
+                    sliderInput("lambda_gr",
                                 "Resource growth rate",
                                 min   = 0,
                                 max   = 4,
@@ -191,18 +190,18 @@ body <- dashboardBody(
                     hr(),
                 
                     selectInput("observe_type", "Type of observation made",
-                                c("Density-based observation"  = 0, 
-                                  "Mark-recapture sampling"    = 1,
-                                  "Sampling a linear transect" = 2,
-                                  "Sampling a block transect"  = 3)
+                                c("Density-based observation"  = "0", 
+                                  "Mark-recapture sampling"    = "1",
+                                  "Sampling a linear transect" = "2",
+                                  "Sampling a block transect"  = "3")
                     ),
                 
                     selectInput("obs_move_type", 
                                 "Agent movement while observing",
-                                c("No movement"        = 0, 
-                                  "Uniform movement in any direction" = 1,
-                                  "Poisson movement in x and y" = 2,
-                                  "Uniform movement in any direct N times" = 3)
+                                c("No movement"        = "0", 
+                                  "Uniform movement in any direction" = "1",
+                                  "Poisson movement in x and y" = "2",
+                                  "Uniform movement in any direct N times"= "3")
                     ),
                     
                     radioButtons("res_move_obs", 
@@ -466,11 +465,11 @@ body <- dashboardBody(
         
         tabItem("plotting",
                 
-                headerPanel(title = "Simulation output"),
+                headerPanel(title = "Simulation output (please be patient)"),
 
                 hr(),
                 
-                plotOutput("plot1", height = 800, width = 600)
+                plotOutput("plot1", height = 900, width = 700)
         )
         
     )
@@ -492,9 +491,9 @@ server <- function(input, output){
         gmse(time_max       = input$time,
              land_dim_1     = input$land_dim_1,
              land_dim_2     = input$land_dim_2,
-             res_movement   = 20,
-             remove_pr      = 0.0,
-             lambda         = 0.30,
+             res_movement   = input$res_movement,
+             remove_pr      = input$remove_pr,
+             lambda         = input$lambda_gr,
              agent_view     = 10,
              agent_move     = 50,
              res_birth_K    = 10000,
@@ -509,7 +508,7 @@ server <- function(input, output){
              times_observe  = 8,
              obs_move_type  = 1,
              res_min_age    = 0,
-             res_move_obs   = TRUE,
+             res_move_obs   = 1,
              Euclidean_dist = FALSE,
              plotting       = FALSE,
              hunt           = FALSE,
@@ -522,24 +521,24 @@ server <- function(input, output){
              ga_chooseK     = 2,
              ga_mutation    = 0.1,
              ga_crossover   = 0.1,
-             move_agents    = TRUE,
+             move_agents    = 1,
              max_ages       = 5,
              minimum_cost   = 10,
              user_budget    = 1000,
              manager_budget = 1000,
              manage_target  = 300,
              RESOURCE_ini   = 300,
-             scaring        = FALSE,
-             culling        = TRUE,
-             castration     = FALSE,
-             feeding        = FALSE,
-             help_offspring = FALSE,
-             tend_crops     = FALSE,
-             tend_crop_yld  = 0.2,
-             kill_crops     = FALSE,
+             scaring        = 1,
+             culling        = 1,
+             castration     = 1,
+             feeding        = 1,
+             help_offspring = 1,
+             tend_crops     = 1,
+             tend_crop_yld  = 1,
+             kill_crops     = 1,
              stakeholders   = 4,
              manage_caution = 1,
-             land_ownership = FALSE,
+             land_ownership = 1,
              manage_freq    = 1,
              converge_crit  = 100,
              manager_sense  = 0.1,
@@ -562,27 +561,9 @@ server <- function(input, output){
 # The app is called with the below
 app <- shinyApp(ui, server)
     runApp(app, launch.browser = TRUE)
-} #
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#-------------------------------------------------------------------------------
+}
 
 
 
