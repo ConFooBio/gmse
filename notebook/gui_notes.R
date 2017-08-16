@@ -101,32 +101,105 @@ body <- dashboardBody(
         ),
         tabItem("resource",
                 
-                selectInput("variable", "Model type:",
-                            c("Numerical Model"        = "Numer", 
-                              "Individual-Based Model" = "IBM")),
+                headerPanel(title = "Resource model parameters"),
                 
-                sliderInput("time",
-                            "Number of generations",
-                            min = 10,
-                            max = 200,
-                            step  = 10,
-                            value = 100),
+                column(width = 6, offset = 0, style='padding:0px;',
+                       
+                    hr(),
+                      
+                    selectInput("res_move_type", "Resource movement type:",
+                               c("No movement"        = 0, 
+                                  "Uniform movement in any direction" = 1,
+                                  "Poisson movement in x and y" = 2,
+                                  "Uniform movement in any direct N times" = 3)
+                               ),
                 
-                sliderInput("N_initial",
-                            "Initial prey density",
-                            min   = 0,
-                            max   = 1,
-                            step  = 0.01,
-                            value = 0.5)
+                    sliderInput("res_movement",
+                                "Resource movement",
+                                min   = 10,
+                                max   = 200,
+                                step  = 10,
+                                value = 100),
+                
+                    sliderInput("remove_pr",
+                                "Density-independent resource death",
+                                 min   = 0,
+                                 max   = 1,
+                                 step  = 0.01,
+                                 value = 0),                
+                
+                    sliderInput("lambda",
+                                "Resource growth rate",
+                                min   = 0,
+                                max   = 4,
+                                step  = 0.01,
+                                value = 0),
+                
+                    sliderInput("res_birth_K",
+                                "Carrying capacity applied to birth",
+                                min   = 0,
+                                max   = 1,
+                                step  = 0.01,
+                                value = 0),
+                
+                    sliderInput("res_death_K",
+                                "Carrying capacity applied to death",
+                                min   = 0,
+                                max   = 1,
+                                step  = 0.01,
+                                value = 0)
+                
+                )
+                
         ),
         tabItem("observation",
-                "Sub-item 1 tab content"
+                
+                headerPanel(title = "Observation model parameters"),
+                
+                column(width = 6, offset = 0, style='padding:0px;',
+                       
+                    hr(),
+                
+                    selectInput("variable", "Model type:",
+                                c("Numerical Model"        = "Numer", 
+                                  "Individual-Based Model" = "IBM")),
+                
+                    sliderInput("agent_view",
+                                "Number of cells agents can view around them",
+                                min   = 1,
+                                max   = 50,
+                                step  = 1,
+                                value = 10),
+                
+                    sliderInput("agent_move",
+                                "Number of cells agents can move",
+                                min   = 1,
+                                max   = 50,
+                                step  = 1,
+                                value = 50)
+                )
+                
         ),
         tabItem("manager",
-                "Sub-item 2 tab content"
+                
+                headerPanel(title = "Manager model parameters"),
+                
+                column(width = 6, offset = 0, style='padding:0px;',
+                       
+                       hr()
+                       
+                )
+                
         ),
         tabItem("user",
-                "Sub-item 2 tab content"
+                
+                headerPanel(title = "Manager model parameters"),
+                
+                column(width = 6, offset = 0, style='padding:0px;',
+                       
+                       hr()
+                       
+                )
         ),
         tabItem("run",
                 actionButton("go", "Run"),
