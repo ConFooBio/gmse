@@ -4,7 +4,7 @@
 
 
 
-run_gmse <- function(){ # nocov start
+gmse_gui <- function(){ # nocov start
 
 
 
@@ -19,8 +19,8 @@ sidebar <-   dashboardSidebar(
     useShinyjs(),
     sidebarMenu(id = "tab",
                 div(style = "background: rgb(0, 100, 0); height: 50px",
-                    p(icon("cogs"),"GMSE", 
-                      style = "font-size: 200%; padding-left:50px;padding-top:5px")),
+                 p(icon("cogs"),"GMSE", 
+                 style = "font-size: 200%; padding-left:50px;padding-top:5px")),
                 
                 menuItem("Global parameters", tabName = "global", 
                          icon = icon("globe", class=menuIconClass)),
@@ -459,8 +459,7 @@ body <- dashboardBody(
                        
                     hr(),
                        
-                    actionButton("go", "Run"),
-                    numericInput("n", "n", 50)
+                    actionButton("go", "Run Simulation Now")
                 
                 )
         ),
@@ -477,13 +476,10 @@ body <- dashboardBody(
     )
 )
 
-
-
 # This function builds the fancy title at the top of the browser
 header <- dashboardHeader(
     title = list(icon("cogs"),"GMSE"), disable = TRUE, titleWidth = 260
 )
-
 
 #The below calls the user environment (I assume in the normal shiny way)
 ui <- dashboardPage(header, sidebar, body, skin = skin)
@@ -492,12 +488,72 @@ ui <- dashboardPage(header, sidebar, body, skin = skin)
 # server <- function(input, output, session){}
 server <- function(input, output){
 
-    randomVals <- eventReactive(input$go, {
-        runif(input$n)
+    run_gmse <- eventReactive(input$go, {
+        gmse(time_max       = input$time,
+             land_dim_1     = input$land_dim_1,
+             land_dim_2     = input$land_dim_2,
+             res_movement   = 20,
+             remove_pr      = 0.0,
+             lambda         = 0.30,
+             agent_view     = 10,
+             agent_move     = 50,
+             res_birth_K    = 10000,
+             res_death_K    = 600,
+             edge_effect    = 1,
+             res_move_type  = 1,
+             res_birth_type = 2,
+             res_death_type = 2,
+             observe_type   = 0,
+             fixed_mark     = 50,
+             fixed_recapt   = 150,
+             times_observe  = 8,
+             obs_move_type  = 1,
+             res_min_age    = 0,
+             res_move_obs   = TRUE,
+             Euclidean_dist = FALSE,
+             plotting       = FALSE,
+             hunt           = FALSE,
+             start_hunting  = 95,
+             res_consume    = 0.5,
+             ga_popsize     = 100,
+             ga_mingen      = 40,
+             ga_seedrep     = 20,
+             ga_sampleK     = 20,
+             ga_chooseK     = 2,
+             ga_mutation    = 0.1,
+             ga_crossover   = 0.1,
+             move_agents    = TRUE,
+             max_ages       = 5,
+             minimum_cost   = 10,
+             user_budget    = 1000,
+             manager_budget = 1000,
+             manage_target  = 300,
+             RESOURCE_ini   = 300,
+             scaring        = FALSE,
+             culling        = TRUE,
+             castration     = FALSE,
+             feeding        = FALSE,
+             help_offspring = FALSE,
+             tend_crops     = FALSE,
+             tend_crop_yld  = 0.2,
+             kill_crops     = FALSE,
+             stakeholders   = 4,
+             manage_caution = 1,
+             land_ownership = FALSE,
+             manage_freq    = 1,
+             converge_crit  = 100,
+             manager_sense  = 0.1,
+             public_land    = 0
+        )
+
     })
     
     output$plot1 <- renderPlot({
-        hist(randomVals())
+        sim <- run_gmse();
+        plot_gmse_results(res = sim$resource, obs = sim$observation, 
+                          land = sim$land, agents = sim$agents, 
+                          paras = sim$paras, ACTION = sim$action, 
+                          COST = sim$cost);
     })
     
 }    
