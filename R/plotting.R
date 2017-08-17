@@ -543,7 +543,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
 #'observe_type = 0);
 #'}
 #'@export
-plot_gmse_results <- function(res, obs, land, agents, paras, ACTION, COST){
+plot_gmse_results1 <- function(res, obs, land, agents, paras, ACTION, COST){
     
     para_vec <- paras[1,]
     
@@ -628,15 +628,18 @@ plot_gmse_results <- function(res, obs, land, agents, paras, ACTION, COST){
             lci      <- c(lci, analysis$lci);
             uci      <- c(uci, analysis$uci);
         }
-        for(stakeholder in 1:dim(ages)[2]){
-            max_yield   <- sum(land3 == stakeholder);
-            agent_yield <- rep(x = NA, max_time);
-            if(max_yield > 0 & para_vec[104] > 0){
-                agent_yield <- 100 * (ages[,stakeholder] / max_yield);
-            }
+    }
+    for(stakeholder in 1:dim(ages)[2]){
+        max_yield   <- sum(land3 == stakeholder);
+        agent_yield <- rep(x = NA, max_time);
+        if(max_yield > 0 & para_vec[104] > 0){
+            agent_yield <- 100 * (ages[,stakeholder] / max_yield);
+        }
+        if(para_vec[104] > 0){
             stky[[stakeholder]] <- agent_yield;
         }
     }
+    
     if(case > 1){
         est <- paras[,100];
     }
