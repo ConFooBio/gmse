@@ -1,10 +1,17 @@
-library(shiny)
-library(shinydashboard)
-library(shinyjs)
-library(GMSE)
-
-# Calling the function below will call the gmse function in a browser
-
+#' GMSE GUI function
+#' 
+#' The gmse_gui function will call a browser-based graphical user interface 
+#' (GUI) for the gmse function. The GUI will run simulations for a limited range
+#' of parameter values and present results as plots.
+#'
+#'@examples
+#'sim <- gmse_gui();
+#'@useDynLib GMSE
+#'@importFrom grDevices topo.colors
+#'@importFrom graphics abline axis image mtext par plot points polygon
+#'@importFrom stats rnorm rpois
+#'@importFrom shiny shinyjs shinydashboard
+#'@export
 gmse_gui <- function(){ 
 
 #-------------------------------------------------------------------------------
