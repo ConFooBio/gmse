@@ -3,8 +3,8 @@ title: gmse_gui
 account: bradduthie
 server: shinyapps.io
 appId: 205319
-bundleId: 943146
+bundleId: 944303
 url: https://bradduthie.shinyapps.io/gmse_gui/
-when: 1502900075.48214
+when: 1502978084.999
 asMultiple: FALSE
 asStatic: FALSE
