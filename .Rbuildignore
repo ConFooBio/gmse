@@ -3,3 +3,4 @@
 notebook*
 vignettes*
 tests/testthat/test-make_gmse.R
+R/gmse_gui/*
