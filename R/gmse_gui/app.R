@@ -3,6 +3,11 @@ library(shinydashboard)
 library(shinyjs)
 library(GMSE)
 
+################################################################################
+# Note: This code is for uploading to the shiny server, the gui called from the
+# GMSE is located in the gmse_gui.R file.
+################################################################################
+
 skin <- Sys.getenv("DASHBOARD_SKIN")
 skin <- tolower(skin)
 if (skin == "") skin <- "green"
@@ -53,7 +58,7 @@ sidebar <-   dashboardSidebar(
                 
                 hr(style ="width: 70%; color: white; align: center"),
                 
-                menuItem("Results", icon = icon("line-chart"), 
+                menuItem("General results", icon = icon("line-chart"), 
                          tabName = "plotting"),
                 
                 menuItem("Source code for app", icon = icon("code"),
@@ -285,7 +290,7 @@ body <- dashboardBody(
                                    value = 300),
                        
                        sliderInput("manage_freq",
-                                   "Management frequency (every N years)",
+                                   "Manage frequency (once per N time steps)",
                                    min   = 1,
                                    max   = 5,
                                    step  = 1,
@@ -477,6 +482,8 @@ header <- dashboardHeader(
 #The below calls the user environment (I assume in the normal shiny way)
 ui <- dashboardPage(header, sidebar, body, skin = skin)
 
+#The server function itself contains everything else to get the program to run
+# server <- function(input, output, session){}
 server <- function(input, output){
     
     run_gmse <- eventReactive(input$go, {
@@ -547,7 +554,7 @@ server <- function(input, output){
                           COST = sim$cost);
     })
     
-}
+}    
 
 # Run the application 
 shinyApp(ui = ui, server = server)

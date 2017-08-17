@@ -7,12 +7,19 @@
 #'@return A browser should immediately open with the gmse graphical user
 #'interface
 #'@examples
+#'\dontrun{
 #'sim <- gmse_gui();
+#'}
 #'@useDynLib GMSE
 #'@importFrom grDevices topo.colors
 #'@importFrom graphics abline axis image mtext par plot points polygon
 #'@importFrom stats rnorm rpois
-#'@importFrom shiny shinyjs shinydashboard
+#'@importFrom shiny div p icon headerPanel column hr sliderInput selectInput
+#'@importFrom shiny radioButtons actionButton plotOutput eventReactive runApp
+#'@importFrom shiny shinyApp renderPlot uiOutput
+#'@importFrom shinydashboard dashboardSidebar sidebarMenu menuItem dashboardBody
+#'@importFrom shinydashboard tabItems tabItem dashboardHeader dashboardPage
+#'@importFrom shinyjs useShinyjs
 #'@export
 gmse_gui <- function(){ 
 
@@ -68,7 +75,7 @@ sidebar <-   dashboardSidebar(
                 
                 hr(style ="width: 70%; color: white; align: center"),
                 
-                menuItem("Results", icon = icon("line-chart"), 
+                menuItem("General results", icon = icon("line-chart"), 
                          tabName = "plotting"),
 
                 menuItem("Source code for app", icon = icon("code"),
@@ -300,7 +307,7 @@ body <- dashboardBody(
                                    value = 300),
                        
                        sliderInput("manage_freq",
-                                   "Frequency management decisions are enacted",
+                                   "Manage frequency (once per N time steps)",
                                    min   = 1,
                                    max   = 5,
                                    step  = 1,
@@ -573,7 +580,5 @@ app <- shinyApp(ui, server)
 
 #-------------------------------------------------------------------------------
 }
-
-
 
 

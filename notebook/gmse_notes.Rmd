@@ -91,6 +91,14 @@ library(rhandsontable)
 
 While playing with the [proto-type GUI](https://bradduthie.shinyapps.io/gmse_gui/), I discovered a minor bug in the plotting function, which I fixed so that the plot doesn't make an error. I have also updated the list of contributors in the description file, and the list of recommended packages (shiny packages for the new `gmse_gui` function).
 
+I have now also added a new release version 0.2.2.8 to GitHub. This version requires three additional libraries:
+
+1. [shiny](https://cran.r-project.org/package=shiny)
+2. [shinydashboard](https://cran.r-project.org/package=shinydashboard)
+3. [shinyjs](https://cran.r-project.org/package=shinyjs)
+
+The above three libraries will be imported as dependencies (or should be) in the new version of GMSE. 
+
 > <a name="u-16-AUG-2017">Update: 16 AUG 2017</a>
 
 A [proto-type GUI](https://bradduthie.shinyapps.io/gmse_gui/) for the GMSE package is now up on shiny. I'm going to make this look nicer with a CSS style-sheet, but for now this gets the job done.

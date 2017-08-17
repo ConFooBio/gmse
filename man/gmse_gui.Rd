@@ -16,5 +16,7 @@ The gmse_gui function will call a browser-based graphical user interface
 of parameter values and present results as plots.
 }
 \examples{
+\dontrun{
 sim <- gmse_gui();
+}
 }
