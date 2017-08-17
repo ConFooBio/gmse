@@ -4,6 +4,8 @@
 #' (GUI) for the gmse function. The GUI will run simulations for a limited range
 #' of parameter values and present results as plots.
 #'
+#'@return A browser should immediately open with the gmse graphical user
+#'interface
 #'@examples
 #'sim <- gmse_gui();
 #'@useDynLib GMSE

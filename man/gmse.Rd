@@ -120,7 +120,7 @@ gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
 
 \item{kill_crops}{This is a TRUE or FALSE value determining whether or not killing crops on the landscape is allowed for stakehodlers. If so, then stakeholders can remove the crop yield on a cell completely for each action to `tend_crops`. Actions on the landscape cannot be regulated by managers, so the cost of this action is always `minimum_cost`.}
 
-\item{stakeholders}{This is the number of stakeholders in a simulation; there is always one manager, and any natural number of stakeholders.}
+\item{stakeholders}{This is the number of stakeholders in a simulation; there is always one manager, plus any natural number of stakeholders.}
 
 \item{manage_caution}{This value moderates the caution a manager has when changing policy by assuming that at least `manage_caution` of each possible action will always be performed by stakeholders. I manager will therefore not ignore policy for one action because no stakeholder is engaging in it; the default value of `manage_caution` is 1.}
 

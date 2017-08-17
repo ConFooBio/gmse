@@ -543,7 +543,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
 #'observe_type = 0);
 #'}
 #'@export
-plot_gmse_results1 <- function(res, obs, land, agents, paras, ACTION, COST){
+plot_gmse_results <- function(res, obs, land, agents, paras, ACTION, COST){
     
     para_vec <- paras[1,]
     
