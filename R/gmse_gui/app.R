@@ -285,7 +285,7 @@ body <- dashboardBody(
                                    value = 300),
                        
                        sliderInput("manage_freq",
-                                   "Frequency management decisions are enacted",
+                                   "Management frequency (every N years)",
                                    min   = 1,
                                    max   = 5,
                                    step  = 1,
