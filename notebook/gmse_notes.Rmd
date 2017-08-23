@@ -49,7 +49,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **AUG** [17](#u-17-AUG-2017), [16](#u-16-AUG-2017), [15](#u-15-AUG-2017), [7](#u-7-AUG-2017)
+     - **AUG** [23](#u-23-AUG-2017), [17](#u-17-AUG-2017), [16](#u-16-AUG-2017), [15](#u-15-AUG-2017), [7](#u-7-AUG-2017)
      - **JUL** [7](#u-7-JUL-2017), [3](#u-3-JUL-2017)
      - **JUN** [27](#u-27-JUN-2017), [26](#u-26-JUN-2017), [25](#u-25-JUN-2017), [23](#u-23-JUN-2017), [20](#u-20-JUN-2017), [16](#u-16-JUN-2017), [15](#u-15-JUN-2017), [14](#u-14-JUN-2017), [13](#u-13-JUN-2017), [9](#u-9-JUN-2017), [8](#u-8-JUN-2017), [7](#u-7-JUN-2017), [6](#u-6-JUN-2017), [5](#u-5-JUN-2017), [4](#u-4-JUN-2017)
      - **MAY** [31](#u-31-MAY-2017), [30](#u-30-MAY-2017), [29](#u-29-MAY-2017), [26](#u-26-MAY-2017), [25](#u-25-MAY-2017), [24](#u-24-MAY-2017), [23](#u-23-MAY-2017), [22](#u-22-MAY-2017), [18](#u-18-MAY-2017), [17](#u-17-MAY-2017), [16](#u-16-MAY-2017), [15](#u-15-MAY-2017), [12](#u-12-MAY-2017), [11](#u-11-MAY-2017), [10](#u-10-MAY-2017), [9](#u-9-MAY-2017), [8](#u-8-MAY-2017), [5](#u-5-MAY-2017), [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
@@ -86,6 +86,23 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-23-AUG-2017">Update: 23 AUG 2017</a>
+
+I am experimenting with ways of demonstrating the conflict between what a manager incentivises, and what the users actually do, in GMSE. Below are some plots that show this for a few sample simulations. The five panels in each plot correspond to the five possible actions where policy is set. Policy set by the manager is shown with the black solid line, with the thin coloured lines reflecting individual user effort expended into each action.
+
+The right axis is fairly easy to interpret -- it's just the percentage of the user's total budget devoted to a particular action (note, this is *not necessarily* the number of actions a user performs because different actions can cost different amounts -- hence the term 'effort'). 
+
+The left axis is a bit trickier -- it's how permissive of an action the manager is in practice. High values correspond to an action being highly permitted by the manager (i.e., the manager invests no effort in making these actions costly), whereas low values correspond to an action being less permitted (i.e., the manger invests highly in making these actions costly for users). 
+
+The end result is that the lines indicating manger permissiveness are typically correlated with user effort towards any particular action. In the first attached example, this is true for scaring and culling (as the manager becomes more permissive of these actions, users tend to take advantage and spend more effort doing them). Note that users do not feed because they have nothing to gain by feeding the resources, even though the manager is usually permits feeding (around generation 75, the population started going way over the manager's target).
+
+![](https://raw.githubusercontent.com/bradduthie/gmse/0b9e680bdca7318adccbad99270e8439cc848aaa/notebook/images/23-AUG-2017-conflict_plot1.png)
+
+![](https://raw.githubusercontent.com/bradduthie/gmse/0b9e680bdca7318adccbad99270e8439cc848aaa/notebook/images/23-AUG-2017-conflict_plot2.png)
+
+![](https://raw.githubusercontent.com/bradduthie/gmse/0b9e680bdca7318adccbad99270e8439cc848aaa/notebook/images/23-AUG-2017-conflict_plot3.png)
+
 
 > <a name="u-17-AUG-2017">Update: 17 AUG 2017</a>
 
