@@ -95,11 +95,15 @@ The right axis is fairly easy to interpret -- it's just the percentage of the us
 
 The left axis is a bit trickier -- it's how permissive of an action the manager is in practice. High values correspond to an action being highly permitted by the manager (i.e., the manager invests no effort in making these actions costly), whereas low values correspond to an action being less permitted (i.e., the manger invests highly in making these actions costly for users). 
 
-The end result is that the lines indicating manger permissiveness are typically correlated with user effort towards any particular action. In the first attached example, this is true for scaring and culling (as the manager becomes more permissive of these actions, users tend to take advantage and spend more effort doing them). Note that users do not feed because they have nothing to gain by feeding the resources, even though the manager is usually permits feeding (around generation 75, the population started going way over the manager's target).
+The end result is that the lines indicating manger permissiveness are typically correlated with user effort towards any particular action. In the first example below, this is true for scaring and culling (as the manager becomes more permissive of these actions, users tend to take advantage and spend more effort doing them). Note that users do not feed because they have nothing to gain by feeding the resources, even though the manager is usually permits feeding (around generation 75, the population started going way over the manager's target).
 
 ![](https://raw.githubusercontent.com/bradduthie/gmse/0b9e680bdca7318adccbad99270e8439cc848aaa/notebook/images/23-AUG-2017-conflict_plot1.png)
 
+In the second example (below), the option for scaring has been removed. Because users want resources off of their land, the only option is to cull, so users will cull as much as permitted even though the manager is incentivising them not to as much as possible.
+
 ![](https://raw.githubusercontent.com/bradduthie/gmse/0b9e680bdca7318adccbad99270e8439cc848aaa/notebook/images/23-AUG-2017-conflict_plot2.png)
+
+The below is a final example where all actions except helping are possible options.
 
 ![](https://raw.githubusercontent.com/bradduthie/gmse/0b9e680bdca7318adccbad99270e8439cc848aaa/notebook/images/23-AUG-2017-conflict_plot3.png)
 
