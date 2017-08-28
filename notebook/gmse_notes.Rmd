@@ -92,6 +92,8 @@ library(rhandsontable)
 
 I have finally fixed the annoyance in the [shiny app](https://bradduthie.shinyapps.io/gmse_gui/) of GMSE that caused the bottom of the browser to black, hence making it difficult to set parameter values in some tabs.
 
+Additionally, by hovering over the different options in the application, the software user can now see a brief description of what each option does in the simulation.
+
 > <a name="u-23-AUG-2017">Update: 23 AUG 2017</a>
 
 I am experimenting with ways of demonstrating the conflict between what a manager incentivises, and what the users actually do, in GMSE. Below are some plots that show this for a few sample simulations. The five panels in each plot correspond to the five possible actions where policy is set. Policy set by the manager is shown with the black solid line, with the thin coloured lines reflecting individual user effort expended into each action.
