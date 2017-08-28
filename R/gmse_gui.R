@@ -25,6 +25,7 @@ gmse_gui <- function(){
 
 #-------------------------------------------------------------------------------
 
+
 skin <- Sys.getenv("DASHBOARD_SKIN")
 skin <- tolower(skin)
 if (skin == "") skin <- "green"
@@ -92,6 +93,7 @@ sidebar <-   dashboardSidebar(
 
 
 body <- dashboardBody(
+    fluidPage(
     tabItems(
         tabItem("global",
                
@@ -487,8 +489,7 @@ body <- dashboardBody(
                 
                 plotOutput("plot1", height = 900, width = 700)
         )
-        
-    )
+    ))
 )
 
 # This function builds the fancy title at the top of the browser
