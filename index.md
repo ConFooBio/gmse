@@ -14,3 +14,6 @@ Generalised Management Strategy Evaluation
 
 The R package [GMSE](https://CRAN.R-project.org/package=GMSE) is available on [GitHub](http://github.com) and the [Comprehensive R Archive Network](https://cran.r-project.org/) (CRAN). To install, consult the [README](https://github.com/bradduthie/gmse/blob/master/README.md) file available on GitHub. The software is being developed by [Brad Duthie](http://bradduthie.github.io) as part of the [ConFooBio](https://sti-cs.org/confoobio/) project. This page will be updated as necessary, and problems or requests for new features can be introduced on the GMSE GitHub [issues page](https://github.com/bradduthie/gmse/issues) or [Wiki](https://github.com/bradduthie/gmse/wiki), or emailed to [Brad](https://bradduthie.github.io/).
 
+<hr>
+
+**GMSE simulations can also be [run directly from a browser](https://bradduthie.shinyapps.io/gmse_gui/) via [shiny](https://shiny.rstudio.com/).**
