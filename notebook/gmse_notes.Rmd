@@ -49,6 +49,7 @@ library(rhandsontable)
 
  - **2017**
 
+     - **SEP** [6](#u-6-SEP-2017)
      - **AUG** [28](#u-28-AUG-2017), [23](#u-23-AUG-2017), [17](#u-17-AUG-2017), [16](#u-16-AUG-2017), [15](#u-15-AUG-2017), [7](#u-7-AUG-2017)
      - **JUL** [7](#u-7-JUL-2017), [3](#u-3-JUL-2017)
      - **JUN** [27](#u-27-JUN-2017), [26](#u-26-JUN-2017), [25](#u-25-JUN-2017), [23](#u-23-JUN-2017), [20](#u-20-JUN-2017), [16](#u-16-JUN-2017), [15](#u-15-JUN-2017), [14](#u-14-JUN-2017), [13](#u-13-JUN-2017), [9](#u-9-JUN-2017), [8](#u-8-JUN-2017), [7](#u-7-JUN-2017), [6](#u-6-JUN-2017), [5](#u-5-JUN-2017), [4](#u-4-JUN-2017)
@@ -86,6 +87,23 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-6-SEP-2017">Update: 6 SEP 2017</a>
+
+**A function for modellers**
+
+I am beginning work on a `gmse_apply()` function, which will improve the modularity of GMSE for developers. The goal behind this function will be to provide a simple tool for allowing developers to use their own resource and observation models and, with the correct inputs, take advantage of the manager and user functions. Hence, simple resource and observation models will be possible, but the flexibility of GMSE should be retained as much as possible. A few starting points include the following:
+
+- The `gmse_apply()` function will run a single cycle of GMSE instead of multiple time steps.
+- The function will take user-supplied functions as input for each sub-model.
+- All relevant `gmse()` options will be acceptable, but not obvious, appearing as `...` passes that the user can add if they want to change things. Otherwise, defaults will be used.
+- The function will allow for both numerical and individual-based models, but numerical models will be the default.
+  - Numerical models will work with a vector instead of a table of resources. For now, this vector will include just a single estimate that is the actual resource population size (could be expanded to different resource types). A second vector will include estimates, produced by the observation model. The default manager model will take these vectors and run the genetic algorithm accordingly, as will the user model. 
+  - There should be room for software users to supply their own manager and user models, but with the appropriate checks to ensure model compatibility.
+  
+Inputs and outputs of different functions will then include the following:
+
+- **Resource model**
 
 > <a name="u-28-AUG-2017">Update: 28 AUG 2017</a>
 
