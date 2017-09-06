@@ -50,6 +50,7 @@ library(rhandsontable)
 
  - **2017**
 
+     - **SEP** [6](#u-6-SEP-2017)
      - **AUG** [28](#u-28-AUG-2017), [23](#u-23-AUG-2017), [17](#u-17-AUG-2017), [16](#u-16-AUG-2017), [15](#u-15-AUG-2017), [7](#u-7-AUG-2017)
      - **JUL** [7](#u-7-JUL-2017), [3](#u-3-JUL-2017)
      - **JUN** [27](#u-27-JUN-2017), [26](#u-26-JUN-2017), [25](#u-25-JUN-2017), [23](#u-23-JUN-2017), [20](#u-20-JUN-2017), [16](#u-16-JUN-2017), [15](#u-15-JUN-2017), [14](#u-14-JUN-2017), [13](#u-13-JUN-2017), [9](#u-9-JUN-2017), [8](#u-7-JUN-2017), [7](#u-7-JUN-2017), [6](#u-6-JUN-2017), [5](#u-5-JUN-2017), [4](#u-4-JUN-2017) 
@@ -87,6 +88,55 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-6-SEP-2017">Update: 6 SEP 2017</a>
+
+**A modular function for modellers**
+
+I am beginning work on a `gmse_apply()` function, which will improve the modularity of GMSE for developers. The goal behind this function will be to provide a simple tool for allowing developers to use their own resource and observation models and, with the correct inputs, take advantage of the manager and user functions. Hence, simple resource and observation models will be possible, but the flexibility of GMSE should be retained as much as possible. A few starting points include the following:
+
+- The `gmse_apply()` function will run a single cycle of GMSE instead of multiple time steps.
+- The function will take user-supplied functions as input for each sub-model.
+- All relevant `gmse()` options will be acceptable, but not obvious, appearing as `...` passes that the user can add if they want to change things. Otherwise, defaults will be used.
+- The function will allow for both numerical and individual-based models, but numerical models will be the default.
+    - Numerical models will work with a vector instead of a table of resources. For now, this vector will include just a single estimate that is the actual resource population size (could be expanded to different resource types). A second vector will include estimates, produced by the observation model. The default manager model will take these vectors and run the genetic algorithm accordingly, as will the user model. 
+    - There should be room for software users to supply their own manager and user models, but with the appropriate checks to ensure model compatibility (an early switch might organise things clearly).
+  
+Inputs and outputs of different functions will then include the following:
+
+- **Resource model**
+    - *Numerical* will require a vector of population size values from the larger function (for now, this will almost always just be a single element of the population size). Harvesting will be output at the end, so that users can just add in a simple model (e.g., logistic growth) and not worry about adding the harvesting in here (as it does in [MSEtools](https://github.com/bradduthie/MSEtools/blob/master/R/PopulationModels.R)). LIkewise, the output will **only** be a vector of population size values, so very simple models will be possible. Additional model-specific parameters will be specified in the function itself. In other words, for a user inputting their own logistic growth model into `gmse_apply()`, the only thing required of the user-defined function will be the population size vector, and other parameters will be specified in the logistic function, e.g.: `gmse_apply(resource = LV(pop, K = 100, r = 1, ...), observation = ..., type = "Numerical")`.
+    - *Individual-based* will default to the `resource()` function, though some options to input landscape and starting conditions will be needed (though these should also switch to default).
+- **Observation model**
+    - *Numerical* will require a vector of population size values from the larger function, and a vector will be returned that is the observed estimate of the population size. Other options might affect the observation function itself, but no other input or output should be *necessary*, as in the resource function.
+    - *Individual-based* will default to the `observation()` function, as as with the resource model.
+- **Manager model**
+    - *Numerical* will need to be tweaked so that it can accept direct estimates from the observation model, so the [`estimate_abundances`](https://github.com/bradduthie/gmse/blob/master/src/manager.c#L613) function in [`manager.c`](https://github.com/bradduthie/gmse/blob/master/src/manager.c) can be bipassed entirely (i.e., I still think that we'll want to call the c function as normal, but add an option). This can be arranged simply by reading in the observation vector (might have to re-structure to an array a bit better?) as the `OBSERVATION` array in c, but then instead of running `estimate_abundances`, allow an if-else statement to read this array as `abun_est` given a new value in `paras`, after which the genetic algorithm and `set_action_costs` can be run as normal. The irrelevant output can just be ignored by the user model in `gmse_apply`.
+    - *Individual-based* will default to the `manager()` function in its normal form. As with the others, this will require some eventual decisions about initialisation, but I can worry about this later.
+    - There will be an option built into `gmse_apply()` that would allow users to specify their own manager functions, but for the moment this is just going to be hidden because the genetic algorithm *requires* the `COST` and `ACTION` arrays to be in the correct form for use. Hence, if someone later wants to apply their own manager or user function, they will either need to get the input-output correct (at the moment) or (eventually) use some different input-output data structure that I make up later; but at some point, things would just collapse down to [MSEtools](https://github.com/bradduthie/MSEtools). Or, rather, `gmse_apply()` just becomes a trivial function that includes four lines of compatible code, calling each model. 
+- **User model**
+    - *Numerical* will also need to be tweaked to return actions from the user model, but this shouldn't be too difficult. A key here is that given these very simple models, the only real policy option is 'culling'. We really don't even need to call the user function if we just assume that users always cull as much as they possibly can. Nevertheless, I'll call it and the genetic algorithm along with it, sticking in place the relevant parameters for a spatially implicit model. As with the manager model, there will need to be some sort of if-else where landscape based actions [do not apply](https://github.com/bradduthie/gmse/blob/master/src/user.c#L626), and actions will be not applied to the resource array. Instead, the `ACTION` output from `user()` will just be translated in R to adjusting the vector.
+    - *Individual-based* will default to the `user()` function in its normal form. As with the others, this will require some eventual decisions about initialisation to be determined later.
+
+**As an alternative,** at least to the implementation, I think that the call could be made at the level of the individual `resource()` and `observation()` R functions. This was kind of always the plan, but there's a semi-dirty way to mix numerical resource and observation models with the full individual-based manager and user models. This can be done by adding a [model option](https://github.com/bradduthie/gmse/blob/master/R/resource.R#L21) to be user defined through an `if( is.function(model) == TRUE )` in the resource.R function. If the condition is satisfied, then `resource()` will shift to the user generated model. This can actually be done for all of the submodels very easily. 
+
+This alternative might be a better way to go. The aforementioned 'dirty' part of the technique might be to check to see if the output is in the correct form, then, if only a vector is returned -- *turn it into the correct form* by making a data frame that has the same number of rows by calling [`make_resource`](https://github.com/bradduthie/gmse/blob/master/R/initialise.R#L22). The type 1 values could correspond to vector elements. Admittedly, this could get slow for huge population sizes, but population sizes would have to be massive for R to slow down from simplying making a matrix with a lot of rows. In any case, it would at least standardise the input and output for the user of `gmse_apply` in a way that plays nice with everything else in GMSE.
+
+Similarly, the [observation](https://github.com/bradduthie/gmse/blob/master/R/observation.R) function could also call `make_resource` if a vector is returned (since individual variation wouldn't be relevant in the numerical model).
+
+With this alternative approach, no changes to the C code need to be made -- the inputs and outputs just need to be tweaked into a standardised way when a vector or scalar is returned from any user-defined model (small detail -- population size needs to be an integer). This can be an option later for the user and manager models -- though I'm not sure how this would work, exactly. A benefit here is that some parts of the model could concievably individual-based, with others being numerical -- the trade-off being the requirement for discrete resource numbers and a very small amount of slowdown (which will almost certainly not be noticable for any resaonable model).
+
+The `gmse_apply` function would then initialise a very small number of agents, and a small landscape (unless otherwise specified) in every run. The possibility of passing more options [could be applied](https://stackoverflow.com/questions/28370249/correct-way-to-specifiy-optional-arguments-in-r-functions) with a simple `...`. This would also require a sub-function `build_para_vec`, which would be used for the sole purpose of taking the list of options included (same as in `gmse()`) and passing it to the sub-function, with any functions not passed being assumed defaults (and most would be irrelevant). So the default function should then look like
+
+```
+gmse_apply(resource_function = "IBM", observation_function = "IBM", manager_function = "IBM", user_function = "IBM", res_number = 100, ...);
+```
+
+I think at least an initial population needs to be specified, but everything else can be left up to the user, with the elipses passing to the function building the parameter vector (which can also be called by `gmse()`, replacing some clutter). Overall, the function will run without any input if none is specified, defaulting to an IBM with a population size of 100 for one generation. All other options, including non-standard functions, are left to the user.
+
+**Additional thoughts**
+
+**Working this through,** I'm slightly apprehensive about the motivation for including `gmse_apply` function. Once you strip the mechanistic approach from the resource and observation models, all you really have are two values: (1) the population abundance or density and (2) the estimate of the population size or density. Once you include the `manage_target` into `gmse_apply` (necessary, I believe), then the genetic algorithm is really just a fancy way of getting the difference between the population estimate and the target size, and then setting a number of culling actions acceptable for users. Users then cull as much as possible because they're assumed to want to use the resource as much as possible. Of course, we can consider other parameters that affect user actions (e.g., maximum catch, effort), but if we're interested in learning about how these concepts affect harvesting in theory, then they can and should probably be studied using a simpler model. The real point of the genetic algorithm is that it allows for complex, multi-variable goal driven behaviour, as might occur given indirect effects (e.g., organisms on crop yield) or multiple options (e.g., culling versus scaring or growing) and spatial complexities. There seems little to be gained by calling the genetic algorithm to tell users to cull as much as possible, which can be done with a (very) simple function.
 
 > <a name="u-28-AUG-2017">Update: 28 AUG 2017</a>
 
