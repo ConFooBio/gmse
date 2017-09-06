@@ -121,7 +121,17 @@ Inputs and outputs of different functions will then include the following:
 
 This alternative might be a better way to go. The aforementioned 'dirty' part of the technique might be to check to see if the output is in the correct form, then, if only a vector is returned -- *turn it into the correct form* by making a data frame that has the same number of rows by calling [`make_resource`](https://github.com/bradduthie/gmse/blob/master/R/initialise.R#L22). The type 1 values could correspond to vector elements. Admittedly, this could get slow for huge population sizes, but population sizes would have to be massive for R to slow down from simplying making a matrix with a lot of rows. In any case, it would at least standardise the input and output for the user of `gmse_apply` in a way that plays nice with everything else in GMSE.
 
+Similarly, the [observation](https://github.com/bradduthie/gmse/blob/master/R/observation.R) function could also call `make_resource` if a vector is returned (since individual variation wouldn't be relevant in the numerical model).
 
+With this alternative approach, no changes to the C code need to be made -- the inputs and outputs just need to be tweaked into a standardised way when a vector or scalar is returned from any user-defined model (small detail -- population size needs to be an integer). This can be an option later for the user and manager models -- though I'm not sure how this would work, exactly. A benefit here is that some parts of the model could concievably individual-based, with others being numerical -- the trade-off being the requirement for discrete resource numbers and a very small amount of slowdown (which will almost certainly not be noticable for any resaonable model).
+
+The `gmse_apply` function would then initialise a very small number of agents, and a small landscape (unless otherwise specified) in every run. The possibility of passing more options [could be applied](https://stackoverflow.com/questions/28370249/correct-way-to-specifiy-optional-arguments-in-r-functions) with a simple `...`. This would also require a sub-function `build_para_vec`, which would be used for the sole purpose of taking the list of options included (same as in `gmse()`) and passing it to the sub-function, with any functions not passed being assumed defaults (and most would be irrelevant). So the default function should then look like
+
+```
+gmse_apply(resource_function = "IBM", observation_function = "IBM", manager_function = "IBM", user_function = "IBM", res_number = 100, ...);
+```
+
+I think at least an initial population needs to be specified, but everything else can be left up to the user, with the elipses passing to the function building the parameter vector (which can also be called by `gmse()`, replacing some clutter). Overall, the function will run without any input if none is specified, defaulting to an IBM with a population size of 100 for one generation. All other options, including non-standard functions, are left to the user.
 
 **Additional thoughts**
 
