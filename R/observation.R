@@ -17,6 +17,7 @@
 #'@param move_res Defines whether or not resources move during observation (default = FALSE). Note that if this is FALSE, then observation methods (obs_method) 3 and 4 produce no observation error 
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
+#'@param ... Other arguments to be passed to a user-defined model
 #'@return The observation function outputs an R list that includes three separate arrays, including (1) an new OBSERVATION array that holds observed resources and their traits with additional columns indicating when the resources were observed (relevant, e.g., for mark-recapture), (2) a new AGENTS array, and (3) a new PARAS array, each of which might be affected by the user function.  The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the management, user, and resource models.
 #'@examples
 #'\dontrun{
@@ -38,7 +39,8 @@ observation <- function(RESOURCES  = NULL,
                         type_cat   = 1,
                         obs_method = 0,
                         move_res   = FALSE,
-                        model      = "IBM"
+                        model      = "IBM",
+                        ...
                         ){
     check_model <- 0;
     # Use DATA as an array for mark-recapture information
@@ -76,6 +78,9 @@ observation <- function(RESOURCES  = NULL,
                                            INTERACT_c   = inter_tabl
                                            );
         check_model <- 1;
+    }
+    if(is.function(model) == TRUE){
+        OBSERVE_OUT <- model(...);
     }
     if(check_model == 0){
         stop("Invalid model selected (Must be 'IBM')");

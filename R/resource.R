@@ -8,6 +8,7 @@
 #'@param PARAS The vector of parameters that hold global and dynamic parameter values used by GMSE
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
+#'@param ... Other arguments to be passed to a user-defined model
 #'@return The resource function outputs an R list that includes three separate arrays, including (1) an new RESOURCES array, (2) a new LAND array, (3) a new PARAS array, each of which might be affected by the user function. The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the observation, management, and user models.
 #'@examples
 #'\dontrun{
@@ -18,7 +19,8 @@
 resource <- function(RESOURCES = NULL, 
                      LAND      = NULL, 
                      PARAS     = NULL,
-                     model     = "IBM"
+                     model     = "IBM",
+                     ...
                      ) {
     check_model <- 0;
     if(model == "IBM"){
@@ -38,8 +40,11 @@ resource <- function(RESOURCES = NULL,
                                         PARAMETERS_c = PARAS);
         check_model <- 1;
     }
+    if(is.function(model) == TRUE){
+        RESOURCE_OUT <- model(...);
+    }
     if(check_model == 0){
-        stop("Invalid model selected (Must be 'IBM')");
+        stop("Invalid model selected");
     }
     return(RESOURCE_OUT);
 }
