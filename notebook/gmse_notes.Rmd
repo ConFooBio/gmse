@@ -88,6 +88,10 @@ library(rhandsontable)
 <a name="updates">Project updates:</a>
 ================================================================================
 
+> <a name="u-13-SEP-2017">Update: 13 SEP 2017</a>
+
+I will be giving a talk on 19 September 2017 for the [Mathematics and Statistics Group](http://www.maths.stir.ac.uk/seminars.html) at the University of Stirling on GMSE as a general tool for management strategy evaluation. Slides for this talk will be [available on GitHub]().
+
 > <a name="u-8-SEP-2017">Update: 8 SEP 2017</a>
 
 The alternative approach from [Wednesday](#u-6-SEP-2017) is being implemented smoothly. Passing user-defined functions in a modular way is possible, but inputs and outputs need to be carefully considered within `gmse_apply()`. The objective is to make things as easy and flexible as possible for the user, while also making sure that the function runs efficiently.
