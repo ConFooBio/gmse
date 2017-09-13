@@ -1,0 +1,21 @@
+.title-slide hgroup h1 {
+  font-size: 38px;
+  letter-spacing: 0;
+}
+
+.title-slide hgroup h2 {
+  font-size: 28px;
+  letter-spacing: 0;
+}
+
+slides > slide.backdrop{
+  background: white;
+}
+
+.reveal section p {
+  color: black;
+}
+
+.reveal section h6 {
+  color: black
+}

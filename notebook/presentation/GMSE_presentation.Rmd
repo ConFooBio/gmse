@@ -1,0 +1,41 @@
+---
+title: "GMSE: a general tool for management strategy evaluation"
+subtitle: "https://bradduthie.shinyapps.io/GMSE_presentation/#1"
+author: "Brad Duthie"
+date: "19 September 2017"
+output: 
+  ioslides_presentation:
+    logo: Confoobio-stacked-logo.png
+    css: slide.css
+    widescreen: no
+    fig_width: 5
+    fig_height: 5
+runtime: shiny
+---
+
+
+## Introduction
+
+## Background on ConFooBio
+
+Need some background on management
+
+## Management Strategy Evaluation
+
+Show the general structure, point out these four submodels being quite novel
+Lead into next slide by pointing out that users and managers are agents
+
+## Conservation conflict
+
+## Point about conflict and games being complex
+
+## Genetic algorithms
+
+Show the basic idea
+Use the gamesGA package to illustrate it in a game-theoretic context
+
+## Introduce GMSE
+
+## Geese example
+
+## Future software development
