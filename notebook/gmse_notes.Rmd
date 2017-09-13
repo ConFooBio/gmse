@@ -90,7 +90,7 @@ library(rhandsontable)
 
 > <a name="u-13-SEP-2017">Update: 13 SEP 2017</a>
 
-I will be giving a talk on 19 September 2017 for the [Mathematics and Statistics Group](http://www.maths.stir.ac.uk/seminars.html) at the University of Stirling on GMSE as a general tool for management strategy evaluation. Slides for this talk will be [available on GitHub]().
+I will be giving a talk on 19 September 2017 for the [Mathematics and Statistics Group](http://www.maths.stir.ac.uk/seminars.html) at the University of Stirling on GMSE as a general tool for management strategy evaluation. Slides for this talk will be [available on GitHub](https://github.com/bradduthie/gmse/tree/dev/notebook/presentation).
 
 > <a name="u-8-SEP-2017">Update: 8 SEP 2017</a>
 
