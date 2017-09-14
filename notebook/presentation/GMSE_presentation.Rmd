@@ -16,26 +16,117 @@ runtime: shiny
 
 ## Introduction
 
+##
+
+![](wildlife_conflict_sm.jpg)
+
+<center>
+**Image**: [Public domain](https://commons.wikimedia.org/wiki/File:Human-wildlife_conflict.jpg)
+</center>
+
+## Conservation conflict
+
+- People with strongly held views clash over objectives
+- Negative effect on sustainability, biodiversity, and human livelihood
+
+## Game theory: conflict and cooperation
+
+<div class="columns-2">
+
+- Formalisation and study of conflict and cooperation between rational decision-makers
+- Broadly encompasses combinatorial games (e.g., tic-tac-toe, chess) and evolutionary invasion analysis (adaptive dynamics)
+- Compatibile with agent-based modelling
+
+![](payoff_matrix_sm.png)
+
+</div>
+<hr>
+
+[Adami et al. (2016) Phys. Life. Rev. 19:1-26](http://dx.doi.org/10.1016/j.plrev.2016.08.015)
+
+## {.smaller}
+
+<div class="columns-2">
+
+![Public license](US_USSR_nukes_sm.png).
+
+![Wilkinson 1990](Wilkinson1990_sm.png).
+
+![Isaacdm](penalty_sm.png).
+
+![Dennig](brexit_sm.png).
+
+</div>
+
+**Images:** (1) [Public license](https://commons.wikimedia.org/wiki/File:US_and_USSR_nuclear_stockpiles.svg), (2) [Wilkinson 1990](https://projects.ncsu.edu/project/evoresources/Evolutionary%20medicine/Unitsofselection%20DM%20copy/wilkinson-foodsharing.pdf), (3) [Isaacdm](https://commons.wikimedia.org/wiki/File:PhysicsofPenalty.JPG?uselang=en-gb), (4) [Public license](http://www.publicdomainpictures.net/view-image.php?image=180560&picture=brexit-referendum-uk)
+
+
+## Conflict in conservation
+
+Game theory provides a natural framework for addressing issues of cooperation and conflict in conservation.
+
+- Game theory can be used to understand stake-holder decision making ([Kark et al. 2015 *Curr. Opin. Environ. Sustainability* **12**:12-24]()).
+
+- Game-theoretic models can suggest novel management strategies ([Colvan et al. 2011 *Biol. Conserv.* **144**:1246-1253](http://dx.doi.org/10.1016/j.biocon.2010.10.028); [Tilman et al. 2016 *Theor. Ecol.*](http://link.springer.com/article/10.1007%2Fs12080-016-0318-8)).
+
+- Game theory can consider multiple management objectives simultaneously ([Lee 2012 *Chemosphere* **87**:608-613](http://dx.doi.org/10.1016/j.chemosphere.2012.01.014)).
+
+## Point about conflict and games being complex
+
+Nils points out that typical game theory assumes that
+
+- pay-offs are known and fixed
+- Actions are clear and always available
+- Players behave rationally
+- Game rules are known to all
+- There is a clear rank order of outcomes
+
 ## Background on ConFooBio
 
-Need some background on management
+Resolving conflicts between food security and biodiversity conservation under uncertainty
+
+<div class = "columns-2">
+
+![](confoobio_sans.png)
+
+- How to solve conflict
+- What leads to conflict
+- Impact on sustainability
+
+All of the above are characterised by uncertainty
+
+</div>
+
+<!--- Get the ERC logo and EU flag in here? --->
+
 
 ## Management Strategy Evaluation
 
 Show the general structure, point out these four submodels being quite novel
 Lead into next slide by pointing out that users and managers are agents
 
-## Conservation conflict
+- Confoobio brings in a game-theoretic perspective to this
 
-## Point about conflict and games being complex
 
 ## Genetic algorithms
 
 Show the basic idea
 Use the gamesGA package to illustrate it in a game-theoretic context
 
+## One run
+
+
+
 ## Introduce GMSE
 
+<div class = "columns-2">
+
+![](GMSE_Logo_Goose_300.png)
+
+</div>
+
 ## Geese example
+
+- Use some data from Jeremy's paper?
 
 ## Future software development
