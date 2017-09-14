@@ -13,8 +13,22 @@ output:
 runtime: shiny
 ---
 
+```{r, echo=FALSE}
+library(gamesGA);
+library(GMSE);
+library(knitr);
+```
+
 
 ## Introduction
+
+## Process of adaptive management
+
+
+## Management Strategy Evaluation
+
+
+## Uncertainty
 
 ##
 
@@ -28,6 +42,27 @@ runtime: shiny
 
 - People with strongly held views clash over objectives
 - Negative effect on sustainability, biodiversity, and human livelihood
+
+
+## Background on ConFooBio
+
+Resolving conflicts between food security and biodiversity conservation under uncertainty
+
+<div class = "columns-2">
+
+![](confoobio_sans.png)
+
+- How to solve conflict
+- What leads to conflict
+- Impact on sustainability
+
+All of the above are characterised by uncertainty
+
+</div>
+
+<!--- Get the ERC logo and EU flag in here? --->
+
+
 
 ## Game theory: conflict and cooperation
 
@@ -81,31 +116,7 @@ Nils points out that typical game theory assumes that
 - Game rules are known to all
 - There is a clear rank order of outcomes
 
-## Background on ConFooBio
 
-Resolving conflicts between food security and biodiversity conservation under uncertainty
-
-<div class = "columns-2">
-
-![](confoobio_sans.png)
-
-- How to solve conflict
-- What leads to conflict
-- Impact on sustainability
-
-All of the above are characterised by uncertainty
-
-</div>
-
-<!--- Get the ERC logo and EU flag in here? --->
-
-
-## Management Strategy Evaluation
-
-Show the general structure, point out these four submodels being quite novel
-Lead into next slide by pointing out that users and managers are agents
-
-- Confoobio brings in a game-theoretic perspective to this
 
 
 ## Genetic algorithms
@@ -130,3 +141,7 @@ Use the gamesGA package to illustrate it in a game-theoretic context
 - Use some data from Jeremy's paper?
 
 ## Future software development
+
+
+
+
