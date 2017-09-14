@@ -757,7 +757,12 @@ renderTable({
 
 ## Geese example
 
-- Use some data from Jeremy's paper?
+- Wild geese declined starting in the 1930s, likely caused by habitat loss and increased hunting
+- Refuges were established and hunting restricted in the 1950s, leading to recovery
+
+
+[Fox & Madsen 2017 *Ambio* **46(s2)**:170-187](http://doi.org/10.1007/s13280-016-0878-2)
+
 
 ## Future software development
 
