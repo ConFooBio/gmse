@@ -20,18 +20,56 @@ library(knitr);
 ```
 
 
-## Introduction
+<!---
+https://welikia.org/
+http://ngm.nationalgeographic.com/2009/09/manhattan/miller-text
+https://welikia.org/explore/mannahatta-map/
+
+--->
+
+##
+
+<center>
+
+![](mannahatta.jpg)
+
+</center>
+
+##
+
+![](food_biodiversity.png)
+
+##
+
+![](wicked_modelling.png)
 
 ## Process of adaptive management
 
 
-## Management Strategy Evaluation
+##
+
+<center>
 
 ![](mse_overview_sm.png)
 
-## Uncertainty
+</center>
+
+## Uncertainty in natural resource management
+
+Uncertainty is fundamental in ecological and economic systems, and their measurement
+
+**Natural resources**: Structural and demographic uncertainty
+
+**Resource observation**: Observation uncertainty
+
+**Management**: Implementation uncertainty
+
+**Stake-holder actions**: Pay-off uncertainty
+
 
 ##
+
+<!--- Transition from global to local scale --->
 
 ![](wildlife_conflict_sm.jpg)
 
@@ -43,7 +81,7 @@ library(knitr);
 
 - People with strongly held views clash over objectives
 - Negative effect on sustainability, biodiversity, and human livelihood
-
+- MSE does not integrate the livelihood decisions of people
 
 ## Background on ConFooBio
 
@@ -566,13 +604,121 @@ kable(cbind(agents,fit), format="html");
     END OF THE GENETIC ALGORITHM SET OF SLIDES  --------------------------------
 --->
 
+## Iterated Prisoner's dilemma rules {.smaller}
+
+<div class="columns-2">
+
+![](payoff_matrix_sm.png)
+**General structure of Prisoner's dilemma scenario**
+
+![](pd_pays.png)
+**Specific payoffs satisfying a Prisoner's dilemma scenario**
+
+</div>
+
+## Use of genetic algorithms {.smaller}
+
+**Each locus is an focal player's choice given an opponent's past three choices (plus one choice of first move)**
+
+<hr>
+
+
+|                  | **CCC** | **CCD** | **CDC** | **CDD** | **DCC** | **DCD** | **DDC** | **DDD** | **1st** |
+|------------------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
+| **Strategy 1**   | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  |
+| **Strategy 2**   | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  |
+| **...**          |   ...   |   ...   |   ...   |   ...   |   ...   |   ...   |   ...   |   ...   |   ...   |
+| **Strategy N-1** | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  |
+| **Strategy N**   | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  |
+
+<hr>
+
+**Total of 512 possible strategies**
+
+## Use of genetic algorithms {.smaller}
+
+```{r, echo=FALSE}
+inputPanel(
+    
+  numericInput("CC", label = "CC", 0, width="30%"),
+  numericInput("DC", label = "DC", 0, width="30%"),
+  numericInput("CD", label = "CD", 0, width="30%"),
+  numericInput("DD", label = "DD", 0, width="30%"),
+
+  style='width: 2000px; height: 60px'
+)
+```
+
+<br>
+
+```{r, echo=FALSE}
+gres <- reactive({ 
+     cc <- input$CC;
+     dc <- input$DC;
+     cd <- input$CD;
+     dd <- input$DD;
+     rd <- 100;
+     gn <- 100;
+     co <- 0.05;
+     mu <- 0.05;
+ 
+     game_res <- games_ga(CC = cc, DC = dc, CD = cd, DD = dd, rounds = rd,
+                          generations = gn, cross_prob = co, 
+                          mutation_prob = mu, num_opponents = 100);     
+     all <- c(game_res$genos, "break_1",
+              rownames(game_res$genos), "break_2",
+              game_res$fitness);
+    })
+```
+
+```{r, echo = FALSE}
+renderPlot({
+    break2    <- which(gres()=="break_2")[1]+1;
+    end       <- length(gres());
+    fitnesses <- gres()[break2:end];
+    fitnesses <- as.numeric(fitnesses);
+    mean_fit  <- fitnesses / (100 * 100);
+    maxpt     <- max(c(input$CC, input$CD, input$DC, input$DD));
+    par(mar=c(5,5,1,1));
+    plot(x = 1:length(mean_fit), y=mean_fit, type="l", ylim=c(0,maxpt), lwd = 3,
+        xlab="Generation", ylab = "Mean strategy fitness per round",
+         cex.axis=1.5, cex.lab=1.5);
+})
+```
+
+## Adaptive strategies simulated {.smaller}
+
+```{r, echo=FALSE}
+renderTable({
+      break1   <- which(gres()=="break_1")[1] - 1;
+      break2   <- which(gres()=="break_2")[1] - 1;
+      geno_vec <- gres()[1:break1];
+      geno_row <- gres()[(break1+2):break2];
+      genos    <- matrix(data =  geno_vec, ncol = 10, byrow = FALSE);
+      rownames(genos) <- geno_row;
+      colnames(genos) <- c("CCC", "CCD", "CDC", "CDD", "DCC", "DCD", "DDC",
+                           "DDD", "1st", "Final %");
+      final_table <- genos[1:10,];
+     
+}, include.rownames=TRUE)
+```
+
+
 ##
+
+<center>
 
 ![](mse_overview_sm.png)
 
+</center>
+
 ##
 
+<center>
+
 ![](gmse_overview_sm.png)
+
+</center>
 
 ## Introduce GMSE
 
