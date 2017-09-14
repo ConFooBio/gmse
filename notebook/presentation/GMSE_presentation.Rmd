@@ -31,6 +31,14 @@ https://welikia.org/explore/mannahatta-map/
 
 <center>
 
+![](mannahatta_before.jpg)
+
+</center>
+
+##
+
+<center>
+
 ![](mannahatta.jpg)
 
 </center>
@@ -79,6 +87,8 @@ Uncertainty is fundamental in ecological and economic systems, and their measure
 
 ## Conservation conflict
 
+**Conservation conflicts are complex, and characterised by incomplete information that is rapidly changing.**
+
 - People with strongly held views clash over objectives
 - Negative effect on sustainability, biodiversity, and human livelihood
 - MSE does not integrate the livelihood decisions of people
@@ -91,8 +101,8 @@ Resolving conflicts between food security and biodiversity conservation under un
 
 ![](confoobio_sans.png)
 
-- How to solve conflict
 - What leads to conflict
+- How to solve conflict
 - Impact on sustainability
 
 All of the above are characterised by uncertainty
@@ -145,9 +155,9 @@ Game theory provides a natural framework for addressing issues of cooperation an
 
 - Game theory can consider multiple management objectives simultaneously ([Lee 2012 *Chemosphere* **87**:608-613](http://dx.doi.org/10.1016/j.chemosphere.2012.01.014)).
 
-## Point about conflict and games being complex
+## Simple game-theoretic models insufficient
 
-Nils points out that typical game theory assumes that
+![](payoff_matrix_sm.png)
 
 - pay-offs are known and fixed
 - Actions are clear and always available
@@ -726,9 +736,10 @@ renderTable({
 
 ![](GMSE_Logo_Goose_300.png)
 
-- Objective of GMSE 1
-- Objective of GMSE 2
-- Objective of GMSE 3
+- Integrates game theory and ecological theory to construct social-ecological models for adaptive management
+- Simulates all aspects of management: population dynamics, manager observation of populations, manager decision making, and stakeholder responses to management decisions
+- Mimic the decision-making process of managers and stakeholders under conditions of change, uncertainty, and conflict
+- Provide a flexible modelling framework for future development of complex adaptive management models to be applied to conservation theory and specific case studies
 
 </div>
 
@@ -738,9 +749,9 @@ renderTable({
 
 ![](GMSE_Logo_Goose_300.png)
 
-- Technical detail of GMSE 1
-- Technical detail of GMSE 2
-- Technical detail of GMSE 3
+- Written in R and C
+- Requires R (>= 3.3.3)
+- License GPL (>=2)
 
 </div>
 
