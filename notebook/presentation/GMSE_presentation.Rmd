@@ -759,9 +759,12 @@ renderTable({
 
 - Wild geese declined starting in the 1930s, likely caused by habitat loss and increased hunting
 - Refuges were established and hunting restricted in the 1950s, leading to recovery
-
+- Since the 1960s, many populations have exponentially increased
+- Population growth coincides with a switch from natural wetlands to agricultural landscapes
+- Switch to agricultural exploitation causes conflict with farmers
 
 [Fox & Madsen 2017 *Ambio* **46(s2)**:170-187](http://doi.org/10.1007/s13280-016-0878-2)
+[Fox & Abraham 2017 *Ambio* **46(s2)**:188-197](http://doi.org/10.1007/s13280-016-0879-1)
 
 
 ## Future software development
