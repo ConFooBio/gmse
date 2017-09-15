@@ -27,21 +27,47 @@ https://welikia.org/explore/mannahatta-map/
 
 --->
 
-##
+## {.smaller}
 
 <center>
 
-![](mannahatta_before.jpg)
+![](mannahatta_before.png)
 
 </center>
 
-##
+## {.smaller}
 
 <center>
 
-![](mannahatta.jpg)
+![](mannahatta.png)
 
 </center>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Computer Image: [Markley Boyer](https://www.facebook.com/markley.boyer), Photo Image: [Robert Clark](http://www.nationalgeographic.com/contributors/c/photographer-robert-clark/)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [National Geographic](http://ngm.nationalgeographic.com/2009/09/manhattan/miller-text), [The Welikia Project](https://welikia.org/)
+
+
+
+## {.smaller}
+
+<center>
+
+![](potato_fields_Janet_Tench.jpg)
+
+<br> 
+
+Image: [Janet Tench](https://commons.wikimedia.org/wiki/File:Norfolk_potato_field_-_geograph.org.uk_-_180521.jpg)
+</center>
+
+## {.smaller}
+
+<center>
+
+![](KehoeFig1.png)
+
+</center>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Kehoe et al. (2017) *Nat. Ecol. Evol.* **1**:1129–1135](https://www.nature.com/articles/s41559-017-0234-3) 
 
 ##
 
@@ -62,17 +88,32 @@ https://welikia.org/explore/mannahatta-map/
 
 </center>
 
-## Uncertainty in natural resource management
+## {.smaller}
 
-Uncertainty is fundamental in ecological and economic systems, and their measurement
+<center>
 
-**Natural resources**: Structural and demographic uncertainty
+![](mse_overview_sm_pt.png)
 
-**Resource observation**: Observation uncertainty
+</center>
 
-**Management**: Implementation uncertainty
+<br>
 
-**Stake-holder actions**: Pay-off uncertainty
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Bunnefeld et al. (2011) *Trends. Ecol. Evol.* **26**:441-447](https://doi.org/10.1016/j.tree.2011.05.003)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Chadès et al. (2017) *Theor. Ecol.* **10**:1-10](https://doi.org/10.1007/s12080-016-0313-0)
+
+
+## {.smaller}
+
+<center>
+
+![](mse_overview_sm_un.png)
+
+</center>
+
+<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Bunnefeld et al. (2011) *Trends. Ecol. Evol.* **26**:441-447](https://doi.org/10.1016/j.tree.2011.05.003)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Chadès et al. (2017) *Theor. Ecol.* **10**:1-10](https://doi.org/10.1007/s12080-016-0313-0)
 
 
 ##
@@ -126,7 +167,7 @@ All of the above are characterised by uncertainty
 </div>
 <hr>
 
-[Adami et al. (2016) Phys. Life. Rev. 19:1-26](http://dx.doi.org/10.1016/j.plrev.2016.08.015)
+[Adami et al. (2016) *Phys. Life. Rev.* **19**:1-26](http://dx.doi.org/10.1016/j.plrev.2016.08.015)
 
 ## {.smaller}
 
