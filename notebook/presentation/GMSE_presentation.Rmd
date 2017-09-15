@@ -1,7 +1,7 @@
 ---
 title: "GMSE: a general tool for management strategy evaluation"
 subtitle: "https://bradduthie.shinyapps.io/GMSE_presentation/#1"
-author: "Brad Duthie"
+author: "Brad Duthie (@bradduthie)"
 date: "19 September 2017"
 output: 
   ioslides_presentation:
@@ -119,7 +119,7 @@ https://welikia.org/explore/mannahatta-map/
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Chadès et al. (2017) *Theor. Ecol.* **10**:1-10](https://doi.org/10.1007/s12080-016-0313-0)
 
 
-##
+## {.smaller}
 
 <!--- Transition from global to local scale --->
 
@@ -129,33 +129,97 @@ https://welikia.org/explore/mannahatta-map/
 **Image**: [Public domain](https://commons.wikimedia.org/wiki/File:Human-wildlife_conflict.jpg)
 </center>
 
-## Conservation conflict
+##
+
+<div class = "columns-2">
+
+<!--- ![](African_Bush_Elephant.jpg) --->
+
+![](grouse_shooting.jpg)
+
+<br>
 
 **Conservation conflicts are complex, and characterised by incomplete information that is rapidly changing.**
+
+<br>
 
 - People with strongly held views clash over objectives
 - Negative effect on sustainability, biodiversity, and human livelihood
 - MSE does not integrate the livelihood decisions of people
 
-## Background on ConFooBio
+</div>
 
-Resolving conflicts between food security and biodiversity conservation under uncertainty
+<center>
+
+<br>
+
+**Image:** [Public](https://commons.wikimedia.org/wiki/File:Hardy_Heywood_-_The_Grouse_Shoot_1898.jpg) [Domain](https://commons.wikimedia.org/wiki/File:Henharrier.jpg)
+<!--- **Image:** [Muhammad Mahdi Karim](https://en.wikipedia.org/wiki/User:Muhammad_Mahdi_Karim) --->
+
+</center>
+
+##
+
+<div class = "columns-2">
+
+<!--- ![](African_Bush_Elephant.jpg) --->
+
+![](grouse_shooting2.jpg)
+
+<br>
+
+**Conservation conflicts are complex, and characterised by incomplete information that is rapidly changing.**
+
+<br>
+
+- People with strongly held views clash over objectives
+- Negative effect on sustainability, biodiversity, and human livelihood
+- MSE does not integrate the livelihood decisions of people
+
+</div>
+
+<center>
+
+<br>
+
+**Image:** [Public](https://commons.wikimedia.org/wiki/File:Hardy_Heywood_-_The_Grouse_Shoot_1898.jpg) [Domain](https://commons.wikimedia.org/wiki/File:Henharrier.jpg)
+<!--- **Image:** [Muhammad Mahdi Karim](https://en.wikipedia.org/wiki/User:Muhammad_Mahdi_Karim) --->
+
+</center>
+
+
+## The ConFooBio Project
+
+**Resolving conflicts between food security and biodiversity conservation under uncertainty**
 
 <div class = "columns-2">
 
 ![](confoobio_sans.png)
 
-- What leads to conflict
-- How to solve conflict
-- Impact on sustainability
-
-All of the above are characterised by uncertainty
+![](group.png)
 
 </div>
 
+
+
+## The ConFooBio Project
+
+**Resolving conflicts between food security and biodiversity conservation under uncertainty**
+
+<div class = "columns-2">
+
+![](confoobio_sans.png)
+
+<br>
+
+- What leads to conservation conflict
+- How to resolve conservation conflict
+- Impact on sustainability of social-ecological systems
+
+</div>
+
+
 <!--- Get the ERC logo and EU flag in here? --->
-
-
 
 ## Game theory: conflict and cooperation
 
@@ -170,7 +234,9 @@ All of the above are characterised by uncertainty
 </div>
 <hr>
 
-[Adami et al. (2016) *Phys. Life. Rev.* **19**:1-26](http://dx.doi.org/10.1016/j.plrev.2016.08.015)
+<br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Adami et al. (2016) *Phys. Life. Rev.* **19**:1-26](http://dx.doi.org/10.1016/j.plrev.2016.08.015)
 
 ## {.smaller}
 
@@ -186,7 +252,9 @@ All of the above are characterised by uncertainty
 
 </div>
 
-**Images:** (1) [Public license](https://commons.wikimedia.org/wiki/File:US_and_USSR_nuclear_stockpiles.svg), (2) [Wilkinson 1990](https://projects.ncsu.edu/project/evoresources/Evolutionary%20medicine/Unitsofselection%20DM%20copy/wilkinson-foodsharing.pdf), (3) [Isaacdm](https://commons.wikimedia.org/wiki/File:PhysicsofPenalty.JPG?uselang=en-gb), (4) [Public license](http://www.publicdomainpictures.net/view-image.php?image=180560&picture=brexit-referendum-uk)
+<br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Images:** (1) [Public license](https://commons.wikimedia.org/wiki/File:US_and_USSR_nuclear_stockpiles.svg), (2) [Wilkinson 1990](https://projects.ncsu.edu/project/evoresources/Evolutionary%20medicine/Unitsofselection%20DM%20copy/wilkinson-foodsharing.pdf), (3) [Isaacdm](https://commons.wikimedia.org/wiki/File:PhysicsofPenalty.JPG?uselang=en-gb), (4) [Public license](http://www.publicdomainpictures.net/view-image.php?image=180560&picture=brexit-referendum-uk)
 
 
 ## Conflict in conservation
@@ -199,23 +267,112 @@ Game theory provides a natural framework for addressing issues of cooperation an
 
 - Game theory can consider multiple management objectives simultaneously ([Lee 2012 *Chemosphere* **87**:608-613](http://dx.doi.org/10.1016/j.chemosphere.2012.01.014)).
 
-## Simple game-theoretic models insufficient
+## Stake-holders are complex
+
+<div class="columns-2">
+
+**Simple models assume that stake-holders:**
+
+- Know what pay-offs will be
+- Have clearly defined choices
+- Behave rationally
+- Understand the games
+- Prioritise outcomes clearly
 
 ![](payoff_matrix_sm.png)
 
-- pay-offs are known and fixed
-- Actions are clear and always available
-- Players behave rationally
-- Game rules are known to all
-- There is a clear rank order of outcomes
+</div>
+
+## Conservation conflicts are complex {.smaller}
+
+<div class="columns-2">
+
+ - **Asymmetric payoffs**: Payoffs of choices may depend instead on stakeholder identity.
+
+![](payoff_matrix_asym.png)
+
+</div>
+
+## But most games are more complex {.smaller}
+
+<div class="columns-2">
+
+ - **Asymmetric payoffs**: Payoffs of choices may depend instead on stakeholder identity.
+  - **Multiple choices**: Players might have three or more choices.
+
+![](payoff_matrix_cho.png)
+
+</div>
+
+## But most games are more complex {.smaller}
+
+<div class="columns-2">
+
+ - **Asymmetric payoffs**: Payoffs of choices may depend instead on stakeholder identity.
+ - **Multiple choices**: Players might have three or more choices.
+ - **Multiple players**: More than two stakeholders might interact at one time.
+
+![](payoff_matrix_3pl.png)
+
+</div>
+
+## But most games are more complex {.smaller}
+
+<div class="columns-2">
+
+ - **Asymmetric payoffs**: Payoffs of choices may depend instead on stakeholder identity.
+ - **Multiple choices**: Players might have three or more choices.
+ - **Multiple players**: More than two stakeholders might interact at one time.
+ - **Iterated interactions**: Strategies maybe affected by interaction history.
+
+```{r, echo=FALSE}
+rounds  <- as.character(1:9);
+players <- c("Player 1","Player 2");
+plays   <- sample(x=c(0,1), size=18, replace=TRUE);
+plays[plays == 0] <- "A";
+plays[plays == 1] <- "B";
+history <- matrix(data=plays, nrow=2);
+rownames(history) <- players;
+colnames(history) <- rounds;
+kable(noquote(history));
+```
 
 
+![](payoff_matrix_rd10_sm.png)
 
 
-## Genetic algorithms
+</div>
 
-Show the basic idea
-Use the gamesGA package to illustrate it in a game-theoretic context
+
+##{.smaller}
+
+<center>
+
+![](mse_overview_sm.png)
+
+</center>
+
+
+## {.smaller}
+
+<center>
+
+![](gmse_overview_sm_ga.png)
+
+</center>
+
+<br><br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Bunnefeld et al. (2011) *Trends. Ecol. Evol.* **26**:441-447](https://doi.org/10.1016/j.tree.2011.05.003)  
+
+## {.smaller}
+
+<center>
+
+![](gmse_overview_sm_ga2.png)
+
+</center>
+
 
 <!--- 
     START OF THE GENETIC ALGORITHM SET OF SLIDES  ------------------------------
@@ -758,11 +915,11 @@ renderTable({
 ```
 
 
-##
+## {.smaller}
 
 <center>
 
-![](mse_overview_sm.png)
+![](gmse_overview_sm_ga2.png)
 
 </center>
 
@@ -774,30 +931,180 @@ renderTable({
 
 </center>
 
-## Introduce GMSE
+## Genearlised MSE {.smaller}
 
 <div class = "columns-2">
-
-![](GMSE_Logo_Goose_300.png)
 
 - Integrates game theory and ecological theory to construct social-ecological models for adaptive management
 - Simulates all aspects of management: population dynamics, manager observation of populations, manager decision making, and stakeholder responses to management decisions
 - Mimic the decision-making process of managers and stakeholders under conditions of change, uncertainty, and conflict
 - Provide a flexible modelling framework for future development of complex adaptive management models to be applied to conservation theory and specific case studies
 
+<br><br>
+
+<center>
+
+![](GMSE_Logo_Goose_375.png)
+
+</center>
+
 </div>
 
-## Introduce GMSE
+## Genearlised MSE ('GMSE' R package)
 
 <div class = "columns-2">
 
-![](GMSE_Logo_Goose_300.png)
-
+- Individual-based
+- Spatially explicit
 - Written in R and C
 - Requires R (>= 3.3.3)
 - License GPL (>=2)
+- *v0.2.2.7* [available](https://cran.r-project.org/package=GMSE) on CRAN
+- Browser-based GUI [available](https://bradduthie.shinyapps.io/gmse_gui/) via shiny
+- Source code [available](https://github.com/bradduthie/gmse) on GitHub
+- Intended for a wide range of software users
+
+<br><br>
+
+<center>
+
+![](GMSE_Logo_Goose_375.png)
+
+</center>
 
 </div>
+
+
+##
+
+<center>
+
+![](gmse_overview_sm.png)
+
+</center>
+
+
+## GMSE: Natural resources 
+
+<div class = "columns-2">
+
+
+- Spatially explicit landscape
+- Discrete individual resources
+- Individual birth, movement, death
+
+<br>
+
+<center>
+
+![](sep_land.gif)
+
+</center>
+
+## GMSE: Resource observation
+
+<div class = "columns-2">
+
+
+- Four types of observation options
+    1. Counting on a subset of landscape
+    2. Mark and recapture
+    3. Linear transect sampling
+    4. Block transect sampling
+- Mechanistic sampling process
+- Generates simulated data frame used by the manager
+
+<br>
+
+<center>
+
+![](binos.png)
+
+</center>
+
+</div>
+
+<center>
+
+**Image:** [Public Domain](https://commons.wikimedia.org/wiki/File:Fernglas(alt).JPG)
+
+</center>
+
+## GMSE: Management
+
+<div class = "columns-2">
+
+
+- One manager analyses observations and compares with a target abundance
+- Five possible policy options (scaring, culling, castration, feeding, helping)
+- Fixed budget and a costs for setting policy
+- Genetic algorithm anticipates policy effects from previous actions to set costs of actions for stakeholders
+
+<br>
+
+<center>
+
+![](balance.png)
+
+</center>
+
+## GMSE: Stake-holder actions {.smaller}
+
+<div class = "columns-2">
+
+- Any number of stake-holders
+- Stake-holders want to maximise harvest of resources or minimise resource effects on their land
+- Seven possible actions (scaring, culling, castration, feeding, helping, tend crops, kill crops)
+- Fixed budget for performing actions of potentially differing costs
+- Genetic algorithm anticipates effects of actions on harvest or land yield
+
+<br>
+
+<center>
+
+![](harvesting.jpg)
+
+</center>
+
+
+</div>
+
+<center>
+
+<br>
+
+**Image:** [Public Domain](https://commons.wikimedia.org/wiki/File:Libiaz-zniwa1938.a.jpg)
+
+</center>
+
+
+## Running the gmse() function {.smaller}
+
+```{r, echo = TRUE}
+sim <- gmse(land_ownership = TRUE, stakeholders = 10, observe_type = 1,
+            res_death_K = 2000, manage_target = 1000, RESOURCE_ini = 1000,
+            user_budget = 5000, manager_budget = 5000, res_consume = 1,
+            scaring = TRUE, fixed_mark = 50, fixed_recapt = 300,
+            plotting = FALSE);
+```
+
+
+## Explain two types of plots
+
+
+##
+
+<center>
+
+```{r, echo = FALSE, fig.height = 6, fig.width = 7}
+plot_gmse_results(res = sim$resource, obs = sim$observation, land = sim$land,
+                  agents = sim$agents, paras = sim$paras, ACTION = sim$action,
+                  COST = sim$cost);
+```
+
+</center>
+
+## Other plot type
 
 ## Geese example
 
