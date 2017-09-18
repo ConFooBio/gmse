@@ -312,8 +312,10 @@ https://welikia.org/explore/mannahatta-map/
 
 <br>
 
-![](adaptive_management.png)
+![](African_Bush_Elephant.jpg)
+<!--- ![](adaptive_management.png) --->
 
+**Image:** [M. M. Karim](https://en.wikipedia.org/wiki/User:Muhammad_Mahdi_Karim)
 
 </div>
 
@@ -444,9 +446,9 @@ https://welikia.org/explore/mannahatta-map/
 
 <br><br><br>
 
-- What leads to conservation conflict
-- How to resolve conservation conflict
-- Impact on sustainability of social-ecological systems
+- What leads to conservation conflict?
+- How to resolve conservation conflict?
+- Impact on sustainability of social-ecological systems?
 
 </div>
 
@@ -1261,6 +1263,8 @@ renderTable({
 
 <center>
 
+<br><br><br><br><br><br><br><br>
+
 **Image:** [Public Domain](https://commons.wikimedia.org/wiki/File:Fernglas(alt).JPG)
 
 </center>
@@ -1333,10 +1337,10 @@ renderTable({
 
 </div>
 
-<br>
+<br><br>
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Fox & Madsen 2017 *Ambio* **46(s2)**:170-187](http://doi.org/10.1007/s13280-016-0878-2)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Fox & Abraham 2017 *Ambio* **46(s2)**:188-197](http://doi.org/10.1007/s13280-016-0879-1)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Fox & Madsen 2017 *Ambio* **46(s2)**:170-187](http://doi.org/10.1007/s13280-016-0878-2)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Fox & Abraham 2017 *Ambio* **46(s2)**:188-197](http://doi.org/10.1007/s13280-016-0879-1)
 
 
 ## {.smaller}
@@ -1358,18 +1362,18 @@ renderTable({
 </div>
 
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Fox & Madsen 2017 *Ambio* **46(s2)**:170-187](http://doi.org/10.1007/s13280-016-0878-2)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Fox & Abraham 2017 *Ambio* **46(s2)**:188-197](http://doi.org/10.1007/s13280-016-0879-1)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Fox & Madsen 2017 *Ambio* **46(s2)**:170-187](http://doi.org/10.1007/s13280-016-0878-2)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Fox & Abraham 2017 *Ambio* **46(s2)**:188-197](http://doi.org/10.1007/s13280-016-0879-1)
 
 
 ## Running the gmse() function {.smaller}
 
 ```{r, echo = TRUE}
-sim <- gmse(land_ownership = TRUE, stakeholders = 10, observe_type = 1,
-            res_death_K = 2000, manage_target = 1000, RESOURCE_ini = 1000,
-            user_budget = 5000, manager_budget = 5000, res_consume = 1,
-            scaring = TRUE, fixed_mark = 50, fixed_recapt = 300,
-            plotting = FALSE);
+sim <- gmse(land_ownership = TRUE, stakeholders = 10, RESOURCE_ini = 1000,
+            res_death_K = 2000, manage_target = 1000, res_consume = 1,
+            user_budget = 5000, manager_budget = 5000, plotting = FALSE,
+            scaring = TRUE, culling = TRUE, observe_type = 1, fixed_mark = 50, 
+            fixed_recapt = 300);
 ```
 
 
@@ -1429,8 +1433,6 @@ plot_gmse_effort(agents = sim$agents, paras = sim$paras, ACTION = sim$action,
 - Improved strategy prediction for managers and users
 - Interactive decision-making with software users
 
-<br><br>
-
 <center>
 
 ![](GMSE_Logo_Goose_375.png)
@@ -1449,3 +1451,23 @@ plot_gmse_effort(agents = sim$agents, paras = sim$paras, ACTION = sim$action,
 
 </center>
 
+
+##
+
+<br><br><br>
+
+<div class = "columns-2">
+
+<center>
+
+
+
+![](confoobio_sans.png)
+
+
+![](GMSE_Logo_Goose_340.png)  
+
+
+</center>
+
+</div>
