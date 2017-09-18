@@ -120,7 +120,7 @@ plot_gmse_effort <- function(agents, paras, ACTION, COST){
     feed_eff <- feed_eff * 100;
     help_eff <- help_eff * 100;
     
-    par(mfrow = c(5, 1), mar = c(0, 0, 0, 0), oma = c(6, 6, 4, 6));
+    par(mfrow = c(5, 1), mar = c(0, 0, 0, 0), oma = c(6, 6, 0, 6));
     #---- Scaring
     if(para_vec[89] == 1){
         y1 <- 100;
@@ -139,7 +139,7 @@ plot_gmse_effort <- function(agents, paras, ACTION, COST){
         axis(side = 4, at = c(50, 100),  labels = c(50, 100), cex.axis = 1.5);
         legend(x = 1, y = y2 + y2*0.1, fill = cols[1:5], horiz = TRUE,
                legend = c("scaring", "culling", "castration", "feeding", 
-                          "helping"), bty = "n", cex = 1.5);
+                          "helping"), bty = "n", cex = 1);
         abline(h = y1 + y1*0.1, lwd = 2);
     }else{
         plot(x = 1:max_time, y = scar_eff[,1], type = "n", xaxt= "n", 
@@ -149,7 +149,7 @@ plot_gmse_effort <- function(agents, paras, ACTION, COST){
         abline(h = 100, lwd = 2);
         legend(x = 1, y = 119, fill = cols[1:5], horiz = TRUE,
                legend = c("scaring", "culling", "castration", "feeding", 
-                          "helping"), bty = "n", cex = 1.5);
+                          "helping"), bty = "n", cex = 1);
     }
     #---- Culling
     if(para_vec[90] == 1){
@@ -243,6 +243,8 @@ https://welikia.org/explore/mannahatta-map/
 
 --->
 
+# Biodiversity and food security
+
 ## {.smaller}
 
 <center>
@@ -296,8 +298,26 @@ https://welikia.org/explore/mannahatta-map/
 
 ![](wicked_modelling.png)
 
+# Adaptive management and conservation conflicts
+
+
 ## Process of adaptive management
 
+<div class = "columns-2">
+
+- Uses an iterative process of decision-making
+- Sets explicit management goals
+- Develops alternative management strategies
+- Deals with uncertainty by updating knowledge of the system
+
+<br>
+
+![](adaptive_management.png)
+
+
+</div>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Keith et al. (2011) *Biol. Conserv.* **144**: 1175-1778](https://doi.org/10.1016/j.biocon.2010.11.022)
 
 ##
 
@@ -430,6 +450,7 @@ https://welikia.org/explore/mannahatta-map/
 
 </div>
 
+# Game theory in conservation conflict
 
 <!--- Get the ERC logo and EU flag in here? --->
 
@@ -466,7 +487,7 @@ https://welikia.org/explore/mannahatta-map/
 
 <br>
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Images:** (1) [Public license](https://commons.wikimedia.org/wiki/File:US_and_USSR_nuclear_stockpiles.svg), (2) [Wilkinson 1990](https://projects.ncsu.edu/project/evoresources/Evolutionary%20medicine/Unitsofselection%20DM%20copy/wilkinson-foodsharing.pdf), (3) [Isaacdm](https://commons.wikimedia.org/wiki/File:PhysicsofPenalty.JPG?uselang=en-gb), (4) [Public license](http://www.publicdomainpictures.net/view-image.php?image=180560&picture=brexit-referendum-uk)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Images:** (1) [Public license](https://commons.wikimedia.org/wiki/File:US_and_USSR_nuclear_stockpiles.svg), (2) [Wilkinson 1990](https://projects.ncsu.edu/project/evoresources/Evolutionary%20medicine/Unitsofselection%20DM%20copy/wilkinson-foodsharing.pdf), (3) [Isaacdm](https://commons.wikimedia.org/wiki/File:PhysicsofPenalty.JPG?uselang=en-gb), (4) [Public license](http://www.publicdomainpictures.net/view-image.php?image=180560&picture=brexit-referendum-uk)
 
 
 ## Conflict in conservation
@@ -585,6 +606,7 @@ kable(noquote(history));
 
 </center>
 
+# Genetic algorithms, and an example using Prisoner's dilemma
 
 <!--- 
     START OF THE GENETIC ALGORITHM SET OF SLIDES  ------------------------------
@@ -1126,6 +1148,7 @@ renderTable({
 }, include.rownames=TRUE)
 ```
 
+# Genetic algorithms in Management Strategy Evaluation
 
 ## {.smaller}
 
@@ -1290,6 +1313,55 @@ renderTable({
 </center>
 
 
+# Rise of the geese: Example use of GMSE
+
+## {.smaller}
+
+<div class = "columns-2">
+
+- Wild geese declined starting in the 1930s, likely caused by habitat loss and increased hunting
+- Refuges were established and hunting restricted in the 1950s, leading to recovery
+
+
+<center>
+
+![](barnacle_goose.JPG)
+
+**Image:** [Raju Kasambe](https://commons.wikimedia.org/wiki/File:Barnacle_Geese_Branta_leucopsis_London_UK_(4).JPG)
+
+</center>
+
+</div>
+
+<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Fox & Madsen 2017 *Ambio* **46(s2)**:170-187](http://doi.org/10.1007/s13280-016-0878-2)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Fox & Abraham 2017 *Ambio* **46(s2)**:188-197](http://doi.org/10.1007/s13280-016-0879-1)
+
+
+## {.smaller}
+
+<div class = "columns-2">
+
+- Wild geese declined starting in the 1930s, likely caused by habitat loss and increased hunting
+- Refuges were established and hunting restricted in the 1950s, leading to recovery
+- Since the 1960s, many populations have exponentially increased
+- Population growth coincides with a switch from natural wetlands to agricultural landscapes
+- Switch to agricultural exploitation causes conflict with farmers
+
+<center>
+
+![](goose_graph.png)
+
+</center>
+
+</div>
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Fox & Madsen 2017 *Ambio* **46(s2)**:170-187](http://doi.org/10.1007/s13280-016-0878-2)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Fox & Abraham 2017 *Ambio* **46(s2)**:188-197](http://doi.org/10.1007/s13280-016-0879-1)
+
+
 ## Running the gmse() function {.smaller}
 
 ```{r, echo = TRUE}
@@ -1333,27 +1405,17 @@ plot_gmse_results(res = sim$resource, obs = sim$observation, land = sim$land,
 
 </center>
 
-##
+## {.smaller}
 
 <center>
 
-```{r, echo = FALSE, fig.height = 6, fig.width = 6}
+```{r, echo = FALSE, fig.height = 6.5, fig.width = 6}
 plot_gmse_effort(agents = sim$agents, paras = sim$paras, ACTION = sim$action, 
                  COST   = sim$cost);
 ```
 
 </center>
 
-## Geese example
-
-- Wild geese declined starting in the 1930s, likely caused by habitat loss and increased hunting
-- Refuges were established and hunting restricted in the 1950s, leading to recovery
-- Since the 1960s, many populations have exponentially increased
-- Population growth coincides with a switch from natural wetlands to agricultural landscapes
-- Switch to agricultural exploitation causes conflict with farmers
-
-[Fox & Madsen 2017 *Ambio* **46(s2)**:170-187](http://doi.org/10.1007/s13280-016-0878-2)
-[Fox & Abraham 2017 *Ambio* **46(s2)**:188-197](http://doi.org/10.1007/s13280-016-0879-1)
 
 
 ## Future software development
