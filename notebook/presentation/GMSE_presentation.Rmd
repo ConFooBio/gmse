@@ -1417,9 +1417,35 @@ plot_gmse_effort(agents = sim$agents, paras = sim$paras, ACTION = sim$action,
 </center>
 
 
+# [GMSE GUI](https://bradduthie.shinyapps.io/gmse_gui/)
 
 ## Future software development
 
+<div class = "columns-2">
+
+- Modular `gmse_apply()` function allowing user-supplied natural resource, observation, manager, and user models
+- Stuctured populations (e.g., sex, stage)
+- Multiple populations of interacting species
+- Improved strategy prediction for managers and users
+- Interactive decision-making with software users
+
+<br><br>
+
+<center>
+
+![](GMSE_Logo_Goose_375.png)
+
+</center>
+
+</div>
 
 
+## {.smaller}
+
+<br>
+<center>
+
+![](acknowledgements.png)
+
+</center>
 
