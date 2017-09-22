@@ -298,28 +298,7 @@ https://welikia.org/explore/mannahatta-map/
 
 ![](wicked_modelling.png)
 
-# Adaptive management and conservation conflicts
-
-
-## Process of adaptive management
-
-<div class = "columns-2">
-
-- Uses an iterative process of decision-making
-- Sets explicit management goals
-- Develops alternative management strategies
-- Deals with uncertainty by updating knowledge of the system
-
-<br>
-
-![](African_Bush_Elephant.jpg)
-<!--- ![](adaptive_management.png) --->
-
-**Image:** [M. M. Karim](https://en.wikipedia.org/wiki/User:Muhammad_Mahdi_Karim)
-
-</div>
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Keith et al. (2011) *Biol. Conserv.* **144**: 1175-1778](https://doi.org/10.1016/j.biocon.2010.11.022)
+# Uncertainty and conservation conflict
 
 ##
 
@@ -367,7 +346,7 @@ https://welikia.org/explore/mannahatta-map/
 **Image**: [Public domain](https://commons.wikimedia.org/wiki/File:Human-wildlife_conflict.jpg)
 </center>
 
-##
+## {.smaller}
 
 <div class = "columns-2">
 
@@ -375,9 +354,8 @@ https://welikia.org/explore/mannahatta-map/
 
 ![](grouse_shooting.jpg)
 
-<br>
 
-**Conservation conflicts are complex, and characterised by incomplete information that is rapidly changing.**
+**Conservation conflicts between biodiversity and food security result when the outcome of one stake-holder is affected by one or more other stake-holders** ([Colyvan et al. (2011) *Biol. Conserv.* **144**:1246-1253](http://www.sciencedirect.com/science/article/pii/S000632071000488X?via%3Dihub))
 
 <br>
 
@@ -386,7 +364,7 @@ https://welikia.org/explore/mannahatta-map/
 - MSE does not integrate the livelihood decisions of people
 
 </div>
-
+<br><br>
 <center>
 
 **Image:** [Public](https://commons.wikimedia.org/wiki/File:Hardy_Heywood_-_The_Grouse_Shoot_1898.jpg) [Domain](https://commons.wikimedia.org/wiki/File:Henharrier.jpg)
@@ -394,7 +372,7 @@ https://welikia.org/explore/mannahatta-map/
 
 </center>
 
-##
+## {.smaller}
 
 <div class = "columns-2">
 
@@ -402,9 +380,8 @@ https://welikia.org/explore/mannahatta-map/
 
 ![](grouse_shooting2.jpg)
 
-<br>
 
-**Conservation conflicts are complex, and characterised by incomplete information that is rapidly changing.**
+**Conservation conflicts between biodiversity and food security result when the outcome of one stake-holder is affected by one or more other stake-holders** ([Colyvan et al. (2011) *Biol. Conserv.* **144**:1246-1253](http://www.sciencedirect.com/science/article/pii/S000632071000488X?via%3Dihub))
 
 <br>
 
@@ -413,6 +390,8 @@ https://welikia.org/explore/mannahatta-map/
 - MSE does not integrate the livelihood decisions of people
 
 </div>
+
+<br><br>
 
 <center>
 
@@ -1152,21 +1131,6 @@ renderTable({
 
 # Genetic algorithms in Management Strategy Evaluation
 
-## {.smaller}
-
-<center>
-
-![](gmse_overview_sm_ga2.png)
-
-</center>
-
-##
-
-<center>
-
-![](gmse_overview_sm.png)
-
-</center>
 
 ## Generalised MSE {.smaller}
 
@@ -1276,7 +1240,7 @@ renderTable({
 
 - One manager analyses observations and compares with a target abundance
 - Five possible policy options (scaring, culling, castration, feeding, helping)
-- Fixed budget and a costs for setting policy
+- Fixed budget and costs for setting policy
 - Genetic algorithm anticipates policy effects from previous actions to set costs of actions for stake-holders
 
 <br>
@@ -1317,54 +1281,7 @@ renderTable({
 </center>
 
 
-# Rise of the geese: Example use of GMSE
-
-## {.smaller}
-
-<div class = "columns-2">
-
-- Wild geese declined starting in the 1930s, likely caused by habitat loss and increased hunting
-- Refuges were established and hunting restricted in the 1950s, leading to recovery
-
-
-<center>
-
-![](barnacle_goose.JPG)
-
-**Image:** [Raju Kasambe](https://commons.wikimedia.org/wiki/File:Barnacle_Geese_Branta_leucopsis_London_UK_(4).JPG)
-
-</center>
-
-</div>
-
-<br><br>
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Fox & Madsen 2017 *Ambio* **46(s2)**:170-187](http://doi.org/10.1007/s13280-016-0878-2)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Fox & Abraham 2017 *Ambio* **46(s2)**:188-197](http://doi.org/10.1007/s13280-016-0879-1)
-
-
-## {.smaller}
-
-<div class = "columns-2">
-
-- Wild geese declined starting in the 1930s, likely caused by habitat loss and increased hunting
-- Refuges were established and hunting restricted in the 1950s, leading to recovery
-- Since the 1960s, many populations have exponentially increased
-- Population growth coincides with a switch from natural wetlands to agricultural landscapes
-- Switch to agricultural exploitation causes conflict with farmers
-
-<center>
-
-![](goose_graph.png)
-
-</center>
-
-</div>
-
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Fox & Madsen 2017 *Ambio* **46(s2)**:170-187](http://doi.org/10.1007/s13280-016-0878-2)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Fox & Abraham 2017 *Ambio* **46(s2)**:188-197](http://doi.org/10.1007/s13280-016-0879-1)
-
+# Example use of GMSE
 
 ## Running the gmse() function {.smaller}
 
@@ -1422,6 +1339,30 @@ plot_gmse_effort(agents = sim$agents, paras = sim$paras, ACTION = sim$action,
 
 
 # [GMSE GUI](https://bradduthie.shinyapps.io/gmse_gui/)
+
+## Use of GMSE: Model case studies
+
+<div class = "columns-2">
+
+<center>
+
+![](African_Bush_Elephant.jpg)  
+**Image:** [M. M. Karim](https://en.wikipedia.org/wiki/User:Muhammad_Mahdi_Karim)
+
+![](barnacle_goose.JPG)  
+**Image:** [Raju Kasambe](https://commons.wikimedia.org/wiki/File:Barnacle_Geese_Branta_leucopsis_London_UK_(4).JPG)
+
+</center>
+
+</div>
+
+## Use of GMSE: Theoretical questions
+
+<center>
+
+![](man_freq.png) 
+
+</center>
 
 ## Future software development
 
