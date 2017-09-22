@@ -50,7 +50,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **SEP** [15](#u-15-SEP-2017), [13](#u-13-SEP-2017), [8](#u-8-SEP-2017), [6](#u-6-SEP-2017)
+     - **SEP** [22](#u-22-SEP-2017), [15](#u-15-SEP-2017), [13](#u-13-SEP-2017), [8](#u-8-SEP-2017), [6](#u-6-SEP-2017)
      - **AUG** [28](#u-28-AUG-2017), [23](#u-23-AUG-2017), [17](#u-17-AUG-2017), [16](#u-16-AUG-2017), [15](#u-15-AUG-2017), [7](#u-7-AUG-2017)
      - **JUL** [7](#u-7-JUL-2017), [3](#u-3-JUL-2017)
      - **JUN** [27](#u-27-JUN-2017), [26](#u-26-JUN-2017), [25](#u-25-JUN-2017), [23](#u-23-JUN-2017), [20](#u-20-JUN-2017), [16](#u-16-JUN-2017), [15](#u-15-JUN-2017), [14](#u-14-JUN-2017), [13](#u-13-JUN-2017), [9](#u-9-JUN-2017), [8](#u-7-JUN-2017), [7](#u-7-JUN-2017), [6](#u-6-JUN-2017), [5](#u-5-JUN-2017), [4](#u-4-JUN-2017) 
@@ -88,6 +88,94 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-22-SEP-2017">Update: 22 SEP 2017</a>
+
+Currently, the `gmse()` function returns a list that includes all of the data produced by the model, some details of which are required for plotting.
+
+```{r, eval = FALSE}
+sim_results <- list(resource    = RESOURCE_REC,
+                    observation = OBSERVATION_REC,
+                    paras       = PARAS_REC,
+                    land        = LANDSCAPE_REC,
+                    time_taken  = total_time,
+                    agents      = AGENT_REC,
+                    cost        = COST_REC,
+                    action      = ACTION_REC
+                );
+```
+
+I think that this list is fine, perhaps necessary, to keep, but the ConFooBio group has also concluded that there should be some easier to understand summary of the data. I propose that some function written, a `gmse_summary()`, that summarises the results in an easier to understand way would be useful. The function could just be run as below.
+
+```{r, eval = FALSE}
+sim         <- gmse();
+sim_summary <- gmse_summary(sim);
+```
+
+The output of `gmse_summary()` should be a list of all of the relevant information that a user might want to plot or analyse. It should include the following list elements.
+
+1. `sim_summary$resources`
+2. `sim_summary$observations`
+3. `sim_summary$costs`
+4. `sim_summary$actions`
+
+More might be needed, but the above should be a good starting point that will provide four clear data tables for the user. The tables will look like the below.
+
+**1. Resource abundances over time**
+
+| time_step | abundance |
+|-----------|-----------|
+| 1         |  100      |
+| 2         |  104      |
+| ...       |  ...      |
+| 99        |  116      |
+| 100       |  108      |
+
+In the above, only the resource abundance is reported to the software user, though it might also be useful to have additional columns as well eventually.
+
+**2. Observation estimates of abundance over time**
+
+| time_step | estimated_abundance |
+|-----------|---------------------|
+| 1         |  102                |
+| 2         |  101                |
+| ...       |  ...                |
+| 99        |  121                |
+| 100       |  112                |
+
+In the above, only the estimate from the observaiton submodel is reported to the software user. Additional columns might also be useful for things like confidence intervals, though for now I'm not sure if this is needed.
+
+**3. Costs set in each time step**
+
+| time_step | manager | scaring  | castration | culling | feeding | helping | unused |
+|-----------|---------|----------|------------|---------|---------|---------|--------|
+|  1        |  0      |  40      | NA         | 60      | NA      | NA      | 0      |
+|  2        |  0      |  36      | NA         | 62      | NA      | NA      | 2      |
+|  ...      | ...     | ...      | ...        | ...     | ...     | ...     | ...    |
+|  99       |  0      |  0       | NA         | 100     | NA      | NA      | 0      |
+|  100      |  0      |  3       | NA         | 97      | NA      | NA      | 0      |
+
+In the above, the manager number is always 0 because this is the number of the agent that has that role in GMSE. All impossible actions (specificed by the simulation) are labelled `NA`, while the possible scaring and culling actions are given values that correspond to the cost of each action for users in each time step. Hence the table summarises policy for each time step in a way that software users can interpret more cleanly.
+
+**4. Actions in each time step**
+
+| time_step | user  | scaring  | castration | culling | feeding | helping | tend_crop | kill_crop | unused | crop_yield | harvested |
+|-----------|-------|----------|------------|---------|---------|---------|-----------|-----------|--------|------------|-----------|
+|  1        |  1    |  50      | NA         | 50      | NA      | NA      | NA        | NA        | 0      |  90        | 12        |
+|  1        |  2    |  59      | NA         | 40      | NA      | NA      | NA        | NA        | 1      |  92        | 9         |
+|  1        |  3    |  100     | NA         | 0       | NA      | NA      | NA        | NA        | 0      |  89        | 0         |
+|  2        |  1    |  44      | NA         | 66      | NA      | NA      | NA        | NA        | 0      |  88        | 16        |
+|  2        |  2    |  52      | NA         | 48      | NA      | NA      | NA        | NA        | 0      |  94        | 12        |
+|  2        |  3    |  98      | NA         | 0       | NA      | NA      | NA        | NA        | 2      |  90        | 0         |
+|  ...      | ...   | ...      | ...        | ...     | ...     | ...     | ...       | ...       | ...    | ...        | ...       |
+|  99       |  1    |  36      | NA         | 63      | NA      | NA      | NA        | NA        | 1      |  79        | 20        |
+|  99       |  2    |  40      | NA         | 60      | NA      | NA      | NA        | NA        | 0      |  83        | 18        |
+|  99       |  3    |  28      | NA         | 72      | NA      | NA      | NA        | NA        | 0      |  88        | 12        |
+|  100      |  1    |  35      | NA         | 62      | NA      | NA      | NA        | NA        | 3      |  82        | 18        |
+|  100      |  2    |  37      | NA         | 63      | NA      | NA      | NA        | NA        | 0      |  84        | 22        |
+|  100      |  3    |  23      | NA         | 77      | NA      | NA      | NA        | NA        | 0      |  84        | 13        |
+
+The above action table has more rows in it than the cost table because a row is needed for each user in each time step. This gives the software user full access to each individual user's actions, and their results. Note that as above, castration, feeding, and helping, are not options. Additionally, in this hypothetical simulation, tending or killing crops are not options, so no actions are performed. Users divide their budget between scaring and culling in each time step. The last two columns also give useful information to the software user. The first is crop yield on the user's owned land (should probably be `NA` if `land_ownership = FALSE`), which will reflect the percentage of the total possible yield (or maybe raw yield?) for each user -- hencing allowing the table to direclty correlate actions with yield. The last column is the number of resources 'harvested', which I think should count successful 'kills' (rather than just actions devoted to culling). The realised culling might be lower than the actions devoted to culling, for example, if not enough resources are actually on the user's land to cull. Additional statistics for each user could be added in as columns, but this seems a good place to start. This `gmse_summary` producing a list of the above four tables will be included in the next version of GMSE, along with the [new plotting function](#u-23-AUG-2017) highlighting the conflict itself, and the `gmse_apply` function discussed on [6 SEPT](#u-6-SEP-2017). 
 
 > <a name="u-15-SEP-2017">Update: 15 SEP 2017</a>
 
