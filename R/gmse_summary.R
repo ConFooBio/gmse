@@ -32,8 +32,13 @@ gmse_summary <- function(gmse_results){
     #--- Next get estimates abd the costs set by the manager
     observations    <- matrix(dat  = 0, nrow = time_steps, 
                               ncol = length(res_types) + 1);
-    costs  <- matrix(dat = NA, nrow = time_steps*length(res_types), ncol = 10);
+    costs   <- matrix(dat = NA, nrow = time_steps*length(res_types), ncol = 10);
+    agents  <- gmse_results$agents[[1]];
+    users   <- agents[agents[,2] > 0, 1];
+    actions <- matrix(dat  = NA, ncol = 13,
+                      nrow = time_steps * length(res_types) * length(users));
     c_row  <- 1;
+    a_row  <- 1;
     for(i in 1:time_steps){
         the_res            <- gmse_results$resource[[i]][,2];
         manager_acts       <- gmse_results$action[[i]][,,1];
@@ -78,32 +83,14 @@ gmse_summary <- function(gmse_results){
             }
             costs[c_row, 10] <- manager_acts[estim_row, 13] - parameters[97];
             c_row <- c_row + 1;
-        }
-    }
-    cost_col <- c("time_step", "resource_type", "scaring", "culling",
-                  "castration", "feeding", "helping", "tend_crop", 
-                  "kill_crop", "unused");
-    colnames(costs)        <- cost_col;
-    colnames(resources)    <- res_colna;
-    colnames(observations) <- res_colna;
-    #--- Next get the actions of users
-    agents   <- gmse_results$agents[[1]];
-    users    <- agents[agents[,2] > 0, 1];
-    actions  <- matrix(dat  = NA, 
-                       nrow = time_steps * length(res_types) * length(users),
-                       ncol = 13);
-    a_row    <- 1;
-    for(i in 1:time_steps){
-        land_prod <- gmse_results$land[[i]][,,2];
-        land_own  <- gmse_results$land[[i]][,,3];
-        for(j in 1:length(users)){
-            usr_acts <- gmse_results$action[[i]][,,users[j]];
-            for(k in 1:length(res_types)){
+            #--- Action setting below
+            for(k in 1:length(users)){
+                usr_acts <- gmse_results$action[[i]][,,users[k]];
                 actions[a_row, 1] <- i;
-                actions[a_row, 2] <- users[j];
-                actions[a_row, 3] <- res_types[k];
+                actions[a_row, 2] <- users[k];
+                actions[a_row, 3] <- res_types[j];
                 res_row <- which(usr_acts[,1] == -2 & 
-                                 usr_acts[,2] == res_types[k]);
+                                     usr_acts[,2] == res_types[j]);
                 if(parameters[89] == TRUE){
                     actions[a_row, 4] <- usr_acts[res_row,  8];
                 }
@@ -119,7 +106,7 @@ gmse_summary <- function(gmse_results){
                 if(parameters[93] == TRUE){
                     actions[a_row, 8] <- usr_acts[res_row,  12];
                 }
-                if(k == length(res_types)){
+                if(j == length(res_types)){
                     if(parameters[104] > 0){
                         land_row <- which(usr_acts[,1] == -1);
                         if(parameters[95] > 0){
@@ -132,14 +119,20 @@ gmse_summary <- function(gmse_results){
                     actions[a_row, 11] <- sum(usr_acts[, 13]);
                 }
                 if(parameters[104] > 0){
-                    max_yield <- sum(land_own == users[j]);
-                    usr_yield <- sum(land_prod[land_own == users[j]]);
+                    max_yield <- sum(land_own == users[k]);
+                    usr_yield <- sum(land_prod[land_own == users[k]]);
                     actions[a_row, 12] <- 100 * (usr_yield / max_yield);
                 }
                 a_row <- a_row + 1;
             }
         }
     }
+    cost_col <- c("time_step", "resource_type", "scaring", "culling",
+                  "castration", "feeding", "helping", "tend_crop", 
+                  "kill_crop", "unused");
+    colnames(costs)        <- cost_col;
+    colnames(resources)    <- res_colna;
+    colnames(observations) <- res_colna;
     action_col <- c("time_step", "user_ID", "resource_type", "scaring", 
                     "culling", "castration", "feeding", "helping", "tend_crop",
                     "kill_crop", "unused", "crop_yield", "harvested");
