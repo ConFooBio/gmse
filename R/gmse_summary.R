@@ -11,6 +11,14 @@
 #'@export
 gmse_summary <- function(gmse_results){
     time_steps <- dim(gmse_results$paras)[1];
+    parameters <- gmse_results$paras[1,];
+    movem      <- parameters[89];
+    killem     <- parameters[90];
+    castem     <- parameters[91];
+    feedem     <- parameters[92];
+    helpem     <- parameters[93];
+    kill_crop  <- parameters[94];
+    tend_crop  <- parameters[95];
     #--- First get the resource abundances
     res_types    <- unique(gmse_results$resource[[1]][,2]);
     resources    <- matrix(dat  = 0, nrow = time_steps, 
@@ -27,8 +35,76 @@ gmse_summary <- function(gmse_results){
             resources[i,j+1] <- sum(the_res == res_types[j]);
         }
     }
+    colnames(resources) <- res_colna;
     #--- Next get the estimated abundances
+    observations    <- matrix(dat  = 0, nrow = time_steps, 
+                              ncol = length(res_types) + 1);
+    for(i in 1:time_steps){
+        manager_acts <- gmse_results$action[[i]][,,1];
+        observations[i, 1] <- i;
+        for(j in 1:length(res_types)){
+            target_row <- which(manager_acts[,1] == -2 & 
+                                manager_acts[,2] == res_types[j]);
+            estim_row  <- which(manager_acts[,1] ==  1 & 
+                                manager_acts[,2] == res_types[j]);
+            target <- manager_acts[target_row, 5];
+            adjusr <- manager_acts[estim_row,  5];
+            observations[i,j+1] <- target - adjusr;
+        }
+    }
+    colnames(observations) <- res_colna;
+    #--- Next get the costs set by the manager
+    costs <- matrix(dat = NA, nrow = time_steps * length(res_types), ncol = 8);
+    for(i in 1:time_steps){
+        manager_acts <- gmse_results$action[[i]][,,1];
+        for(j in 1:length(res_types)){
+            costs[i, 1]  <- i;
+            costs[i, 2]  <- res_types[j];
+            estim_row  <- which(manager_acts[,1] ==  1 & 
+                                    manager_acts[,2] == res_types[j]);
+            if(parameters[89] == TRUE){
+                costs[i, 3] <- manager_acts[estim_row,  8];
+            }
+            if(parameters[90] == TRUE){
+                costs[i, 4] <- manager_acts[estim_row,  9];
+            }
+            if(parameters[91] == TRUE){
+                costs[i, 5] <- manager_acts[estim_row,  10];
+            }
+            if(parameters[92] == TRUE){
+                costs[i, 6] <- manager_acts[estim_row,  11];
+            }
+            if(parameters[93] == TRUE){
+                costs[i, 7] <- manager_acts[estim_row,  12];
+            }
+            costs[i, 8] <- manager_acts[estim_row, 13] - parameters[97];
+        }
+    }
+    cost_col <- c("time_step", "resource_type", "scaring", "culling",
+                  "castration", "feeding", "helping", "unused");
+    colnames(costs) <- cost_col;
+    #--- Next get the actions of users
+    
+    
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
