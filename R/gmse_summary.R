@@ -28,37 +28,29 @@ gmse_summary <- function(gmse_results){
     for(i in 1:length(res_types)){
         res_colna[i+1] <- paste("type_", res_types[i], sep = "");
     }
-    for(i in 1:time_steps){
-        the_res         <- gmse_results$resource[[i]][,2]
-        resources[i, 1] <- i;
-        for(j in 1:length(res_types)){
-            resources[i,j+1] <- sum(the_res == res_types[j]);
-        }
-    }
     colnames(resources) <- res_colna;
-    #--- Next get the estimated abundances
+    #--- Next get estimates abd the costs set by the manager
     observations    <- matrix(dat  = 0, nrow = time_steps, 
                               ncol = length(res_types) + 1);
-    for(i in 1:time_steps){
-        manager_acts <- gmse_results$action[[i]][,,1];
-        observations[i, 1] <- i;
-        for(j in 1:length(res_types)){
-            target_row <- which(manager_acts[,1] == -2 & 
-                                manager_acts[,2] == res_types[j]);
-            estim_row  <- which(manager_acts[,1] ==  1 & 
-                                manager_acts[,2] == res_types[j]);
-            target <- manager_acts[target_row, 5];
-            adjusr <- manager_acts[estim_row,  5];
-            observations[i,j+1] <- target - adjusr;
-        }
-    }
-    colnames(observations) <- res_colna;
-    #--- Next get the costs set by the manager
     costs  <- matrix(dat = NA, nrow = time_steps*length(res_types), ncol = 10);
     c_row  <- 1;
     for(i in 1:time_steps){
-        manager_acts <- gmse_results$action[[i]][,,1];
+        the_res            <- gmse_results$resource[[i]][,2];
+        manager_acts       <- gmse_results$action[[i]][,,1];
+        resources[i, 1]    <- i;
+        observations[i, 1] <- i;
         for(j in 1:length(res_types)){
+            #---- Resource abundance below
+            resources[i,j+1] <- sum(the_res == res_types[j]);
+            #---- Manager estimates below
+            target_row <- which(manager_acts[,1] == -2 & 
+                                    manager_acts[,2] == res_types[j]);
+            estim_row  <- which(manager_acts[,1] ==  1 & 
+                                    manager_acts[,2] == res_types[j]);
+            target <- manager_acts[target_row, 5];
+            adjusr <- manager_acts[estim_row,  5];
+            observations[i,j+1] <- target - adjusr;
+            #---- Cost setting below
             costs[c_row, 1]  <- i;
             costs[c_row, 2]  <- res_types[j];
             estim_row    <- which(manager_acts[,1] ==  1 & 
@@ -91,7 +83,9 @@ gmse_summary <- function(gmse_results){
     cost_col <- c("time_step", "resource_type", "scaring", "culling",
                   "castration", "feeding", "helping", "tend_crop", 
                   "kill_crop", "unused");
-    colnames(costs) <- cost_col;
+    colnames(costs)        <- cost_col;
+    colnames(resources)    <- res_colna;
+    colnames(observations) <- res_colna;
     #--- Next get the actions of users
     agents   <- gmse_results$agents[[1]];
     users    <- agents[agents[,2] > 0, 1];
