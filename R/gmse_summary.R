@@ -21,12 +21,13 @@ gmse_summary <- function(gmse_results){
         res_colna[i+1] <- paste("type_", res_types[i], sep = "");
     }
     for(i in 1:time_steps){
+        the_res         <- gmse_results$resource[[i]][,2]
         resources[i, 1] <- i;
         for(j in 1:length(res_types)){
-            resources[i,j+1] <- sum(sim$resource[[i]][,2] == res_types[j]);
+            resources[i,j+1] <- sum(the_res == res_types[j]);
         }
     }
-    
+    #--- Next get the estimated abundances
     
 }
 
