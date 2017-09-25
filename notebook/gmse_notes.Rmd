@@ -49,7 +49,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **SEP** [22](#u-22-SEP-2017), [15](#u-15-SEP-2017), [13](#u-13-SEP-2017), [8](#u-8-SEP-2017), [6](#u-6-SEP-2017)
+     - **SEP** [25](#u-25-SEP-2017), [22](#u-22-SEP-2017), [15](#u-15-SEP-2017), [13](#u-13-SEP-2017), [8](#u-8-SEP-2017), [6](#u-6-SEP-2017)
      - **AUG** [28](#u-28-AUG-2017), [23](#u-23-AUG-2017), [17](#u-17-AUG-2017), [16](#u-16-AUG-2017), [15](#u-15-AUG-2017), [7](#u-7-AUG-2017)
      - **JUL** [7](#u-7-JUL-2017), [3](#u-3-JUL-2017)
      - **JUN** [27](#u-27-JUN-2017), [26](#u-26-JUN-2017), [25](#u-25-JUN-2017), [23](#u-23-JUN-2017), [20](#u-20-JUN-2017), [16](#u-16-JUN-2017), [15](#u-15-JUN-2017), [14](#u-14-JUN-2017), [13](#u-13-JUN-2017), [9](#u-9-JUN-2017), [8](#u-8-JUN-2017), [7](#u-7-JUN-2017), [6](#u-6-JUN-2017), [5](#u-5-JUN-2017), [4](#u-4-JUN-2017)
@@ -87,6 +87,146 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-25-SEP-2017">Update: 25 SEP 2017</a>
+
+I have written a `gmse_summary` function (see below), which returns a simplified list that includes four elements, each of which is a table of data: 1. resources, a table showing time step in the first column, followed by resource abundance in the second column. 2. observations, a table showing time step in the first column, followed by the estimate of population size (produced by the manager) in the second column. 3. costs, a table showing time step in the first column, manager number in the second column (should always be zero), followed by the costs of each action set by the manager (policy); the far-right column indicates budget that is unused and therefore not allocated to any policy. 4. actions, a table showing time step in the first column, user number in the second column, followed by the actions of each user in the time step; additional columns indicate unused actions, crop yield on the user's land (if applicable), and the number of resources that a user successfully harvests (i.e., 'culls'). 
+
+**At the moment, I have not added in the actual number of resources that a user culls.** This will be added shortly, after which I will post a new function. Doing so is a bit more complicated because it requires me to go into the C code and make a recording every time it happens (see how I plan to do this below the function).
+
+```{r, eval = FALSE}
+gmse_summary <- function(gmse_results){
+    time_steps <- dim(gmse_results$paras)[1];
+    parameters <- gmse_results$paras[1,];
+    #--- First get the resource abundances
+    res_types    <- unique(gmse_results$resource[[1]][,2]);
+    resources    <- matrix(dat  = 0, nrow = time_steps, 
+                           ncol = length(res_types) + 1);
+    res_colna    <- rep(x = NA, times = dim(resources)[2]);
+    res_colna[1] <- "time_step";
+    for(i in 1:length(res_types)){
+        res_colna[i+1] <- paste("type_", res_types[i], sep = "");
+    }
+    colnames(resources) <- res_colna;
+    #--- Next get estimates abd the costs set by the manager
+    observations    <- matrix(dat  = 0, nrow = time_steps, 
+                              ncol = length(res_types) + 1);
+    costs   <- matrix(dat = NA, nrow = time_steps*length(res_types), ncol = 10);
+    agents  <- gmse_results$agents[[1]];
+    users   <- agents[agents[,2] > 0, 1];
+    actions <- matrix(dat  = NA, ncol = 13,
+                      nrow = time_steps * length(res_types) * length(users));
+    c_row  <- 1;
+    a_row  <- 1;
+    for(i in 1:time_steps){
+        the_res            <- gmse_results$resource[[i]][,2];
+        manager_acts       <- gmse_results$action[[i]][,,1];
+        resources[i, 1]    <- i;
+        observations[i, 1] <- i;
+        for(j in 1:length(res_types)){
+            #---- Resource abundance below
+            resources[i,j+1] <- sum(the_res == res_types[j]);
+            #---- Manager estimates below
+            target_row <- which(manager_acts[,1] == -2 & 
+                                    manager_acts[,2] == res_types[j]);
+            estim_row  <- which(manager_acts[,1] ==  1 & 
+                                    manager_acts[,2] == res_types[j]);
+            target <- manager_acts[target_row, 5];
+            adjusr <- manager_acts[estim_row,  5];
+            observations[i,j+1] <- target - adjusr;
+            #---- Cost setting below
+            costs[c_row, 1]  <- i;
+            costs[c_row, 2]  <- res_types[j];
+            estim_row    <- which(manager_acts[,1] ==  1 & 
+                                  manager_acts[,2] == res_types[j]);
+            if(parameters[89] == TRUE){
+                costs[c_row, 3] <- manager_acts[estim_row,  8];
+            }
+            if(parameters[90] == TRUE){
+                costs[c_row, 4] <- manager_acts[estim_row,  9];
+            }
+            if(parameters[91] == TRUE){
+                costs[c_row, 5] <- manager_acts[estim_row,  10];
+            }
+            if(parameters[92] == TRUE){
+                costs[c_row, 6] <- manager_acts[estim_row,  11];
+            }
+            if(parameters[93] == TRUE){
+                costs[c_row, 7] <- manager_acts[estim_row,  12];
+            }
+            if(parameters[94] == TRUE){
+                costs[c_row, 8] <- parameters[97];
+            }
+            if(parameters[95] == TRUE){
+                costs[c_row, 9] <- parameters[97];
+            }
+            costs[c_row, 10] <- manager_acts[estim_row, 13] - parameters[97];
+            c_row <- c_row + 1;
+            #--- Action setting below
+            for(k in 1:length(users)){
+                usr_acts <- gmse_results$action[[i]][,,users[k]];
+                actions[a_row, 1] <- i;
+                actions[a_row, 2] <- users[k];
+                actions[a_row, 3] <- res_types[j];
+                res_row <- which(usr_acts[,1] == -2 & 
+                                     usr_acts[,2] == res_types[j]);
+                if(parameters[89] == TRUE){
+                    actions[a_row, 4] <- usr_acts[res_row,  8];
+                }
+                if(parameters[90] == TRUE){
+                    actions[a_row, 5] <- usr_acts[res_row,  9];
+                }
+                if(parameters[91] == TRUE){
+                    actions[a_row, 6] <- usr_acts[res_row,  10];
+                }
+                if(parameters[92] == TRUE){
+                    actions[a_row, 7] <- usr_acts[res_row,  11];
+                }
+                if(parameters[93] == TRUE){
+                    actions[a_row, 8] <- usr_acts[res_row,  12];
+                }
+                if(j == length(res_types)){
+                    if(parameters[104] > 0){
+                        land_row <- which(usr_acts[,1] == -1);
+                        if(parameters[95] > 0){
+                            actions[a_row, 9]  <- usr_acts[land_row, 10];
+                        }
+                        if(parameters[94] > 0){
+                            actions[a_row, 10] <- usr_acts[land_row, 11];
+                        }
+                    }
+                    actions[a_row, 11] <- sum(usr_acts[, 13]);
+                }
+                if(parameters[104] > 0){
+                    max_yield <- sum(land_own == users[k]);
+                    usr_yield <- sum(land_prod[land_own == users[k]]);
+                    actions[a_row, 12] <- 100 * (usr_yield / max_yield);
+                }
+                a_row <- a_row + 1;
+            }
+        }
+    }
+    cost_col <- c("time_step", "resource_type", "scaring", "culling",
+                  "castration", "feeding", "helping", "tend_crop", 
+                  "kill_crop", "unused");
+    colnames(costs)        <- cost_col;
+    colnames(resources)    <- res_colna;
+    colnames(observations) <- res_colna;
+    action_col <- c("time_step", "user_ID", "resource_type", "scaring", 
+                    "culling", "castration", "feeding", "helping", "tend_crop",
+                    "kill_crop", "unused", "crop_yield", "harvested");
+    colnames(actions) <- action_col;
+    the_summary <- list(resources    = resources, 
+                        observations = observations, 
+                        costs        = costs, 
+                        actions      = actions);
+    return(the_summary);
+}
+```
+
+**To record kills**, I think that the best way is to use the resource mortality adjustment column (at the moment, column 17 in C and 18 in R of the resource array). Mortality as of now is just adjusted to 1 in the event of a kill, and mortality occurs whenever a random probability is greater than or equal to 1. Hence, I can replace the 1 value with the user's ID (for non-managers, this *must* be at least 1), and then the resource array will record the ID of the user that killed it at the particular time step. **Note** that this cannot be done for other adjustments such as growth rate or offspring production because the values are not interpreted as probabilities.
+
+I will do the above tomorrow, which should not take too long. I will then continue work on the `gmse_apply` function.
 
 > <a name="u-22-SEP-2017">Update: 22 SEP 2017</a>
 
