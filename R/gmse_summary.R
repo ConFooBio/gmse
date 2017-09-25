@@ -12,13 +12,6 @@
 gmse_summary <- function(gmse_results){
     time_steps <- dim(gmse_results$paras)[1];
     parameters <- gmse_results$paras[1,];
-    movem      <- parameters[89];
-    killem     <- parameters[90];
-    castem     <- parameters[91];
-    feedem     <- parameters[92];
-    helpem     <- parameters[93];
-    kill_crop  <- parameters[94];
-    tend_crop  <- parameters[95];
     #--- First get the resource abundances
     res_types    <- unique(gmse_results$resource[[1]][,2]);
     resources    <- matrix(dat  = 0, nrow = time_steps, 
