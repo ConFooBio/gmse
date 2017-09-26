@@ -75,7 +75,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   res_movement   = 20,    # How far do resources move
                   remove_pr      = 0.0,   # Density independent resource death
                   lambda         = 0.30,  # Resource growth rate
-                  agent_view     = 10,    # Number cells agent view around them
+                  agent_view     = 20,    # Number cells agent view around them
                   agent_move     = 50,    # Number cells agent can move
                   res_birth_K    = 10000, # Carrying capacity applied to birth
                   res_death_K    = 600,   # Carrying capacity applied to death
@@ -86,7 +86,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   observe_type   = 0,     # Type of observation used
                   fixed_mark     = 50,    # How many marked (if obs type = 1)
                   fixed_recapt   = 150,   # How many recaptured (if type = 1)
-                  times_observe  = 8,     # How many times obs (if type = 0)
+                  times_observe  = 1,     # How many times obs (if type = 0)
                   obs_move_type  = 1,     # Type of movement for agents
                   res_min_age    = 0,     # Minimum age recorded and observed
                   res_move_obs   = TRUE,  # Move resources while observing
