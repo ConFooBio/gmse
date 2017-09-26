@@ -16,7 +16,7 @@
 #'@importFrom stats rnorm rpois
 #'@importFrom shiny div p icon headerPanel column hr sliderInput selectInput
 #'@importFrom shiny radioButtons actionButton plotOutput eventReactive runApp
-#'@importFrom shiny shinyApp renderPlot uiOutput fluidPage tags br
+#'@importFrom shiny shinyApp renderPlot uiOutput
 #'@importFrom shinydashboard dashboardSidebar sidebarMenu menuItem dashboardBody
 #'@importFrom shinydashboard tabItems tabItem dashboardHeader dashboardPage
 #'@importFrom shinyjs useShinyjs
