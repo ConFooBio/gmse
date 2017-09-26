@@ -337,7 +337,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                0,       # 72. Total actions in the action array
                17,      # 73. The column to adjust the castration of a resource
                0,       # 74. Manager's projected change if resource moved
-               -1*mas*lambda, # 75. Manager's projected change if reso killed
+               -1*mas*(1+lambda), # 75. Manager's proj change if res killed
                -1*mas,  # 76. Manager's projected change if resource castrated
                1*mas,   # 77. Manager's projected change if resource growth +
                1*mas,   # 78. Manager's projected change if resource offspring +
@@ -366,7 +366,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                0,       # 101. Lower CI for res type 1 estimate
                fxr,     # 102. The number of recaptures in RMR estimation
                ldo,     # 103. Is there land ownership among stakeholders
-               pub      # 104. How much public land is there (proportion)
+               pub,     # 104. How much public land is there (proportion)
+               lambda   # 105. Birth rate parameter
     );
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
