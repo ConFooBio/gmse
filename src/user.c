@@ -239,12 +239,12 @@ int find_a_resource(double **resource_array, double ***land, double *paras,
         if(resource_array[resource][res_t3] != type3){
             can_act[resource] = 0;
         }
-        if(resource_array[resource][16] >= 1){
-            can_act[resource] = 0;
-        } 
         if(resource_array[resource][17] >= 1 && action_col != 9){ 
             can_act[resource] = 0;
         }
+        if(resource_array[resource][16] >= 1){
+            can_act[resource] = 0;
+        } 
         available += can_act[resource];
     }
 
@@ -294,7 +294,7 @@ void act_on_resource(double **resource_array, double *paras, double ***land,
             resource_array[samp][15]++;
             break;
         case 8: /* Kill resource */
-            resource_array[samp][16] = (double) action_layer;
+            resource_array[samp][16] = (double) action_layer + 1;
             if(action_layer < 1){ /* Should not happen -- manager is culling */
                 resource_array[samp][16]++;
             }
