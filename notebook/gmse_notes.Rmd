@@ -123,6 +123,8 @@ gmse_summary <- function(gmse_results){
         manager_acts       <- gmse_results$action[[i]][,,1];
         resources[i, 1]    <- i;
         observations[i, 1] <- i;
+        land_prod          <- gmse_results$land[[i]][,,2];
+        land_own           <- gmse_results$land[[i]][,,3];
         for(j in 1:length(res_types)){
             #---- Resource abundance below
             resources[i,j+1] <- sum(the_res == res_types[j]);
