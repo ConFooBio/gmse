@@ -795,7 +795,7 @@ plot_gmse_effort <- function(agents, paras, ACTION, COST){
                    "deepskyblue2");
     
     users    <- dim(agents[[1]])[1];
-    max_time <- dim(paras)[1];
+    max_time <- length(ACTION);
     
     para_vec <- paras[1,];
     
@@ -884,10 +884,10 @@ plot_gmse_effort <- function(agents, paras, ACTION, COST){
     help_eff <- help_eff * 100;
     
     par(mfrow = c(5, 1), mar = c(0, 0, 0, 0), oma = c(6, 6, 4, 6));
+    y1 <- 100;
+    y2 <- y1 * 1.2
     #---- Scaring
     if(para_vec[89] == 1){
-        y1 <- 100;
-        y2 <- y1 * 1.2
         plot(x = 1:max_time, y = 100 - scar_eff[,1], type = "l", lwd = 2, 
              cex.axis = 1.5, xaxt = "n", ylim = c(0, y2), yaxt = "n");
         axis(side = 2, at = c(50, 100), labels = c(50, 100), cex.axis = 1.5);

@@ -10,7 +10,7 @@
 #'}
 #'@export
 gmse_summary <- function(gmse_results){
-    time_steps <- dim(gmse_results$paras)[1];
+    time_steps <- length(gmse_results$resource);
     parameters <- gmse_results$paras[1,];
     #--- First get the resource abundances
     res_types    <- unique(gmse_results$resource[[1]][,2]);
