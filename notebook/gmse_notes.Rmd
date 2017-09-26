@@ -91,6 +91,56 @@ library(rhandsontable)
 
 > <a name="u-26-SEP-2017">Update: 26 SEP 2017</a>
 
+********************************************************************************
+
+**GMSE Version 0.2.3.0 on GitHub**
+
+I have pushed a [new version 0.2.3.0](https://github.com/bradduthie/gmse/releases/tag/v0.2.3.0) of GMSE onto the master branch of GitHub, which means that the most up-to-date version can be installed using the code below (make sure the devtools library is installed).
+
+```{r, eval = FALSE}
+devtools::install_github("bradduthie/GMSE")
+```
+
+The new version includes multiple new features:
+
+- A bug fix (see below) that was causing confusion between culling and castration actions.
+- A new `plot_gmse_effort` function, which shows the conflict between manager targets and user actions more directly (see [plots from 23 AUG 2017 notes](#u-23-AUG-2017)).
+- A new `gmse_summary` function, which takes the large output produced from `gmse` and returns a much easier to understand set of tables.
+- A revised `gmse_gui` function that has better defaults and parameter organisation, which has been [uploaded to shiny](https://bradduthie.shinyapps.io/gmse_gui/) for use in a browser.
+- Slightly adjusted default parameter values.
+- Documentation for new functions, and error fixes in the old documentation.
+
+To run a simple default simulation, the `gmse` function remains unchanged.
+
+```{r, eval = FALSE}
+sim <- gmse();
+```
+
+To plot the effort of managers and users, use the below.
+
+```{r, eval = FALSE}
+plot_gmse_effort(agents = sim$agents, paras = sim$paras, 
+                 ACTION = sim$action,  COST = sim$cost);
+```
+
+Below summarises the results more cleanly, extracting key information from `sim`.
+
+```{r, eval = FALSE}
+gmse_summary(sim);
+```
+
+And as before, the GUI can be called directly from the R console.
+
+```{r, eval = FALSE}
+gmse_gui();
+```
+
+The GUI does not yet allow you to get a vew of the `plot_gmse_effort` output, or a `gmse_summary`, but this will be a goal for future versions of GMSE.
+
+If able, **I recommend updating to version 0.2.3.0 as soon as possible**. In the coming few days, I will also add the `gmse_apply` function, [primarily for developers](#u-6-SEP-2017) who will benefit from a more modular way of using GMSE, allowing for different types of submodules to be used within the broader GMSE framework. When the new apply function has been added (and possibly the GUI improved), I will submit a new version 0.3.x.x to CRAN.
+
+********************************************************************************
+
 **Bug Fix and tweaks to agent prediction**
 
 I have now [fixed a bug](https://github.com/bradduthie/gmse/commit/1787fc9a3ce4ccb38ae6d60a2122dbce51ae64be) in the code that was causing confusion between culling and castration. After recompiling and running simulations, manager and user actions improve. I have also made some minor changes to default `gmse()` options. Regarding the predicted consequences of manager and user actions (i.e., the predictions from the agents' perspective that guid their decision making), I have [adjusted some things](https://github.com/bradduthie/gmse/commit/26b18a847108a322766fc84c466ccc70305d44b4) to make them more in line with what is expected in the simulation as follows (recall that managers are interested in global abundance and users are interested specifically in how abundance affects themselves):
