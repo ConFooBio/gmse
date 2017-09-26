@@ -1089,7 +1089,26 @@ plot_gmse_conflict <- function(agents, paras, ACTION, COST){
     mtext("Time step", side = 1, line = 3.5, cex = 1.5, col = "black");
 }
 
-
+####################################################################
+## Plot the effort of each user
+####################################################################
+#' Plot the effort made by each user for each action
+#'
+#' Produce a five panel plot in which each panel compares the permissiveness of each action (scaring, culling, etc.) from the manager with the effort put into each action by individual users.
+#' 
+#'@param agents The array of agents produced in the main gmse() function
+#'@param paras The array of parameters that hold global and dynamic parameter values used by GMSE
+#'@param ACTION A three dimensional array of agent (manager and stakeholder) actions
+#'@param COST A three dimensional array of cost values for agent (manager and stakeholder) actions
+#'@importFrom grDevices topo.colors
+#'@importFrom graphics abline axis image mtext par plot points polygon legend
+#'@importFrom stats rnorm rpois
+#'@return This function plots the permissiveness that each manager exhibits for each user action (scaring, culling, etc.) and the effort that each individual user puts into each action over time. On the left axis, permissiveness is calculated as 100 minus the percent of the manager's budget put into increasing the cost of a particular action, so, e.g., if a manager puts all of their effort into increasing the cost of culling, then permissiveness of culling is 0; if they put none of their effort into increasing the cost of culling, then permissiveness of culling is 100. On the right axis, percentage of user action expended is the percent of a user's budget put into a particular action (note, these might not add up to 100 because users are not forced to use their entire budget). Coloured lines that are above black lines could potentially (cautiously) be interpreted as conflict between managers and users.
+#'@examples
+#'\dontrun{
+#'plot_gmse_effort(sim$agents, sim$paras, ACTION = sim$action, COST = sim$cost);
+#'}
+#'@export
 plot_gmse_effort <- function(agents, paras, ACTION, COST){
     
     cols      <- c("green", "indianred1", "indianred3", "deepskyblue1",
