@@ -239,12 +239,12 @@ int find_a_resource(double **resource_array, double ***land, double *paras,
         if(resource_array[resource][res_t3] != type3){
             can_act[resource] = 0;
         }
-        if(resource_array[resource][16] == 1 && action_col != 9){ 
-            can_act[resource] = 0;
-        }
-        if(resource_array[resource][17] == 1){
+        if(resource_array[resource][16] >= 1){
             can_act[resource] = 0;
         } 
+        if(resource_array[resource][17] >= 1 && action_col != 9){ 
+            can_act[resource] = 0;
+        }
         available += can_act[resource];
     }
 
