@@ -14,7 +14,7 @@ gmse_summary <- function(gmse_results){
     parameters <- gmse_results$paras[1,];
     #--- First get the resource abundances
     res_types    <- unique(gmse_results$resource[[1]][,2]);
-    resources    <- matrix(dat  = 0, nrow = time_steps, 
+    resources    <- matrix(data  = 0, nrow = time_steps, 
                            ncol = length(res_types) + 1);
     res_colna    <- rep(x = NA, times = dim(resources)[2]);
     res_colna[1] <- "time_step";
@@ -23,17 +23,19 @@ gmse_summary <- function(gmse_results){
     }
     colnames(resources) <- res_colna;
     #--- Next get estimates abd the costs set by the manager
-    observations    <- matrix(dat  = 0, nrow = time_steps, 
+    observations    <- matrix(data  = 0, nrow = time_steps, 
                               ncol = length(res_types) + 1);
-    costs   <- matrix(dat = NA, nrow = time_steps*length(res_types), ncol = 10);
+    costs   <- matrix(data = NA, nrow = time_steps*length(res_types), 
+                      ncol = 10);
     agents  <- gmse_results$agents[[1]];
     users   <- agents[agents[,2] > 0, 1];
-    actions <- matrix(dat  = NA, ncol = 13,
+    actions <- matrix(data  = NA, ncol = 13,
                       nrow = time_steps * length(res_types) * length(users));
     c_row  <- 1;
     a_row  <- 1;
     for(i in 1:time_steps){
         the_res            <- gmse_results$resource[[i]][,2];
+        harvests           <- gmse_results$resource[[i]][,17];
         manager_acts       <- gmse_results$action[[i]][,,1];
         resources[i, 1]    <- i;
         observations[i, 1] <- i;
@@ -118,6 +120,7 @@ gmse_summary <- function(gmse_results){
                     usr_yield <- sum(land_prod[land_own == users[k]]);
                     actions[a_row, 12] <- 100 * (usr_yield / max_yield);
                 }
+                actions[a_row, 13] <- sum(harvests == users[k]);
                 a_row <- a_row + 1;
             }
         }

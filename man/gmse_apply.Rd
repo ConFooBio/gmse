@@ -4,7 +4,7 @@
 \alias{gmse_apply}
 \title{GMSE apply simulation}
 \usage{
-gmse_apply()
+gmse_apply(time_max = 100)
 }
 \arguments{
 \item{time_max}{This value sets the maximum number of time steps for a simulation. There are no constraints for length of time that a simulation can run. The default is 100 time steps.}
@@ -16,5 +16,5 @@ models in each time step. Hence while individual models can be used on their
 own, gmse() is really all that is needed to run a simulation.
 }
 \examples{
-sim <- gmse_apply();
+sim <- gmse_apply(time_max = 100);
 }

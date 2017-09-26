@@ -8,14 +8,14 @@
 #' 
 #'@param time_max This value sets the maximum number of time steps for a simulation. There are no constraints for length of time that a simulation can run. The default is 100 time steps.
 #'@examples
-#'sim <- gmse_apply();
+#'sim <- gmse_apply(time_max = 100);
 #'@useDynLib GMSE
 #'@importFrom grDevices topo.colors
 #'@importFrom graphics abline axis image mtext par plot points polygon
 #'@importFrom stats rnorm rpois
 #'@export
-gmse_apply <- function(){
-    
+gmse_apply <- function(time_max = 100){
+    return(time_max);
 }
 
 
