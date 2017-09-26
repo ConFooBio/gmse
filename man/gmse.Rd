@@ -5,18 +5,18 @@
 \title{GMSE simulation}
 \usage{
 gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
-  res_movement = 20, remove_pr = 0, lambda = 0.3, agent_view = 10,
-  agent_move = 50, res_birth_K = 10000, res_death_K = 600,
+  res_movement = 20, remove_pr = 0, lambda = 0.3, agent_view = 20,
+  agent_move = 50, res_birth_K = 10000, res_death_K = 2000,
   edge_effect = 1, res_move_type = 1, res_birth_type = 2,
   res_death_type = 2, observe_type = 0, fixed_mark = 50,
-  fixed_recapt = 150, times_observe = 8, obs_move_type = 1,
+  fixed_recapt = 150, times_observe = 1, obs_move_type = 1,
   res_min_age = 0, res_move_obs = TRUE, Euclidean_dist = FALSE,
   plotting = TRUE, hunt = FALSE, start_hunting = 95, res_consume = 0.5,
   ga_popsize = 100, ga_mingen = 40, ga_seedrep = 20, ga_sampleK = 20,
   ga_chooseK = 2, ga_mutation = 0.1, ga_crossover = 0.1,
   move_agents = TRUE, max_ages = 5, minimum_cost = 10,
-  user_budget = 1000, manager_budget = 1000, manage_target = 300,
-  RESOURCE_ini = 300, scaring = FALSE, culling = TRUE,
+  user_budget = 1000, manager_budget = 1000, manage_target = 1000,
+  RESOURCE_ini = 1000, scaring = FALSE, culling = TRUE,
   castration = FALSE, feeding = FALSE, help_offspring = FALSE,
   tend_crops = FALSE, tend_crop_yld = 0.2, kill_crops = FALSE,
   stakeholders = 4, manage_caution = 1, land_ownership = FALSE,
@@ -28,13 +28,13 @@ gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
 
 \item{land_dim_1}{This value sets the number of cells on the x dimension of the landscape (i.e., the number of columns in the landscape array; this can also be thought of as the x-axis when the landscape image is plotted). There is no maximum, but the minimum dimension of a landscape is 2 cells. The default is 100 cells.}
 
-\item{land_dim_2}{This value sets the number of cells on the x dimension of the landscape (i.e., the number of columns in the landscape array; this can also be thought of as the x-axis when the landscape image is plotted). There is no maximum, but the minimum dimension of a landscape is 2 cells. The default is 100 cells.}
+\item{land_dim_2}{This value sets the number of cells on the y dimension of the landscape (i.e., the number of columns in the landscape array; this can also be thought of as the y-axis when the landscape image is plotted). There is no maximum, but the minimum dimension of a landscape is 2 cells. The default is 100 cells.}
 
 \item{res_movement}{This value determines how far resources move during a time step. Exact movement is probabilistic and partly affected by `res_move_type` settings. Under default settings, during each time step, resources move from zero to res_movement cells away from their starting cell in any direction. Hence res_movement is the maximum distance away from a resources starting cell that it can move in a time step; other types of resource movement, however, interpret res_movement differently to get the raw distance moved (see res_move_type). The default value is 4.}
 
 \item{remove_pr}{This value is the density-independent and user-independent probability of a resource being removed (e.g., dying) during a time step in the resource model. Under default settings, this value is set to zero, with resource removal being determined entirely by carrying capcity on resource survival, and by user actions.}
 
-\item{lambda}{This value is the baseline population growth rate of resources. Each resource in the simulation produces Poisson(lambda) offspring in one time step within the resource model. The value of lambda might be increased or decreased by user actions, and juvenile survival can potentially be decreased by a carrying capacity placed on birth. The default value is 0.3, meaning that the average resource produces one offspring every three time steps.}
+\item{lambda}{This value is the baseline population growth rate of resources. Each resource in the simulation produces Poisson(lambda) offspring in one time step within the resource model. The value of lambda might be increased or decreased by user actions, and juvenile survival can potentially be decreased by a carrying capacity placed on birth. The default value is 0.5, meaning that the average resource produces one offspring every two time steps.}
 
 \item{agent_view}{This value determines how far agents (managers and stakeholders) can see on the landscape. At the moment, this affects only the sampling ability of managers in the observation model for density-based and transect-based estimates of resource abundance. In these types of estimates, when managers have a higher agent_view, they are capable of observing a larger area of landscape and therefore of getting a larger (in the case of density-based estimation) or more efficient (in the case of transect-based estimation) sample of resources from which to estimate total resource abundance. The default value of agent_view is 20, so agents can see 20 cells away from their current cell in any direction.}
 
@@ -42,7 +42,7 @@ gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
 
 \item{res_birth_K}{This value is the carrying capacity on new resources added per time step (e.g., birth). If more offspring are born in a time step than res_birth_K, then offspring are randomly removed from the population until offspring born equals res_birth_K. By default, carrying capacity is effectively applied to death instead of birth, so the default value of res_birth_K is set to 10000 (and hence not enacted because the number of births is never this high).}
 
-\item{res_death_K}{This value is the carrying capacity on resources in the population. Carrying capacity is realised by an increase in mortality probability as resource abundance approaches res_death_K. In each time step, realised mortality probability equals the number of resources over carrying capacity divided by the number of resources (i.e., [resource count - carrying capacity] / resource count). Hence, as the resource abundance increases above carrying capcity, mortality probability also increases in proportion, generating some stochasticity in resource survival. Note that carrying capacity is independent of user actions; if a user culls a resource this culling is applied after mortality probability due to carrying capacity has already been calculated. The default value for res_death_K is 400.}
+\item{res_death_K}{This value is the carrying capacity on resources in the population. Carrying capacity is realised by an increase in mortality probability as resource abundance approaches res_death_K. In each time step, realised mortality probability equals the number of resources over carrying capacity divided by the number of resources (i.e., [resource count - carrying capacity] / resource count). Hence, as the resource abundance increases above carrying capcity, mortality probability also increases in proportion, generating some stochasticity in resource survival. Note that carrying capacity is independent of user actions; if a user culls a resource this culling is applied after mortality probability due to carrying capacity has already been calculated. The default value for res_death_K is 2000.}
 
 \item{edge_effect}{This determines what happens at the edge of the landscape. Currently there is only one option (value 1), which causes the landscape to wrap around as a torus (effectively removing the edge); resources that leave off of one side of the landscape will reappear on the other side of the landscape.}
 
@@ -82,9 +82,9 @@ gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
 
 \item{ga_seedrep}{At the start of each genetic algorithm, `ga_popsize` replicate agents are produced; `ga_seedrep` of these replicates are *exact* replicates, while the rest have random actions to introduce variation into the population. Because adaptive agent strategies are not likely to change wildly from one generation to the next, it is highly recommended to use some value of `ga_seedrep` greater than zero; the default value is 20, which does a good job of finding adaptive strategies.}
 
-\item{ga_sampleK}{In the genetic algorithm, fitnesses are assgined to different agent strategies and compete in a tournament to be selected into the next generation. The tournament samples `ga_sampleK` strategies at random and with replacement from the population of `ga_popsize` to be included in the torunament. The default value is 20.}
+\item{ga_sampleK}{In the genetic algorithm, fitnesses are assigned to different agent strategies and compete in a tournament to be selected into the next generation. The tournament samples `ga_sampleK` strategies at random and with replacement from the population of `ga_popsize` to be included in the torunament. The default value is 20.}
 
-\item{ga_chooseK}{In the genetic algorithm, fitnesses are assgined to different agent strategies and compete in a tournament to be selected into the next generation. The tournament samples `ga_sampleK` strategies at random and with replacement from the population of `ga_popsize` to be included in the torunament, and from these randomly selected strategies, the top `ga_chooseK` strategies are selected. The default value is 2, so the top 10 percent of the random sample in a tournament makes it into the next generation (note that multiple tournaments are run until `ga_popsize` strategies are selected for the next generation).}
+\item{ga_chooseK}{In the genetic algorithm, fitnesses are assigned to different agent strategies and compete in a tournament to be selected into the next generation. The tournament samples `ga_sampleK` strategies at random and with replacement from the population of `ga_popsize` to be included in the torunament, and from these randomly selected strategies, the top `ga_chooseK` strategies are selected. The default value is 2, so the top 10 percent of the random sample in a tournament makes it into the next generation (note that multiple tournaments are run until `ga_popsize` strategies are selected for the next generation).}
 
 \item{ga_mutation}{In the genetic algorithm, this is the mutation rate of any action within an agent's strategy. When a mutation occurs, the action is either increased or decreased by a value of 1. If the action drops below zero, then the value after mutation is multiplied by -1.}
 
@@ -100,9 +100,9 @@ gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
 
 \item{manager_budget}{This is the total budget for the manager when setting policy. Higher budgets make it easier to restrict the actions of stakeholders; lower budgets make it more difficult for managers to limit the actions of stakeholders by setting policy. The default `manager_budget` is 1000. The maximum budget is 10000.}
 
-\item{manage_target}{This is the target resource abundance that the manager attempts to keep the population at; the default value is 200.}
+\item{manage_target}{This is the target resource abundance that the manager attempts to keep the population at; the default value is 1000.}
 
-\item{RESOURCE_ini}{This is the initial abundance of resources at the start of the simulation; the default is 200.}
+\item{RESOURCE_ini}{This is the initial abundance of resources at the start of the simulation; the default is 1000.}
 
 \item{scaring}{This is a TRUE or FALSE value determining whether or not scaring is an option for managers and stakeholders. If so, then stakeholders that scare cause resources to be moved from their current landscape cell to a random cell on the landscape (note, it is possible that the resource could be scared back onto the stakeholder's own land again). The default value of this is FALSE.}
 
@@ -114,17 +114,17 @@ gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
 
 \item{help_offspring}{This is a TRUE or FALSE value determining whether or not feeding is an option for managers and stakeholders. If so, then stakeholders that help_offspring increase a resource's offspring production for one time step by one (i.e., one more offspring is produced). The default value of this is FALSE.}
 
-\item{tend_crops}{This is a TRUE or FALSE value determining whether or not tending crops on the landscape is allowed for stakehodlers. If so, then stakeholders can increase one cells yield by 50 percent for each action to `tend_crops`. Actions on the landscape cannot be regulated by managers, so the cost of this action is always `minimum_cost`. The default value of this is FALSE.}
+\item{tend_crops}{This is a TRUE or FALSE value determining whether or not tending crops on the landscape is allowed for stakeholders. If so, then stakeholders can increase one cells yield by 50 percent for each action to `tend_crops`. Actions on the landscape cannot be regulated by managers, so the cost of this action is always `minimum_cost`. The default value of this is FALSE.}
 
 \item{tend_crop_yld}{The per landscape cell proportional increase in crop yield when stakeholders take one action to increase yield on their landscape. The default value is set to 0.5 (i.e., a 50 percent increase in yield on a cell).}
 
-\item{kill_crops}{This is a TRUE or FALSE value determining whether or not killing crops on the landscape is allowed for stakehodlers. If so, then stakeholders can remove the crop yield on a cell completely for each action to `tend_crops`. Actions on the landscape cannot be regulated by managers, so the cost of this action is always `minimum_cost`.}
+\item{kill_crops}{This is a TRUE or FALSE value determining whether or not killing crops on the landscape is allowed for stakeholders. If so, then stakeholders can remove the crop yield on a cell completely for each action to `kill_crops`. Actions on the landscape cannot be regulated by managers, so the cost of this action is always `minimum_cost`.}
 
 \item{stakeholders}{This is the number of stakeholders in a simulation; there is always one manager, plus any natural number of stakeholders.}
 
 \item{manage_caution}{This value moderates the caution a manager has when changing policy by assuming that at least `manage_caution` of each possible action will always be performed by stakeholders. I manager will therefore not ignore policy for one action because no stakeholder is engaging in it; the default value of `manage_caution` is 1.}
 
-\item{land_ownership}{This value defines whether stakeholders own land and their actions are restricted to land that they own. If FALSE, then stakeholders can act on any landscape cell; if TRUE, then agents can only act on their own cells. The default of this value is TRUE.}
+\item{land_ownership}{This value defines whether stakeholders own land and their actions are restricted to land that they own. If FALSE, then stakeholders can act on any landscape cell; if TRUE, then agents can only act on their own cells. The default of this value is FALSE.}
 
 \item{manage_freq}{This is the frequency with which policy is set by managers; a value of 1 means that policy is set in the manager model every time step; a value of 2 means that poilcy is set in the manager model every other time step, etc. The default value is 1.}
 
