@@ -293,14 +293,14 @@ void act_on_resource(double **resource_array, double *paras, double ***land,
             resource_array[samp][5] = yloc;
             resource_array[samp][15]++;
             break;
-        case 8: /* Castrate resource */
-            resource_array[samp][16]++;
-            break;
-        case 9: /* Kill resource */
-            resource_array[samp][17] = (double) action_layer;
+        case 8: /* Kill resource */
+            resource_array[samp][16] = (double) action_layer;
             if(action_layer < 1){ /* Should not happen -- manager is culling */
-                resource_array[samp][17]++;
+                resource_array[samp][16]++;
             }
+            break;
+        case 9: /* Castrate resource */
+            resource_array[samp][17]++;
             break;
         case 10: /* Feed resource (increase birth-rate)*/
             resource_array[samp][18]++;

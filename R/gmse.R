@@ -304,7 +304,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                18,      # 39. The column to adjust the growth rate helpem
                19,      # 40. The column to adjust the offspring feedem
                ttr,     # 41. Total columns in the resource array
-               17,      # 42. The column to adjust the death resource column
+               16,      # 42. The column to adjust the death resource column
                8,       # 43. The column in resource array affecting removal
                1,       # 44. A column to refer to a resource type as needed
                1,       # 45. A type of resource to do interacting with land
@@ -335,7 +335,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                4,       # 70. Col actions vary for other individuals in ga
                7,       # 71. Col actions vary for self individuals in ga
                0,       # 72. Total actions in the action array
-               16,      # 73. The column to adjust the castration of a resource
+               17,      # 73. The column to adjust the castration of a resource
                0,       # 74. Manager's projected change if resource moved
                -1*mas,  # 75. Manager's projected change if resource killed
                -1*mas,  # 76. Manager's projected change if resource castrated
