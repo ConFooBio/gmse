@@ -49,7 +49,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **SEP** [25](#u-25-SEP-2017), [22](#u-22-SEP-2017), [15](#u-15-SEP-2017), [13](#u-13-SEP-2017), [8](#u-8-SEP-2017), [6](#u-6-SEP-2017)
+     - **SEP** [26](#u-26-SEP-2017), [25](#u-25-SEP-2017), [22](#u-22-SEP-2017), [15](#u-15-SEP-2017), [13](#u-13-SEP-2017), [8](#u-8-SEP-2017), [6](#u-6-SEP-2017)
      - **AUG** [28](#u-28-AUG-2017), [23](#u-23-AUG-2017), [17](#u-17-AUG-2017), [16](#u-16-AUG-2017), [15](#u-15-AUG-2017), [7](#u-7-AUG-2017)
      - **JUL** [7](#u-7-JUL-2017), [3](#u-3-JUL-2017)
      - **JUN** [27](#u-27-JUN-2017), [26](#u-26-JUN-2017), [25](#u-25-JUN-2017), [23](#u-23-JUN-2017), [20](#u-20-JUN-2017), [16](#u-16-JUN-2017), [15](#u-15-JUN-2017), [14](#u-14-JUN-2017), [13](#u-13-JUN-2017), [9](#u-9-JUN-2017), [8](#u-8-JUN-2017), [7](#u-7-JUN-2017), [6](#u-6-JUN-2017), [5](#u-5-JUN-2017), [4](#u-4-JUN-2017)
@@ -87,6 +87,22 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-26-SEP-2017">Update: 26 SEP 2017</a>
+
+**Bug Fix and tweaks to agent prediction**
+
+I have now [fixed a bug](https://github.com/bradduthie/gmse/commit/1787fc9a3ce4ccb38ae6d60a2122dbce51ae64be) in the code that was causing confusion between culling and castration. After recompiling and running simulations, manager and user actions improve. I have also made some minor changes to default `gmse()` options. Regarding the predicted consequences of manager and user actions (i.e., the predictions from the agents' perspective that guid their decision making), I have [adjusted some things](https://github.com/bradduthie/gmse/commit/26b18a847108a322766fc84c466ccc70305d44b4) to make them more in line with what is expected in the simulation as follows (recall that managers are interested in global abundance and users are interested specifically in how abundance affects themselves):
+
+1. **Scaring**: Managers predict no change in resource abundance, while users predict a decrease of 1
+2. **Culling**: Managers and users predict a decrease of $1 + \lambda$ (**Note** that this brings in knowledge of birth rate *a priori* -- might want to allow for a change in this in the simulation, but it also seems realistic for agents to recognise that adults can reproduce, and a value is needed to reflect this)
+3. **Castration**: Managers and users predict a decrease of $\lambda$
+4. **Feeding**: Managers and users predict an increase of $\lambda$
+5. **Help offspring**: Managers and users predict an increase of 1
+
+These values are a bit more in line with what will actually happen, so we assume that managers and users are a bit more informed now. It also allows for a bit more differentiation among actions. **Overall, the model appears to perform better now -- meaning that managers and users appear to be better predictors of the conseuqneces of their actions**.
+
+Before finishing the `gmse_apply()` function, I will push an updated version of GMSE to GitHub with these changes, plus new plotting options.
 
 > <a name="u-25-SEP-2017">Update: 25 SEP 2017</a>
 
