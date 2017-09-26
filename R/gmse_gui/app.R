@@ -195,7 +195,7 @@ body <- dashboardBody(
                                                 min   = 10,
                                                 max   = 10000,
                                                 step  = 10,
-                                                value = 600)
+                                                value = 2000)
                            ),
                            
                            tags$div(title="The fraction of remaining biomass (e.g. crop production) that a resource consumes while occupying a landscape cell. The default value is 0.5, so if one resource occupies the cell, then landscape production is halved, if two resources occupy the cell, then landscape production drops to 0.25; if three, then production drops to 0.125, etc.",
@@ -205,6 +205,15 @@ body <- dashboardBody(
                                                 max   = 1,
                                                 step  = 0.01,
                                                 value = 0.5)
+                           ),
+                           
+                           tags$div(title="This is the initial abundance of resources at the start of the simulation.", 
+                                    sliderInput("RESOURCE_ini",
+                                                "Initial population size",
+                                                min   = 10,
+                                                max   = 10000,
+                                                step  = 10,
+                                                value = 1000)
                            )
                            
                     )
@@ -268,7 +277,7 @@ body <- dashboardBody(
                                                 min   = 1,
                                                 max   = 20,
                                                 step  = 1,
-                                                value = 8)
+                                                value = 1)
                            ),
                            
                            tags$div(title="This parameter affects mark-recapture observation. Its value defines how many resources will be marked in each time step as part of a mark-recapture population size estimate.", 
@@ -305,15 +314,6 @@ body <- dashboardBody(
                                                 max   = 50,
                                                 step  = 1,
                                                 value = 5)
-                           ),
-                           
-                           tags$div(title="This is the initial abundance of resources at the start of the simulation.", 
-                                    sliderInput("RESOURCE_ini",
-                                                "Initial population size",
-                                                min   = 10,
-                                                max   = 10000,
-                                                step  = 10,
-                                                value = 300)
                            )
                     )
             ),
@@ -340,7 +340,7 @@ body <- dashboardBody(
                                                 min   = 10,
                                                 max   = 10000,
                                                 step  = 10,
-                                                value = 300)
+                                                value = 1000)
                            ),
                            
                            tags$div(title="This is the frequency with which policy is set by managers; a value of 1 means that policy is set in the manager model every time step; a value of 2 means that poilcy is set in the manager model every other time step, etc.", 
@@ -365,63 +365,63 @@ body <- dashboardBody(
                                     radioButtons("land_ownership", 
                                                  "Users own and act on their patch of land",
                                                  c("True" = "1",
-                                                   "False" = "0"))
+                                                   "False" = "0"), selected = "0")
                            ),
                            
                            tags$div(title="Whether or not agents should move at the end of each time step", 
                                     radioButtons("move_agents", 
                                                  "Agents move in each time step",
                                                  c("True" = "1",
-                                                   "False" = "0"))
+                                                   "False" = "0"), selected = "1")
                            ),
                            
                            tags$div(title="Whether or not scaring is an option for managers and stakeholders. If so, then stakeholders that scare cause resources to be moved from their current landscape cell to a random cell on the landscape (note, it is possible that the resource could be scared back onto the stakeholder's own land again).", 
                                     radioButtons("scaring", 
                                                  "Scaring is a possible action",
                                                  c("True" = "1",
-                                                   "False" = "0"))
+                                                   "False" = "0"), selected = "0")
                            ),
                            
                            tags$div(title="Whether or not culling is an option for managers and stakeholders. If so, then stakeholders that cull cause the resource to be removed from the simulation permanently (i.e., killing the resource).", 
                                     radioButtons("culling", 
                                                  "Culling is a possible action",
                                                  c("True" = "1",
-                                                   "False" = "0"))
+                                                   "False" = "0"), selected = "1")
                            ),
                            
                            tags$div(title="Whether or not castration is an option for managers and stakeholders. If so, then stakeholders that castrate do not remove the resource from the simulation, but prohibit the resource from reproducing by setting its 'lambda' value to zero.", 
                                     radioButtons("castration", 
                                                  "Castration is a possible action",
                                                  c("True" = "1",
-                                                   "False" = "0"))
+                                                   "False" = "0"), selected = "0")
                            ),
                            
                            tags$div(title="Whether or not feeding is an option for managers and stakeholders. If so, then stakeholders that feed increase a resource's growth rate (lambda) for one time step by 100 percent.",
                                     radioButtons("feeding", 
                                                  "Feeding resources is a possible action",
                                                  c("True" = "1",
-                                                   "False" = "0"))
+                                                   "False" = "0"), selected = "0")
                            ),
                            
                            tags$div(title="Whether or not feeding is an option for managers and stakeholders. If so, then stakeholders that help_offspring increase a resource's offspring production for one time step by one (i.e., one more offspring is produced).",
                                     radioButtons("help_offspring", 
                                                  "Helping offspring is a possible action",
                                                  c("True" = "1",
-                                                   "False" = "0"))
+                                                   "False" = "0"), selected = "0")
                            ),
                            
                            tags$div(title="Whether or not killing crops on the landscape is allowed for stakeholders. If so, then stakeholders can remove the crop yield on a cell completely for each action to kill crops. Actions on the landscape cannot be regulated by managers, so the cost of this action is always fixed.",
                                     radioButtons("kill_crops", 
                                                  "Destroying crops is a possible action",
                                                  c("True" = "1",
-                                                   "False" = "0"))
+                                                   "False" = "0"), selected = "0")
                            ),
                            
                            tags$div(title="Whether or not tending crops on the landscape is allowed for stakeholders. If so, then stakeholders can increase one cells yield by 50 percent for each action to tend crops. Actions on the landscape cannot be regulated by managers, so the cost of this action is always fixed.",
                                     radioButtons("tend_crops", 
                                                  "Tending crops is a possible action",
                                                  c("True" = "1",
-                                                   "False" = "0"))
+                                                   "False" = "0"), selected = "0")
                            ),
                            
                            tags$div(title="The per landscape cell proportional increase in crop yield when stakeholders take one action to increase yield on their landscape. The default value is set to 0.5 (i.e., a 50 percent increase in yield on a cell).",
