@@ -268,7 +268,7 @@ void res_to_counts(double ***population, int **interact_table, double *paras,
     foc_effect -= population[row][7][agent];  /* Times birth account for repr?*/
     foc_effect -= population[row][8][agent] * (1 + lambda);
     foc_effect -= population[row][9][agent] * lambda;
-    foc_effect += population[row][10][agent]; /* But should less mortality    */
+    foc_effect += population[row][10][agent] * lambda;
     foc_effect += population[row][11][agent]; /* But should affect offspring? */
     interest_row = 0;
     while(interest_row < int_num){

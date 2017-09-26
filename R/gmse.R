@@ -338,8 +338,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                17,      # 73. The column to adjust the castration of a resource
                0,       # 74. Manager's projected change if resource moved
                -1*mas*(1+lambda), # 75. Manager's proj change if res killed
-               -1*mas,  # 76. Manager's projected change if resource castrated
-               1*mas,   # 77. Manager's projected change if resource growth +
+               -1*mas*lambda,     # 76. Manager's proj change if res castrated
+               1*lambda,          # 77. Manager's proj change if reso growth +
                1*mas,   # 78. Manager's projected change if resource offspring +
                tcy,     # 79. User's improvement of land (proportion)
                1,       # 80. Landscape layer on which crop yield is located
