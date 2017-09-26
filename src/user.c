@@ -272,7 +272,7 @@ int find_a_resource(double **resource_array, double ***land, double *paras,
 void act_on_resource(double **resource_array, double *paras, double ***land,
                      double ***action_array){
     
-    int samp, xloc, yloc, land_x, land_y, action_col;
+    int samp, xloc, yloc, land_x, land_y, action_col, action_layer;
     
     samp = find_a_resource(resource_array, land, paras, action_array);
     
@@ -280,9 +280,10 @@ void act_on_resource(double **resource_array, double *paras, double ***land,
         return;
     }
     
-    land_x     = (int) paras[12];
-    land_y     = (int) paras[13];
-    action_col = (int) paras[84];
+    land_x       = (int) paras[12];
+    land_y       = (int) paras[13];
+    action_col   = (int) paras[84];
+    action_layer = (int) paras[85];
 
     switch(action_col){
         case 7: /* Move resource */
@@ -296,7 +297,10 @@ void act_on_resource(double **resource_array, double *paras, double ***land,
             resource_array[samp][16]++;
             break;
         case 9: /* Kill resource */
-            resource_array[samp][17]++;
+            resource_array[samp][17] = (double) action_layer;
+            if(action_layer < 1){ /* Should not happen -- manager is culling */
+                resource_array[samp][17]++;
+            }
             break;
         case 10: /* Feed resource (increase birth-rate)*/
             resource_array[samp][18]++;
