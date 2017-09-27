@@ -64,10 +64,18 @@ sidebar <-   dashboardSidebar(
                 menuItem("Confict results", icon = icon("meh-o"), 
                          tabName = "plot_effort"),
                 
-                menuItem("Resource table", icon = icon("meh-o"), 
+                menuItem("Resource table", icon = icon("leaf"), 
                          tabName = "resource_tab"),
                 
+                menuItem("Cost table", icon = icon("euro"), 
+                         tabName = "cost_tab"),
+                
+                menuItem("Action table", icon = icon("wrench"), 
+                         tabName = "action_tab"),
+                
                 div(align="center"),
+                
+                hr(style ="width: 70%; color: white; align: center"),
                 
                 menuItem("Getting started", tabName = "help", 
                          icon = icon("question-circle", class=menuIconClass)),
@@ -590,6 +598,24 @@ body <- dashboardBody(
                     tableOutput("table1")
             ),
             
+            tabItem("cost_tab",
+                    
+                    headerPanel(title = "Costs set by manager"),
+                    
+                    hr(),
+                    
+                    tableOutput("table2")
+            ),
+            
+            tabItem("action_tab",
+                    
+                    headerPanel(title = "Actions of users"),
+                    
+                    hr(),
+                    
+                    tableOutput("table3")
+            ),
+            
             tabItem("help",
                     
                     headerPanel(title = "Introduction to GMSE"),
@@ -730,6 +756,24 @@ server <- function(input, output){
         colnames(showt) <- c("time_step", "population_size", 
                              "estimate_of_pop_size");
         showt[,1:3];
+    }, include.colnames = TRUE)
+    
+    output$table2 <- renderTable({
+        set.seed(systime());
+        sim    <- run_gmse();
+        simsum <- gmse_summary(sim);
+        simcos <- simsum$costs[,-2];
+        includ <- as.numeric(which(!is.na(simcos[1,])));
+        simcos[,includ];
+    }, include.colnames = TRUE)
+    
+    output$table3 <- renderTable({
+        set.seed(systime());
+        sim    <- run_gmse();
+        simsum <- gmse_summary(sim);
+        simact <- simsum$actions[,-3];
+        includ <- as.numeric(which(!is.na(simact[1,])));
+        simact[,includ];
     }, include.colnames = TRUE)
     
 }    
