@@ -61,6 +61,9 @@ sidebar <-   dashboardSidebar(
                 menuItem("General results", icon = icon("line-chart"), 
                          tabName = "plotting"),
                 
+                menuItem("Confict results", icon = icon("meh-o"), 
+                         tabName = "plot_effort"),
+                
                 div(align="center"),
                 
                 menuItem("Getting started", tabName = "help", 
@@ -566,6 +569,15 @@ body <- dashboardBody(
                     plotOutput("plot1", height = 900, width = 700)
             ),
             
+            tabItem("plot_effort",
+                    
+                    headerPanel(title = "Conflict output (please be patient)"),
+                    
+                    hr(),
+                    
+                    plotOutput("plot2", height = 900, width = 700)
+            ),
+            
             tabItem("help",
                     
                     headerPanel(title = "Introduction to GMSE"),
@@ -590,7 +602,15 @@ body <- dashboardBody(
                     
                     headerPanel(title = "How to interpret general results"),
                     
-                    p("The 'General results' tab plots the dynamics of GMSE resource, observation, manager, and user models in six separate sub-panels. (1) Upper left panel: Shows the locations of resources on the landscape (black dots). (2) Upper right panel: Shows ownership of land by agents if 'Users own and act on their patch of land' is set to 'True' in the user model tab; land is divided proportional based on parameters set in gmse() and colours correspond with other subplots. This panel shows where actions are being performed by individual users, and where resources are affecting the landscape. (3) Middle left panel: Shows the actual population abundance (black solid line) and the population abundance estimated by the manager (blue solid line; where applicable, shading indicates 95 percent confidence intervals) over time. The dotted red line shows the resource carrying capacity (as applied to mortality) and the dotted blue line shows the target for resource abundance as set in the gmse() function; the orange line shows the total percent yield of the landscape (i.e., 100 percent means that resources have not decreased yield at all, 0 percent means that resources have completely destroyed all yield). (4) Middle right panel: Shows the raw landscape yield for each stakeholder (can be ignored if users do not own land) over time; colours correspond to land ownership shown in the upper right panel. (5) Lower left panel: The cost of stakeholders performing actions over time, as set by the manager. (6) Lower right panel: The total number of actions performed by all stakeholders over time.")
+                    p("The 'General results' tab plots the dynamics of GMSE resource, observation, manager, and user models in six separate sub-panels. (1) Upper left panel: Shows the locations of resources on the landscape (black dots). (2) Upper right panel: Shows ownership of land by agents if 'Users own and act on their patch of land' is set to 'True' in the user model tab; land is divided proportional based on parameters set in gmse() and colours correspond with other subplots. This panel shows where actions are being performed by individual users, and where resources are affecting the landscape. (3) Middle left panel: Shows the actual population abundance (black solid line) and the population abundance estimated by the manager (blue solid line; where applicable, shading indicates 95 percent confidence intervals) over time. The dotted red line shows the resource carrying capacity (as applied to mortality) and the dotted blue line shows the target for resource abundance as set in the gmse() function; the orange line shows the total percent yield of the landscape (i.e., 100 percent means that resources have not decreased yield at all, 0 percent means that resources have completely destroyed all yield). (4) Middle right panel: Shows the raw landscape yield for each stakeholder (can be ignored if users do not own land) over time; colours correspond to land ownership shown in the upper right panel. (5) Lower left panel: The cost of stakeholders performing actions over time, as set by the manager. (6) Lower right panel: The total number of actions performed by all stakeholders over time."),
+                    
+                    hr(),
+                    
+                    br(),
+                    
+                    headerPanel(title = "How to interpret conflict results"),
+                    
+                    p("The 'Conflict results' tab plots the permissiveness that each manager exhibits for each user action (scaring, culling, etc.) and the effort that each individual user puts into each action over time. On the left axis, permissiveness is calculated as 100 minus the percent of the manager's budget put into increasing the cost of a particular action, so, e.g., if a manager puts all of their effort into increasing the cost of culling, then permissiveness of culling is 0; if they put none of their effort into increasing the cost of culling, then permissiveness of culling is 100. On the right axis, percentage of user action expended is the percent of a user's budget put into a particular action (note, these might not add up to 100 because users are not forced to use their entire budget). Coloured lines that are above black lines could potentially (cautiously) be interpreted as conflict between managers and users.")
                     
             )
             
@@ -608,6 +628,10 @@ ui <- dashboardPage(header, sidebar, body, skin = skin)
 #The server function itself contains everything else to get the program to run
 # server <- function(input, output, session){}
 server <- function(input, output){
+    
+    systime <- eventReactive(input$go, {
+        as.integer(Sys.time());
+    })
     
     run_gmse <- eventReactive(input$go, {
         gmse(time_max       = input$time,
@@ -665,16 +689,23 @@ server <- function(input, output){
              converge_crit  = input$converge_crit,
              manager_sense  = 0.1,
              public_land    = input$public_land
-        )
-        
+        );
     })
-    
+
     output$plot1 <- renderPlot({
+        set.seed(systime());
         sim <- run_gmse();
         plot_gmse_results(res = sim$resource, obs = sim$observation, 
                           land = sim$land, agents = sim$agents, 
                           paras = sim$paras, ACTION = sim$action, 
                           COST = sim$cost);
+    })
+    
+    output$plot2 <- renderPlot({
+        set.seed(systime());
+        sim <- run_gmse();
+        plot_gmse_effort(agents = sim$agents, paras = sim$paras, 
+                         ACTION = sim$action,  COST = sim$cost);
     })
     
 }    
