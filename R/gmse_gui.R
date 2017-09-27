@@ -17,6 +17,7 @@
 #'@importFrom shiny div p icon headerPanel column hr sliderInput selectInput
 #'@importFrom shiny radioButtons actionButton plotOutput eventReactive runApp
 #'@importFrom shiny shinyApp renderPlot uiOutput renderTable tableOutput
+#'@importFrom shiny fluidPage tags br
 #'@importFrom shinydashboard dashboardSidebar sidebarMenu menuItem dashboardBody
 #'@importFrom shinydashboard tabItems tabItem dashboardHeader dashboardPage
 #'@importFrom shinyjs useShinyjs
