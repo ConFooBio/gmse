@@ -64,6 +64,9 @@ sidebar <-   dashboardSidebar(
                 menuItem("Confict results", icon = icon("meh-o"), 
                          tabName = "plot_effort"),
                 
+                menuItem("Resource table", icon = icon("meh-o"), 
+                         tabName = "resource_tab"),
+                
                 div(align="center"),
                 
                 menuItem("Getting started", tabName = "help", 
@@ -578,6 +581,15 @@ body <- dashboardBody(
                     plotOutput("plot2", height = 900, width = 700)
             ),
             
+            tabItem("resource_tab",
+                    
+                    headerPanel(title = "Resource abundance and estimate"),
+                    
+                    hr(),
+                    
+                    tableOutput("table1")
+            ),
+            
             tabItem("help",
                     
                     headerPanel(title = "Introduction to GMSE"),
@@ -707,6 +719,18 @@ server <- function(input, output){
         plot_gmse_effort(agents = sim$agents, paras = sim$paras, 
                          ACTION = sim$action,  COST = sim$cost);
     })
+    
+    output$table1 <- renderTable({
+        set.seed(systime());
+        sim    <- run_gmse();
+        simsum <- gmse_summary(sim);
+        simres <- simsum$resources;
+        simest <- simsum$observations;
+        showt  <- cbind(simres[,1:2], simest[,2]);
+        colnames(showt) <- c("time_step", "population_size", 
+                             "estimate_of_pop_size");
+        showt[,1:3];
+    }, include.colnames = TRUE)
     
 }    
 
