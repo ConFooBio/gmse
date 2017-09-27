@@ -50,7 +50,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **SEP** [26](#u-26-SEP-2017), [25](#u-25-SEP-2017), [22](#u-22-SEP-2017), [15](#u-15-SEP-2017), [13](#u-13-SEP-2017), [8](#u-8-SEP-2017), [6](#u-6-SEP-2017)
+     - **SEP** [27](#u-27-SEP-2017), [26](#u-26-SEP-2017), [25](#u-25-SEP-2017), [22](#u-22-SEP-2017), [15](#u-15-SEP-2017), [13](#u-13-SEP-2017), [8](#u-8-SEP-2017), [6](#u-6-SEP-2017)
      - **AUG** [28](#u-28-AUG-2017), [23](#u-23-AUG-2017), [17](#u-17-AUG-2017), [16](#u-16-AUG-2017), [15](#u-15-AUG-2017), [7](#u-7-AUG-2017)
      - **JUL** [7](#u-7-JUL-2017), [3](#u-3-JUL-2017)
      - **JUN** [27](#u-27-JUN-2017), [26](#u-26-JUN-2017), [25](#u-25-JUN-2017), [23](#u-23-JUN-2017), [20](#u-20-JUN-2017), [16](#u-16-JUN-2017), [15](#u-15-JUN-2017), [14](#u-14-JUN-2017), [13](#u-13-JUN-2017), [9](#u-9-JUN-2017), [8](#u-7-JUN-2017), [7](#u-7-JUN-2017), [6](#u-6-JUN-2017), [5](#u-5-JUN-2017), [4](#u-4-JUN-2017) 
@@ -88,6 +88,10 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-27-SEP-2017">Update: 27 SEP 2017</a>
+
+The [GMSE GUI](https://bradduthie.shinyapps.io/gmse_gui/) has been updated with all of the new features in [version 0.2.3.0](https://github.com/bradduthie/gmse/releases/tag/v0.2.3.0). The `gmse_gui()` function is likewise updated in a new patch [version 0.2.3.1](https://github.com/bradduthie/gmse/releases/tag/v0.2.3.0). I did this quickly because the GUI was actually easy to update; plans for the `gmse_apply` function are now also clear, and I hope to have a working function and version 0.3.0.0 by the end of the week, or by early next week.
 
 > <a name="u-26-SEP-2017">Update: 26 SEP 2017</a>
 
