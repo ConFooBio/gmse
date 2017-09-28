@@ -39,8 +39,17 @@ gmse_apply <- function(resource_model    = resource,
     man_mod <- match.fun(manager_model);
     use_mod <- match.fun(user_model);
     
+    allpars <- pass_paras(...);
     
-    result <- in_fun(3);
+    inputs  <- allpars$gmse_user_input;
+    paras   <- allpars$gmse_para_vect;
+    
+    if( identical(resource_model, resource) ){
+        
+    }
+    
+    
+    
     
     return(result);
 }
