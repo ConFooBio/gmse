@@ -40,29 +40,55 @@ gmse_apply <- function(resource_model    = resource,
     use_mod <- match.fun(user_model);
     
     # Sort out the arguments for each function, and the rest
-    all_arguments <- as.list(sys.call());
-    all_arg_names <- names(all_arguments);
+    all_arguments  <- as.list(sys.call());
+    all_arg_names  <- names(all_arguments);
+    res_arg_names  <- names(formals(res_mod));
+    obs_arg_names  <- names(formals(obs_mod));
+    man_arg_names  <- names(formals(man_mod));
+    use_arg_names  <- names(formals(use_mod));
+    f_arg_names    <- c(res_arg_names, obs_arg_names, man_arg_names, 
+                        use_arg_names);
+    f_arg_names    <- unique(f_arg_names);
+    
+    if("PARAS" %in% f_arg_names == TRUE & "PARAS" %in% all_arg_names == FALSE){
+        allpars <- pass_paras(...); # Pass gmse linked arguments
+    }
+    
+    gmse_user_input <- allpars$gmse_user_input;
+    gmse_para_vect  <- allpars$gmse_para_vect;
+    
+    if("LAND" %in% f_arg_names == TRUE & "LAND" %in% all_arg_names == FALSE){
+        all_arg_names <- c(all_arguments, "LAND");
+        if(gmse_para_vect[104] == TRUE){
+            stake_pr    <- (1 - gmse_para_vect[105]) / (gmse_para_vect[55] - 1);
+            land_alloc  <- c(gmse_para_vect[105], 
+                             rep(x = stake_pr, times = gmse_para_vect[55] - 1));
+        }else{
+            land_alloc  <- c(1, rep(x = 0, times = gmse_para_vect[55] - 1)); 
+        }
+        LANDSCAPE_r  <- make_landscape( model       = "IBM", 
+                                        rows        = gmse_para_vect[2], 
+                                        cols        = gmse_para_vect[3], 
+                                        cell_types  = 1,
+                                        cell_val_mn = 1,
+                                        cell_val_sd = 0,
+                                        ownership   = 1:gmse_para_vect[55],
+                                        owner_pr    = land_alloc
+        );
+    }
+    
+    
+    
+    
+    #res_arg_vals  <- get_arg_list( the_function   = res_mod, 
+    #                               all_arg_names  = all_arg_names, 
+    #                               all_arg_values = all_arguments
+    #                             );
+    
+    #res <- do.call(what = res_mod, args = res_arg_vals);
+    
 
-    res_arg_vals  <- get_arg_list( the_function   = res_mod, 
-                                   all_arg_names  = all_arg_names, 
-                                   all_arg_values = all_arguments
-                                 );
-    
-    res <- do.call(what = res_mod, args = res_arg_vals);
-    
-    
-    
-    
-    
-    allpars <- pass_paras(...); # Will ignore non-GMSE functions
-    
-    inputs  <- allpars$gmse_user_input;
-    paras   <- allpars$gmse_para_vect;
-    
-    
-    
-    
-    return(result);
+    return(LANDSCAPE_r);
 }
 
 
@@ -142,7 +168,7 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
 
 get_arg_list <- function(the_function, all_arg_names, all_arg_values){
     fun_args <- names(formals(the_function));
-    fun_vals <- rep(x = "arg_not_found", times = length(fun_args)); 
+    fun_vals <- rep(x = NA, times = length(fun_args)); 
     for(i in 1:length(fun_args)){
         for(j in 1:length(all_arg_names)){
             if(fun_args[i] == all_arg_names[j]){
@@ -150,11 +176,6 @@ get_arg_list <- function(the_function, all_arg_names, all_arg_values){
                 break;
             }
         }
-    }
-    if( sum(fun_vals == "arg_not_found") > 0 ){
-        error_str <- paste("ERROR: Cannot find the following:", 
-                           fun_args[which(fun_vals == "arg_not_found")]);
-        stop(error_str);
     }
     return(fun_vals);
 }
@@ -168,7 +189,7 @@ get_arg_list <- function(the_function, all_arg_names, all_arg_values){
 
 
 
-f1 <- function(x, z = 0) 2*x + z;
+f1 <- function(x, z = 0, m = NULL) 2*x + z;
 f2 <- function(x) x*x + 1;
 
 dv <- function(d1 = -1, d2 = -2, ...){
