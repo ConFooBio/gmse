@@ -42,10 +42,15 @@ gmse_apply <- function(resource_model    = resource,
     # Sort out the arguments for each function, and the rest
     all_arguments <- as.list(sys.call());
     all_arg_names <- names(all_arguments);
-    res_mod_args  <- names(formals(res_mod));
-    obs_mod_args  <- names(formals(obs_mod));
-    man_mod_args  <- names(formals(man_mod));
-    use_mod_args  <- names(formals(use_mod));
+
+    res_arg_vals  <- get_arg_list( the_function   = res_mod, 
+                                   all_arg_names  = all_arg_names, 
+                                   all_arg_values = all_arguments
+                                 );
+    
+    res <- do.call(what = res_mod, args = res_arg_vals);
+    
+    
     
     
     
@@ -53,15 +58,6 @@ gmse_apply <- function(resource_model    = resource,
     
     inputs  <- allpars$gmse_user_input;
     paras   <- allpars$gmse_para_vect;
-    
-    
-    
-    
-    if( identical(resource_model, resource) ){
-        
-    }else{
-        
-    }
     
     
     
@@ -141,6 +137,28 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
                  gmse_para_vect  = as.vector(paras)) 
           );
 }
+
+
+
+get_arg_list <- function(the_function, all_arg_names, all_arg_values){
+    fun_args <- names(formals(the_function));
+    fun_vals <- rep(x = "arg_not_found", times = length(fun_args)); 
+    for(i in 1:length(fun_args)){
+        for(j in 1:length(all_arg_names)){
+            if(fun_args[i] == all_arg_names[j]){
+                fun_vals[i] <- all_arg_values[j];
+                break;
+            }
+        }
+    }
+    if( sum(fun_vals == "arg_not_found") > 0 ){
+        error_str <- paste("ERROR: Cannot find the following:", 
+                           fun_args[which(fun_vals == "arg_not_found")]);
+        stop(error_str);
+    }
+    return(fun_vals);
+}
+
 
 
 
