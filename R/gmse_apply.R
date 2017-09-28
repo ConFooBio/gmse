@@ -44,7 +44,12 @@ gmse_apply <- function(resource_model    = resource,
     inputs  <- allpars$gmse_user_input;
     paras   <- allpars$gmse_para_vect;
     
+    
+    
+    
     if( identical(resource_model, resource) ){
+        
+    }else{
         
     }
     
@@ -76,7 +81,7 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
                         kill_crops = FALSE, stakeholders = 4, 
                         manage_caution = 1, land_ownership = FALSE, 
                         manage_freq = 1, converge_crit = 100, 
-                        manager_sense = 0.1, public_land    = 0
+                        manager_sense = 0.1, public_land    = 0, ...
                     ){
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
@@ -130,14 +135,40 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
 
 
 
-f1 <- function(x) 2*x;
+
+
+
+
+
+f1 <- function(x, z = 0) 2*x + z;
 f2 <- function(x) x*x + 1;
 
-dv <- function(d1 = -1, d2 = -2){
+dv <- function(d1 = -1, d2 = -2, ...){
     return(c(d1, d2));
 }
 
 xfun <- function(f1, f2, x, y, ...){
+    
+    #lists all of the arguments in the function
+    llv      <- as.list(sys.call()); # All values
+    lln      <- names(llv);          # All names
+    f1_args  <- names(formals(f1));  # Just the names of F1 arguments
+    
+    #Isolates the ... arguments relevant to f1
+    f1_input <- rep(x = 0, times = length(f1_args));
+    for(i in 1:length(lln)){
+        for(j in 1:length(f1_args)){
+            if(lln[i] == f1_args[j]){
+                f1_input[j] <- llv[i];
+            }
+        }
+    }
+
+    # Runs f1 with the relevant arguments
+    res <- do.call(what = f1, args = f1_input);
+    
+    
+    
     f1x <- match.fun(f1);
     f2x <- match.fun(f2);
     
@@ -147,6 +178,18 @@ xfun <- function(f1, f2, x, y, ...){
     v1  <- c(f1r, f2r)
     v2  <- dv(...);
     
-    return( v1*v2 )
+    return( res );
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
