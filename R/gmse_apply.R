@@ -39,7 +39,17 @@ gmse_apply <- function(resource_model    = resource,
     man_mod <- match.fun(manager_model);
     use_mod <- match.fun(user_model);
     
-    allpars <- pass_paras(...);
+    # Sort out the arguments for each function, and the rest
+    all_arguments <- as.list(sys.call());
+    all_arg_names <- names(all_arguments);
+    res_mod_args  <- names(formals(res_mod));
+    obs_mod_args  <- names(formals(obs_mod));
+    man_mod_args  <- names(formals(man_mod));
+    use_mod_args  <- names(formals(use_mod));
+    
+    
+    
+    allpars <- pass_paras(...); # Will ignore non-GMSE functions
     
     inputs  <- allpars$gmse_user_input;
     paras   <- allpars$gmse_para_vect;
@@ -147,7 +157,10 @@ dv <- function(d1 = -1, d2 = -2, ...){
     return(c(d1, d2));
 }
 
-xfun <- function(f1, f2, x, y, ...){
+xfun <- function(f1_i, f2_i, x, y, ...){
+    
+    f1 <- match.fun(f1_i);
+    f2 <- match.fun(f2_i);
     
     #lists all of the arguments in the function
     llv      <- as.list(sys.call()); # All values
