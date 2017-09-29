@@ -136,7 +136,7 @@ gmse_apply <- function(resource_model    = resource,
         res_arg_vals[[5]] <- NULL;
     }
     
-    return(AGENTS);
+    return(all_arguments);
     
 }
 
