@@ -84,6 +84,36 @@ gmse_apply <- function(resource_model    = resource,
         list_count <- list_count + 1;
     }
     
+    # Make agents if they are needed but not provided by the software user
+    if("AGENTS" %in% f_arg_names == TRUE & 
+       "AGENTS" %in% all_arg_names == FALSE){
+        all_arg_names[[list_count+1]] <- "AGENTS";
+        stakeholders <- 4;
+        if("stakeholders" %in% all_arg_names == TRUE){
+            where_stk    <- which(all_arg_names == "stakeholders");
+            stakeholders <- all_arguments[where_stk];
+        }
+        agent_view  <- 10;
+        if("agent_view" %in% all_arg_names == TRUE){
+            where_age  <- which(all_arg_names == "agent_view");
+            agent_view <- all_arguments[where_age];
+        }
+        agent_move  <- FALSE;
+        if("agent_move" %in% all_arg_names == TRUE){
+            where_mve  <- which(all_arg_names == "agent_move");
+            agent_move <- all_arguments[where_mve];
+        }
+        AGENTS   <- make_agents( model        = "IBM",
+                                 agent_number = 1 + stakeholders,
+                                 type_counts  = c(1, stakeholders),
+                                 vision       = agent_view,
+                                 rows         = gmse_para_vect[2],
+                                 cols         = gmse_para_vect[3],
+                                 move         = agent_move
+        ); 
+        
+    }
+        
     # --- Run the resource model function provided by the software user
     res_arg_vals  <- get_arg_list( the_function   = res_mod, 
                                    all_arg_names  = all_arg_names, 
@@ -96,7 +126,15 @@ gmse_apply <- function(resource_model    = resource,
     
     res <- do.call(what = res_mod, args = res_arg_vals)
 
-    
+    # --- Run the observation model function provided by the software user
+    obs_arg_values  <- get_arg_list( the_function   = obs_mod, 
+                                     all_arg_names  = all_arg_names, 
+                                     all_arg_values = all_arguments
+    );
+    if( identical(observation_model, observation) == TRUE ){
+        res_arg_vals[[4]] <- "IBM";
+        res_arg_vals[[5]] <- NULL;
+    }
     
     #see_args <- list();
     #see_args$before <- all_arguments;
