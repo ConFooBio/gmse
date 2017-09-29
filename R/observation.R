@@ -85,6 +85,7 @@ observation <- function(RESOURCES  = NULL,
     if(check_model == 0){
         stop("Invalid model selected (Must be 'IBM')");
     }
+    names(OBSERVE_OUT) <- c("OBSERVATION", "AGENTS", "PARAS");
     return(OBSERVE_OUT);
 }
 

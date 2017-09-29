@@ -46,6 +46,7 @@ resource <- function(RESOURCES = NULL,
     if(check_model == 0){
         stop("Invalid model selected");
     }
+    names(RESOURCE_OUT) <- c("RESOURCE", "LAND", "PARAS");
     return(RESOURCE_OUT);
 }
 
