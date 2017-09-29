@@ -49,16 +49,21 @@ gmse_apply <- function(resource_model    = resource,
     f_arg_names    <- c(res_arg_names, obs_arg_names, man_arg_names, 
                         use_arg_names);
     f_arg_names    <- unique(f_arg_names);
+    list_count     <- length(all_arguments);
     
     if("PARAS" %in% f_arg_names == TRUE & "PARAS" %in% all_arg_names == FALSE){
         allpars <- pass_paras(...); # Pass gmse linked arguments
+        all_arg_names[[list_count+1]] <- "PARAS";
+        all_arguments[[list_count+1]] <- allpars$gmse_para_vect;
+        list_count <- list_count + 1;
     }
     
     gmse_user_input <- allpars$gmse_user_input;
     gmse_para_vect  <- allpars$gmse_para_vect;
     
+    # Make a landscape if one is needed but not provided by the software user
     if("LAND" %in% f_arg_names == TRUE & "LAND" %in% all_arg_names == FALSE){
-        all_arg_names <- c(all_arguments, "LAND");
+        all_arg_names[[list_count+1]] <- "LAND";
         if(gmse_para_vect[104] == TRUE){
             stake_pr    <- (1 - gmse_para_vect[105]) / (gmse_para_vect[55] - 1);
             land_alloc  <- c(gmse_para_vect[105], 
@@ -67,28 +72,27 @@ gmse_apply <- function(resource_model    = resource,
             land_alloc  <- c(1, rep(x = 0, times = gmse_para_vect[55] - 1)); 
         }
         LANDSCAPE_r  <- make_landscape( model       = "IBM", 
-                                        rows        = gmse_para_vect[2], 
-                                        cols        = gmse_para_vect[3], 
+                                        rows        = gmse_para_vect[13], 
+                                        cols        = gmse_para_vect[14], 
                                         cell_types  = 1,
                                         cell_val_mn = 1,
                                         cell_val_sd = 0,
                                         ownership   = 1:gmse_para_vect[55],
                                         owner_pr    = land_alloc
         );
+        all_arguments[[list_count+1]] <- LANDSCAPE_r;
+        list_count <- list_count + 1;
     }
     
+    res_arg_vals  <- get_arg_list( the_function   = res_mod, 
+                                   all_arg_names  = all_arg_names, 
+                                   all_arg_values = all_arguments
+                                 );
     
+    res <- do.call(what = res_mod, args = res_arg_vals);
     
+    return(res);
     
-    #res_arg_vals  <- get_arg_list( the_function   = res_mod, 
-    #                               all_arg_names  = all_arg_names, 
-    #                               all_arg_values = all_arguments
-    #                             );
-    
-    #res <- do.call(what = res_mod, args = res_arg_vals);
-    
-
-    return(LANDSCAPE_r);
 }
 
 
@@ -160,7 +164,7 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
     );
     
     return( list(gmse_user_input = as.vector(input_list), 
-                 gmse_para_vect  = as.vector(paras)) 
+                 gmse_para_vect  = as.vector(paras))
           );
 }
 
