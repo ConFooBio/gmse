@@ -91,17 +91,17 @@ gmse_apply <- function(resource_model    = resource,
         stakeholders <- 4;
         if("stakeholders" %in% all_arg_names == TRUE){
             where_stk    <- which(all_arg_names == "stakeholders");
-            stakeholders <- all_arguments[where_stk];
+            stakeholders <- as.numeric(all_arguments[where_stk]);
         }
         agent_view  <- 10;
         if("agent_view" %in% all_arg_names == TRUE){
             where_age  <- which(all_arg_names == "agent_view");
-            agent_view <- all_arguments[where_age];
+            agent_view <- as.numeric(all_arguments[where_age]);
         }
-        agent_move  <- FALSE;
+        agent_move  <- 0;
         if("agent_move" %in% all_arg_names == TRUE){
             where_mve  <- which(all_arg_names == "agent_move");
-            agent_move <- all_arguments[where_mve];
+            agent_move <- as.numeric(all_arguments[where_mve]);
         }
         AGENTS   <- make_agents( model        = "IBM",
                                  agent_number = 1 + stakeholders,
@@ -136,26 +136,7 @@ gmse_apply <- function(resource_model    = resource,
         res_arg_vals[[5]] <- NULL;
     }
     
-    #see_args <- list();
-    #see_args$before <- all_arguments;
-    
-    #all_arguments <-  update_all_arguments(mod_output     = res, 
-    #                                       all_arguments  = all_arguments, 
-    #                                       all_arg_names  = all_arg_names
-    #                                      );
-
-    #see_args$after   <- all_arguments;
-    #see_args$correct <- res;
-    #see_args$resdim  <- dim(res[[1]]);
-    
-    # --- Run the observation model function provided by the software user
-    #res_arg_vals  <- get_arg_list( the_function   = res_mod, 
-    #                               all_arg_names  = all_arg_names, 
-    #                               all_arg_values = all_arguments
-    #);
-    
-    
-    return(all_arguments);
+    return(AGENTS);
     
 }
 
