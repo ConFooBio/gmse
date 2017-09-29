@@ -49,7 +49,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **SEP** [27](#u-27-SEP-2017), [26](#u-26-SEP-2017), [25](#u-25-SEP-2017), [22](#u-22-SEP-2017), [15](#u-15-SEP-2017), [13](#u-13-SEP-2017), [8](#u-8-SEP-2017), [6](#u-6-SEP-2017)
+     - **SEP** [28](#u-28-SEP-2017), [27](#u-27-SEP-2017), [26](#u-26-SEP-2017), [25](#u-25-SEP-2017), [22](#u-22-SEP-2017), [15](#u-15-SEP-2017), [13](#u-13-SEP-2017), [8](#u-8-SEP-2017), [6](#u-6-SEP-2017)
      - **AUG** [28](#u-28-AUG-2017), [23](#u-23-AUG-2017), [17](#u-17-AUG-2017), [16](#u-16-AUG-2017), [15](#u-15-AUG-2017), [7](#u-7-AUG-2017)
      - **JUL** [7](#u-7-JUL-2017), [3](#u-3-JUL-2017)
      - **JUN** [27](#u-27-JUN-2017), [26](#u-26-JUN-2017), [25](#u-25-JUN-2017), [23](#u-23-JUN-2017), [20](#u-20-JUN-2017), [16](#u-16-JUN-2017), [15](#u-15-JUN-2017), [14](#u-14-JUN-2017), [13](#u-13-JUN-2017), [9](#u-9-JUN-2017), [8](#u-8-JUN-2017), [7](#u-7-JUN-2017), [6](#u-6-JUN-2017), [5](#u-5-JUN-2017), [4](#u-4-JUN-2017)
@@ -87,6 +87,10 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-28-SEP-2017">Update: 28 SEP 2017</a>
+
+Progress has been made on the `gmse_apply()` function. My goal is to make this as modular as possible -- to allow any four functions to be included in the GMSE framework, including arbitrary arguments to each function. The `gmse_apply()` function will recognise which arguments go along with which functions, and naturally string together results from one sub-function to the input of the next sub-function (though this will demand that the output from functions is labelled in a way that matches the arguments of the next function; e.g., if you have a 'N_total' as input for the observation model, then 'N_total' will either need to be labelled output of the resource model or specificied directly in `gmse_apply()`). Default submodels will be the IBMs used in `gmse()`, and where arguments are not specified by the software user in `gmse_apply()` (e.g., `LAND`) they will be built from default `gmse()` parameters.
 
 > <a name="u-27-SEP-2017">Update: 27 SEP 2017</a>
 
