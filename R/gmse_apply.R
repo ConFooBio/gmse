@@ -84,16 +84,32 @@ gmse_apply <- function(resource_model    = resource,
         list_count <- list_count + 1;
     }
     
+    # --- Run the resource model function provided by the software user
     res_arg_vals  <- get_arg_list( the_function   = res_mod, 
                                    all_arg_names  = all_arg_names, 
                                    all_arg_values = all_arguments
                                  );
-    
     if( identical(resource_model, resource) == TRUE ){
         res_arg_vals[[4]] <- "IBM";
         res_arg_vals[[5]] <- NULL;
     }
-    res <- do.call(what = res_mod, args = res_arg_vals);
+    
+    res <- do.call(what = res_mod, args = res_arg_vals)
+
+    for(i in 1:length(res)){
+        for(j in 1:length(all_arguments)){
+            if(names(res)[i] == all_arg_names[j]){
+                all_arg_values[j] <- res[i];
+            }
+        }
+    }
+
+    # --- Run the observation model function provided by the software user
+    res_arg_vals  <- get_arg_list( the_function   = res_mod, 
+                                   all_arg_names  = all_arg_names, 
+                                   all_arg_values = all_arguments
+    );
+    
     
     return(res);
     
@@ -199,7 +215,32 @@ get_arg_list <- function(the_function, all_arg_names, all_arg_values){
 
 
 
+update_all_arguments <- function(mod_output, all_arguments, all_arg_names, 
+                                 all_arg_values){
+    for(i in 1:length(mod_output)){
+        for(j in 1:length(all_arguments)){
+            if(names(mod_output)[i] == all_arg_names[j]){
+                all_arg_values[j] <- mod_output[i];
+            }
+        }
+    }
+    return(all_arg_values);
+}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+#=== SCRATCH BELOW
 
 
 f1 <- function(x, z = 0, m = NULL) 2*x + z;
