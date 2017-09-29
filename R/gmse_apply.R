@@ -89,6 +89,10 @@ gmse_apply <- function(resource_model    = resource,
                                    all_arg_values = all_arguments
                                  );
     
+    if( identical(resource_model, resource) == TRUE ){
+        res_arg_vals[[4]] <- "IBM";
+        res_arg_vals[[5]] <- NULL;
+    }
     res <- do.call(what = res_mod, args = res_arg_vals);
     
     return(res);
@@ -179,6 +183,11 @@ get_arg_list <- function(the_function, all_arg_names, all_arg_values){
                 fun_vals[i] <- all_arg_values[j];
                 break;
             }
+        }
+    }
+    for(i in 1:length(fun_args)){
+        if(is.na(fun_vals)[i] == TRUE & formals(the_function)[i] != ""){
+            fun_vals[i] <- formals(the_function)[i];
         }
     }
     return(fun_vals);
