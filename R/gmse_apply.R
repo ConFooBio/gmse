@@ -111,9 +111,10 @@ gmse_apply <- function(resource_model    = resource,
                                  cols         = gmse_para_vect[3],
                                  move         = agent_move
         ); 
-        
+        all_arguments[[list_count+1]] <- AGENTS;
+        list_count <- list_count + 1;
     }
-        
+    
     # --- Run the resource model function provided by the software user
     res_arg_vals  <- get_arg_list( the_function   = res_mod, 
                                    all_arg_names  = all_arg_names, 
@@ -124,19 +125,53 @@ gmse_apply <- function(resource_model    = resource,
         res_arg_vals[[5]] <- NULL;
     }
     
-    res <- do.call(what = res_mod, args = res_arg_vals)
-
-    # --- Run the observation model function provided by the software user
-    obs_arg_values  <- get_arg_list( the_function   = obs_mod, 
-                                     all_arg_names  = all_arg_names, 
-                                     all_arg_values = all_arguments
-    );
-    if( identical(observation_model, observation) == TRUE ){
-        res_arg_vals[[4]] <- "IBM";
-        res_arg_vals[[5]] <- NULL;
+    res <- do.call(what = res_mod, args = res_arg_vals);
+    
+    if( "RESOURCES" %in% names(res) == FALSE){
+        stop("ERROR: Resource model must return a 'RESOURCES' list element");
+    }
+    if( "RESOURCES" %in% all_arg_names == FALSE){
+        all_arg_names[[list_count+1]] <- "RESOURCES";
+        all_arguments[[list_count+1]] <- res$RESOURCES;
+        list_count                    <- list_count + 1;
     }
     
-    return(res);
+    all_arguments <- update_all_arguments(mod_output    = res, 
+                                          all_arguments = all_arguments, 
+                                          all_arg_names = all_arg_names);
+    
+
+    res_pos <- which(all_arg_names == "RESOURCES");
+    res_out <- all_arguments[[res_pos]];
+    if( is.vector(res_out) == FALSE & is.matrix(res_out) == FALSE){
+        stop("ERROR: Resource output needs to either vector or matrix");
+    }
+    if( is.vector(all_arguments[[res_pos]]) == TRUE ){
+        rvec         <- all_arguments[[res_pos]];
+        totalr       <- sum(rvec);
+        mat_resource <- make_resource(resource_quantity = totalr);
+        if(length(rvec) > 1){
+            types <- rep(x = 1:totalr, times = rvec);
+        }
+        all_arg_names[[list_count+1]] <- "resource_vec";
+        all_arguments[[list_count+1]] <- rvec;
+        all_arguments[[res_pos]]      <- mat_resource;
+        list_count                    <- list_count + 1;
+    }
+    
+    # --- Run the observation model function provided by the software user
+    #obs_arg_values  <- get_arg_list( the_function   = obs_mod, 
+    #                                 all_arg_names  = all_arg_names, 
+    #                                 all_arg_values = all_arguments
+    #);
+    #if( identical(observation_model, observation) == TRUE ){
+    #    obs_arg_values[[4]] <- "IBM";
+    #    obs_arg_values[[5]] <- NULL;
+    #}
+    
+    #obs <- do.call(what = obs_mod, args = obs_arg_vals);
+    
+    return(list(all_arguments, all_arg_names));
     
 }
 
