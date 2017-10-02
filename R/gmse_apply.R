@@ -136,10 +136,9 @@ gmse_apply <- function(resource_model    = resource,
         res_arg_vals[[5]] <- NULL;
     }
     
-    return(all_arguments);
+    return(res);
     
 }
-
 
 pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,  
                         res_movement = 20, remove_pr = 0.0, lambda = 0.30, 
@@ -220,7 +219,7 @@ get_arg_list <- function(the_function, all_arg_names, all_arg_values){
     fun_vals <- rep(x = NA, times = length(fun_args)); 
     for(i in 1:length(fun_args)){
         for(j in 1:length(all_arg_names)){
-            if(fun_args[i] == all_arg_names[j]){
+            if( identical(fun_args[i], all_arg_names[j]) == TRUE){
                 fun_vals[i] <- all_arg_values[j];
                 break;
             }
