@@ -213,19 +213,42 @@ gmse_apply <- function(resource_model    = resource,
         list_count                    <- list_count + 1;
     }
     
+    if("inter_tabl" %in% f_arg_names == TRUE & 
+       "inter_tabl" %in% all_arg_names == FALSE){
+        all_arg_names[[list_count+1]] <- "inter_tabl";
+        r_a_p      <- which(all_arg_names == "resource_arr");
+        l_pos      <- which(all_arg_names == "LAND");
+        inter_tabl <- make_interaction_table(RESOURCES = all_arguments[[r_a_p]], 
+                                             LAND      = all_arguments[[l_pos]]
+                                             );
+        all_arguments[[list_count+1]] <- inter_tabl;
+        list_count <- list_count + 1;
+    }
+    
     # --- Run the observation model function provided by the software user
-    #obs_arg_values  <- get_arg_list( the_function   = obs_mod, 
-    #                                 all_arg_names  = all_arg_names, 
-    #                                 all_arg_values = all_arguments
-    #);
-    #if( identical(observation_model, observation) == TRUE ){
-    #    obs_arg_values[[4]] <- "IBM";
-    #    obs_arg_values[[5]] <- NULL;
-    #}
+    obs_arg_values  <- get_arg_list( the_function   = obs_mod, 
+                                     all_arg_names  = all_arg_names, 
+                                     all_arg_values = all_arguments
+    );
     
-    #obs <- do.call(what = obs_mod, args = obs_arg_vals);
+    # --- Some adjustments for running the observation model
+    if( identical(observation_model, observation) == TRUE){
+        pa_pos               <- which(all_arg_names == "PARAS")[1];
+        obs_arg_values[[6]]  <- all_arguments[[pa_pos]][11]; 
+        obs_arg_values[[7]]  <- all_arguments[[pa_pos]][12];
+        obs_arg_values[[8]]  <- all_arguments[[pa_pos]][17];
+        obs_arg_values[[11]] <- all_arguments[[pa_pos]][9];
+        obs_arg_values[[12]] <- all_arguments[[pa_pos]][20];
+        obs_arg_values[[13]] <- "IBM";
+        obs_arg_values[[14]] <- NULL;
+    }
     
-    return(list(all_arg_names, all_arguments));
+    
+    #obs <- do.call(what = obs_mod, args = obs_arg_values);
+    
+    # XXX XXX --- APPEARS TO NOT LIKE COLUMN NAMES??
+    
+    return(obs_arg_values);
     
 }
 
@@ -309,7 +332,7 @@ get_arg_list <- function(the_function, all_arg_names, all_arg_values){
     for(i in 1:length(fun_args)){
         for(j in 1:length(all_arg_names)){
             if( fun_args[i] == "RESOURCES" &         # Handles an exception
-                all_arg_names[j] == "resource_mat"){
+                all_arg_names[j] == "resource_arr"){
                 fun_vals[i] <- all_arg_values[j];
                 break;
             }
