@@ -318,5 +318,6 @@ make_interaction_table <- function(RESOURCES, LAND){
     landscape_part[,2] <- 1:landscape_count;
     
     the_table <- rbind(resource_part, landscape_part);
+    return(the_table);
 }
                                    
