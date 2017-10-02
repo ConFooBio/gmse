@@ -52,34 +52,33 @@ gmse_apply <- function(resource_model    = resource,
     list_count     <- length(all_arguments);
     
     # Convert to names for resource() if need be
-    if("resource_mat" %in% all_arg_names == TRUE & 
+    if("resource_arr" %in% all_arg_names == TRUE & 
        "RESOURCES"    %in% all_arg_names == TRUE){
-        r_m_loc       <- which(all_arg_names == "resource_mat");
+        r_m_loc       <- which(all_arg_names == "resource_arr");
         RES_loc       <- which(all_arg_names == "RESOURCES");
         all_arguments[[RES_loc]] <- all_arguments[[r_m_loc]];
     }
-    if("resource_mat" %in% all_arg_names == TRUE & 
+    if("resource_arr" %in% all_arg_names == TRUE & 
        "RESOURCES"    %in% all_arg_names == FALSE){
-        r_m_loc       <- which(all_arg_names == "resource_mat");
+        r_m_loc       <- which(all_arg_names == "resource_arr");
         all_arguments[[list_count+1]] <- all_arguments[[r_m_loc]];
         all_arg_names[[list_count+1]] <- "RESOURCES";
         list_count <- list_count + 1;
     }
-    if("resource_mat" %in% all_arg_names == FALSE & 
+    if("resource_arr" %in% all_arg_names == FALSE & 
        "RESOURCES"    %in% all_arg_names == TRUE){
         RES_loc       <- which(all_arg_names == "RESOURCES");
         all_arguments[[list_count+1]] <- all_arguments[[RES_loc]];
-        all_arg_names[[list_count+1]] <- "resource_mat";
+        all_arg_names[[list_count+1]] <- "resource_arr";
         list_count <- list_count + 1;
     }
-    if("resource_mat" %in% all_arg_names == FALSE & 
+    if("resource_arr" %in% all_arg_names == FALSE & 
        "RESOURCES"    %in% all_arg_names == FALSE){
         all_arguments[[list_count+1]] <- NA
-        all_arg_names[[list_count+1]] <- "resource_mat";
+        all_arg_names[[list_count+1]] <- "resource_arr";
         list_count <- list_count + 1;
     }
     
-
     if("PARAS" %in% f_arg_names == TRUE & "PARAS" %in% all_arg_names == FALSE){
         allpars <- pass_paras(...); # Pass gmse linked arguments
         all_arg_names[[list_count+1]] <- "PARAS";
@@ -163,18 +162,24 @@ gmse_apply <- function(resource_model    = resource,
         all_arguments[[list_count+1]] <- res$resource_vec;
         list_count                    <- list_count + 1;
     }
-    if( "resource_mat" %in% names(res) == TRUE ){
+    if( "resource_arr" %in% names(res) == TRUE |
+        "RESOURCE"     %in% names(res) == TRUE){
         res_vector_output <- FALSE;
     }
-    if( "resource_mat" %in% names(res) == FALSE & 
+    if( "resource_arr" %in% names(res) == FALSE & 
         "resource_vec" %in% names(res) == FALSE){
-        stop("ERROR: Resource model must return a 'resource_mat' (matrix) list
-              element, a 'resource_vec' (vector) list element, or a scalar");
+        if("RESOURCE" %in% names(res) == FALSE){
+            stop("ERROR: Resource model must return a 'resource_arr' (array) 
+                 list element, a 'resource_vec' (vector) list element, or a 
+                 scalar");
+        }
+        r_a_p <- which(all_arg_names == "resource_arr");
+        all_arguments[[r_a_p]] <- res$RESOURCE;
     }
-    if( "resource_mat" %in% names(res)    == TRUE &
-        "resource_mat" %in% all_arg_names == FALSE){
-        all_arg_names[[list_count+1]] <- "resource_mat";
-        all_arguments[[list_count+1]] <- res$resource_mat;
+    if( "resource_arr" %in% names(res)    == TRUE &
+        "resource_arr" %in% all_arg_names == FALSE){
+        all_arg_names[[list_count+1]] <- "resource_arr";
+        all_arguments[[list_count+1]] <- res$resource_arr;
         list_count                    <- list_count + 1;
     }
     if( "resource_vec" %in% names(res)    == TRUE &
@@ -195,17 +200,18 @@ gmse_apply <- function(resource_model    = resource,
         if(length(rvec) > 1){
             types <- rep(x = 1:totalr, times = rvec);
         }
-        all_arg_names[[list_count+1]] <- "resource_mat";
-        all_arguments[[list_count+1]] <- mat_resource;
-        list_count                    <- list_count + 1;
+        r_m_pos <- which(all_arg_names == "resource_arr")[1]
+        all_arguments[[r_m_pos]] <- mat_resource;
     }
     if( res_vector_output == FALSE ){
-        rvec         <- as.vector(table(res$resource_mat[,2]));
+        rvec         <- as.vector(table(res$resource_arr[,2]));
+        if( is.null(res$RESOURCE) == FALSE){
+            rvec         <- as.vector(table(res$RESOURCE[,2]));
+        }
         all_arg_names[[list_count+1]] <- "resource_vec";
         all_arguments[[list_count+1]] <- rvec;
         list_count                    <- list_count + 1;
     }
-    
     
     # --- Run the observation model function provided by the software user
     #obs_arg_values  <- get_arg_list( the_function   = obs_mod, 
@@ -219,7 +225,7 @@ gmse_apply <- function(resource_model    = resource,
     
     #obs <- do.call(what = obs_mod, args = obs_arg_vals);
     
-    return(all_arguments);
+    return(list(all_arg_names, all_arguments));
     
 }
 
@@ -302,6 +308,11 @@ get_arg_list <- function(the_function, all_arg_names, all_arg_values){
     fun_vals <- rep(x = NA, times = length(fun_args)); 
     for(i in 1:length(fun_args)){
         for(j in 1:length(all_arg_names)){
+            if( fun_args[i] == "RESOURCES" &         # Handles an exception
+                all_arg_names[j] == "resource_mat"){
+                fun_vals[i] <- all_arg_values[j];
+                break;
+            }
             if( identical(fun_args[i], all_arg_names[j]) == TRUE){
                 fun_vals[i] <- all_arg_values[j];
                 break;
