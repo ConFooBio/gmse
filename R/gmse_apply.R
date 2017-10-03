@@ -91,6 +91,12 @@ gmse_apply <- function(resource_model    = resource,
                 allpars$gmse_para_vect[33] <- dim(all_arguments[[resiloc]])[1];
             }
         }
+        if("RESOURCES" %in% all_arg_names == TRUE){
+            resiloc <- which(all_arg_names == "RESOURCES");
+            if( is.na(all_arguments[[resiloc]][1])  == FALSE ){
+                allpars$gmse_para_vect[33] <- dim(all_arguments[[resiloc]])[1];
+            }
+        }
         if("resource_vec" %in% all_arg_names){
             resiloc     <- which(all_arg_names == "resource_vec");
             allpars$gmse_para_vect[33] <- all_arguments[[resiloc]][1]
@@ -167,10 +173,7 @@ gmse_apply <- function(resource_model    = resource,
         res_arg_vals[[5]] <- NULL;
     }
     
-
     res <- do.call(what = res_mod, args = res_arg_vals); 
-    
-    return(res);
     
     res_vector_output  <- TRUE;
     if(length(res) == 1){
@@ -209,7 +212,7 @@ gmse_apply <- function(resource_model    = resource,
     all_arguments <- update_all_arguments(mod_output    = res, 
                                           all_arguments = all_arguments, 
                                           all_arg_names = all_arg_names);
-
+    
     if( res_vector_output == TRUE ){
         rvec         <- floor(res$resource_vec);
         totalr       <- sum(rvec);
@@ -219,6 +222,10 @@ gmse_apply <- function(resource_model    = resource,
         }
         r_m_pos <- which(all_arg_names == "resource_arr")[1]
         all_arguments[[r_m_pos]] <- mat_resource;
+        if("PARAS" %in% all_arg_names == TRUE){
+            para_pos <- which(all_arg_names == "PARAS")[1];
+            all_arguments[[para_pos]][33] <- totalr;
+        }
     }
     if( res_vector_output == FALSE ){
         rvec         <- as.vector(table(res$resource_arr[,2]));
@@ -259,7 +266,9 @@ gmse_apply <- function(resource_model    = resource,
         obs_arg_values[[14]] <- NULL;
     }
     
-    
+    # XXX NOW A PROBLEM WITH THE FUNCTION ONLY WHEN RESOURCES ARE SPECIFIED
+    # USING 'resource_arr', but not the equivalent 'RESOURCES'. Look upstream
+    # to see why this is going wrong.
     obs <- do.call(what = obs_mod, args = obs_arg_values);
     
     return(obs);
