@@ -189,14 +189,10 @@ gmse_apply <- function(resource_model    = resource,
         list_count                    <- list_count + 1;
     }
 
-    check_1 <- all_arguments;
-    
     all_arguments <- update_all_arguments(mod_output    = res, 
                                           all_arguments = all_arguments, 
                                           all_arg_names = all_arg_names);
 
-    check_2 <- all_arguments;
-    
     if( res_vector_output == TRUE ){
         rvec         <- floor(res$resource_vec);
         totalr       <- sum(rvec);
@@ -250,7 +246,7 @@ gmse_apply <- function(resource_model    = resource,
     
     obs <- do.call(what = obs_mod, args = obs_arg_values);
     
-    return(list(res = res, obs = obs));
+    return(obs);
     
 }
 
@@ -336,11 +332,9 @@ get_arg_list <- function(the_function, all_arg_names, all_arg_values){
             if( fun_args[i] == "RESOURCES" &         # Handles an exception
                 all_arg_names[j] == "resource_arr"){
                 fun_vals[i] <- all_arg_values[j];
-                break;
             }
             if( identical(fun_args[i], all_arg_names[j]) == TRUE){
                 fun_vals[i] <- all_arg_values[j];
-                break;
             }
         }
     }
