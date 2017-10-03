@@ -188,11 +188,15 @@ gmse_apply <- function(resource_model    = resource,
         all_arguments[[list_count+1]] <- res$resource_vec;
         list_count                    <- list_count + 1;
     }
+
+    check_1 <- all_arguments;
     
     all_arguments <- update_all_arguments(mod_output    = res, 
                                           all_arguments = all_arguments, 
                                           all_arg_names = all_arg_names);
 
+    check_2 <- all_arguments;
+    
     if( res_vector_output == TRUE ){
         rvec         <- floor(res$resource_vec);
         totalr       <- sum(rvec);
@@ -244,11 +248,9 @@ gmse_apply <- function(resource_model    = resource,
     }
     
     
-    #obs <- do.call(what = obs_mod, args = obs_arg_values);
+    obs <- do.call(what = obs_mod, args = obs_arg_values);
     
-    # XXX XXX --- APPEARS TO NOT LIKE COLUMN NAMES??
-    
-    return(obs_arg_values);
+    return(list(res = res, obs = obs));
     
 }
 
@@ -446,6 +448,19 @@ popmod <-function(X_t0=100, sigma2_e=0.2, N_Harv=20, K=200, theta=1, r_max=1.0){
     
 }
 
+obs_mod1 <- function(scale="Abund", value=1000, bias=1, cv=0.2, LogNorm="ND"){
+    
+    obs1 <-  switch(LogNorm,
+                    LND={rlnorm(n=1, meanlog=log(value*bias), sdlog=cv)},
+                    ND={rnorm(n=1,mean=value*bias, sd=cv*value)})
+    
+    obs1 <- switch(scale,
+                   Abund={round(obs1)},
+                   Dens={obs1})
+    obs1
+}
 
 
+
+#observation(RESOURCES = sim$resource[[1]], LAND = sim$land[[1]], PARAS = sim$paras[1,], AGENTS = sim$agents[[1]], inter_tabl = tbb, fix_mark = 50, times = 1, samp_age = 0, agent_type = 0, type_cat = 1, obs_method = 0, move_res = TRUE, model  = "IBM")
 
