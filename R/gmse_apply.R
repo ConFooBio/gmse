@@ -85,6 +85,16 @@ gmse_apply <- function(resource_model    = resource,
     
     if("PARAS" %in% f_arg_names == TRUE & "PARAS" %in% all_arg_names == FALSE){
         allpars <- pass_paras(...); # Pass gmse linked arguments
+        if("resource_arr" %in% all_arg_names == TRUE){
+            resiloc <- which(all_arg_names == "resource_arr");
+            if( is.na(all_arguments[[resiloc]][1])  == FALSE ){
+                allpars$gmse_para_vect[33] <- dim(all_arguments[[resiloc]])[1];
+            }
+        }
+        if("resource_vec" %in% all_arg_names){
+            resiloc     <- which(all_arg_names == "resource_vec");
+            allpars$gmse_para_vect[33] <- all_arguments[[resiloc]][1]
+        }
         all_arg_names[[list_count+1]] <- "PARAS";
         all_arguments[[list_count+1]] <- allpars$gmse_para_vect;
         list_count <- list_count + 1;
@@ -157,8 +167,10 @@ gmse_apply <- function(resource_model    = resource,
         res_arg_vals[[5]] <- NULL;
     }
     
-    # ERROR ONLY OCCURS WHEN READ IN THROUGH sim$resource[[gen]] -- fix?
-    res <- do.call(what = res_mod, args = res_arg_vals); return(res);
+
+    res <- do.call(what = res_mod, args = res_arg_vals); 
+    
+    return(res);
     
     res_vector_output  <- TRUE;
     if(length(res) == 1){
@@ -193,7 +205,7 @@ gmse_apply <- function(resource_model    = resource,
         all_arguments[[list_count+1]] <- res$resource_vec;
         list_count                    <- list_count + 1;
     }
-
+    
     all_arguments <- update_all_arguments(mod_output    = res, 
                                           all_arguments = all_arguments, 
                                           all_arg_names = all_arg_names);
@@ -248,9 +260,9 @@ gmse_apply <- function(resource_model    = resource,
     }
     
     
-    #obs <- do.call(what = obs_mod, args = obs_arg_values);
+    obs <- do.call(what = obs_mod, args = obs_arg_values);
     
-    return(res);
+    return(obs);
     
 }
 
