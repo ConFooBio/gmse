@@ -50,6 +50,10 @@ gmse_apply <- function(resource_model    = resource,
                         use_arg_names);
     f_arg_names    <- unique(f_arg_names);
     list_count     <- length(all_arguments);
+
+    for(i in 1:length(all_arguments)){ # Needed to read in the variables
+        all_arguments[[i]] <- eval(all_arguments[[i]]);
+    }
     
     # Convert to names for resource() if need be
     if("resource_arr" %in% all_arg_names == TRUE & 
@@ -153,7 +157,8 @@ gmse_apply <- function(resource_model    = resource,
         res_arg_vals[[5]] <- NULL;
     }
     
-    res <- do.call(what = res_mod, args = res_arg_vals);
+    # ERROR ONLY OCCURS WHEN READ IN THROUGH sim$resource[[gen]] -- fix?
+    res <- do.call(what = res_mod, args = res_arg_vals); return(res);
     
     res_vector_output  <- TRUE;
     if(length(res) == 1){
@@ -228,8 +233,7 @@ gmse_apply <- function(resource_model    = resource,
     # --- Run the observation model function provided by the software user
     obs_arg_values  <- get_arg_list( the_function   = obs_mod, 
                                      all_arg_names  = all_arg_names, 
-                                     all_arg_values = all_arguments
-    );
+                                     all_arg_values = all_arguments);
     
     # --- Some adjustments for running the observation model
     if( identical(observation_model, observation) == TRUE){
@@ -244,9 +248,9 @@ gmse_apply <- function(resource_model    = resource,
     }
     
     
-    obs <- do.call(what = obs_mod, args = obs_arg_values);
+    #obs <- do.call(what = obs_mod, args = obs_arg_values);
     
-    return(obs);
+    return(res);
     
 }
 
