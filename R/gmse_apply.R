@@ -266,9 +266,6 @@ gmse_apply <- function(resource_model    = resource,
         obs_arg_values[[14]] <- NULL;
     }
     
-    # XXX NOW A PROBLEM WITH THE FUNCTION ONLY WHEN RESOURCES ARE SPECIFIED
-    # USING 'resource_arr', but not the equivalent 'RESOURCES'. Look upstream
-    # to see why this is going wrong.
     obs <- do.call(what = obs_mod, args = obs_arg_values);
     
     return(obs);
@@ -482,4 +479,15 @@ obs_mod1 <- function(scale="Abund", value=1000, bias=1, cv=0.2, LogNorm="ND"){
 
 
 #observation(RESOURCES = sim$resource[[1]], LAND = sim$land[[1]], PARAS = sim$paras[1,], AGENTS = sim$agents[[1]], inter_tabl = tbb, fix_mark = 50, times = 1, samp_age = 0, agent_type = 0, type_cat = 1, obs_method = 0, move_res = TRUE, model  = "IBM")
+
+
+
+
+reps <- 100
+while(reps > 0){
+    i <- sample(1:80, 1);
+    gmse_apply(resource_model = popmod);
+    reps <- reps - 1;
+}
+
 
