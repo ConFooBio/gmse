@@ -659,8 +659,11 @@ place_args <- function(all_names, placing_vals, arg_list){
 
 replace_default_args <- function(argument_list, argument_names, from, to){
     from_names <- names(from);
-    if("RESOURCE" %in% from_names){
-        
+    if("RESOURCES" %in% from_names){
+        RESOURCE_pos <- which(argument_names == "RESOURCES");
+        res_arr_pos  <- which(argument_names == "resource_array");
+        res_vec_pos  <- which(argument_names == "resource_vector");
+        argument_list[[res_arr_pos]] <- argument_list[[RESOURCE_pos]];
     }
     
     
