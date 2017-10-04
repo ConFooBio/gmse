@@ -559,44 +559,8 @@ HarvDec1 <- function(HD_type="A", c=1000, qu=0.2, observation_vec=100){
 
 
 
-
-resource_model <- resource;
-observation_model <- observation;
-manager_model <- manager;
-user_model <- user;
-
-
-
-
-
-
-
-
-res_mod <- match.fun(resource_model);
-obs_mod <- match.fun(observation_model);
-man_mod <- match.fun(manager_model);
-use_mod <- match.fun(user_model);
-
-# Sort out the arguments for each function, and the rest
-all_arguments  <- as.list(sys.call());
-all_arg_names  <- names(all_arguments);
-res_arg_names  <- names(formals(res_mod));
-obs_arg_names  <- names(formals(obs_mod));
-man_arg_names  <- names(formals(man_mod));
-use_arg_names  <- names(formals(use_mod));
-f_arg_names    <- c(res_arg_names, obs_arg_names, man_arg_names, 
-                    use_arg_names);
-f_arg_names    <- unique(f_arg_names);
-list_count     <- length(all_arguments);
-
-for(i in 1:length(all_arguments)){ # Needed to read in the variables
-    all_arguments[[i]] <- eval(all_arguments[[i]]);
-}
-
-
-
-
 argument_list <- function(res_mod, obs_mod, man_mod, use_mod, ...){
+    # Need to force PARAS into this XXX XXX XXX XXX
     oth_vals    <- as.list(sys.call());
     oth_names   <- names(oth_vals);
     res_names   <- names(formals(res_mod));
@@ -613,8 +577,6 @@ argument_list <- function(res_mod, obs_mod, man_mod, use_mod, ...){
     u_arg_names <- u_arg_names[u_arg_names != ""];
     all_names   <- u_arg_names[u_arg_names != "..."];
     arg_list    <- rep(x = list(NA), times = length(all_names));
-    
-    
     arg_list    <- place_args(all_names, oth_vals, arg_list);
     arg_list    <- place_args(all_names, formals(res_mod), arg_list);
     arg_list    <- place_args(all_names, formals(obs_mod), arg_list);
@@ -677,9 +639,20 @@ fun_warn <- function(res_mod, obs_mod, man_mod, use_mod){
 }
 
 
-swap_vec_to_mat <- function(){}
+swap_vec_to_mat <- function(vec_name, mat_name, arg_list, arg_names, model){
+  
+  
+  if(model == "resource"){
+    
+  }
+  
+  return(argument_list);
+}
 
-swap_mat_to_vec <- function(){}
+swap_mat_to_vec <- function(mat_name, vec_name, arg_list, arg_names, model){
+  
+  return(argument_list)
+}
 
 
 
