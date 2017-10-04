@@ -196,6 +196,11 @@ gmse_apply <- function(resource_model    = resource,
         r_a_p <- which(all_arg_names == "resource_arr");
         all_arguments[[r_a_p]] <- res$RESOURCE;
     }
+    if( "RESOURCE" %in% names(res) == TRUE & 
+        "RESOURCES" %in% all_arg_names == TRUE){
+        r_a_p <- which(all_arg_names == "RESOURCES");
+        all_arguments[[r_a_p]] <- res$RESOURCE;
+    }
     if( "resource_arr" %in% names(res)    == TRUE &
         "resource_arr" %in% all_arg_names == FALSE){
         all_arg_names[[list_count+1]] <- "resource_arr";
@@ -236,7 +241,6 @@ gmse_apply <- function(resource_model    = resource,
         all_arguments[[list_count+1]] <- rvec;
         list_count                    <- list_count + 1;
     }
-    
     if("inter_tabl" %in% f_arg_names == TRUE & 
        "inter_tabl" %in% all_arg_names == FALSE){
         all_arg_names[[list_count+1]] <- "inter_tabl";
@@ -266,6 +270,9 @@ gmse_apply <- function(resource_model    = resource,
         obs_arg_values[[14]] <- NULL;
     }
     
+    return(list(obs_arg_names, obs_arg_values));
+    
+    ## ERROR ONLY WITH resource_arr argument.
     obs <- do.call(what = obs_mod, args = obs_arg_values);
     
     return(obs);
@@ -353,6 +360,10 @@ get_arg_list <- function(the_function, all_arg_names, all_arg_values){
         for(j in 1:length(all_arg_names)){
             if( fun_args[i] == "RESOURCES" &         # Handles an exception
                 all_arg_names[j] == "resource_arr"){
+                fun_vals[i] <- all_arg_values[j];
+            }
+            if( fun_args[i] == "resource_arr" &         # Handles an exception
+                all_arg_names[j] == "RESOURCES"){
                 fun_vals[i] <- all_arg_values[j];
             }
             if( identical(fun_args[i], all_arg_names[j]) == TRUE){
@@ -481,13 +492,12 @@ obs_mod1 <- function(scale="Abund", value=1000, bias=1, cv=0.2, LogNorm="ND"){
 #observation(RESOURCES = sim$resource[[1]], LAND = sim$land[[1]], PARAS = sim$paras[1,], AGENTS = sim$agents[[1]], inter_tabl = tbb, fix_mark = 50, times = 1, samp_age = 0, agent_type = 0, type_cat = 1, obs_method = 0, move_res = TRUE, model  = "IBM")
 
 
+#test <- NULL;
+#testrows <- NULL;
+#for(i in 1:99){
+#    test[[i]] <- gmse_apply(resource_model = resource, RESOURCES = sim$resource[[i]]);
+#    testrows  <- rbind(testrows, c(i, dim(test[[i]][[2]][[1]])[1], test[[i]][[2]][[3]][33]));
+#}
 
-
-reps <- 100
-while(reps > 0){
-    i <- sample(1:80, 1);
-    gmse_apply(resource_model = popmod);
-    reps <- reps - 1;
-}
 
 
