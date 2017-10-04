@@ -55,6 +55,10 @@ gmse_apply <- function(resource_model    = resource,
         all_arguments[[i]] <- eval(all_arguments[[i]]);
     }
     
+    # ==========================================================================
+    # PREPARE FOR THE RESOURCE MODEL TO BE RUN
+    # ==========================================================================
+    
     # Convert to names for resource() if need be
     if("resource_arr" %in% all_arg_names == TRUE & 
        "RESOURCES"    %in% all_arg_names == TRUE){
@@ -175,6 +179,10 @@ gmse_apply <- function(resource_model    = resource,
     
     res <- do.call(what = res_mod, args = res_arg_vals); 
     
+    # ==========================================================================
+    # PREPARE FOR THE OBSERVATION MODEL TO BE RUN
+    # ==========================================================================
+    
     res_vector_output  <- TRUE;
     if(length(res) == 1){
         names(res) <- "resource_vec";
@@ -183,18 +191,18 @@ gmse_apply <- function(resource_model    = resource,
         list_count                    <- list_count + 1;
     }
     if( "resource_arr" %in% names(res) == TRUE |
-        "RESOURCE"     %in% names(res) == TRUE){
+        "RESOURCES"     %in% names(res) == TRUE){
         res_vector_output <- FALSE;
     }
     if( "resource_arr" %in% names(res) == FALSE & 
         "resource_vec" %in% names(res) == FALSE){
-        if("RESOURCE" %in% names(res) == FALSE){
+        if("RESOURCES" %in% names(res) == FALSE){
             stop("ERROR: Resource model must return a 'resource_arr' (array) 
                  list element, a 'resource_vec' (vector) list element, or a 
                  scalar");
         }
         r_a_p <- which(all_arg_names == "resource_arr");
-        all_arguments[[r_a_p]] <- res$RESOURCE;
+        all_arguments[[r_a_p]] <- res$RESOURCES;
     }
     if( "RESOURCE" %in% names(res) == TRUE & 
         "RESOURCES" %in% all_arg_names == TRUE){
@@ -217,6 +225,8 @@ gmse_apply <- function(resource_model    = resource,
     all_arguments <- update_all_arguments(mod_output    = res, 
                                           all_arguments = all_arguments, 
                                           all_arg_names = all_arg_names);
+    
+    # ADD A WAY TO CHECK FOR EXTINCTION HERE
     
     if( res_vector_output == TRUE ){
         rvec         <- floor(res$resource_vec);
@@ -270,12 +280,58 @@ gmse_apply <- function(resource_model    = resource,
         obs_arg_values[[14]] <- NULL;
     }
     
-    return(list(obs_arg_names, obs_arg_values));
-    
     ## ERROR ONLY WITH resource_arr argument.
     obs <- do.call(what = obs_mod, args = obs_arg_values);
     
-    return(obs);
+    # ==========================================================================
+    # PREPARE FOR THE MANAGER MODEL TO BE RUN
+    # ==========================================================================
+    
+    
+    return(list(res, obs));
+    
+    
+    obs_vector_output  <- TRUE;
+    if(length(obs) == 1){
+        names(obs) <- "observation_vec";
+        all_arg_names[[list_count+1]] <- "observation_vec";
+        all_arguments[[list_count+1]] <- obs$observation_vec;
+        list_count                    <- list_count + 1;
+    }
+    if( "observation_arr"  %in% names(obs) == TRUE |
+        "OBSERVATION"      %in% names(obs) == TRUE){
+        obs_vector_output <- FALSE;
+    }
+    if( "observation_arr" %in% names(obs) == FALSE & 
+        "observation_vec" %in% names(obs) == FALSE){
+        if("OBSERVATION" %in% names(obs) == FALSE){
+            stop("ERROR: Resource model must return a 'observation_arr' (array) 
+                 list element, a 'observation_vec' (vector) list element, or a 
+                 scalar");
+        }
+        o_a_p <- which(all_arg_names == "OBSERVATION");
+        all_arguments[[o_a_p]] <- obs$OBSERVATION;
+    }
+    if( "observation_arr" %in% names(obs)    == TRUE &
+        "observation_arr" %in% all_arg_names == FALSE){
+        all_arg_names[[list_count+1]] <- "observation_arr";
+        all_arguments[[list_count+1]] <- obs$observation_arr;
+        list_count                    <- list_count + 1;
+    }
+    if( "observation_vec" %in% names(obs)    == TRUE &
+        "observation_vec" %in% all_arg_names == FALSE){
+        all_arg_names[[list_count+1]] <- "observation_vec";
+        all_arguments[[list_count+1]] <- obs$observation_vec;
+        list_count                    <- list_count + 1;
+    }
+    
+    return(list(res, obs));
+    
+    all_arguments <- update_all_arguments(mod_output    = obs, 
+                                          all_arguments = all_arguments, 
+                                          all_arg_names = all_arg_names);
+    
+    
     
 }
 
@@ -461,7 +517,9 @@ xfun <- function(f1_i, f2_i, x, y, ...){
 
 
 
-popmod <-function(X_t0=100, sigma2_e=0.2, N_Harv=20, K=200, theta=1, r_max=1.0){
+popmod <-function(resource_vec =100, sigma2_e=0.2, N_Harv=20, K=200, theta=1, r_max=1.0){
+    
+    X_t0 <- resource_vec;
     
     eps <- rnorm(1, mean=0, sd=sqrt(sigma2_e))
     X_star <- X_t0-N_Harv
@@ -475,7 +533,9 @@ popmod <-function(X_t0=100, sigma2_e=0.2, N_Harv=20, K=200, theta=1, r_max=1.0){
     
 }
 
-obs_mod1 <- function(scale="Abund", value=1000, bias=1, cv=0.2, LogNorm="ND"){
+obs_mod1 <- function(scale="Abund", resource_vec=1000, bias=1, cv=0.2, LogNorm="ND"){
+    
+    value <- resource_vec;
     
     obs1 <-  switch(LogNorm,
                     LND={rlnorm(n=1, meanlog=log(value*bias), sdlog=cv)},
@@ -487,7 +547,16 @@ obs_mod1 <- function(scale="Abund", value=1000, bias=1, cv=0.2, LogNorm="ND"){
     obs1
 }
 
-
+HarvDec1 <- function(HD_type="A", c=1000, qu=0.2, observation_vec=100){
+    PopState_est <- observation_vec;
+    TAC <- switch(HD_type,
+                  A={PopState_est*qu},
+                  B={ifelse(PopState_est>c, PopState_est-c, 0)},
+                  C={qu},
+                  D={ifelse(PopState_est>c, qu(PopState_est-c), 0)})
+    
+    TAC
+}
 
 #observation(RESOURCES = sim$resource[[1]], LAND = sim$land[[1]], PARAS = sim$paras[1,], AGENTS = sim$agents[[1]], inter_tabl = tbb, fix_mark = 50, times = 1, samp_age = 0, agent_type = 0, type_cat = 1, obs_method = 0, move_res = TRUE, model  = "IBM")
 
@@ -498,6 +567,126 @@ obs_mod1 <- function(scale="Abund", value=1000, bias=1, cv=0.2, LogNorm="ND"){
 #    test[[i]] <- gmse_apply(resource_model = resource, RESOURCES = sim$resource[[i]]);
 #    testrows  <- rbind(testrows, c(i, dim(test[[i]][[2]][[1]])[1], test[[i]][[2]][[3]][33]));
 #}
+
+
+
+
+resource_model <- resource;
+observation_model <- observation;
+manager_model <- manager;
+user_model <- user;
+
+
+
+
+
+
+
+
+res_mod <- match.fun(resource_model);
+obs_mod <- match.fun(observation_model);
+man_mod <- match.fun(manager_model);
+use_mod <- match.fun(user_model);
+
+# Sort out the arguments for each function, and the rest
+all_arguments  <- as.list(sys.call());
+all_arg_names  <- names(all_arguments);
+res_arg_names  <- names(formals(res_mod));
+obs_arg_names  <- names(formals(obs_mod));
+man_arg_names  <- names(formals(man_mod));
+use_arg_names  <- names(formals(use_mod));
+f_arg_names    <- c(res_arg_names, obs_arg_names, man_arg_names, 
+                    use_arg_names);
+f_arg_names    <- unique(f_arg_names);
+list_count     <- length(all_arguments);
+
+for(i in 1:length(all_arguments)){ # Needed to read in the variables
+    all_arguments[[i]] <- eval(all_arguments[[i]]);
+}
+
+
+
+
+argument_list <- function(res_mod, obs_mod, man_mod, use_mod, ...){
+    oth_vals    <- as.list(sys.call());
+    oth_names   <- names(oth_vals);
+    res_names   <- names(formals(res_mod));
+    obs_names   <- names(formals(obs_mod));
+    man_names   <- names(formals(man_mod));
+    use_names   <- names(formals(use_mod));  
+    f_arg_names <- c(res_names, obs_names, man_names, use_names);
+    r_arg_names <- c("resource_array", "resource_vector",
+                     "observation_array", "observation_vector",
+                     "manager_array", "manager_vector",
+                     "user_array", "user_vector");
+    t_arg_names <- c(f_arg_names, r_arg_names, oth_names);
+    u_arg_names <- unique(t_arg_names);
+    u_arg_names <- u_arg_names[u_arg_names != ""];
+    all_names   <- u_arg_names[u_arg_names != "..."];
+    arg_list    <- rep(x = list(NA), times = length(all_names));
+    
+    
+    arg_list    <- place_args(all_names, oth_vals, arg_list);
+    arg_list    <- place_args(all_names, formals(res_mod), arg_list);
+    arg_list    <- place_args(all_names, formals(obs_mod), arg_list);
+    arg_list    <- place_args(all_names, formals(man_mod), arg_list);
+    arg_list    <- place_args(all_names, formals(use_mod), arg_list);
+    
+    arg_out     <- list(all_arg_values = arg_list, all_arg_names = all_names);
+    
+    return(arg_out);        
+}
+
+
+place_args <- function(all_names, placing_vals, arg_list){
+    for(i in 1:length(placing_vals)){
+        place_name <- names(placing_vals[i]);
+        if(place_name %in% all_names){
+            place_pos <- which(all_names == place_name);
+            arg_eval  <- eval(placing_vals[[i]]);
+            if(is.null(arg_eval) == FALSE){
+                arg_list[[place_pos]] <- eval(placing_vals[[i]]);
+            }
+        }
+    }
+    return(arg_list);
+}
+
+
+
+
+
+
+replace_default_args <- function(argument_list, argument_names, from, to){
+    from_names <- names(from);
+    if("RESOURCE" %in% from_names){
+        
+    }
+    
+    
+    
+    return( list(new_args = new_args) );
+}
+
+
+
+swap_vec_to_mat <- function(){}
+
+swap_mat_to_vec <- function(){}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
