@@ -21,18 +21,7 @@ gmse_apply <- function(resource_model    = resource,
                        ...
                        ){
     
-    if( is.function(resource_model) == "FALSE" ){
-        stop( "ERROR: Resource model needs to be a function");
-    }
-    if( is.function(observation_model) == "FALSE" ){
-        stop( "ERROR: Observation model needs to be a function");
-    }
-    if( is.function(manager_model) == "FALSE" ){
-        stop( "ERROR: Manager model needs to be a function");
-    }
-    if( is.function(user_model) == "FALSE" ){
-        stop( "ERROR: User model needs to be a function");
-    }
+    fun_warn(resource_model, observation_model, manager_model, user_model);
     
     res_mod <- match.fun(resource_model);
     obs_mod <- match.fun(observation_model);
@@ -671,6 +660,21 @@ replace_default_args <- function(argument_list, argument_names, from, to){
     return( list(new_args = new_args) );
 }
 
+
+fun_warn <- function(res_mod, obs_mod, man_mod, use_mod){
+  if( is.function(res_mod) == "FALSE" ){
+    stop( "ERROR: Resource model needs to be a function");
+  }
+  if( is.function(obs_mod) == "FALSE" ){
+    stop( "ERROR: Observation model needs to be a function");
+  }
+  if( is.function(man_mod) == "FALSE" ){
+    stop( "ERROR: Manager model needs to be a function");
+  }
+  if( is.function(use_mod) == "FALSE" ){
+    stop( "ERROR: User model needs to be a function");
+  }
+}
 
 
 swap_vec_to_mat <- function(){}
