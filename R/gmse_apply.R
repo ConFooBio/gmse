@@ -45,9 +45,9 @@ gmse_apply <- function(res_mod  = resource,
                                       vec_name = "resource_vector", 
                                       mat_name = "resource_array");
     
+    arg_vals    <- add_results(arg_list = arg_vals, output = res_results);
     
-    
-    return(res_results);    
+    return(arg_vals);    
 }
 
 ################################################################################
@@ -375,8 +375,44 @@ add_results <- function(arg_list, output){
     arg_names <- names(arg_list);
     out_names <- names(output);
     for(i in 1:length(output)){
-        if(out_names[[i]] %in% 
+        if(out_names[[i]] %in% arg_names == TRUE){
+            rep_pos <- which(arg_names == out_names[[i]]);
+            arg_list[[rep_pos]] <- output[[i]];
+        }
+        if(out_names[[i]] == "resource_vector"){
+            # Switch to the array and add to arg_list
+        }
+        if(out_names[[i]] == "resource_array"){
+            # Switch to the vector and add to arg_list
+        }
+        if(out_names[[i]] == "observation_vector"){
+            # Switch to the array and add to arg_list
+            # Will need to get the manager function in c to recognise paras
+            #     Do this by having a new 'hidden' observe_type = -1, which
+            #     just uses PARAS[100] (R) PARAS[99] c to define the estimated
+            #     abundance, then force whenever vector is returned
+        }
+        if(out_names[[i]] == "observation_array"){
+            # Switch to the vector and add to arg_list
+            # Will need to run a function to estimate population size and
+            #    return the appropriate vector from the estimate
+        }
+        if(out_names[[i]] == "manager_vector"){
+            # Switch to the array and add to arg_list. Insert costs (or 
+            #   converted cull abilities) into the relevant column of the COST
+            #   array for resource type 1? Maybe leave up to the user.
+        }
+        if(out_names[[i]] == "manager_array"){
+            # Switch to the vector and add to arg_list
+        }
+        if(out_names[[i]] == "user_vector"){
+            # Switch to the array and add to arg_list
+        }
+        if(out_names[[i]] == "user_array"){
+            # Switch to the vector and add to arg_list
+        }
     }
+    return(arg_list);
 }
 
 
