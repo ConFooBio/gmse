@@ -14,20 +14,15 @@
 #'@importFrom graphics abline axis image mtext par plot points polygon
 #'@importFrom stats rnorm rpois
 #'@export
-gmse_apply <- function(resource_model    = resource, 
-                       observation_model = observation, 
-                       manager_model     = manager, 
-                       user_model        = user, 
+gmse_apply <- function(res_mod  = resource, 
+                       obs_mod  = observation, 
+                       man_mod  = manager, 
+                       use_mod  = user, 
                        ...
                        ){
 
-    fun_warn(resource_model, observation_model, manager_model, user_model);
-    
-    res_mod <- match.fun(resource_model);
-    obs_mod <- match.fun(observation_model);
-    man_mod <- match.fun(manager_model);
-    use_mod <- match.fun(user_model);
-        
+    fun_warn(res_mod, obs_mod, man_mod, use_mod);
+   
     std_paras      <- pass_paras(...);
     all_args       <- as.list(sys.call());
     all_args$PARAS <- std_paras$gmse_para_vect;
@@ -40,9 +35,19 @@ gmse_apply <- function(resource_model    = resource,
     
     names(arg_vals) <- arg_name;
 
-    #check_args(arg_list = arg_vals, the_fun = res_mod);
     
-    return(arg_vals);    
+    res_args <- prep_res(arg_list = arg_vals, res_mod = res_mod)
+    check_args(arg_list = res_args, the_fun = res_mod);
+    
+    res_results <- do.call(what = res_mod, args = res_args);
+    
+    res_results <- check_name_results(output = res_results, 
+                                      vec_name = "resource_vector", 
+                                      mat_name = "resource_array");
+    
+    
+    
+    return(res_results);    
 }
 
 ################################################################################
@@ -211,32 +216,43 @@ check_args <- function(arg_list, the_fun){
 
 
 
-
 prep_res <- function(arg_list, res_mod){
+    if( identical(res_mod, resource) == TRUE){
+        arg_list <- add_res_defaults(arg_list);
+    }
     res_args <- list();
-    
-    
-    
-    
+    arg_name <- names(arg_list);
+    res_take <- formals(res_mod);
+    res_take <- res_take[names(res_take) != "..."];
+    res_name <- names(res_take);
+    for(arg in 1:length(res_take)){
+        arg_pos         <- which(res_name[arg] == arg_name);
+        res_args[[arg]] <- arg_list[[arg_pos]];
+    }
+    names(res_args) <- res_name;
+    return(res_args);
 }
 
 
 add_res_defaults <- function(arg_list){
     arg_names <- names(arg_list);
+    res_pos   <- which(arg_names == "RESOURCES");
+    arr_pos   <- which(arg_names == "resource_array");
+    if(is.na(arg_list[[arr_pos]][1]) == FALSE){
+        arg_list <- copy_args(arg_list = arg_list, from = "resource_array",
+                              to = "RESOURCES");
+    }
     para_pos  <- which(arg_names == "PARAS");
     paras     <- arg_list[[para_pos]];
-    res_pos   <- which(arg_names == "RESOURCES");
-    arr_pos   <- which(arg_names == "resource_arr");
-    if(is.na(arg_list[[res_pos]]) == TRUE){
-        ini_res <- make_resource( model             = "IBM", 
-                                  resource_quantity = paras[33]);
+    if(is.na(arg_list[[res_pos]][1]) == TRUE){
+        dresarg <- collect_res_ini(arg_list);
+        ini_res <- do.call(what = make_resource, args = dresarg);
         arg_list[[res_pos]] <- ini_res;
     }
     land_pos  <- which(arg_names == "LAND");
     if(is.na(arg_list[[land_pos]]) == TRUE){
-        xdim     <- paras[13];
-        ydim     <- paras[14];
-        ini_land <- make_landscape(model = "IBM", rows = xdim, cols = ydim);
+        dlndarg  <- collect_land_ini(arg_list);
+        ini_land <- do.call(what = make_landscape, args = dlndarg);
         arg_list[[land_pos]] <- ini_land;
     }
     return(arg_list);
@@ -299,47 +315,70 @@ collect_res_ini <- function(arg_list){
 }
 
 
-
-
-
-
-
-
-
-
-
-
-replace_default_args <- function(argument_list, argument_names, from, to){
-    from_names <- names(from);
-    if("RESOURCES" %in% from_names){
-        RESOURCE_pos <- which(argument_names == "RESOURCES");
-        res_arr_pos  <- which(argument_names == "resource_array");
-        argument_list[[res_arr_pos]] <- argument_list[[RESOURCE_pos]];
-        # Convert resource array to resource vector
+collect_land_ini <- function(arg_list){
+    make_lnd_list <- list();
+    arg_names     <- names(arg_list);
+    def_forms     <- formals(gmse);
+    def_names     <- names(def_forms);
+    make_lnd_list[[1]] <- "IBM";
+    make_lnd_list[[2]] <- arg_list$GMSE$land_dim_1;
+    if("land_dim_1" %in% arg_names){
+        apos               <- which(arg_names == "land_dim_1");
+        make_lnd_list[[2]] <- arg_list[[apos]];
     }
-
-    
-    return( list(new_args = new_args) );
-}
-
-
-
-
-
-swap_vec_to_mat <- function(vec_name, mat_name, arg_list, arg_names, model){
-    
-    
-    if(model == "resource"){
-        
+    make_lnd_list[[3]] <- arg_list$GMSE$land_dim_2;
+    if("land_dim_2" %in% arg_names){
+        apos               <- which(arg_names == "land_dim_2");
+        make_lnd_list[[3]] <- arg_list[[apos]];
     }
-    
-    return(argument_list);
+    make_lnd_list[[4]] <- 1;
+    make_lnd_list[[5]] <- 1;
+    make_lnd_list[[6]] <- 0;
+    if(arg_list$GMSE$land_ownership == TRUE){
+        publand     <- arg_list$GMSE$public_land;
+        stakes      <- arg_list$GMSE$stakeholders;
+        stake_pr    <- (1 - publand) / stakes;
+        land_alloc  <- c(publand, rep(x = stake_pr, times = stakes));
+    }else{
+        land_alloc  <- c(1, rep(x = 0, times = arg_list$GMSE$stakeholders)); 
+    }
+    make_lnd_list[[7]] <- 1:(arg_list$GMSE$stakeholders + 1);
+    make_lnd_list[[8]] <- land_alloc
+
+    return(make_lnd_list);
 }
 
-swap_mat_to_vec <- function(mat_name, vec_name, arg_list, arg_names, model){
+
+copy_args <- function(arg_list, from, to){
+    arg_names <- names(arg_list);
+    from_pos  <- which(arg_names == from);
+    to_pos    <- which(arg_names == to);
+    arg_list[[to_pos]] <- arg_list[[from_pos]];
     
-    return(argument_list)
+    return(arg_list);
 }
+
+check_name_results <- function(output, vec_name, mat_name){
+    outname <- names(output);
+    if(is.null(outname) == TRUE){
+        if(is.vector(output[[1]]) == TRUE){
+            names(output)[[1]] <- vec_name;
+        }
+        if(is.matrix(output[[1]]) == TRUE){
+            names(output)[[1]] <- mat_name;
+        }
+    }
+    return(output);
+}
+
+add_results <- function(arg_list, output){
+    arg_names <- names(arg_list);
+    out_names <- names(output);
+    for(i in 1:length(output)){
+        if(out_names[[i]] %in% 
+    }
+}
+
 
 
 
@@ -547,6 +586,21 @@ popmod <-function(resource_vec =100, sigma2_e=0.2, N_Harv=20, K=200, theta=1, r_
     
     PopRes <- list();
     PopRes$resource_vec <- X_t1;
+    PopRes
+    
+}
+
+popmod2 <-function(resource_vec =100, sigma2_e=0.2, N_Harv=20, K=200, theta=1, r_max=1.0){
+    
+    X_t0 <- resource_vec;
+    
+    eps <- rnorm(1, mean=0, sd=sqrt(sigma2_e))
+    X_star <- X_t0-N_Harv
+    
+    r <- (r_max*(1-(X_star/K)^theta))+eps
+    X_t1 <- X_star*exp(r)
+    
+    PopRes <- X_t1;
     PopRes
     
 }
