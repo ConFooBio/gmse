@@ -20,322 +20,338 @@ gmse_apply <- function(resource_model    = resource,
                        user_model        = user, 
                        ...
                        ){
-    
+
     fun_warn(resource_model, observation_model, manager_model, user_model);
     
     res_mod <- match.fun(resource_model);
     obs_mod <- match.fun(observation_model);
     man_mod <- match.fun(manager_model);
     use_mod <- match.fun(user_model);
-    
-    needed_arguments <- argument_list(res_mod, obs_mod, man_mod, use_mod, ...);
-    
-    arg_vals <- needed_arguments$all_arg_values;
-    arg_name <- needed_arguments$all_arg_names;
+        
+    std_paras      <- pass_paras(...);
+    all_args       <- as.list(sys.call());
+    all_args$PARAS <- std_paras$gmse_para_vect;
+    all_args$GMSE  <- formals(gmse);
 
+    needed_args <- argument_list(res_mod, obs_mod, man_mod, use_mod, all_args);
     
+    arg_vals <- needed_args$all_arg_values;
+    arg_name <- needed_args$all_arg_names;
     
+    names(arg_vals) <- arg_name;
+
+    #check_args(arg_list = arg_vals, the_fun = res_mod);
     
-    return(needed_arguments);    
+    return(arg_vals);    
+}
+
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+
+fun_warn <- function(res_mod, obs_mod, man_mod, use_mod){
+    if( is.function(res_mod) == "FALSE" ){
+        stop( "ERROR: Resource model needs to be a function");
+    }
+    if( is.function(obs_mod) == "FALSE" ){
+        stop( "ERROR: Observation model needs to be a function");
+    }
+    if( is.function(man_mod) == "FALSE" ){
+        stop( "ERROR: Manager model needs to be a function");
+    }
+    if( is.function(use_mod) == "FALSE" ){
+        stop( "ERROR: User model needs to be a function");
+    }
+}
+
+pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,  
+                        res_movement = 20, remove_pr = 0.0, lambda = 0.30, 
+                        agent_view = 10, agent_move = 50, res_birth_K = 10000,
+                        res_death_K = 2000, edge_effect = 1, res_move_type = 1,
+                        res_birth_type = 2, res_death_type = 2, 
+                        observe_type = 0, fixed_mark = 50, fixed_recapt = 150, 
+                        times_observe = 1, obs_move_type  = 1, res_min_age = 0,
+                        res_move_obs = TRUE, Euclidean_dist = FALSE, 
+                        plotting = FALSE, hunt = FALSE, start_hunting = 95,  
+                        res_consume = 0.5, ga_popsize = 100, ga_mingen = 40, 
+                        ga_seedrep = 20, ga_sampleK = 20, ga_chooseK = 2,  
+                        ga_mutation = 0.1, ga_crossover = 0.1, 
+                        move_agents = TRUE, max_ages = 5, minimum_cost = 10,
+                        user_budget = 1000, manager_budget = 1000,
+                        manage_target = 1000, RESOURCE_ini = 1000, 
+                        scaring = FALSE, culling = TRUE, castration = FALSE,
+                        feeding = FALSE, help_offspring = FALSE, 
+                        tend_crops = FALSE, tend_crop_yld = 0.2, 
+                        kill_crops = FALSE, stakeholders = 4, 
+                        manage_caution = 1, land_ownership = FALSE, 
+                        manage_freq = 1, converge_crit = 100, 
+                        manager_sense = 0.1, public_land    = 0, ...
+){
+    
+    input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
+                    lambda, agent_view, agent_move, res_birth_K, res_death_K,
+                    edge_effect, res_move_type, res_birth_type, res_death_type,
+                    observe_type, fixed_mark, fixed_recapt, times_observe,
+                    obs_move_type, res_min_age, res_move_obs, Euclidean_dist, 
+                    plotting, hunt, start_hunting, res_consume, ga_popsize,
+                    ga_mingen, ga_seedrep, ga_sampleK, ga_chooseK, ga_mutation,
+                    ga_crossover, move_agents, max_ages, minimum_cost,
+                    user_budget, manage_target, RESOURCE_ini, scaring, culling,
+                    castration, feeding, help_offspring, tend_crops,
+                    tend_crop_yld, kill_crops, stakeholders, manage_caution,
+                    land_ownership, manage_freq, converge_crit, manager_sense,
+                    public_land); 
+    
+    user_res_opts  <- c(scaring, culling, castration, feeding, help_offspring);
+    user_lnd_opts  <- c(tend_crops, kill_crops);
+    
+    ttr <- 20;
+    agn <- stakeholders + 1;
+    agt <- 17;
+    lkr <- 2;
+    lyr <- stakeholders + 1;
+    roc <- stakeholders + 1;
+    coc <- 13;
+    
+    paras <- c(1, edge_effect, res_move_type, res_birth_type, res_death_type,
+               res_birth_K, res_death_K, 0, observe_type, 1, fixed_mark, 
+               times_observe, land_dim_1, land_dim_2, obs_move_type, 1, 
+               res_min_age, 1, 12, res_move_obs, Euclidean_dist, ga_popsize, 
+               ga_mingen, ga_seedrep, ga_sampleK, ga_chooseK, ga_mutation,
+               ga_crossover, move_agents, max_ages, 7, 11, RESOURCE_ini, 4, 5,
+               6, 3, 9, 10, 18, 19, ttr, 16, 8, 1, 1, 15, 14, 1, 4, 5, 6, 10, 
+               12, agn, agt, 1, 2, 3, 13, lkr, RESOURCE_ini, ttr+times_observe, 
+               1, 0, lyr, lkr-1, 8, roc, coc, 4, 7, 0, 17, 0, 
+               -1*manager_sense*(1+lambda), -1*manager_sense*lambda, 1*lambda, 
+               1*manager_sense, tend_crop_yld, 1, 2, 15, 0, 0, 0, 0, 0, 
+               user_res_opts[1], user_res_opts[2], user_res_opts[3], 
+               user_res_opts[4], user_res_opts[5], user_lnd_opts[1], 
+               user_lnd_opts[2], manage_caution, minimum_cost, user_budget, 
+               converge_crit, RESOURCE_ini, 0, 0, fixed_recapt, land_ownership, 
+               public_land, lambda
+    );
+    
+    return( list(gmse_user_input = as.vector(input_list), 
+                 gmse_para_vect  = as.vector(paras))
+    );
+}
+
+argument_list <- function(res_mod, obs_mod, man_mod, use_mod, oth_vals){
+    oth_names   <- names(oth_vals);
+    res_names   <- names(formals(res_mod));
+    obs_names   <- names(formals(obs_mod));
+    man_names   <- names(formals(man_mod)); 
+    use_names   <- names(formals(use_mod));  
+    f_arg_names <- c(res_names, obs_names, man_names, use_names);
+    r_arg_names <- c("resource_array", "resource_vector",
+                     "observation_array", "observation_vector",
+                     "manager_array", "manager_vector",
+                     "user_array", "user_vector");
+    t_arg_names <- c(f_arg_names, r_arg_names, oth_names);
+    u_arg_names <- unique(t_arg_names);
+    u_arg_names <- u_arg_names[u_arg_names != ""];
+    all_names   <- u_arg_names[u_arg_names != "..."];
+    arg_list    <- rep(x = list(NA), times = length(all_names));
+    arg_list    <- place_args(all_names, oth_vals, arg_list);
+    arg_list    <- place_args(all_names, formals(res_mod), arg_list);
+    arg_list    <- place_args(all_names, formals(obs_mod), arg_list);
+    arg_list    <- place_args(all_names, formals(man_mod), arg_list);
+    arg_list    <- place_args(all_names, formals(use_mod), arg_list);
+    arg_out     <- list(all_arg_values = arg_list, all_arg_names = all_names);
+    
+    return(arg_out);        
+}
+
+
+place_args <- function(all_names, placing_vals, arg_list){
+    placing_names <- names(placing_vals);
+    empty         <- identical(placing_names, NULL);
+    if(empty == TRUE){
+        return(arg_list);
+    }
+    for(i in 1:length(placing_vals)){
+        place_name <- placing_names[i];
+        if(place_name %in% all_names){
+            place_pos <- which(all_names == place_name);
+            arg_eval  <- eval(placing_vals[[i]]);
+            if(is.null(arg_eval) == FALSE){
+                arg_list[[place_pos]] <- eval(placing_vals[[i]]);
+            }
+        }
+    }
+    return(arg_list);
+}
+
+
+check_args <- function(arg_list, the_fun){
+    the_fun_names <- names(formals(the_fun));
+    fun_names     <- the_fun_names[the_fun_names != "..."];
+    arg_names     <- names(arg_list);
+    which_fun     <- deparse(substitute(the_fun));
+    for(arg in 1:length(fun_names)){
+        if(fun_names[arg] %in% arg_names == FALSE){
+            error <- paste("ERROR: I can't find the argument ", fun_names[arg],
+                           " in the function ", which_fun);
+            stop(error);
+        }
+        arg_pos <- which(fun_names[arg] == arg_names);
+        if(is.na(arg_list[arg_pos]) == TRUE){
+            error <- paste("ERROR: The argument", fun_names[arg], 
+                           "in the function ", which_fun, "cannot be found",
+                           "or is 'NA' (which is not allowed)");
+            stop(error);
+        }
+    }
 }
 
 
 
-    # Sort out the arguments for each function, and the rest
-    all_arguments  <- as.list(sys.call());
-    all_arg_names  <- names(all_arguments);
-    res_arg_names  <- names(formals(res_mod));
-    obs_arg_names  <- names(formals(obs_mod));
-    man_arg_names  <- names(formals(man_mod));
-    use_arg_names  <- names(formals(use_mod));
-    f_arg_names    <- c(res_arg_names, obs_arg_names, man_arg_names, 
-                        use_arg_names);
-    f_arg_names    <- unique(f_arg_names);
-    list_count     <- length(all_arguments);
 
-    for(i in 1:length(all_arguments)){ # Needed to read in the variables
-        all_arguments[[i]] <- eval(all_arguments[[i]]);
-    }
+
+
+prep_res <- function(arg_list, res_mod){
+    res_args <- list();
     
-    # ==========================================================================
-    # PREPARE FOR THE RESOURCE MODEL TO BE RUN
-    # ==========================================================================
-    
-    # Convert to names for resource() if need be
-    if("resource_arr" %in% all_arg_names == TRUE & 
-       "RESOURCES"    %in% all_arg_names == TRUE){
-        r_m_loc       <- which(all_arg_names == "resource_arr");
-        RES_loc       <- which(all_arg_names == "RESOURCES");
-        all_arguments[[RES_loc]] <- all_arguments[[r_m_loc]];
-    }
-    if("resource_arr" %in% all_arg_names == TRUE & 
-       "RESOURCES"    %in% all_arg_names == FALSE){
-        r_m_loc       <- which(all_arg_names == "resource_arr");
-        all_arguments[[list_count+1]] <- all_arguments[[r_m_loc]];
-        all_arg_names[[list_count+1]] <- "RESOURCES";
-        list_count <- list_count + 1;
-    }
-    if("resource_arr" %in% all_arg_names == FALSE & 
-       "RESOURCES"    %in% all_arg_names == TRUE){
-        RES_loc       <- which(all_arg_names == "RESOURCES");
-        all_arguments[[list_count+1]] <- all_arguments[[RES_loc]];
-        all_arg_names[[list_count+1]] <- "resource_arr";
-        list_count <- list_count + 1;
-    }
-    if("resource_arr" %in% all_arg_names == FALSE & 
-       "RESOURCES"    %in% all_arg_names == FALSE){
-        all_arguments[[list_count+1]] <- NA
-        all_arg_names[[list_count+1]] <- "resource_arr";
-        list_count <- list_count + 1;
-    }
-    
-    if("PARAS" %in% f_arg_names == TRUE & "PARAS" %in% all_arg_names == FALSE){
-        allpars <- pass_paras(...); # Pass gmse linked arguments
-        if("resource_arr" %in% all_arg_names == TRUE){
-            resiloc <- which(all_arg_names == "resource_arr");
-            if( is.na(all_arguments[[resiloc]][1])  == FALSE ){
-                allpars$gmse_para_vect[33] <- dim(all_arguments[[resiloc]])[1];
-            }
-        }
-        if("RESOURCES" %in% all_arg_names == TRUE){
-            resiloc <- which(all_arg_names == "RESOURCES");
-            if( is.na(all_arguments[[resiloc]][1])  == FALSE ){
-                allpars$gmse_para_vect[33] <- dim(all_arguments[[resiloc]])[1];
-            }
-        }
-        if("resource_vec" %in% all_arg_names){
-            resiloc     <- which(all_arg_names == "resource_vec");
-            allpars$gmse_para_vect[33] <- all_arguments[[resiloc]][1]
-        }
-        all_arg_names[[list_count+1]] <- "PARAS";
-        all_arguments[[list_count+1]] <- allpars$gmse_para_vect;
-        list_count <- list_count + 1;
-    }
-    
-    gmse_user_input <- allpars$gmse_user_input;
-    gmse_para_vect  <- allpars$gmse_para_vect;
-    
-    # Make a landscape if one is needed but not provided by the software user
-    if("LAND" %in% f_arg_names == TRUE & "LAND" %in% all_arg_names == FALSE){
-        all_arg_names[[list_count+1]] <- "LAND";
-        if(gmse_para_vect[104] == TRUE){
-            stake_pr    <- (1 - gmse_para_vect[105]) / (gmse_para_vect[55] - 1);
-            land_alloc  <- c(gmse_para_vect[105], 
-                             rep(x = stake_pr, times = gmse_para_vect[55] - 1));
-        }else{
-            land_alloc  <- c(1, rep(x = 0, times = gmse_para_vect[55] - 1)); 
-        }
-        LANDSCAPE_r  <- make_landscape( model       = "IBM", 
-                                        rows        = gmse_para_vect[13], 
-                                        cols        = gmse_para_vect[14], 
-                                        cell_types  = 1,
-                                        cell_val_mn = 1,
-                                        cell_val_sd = 0,
-                                        ownership   = 1:gmse_para_vect[55],
-                                        owner_pr    = land_alloc
-        );
-        all_arguments[[list_count+1]] <- LANDSCAPE_r;
-        list_count <- list_count + 1;
-    }
-    
-    # Make agents if they are needed but not provided by the software user
-    if("AGENTS" %in% f_arg_names == TRUE & 
-       "AGENTS" %in% all_arg_names == FALSE){
-        all_arg_names[[list_count+1]] <- "AGENTS";
-        stakeholders <- 4;
-        if("stakeholders" %in% all_arg_names == TRUE){
-            where_stk    <- which(all_arg_names == "stakeholders");
-            stakeholders <- as.numeric(all_arguments[where_stk]);
-        }
-        agent_view  <- 10;
-        if("agent_view" %in% all_arg_names == TRUE){
-            where_age  <- which(all_arg_names == "agent_view");
-            agent_view <- as.numeric(all_arguments[where_age]);
-        }
-        agent_move  <- 0;
-        if("agent_move" %in% all_arg_names == TRUE){
-            where_mve  <- which(all_arg_names == "agent_move");
-            agent_move <- as.numeric(all_arguments[where_mve]);
-        }
-        AGENTS   <- make_agents( model        = "IBM",
-                                 agent_number = 1 + stakeholders,
-                                 type_counts  = c(1, stakeholders),
-                                 vision       = agent_view,
-                                 rows         = gmse_para_vect[2],
-                                 cols         = gmse_para_vect[3],
-                                 move         = agent_move
-        ); 
-        all_arguments[[list_count+1]] <- AGENTS;
-        list_count <- list_count + 1;
-    }
-    
-    # --- Run the resource model function provided by the software user
-    res_arg_vals  <- get_arg_list( the_function   = res_mod, 
-                                   all_arg_names  = all_arg_names, 
-                                   all_arg_values = all_arguments
-                                 );
-    if( identical(resource_model, resource) == TRUE ){
-        res_arg_vals[[4]] <- "IBM";
-        res_arg_vals[[5]] <- NULL;
-    }
-    
-    res <- do.call(what = res_mod, args = res_arg_vals); 
-    
-    # ==========================================================================
-    # PREPARE FOR THE OBSERVATION MODEL TO BE RUN
-    # ==========================================================================
-    
-    res_vector_output  <- TRUE;
-    if(length(res) == 1){
-        names(res) <- "resource_vec";
-        all_arg_names[[list_count+1]] <- "resource_vec";
-        all_arguments[[list_count+1]] <- res$resource_vec;
-        list_count                    <- list_count + 1;
-    }
-    if( "resource_arr" %in% names(res) == TRUE |
-        "RESOURCES"     %in% names(res) == TRUE){
-        res_vector_output <- FALSE;
-    }
-    if( "resource_arr" %in% names(res) == FALSE & 
-        "resource_vec" %in% names(res) == FALSE){
-        if("RESOURCES" %in% names(res) == FALSE){
-            stop("ERROR: Resource model must return a 'resource_arr' (array) 
-                 list element, a 'resource_vec' (vector) list element, or a 
-                 scalar");
-        }
-        r_a_p <- which(all_arg_names == "resource_arr");
-        all_arguments[[r_a_p]] <- res$RESOURCES;
-    }
-    if( "RESOURCE" %in% names(res) == TRUE & 
-        "RESOURCES" %in% all_arg_names == TRUE){
-        r_a_p <- which(all_arg_names == "RESOURCES");
-        all_arguments[[r_a_p]] <- res$RESOURCE;
-    }
-    if( "resource_arr" %in% names(res)    == TRUE &
-        "resource_arr" %in% all_arg_names == FALSE){
-        all_arg_names[[list_count+1]] <- "resource_arr";
-        all_arguments[[list_count+1]] <- res$resource_arr;
-        list_count                    <- list_count + 1;
-    }
-    if( "resource_vec" %in% names(res)    == TRUE &
-        "resource_vec" %in% all_arg_names == FALSE){
-        all_arg_names[[list_count+1]] <- "resource_vec";
-        all_arguments[[list_count+1]] <- res$resource_vec;
-        list_count                    <- list_count + 1;
-    }
-    
-    all_arguments <- update_all_arguments(mod_output    = res, 
-                                          all_arguments = all_arguments, 
-                                          all_arg_names = all_arg_names);
-    
-    # ADD A WAY TO CHECK FOR EXTINCTION HERE
-    
-    if( res_vector_output == TRUE ){
-        rvec         <- floor(res$resource_vec);
-        totalr       <- sum(rvec);
-        mat_resource <- make_resource(resource_quantity = totalr);
-        if(length(rvec) > 1){
-            types <- rep(x = 1:totalr, times = rvec);
-        }
-        r_m_pos <- which(all_arg_names == "resource_arr")[1]
-        all_arguments[[r_m_pos]] <- mat_resource;
-        if("PARAS" %in% all_arg_names == TRUE){
-            para_pos <- which(all_arg_names == "PARAS")[1];
-            all_arguments[[para_pos]][33] <- totalr;
-        }
-    }
-    if( res_vector_output == FALSE ){
-        rvec         <- as.vector(table(res$resource_arr[,2]));
-        if( is.null(res$RESOURCE) == FALSE){
-            rvec         <- as.vector(table(res$RESOURCE[,2]));
-        }
-        all_arg_names[[list_count+1]] <- "resource_vec";
-        all_arguments[[list_count+1]] <- rvec;
-        list_count                    <- list_count + 1;
-    }
-    if("inter_tabl" %in% f_arg_names == TRUE & 
-       "inter_tabl" %in% all_arg_names == FALSE){
-        all_arg_names[[list_count+1]] <- "inter_tabl";
-        r_a_p      <- which(all_arg_names == "resource_arr");
-        l_pos      <- which(all_arg_names == "LAND");
-        inter_tabl <- make_interaction_table(RESOURCES = all_arguments[[r_a_p]], 
-                                             LAND      = all_arguments[[l_pos]]
-                                             );
-        all_arguments[[list_count+1]] <- inter_tabl;
-        list_count <- list_count + 1;
-    }
-    
-    # --- Run the observation model function provided by the software user
-    obs_arg_values  <- get_arg_list( the_function   = obs_mod, 
-                                     all_arg_names  = all_arg_names, 
-                                     all_arg_values = all_arguments);
-    
-    # --- Some adjustments for running the observation model
-    if( identical(observation_model, observation) == TRUE){
-        pa_pos               <- which(all_arg_names == "PARAS")[1];
-        obs_arg_values[[6]]  <- all_arguments[[pa_pos]][11]; 
-        obs_arg_values[[7]]  <- all_arguments[[pa_pos]][12];
-        obs_arg_values[[8]]  <- all_arguments[[pa_pos]][17];
-        obs_arg_values[[11]] <- all_arguments[[pa_pos]][9];
-        obs_arg_values[[12]] <- all_arguments[[pa_pos]][20];
-        obs_arg_values[[13]] <- "IBM";
-        obs_arg_values[[14]] <- NULL;
-    }
-    
-    ## ERROR ONLY WITH resource_arr argument.
-    obs <- do.call(what = obs_mod, args = obs_arg_values);
-    
-    # ==========================================================================
-    # PREPARE FOR THE MANAGER MODEL TO BE RUN
-    # ==========================================================================
-    
-    
-    return(list(res, obs));
-    
-    
-    obs_vector_output  <- TRUE;
-    if(length(obs) == 1){
-        names(obs) <- "observation_vec";
-        all_arg_names[[list_count+1]] <- "observation_vec";
-        all_arguments[[list_count+1]] <- obs$observation_vec;
-        list_count                    <- list_count + 1;
-    }
-    if( "observation_arr"  %in% names(obs) == TRUE |
-        "OBSERVATION"      %in% names(obs) == TRUE){
-        obs_vector_output <- FALSE;
-    }
-    if( "observation_arr" %in% names(obs) == FALSE & 
-        "observation_vec" %in% names(obs) == FALSE){
-        if("OBSERVATION" %in% names(obs) == FALSE){
-            stop("ERROR: Resource model must return a 'observation_arr' (array) 
-                 list element, a 'observation_vec' (vector) list element, or a 
-                 scalar");
-        }
-        o_a_p <- which(all_arg_names == "OBSERVATION");
-        all_arguments[[o_a_p]] <- obs$OBSERVATION;
-    }
-    if( "observation_arr" %in% names(obs)    == TRUE &
-        "observation_arr" %in% all_arg_names == FALSE){
-        all_arg_names[[list_count+1]] <- "observation_arr";
-        all_arguments[[list_count+1]] <- obs$observation_arr;
-        list_count                    <- list_count + 1;
-    }
-    if( "observation_vec" %in% names(obs)    == TRUE &
-        "observation_vec" %in% all_arg_names == FALSE){
-        all_arg_names[[list_count+1]] <- "observation_vec";
-        all_arguments[[list_count+1]] <- obs$observation_vec;
-        list_count                    <- list_count + 1;
-    }
-    
-    return(list(res, obs));
-    
-    all_arguments <- update_all_arguments(mod_output    = obs, 
-                                          all_arguments = all_arguments, 
-                                          all_arg_names = all_arg_names);
     
     
     
 }
+
+
+add_res_defaults <- function(arg_list){
+    arg_names <- names(arg_list);
+    para_pos  <- which(arg_names == "PARAS");
+    paras     <- arg_list[[para_pos]];
+    res_pos   <- which(arg_names == "RESOURCES");
+    arr_pos   <- which(arg_names == "resource_arr");
+    if(is.na(arg_list[[res_pos]]) == TRUE){
+        ini_res <- make_resource( model             = "IBM", 
+                                  resource_quantity = paras[33]);
+        arg_list[[res_pos]] <- ini_res;
+    }
+    land_pos  <- which(arg_names == "LAND");
+    if(is.na(arg_list[[land_pos]]) == TRUE){
+        xdim     <- paras[13];
+        ydim     <- paras[14];
+        ini_land <- make_landscape(model = "IBM", rows = xdim, cols = ydim);
+        arg_list[[land_pos]] <- ini_land;
+    }
+    return(arg_list);
+}
+
+
+
+collect_res_ini <- function(arg_list){
+    make_res_list <- list();
+    arg_names     <- names(arg_list);
+    def_forms     <- formals(gmse);
+    def_names     <- names(def_forms);
+    make_res_list[[1]] <- "IBM";
+    make_res_list[[2]] <- arg_list$GMSE$RESOURCE_ini;
+    if("RESOURCE_ini" %in% arg_names){
+        apos               <- which(arg_names == "RESOURCE_ini");
+        make_res_list[[2]] <- arg_list[[apos]];
+    }
+    make_res_list[[3]] <- 1;
+    if("res_types_ini" %in% arg_names){
+        apos               <- which(arg_names == "res_types_ini");
+        make_res_list[[3]] <- arg_list[[apos]];
+    }
+    make_res_list[[4]] <- arg_list$GMSE$land_dim_1;
+    if("land_dim_1" %in% arg_names){
+        apos               <- which(arg_names == "land_dim_1");
+        make_res_list[[4]] <- arg_list[[apos]];
+    }
+    make_res_list[[5]] <- arg_list$GMSE$land_dim_2;
+    if("land_dim_2" %in% arg_names){
+        apos               <- which(arg_names == "land_dim_2");
+        make_res_list[[5]] <- arg_list[[apos]];
+    }
+    make_res_list[[6]] <- arg_list$GMSE$res_movement;
+    if("movement" %in% arg_names){
+        apos               <- which(arg_names == "movement");
+        make_res_list[[6]] <- arg_list[[apos]];
+    }
+    make_res_list[[7]] <- arg_list$GMSE$remove_pr;
+    if("remove_pr" %in% arg_names){
+        apos               <- which(arg_names == "remove_pr");
+        make_res_list[[7]] <- arg_list[[apos]];
+    }
+    make_res_list[[8]] <- arg_list$GMSE$lambda;
+    if("lambda" %in% arg_names){
+        apos               <- which(arg_names == "lambda");
+        make_res_list[[8]] <- arg_list[[apos]];
+    }
+    make_res_list[[9]] <- arg_list$GMSE$res_consume;
+    if("res_consume" %in% arg_names){
+        apos               <- which(arg_names == "res_consume");
+        make_res_list[[9]] <- arg_list[[apos]];
+    }
+    make_res_list[[10]] <- arg_list$GMSE$max_ages;
+    if("res_consume" %in% arg_names){
+        apos               <- which(arg_names == "max_ages");
+        make_res_list[[10]] <- arg_list[[apos]];
+    }
+    return(make_res_list);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+replace_default_args <- function(argument_list, argument_names, from, to){
+    from_names <- names(from);
+    if("RESOURCES" %in% from_names){
+        RESOURCE_pos <- which(argument_names == "RESOURCES");
+        res_arr_pos  <- which(argument_names == "resource_array");
+        argument_list[[res_arr_pos]] <- argument_list[[RESOURCE_pos]];
+        # Convert resource array to resource vector
+    }
+
+    
+    return( list(new_args = new_args) );
+}
+
+
+
+
+
+swap_vec_to_mat <- function(vec_name, mat_name, arg_list, arg_names, model){
+    
+    
+    if(model == "resource"){
+        
+    }
+    
+    return(argument_list);
+}
+
+swap_mat_to_vec <- function(mat_name, vec_name, arg_list, arg_names, model){
+    
+    return(argument_list)
+}
+
+
+
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+
+
+
 
 pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,  
                         res_movement = 20, remove_pr = 0.0, lambda = 0.30, 
@@ -578,8 +594,7 @@ HarvDec1 <- function(HD_type="A", c=1000, qu=0.2, observation_vec=100){
 ################################################################################
 
 
-argument_list <- function(res_mod, obs_mod, man_mod, use_mod, ...){
-    oth_vals    <- as.list(sys.call());
+argument_list <- function(res_mod, obs_mod, man_mod, use_mod, oth_vals){
     oth_names   <- names(oth_vals);
     res_names   <- names(formals(res_mod));
     obs_names   <- names(formals(obs_mod));
@@ -600,11 +615,6 @@ argument_list <- function(res_mod, obs_mod, man_mod, use_mod, ...){
     arg_list    <- place_args(all_names, formals(obs_mod), arg_list);
     arg_list    <- place_args(all_names, formals(man_mod), arg_list);
     arg_list    <- place_args(all_names, formals(use_mod), arg_list);
-    if("PARAS" %in% all_names){
-        para_vals <- pass_paras(...);
-        para_pos  <- which(all_names == "PARAS");
-        arg_list[[para_pos]] <- para_vals;
-    }
     arg_out     <- list(all_arg_values = arg_list, all_arg_names = all_names);
     
     return(arg_out);        
