@@ -31,9 +31,8 @@ manager <- function(RESOURCES   = NULL,
                     INTERACT    = NULL,
                     inter_tabl  = NULL,
                     OBSERVATION = NULL,
-                    model       = "IBM",
-                    ...
-) {
+                    model       = "IBM"
+                   ) {
     check_model <- 0;
     if(model == "IBM"){
         # Relevant warnings below if the inputs are not of the right type
@@ -76,9 +75,6 @@ manager <- function(RESOURCES   = NULL,
                                   OBSERVATION_c = OBSERVATION
         );
         check_model <- 1;
-    }
-    if(is.function(model) == TRUE){
-        MANAGER_OUT <- model(...);
     }
     if(check_model == 0){
         stop("Invalid model selected (Must be 'IBM')");

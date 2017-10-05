@@ -29,9 +29,8 @@ user <- function(RESOURCES  = NULL,
                  ACTION     = NULL,
                  INTERACT   = NULL,
                  inter_tabl = NULL,
-                 model      = "IBM",
-                 ...
-) {
+                 model      = "IBM"
+                ){
     check_model <- 0;
     if(model == "IBM"){
         # Relevant warnings below if the inputs are not of the right type
@@ -64,9 +63,6 @@ user <- function(RESOURCES  = NULL,
                              INTERACT_c    = inter_tabl
         );
         check_model <- 1;
-    }
-    if(is.function(model) == TRUE){
-        USER_OUT <- model(...);
     }
     if(check_model == 0){
         stop("Invalid model selected (Must be 'IBM')");

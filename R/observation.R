@@ -39,12 +39,9 @@ observation <- function(RESOURCES  = NULL,
                         type_cat   = 1,
                         obs_method = 0,
                         move_res   = FALSE,
-                        model      = "IBM",
-                        ...
-                        ){
+                        model      = "IBM"
+                       ){
     check_model <- 0;
-    # Use DATA as an array for mark-recapture information
-    # Time-stamp the mark-recapture data so can simulate within/over years
     if(model == "IBM"){
         # Relevant warnings below if the inputs are not of the right type
         if(!is.array(RESOURCES)){
@@ -78,9 +75,6 @@ observation <- function(RESOURCES  = NULL,
                                            INTERACT_c   = inter_tabl
                                            );
         check_model <- 1;
-    }
-    if(is.function(model) == TRUE){
-        OBSERVE_OUT <- model(...);
     }
     if(check_model == 0){
         stop("Invalid model selected (Must be 'IBM')");
