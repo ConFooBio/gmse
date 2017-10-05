@@ -28,6 +28,19 @@ gmse_apply <- function(resource_model    = resource,
     man_mod <- match.fun(manager_model);
     use_mod <- match.fun(user_model);
     
+    needed_arguments <- argument_list(res_mod, obs_mod, man_mod, use_mod, ...);
+    
+    arg_vals <- needed_arguments$all_arg_values;
+    arg_name <- needed_arguments$all_arg_names;
+
+    
+    
+    
+    return(needed_arguments);    
+}
+
+
+
     # Sort out the arguments for each function, and the rest
     all_arguments  <- as.list(sys.call());
     all_arg_names  <- names(all_arguments);
@@ -557,10 +570,15 @@ HarvDec1 <- function(HD_type="A", c=1000, qu=0.2, observation_vec=100){
 #    testrows  <- rbind(testrows, c(i, dim(test[[i]][[2]][[1]])[1], test[[i]][[2]][[3]][33]));
 #}
 
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
 
 
 argument_list <- function(res_mod, obs_mod, man_mod, use_mod, ...){
-    # Need to force PARAS into this XXX XXX XXX XXX
     oth_vals    <- as.list(sys.call());
     oth_names   <- names(oth_vals);
     res_names   <- names(formals(res_mod));
@@ -582,7 +600,11 @@ argument_list <- function(res_mod, obs_mod, man_mod, use_mod, ...){
     arg_list    <- place_args(all_names, formals(obs_mod), arg_list);
     arg_list    <- place_args(all_names, formals(man_mod), arg_list);
     arg_list    <- place_args(all_names, formals(use_mod), arg_list);
-    
+    if("PARAS" %in% all_names){
+        para_vals <- pass_paras(...);
+        para_pos  <- which(all_names == "PARAS");
+        arg_list[[para_pos]] <- para_vals;
+    }
     arg_out     <- list(all_arg_values = arg_list, all_arg_names = all_names);
     
     return(arg_out);        
@@ -590,8 +612,13 @@ argument_list <- function(res_mod, obs_mod, man_mod, use_mod, ...){
 
 
 place_args <- function(all_names, placing_vals, arg_list){
+    placing_names <- names(placing_vals);
+    empty         <- identical(placing_names, NULL);
+    if(empty == TRUE){
+        return(arg_list);
+    }
     for(i in 1:length(placing_vals)){
-        place_name <- names(placing_vals[i]);
+        place_name <- placing_names[i];
         if(place_name %in% all_names){
             place_pos <- which(all_names == place_name);
             arg_eval  <- eval(placing_vals[[i]]);
@@ -602,8 +629,6 @@ place_args <- function(all_names, placing_vals, arg_list){
     }
     return(arg_list);
 }
-
-
 
 
 
