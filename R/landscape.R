@@ -19,8 +19,8 @@
 #'land <- make_landscape(model = "IBM", rows = 10, cols = 10, cell_types = 1, 
 #'cell_val_mn = 1, cell_val_sd =  0)
 #'@export
-make_landscape <- function(model, rows, cols, cell_types, cell_val_mn, 
-                           cell_val_sd, cell_val_max = 1, cell_val_min = 0,
+make_landscape <- function(model, rows, cols, cell_types = 1, cell_val_mn = 1, 
+                           cell_val_sd = 0, cell_val_max = 1, cell_val_min = 0,
                            layers = 3, ownership = 0, owner_pr = NULL){
     the_land  <- NULL;
     if(model == "IBM"){
