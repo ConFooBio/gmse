@@ -50,6 +50,7 @@ library(rhandsontable)
 
  - **2017**
 
+     - **OCT** [6](#u-6-OCT-2017)
      - **SEP** [28](#u-28-SEP-2017), [27](#u-27-SEP-2017), [26](#u-26-SEP-2017), [25](#u-25-SEP-2017), [22](#u-22-SEP-2017), [15](#u-15-SEP-2017), [13](#u-13-SEP-2017), [8](#u-8-SEP-2017), [6](#u-6-SEP-2017)
      - **AUG** [28](#u-28-AUG-2017), [23](#u-23-AUG-2017), [17](#u-17-AUG-2017), [16](#u-16-AUG-2017), [15](#u-15-AUG-2017), [7](#u-7-AUG-2017)
      - **JUL** [7](#u-7-JUL-2017), [3](#u-3-JUL-2017)
@@ -88,6 +89,12 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-6-OCT-2017">Update: 6 OCT 2017</a>
+
+**Compensation suggestion**
+
+A suggestion from [Jeremy](https://twitter.com/jeremyjcusack) to include a compensation option for users. Users could devote some of their budget to compensation, then managers could compensate a proportion of their damaged yield. Implementing this will require consideration from the manager's perspective with respect to the genetic algorithm -- the users' perspective will be easier because a user can remember their previous losses and assess compensation versus culling. Managers might have to think about how compensation could incentivise non-culling, but this might actually already work given the way the manager anticipates actions; more investigation into this will be useful following the finalisation of `gmse_apply()`, which is in progress.
 
 > <a name="u-28-SEP-2017">Update: 28 SEP 2017</a>
 
