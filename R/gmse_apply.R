@@ -476,6 +476,45 @@ collect_agent_ini <- function(arg_list){
 }
 
 
+
+
+
+
+collect_itb_ini <- function(arg_list){
+    make_itb_list <- list();
+    arg_names     <- names(arg_list);
+    def_forms     <- formals(gmse);
+    def_names     <- names(def_forms);
+    make_itb_list[[1]] <- NA;
+    if("resource_array" %in% arg_names == TRUE){
+        rpos               <- which(arg_names == "resource_array");
+        make_itb_list[[1]] <- arg_list[[rpos]];
+    }
+    if(is.na(make_itb_list[[1]][1]) == TRUE){
+        dresarg            <- collect_res_ini(arg_list);
+        make_itb_list[[1]] <- do.call(what = make_resource, args = dresarg);
+    }
+    make_itb_list[[2]] <- NA;
+    if("LAND" %in% arg_names == TRUE){
+        lpos               <- which(arg_names == "LAND");
+        make_itb_list[[2]] <- arg_list[[lpos]];
+    }
+    if(is.na(make_itb_list[[2]][1]) == TRUE){
+        dlndarg            <- collect_land_ini(arg_list);
+        make_itb_list[[2]] <- do.call(what = make_landscape, args = dlndarg);
+    }
+    
+    return(make_itb_list);
+}
+
+
+
+
+
+
+
+
+
 add_obs_defaults <- function(arg_list){
     arg_names <- names(arg_list);
     res_pos   <- which(arg_names == "RESOURCES");
@@ -503,27 +542,49 @@ add_obs_defaults <- function(arg_list){
         ini_age <- do.call(what = make_agents, args = dagearg);
         arg_list[[agent_pos]] <- ini_age;
     }
+    inter_tabl_pos <- which(arg_names == "inter_tabl");
+    
+    
+    if(is.na(arg_list[[agent_pos]][1]) == TRUE){
+        ditbarg <- collect_itb_ini(arg_list);
+        ini_itb <- do.call(what = make_interaction_array, args = ditbarg);
+        arg_list[[agent_pos]] <- ini_itb;
+    }
+    
+    
+    
+    
+    
     return(arg_list);
 }
 
 
 
 
+
+
+
+
+
+
+
+
+
 prep_obs <- function(arg_list, obs_mod){
-    if( identical(res_mod, resource) == TRUE){
-        arg_list <- add_res_defaults(arg_list);
+    if( identical(obs_mod, observation) == TRUE){
+        arg_list <- add_obs_defaults(arg_list);
     }
-    res_args <- list();
+    obs_args <- list();
     arg_name <- names(arg_list);
-    res_take <- formals(res_mod);
-    res_take <- res_take[names(res_take) != "..."];
-    res_name <- names(res_take);
-    for(arg in 1:length(res_take)){
-        arg_pos         <- which(res_name[arg] == arg_name);
-        res_args[[arg]] <- arg_list[[arg_pos]];
+    obs_take <- formals(obs_mod);
+    obs_take <- obs_take[names(obs_take) != "..."];
+    obs_name <- names(obs_take);
+    for(arg in 1:length(obs_take)){
+        arg_pos         <- which(obs_name[arg] == arg_name);
+        obs_args[[arg]] <- arg_list[[arg_pos]];
     }
-    names(res_args) <- res_name;
-    return(res_args);
+    names(obs_args) <- obs_name;
+    return(obs_args);
 }
 
 
