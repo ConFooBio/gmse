@@ -35,17 +35,18 @@ gmse_apply <- function(res_mod  = resource,
     
     names(arg_vals) <- arg_name;
 
-    
+    # ------ RESOURCE MODEL ----------------------------------------------------
     res_args <- prep_res(arg_list = arg_vals, res_mod = res_mod)
     check_args(arg_list = res_args, the_fun = res_mod);
-    
     res_results <- do.call(what = res_mod, args = res_args);
-    
-    res_results <- check_name_results(output = res_results, 
+    res_results <- check_name_results(output   = res_results, 
                                       vec_name = "resource_vector", 
                                       mat_name = "resource_array");
-    
     arg_vals    <- add_results(arg_list = arg_vals, output = res_results);
+    arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = res_mod);
+    arg_vals    <- translate_results(arg_list = arg_vals, output = res_results);
+    
+    # ------ OBSERVATION MODEL -------------------------------------------------
     
     return(arg_vals);    
 }
@@ -170,7 +171,6 @@ argument_list <- function(res_mod, obs_mod, man_mod, use_mod, oth_vals){
     return(arg_out);        
 }
 
-
 place_args <- function(all_names, placing_vals, arg_list){
     placing_names <- names(placing_vals);
     empty         <- identical(placing_names, NULL);
@@ -189,7 +189,6 @@ place_args <- function(all_names, placing_vals, arg_list){
     }
     return(arg_list);
 }
-
 
 check_args <- function(arg_list, the_fun){
     the_fun_names <- names(formals(the_fun));
@@ -212,10 +211,6 @@ check_args <- function(arg_list, the_fun){
     }
 }
 
-
-
-
-
 prep_res <- function(arg_list, res_mod){
     if( identical(res_mod, resource) == TRUE){
         arg_list <- add_res_defaults(arg_list);
@@ -232,7 +227,6 @@ prep_res <- function(arg_list, res_mod){
     names(res_args) <- res_name;
     return(res_args);
 }
-
 
 add_res_defaults <- function(arg_list){
     arg_names <- names(arg_list);
@@ -257,8 +251,6 @@ add_res_defaults <- function(arg_list){
     }
     return(arg_list);
 }
-
-
 
 collect_res_ini <- function(arg_list){
     make_res_list <- list();
@@ -348,7 +340,6 @@ collect_land_ini <- function(arg_list){
     return(make_lnd_list);
 }
 
-
 copy_args <- function(arg_list, from, to){
     arg_names <- names(arg_list);
     from_pos  <- which(arg_names == from);
@@ -371,6 +362,18 @@ check_name_results <- function(output, vec_name, mat_name){
     return(output);
 }
 
+fix_gmse_defaults <- function(arg_list, model){
+    arg_names <- names(arg_list);
+    out_names <- names(output);
+    if( identical(model, resource) ){
+        arg_list <- copy_args(arg_list, "RESOURCES", "resource_array");
+    }
+    if( identical(model, observation) ){
+        arg_list <- copy_args(arg_list, "OBSERVATION", "observation_array");
+    }
+    return(arg_list);
+}
+
 add_results <- function(arg_list, output){
     arg_names <- names(arg_list);
     out_names <- names(output);
@@ -379,11 +382,31 @@ add_results <- function(arg_list, output){
             rep_pos <- which(arg_names == out_names[[i]]);
             arg_list[[rep_pos]] <- output[[i]];
         }
-        if(out_names[[i]] == "resource_vector"){
-            # Switch to the array and add to arg_list
+    }
+    return(arg_list);
+}
+
+translate_results <- function(arg_list, output){
+    arg_names <- names(arg_list);
+    out_names <- names(output);
+    for(i in 1:length(output)){
+        if(out_names[[i]] %in% arg_names == TRUE){
+            rep_pos <- which(arg_names == out_names[[i]]);
+            arg_list[[rep_pos]] <- output[[i]];
         }
-        if(out_names[[i]] == "resource_array"){
-            # Switch to the vector and add to arg_list
+        if(out_names[[i]] == "resource_vector"){
+            tot_res <- sum(arg_list[[i]]);
+            res_arr <- make_resource(resource_quantity = tot_res);
+            typeNum <- length(floor(arg_list[[i]]));
+            types   <- rep(x = 1:typeNum, times = arg_list[[i]]);
+            res_arr[,2] <- types;
+            arr_pos  <- which(arg_names == "resource_array");
+            arg_list[[arr_pos]] <- res_arr;
+        }
+        if(out_names[[i]] == "resource_array" | out_names[[i]] == "RESOURCES"){
+            typ_vec <- as.numeric(table(output[[i]][,2]));
+            vec_pos <- which(arg_names == "resource_vector");
+            arg_list[[vec_pos]] <- typ_vec;
         }
         if(out_names[[i]] == "observation_vector"){
             # Switch to the array and add to arg_list
@@ -392,7 +415,8 @@ add_results <- function(arg_list, output){
             #     just uses PARAS[100] (R) PARAS[99] c to define the estimated
             #     abundance, then force whenever vector is returned
         }
-        if(out_names[[i]] == "observation_array"){
+        if(out_names[[i]] == "observation_array" | 
+           out_names[[i]] == "OBSERVATIONS"         ){
             # Switch to the vector and add to arg_list
             # Will need to run a function to estimate population size and
             #    return the appropriate vector from the estimate
@@ -402,13 +426,13 @@ add_results <- function(arg_list, output){
             #   converted cull abilities) into the relevant column of the COST
             #   array for resource type 1? Maybe leave up to the user.
         }
-        if(out_names[[i]] == "manager_array"){
+        if(out_names[[i]] == "manager_array" | out_names[[i]] == "COSTS"){
             # Switch to the vector and add to arg_list
         }
         if(out_names[[i]] == "user_vector"){
             # Switch to the array and add to arg_list
         }
-        if(out_names[[i]] == "user_array"){
+        if(out_names[[i]] == "user_array" | out_names[[i]] == "ACTIONS"){
             # Switch to the vector and add to arg_list
         }
     }
@@ -610,7 +634,9 @@ xfun <- function(f1_i, f2_i, x, y, ...){
 
 
 
-popmod <-function(resource_vec =100, sigma2_e=0.2, N_Harv=20, K=200, theta=1, r_max=1.0){
+popmod <-function(resource_vector =100, sigma2_e=0.2, N_Harv=20, K=200, theta=1, r_max=1.0){
+    
+    resource_vec <- resource_vector;
     
     X_t0 <- resource_vec;
     
@@ -621,12 +647,14 @@ popmod <-function(resource_vec =100, sigma2_e=0.2, N_Harv=20, K=200, theta=1, r_
     X_t1 <- X_star*exp(r)
     
     PopRes <- list();
-    PopRes$resource_vec <- X_t1;
+    PopRes$resource_vector <- X_t1;
     PopRes
     
 }
 
-popmod2 <-function(resource_vec =100, sigma2_e=0.2, N_Harv=20, K=200, theta=1, r_max=1.0){
+popmod2 <-function(resource_vector =100, sigma2_e=0.2, N_Harv=20, K=200, theta=1, r_max=1.0){
+    
+    resource_vec <- resource_vector;
     
     X_t0 <- resource_vec;
     
