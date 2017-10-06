@@ -29,9 +29,8 @@ gmse_apply <- function(res_mod  = resource,
     all_args$GMSE  <- formals(gmse);
 
     needed_args <- argument_list(res_mod, obs_mod, man_mod, use_mod, all_args);
-    
-    arg_vals <- needed_args$all_arg_values;
-    arg_name <- needed_args$all_arg_names;
+    arg_vals    <- needed_args$all_arg_values;
+    arg_name    <- needed_args$all_arg_names;
     
     names(arg_vals) <- arg_name;
 
@@ -244,7 +243,7 @@ add_res_defaults <- function(arg_list){
         arg_list[[res_pos]] <- ini_res;
     }
     land_pos  <- which(arg_names == "LAND");
-    if(is.na(arg_list[[land_pos]]) == TRUE){
+    if(is.na(arg_list[[land_pos]][1]) == TRUE){
         dlndarg  <- collect_land_ini(arg_list);
         ini_land <- do.call(what = make_landscape, args = dlndarg);
         arg_list[[land_pos]] <- ini_land;
@@ -439,7 +438,93 @@ translate_results <- function(arg_list, output){
     return(arg_list);
 }
 
+collect_agent_ini <- function(arg_list){
+    make_age_list <- list();
+    arg_names     <- names(arg_list);
+    def_forms     <- formals(gmse);
+    def_names     <- names(def_forms);
+    make_age_list[[1]] <- "IBM";
+    make_age_list[[2]] <- arg_list$GMSE$stakeholders + 1;
+    make_age_list[[3]] <- c(1, arg_list$GMSE$stakeholders);
+    if("stakeholders" %in% arg_names){
+        spos               <- which(arg_names == "stakeholders");
+        make_age_list[[2]] <- arg_list[[spos]] + 1;
+        make_age_list[[3]] <- c(1, arg_list[[spos]]);
+    }
+    make_age_list[[4]] <- arg_list$GMSE$agent_move;
+    if("agent_move" %in% arg_names){
+        apos               <- which(arg_names == "agent_move");
+        make_age_list[[4]] <- arg_list[[apos]];
+    }
+    make_age_list[[5]] <- arg_list$GMSE$agent_view;
+    if("agent_view" %in% arg_names){
+        apos               <- which(arg_names == "agent_view");
+        make_age_list[[5]] <- arg_list[[apos]];
+    }
+    make_age_list[[6]] <- arg_list$GMSE$land_dim_1;
+    if("land_dim_1" %in% arg_names){
+        apos               <- which(arg_names == "land_dim_1");
+        make_age_list[[6]] <- arg_list[[apos]];
+    }
+    make_age_list[[7]] <- arg_list$GMSE$land_dim_2;
+    if("land_dim_2" %in% arg_names){
+        apos               <- which(arg_names == "land_dim_2");
+        make_age_list[[7]] <- arg_list[[apos]];
+    }
 
+    return(make_age_list);
+}
+
+
+add_obs_defaults <- function(arg_list){
+    arg_names <- names(arg_list);
+    res_pos   <- which(arg_names == "RESOURCES");
+    arr_pos   <- which(arg_names == "resource_array");
+    if(is.na(arg_list[[arr_pos]][1]) == FALSE){
+        arg_list <- copy_args(arg_list = arg_list, from = "resource_array",
+                              to = "RESOURCES");
+    }
+    para_pos  <- which(arg_names == "PARAS");
+    paras     <- arg_list[[para_pos]];
+    if(is.na(arg_list[[res_pos]][1]) == TRUE){
+        dresarg <- collect_res_ini(arg_list);
+        ini_res <- do.call(what = make_resource, args = dresarg);
+        arg_list[[res_pos]] <- ini_res;
+    }
+    land_pos  <- which(arg_names == "LAND");
+    if(is.na(arg_list[[land_pos]][1]) == TRUE){
+        dlndarg  <- collect_land_ini(arg_list);
+        ini_land <- do.call(what = make_landscape, args = dlndarg);
+        arg_list[[land_pos]] <- ini_land;
+    }
+    agent_pos <- which(arg_names == "AGENTS");
+    if(is.na(arg_list[[agent_pos]][1]) == TRUE){
+        dagearg <- collect_agent_ini(arg_list);
+        ini_age <- do.call(what = make_agents, args = dagearg);
+        arg_list[[agent_pos]] <- ini_age;
+    }
+    return(arg_list);
+}
+
+
+
+
+prep_obs <- function(arg_list, obs_mod){
+    if( identical(res_mod, resource) == TRUE){
+        arg_list <- add_res_defaults(arg_list);
+    }
+    res_args <- list();
+    arg_name <- names(arg_list);
+    res_take <- formals(res_mod);
+    res_take <- res_take[names(res_take) != "..."];
+    res_name <- names(res_take);
+    for(arg in 1:length(res_take)){
+        arg_pos         <- which(res_name[arg] == arg_name);
+        res_args[[arg]] <- arg_list[[arg_pos]];
+    }
+    names(res_args) <- res_name;
+    return(res_args);
+}
 
 
 ################################################################################
