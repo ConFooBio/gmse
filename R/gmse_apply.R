@@ -26,10 +26,10 @@ gmse_apply <- function(res_mod  = resource,
     std_paras      <- pass_paras(...);
     all_args       <- as.list(sys.call());
     all_args$PARAS <- std_paras$gmse_para_vect;
-    all_args$GMSE  <- formals(gmse);
+    all_args$GMSE  <- formals(gmse); 
 
     needed_args <- argument_list(res_mod, obs_mod, man_mod, use_mod, all_args);
-    arg_vals    <- needed_args$all_arg_values;
+    arg_vals    <- needed_args$all_arg_values; 
     arg_name    <- needed_args$all_arg_names;
     
     names(arg_vals) <- arg_name;
@@ -44,8 +44,19 @@ gmse_apply <- function(res_mod  = resource,
     arg_vals    <- add_results(arg_list = arg_vals, output = res_results);
     arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = res_mod);
     arg_vals    <- translate_results(arg_list = arg_vals, output = res_results);
+    arg_vals    <- update_para_vec(arg_list   = arg_vals);
     
     # ------ OBSERVATION MODEL -------------------------------------------------
+    obs_args <- prep_obs(arg_list = arg_vals, obs_mod = obs_mod);
+    check_args(arg_list = obs_args, the_fun = obs_mod);
+    obs_results <- do.call(what = obs_mod, args = obs_args);
+    obs_results <- check_name_results(output   = obs_results, 
+                                      vec_name = "observation_vector", 
+                                      mat_name = "observation_array");
+    arg_vals    <- add_results(arg_list = arg_vals, output = obs_results);
+    arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = obs_mod);
+    arg_vals    <- translate_results(arg_list = arg_vals, output = obs_results);
+    
     
     return(arg_vals);    
 }
@@ -160,11 +171,11 @@ argument_list <- function(res_mod, obs_mod, man_mod, use_mod, oth_vals){
     u_arg_names <- u_arg_names[u_arg_names != ""];
     all_names   <- u_arg_names[u_arg_names != "..."];
     arg_list    <- rep(x = list(NA), times = length(all_names));
-    arg_list    <- place_args(all_names, oth_vals, arg_list);
     arg_list    <- place_args(all_names, formals(res_mod), arg_list);
     arg_list    <- place_args(all_names, formals(obs_mod), arg_list);
     arg_list    <- place_args(all_names, formals(man_mod), arg_list);
     arg_list    <- place_args(all_names, formals(use_mod), arg_list);
+    arg_list    <- place_args(all_names, oth_vals, arg_list);
     arg_out     <- list(all_arg_values = arg_list, all_arg_names = all_names);
     
     return(arg_out);        
@@ -363,7 +374,6 @@ check_name_results <- function(output, vec_name, mat_name){
 
 fix_gmse_defaults <- function(arg_list, model){
     arg_names <- names(arg_list);
-    out_names <- names(output);
     if( identical(model, resource) ){
         arg_list <- copy_args(arg_list, "RESOURCES", "resource_array");
     }
@@ -475,11 +485,6 @@ collect_agent_ini <- function(arg_list){
     return(make_age_list);
 }
 
-
-
-
-
-
 collect_itb_ini <- function(arg_list){
     make_itb_list <- list();
     arg_names     <- names(arg_list);
@@ -507,14 +512,6 @@ collect_itb_ini <- function(arg_list){
     return(make_itb_list);
 }
 
-
-
-
-
-
-
-
-
 add_obs_defaults <- function(arg_list){
     arg_names <- names(arg_list);
     res_pos   <- which(arg_names == "RESOURCES");
@@ -523,12 +520,15 @@ add_obs_defaults <- function(arg_list){
         arg_list <- copy_args(arg_list = arg_list, from = "resource_array",
                               to = "RESOURCES");
     }
-    para_pos  <- which(arg_names == "PARAS");
-    paras     <- arg_list[[para_pos]];
     if(is.na(arg_list[[res_pos]][1]) == TRUE){
         dresarg <- collect_res_ini(arg_list);
         ini_res <- do.call(what = make_resource, args = dresarg);
         arg_list[[res_pos]] <- ini_res;
+    }
+    para_pos  <- which(arg_names == "PARAS");
+    if(is.na(arg_list[[para_pos]][1]) == TRUE){
+        stop("I can't find a vector of parameters that should be initialised
+              by default -- something has gone very wrong");
     }
     land_pos  <- which(arg_names == "LAND");
     if(is.na(arg_list[[land_pos]][1]) == TRUE){
@@ -543,35 +543,64 @@ add_obs_defaults <- function(arg_list){
         arg_list[[agent_pos]] <- ini_age;
     }
     inter_tabl_pos <- which(arg_names == "inter_tabl");
-    
-    
-    if(is.na(arg_list[[agent_pos]][1]) == TRUE){
+    if(is.na(arg_list[[inter_tabl_pos]][1]) == TRUE){
         ditbarg <- collect_itb_ini(arg_list);
         ini_itb <- do.call(what = make_interaction_array, args = ditbarg);
-        arg_list[[agent_pos]] <- ini_itb;
+        arg_list[[inter_tabl_pos]] <- ini_itb;
     }
-    
-    
-    
-    
+    fm_pos <- which(arg_names == "fix_mark");
+    if(is.na(arg_list[[fm_pos]][1]) == TRUE){
+        arg_list[[fm_pos]][1] <- arg_list$GMSE$fix_mark;
+    }
+    tm_pos <- which(arg_names == "times");
+    if(is.na(arg_list[[tm_pos]][1]) == TRUE){
+        arg_list[[tm_pos]][1] <- arg_list$GMSE$times_observe;
+    }
+    sm_pos <- which(arg_names == "samp_age");
+    if(is.na(arg_list[[sm_pos]][1]) == TRUE){
+        arg_list[[sm_pos]][1] <- arg_list$GMSE$res_min_age;
+    }
+    aty_pos <- which(arg_names == "agent_type");
+    if(is.na(arg_list[[aty_pos]][1]) == TRUE){
+        arg_list[[aty_pos]][1] <- 0;
+    }
+    tca_pos <- which(arg_names == "type_cat");
+    if(is.na(arg_list[[tca_pos]][1]) == TRUE){
+        arg_list[[tca_pos]][1] <- 1;
+    }
+    ot_pos <- which(arg_names == "obs_method");
+    if(is.na(arg_list[[ot_pos]][1]) == TRUE){
+        arg_list[[ot_pos]][1] <- arg_list$GMSE$observe_type;
+    }
+    rmo_pos <- which(arg_names == "move_res");
+    if(is.na(arg_list[[rmo_pos]][1]) == TRUE){
+        arg_list[[rmo_pos]][1] <- arg_list$GMSE$res_move_obs;
+    }
+    mod_pos <- which(arg_names == "model");
+    if(is.na(arg_list[[mod_pos]][1]) == TRUE){
+        arg_list[[mod_pos]][1] <- "IBM";
+    }
+    arg_list <- double_check_obs_type(arg_list);
     
     return(arg_list);
 }
 
-
-
-
-
-
-
-
-
-
-
-
+double_check_obs_type <- function(arg_list){
+    arg_names <- names(arg_list);
+    if("observe_type"  %in% arg_names == FALSE | 
+       "times_observe" %in% arg_names == FALSE ){
+        return(arg_list);
+    }
+    ot_pos <- which(arg_names == "observe_type");
+    tm_pos <- which(arg_names == "times_observe");
+    if(arg_list[[ot_pos]][1] == 1){
+        arg_list[[tm_pos]] <- 2;
+    }
+    return(arg_list);
+}
 
 prep_obs <- function(arg_list, obs_mod){
-    if( identical(obs_mod, observation) == TRUE){
+    if( identical(obs_mod, observation) == TRUE ){
         arg_list <- add_obs_defaults(arg_list);
     }
     obs_args <- list();
@@ -587,6 +616,15 @@ prep_obs <- function(arg_list, obs_mod){
     return(obs_args);
 }
 
+update_para_vec <- function(arg_list){
+    arg_name <- names(arg_list);
+    if("PARAS" %in% arg_name == TRUE){
+        par_pos <- which(arg_name == "PARAS");
+        res_pos <- which(arg_name == "resource_vector");
+        arg_list[[par_pos]][33] <- floor(sum(arg_list[[res_pos]]));
+    }
+    return(arg_list);
+}
 
 ################################################################################
 ################################################################################
@@ -815,9 +853,9 @@ popmod2 <-function(resource_vector =100, sigma2_e=0.2, N_Harv=20, K=200, theta=1
     
 }
 
-obs_mod1 <- function(scale="Abund", resource_vec=1000, bias=1, cv=0.2, LogNorm="ND"){
+obs_mod1 <- function(scale="Abund", resource_vector=1000, bias=1, cv=0.2, LogNorm="ND"){
     
-    value <- resource_vec;
+    value <- resource_vector;
     
     obs1 <-  switch(LogNorm,
                     LND={rlnorm(n=1, meanlog=log(value*bias), sdlog=cv)},
