@@ -55,7 +55,7 @@ gmse_apply <- function(res_mod  = resource,
                                       mat_name = "observation_array");
     arg_vals    <- add_results(arg_list = arg_vals, output = obs_results);
     arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = obs_mod);
-    arg_vals    <- translate_results(arg_list = arg_vals, output = obs_results);
+    arg_vals    <- translate_results(arg_list = arg_vals, output = obs_results); # <- LEFT OFF HERE
     
     
     return(arg_vals);    
@@ -418,17 +418,49 @@ translate_results <- function(arg_list, output){
             arg_list[[vec_pos]] <- typ_vec;
         }
         if(out_names[[i]] == "observation_vector"){
+            obs_arr <- make_resource(); # Dummy, since we already have estimate
+            arr_pos <- which(arg_names == "observation_array");
+            arg_list[[arr_pos]] <- obs_arr;
+            if("PARAS" %in% arg_names == TRUE){
+                par_pos <- which(arg_names == "PARAS");
+            }
+            arg_list[[para_pos]][100] <- -1; # Tells manager to skip estimate
+            arg_list                  <- set_action_array(arg_list);
+            
+            thetar  <- arg_list$ACTION[arg_list$ACTION[,1,1]==-2, 5, 1];
+            theobs  <- arg_list$observation_vector;
+            
+            arg_list$ACTION[arg_list$ACTION[,1,1]==1, 5, 1] <- thetar - theobs;
+            
             # Switch to the array and add to arg_list
             # Will need to get the manager function in c to recognise paras
             #     Do this by having a new 'hidden' observe_type = -1, which
             #     just uses PARAS[100] (R) PARAS[99] c to define the estimated
             #     abundance, then force whenever vector is returned
+            
+            # Put an if (obs_type >= 0) around lines 614-631 in manager.c
+            # If obs_type = -1, ACTIONS array will come into manager.c with the
+            # appropriate marginal utilities in the fourth column of the zero
+            # layer (fifth col and first layer in R). Add the target to 
+            # ACTION[1,5,1] (plus any other -2 values for different resource
+            # types). Add the marginal utility (too high or low) to
+            # ACTION[1,3,1] (again, with additional values for different
+            # resources -- check to ensure this doesn't crash). 
+            
+            # Remember that only culling is default, so this is good so that 
+            # other options will need to be forced by the gmse_apply user, as
+            # many of them won't make sense.
         }
         if(out_names[[i]] == "observation_array" | 
            out_names[[i]] == "OBSERVATIONS"         ){
             # Switch to the vector and add to arg_list
             # Will need to run a function to estimate population size and
             #    return the appropriate vector from the estimate
+            
+            # This can be done by writing a function that recreates what's going
+            # on in the first 274 lines of manager.c (some of this is already
+            # available in the plotting function. In addition to the vector,
+            # The estimate should also be added to PARAS[100]
         }
         if(out_names[[i]] == "manager_vector"){
             # Switch to the array and add to arg_list. Insert costs (or 
@@ -623,6 +655,71 @@ update_para_vec <- function(arg_list){
         res_pos <- which(arg_name == "resource_vector");
         arg_list[[par_pos]][33] <- floor(sum(arg_list[[res_pos]]));
     }
+    return(arg_list);
+}
+
+set_action_array <- function(arg_list){
+    arg_name <- names(arg_list);
+    if("AGENTS" %in% arg_name){
+        agent_pos <- which(arg_name == "AGENTS");
+    }
+    if(is.na(arg_list[[agent_pos]][1]) == TRUE){
+        dagearg <- collect_agent_ini(arg_list);
+        ini_age <- do.call(what = make_agents, args = dagearg);
+        arg_list[[agent_pos]] <- ini_age;
+    }
+    res_pos   <- which(arg_name == "resource_array");
+    if(is.na(arg_list[[res_pos]][1]) == TRUE){
+        dresarg <- collect_res_ini(arg_list);
+        ini_res <- do.call(what = make_resource, args = dresarg);
+        arg_list[[res_pos]] <- ini_res;
+    }
+    ACTION <- make_utilities(arg_list[[agent_pos]], arg_list[[res_pos]]);
+    
+    manage_target <- arg_list$GMSE$manage_target;
+    if("manage_target" %in% arg_name){
+        mtpos         <- which(arg_name == "manage_target");
+        manage_target <- arg_list[[mtpos]];
+    }
+    land_ownership <- arg_list$GMSE$land_ownership;
+    if("land_ownership" %in% arg_name){
+        lopos          <- which(arg_name == "land_ownership");
+        land_ownership <- arg_list[[lopos]];
+    }
+    user_budget <- arg_list$GMSE$user_budget;
+    if("user_budget" %in% arg_name){
+        ubpos          <- which(arg_name == "user_budget");
+        user_budget <- arg_list[[ubpos]];
+    }
+    manager_budget <- arg_list$GMSE$manager_budget;
+    if("manager_budget" %in% arg_name){
+        mbpos          <- which(arg_name == "manager_budget");
+        manager_budget <- arg_list[[mbpos]];
+    }
+    
+    stakeholder_rows             <- 2:dim(ACTION)[3];
+    manager_row                  <- 1;
+    ACTION[1, 5, manager_row]    <- manage_target;
+    ACTION[3, 5:7 , manager_row] <- 0;
+
+    if(land_ownership == TRUE){ # Set up utilities for land owning farmers
+        ACTION[1, 5, stakeholder_rows]   <- 0;
+        ACTION[2, 5, stakeholder_rows]   <- 100;
+        ACTION[1, 6:7, stakeholder_rows] <- 1;
+        ACTION[2, 6:7, stakeholder_rows] <- 1;
+    }else{                      # Set up utilities for hunters of resources
+        ACTION[1, 5, stakeholder_rows]   <- -1;
+        ACTION[2, 5, stakeholder_rows]   <- 0;
+    }
+
+    arg_list[[agent_pos]][,17]     <- user_budget;
+    arg_list[[agent_pos]][1,17]    <- manager_budget;
+    
+    if("ACTION" %in% arg_name){
+        act_pos <- which(arg_name == "ACTION");
+    }
+    arg_list[[act_pos]] <- ACTION;
+    
     return(arg_list);
 }
 
