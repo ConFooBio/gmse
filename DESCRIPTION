@@ -4,7 +4,8 @@ Title: Generalised Management Strategy Evaluation Simulator
 Version: 0.2.3.1
 Imports: grDevices, graphics, stats, shiny, shinydashboard, shinyjs
 Authors@R: c(person("A. Bradley", "Duthie", email = "brad.duthie@gmail.com",
-                  role = c("aut", "cre")),
+                  role = c("aut", "cre"),
+                  comment = c(ORCID = "0000-0001-8343-4995")),
              person("Nils", "Bunnefeld", role = c("ctb", "fnd")),
              person("Jeremy", "Cusack", role = "ctb"),
              person("Erlend", "Nilsen", role = "ctb"),
