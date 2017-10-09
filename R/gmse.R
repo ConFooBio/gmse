@@ -126,6 +126,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   public_land    = 0      # Proportion of landscape public
 ){
     
+    if(observe_type  <  0){ # Don't allow trick observe type in gmse()
+        observe_type <- 0;
+    }
     if(observe_type == 1){
         times_observe <- 2;
     }
