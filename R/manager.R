@@ -79,7 +79,7 @@ manager <- function(RESOURCES   = NULL,
     if(check_model == 0){
         stop("Invalid model selected (Must be 'IBM')");
     }
-    names(MANAGER_OUT) <- c("RESOURCE", "AGENTS", "LAND", "ACTIONS", "COSTS");
+    names(MANAGER_OUT) <- c("RESOURCES", "AGENTS", "LAND", "ACTION", "COST");
     return(MANAGER_OUT);
 }
 
