@@ -780,47 +780,22 @@ set_action_array <- function(arg_list){
     return(arg_list);
 }
 
-
-
-
-
-set_interaction_array <- function(arg_list);
-
-
-
-     do.call(what = make_interaction_table, args = ditbarg);
-     make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
-}
-
-
-
-
-
-
-
-
-
 prep_man <- function(arg_list, man_mod){
     if( identical(man_mod, manager) == TRUE ){
         arg_list <- add_man_defaults(arg_list);
     }
-    
-    
-    
-    
-    obs_args <- list();
+    man_args <- list();
     arg_name <- names(arg_list);
-    obs_take <- formals(obs_mod);
-    obs_take <- obs_take[names(obs_take) != "..."];
-    obs_name <- names(obs_take);
-    for(arg in 1:length(obs_take)){
-        arg_pos         <- which(obs_name[arg] == arg_name);
-        obs_args[[arg]] <- arg_list[[arg_pos]];
+    man_take <- formals(man_mod);
+    man_take <- man_take[names(man_take) != "..."];
+    man_name <- names(man_take);
+    for(arg in 1:length(man_take)){
+        arg_pos         <- which(man_name[arg] == arg_name);
+        man_args[[arg]] <- arg_list[[arg_pos]];
     }
-    names(obs_args) <- obs_name;
-    return(obs_args);
+    names(man_args) <- man_name;
+    return(man_args);
 }
-
 
 add_man_defaults <- function(arg_list){
     arg_names <- names(arg_list);
@@ -861,53 +836,40 @@ add_man_defaults <- function(arg_list){
         arg_list <- set_action_array(arg_list);
     }
     jac_pos  <- which(arg_names == "INTERACT");
-    
-    
-    
+    if(is.na(arg_list[[jac_pos]][1]) == TRUE){
+        arg_list <- set_interaction_array(arg_list);
+    }
     inter_tabl_pos <- which(arg_names == "inter_tabl");
     if(is.na(arg_list[[inter_tabl_pos]][1]) == TRUE){
         ditbarg <- collect_itb_ini(arg_list);
-        ini_itb <- do.call(what = make_interaction_array, args = ditbarg);
+        ini_itb <- do.call(what = make_interaction_table, args = ditbarg);
         arg_list[[inter_tabl_pos]] <- ini_itb;
     }
-    fm_pos <- which(arg_names == "fix_mark");
-    if(is.na(arg_list[[fm_pos]][1]) == TRUE){
-        arg_list[[fm_pos]][1] <- arg_list$GMSE$fix_mark;
+    obs_pos  <- which(arg_names == "OBSERVATION");
+    if(is.na(arg_list[[obs_pos]][1]) == TRUE){ 
+        arg_list <- copy_args(arg_list = arg_list, from = "observation_array",
+                              to       = "OBSERVATION");
     }
-    tm_pos <- which(arg_names == "times");
-    if(is.na(arg_list[[tm_pos]][1]) == TRUE){
-        arg_list[[tm_pos]][1] <- arg_list$GMSE$times_observe;
-    }
-    sm_pos <- which(arg_names == "samp_age");
-    if(is.na(arg_list[[sm_pos]][1]) == TRUE){
-        arg_list[[sm_pos]][1] <- arg_list$GMSE$res_min_age;
-    }
-    aty_pos <- which(arg_names == "agent_type");
-    if(is.na(arg_list[[aty_pos]][1]) == TRUE){
-        arg_list[[aty_pos]][1] <- 0;
-    }
-    tca_pos <- which(arg_names == "type_cat");
-    if(is.na(arg_list[[tca_pos]][1]) == TRUE){
-        arg_list[[tca_pos]][1] <- 1;
-    }
-    ot_pos <- which(arg_names == "obs_method");
-    if(is.na(arg_list[[ot_pos]][1]) == TRUE){
-        arg_list[[ot_pos]][1] <- arg_list$GMSE$observe_type;
-    }
-    rmo_pos <- which(arg_names == "move_res");
-    if(is.na(arg_list[[rmo_pos]][1]) == TRUE){
-        arg_list[[rmo_pos]][1] <- arg_list$GMSE$res_move_obs;
+    if(is.na(arg_list$OBSERVATION[1]) == TRUE){
+        stop("I can't find observations for the manager model");
     }
     mod_pos <- which(arg_names == "model");
     if(is.na(arg_list[[mod_pos]][1]) == TRUE){
         arg_list[[mod_pos]][1] <- "IBM";
     }
-    arg_list <- double_check_obs_type(arg_list);
-    
     return(arg_list);
 }
 
-
+set_interaction_array <- function(arg_list){
+    arg_names    <- names(arg_list);
+    interact_pos <- which(arg_names == "INTERACT");
+    if(is.na(arg_list[[interact_pos]][1]) == TRUE){
+        ditbarg <- collect_itb_ini(arg_list);
+        ini_itb <- do.call(what = make_interaction_array, args = ditbarg);
+        arg_list[[interact_pos]] <- ini_itb;
+    }
+    return(arg_list);
+}
 
 ################################################################################
 ################################################################################
