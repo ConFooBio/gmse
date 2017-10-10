@@ -386,14 +386,15 @@ check_name_results <- function(output, vec_name, mat_name){
 
 fix_gmse_defaults <- function(arg_list, model){
     arg_names <- names(arg_list);
-    if( identical(model, resource) ){
+    if( identical(model, resource) == TRUE ){
         arg_list <- copy_args(arg_list, "RESOURCES", "resource_array");
     }
-    if( identical(model, observation) ){
+    if( identical(model, observation) == TRUE ){
         arg_list <- copy_args(arg_list, "OBSERVATION", "observation_array");
     }
-    if( identical(model, manager) ){
+    if( identical(model, manager) == TRUE ){
         arg_list <- copy_args(arg_list, "RESOURCES", "resource_array");
+        arg_list <- copy_args(arg_list, "COST", "manager_array");
     }
     return(arg_list);
 }
@@ -468,11 +469,27 @@ translate_results <- function(arg_list, output){
                 zcost  <- dim(arg_list$COST)[3];
                 arg_list$COST[1:length(thevec), 9, 2:zcost] <- thevec;
             }
-            if(TAC = TRUE){
-                # Need to convert from costs to total allowable catch, somehow
+            if(TAC == TRUE){
+                
             }
         }
         if(out_names[[i]] == "manager_array" | out_names[[i]] == "COSTS"){
+            TAC <- arg_list$TAC;
+            chk <- length(arg_list$ACTION[arg_list$ACTION[,1,1] == 1,1,1]);
+            if( chk != length(arg_list$manager_vector) ){
+                stop("manager model puts out too many resources in vec form");
+            }
+            if(TAC == FALSE){
+            #    rows                    <- which(arg_list$ACTION[, 1, 1] == 1);
+            #    arg_list$manager_vector <- arg_list$ACTION[rows, 1, 9];
+            }
+            if(TAC == TRUE){
+                rows                    <- which(arg_list$ACTION[, 1, 1] == 1);
+                mvec                    <- arg_list$ACTION[rows, 1, 5];
+                mvec[mvec < 0]          <- 0;
+                arg_list$manager_vector <- mvec;
+            }            
+            
             # Switch to the vector and add to arg_list
         }
         if(out_names[[i]] == "user_vector"){
