@@ -409,47 +409,26 @@ translate_results <- function(arg_list, output){
             typeNum <- length(floor(arg_list[[i]]));
             types   <- rep(x = 1:typeNum, times = arg_list[[i]]);
             res_arr[,2] <- types;
-            arr_pos  <- which(arg_names == "resource_array");
-            arg_list[[arr_pos]] <- res_arr;
+            arr_pos$resource_array <- res_arr;
         }
         if(out_names[[i]] == "resource_array" | out_names[[i]] == "RESOURCES"){
             typ_vec <- as.numeric(table(output[[i]][,2]));
-            vec_pos <- which(arg_names == "resource_vector");
-            arg_list[[vec_pos]] <- typ_vec;
+            arg_list$resource_vector <- typ_vec;
         }
         if(out_names[[i]] == "observation_vector"){
             obs_arr <- make_resource(); # Dummy, since we already have estimate
-            arr_pos <- which(arg_names == "observation_array");
-            arg_list[[arr_pos]] <- obs_arr;
-            if("PARAS" %in% arg_names == TRUE){
-                par_pos <- which(arg_names == "PARAS");
+            arg_list$observation_array <- obs_arr;
+            if("PARAS" %in% arg_names == FALSE){
+                stop("I can't find PARAS, and I need it");
             }
-            arg_list[[para_pos]][100] <- -1; # Tells manager to skip estimate
-            arg_list                  <- set_action_array(arg_list);
+            arg_list$PARAS[100] <- -1; # Tells manager to skip estimate
+            arg_list            <- set_action_array(arg_list);
             
             thetar  <- arg_list$ACTION[arg_list$ACTION[,1,1]==-2, 5, 1];
             theobs  <- arg_list$observation_vector;
             
             arg_list$ACTION[arg_list$ACTION[,1,1]==1, 5, 1] <- thetar - theobs;
-            
-            # Switch to the array and add to arg_list
-            # Will need to get the manager function in c to recognise paras
-            #     Do this by having a new 'hidden' observe_type = -1, which
-            #     just uses PARAS[100] (R) PARAS[99] c to define the estimated
-            #     abundance, then force whenever vector is returned
-            
-            # Put an if (obs_type >= 0) around lines 614-631 in manager.c
-            # If obs_type = -1, ACTIONS array will come into manager.c with the
-            # appropriate marginal utilities in the fourth column of the zero
-            # layer (fifth col and first layer in R). Add the target to 
-            # ACTION[1,5,1] (plus any other -2 values for different resource
-            # types). Add the marginal utility (too high or low) to
-            # ACTION[1,3,1] (again, with additional values for different
-            # resources -- check to ensure this doesn't crash). 
-            
-            # Remember that only culling is default, so this is good so that 
-            # other options will need to be forced by the gmse_apply user, as
-            # many of them won't make sense.
+            arg_list <- gmse_apply_build_cost(arg_list);
         }
         if(out_names[[i]] == "observation_array" | 
            out_names[[i]] == "OBSERVATIONS"         ){
@@ -480,6 +459,60 @@ translate_results <- function(arg_list, output){
     return(arg_list);
 }
 
+gmse_apply_build_cost <- function(arg_list){
+    arg_names <- names(arg_list);
+    if("COST" %in% arg_names == FALSE){
+        stop("I can't find a cost name, and I need to build the cost array");
+    }
+    if("AGENTS" %in% arg_names == FALSE | is.na(arg_list$AGENTS[1]) == TRUE){
+        stop("I can't find an agent array, and I need to build the cost array");
+    }
+    if("resource_array" %in% arg_names == FALSE |
+       is.na(arg_list$resource_array[1]) == TRUE){
+        stop("I can't find a resource_array, & I need to build the cost array");
+    }
+    scaring <- arg_list$GMSE$scaring;
+    if("scaring" %in% arg_names){
+        scaring <- arg_list$scaring;
+    }
+    culling <- arg_list$GMSE$culling;
+    if("culling" %in% arg_names){
+        culling <- arg_list$culling;
+    }
+    castration <- arg_list$GMSE$castration;
+    if("castration" %in% arg_names){
+        castration <- arg_list$castration;
+    }
+    feeding <- arg_list$GMSE$feeding;
+    if("feeding" %in% arg_names){
+        feeding <- arg_list$feeding;
+    }
+    help_offspring <- arg_list$GMSE$help_offspring;
+    if("help_offspring" %in% arg_names){
+        help_offspring <- arg_list$help_offspring;
+    }
+    tend_crops <- arg_list$GMSE$tend_crops;
+    if("tend_crops" %in% arg_names){
+        tend_crops <- arg_list$tend_crops;
+    }
+    kill_crops <- arg_list$GMSE$kill_crops;
+    if("kill_crops" %in% arg_names){
+        kill_crops <- arg_list$kill_crops;
+    }
+    minimum_cost <- arg_list$GMSE$minimum_cost;
+    if("minimum_cost" %in% arg_names){
+        minimum_cost <- arg_list$minimum_cost;
+    }
+    user_res_opts  <- c(scaring, culling, castration, feeding, help_offspring);
+    user_lnd_opts  <- c(tend_crops, kill_crops);
+    AGENTS         <- arg_list$AGENTS;
+    RESOURCES      <- arg_list$resource_array;
+    arg_list$COST  <- make_costs( AGENTS = AGENTS, RESOURCES = RESOURCES,
+                          res_opts = user_res_opts, lnd_opts = user_lnd_opts,
+                          min_cost = minimum_cost);
+    return(arg_list);
+}
+
 collect_agent_ini <- function(arg_list){
     make_age_list <- list();
     arg_names     <- names(arg_list);
@@ -489,31 +522,25 @@ collect_agent_ini <- function(arg_list){
     make_age_list[[2]] <- arg_list$GMSE$stakeholders + 1;
     make_age_list[[3]] <- c(1, arg_list$GMSE$stakeholders);
     if("stakeholders" %in% arg_names){
-        spos               <- which(arg_names == "stakeholders");
-        make_age_list[[2]] <- arg_list[[spos]] + 1;
-        make_age_list[[3]] <- c(1, arg_list[[spos]]);
+        make_age_list[[2]] <- arg_list$stakeholders + 1;
+        make_age_list[[3]] <- c(1, arg_list$stakeholders);
     }
     make_age_list[[4]] <- arg_list$GMSE$agent_move;
     if("agent_move" %in% arg_names){
-        apos               <- which(arg_names == "agent_move");
-        make_age_list[[4]] <- arg_list[[apos]];
+        make_age_list[[4]] <- arg_list$agent_move;
     }
     make_age_list[[5]] <- arg_list$GMSE$agent_view;
     if("agent_view" %in% arg_names){
-        apos               <- which(arg_names == "agent_view");
-        make_age_list[[5]] <- arg_list[[apos]];
+        make_age_list[[5]] <- arg_list$agent_view;
     }
     make_age_list[[6]] <- arg_list$GMSE$land_dim_1;
     if("land_dim_1" %in% arg_names){
-        apos               <- which(arg_names == "land_dim_1");
-        make_age_list[[6]] <- arg_list[[apos]];
+        make_age_list[[6]] <- arg_list$land_dim_1;
     }
     make_age_list[[7]] <- arg_list$GMSE$land_dim_2;
     if("land_dim_2" %in% arg_names){
-        apos               <- which(arg_names == "land_dim_2");
-        make_age_list[[7]] <- arg_list[[apos]];
+        make_age_list[[7]] <- arg_list$land_dim_2;
     }
-
     return(make_age_list);
 }
 
