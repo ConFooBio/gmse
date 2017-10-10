@@ -17,7 +17,8 @@
 gmse_apply <- function(res_mod  = resource, 
                        obs_mod  = observation, 
                        man_mod  = manager, 
-                       use_mod  = user, 
+                       use_mod  = user,
+                       TAC      = FALSE,
                        ...
                        ){
 
@@ -26,7 +27,8 @@ gmse_apply <- function(res_mod  = resource,
     std_paras      <- pass_paras(...);
     all_args       <- as.list(sys.call());
     all_args$PARAS <- std_paras$gmse_para_vect;
-    all_args$GMSE  <- formals(gmse); 
+    all_args$GMSE  <- formals(gmse);
+    all_args$TAC   <- TAC;
 
     needed_args <- argument_list(res_mod, obs_mod, man_mod, use_mod, all_args);
     arg_vals    <- needed_args$all_arg_values; 
@@ -59,7 +61,15 @@ gmse_apply <- function(res_mod  = resource,
     arg_vals    <- update_para_vec(arg_list   = arg_vals);
     
     # ------ MANAGER MODEL -----------------------------------------------------
-    
+    man_args    <- prep_man(arg_list = arg_vals, man_mod = man_mod);
+    check_args(arg_list = man_args, the_fun = man_mod);
+    man_results <- do.call(what = man_mod, args = man_args);
+    man_results <- check_name_results(output   = man_results, 
+                                      vec_name = "manager_vector", 
+                                      mat_name = "manager_array");
+    arg_vals    <- add_results(arg_list = arg_vals, output = man_results);
+    arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = man_mod);
+    arg_vals    <- translate_results(arg_list = arg_vals, output = man_results); # <--- LEFT OFF HERE
     
     return(arg_vals);    
 }
@@ -382,6 +392,9 @@ fix_gmse_defaults <- function(arg_list, model){
     if( identical(model, observation) ){
         arg_list <- copy_args(arg_list, "OBSERVATION", "observation_array");
     }
+    if( identical(model, manager) ){
+        arg_list <- copy_args(arg_list, "RESOURCES", "resource_array");
+    }
     return(arg_list);
 }
 
@@ -444,9 +457,20 @@ translate_results <- function(arg_list, output){
             arg_list <- gmse_apply_build_cost(arg_list);
         }
         if(out_names[[i]] == "manager_vector"){
-            # Switch to the array and add to arg_list. Insert costs (or 
-            #   converted cull abilities) into the relevant column of the COST
-            #   array for resource type 1? Maybe leave up to the user.
+            TAC <- arg_list$TAC;
+            chk <- length(arg_list$ACTION[arg_list$ACTION[,1,1] == 1,1,1]);
+            if( chk != length(arg_list$manager_vector) ){
+                stop("manager model puts out too many resources in vec form");
+            }
+            if(TAC == FALSE){
+                thevec <- arg_list$manager_vector;
+                arg_list$ACTION[arg_list$ACTION[,1,1] == 1, 9, 1] <- thevec;
+                zcost  <- dim(arg_list$COST)[3];
+                arg_list$COST[1:length(thevec), 9, 2:zcost] <- thevec;
+            }
+            if(TAC = TRUE){
+                # Need to convert from costs to total allowable catch, somehow
+            }
         }
         if(out_names[[i]] == "manager_array" | out_names[[i]] == "COSTS"){
             # Switch to the vector and add to arg_list
