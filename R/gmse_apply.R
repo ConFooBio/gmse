@@ -55,7 +55,10 @@ gmse_apply <- function(res_mod  = resource,
                                       mat_name = "observation_array");
     arg_vals    <- add_results(arg_list = arg_vals, output = obs_results);
     arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = obs_mod);
-    arg_vals    <- translate_results(arg_list = arg_vals, output = obs_results); # <- LEFT OFF HERE
+    arg_vals    <- translate_results(arg_list = arg_vals, output = obs_results);
+    arg_vals    <- update_para_vec(arg_list   = arg_vals);
+    
+    # ------ MANAGER MODEL -----------------------------------------------------
     
     
     return(arg_vals);    
@@ -315,7 +318,6 @@ collect_res_ini <- function(arg_list){
     }
     return(make_res_list);
 }
-
 
 collect_land_ini <- function(arg_list){
     make_lnd_list <- list();
@@ -637,7 +639,7 @@ add_obs_defaults <- function(arg_list){
     inter_tabl_pos <- which(arg_names == "inter_tabl");
     if(is.na(arg_list[[inter_tabl_pos]][1]) == TRUE){
         ditbarg <- collect_itb_ini(arg_list);
-        ini_itb <- do.call(what = make_interaction_array, args = ditbarg);
+        ini_itb <- do.call(what = make_interaction_table, args = ditbarg);
         arg_list[[inter_tabl_pos]] <- ini_itb;
     }
     fm_pos <- which(arg_names == "fix_mark");
@@ -711,9 +713,8 @@ prep_obs <- function(arg_list, obs_mod){
 update_para_vec <- function(arg_list){
     arg_name <- names(arg_list);
     if("PARAS" %in% arg_name == TRUE){
-        par_pos <- which(arg_name == "PARAS");
-        res_pos <- which(arg_name == "resource_vector");
-        arg_list[[par_pos]][33] <- floor(sum(arg_list[[res_pos]]));
+        arg_list$PARAS[33]  <- floor(sum(arg_list$resource_vector));
+        arg_list$PARAS[100] <- arg_list$observation_vector[1];
     }
     return(arg_list);
 }
@@ -756,12 +757,10 @@ set_action_array <- function(arg_list){
         mbpos          <- which(arg_name == "manager_budget");
         manager_budget <- arg_list[[mbpos]];
     }
-    
     stakeholder_rows             <- 2:dim(ACTION)[3];
     manager_row                  <- 1;
     ACTION[1, 5, manager_row]    <- manage_target;
     ACTION[3, 5:7 , manager_row] <- 0;
-
     if(land_ownership == TRUE){ # Set up utilities for land owning farmers
         ACTION[1, 5, stakeholder_rows]   <- 0;
         ACTION[2, 5, stakeholder_rows]   <- 100;
@@ -771,10 +770,8 @@ set_action_array <- function(arg_list){
         ACTION[1, 5, stakeholder_rows]   <- -1;
         ACTION[2, 5, stakeholder_rows]   <- 0;
     }
-
     arg_list[[agent_pos]][,17]     <- user_budget;
     arg_list[[agent_pos]][1,17]    <- manager_budget;
-    
     if("ACTION" %in% arg_name){
         act_pos <- which(arg_name == "ACTION");
     }
@@ -782,6 +779,135 @@ set_action_array <- function(arg_list){
     
     return(arg_list);
 }
+
+
+
+
+
+set_interaction_array <- function(arg_list);
+
+
+
+     do.call(what = make_interaction_table, args = ditbarg);
+     make_utilities( AGENTS = AGENTS, RESOURCES = starting_resources);
+}
+
+
+
+
+
+
+
+
+
+prep_man <- function(arg_list, man_mod){
+    if( identical(man_mod, manager) == TRUE ){
+        arg_list <- add_man_defaults(arg_list);
+    }
+    
+    
+    
+    
+    obs_args <- list();
+    arg_name <- names(arg_list);
+    obs_take <- formals(obs_mod);
+    obs_take <- obs_take[names(obs_take) != "..."];
+    obs_name <- names(obs_take);
+    for(arg in 1:length(obs_take)){
+        arg_pos         <- which(obs_name[arg] == arg_name);
+        obs_args[[arg]] <- arg_list[[arg_pos]];
+    }
+    names(obs_args) <- obs_name;
+    return(obs_args);
+}
+
+
+add_man_defaults <- function(arg_list){
+    arg_names <- names(arg_list);
+    res_pos   <- which(arg_names == "RESOURCES");
+    arr_pos   <- which(arg_names == "resource_array");
+    if(is.na(arg_list[[arr_pos]][1]) == FALSE){
+        arg_list <- copy_args(arg_list = arg_list, from = "resource_array",
+                              to = "RESOURCES");
+    }
+    if(is.na(arg_list[[res_pos]][1]) == TRUE){
+        dresarg <- collect_res_ini(arg_list);
+        ini_res <- do.call(what = make_resource, args = dresarg);
+        arg_list[[res_pos]] <- ini_res;
+    }
+    para_pos  <- which(arg_names == "PARAS");
+    if(is.na(arg_list[[para_pos]][1]) == TRUE){
+        stop("I can't find a vector of parameters that should be initialised
+              by default -- something has gone very wrong");
+    }
+    land_pos  <- which(arg_names == "LAND");
+    if(is.na(arg_list[[land_pos]][1]) == TRUE){
+        dlndarg  <- collect_land_ini(arg_list);
+        ini_land <- do.call(what = make_landscape, args = dlndarg);
+        arg_list[[land_pos]] <- ini_land;
+    }
+    agent_pos <- which(arg_names == "AGENTS");
+    if(is.na(arg_list[[agent_pos]][1]) == TRUE){
+        dagearg <- collect_agent_ini(arg_list);
+        ini_age <- do.call(what = make_agents, args = dagearg);
+        arg_list[[agent_pos]] <- ini_age;
+    }
+    cost_pos <- which(arg_names == "COST");
+    if(is.na(arg_list[[cost_pos]][1]) == TRUE){
+        arg_list <- gmse_apply_build_cost(arg_list);
+    }
+    act_pos  <- which(arg_names == "ACTION");
+    if(is.na(arg_list[[act_pos]][1]) == TRUE){
+        arg_list <- set_action_array(arg_list);
+    }
+    jac_pos  <- which(arg_names == "INTERACT");
+    
+    
+    
+    inter_tabl_pos <- which(arg_names == "inter_tabl");
+    if(is.na(arg_list[[inter_tabl_pos]][1]) == TRUE){
+        ditbarg <- collect_itb_ini(arg_list);
+        ini_itb <- do.call(what = make_interaction_array, args = ditbarg);
+        arg_list[[inter_tabl_pos]] <- ini_itb;
+    }
+    fm_pos <- which(arg_names == "fix_mark");
+    if(is.na(arg_list[[fm_pos]][1]) == TRUE){
+        arg_list[[fm_pos]][1] <- arg_list$GMSE$fix_mark;
+    }
+    tm_pos <- which(arg_names == "times");
+    if(is.na(arg_list[[tm_pos]][1]) == TRUE){
+        arg_list[[tm_pos]][1] <- arg_list$GMSE$times_observe;
+    }
+    sm_pos <- which(arg_names == "samp_age");
+    if(is.na(arg_list[[sm_pos]][1]) == TRUE){
+        arg_list[[sm_pos]][1] <- arg_list$GMSE$res_min_age;
+    }
+    aty_pos <- which(arg_names == "agent_type");
+    if(is.na(arg_list[[aty_pos]][1]) == TRUE){
+        arg_list[[aty_pos]][1] <- 0;
+    }
+    tca_pos <- which(arg_names == "type_cat");
+    if(is.na(arg_list[[tca_pos]][1]) == TRUE){
+        arg_list[[tca_pos]][1] <- 1;
+    }
+    ot_pos <- which(arg_names == "obs_method");
+    if(is.na(arg_list[[ot_pos]][1]) == TRUE){
+        arg_list[[ot_pos]][1] <- arg_list$GMSE$observe_type;
+    }
+    rmo_pos <- which(arg_names == "move_res");
+    if(is.na(arg_list[[rmo_pos]][1]) == TRUE){
+        arg_list[[rmo_pos]][1] <- arg_list$GMSE$res_move_obs;
+    }
+    mod_pos <- which(arg_names == "model");
+    if(is.na(arg_list[[mod_pos]][1]) == TRUE){
+        arg_list[[mod_pos]][1] <- "IBM";
+    }
+    arg_list <- double_check_obs_type(arg_list);
+    
+    return(arg_list);
+}
+
+
 
 ################################################################################
 ################################################################################
