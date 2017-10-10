@@ -423,23 +423,23 @@ translate_results <- function(arg_list, output){
             }
             arg_list$PARAS[9]   <- -1; # Tells manager to skip estimate
             arg_list            <- set_action_array(arg_list);
-            
             thetar  <- arg_list$ACTION[arg_list$ACTION[,1,1]==-2, 5, 1];
             theobs  <- arg_list$observation_vector;
-            
             arg_list$ACTION[arg_list$ACTION[,1,1]==1, 5, 1] <- thetar - theobs;
             arg_list <- gmse_apply_build_cost(arg_list);
         }
         if(out_names[[i]] == "observation_array" | 
-           out_names[[i]] == "OBSERVATIONS"         ){
-            # Switch to the vector and add to arg_list
-            # Will need to run a function to estimate population size and
-            #    return the appropriate vector from the estimate
-            
-            # This can be done by writing a function that recreates what's going
-            # on in the first 274 lines of manager.c (some of this is already
-            # available in the plotting function. In addition to the vector,
-            # The estimate should also be added to PARAS[100]
+           out_names[[i]] == "OBSERVATION"         ){
+            if("PARAS" %in% arg_names == FALSE){
+                stop("I can't find PARAS, and I need it");
+            }
+            arg_list <- estimate_abundances(arg_list);
+            arg_list$PARAS[9]   <- -1; # Tells manager to skip estimate
+            arg_list            <- set_action_array(arg_list);
+            thetar  <- arg_list$ACTION[arg_list$ACTION[,1,1]==-2, 5, 1];
+            theobs  <- arg_list$observation_vector;
+            arg_list$ACTION[arg_list$ACTION[,1,1]==1, 5, 1] <- thetar - theobs;
+            arg_list <- gmse_apply_build_cost(arg_list);
         }
         if(out_names[[i]] == "manager_vector"){
             # Switch to the array and add to arg_list. Insert costs (or 
@@ -513,6 +513,41 @@ gmse_apply_build_cost <- function(arg_list){
     return(arg_list);
 }
 
+estimate_abundances <- function(arg_list){
+    if(is.na(arg_list$AGENTS[1]) == FALSE){
+        view <- arg_list$GMSE_agent;
+    }
+    if(is.na(arg_list$LAND[1]) == TRUE){
+        dlndarg        <- collect_land_ini(arg_list);
+        arg_list$LAND  <- do.call(what = make_landscape, args = dlndarg);
+    }
+    if(is.na(arg_list$AGENTS[1]) == TRUE){
+        dagearg         <- collect_agent_ini(arg_list);
+        arg_list$AGENTS <- do.call(what = make_agents, args = dagearg);    
+    }
+    observations <- arg_list$observation_array;
+    paras        <- arg_list$PARAS;
+    land         <- arg_list$LAND;
+    view         <- arg_list$AGENTS[1, 9];
+    obs_method   <- paras[9];
+    est          <- NA;
+    if(obs_method == 0){
+        est <- dens_est(observations, paras, view, land)$Nc;
+    }
+    if(obs_method == 1){
+        est <- chapman_est(observations, paras);
+    }
+    if(obs_method == 2 | obs_method == 3){
+        est <- sum(observations[,13]);
+    }
+    if(is.na(est[1]) == TRUE){
+        stop("I couldn't estimate population; check observe_type?");
+    }
+    arg_list$PARAS[100]         <- est;
+    arg_list$observation_vector <- est;
+    return(arg_list);
+}
+
 collect_agent_ini <- function(arg_list){
     make_age_list <- list();
     arg_names     <- names(arg_list);
@@ -551,8 +586,7 @@ collect_itb_ini <- function(arg_list){
     def_names     <- names(def_forms);
     make_itb_list[[1]] <- NA;
     if("resource_array" %in% arg_names == TRUE){
-        rpos               <- which(arg_names == "resource_array");
-        make_itb_list[[1]] <- arg_list[[rpos]];
+        make_itb_list[[1]] <- arg_list$resource_array;
     }
     if(is.na(make_itb_list[[1]][1]) == TRUE){
         dresarg            <- collect_res_ini(arg_list);
@@ -560,8 +594,7 @@ collect_itb_ini <- function(arg_list){
     }
     make_itb_list[[2]] <- NA;
     if("LAND" %in% arg_names == TRUE){
-        lpos               <- which(arg_names == "LAND");
-        make_itb_list[[2]] <- arg_list[[lpos]];
+        make_itb_list[[2]] <- arg_list$LAND;
     }
     if(is.na(make_itb_list[[2]][1]) == TRUE){
         dlndarg            <- collect_land_ini(arg_list);
