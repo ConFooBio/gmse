@@ -409,7 +409,7 @@ translate_results <- function(arg_list, output){
             typeNum <- length(floor(arg_list[[i]]));
             types   <- rep(x = 1:typeNum, times = arg_list[[i]]);
             res_arr[,2] <- types;
-            arr_pos$resource_array <- res_arr;
+            arg_list$resource_array <- res_arr;
         }
         if(out_names[[i]] == "resource_array" | out_names[[i]] == "RESOURCES"){
             typ_vec <- as.numeric(table(output[[i]][,2]));
@@ -421,7 +421,7 @@ translate_results <- function(arg_list, output){
             if("PARAS" %in% arg_names == FALSE){
                 stop("I can't find PARAS, and I need it");
             }
-            arg_list$PARAS[100] <- -1; # Tells manager to skip estimate
+            arg_list$PARAS[9]   <- -1; # Tells manager to skip estimate
             arg_list            <- set_action_array(arg_list);
             
             thetar  <- arg_list$ACTION[arg_list$ACTION[,1,1]==-2, 5, 1];
