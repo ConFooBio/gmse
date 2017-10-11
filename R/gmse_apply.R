@@ -503,19 +503,17 @@ translate_results <- function(arg_list, output){
             arg_list$manager_vector <- arg_list$ACTION[rows, 9, 1];
         }
         if(out_names[[i]] == "user_vector"){
-            if(!is.na(arg_list$user_array[1]) == TRUE){
-                arg_list$user_array <- set_action_array(arg_list);
+            if(is.na(arg_list$user_array)[1] == TRUE){
+                arg_list <- set_action_array(arg_list);
             }
-            divuser <- arg_list$user_vector / dim(user_array)[3];
+            divuser <- arg_list$user_vector / dim(arg_list$user_array)[3];
             rows    <- which(arg_list$user_array[,1,1] == -2);
-            arg_list$user_array[rows, 9, ] <- divuser;
+            arg_list$user_array[rows, 9, ] <- floor(divuser);
         }
         if(out_names[[i]] == "user_array" | out_names[[i]] == "ACTION"){
-            
-            
-            
-            
-            
+            if(is.na(arg_list$user_array)[1] == TRUE){
+                arg_list <- set_action_array(arg_list);
+            }
             u_out <- arg_list$user_array;
             rows  <- which(u_out[,1,1] == -2);
             acts  <- u_out[rows, 9, ];
