@@ -5,9 +5,9 @@
 \title{Observation model}
 \usage{
 observation(RESOURCES = NULL, LAND = NULL, PARAS = NULL, AGENTS = NULL,
-  inter_tabl = NULL, fix_mark = FALSE, times = 1, samp_age = 1,
+  inter_tabl = NULL, fix_mark = FALSE, times = 1, samp_age = 0,
   agent_type = 0, type_cat = 1, obs_method = 0, move_res = FALSE,
-  model = "IBM", ...)
+  model = "IBM")
 }
 \arguments{
 \item{RESOURCES}{The resources array produced by the resource function within GMSE}

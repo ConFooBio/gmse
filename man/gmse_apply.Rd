@@ -2,19 +2,33 @@
 % Please edit documentation in R/gmse_apply.R
 \name{gmse_apply}
 \alias{gmse_apply}
-\title{GMSE apply simulation}
+\title{GMSE apply function}
 \usage{
-gmse_apply(time_max = 100)
+gmse_apply(res_mod = resource, obs_mod = observation, man_mod = manager,
+  use_mod = user, get_res = "basic", ...)
 }
 \arguments{
-\item{time_max}{This value sets the maximum number of time steps for a simulation. There are no constraints for length of time that a simulation can run. The default is 100 time steps.}
+\item{res_mod}{The function specifying the resource model. By default, the individual-based resource model from gmse is called with default parameter values. User-defined functions must either return an unnamed matrix or vector, or return a named list in which one list element is named either 'resource_array' or 'resource_vector', and arrays must follow the format of GMSE in terms of column number and type (if there is only one resource type, then the model can also just return a scalar value).}
+
+\item{obs_mod}{The function specifying the observation model. By default, the individual-based observation model from gmse is called with default parameter values. User-defined functions must either return an unnamed matrix or vector, or return a named list in which one list element is named either 'observation_array' or 'observation_vector', and arrays must follow the format of GMSE in terms of column number and type  (if there is only one resource type, then the model can also just return a scalar value).}
+
+\item{man_mod}{The function specifying the manager model. By default, the individual-based manager model that calls the genetic algorithm from gmse is used with default parameter values. User-defined functions must either return an unnamed matrix or vector, or return a named list in which one list element is named either 'manager_array' or 'manager_vector', and arrays must follow the (3 dimensional) format of the 'COST' array in GMSE in terms of column numbers and types, with appropriate rows for interactions and layers for agents (see documentation of GMSE for constructing these, if desired). User defined manager outputs will be recognised as costs by the default user model in gmse, but can be interpreted differently (e.g., total allowable catch) if specifying a custom user model.}
+
+\item{use_mod}{The function specifying the user model. By default, the individual-based user model that calls the genetic algorithm from gmse is used with default parameter values. User-defined functions must either return an unnamed matrix or vector, or return a named list in which one list element is named either 'user_array' or 'user_vector', and arrays must follow the (3 dimensional) format of the 'ACTION' array in GMSE in terms of column numbers and types, with appropriate rows for interactions and layers for agents (see documentation of GMSE for constructing these, if desired).}
+
+\item{...}{Arguments passed to user-defined functions, and passed to modify default parameter values that would otherwise be called for gmse default models. Any argument that can be passed to gmse can be specified explicitly, just as if it were an argument to gmse. Similarly, any argument taken by a user-defined function should be specified, though the function will work if the user-defined function has a default that is not specified explicitly.}
 }
 \description{
-The gmse function is the the primary function to call to run a simulation.
-It calls other functions that run resource, observation, management, and user
-models in each time step. Hence while individual models can be used on their
-own, gmse() is really all that is needed to run a simulation.
+The gmse_apply function is a flexible function that allows for user-defined
+sub-functions calling resource, observation, manager, and user models. Where
+such models are not specified, GMSE models resource, observation, manager, 
+and user are run by default. Any type of sub-model (e.g., numerical,
+individual-based) is permitted as long as the input and output are
+are appropriately specified. Only one time step is simulated per call to
+gmse_apply, so the function must be looped for simulation over time. Where
+model parameters are needed but not specified, defaults from gmse are used.
 }
 \examples{
-sim <- gmse_apply(time_max = 100);
+sim <- gmse_apply();
+sim <- gmse_apply(stakeholders = 2);
 }

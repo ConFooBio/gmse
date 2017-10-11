@@ -4,9 +4,9 @@
 \alias{make_landscape}
 \title{Landscape initialisation}
 \usage{
-make_landscape(model, rows, cols, cell_types, cell_val_mn, cell_val_sd,
-  cell_val_max = 1, cell_val_min = 0, layers = 3, ownership = 0,
-  owner_pr = NULL)
+make_landscape(model, rows, cols, cell_types = 1, cell_val_mn = 1,
+  cell_val_sd = 0, cell_val_max = 1, cell_val_min = 0, layers = 3,
+  ownership = 0, owner_pr = NULL)
 }
 \arguments{
 \item{model}{The type of model being applied (Currently only individual-based

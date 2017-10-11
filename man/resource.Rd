@@ -4,8 +4,7 @@
 \alias{resource}
 \title{Resource model}
 \usage{
-resource(RESOURCES = NULL, LAND = NULL, PARAS = NULL, model = "IBM",
-  ...)
+resource(RESOURCES = NULL, LAND = NULL, PARAS = NULL, model = "IBM")
 }
 \arguments{
 \item{RESOURCES}{The resources array produced by the resource function within GMSE}
@@ -16,8 +15,6 @@ resource(RESOURCES = NULL, LAND = NULL, PARAS = NULL, model = "IBM",
 
 \item{model}{The type of model being applied (Currently only individual-based
 -- i.e., 'agent-based' -- models are allowed)}
-
-\item{...}{Other arguments to be passed to a user-defined model}
 }
 \value{
 The resource function outputs an R list that includes three separate arrays, including (1) an new RESOURCES array, (2) a new LAND array, (3) a new PARAS array, each of which might be affected by the user function. The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the observation, management, and user models.
