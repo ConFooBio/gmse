@@ -1,12 +1,18 @@
-#' GMSE apply simulation
+#' GMSE apply function
 #' 
-#' The gmse function is the the primary function to call to run a simulation.
-#' It calls other functions that run resource, observation, management, and user
-#' models in each time step. Hence while individual models can be used on their
-#' own, gmse() is really all that is needed to run a simulation. 
+#' The gmse_apply function is a flexible function that allows for user-defined
+#' sub-functions calling resource, observation, manager, and user models. Where
+#' such models are not specified, GMSE models resource, observation, manager, 
+#' and user are run by default. Any type of sub-model (e.g., numerical,
+#' individual-based) is permitted as long as the input and output are
+#' are appropriately specified. Only one time step is simulated per call to
+#' gmse_apply, so the function must be looped for simulation over time. Where
+#' model parameters are needed but not specified, defaults from gmse are used.
 #'
 #' 
-#'@param time_max This value sets the maximum number of time steps for a simulation. There are no constraints for length of time that a simulation can run. The default is 100 time steps.
+#'@param res_mod The function specifying the resource model. By default, the
+#'individual-based resource model from gmse is called with default parameter
+#'values. User-defined functions must
 #'@examples
 #'sim <- gmse_apply(time_max = 100);
 #'@useDynLib GMSE
@@ -34,9 +40,9 @@ gmse_apply <- function(res_mod  = resource,
     arg_name    <- needed_args$all_arg_names;
     
     names(arg_vals) <- arg_name;
-
+    
     # ------ RESOURCE MODEL ----------------------------------------------------
-    res_args <- prep_res(arg_list = arg_vals, res_mod = res_mod)
+    res_args <- prep_res(arg_list = arg_vals, res_mod = res_mod);
     check_args(arg_list = res_args, the_fun = res_mod);
     res_results <- do.call(what = res_mod, args = res_args);
     res_results <- check_name_results(output   = res_results, 
@@ -51,7 +57,7 @@ gmse_apply <- function(res_mod  = resource,
     obs_args <- prep_obs(arg_list = arg_vals, obs_mod = obs_mod);
     check_args(arg_list = obs_args, the_fun = obs_mod);
     obs_results <- do.call(what = obs_mod, args = obs_args);
-    obs_results <- check_name_results(output   = obs_results, 
+    obs_results <- check_name_results(output   = obs_results,
                                       vec_name = "observation_vector", 
                                       mat_name = "observation_array");
     arg_vals    <- add_results(arg_list = arg_vals, output = obs_results);
@@ -384,8 +390,9 @@ copy_args <- function(arg_list, from, to){
     return(arg_list);
 }
 
-check_name_results <- function(output, vec_name, mat_name){
-    outname <- names(output);
+check_name_results <- function(output, vec_name, mat_name, the_fun){
+    outname       <- names(output);
+    which_fun     <- deparse(substitute(the_fun));
     if(is.null(outname) == TRUE){
         if(is.vector(output[[1]]) == TRUE){
             names(output)[[1]] <- vec_name;
@@ -393,6 +400,22 @@ check_name_results <- function(output, vec_name, mat_name){
         if(is.matrix(output[[1]]) == TRUE){
             names(output)[[1]] <- mat_name;
         }
+    }
+    accepted <- c("resource_vector", "resource_array", "observation_vector",
+                  "observation_array", "manager_vector", "manager_array",
+                  "user_vector", "user_array", "RESOURCES", "OBSERVATION",
+                  "COST", "ACTION");
+    error <- TRUE;
+    for(i in 1:length(output)){
+        if(names(output)[i] %in% accepted){
+            error <- FALSE;
+        }
+    }
+    if(error == TRUE){
+        emess <- paste("ERROR: I can't make sense of the output of the output
+                       from the function ", which_fun, "-- Need to either have
+                       no name, or clearly label as described in docs");
+        stop(emess);
     }
     return(output);
 }
@@ -443,10 +466,10 @@ translate_results <- function(arg_list, output){
             arg_list[[rep_pos]] <- output[[i]];
         }
         if(out_names[[i]] == "resource_vector"){
-            tot_res <- sum(arg_list[[i]]);
+            tot_res <- floor(output[[i]]);
             res_arr <- make_resource(resource_quantity = tot_res);
-            typeNum <- length(floor(arg_list[[i]]));
-            types   <- rep(x = 1:typeNum, times = arg_list[[i]]);
+            typeNum <- length(output[[i]]);
+            types   <- rep(x = 1:typeNum, times = output[[i]]);
             res_arr[,2] <- types;
             arg_list$resource_array <- res_arr;
         }
