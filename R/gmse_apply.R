@@ -531,7 +531,8 @@ translate_results <- function(arg_list, output){
 gmse_apply_build_cost <- function(arg_list){
     arg_names <- names(arg_list);
     if("COST" %in% arg_names == FALSE){
-        stop("I can't find a cost name, and I need to build the cost array");
+        arg_list$COST <- NA;
+        arg_names     <- names(arg_list);
     }
     if("AGENTS" %in% arg_names == FALSE | is.na(arg_list$AGENTS[1]) == TRUE){
         stop("I can't find an agent array, and I need to build the cost array");
@@ -788,14 +789,13 @@ update_para_vec <- function(arg_list){
 
 set_action_array <- function(arg_list){
     arg_name <- names(arg_list);
-    if("AGENTS" %in% arg_name){
-        agent_pos <- which(arg_name == "AGENTS");
+    if("AGENTS" %in% arg_name == FALSE){
+        dagearg         <- collect_agent_ini(arg_list);
+        ini_age         <- do.call(what = make_agents, args = dagearg);
+        arg_list$AGENTS <- ini_age;
+        arg_name        <- names(arg_list);
     }
-    if(is.na(arg_list[[agent_pos]][1]) == TRUE){
-        dagearg <- collect_agent_ini(arg_list);
-        ini_age <- do.call(what = make_agents, args = dagearg);
-        arg_list[[agent_pos]] <- ini_age;
-    }
+    agent_pos <- which(arg_name == "AGENTS");
     res_pos   <- which(arg_name == "resource_array");
     if(is.na(arg_list[[res_pos]][1]) == TRUE){
         dresarg <- collect_res_ini(arg_list);
@@ -839,10 +839,7 @@ set_action_array <- function(arg_list){
     }
     arg_list[[agent_pos]][,17]     <- user_budget;
     arg_list[[agent_pos]][1,17]    <- manager_budget;
-    if("ACTION" %in% arg_name){
-        act_pos <- which(arg_name == "ACTION");
-    }
-    arg_list[[act_pos]] <- ACTION;
+    arg_list$ACTION                <- ACTION;
     
     return(arg_list);
 }
