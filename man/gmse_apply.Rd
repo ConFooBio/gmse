@@ -16,6 +16,8 @@ gmse_apply(res_mod = resource, obs_mod = observation, man_mod = manager,
 
 \item{use_mod}{The function specifying the user model. By default, the individual-based user model that calls the genetic algorithm from gmse is used with default parameter values. User-defined functions must either return an unnamed matrix or vector, or return a named list in which one list element is named either 'user_array' or 'user_vector', and arrays must follow the (3 dimensional) format of the 'ACTION' array in GMSE in terms of column numbers and types, with appropriate rows for interactions and layers for agents (see documentation of GMSE for constructing these, if desired).}
 
+\item{get_res}{How the output should be organised. The default 'basic' attempts to distill results down to their key values from submodel outputs, including resource abundances and estimates, and manager policy and actions. An option 'custom' simply returns a large list that includes the output of every submodel. Any other option (e.g. 'none') will return a massive list with all of the input, output, and parameters used to run gmse_apply.}
+
 \item{...}{Arguments passed to user-defined functions, and passed to modify default parameter values that would otherwise be called for gmse default models. Any argument that can be passed to gmse can be specified explicitly, just as if it were an argument to gmse. Similarly, any argument taken by a user-defined function should be specified, though the function will work if the user-defined function has a default that is not specified explicitly.}
 }
 \description{
