@@ -470,7 +470,17 @@ translate_results <- function(arg_list, output){
                 arg_list$COST[1:length(thevec), 9, 2:zcost] <- thevec;
             }
             if(TAC == TRUE){
-                
+                thevec <- arg_list$manager_vector;
+                agent_pos <- which(arg_names == "AGENTS");
+                if(is.na(arg_list[[agent_pos]][1]) == TRUE){
+                    dagearg <- collect_agent_ini(arg_list);
+                    ini_age <- do.call(what = make_agents, args = dagearg);
+                    arg_list[[agent_pos]] <- ini_age;
+                }
+                users        <- arg_list$AGENTS[arg_list$AGENTS[,2] > 0];
+                user_budgets <- sum(users[,17]);
+                TAC_per_user <- floor( the_vec / dim(users)[1] );
+                                                    
             }
         }
         if(out_names[[i]] == "manager_array" | out_names[[i]] == "COSTS"){
