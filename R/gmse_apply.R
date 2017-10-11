@@ -70,9 +70,10 @@ gmse_apply <- function(res_mod  = resource,
     arg_vals    <- translate_results(arg_list = arg_vals, output = man_results);
     arg_vals    <- update_para_vec(arg_list   = arg_vals);
     
+    # ------ USER MODEL --------------------------------------------------------
+    usr_args    <- prep_usr(arg_list = arg_vals, usr_mod = usr_mod);
     
-    
-    return(arg_vals);    
+    return(usr_args);    
 }
 
 ################################################################################
@@ -907,6 +908,86 @@ set_interaction_array <- function(arg_list){
     }
     return(arg_list);
 }
+
+prep_usr <- function(arg_list, usr_mod){
+    if( identical(usr_mod, user) == TRUE ){
+        arg_list <- add_usr_defaults(arg_list);
+    }
+    usr_args <- list();
+    arg_name <- names(arg_list);
+    usr_take <- formals(usr_mod);
+    usr_take <- usr_take[names(usr_take) != "..."];
+    usr_name <- names(usr_take);
+    for(arg in 1:length(usr_take)){
+        arg_pos         <- which(usr_name[arg] == arg_name);
+        usr_args[[arg]] <- arg_list[[arg_pos]];
+    }
+    names(usr_args) <- usr_name;
+    return(usr_args);
+}
+
+add_usr_defaults <- function(arg_list){
+    arg_names <- names(arg_list);
+    res_pos   <- which(arg_names == "RESOURCES");
+    arr_pos   <- which(arg_names == "resource_array");
+    if(is.na(arg_list[[arr_pos]][1]) == FALSE){
+        arg_list <- copy_args(arg_list = arg_list, from = "resource_array",
+                              to = "RESOURCES");
+    }
+    if(is.na(arg_list[[res_pos]][1]) == TRUE){
+        dresarg <- collect_res_ini(arg_list);
+        ini_res <- do.call(what = make_resource, args = dresarg);
+        arg_list[[res_pos]] <- ini_res;
+    }
+    para_pos  <- which(arg_names == "PARAS");
+    if(is.na(arg_list[[para_pos]][1]) == TRUE){
+        stop("I can't find a vector of parameters that should be initialised
+              by default -- something has gone very wrong");
+    }
+    land_pos  <- which(arg_names == "LAND");
+    if(is.na(arg_list[[land_pos]][1]) == TRUE){
+        dlndarg  <- collect_land_ini(arg_list);
+        ini_land <- do.call(what = make_landscape, args = dlndarg);
+        arg_list[[land_pos]] <- ini_land;
+    }
+    agent_pos <- which(arg_names == "AGENTS");
+    if(is.na(arg_list[[agent_pos]][1]) == TRUE){
+        dagearg <- collect_agent_ini(arg_list);
+        ini_age <- do.call(what = make_agents, args = dagearg);
+        arg_list[[agent_pos]] <- ini_age;
+    }
+    cost_pos <- which(arg_names == "COST");
+    mana_pos <- which(arg_names == "manager_array");
+    if(is.na(arg_list)[[mana_pos]][1] == FALSE){
+        arg_list <- copy_args(arg_list = arg_list, from = "manager_array",
+                              to = "COST");
+    }
+    if(is.na(arg_list[[cost_pos]][1]) == TRUE){
+        arg_list <- gmse_apply_build_cost(arg_list);
+    }
+    act_pos  <- which(arg_names == "ACTION");
+    if(is.na(arg_list[[act_pos]][1]) == TRUE){
+        arg_list <- set_action_array(arg_list);
+    }
+    jac_pos  <- which(arg_names == "INTERACT");
+    if(is.na(arg_list[[jac_pos]][1]) == TRUE){
+        arg_list <- set_interaction_array(arg_list);
+    }
+    inter_tabl_pos <- which(arg_names == "inter_tabl");
+    if(is.na(arg_list[[inter_tabl_pos]][1]) == TRUE){
+        ditbarg <- collect_itb_ini(arg_list);
+        ini_itb <- do.call(what = make_interaction_table, args = ditbarg);
+        arg_list[[inter_tabl_pos]] <- ini_itb;
+    }
+    mod_pos <- which(arg_names == "model");
+    if(is.na(arg_list[[mod_pos]][1]) == TRUE){
+        arg_list[[mod_pos]][1] <- "IBM";
+    }
+    return(arg_list);
+}
+
+
+
 
 ################################################################################
 ################################################################################
