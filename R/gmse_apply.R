@@ -18,7 +18,6 @@ gmse_apply <- function(res_mod  = resource,
                        obs_mod  = observation, 
                        man_mod  = manager, 
                        use_mod  = user,
-                       TAC      = FALSE,
                        ...
                        ){
 
@@ -28,7 +27,6 @@ gmse_apply <- function(res_mod  = resource,
     all_args       <- as.list(sys.call());
     all_args$PARAS <- std_paras$gmse_para_vect;
     all_args$GMSE  <- formals(gmse);
-    all_args$TAC   <- TAC;
 
     needed_args <- argument_list(res_mod, obs_mod, man_mod, use_mod, all_args);
     arg_vals    <- needed_args$all_arg_values; 
@@ -69,7 +67,10 @@ gmse_apply <- function(res_mod  = resource,
                                       mat_name = "manager_array");
     arg_vals    <- add_results(arg_list = arg_vals, output = man_results);
     arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = man_mod);
-    arg_vals    <- translate_results(arg_list = arg_vals, output = man_results); # <--- LEFT OFF HERE
+    arg_vals    <- translate_results(arg_list = arg_vals, output = man_results);
+    arg_vals    <- update_para_vec(arg_list   = arg_vals);
+    
+    
     
     return(arg_vals);    
 }
@@ -406,6 +407,10 @@ add_results <- function(arg_list, output){
         if(out_names[[i]] %in% arg_names == TRUE){
             rep_pos <- which(arg_names == out_names[[i]]);
             arg_list[[rep_pos]] <- output[[i]];
+        }else{
+            arg_list_length                    <- length(arg_list) + 1;
+            arg_list[[arg_list_length]]        <- output[[i]];
+            names(arg_list)[[arg_list_length]] <- out_names[[i]];
         }
     }
     return(arg_list);
@@ -458,49 +463,30 @@ translate_results <- function(arg_list, output){
             arg_list <- gmse_apply_build_cost(arg_list);
         }
         if(out_names[[i]] == "manager_vector"){
-            TAC <- arg_list$TAC;
-            chk <- length(arg_list$ACTION[arg_list$ACTION[,1,1] == 1,1,1]);
-            if( chk != length(arg_list$manager_vector) ){
-                stop("manager model puts out too many resources in vec form");
-            }
-            if(TAC == FALSE){
-                thevec <- arg_list$manager_vector;
+            thevec <- arg_list$manager_vector;
+            if("ACTION" %in% arg_names){
                 arg_list$ACTION[arg_list$ACTION[,1,1] == 1, 9, 1] <- thevec;
+                arg_list <- copy_args(arg_list, "ACTION", "user_array");
+            }
+            if("COST" %in% arg_names){
                 zcost  <- dim(arg_list$COST)[3];
                 arg_list$COST[1:length(thevec), 9, 2:zcost] <- thevec;
-            }
-            if(TAC == TRUE){
-                thevec <- arg_list$manager_vector;
-                agent_pos <- which(arg_names == "AGENTS");
-                if(is.na(arg_list[[agent_pos]][1]) == TRUE){
-                    dagearg <- collect_agent_ini(arg_list);
-                    ini_age <- do.call(what = make_agents, args = dagearg);
-                    arg_list[[agent_pos]] <- ini_age;
-                }
-                users        <- arg_list$AGENTS[arg_list$AGENTS[,2] > 0];
-                user_budgets <- sum(users[,17]);
-                TAC_per_user <- floor( the_vec / dim(users)[1] );
-                                                    
+                arg_list <- copy_args(arg_list, "COST", "manager_array");
+            }else{
+                arg_list$COST <- NA;
+                arg_list <- gmse_apply_build_cost(arg_list);
+                zcost    <- dim(arg_list$COST)[3];
+                arg_list$COST[1:length(thevec), 9, 2:zcost] <- thevec;
+                arg_list <- copy_args(arg_list, "COST", "manager_array");
             }
         }
         if(out_names[[i]] == "manager_array" | out_names[[i]] == "COSTS"){
-            TAC <- arg_list$TAC;
             chk <- length(arg_list$ACTION[arg_list$ACTION[,1,1] == 1,1,1]);
             if( chk != length(arg_list$manager_vector) ){
                 stop("manager model puts out too many resources in vec form");
             }
-            if(TAC == FALSE){
-            #    rows                    <- which(arg_list$ACTION[, 1, 1] == 1);
-            #    arg_list$manager_vector <- arg_list$ACTION[rows, 1, 9];
-            }
-            if(TAC == TRUE){
-                rows                    <- which(arg_list$ACTION[, 1, 1] == 1);
-                mvec                    <- arg_list$ACTION[rows, 1, 5];
-                mvec[mvec < 0]          <- 0;
-                arg_list$manager_vector <- mvec;
-            }            
-            
-            # Switch to the vector and add to arg_list
+            rows                    <- which(arg_list$ACTION[, 1, 1] == 1);
+            arg_list$manager_vector <- arg_list$ACTION[rows, 1, 9];
         }
         if(out_names[[i]] == "user_vector"){
             # Switch to the array and add to arg_list
