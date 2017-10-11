@@ -18,6 +18,7 @@ gmse_apply <- function(res_mod  = resource,
                        obs_mod  = observation, 
                        man_mod  = manager, 
                        use_mod  = user,
+                       get_res  = "basic",
                        ...
                        ){
 
@@ -82,7 +83,10 @@ gmse_apply <- function(res_mod  = resource,
     arg_vals    <- translate_results(arg_list = arg_vals, output = usr_results);
     arg_vals    <- update_para_vec(arg_list   = arg_vals);
     
-    return(arg_vals);    
+    res <- gmse_apply_out(arg_vals, get_res, res_mod, obs_mod, man_mod, use_mod,
+                          res_results, obs_results, man_results, usr_results);
+    
+    return(res);    
 }
 
 ################################################################################
@@ -790,6 +794,10 @@ update_para_vec <- function(arg_list){
 set_action_array <- function(arg_list){
     arg_name <- names(arg_list);
     if("AGENTS" %in% arg_name == FALSE){
+        arg_list$AGENTS <- NA;
+        arg_name        <- names(arg_list);
+    }
+    if(is.na(arg_list$AGENTS[1]) == TRUE){
         dagearg         <- collect_agent_ini(arg_list);
         ini_age         <- do.call(what = make_agents, args = dagearg);
         arg_list$AGENTS <- ini_age;
@@ -1012,86 +1020,176 @@ add_usr_defaults <- function(arg_list){
     return(arg_list);
 }
 
+gmse_apply_out <- function(arg_list, out, res_mod, obs_mod, man_mod, usr_mod,
+                           u_res, u_obs, u_man, u_usr){
+    if(out == "basic"){
+        b_list  <- list();
+        res_nme <- names(formals(res_mod));
+        obs_nme <- names(formals(obs_mod));
+        man_nme <- names(formals(man_mod));
+        usr_nme <- names(formals(usr_mod));
+        
+        res_out <- arg_list$resource_vector;
+        obs_out <- arg_list$observation_vector;
+        man_out <- arg_list$manager_vector;
+        if("manager_array" %in% usr_nme | "COST" %in% usr_nme){
+            man_out <- get_manager_sum(arg_list);
+        }
+        usr_out <- arg_list$user_vector;
+        if("manager_array" %in% usr_nme | "COST" %in% usr_nme){
+            usr_out <- get_user_sum(arg_list);
+        }
+        b_list$resource_results    <- res_out;
+        b_list$observation_results <- obs_out;
+        b_list$manager_results     <- man_out;
+        b_list$user_results        <- usr_out;
+        
+        return(b_list);
+    }    
+    if(out == "custom"){
+        c_list                     <- list();
+        c_list$resource_results    <- u_res;
+        c_list$observation_results <- u_obs;
+        c_list$manager_results     <- u_man;
+        c_list$user_results        <- u_usr;
+        
+        return(c_list);
+    }
+    
+    return(arg_list);
+}
+
+get_manager_sum <- function(arg_list){
+    acts           <- arg_list$user_array;
+    costs          <- arg_list$manager_array
+    scaring        <- NA;
+    culling        <- NA;
+    castrating     <- NA;
+    feeding        <- NA;
+    help_offspring <- NA;
+    u_scaring      <- arg_list$scaring;
+    if(is.null(u_scaring)){
+        u_scaring <- arg_list$GMSE$scaring;
+    }
+    if(u_scaring == TRUE){
+        rows    <- which(acts[,1,1] == -2);
+        scaring <- costs[rows, 8, 2];
+    }
+    u_culling      <- arg_list$culling;
+    if(is.null(u_culling)){
+        u_culling <- arg_list$GMSE$culling;
+    }
+    if(u_culling == TRUE){
+        rows    <- which(acts[,1,1] == -2);
+        culling <- costs[rows, 9, 2];
+    }
+    u_castrating      <- arg_list$castrating;
+    if(is.null(u_castrating)){
+        u_castrating  <- arg_list$GMSE$castration;
+    }
+    if(u_castrating == TRUE){
+        rows       <- which(acts[,1,1] == -2);
+        castrating <- costs[rows, 10, 2];
+    }
+    u_feeding      <- arg_list$feeding;
+    if(is.null(u_feeding)){
+        u_feeding  <- arg_list$GMSE$feeding;
+    }
+    if(u_feeding == TRUE){
+        rows       <- which(acts[,1,1] == -2);
+        feeding    <- costs[rows, 10, 2];
+    }
+    u_help_offspring      <- arg_list$help_offspring;
+    if(is.null(u_help_offspring)){
+        u_help_offspring  <- arg_list$GMSE$help_offspring;
+    }
+    if(u_help_offspring == TRUE){
+        rows           <- which(acts[,1,1] == -2);
+        help_offspring <- costs[rows, 10, 2];
+    }
+    all_costs <- c(scaring, culling, castrating, feeding, help_offspring);
+    cost_mat  <- matrix(data = all_costs, nrow = 1);
+    colnames(cost_mat) <- c("scaring", "culling", "castration", "feeding",
+                            "help_offspring");
+    rownames(cost_mat) <- c("policy");
+    
+    return(cost_mat);
+}
+
+get_user_sum <- function(arg_list){
+    acts           <- arg_list$user_array;
+    scaring        <- NA;
+    culling        <- NA;
+    castrating     <- NA;
+    feeding        <- NA;
+    help_offspring <- NA;
+    rows           <- which(acts[,1,1] == -2);
+    types          <- c(acts[rows,2,]);
+    act_mat        <- matrix(data = NA, nrow = length(types), ncol = 8);
+    act_mat[,1]    <- types;
+    u_scaring      <- arg_list$scaring;
+    if(is.null(u_scaring)){
+        u_scaring <- arg_list$GMSE$scaring;
+    }
+    if(u_scaring == TRUE){
+        act_mat[,2] <- acts[rows, 8, ];
+    }
+    u_culling      <- arg_list$culling;
+    if(is.null(u_culling)){
+        u_culling <- arg_list$GMSE$culling;
+    }
+    if(u_culling == TRUE){
+        act_mat[,3] <- acts[rows, 9, ];
+    }
+    u_castrating      <- arg_list$castrating;
+    if(is.null(u_castrating)){
+        u_castrating  <- arg_list$GMSE$castration;
+    }
+    if(u_castrating == TRUE){
+        act_mat[,4] <- acts[rows, 10, ];
+    }
+    u_feeding      <- arg_list$feeding;
+    if(is.null(u_feeding)){
+        u_feeding  <- arg_list$GMSE$feeding;
+    }
+    if(u_feeding == TRUE){
+        act_mat[,5]    <- acts[rows, 11, ];
+    }
+    u_help_offspring      <- arg_list$help_offspring;
+    if(is.null(u_help_offspring)){
+        u_help_offspring  <- arg_list$GMSE$help_offspring;
+    }
+    if(u_help_offspring == TRUE){
+        act_mat[,6] <- acts[rows, 12, ];
+    }
+    
+    u_tend_crops      <- arg_list$tend_crops;
+    if(is.null(u_tend_crops)){
+        u_tend_crops  <- arg_list$GMSE$tend_crops;
+    }
+    if(u_tend_crops == TRUE){
+        lrows       <- which(acts[,1,1] == -1);
+        act_mat[act_mat[,1] == 1, 7] <- acts[lrows, 10, ];
+    }
+    u_kill_crops      <- arg_list$kill_crops;
+    if(is.null(u_kill_crops)){
+        u_kill_crops  <- arg_list$GMSE$kill_crops;
+    }
+    if(u_kill_crops == TRUE){
+        lrows                        <- which(acts[,1,1] == -1);
+        act_mat[act_mat[,1] == 1, 8] <- acts[lrows, 11, ];
+    }
+    colnames(act_mat) <- c("resource_type", "scaring", "culling", "castration", 
+                            "feeding", "help_offspring", "tend_crops", 
+                            "kill_crops");
+    act_row_names    <- rep(x = NA, length = dim(act_mat)[1]);
+    act_row_names[1] <- c("Manager");
+    for(u in 2:dim(act_mat)[1]){
+        act_row_names[u] <- paste("user_",u, sep = "");
+    }
+    rownames(act_mat) <- act_row_names;
+    
+    return(act_mat);
+}
 ################################################################################
-
-
-
-
-
-
-popmod <-function(resource_vector =100, sigma2_e=0.2, N_Harv=20, K=200, theta=1, r_max=1.0){
-    
-    resource_vec <- resource_vector;
-    
-    X_t0 <- resource_vec;
-    
-    eps <- rnorm(1, mean=0, sd=sqrt(sigma2_e))
-    X_star <- X_t0-N_Harv
-    
-    r <- (r_max*(1-(X_star/K)^theta))+eps
-    X_t1 <- X_star*exp(r)
-    
-    PopRes <- list();
-    PopRes$resource_vector <- X_t1;
-    PopRes
-    
-}
-
-popmod2 <-function(resource_vector =100, sigma2_e=0.2, N_Harv=20, K=200, theta=1, r_max=1.0){
-    
-    resource_vec <- resource_vector;
-    
-    X_t0 <- resource_vec;
-    
-    eps <- rnorm(1, mean=0, sd=sqrt(sigma2_e))
-    X_star <- X_t0-N_Harv
-    
-    r <- (r_max*(1-(X_star/K)^theta))+eps
-    X_t1 <- X_star*exp(r)
-    
-    PopRes <- X_t1;
-    PopRes
-    
-}
-
-obs_mod1 <- function(scale="Abund", resource_vector=1000, bias=1, cv=0.2, LogNorm="ND"){
-    
-    value <- resource_vector;
-    
-    obs1 <-  switch(LogNorm,
-                    LND={rlnorm(n=1, meanlog=log(value*bias), sdlog=cv)},
-                    ND={rnorm(n=1,mean=value*bias, sd=cv*value)})
-    
-    obs1 <- switch(scale,
-                   Abund={round(obs1)},
-                   Dens={obs1})
-    obs1
-}
-
-HarvDec1 <- function(HD_type="A", c=1000, qu=0.2, observation_vec=100){
-    PopState_est <- observation_vec;
-    TAC <- switch(HD_type,
-                  A={PopState_est*qu},
-                  B={ifelse(PopState_est>c, PopState_est-c, 0)},
-                  C={qu},
-                  D={ifelse(PopState_est>c, qu(PopState_est-c), 0)})
-    
-    TAC
-}
-
-Impl1 <- function(manager_vector = 0, ModType="A", p=0.7){
-    H_I <- switch(ModType,
-                  A={rbinom(1, size=manager_vector, p=p)},
-                  B=(rpois(n=1, lambda=manager_vector*p)))
-    
-    H_I
-    
-}
-
-
-
-
-
-
-
 
