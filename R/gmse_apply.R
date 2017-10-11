@@ -71,9 +71,17 @@ gmse_apply <- function(res_mod  = resource,
     arg_vals    <- update_para_vec(arg_list   = arg_vals);
     
     # ------ USER MODEL --------------------------------------------------------
-    usr_args    <- prep_usr(arg_list = arg_vals, usr_mod = usr_mod);
+    usr_args    <- prep_usr(arg_list = arg_vals, usr_mod = use_mod);
+    check_args(arg_list = usr_args, the_fun = use_mod);
+    usr_results <- do.call(what = use_mod, args = usr_args);
+    usr_results <- check_name_results(output   = usr_results, 
+                                      vec_name = "user_vector", 
+                                      mat_name = "user_array");
+    arg_vals    <- add_results(arg_list = arg_vals, output = usr_results);
+    arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = use_mod);
     
-    return(usr_args);    
+    
+    return(arg_vals);    
 }
 
 ################################################################################
@@ -398,6 +406,11 @@ fix_gmse_defaults <- function(arg_list, model){
         arg_list <- copy_args(arg_list, "RESOURCES", "resource_array");
         arg_list <- copy_args(arg_list, "COST", "manager_array");
     }
+    if( identical(model, user) == TRUE ){
+        arg_list <- copy_args(arg_list, "RESOURCES", "resource_array");
+        arg_list <- copy_args(arg_list, "COST", "manager_array");
+        arg_list <- copy_args(arg_list, "ACTION", "user_array");
+    }
     return(arg_list);
 }
 
@@ -493,7 +506,15 @@ translate_results <- function(arg_list, output){
             # Switch to the array and add to arg_list
         }
         if(out_names[[i]] == "user_array" | out_names[[i]] == "ACTIONS"){
-            # Switch to the vector and add to arg_list
+            u_out <- arg_list$user_array
+            t_use <- length(u_out);
+            acts  <- u_out[u_out[,1,1] == -2, 9, ];
+            if(is.matrix(acts) == TRUE){
+                allac <- apply(X = acts, MARGIN = 1, FUN = sum);  
+            }else{
+                allac <- sum(acts);
+            }
+            arg_list$user_vector <- allac;
         }
     }
     return(arg_list);
