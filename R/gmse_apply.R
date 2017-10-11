@@ -71,15 +71,16 @@ gmse_apply <- function(res_mod  = resource,
     arg_vals    <- update_para_vec(arg_list   = arg_vals);
     
     # ------ USER MODEL --------------------------------------------------------
-    usr_args    <- prep_usr(arg_list = arg_vals, usr_mod = use_mod);
-    check_args(arg_list = usr_args, the_fun = use_mod);
-    usr_results <- do.call(what = use_mod, args = usr_args);
-    usr_results <- check_name_results(output   = usr_results, 
-                                      vec_name = "user_vector", 
-                                      mat_name = "user_array");
-    arg_vals    <- add_results(arg_list = arg_vals, output = usr_results);
-    arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = use_mod);
-    
+    #usr_args    <- prep_usr(arg_list = arg_vals, usr_mod = use_mod);
+    #check_args(arg_list = usr_args, the_fun = use_mod);
+    #usr_results <- do.call(what = use_mod, args = usr_args);
+    #usr_results <- check_name_results(output   = usr_results, 
+    #                                  vec_name = "user_vector", 
+    #                                  mat_name = "user_array");
+    #arg_vals    <- add_results(arg_list = arg_vals, output = usr_results);
+    #arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = use_mod);
+    #arg_vals    <- translate_results(arg_list = arg_vals, output = usr_results);
+    #arg_vals    <- update_para_vec(arg_list   = arg_vals);
     
     return(arg_vals);    
 }
@@ -494,19 +495,24 @@ translate_results <- function(arg_list, output){
                 arg_list <- copy_args(arg_list, "COST", "manager_array");
             }
         }
-        if(out_names[[i]] == "manager_array" | out_names[[i]] == "COSTS"){
+        if(out_names[[i]] == "manager_array" | out_names[[i]] == "COST"){
             chk <- length(arg_list$ACTION[arg_list$ACTION[,1,1] == 1,1,1]);
             if( chk != length(arg_list$manager_vector) ){
                 stop("manager model puts out too many resources in vec form");
             }
             rows                    <- which(arg_list$ACTION[, 1, 1] == 1);
-            arg_list$manager_vector <- arg_list$ACTION[rows, 1, 9];
+            arg_list$manager_vector <- arg_list$ACTION[rows, 9, 1];
         }
         if(out_names[[i]] == "user_vector"){
-            # Switch to the array and add to arg_list
+            if(!is.na(arg_list$user_array[1]) == TRUE){
+                arg_list$user_array <- set_action_array(arg_list);
+            }
+            divuser <- arg_list$user_vector / dim(user_array)[3];
+            rows    <- which(arg_list$user_array[,1,1] == -2);
+            arg_list$user_array[rows, 9, ] <- divuser;
         }
         if(out_names[[i]] == "user_array" | out_names[[i]] == "ACTIONS"){
-            u_out <- arg_list$user_array
+            u_out <- arg_list$user_array;
             t_use <- length(u_out);
             acts  <- u_out[u_out[,1,1] == -2, 9, ];
             if(is.matrix(acts) == TRUE){
