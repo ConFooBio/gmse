@@ -194,6 +194,10 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
 
 argument_list <- function(res_mod, obs_mod, man_mod, use_mod, oth_vals){
     oth_names   <- names(oth_vals);
+    res_mod     <- check_arg_formals(res_mod);
+    obs_mod     <- check_arg_formals(obs_mod);
+    man_mod     <- check_arg_formals(man_mod);
+    use_mod     <- check_arg_formals(use_mod);
     res_names   <- names(formals(res_mod));
     obs_names   <- names(formals(obs_mod));
     man_names   <- names(formals(man_mod)); 
@@ -216,6 +220,18 @@ argument_list <- function(res_mod, obs_mod, man_mod, use_mod, oth_vals){
     arg_out     <- list(all_arg_values = arg_list, all_arg_names = all_names);
     
     return(arg_out);        
+}
+
+check_arg_formals <- function(mod){
+    forml <- formals(mod);
+    len   <- length(forml);
+    for(arg in 1:len){
+        if(forml[arg] == ""){
+            forml[arg] <- NA;
+        }
+    }
+    formals(mod) <- forml;
+    return(mod);
 }
 
 place_args <- function(all_names, placing_vals, arg_list){
@@ -998,6 +1014,11 @@ set_interaction_array <- function(arg_list){
         ini_itb <- do.call(what = make_interaction_array, args = ditbarg);
         arg_list[[interact_pos]] <- ini_itb;
     }
+    res_consume <- arg_list$GMSE$res_consume;
+    if("res_consume" %in% arg_names == TRUE){
+        res_consume <- arg_list$res_consume;
+    }
+    arg_list[[interact_pos]][1,2] <- -1 * res_consume;
     return(arg_list);
 }
 
