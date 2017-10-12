@@ -56,6 +56,7 @@ gmse_apply <- function(res_mod  = resource,
     arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = res_mod);
     arg_vals    <- translate_results(arg_list = arg_vals, output = res_results);
     arg_vals    <- update_para_vec(arg_list   = arg_vals);
+    check_extinction(arg_vals);
     
     # ------ OBSERVATION MODEL -------------------------------------------------
     obs_args <- prep_obs(arg_list = arg_vals, obs_mod = obs_mod);
@@ -559,6 +560,15 @@ translate_results <- function(arg_list, output){
     return(arg_list);
 }
 
+check_extinction <- function(arg_list){
+    if(arg_list$resource_vector < 2){
+        stop("Extinction has occurred -- no observation posible");
+    }
+    if(dim(arg_list$resource_array)[1] < 2){
+        stop("Extinction has occurred -- no observation posible");
+    }
+}
+
 gmse_apply_build_cost <- function(arg_list){
     arg_names <- names(arg_list);
     if("COST" %in% arg_names == FALSE){
@@ -624,7 +634,8 @@ estimate_abundances <- function(arg_list){
     }
     if(is.na(arg_list$AGENTS[1]) == TRUE){
         dagearg         <- collect_agent_ini(arg_list);
-        arg_list$AGENTS <- do.call(what = make_agents, args = dagearg);    
+        arg_list$AGENTS <- do.call(what = make_agents, args = dagearg);
+        arg_list$AGENTS <- add_agent_budget(arg_list$AGENTS, arg_list);
     }
     observations <- arg_list$observation_array;
     paras        <- arg_list$PARAS;
@@ -733,6 +744,7 @@ add_obs_defaults <- function(arg_list){
     if(is.na(arg_list[[agent_pos]][1]) == TRUE){
         dagearg <- collect_agent_ini(arg_list);
         ini_age <- do.call(what = make_agents, args = dagearg);
+        ini_age <- add_agent_budget(AGENTS = ini_age, arg_list = arg_list);
         arg_list[[agent_pos]] <- ini_age;
     }
     inter_tabl_pos <- which(arg_names == "inter_tabl");
@@ -776,6 +788,23 @@ add_obs_defaults <- function(arg_list){
     arg_list <- double_check_obs_type(arg_list);
     
     return(arg_list);
+}
+
+add_agent_budget <- function(AGENTS, arg_list){
+    arg_name <- names(arg_list);
+    manage_budget <- arg_list$GMSE$manager_budget;
+    if("manager_budget" %in% arg_name){
+        mbpos         <- which(arg_name == "manager_budget");
+        manage_budget <- arg_list[[mbpos]];
+    }
+    user_budget <- arg_list$GMSE$user_budget;
+    if("user_budget" %in% arg_name){
+        ubpos         <- which(arg_name == "user_budget");
+        user_budget   <- arg_list[[ubpos]];
+    }
+    AGENTS[AGENTS[,2]==0, 17] <- manage_budget;
+    AGENTS[AGENTS[,2]==1, 17] <- user_budget;
+    return(AGENTS);
 }
 
 double_check_obs_type <- function(arg_list){
@@ -827,6 +856,7 @@ set_action_array <- function(arg_list){
     if(is.na(arg_list$AGENTS[1]) == TRUE){
         dagearg         <- collect_agent_ini(arg_list);
         ini_age         <- do.call(what = make_agents, args = dagearg);
+        ini_age         <- add_agent_budget(ini_age, arg_list);
         arg_list$AGENTS <- ini_age;
         arg_name        <- names(arg_list);
     }
@@ -924,6 +954,7 @@ add_man_defaults <- function(arg_list){
     if(is.na(arg_list[[agent_pos]][1]) == TRUE){
         dagearg <- collect_agent_ini(arg_list);
         ini_age <- do.call(what = make_agents, args = dagearg);
+        ini_age <- add_agent_budget(AGENTS = ini_age, arg_list = arg_list);
         arg_list[[agent_pos]] <- ini_age;
     }
     cost_pos <- which(arg_names == "COST");
@@ -1015,6 +1046,7 @@ add_usr_defaults <- function(arg_list){
     if(is.na(arg_list[[agent_pos]][1]) == TRUE){
         dagearg <- collect_agent_ini(arg_list);
         ini_age <- do.call(what = make_agents, args = dagearg);
+        ini_age <- add_agent_budget(AGENTS = ini_age, arg_list = arg_list);
         arg_list[[agent_pos]] <- ini_age;
     }
     cost_pos <- which(arg_names == "COST");
