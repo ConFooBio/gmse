@@ -400,18 +400,18 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         LANDSCAPE_r           <- RESOURCE_NEW[[2]];
         paras                 <- RESOURCE_NEW[[3]];
         
-        OBSERVATION_NEW   <- observation(RESOURCES  = RESOURCES,
-                                         LAND       = LANDSCAPE_r,
-                                         PARAS      = paras,
-                                         AGENTS     = AGENTS,
-                                         inter_tabl = interaction_tabl,
-                                         fix_mark   = fxo,
-                                         times      = tmo,
-                                         samp_age   = rma,
-                                         agent_type = 0,
-                                         type_cat   = 1,
-                                         obs_method = obt,
-                                         move_res   = rmo
+        OBSERVATION_NEW   <- observation(RESOURCES      = RESOURCES,
+                                         LAND           = LANDSCAPE_r,
+                                         PARAS          = paras,
+                                         AGENTS         = AGENTS,
+                                         inter_tabl     = interaction_tabl,
+                                         fixed_mark     = fxo,
+                                         times_observe  = tmo,
+                                         res_min_age    = rma,
+                                         agent_type     = 0,
+                                         type_cat       = 1,
+                                         observe_type   = obt,
+                                         res_move_obs   = rmo
         );
         OBSERVATION_r  <- OBSERVATION_NEW[[1]];
         paras          <- OBSERVATION_NEW[[3]];
