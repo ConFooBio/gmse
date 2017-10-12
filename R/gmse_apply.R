@@ -741,15 +741,15 @@ add_obs_defaults <- function(arg_list){
         ini_itb <- do.call(what = make_interaction_table, args = ditbarg);
         arg_list[[inter_tabl_pos]] <- ini_itb;
     }
-    fm_pos <- which(arg_names == "fix_mark");
+    fm_pos <- which(arg_names == "fixed_mark");
     if(is.na(arg_list[[fm_pos]][1]) == TRUE){
-        arg_list[[fm_pos]][1] <- arg_list$GMSE$fix_mark;
+        arg_list[[fm_pos]][1] <- arg_list$GMSE$fixed_mark;
     }
-    tm_pos <- which(arg_names == "times");
+    tm_pos <- which(arg_names == "times_observe");
     if(is.na(arg_list[[tm_pos]][1]) == TRUE){
         arg_list[[tm_pos]][1] <- arg_list$GMSE$times_observe;
     }
-    sm_pos <- which(arg_names == "samp_age");
+    sm_pos <- which(arg_names == "res_min_age");
     if(is.na(arg_list[[sm_pos]][1]) == TRUE){
         arg_list[[sm_pos]][1] <- arg_list$GMSE$res_min_age;
     }
@@ -761,11 +761,11 @@ add_obs_defaults <- function(arg_list){
     if(is.na(arg_list[[tca_pos]][1]) == TRUE){
         arg_list[[tca_pos]][1] <- 1;
     }
-    ot_pos <- which(arg_names == "obs_method");
+    ot_pos <- which(arg_names == "observe_type");
     if(is.na(arg_list[[ot_pos]][1]) == TRUE){
         arg_list[[ot_pos]][1] <- arg_list$GMSE$observe_type;
     }
-    rmo_pos <- which(arg_names == "move_res");
+    rmo_pos <- which(arg_names == "res_move_obs");
     if(is.na(arg_list[[rmo_pos]][1]) == TRUE){
         arg_list[[rmo_pos]][1] <- arg_list$GMSE$res_move_obs;
     }
