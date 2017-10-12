@@ -6,11 +6,17 @@ Imports: grDevices, graphics, stats, shiny, shinydashboard, shinyjs
 Authors@R: c(person("A. Bradley", "Duthie", email = "brad.duthie@gmail.com",
                   role = c("aut", "cre"),
                   comment = c(ORCID = "0000-0001-8343-4995")),
-             person("Nils", "Bunnefeld", role = c("ctb", "fnd")),
-             person("Jeremy", "Cusack", role = "ctb"),
-             person("Erlend", "Nilsen", role = "ctb"),
+             person("Nils", "Bunnefeld", role = c("ctb", "fnd"),
+                    comment = c(ORCID = "0000-0002-1349-4463")),
+             person("Jeremy", "Cusack", role = "ctb",
+                    comment = c(ORCID = "0000-0003-3004-1586")),
+             person("Erlend", "Nilsen", role = "ctb",
+                    comment = c(ORCID = "0000-0002-5119-8331")),
              person("Rocio", "Pozo", role = "ctb"),
-             person("Sarobidy", "Rakotonarivo", role = "ctb")
+             person("Sarobidy", "Rakotonarivo", role = "ctb",
+                    comment = c(ORCID = "0000-0002-8032-1431")),
+             person("Bram", "Van Moorter", role = "ctb",
+                    comment = c(ORCID = "0000-0002-3196-1993"))
              )
 Maintainer: A. Bradley Duthie <brad.duthie@gmail.com>
 Description: Integrates game theory and ecological theory to construct 
