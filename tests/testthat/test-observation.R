@@ -46,20 +46,19 @@ agents  <-  make_agents(model        = "IBM",
 
 interaction_tabl <- make_interaction_table(res, land);
 
-obs   <- observation(RESOURCES  = res,
-                     LAND       = land,
-                     PARAS      = paras,
-                     AGENTS     = agents,
-                     inter_tabl = interaction_tabl,
-                     fix_mark   = paras[11],
-                     times      = paras[12],
-                     samp_age   = paras[17],
-                     agent_type = 0,
-                     type_cat   = 1,
-                     obs_method = paras[9],
-                     move_res   = paras[20]
+obs   <- observation(RESOURCES      = res,
+                     LAND           = land,
+                     PARAS          = paras,
+                     AGENTS         = agents,
+                     inter_tabl     = interaction_tabl,
+                     fixed_mark     = paras[11],
+                     times_observe  = paras[12],
+                     res_min_age    = paras[17],
+                     agent_type     = 0,
+                     type_cat       = 1,
+                     observe_type   = paras[9],
+                     res_move_obs   = paras[20]
 );
-
 
 test_that("Dimensions of observation arrays in returned list are correct", {
     expect_equal(dim(obs[[1]]), c(100, 41));
