@@ -49,7 +49,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **OCT** [6](#u-6-OCT-2017)
+     - **OCT** [12](#u-12-OCT-2017), [6](#u-6-OCT-2017)
      - **SEP** [28](#u-28-SEP-2017), [27](#u-27-SEP-2017), [26](#u-26-SEP-2017), [25](#u-25-SEP-2017), [22](#u-22-SEP-2017), [15](#u-15-SEP-2017), [13](#u-13-SEP-2017), [8](#u-8-SEP-2017), [6](#u-6-SEP-2017)
      - **AUG** [28](#u-28-AUG-2017), [23](#u-23-AUG-2017), [17](#u-17-AUG-2017), [16](#u-16-AUG-2017), [15](#u-15-AUG-2017), [7](#u-7-AUG-2017)
      - **JUL** [7](#u-7-JUL-2017), [3](#u-3-JUL-2017)
@@ -88,6 +88,49 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-12-OCT-2017">Update: 12 OCT 2017</a>
+
+**New function gmse_apply complete and tested**
+
+I have now completed the `gmse_apply` function, which exploits the full modularity of GMSE by allowing software users to develop their own sub-functions and string them together with any combination of GMSE default sub-functions. As a brief summary, `gmse_apply` includes the following features:
+
+- Any coherent function can be used for a resource model as long as it returns an unlabelled vector or matrix, or returns a list with at least one element labelled 'resource_vector' or 'resource_array'.
+- Similarly, any function can be used for a resource model as long as it takes an argument called 'resource_vector' or 'resource_array' and returns an unnamed vector or matrix, or a list with at least one element labelled 'observation_vector' or 'observation_array'.
+- Any function works for the manager model if it takes an argument called 'observation_vector' or 'observation_array' and returns an unlabelled vector or matrix, or a list with at least one element labelled 'manager_vector' or 'manager_array'.
+- Any function works for the user model if it takes an argument called 'manager_vector' or 'manager_array' and returns an unlabelled vector or matrix, or a list with at least one element labelled 'user_vector' or 'user_array'.
+- Returns one of three options, including (1) a breakdown of the key results (default), (2) all of the model output, or (3) a list of just the sub-model outputs.
+
+Any arguments for custom user functions can simply be passed along by specifying them in `gmse_apply`. For example, if we have a custom resource function `alt_res` below:
+
+```{r, eval = FALSE}
+alt_res <- function(X = 1000, K = 2000, r = 1){
+    X_1 <- X + r*X*(1 - X/K);
+    return(X_1);
+}
+```
+
+We can simply include the above in `gmse_apply` as follows to use the very simple logistic growth sub-model with the individual-based submodels that are defaults of GMSE.
+
+```{r, eval = FALSE}
+sim_app <- gmse_apply(res_mod = alt_res);
+```
+
+The `gmse_apply` function simply adds in GMSE defaults for unspecified models, but we can specify them too.
+
+```{r, eval = FALSE}
+sim_app <- gmse_apply(res_mod = alt_res, obs_mod = observation);
+```
+
+To adjust parameters in the alternative resource model, simply add in the arguments as below.
+
+```{r, eval = FALSE}
+sim_app <- gmse_apply(res_mod = alt_res, X = 2000, K = 5000, r = 1.2);
+```
+
+The `gmse_apply` function will know where to place them, and update them should they be needed for other models.
+
+I will give a more lengthy description of how to use `gmse_apply` tomorrow, when I push GMSE v0.3.0.0 to the master branch of GitHub and advertise the update.
 
 > <a name="u-6-OCT-2017">Update: 6 OCT 2017</a>
 
