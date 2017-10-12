@@ -647,7 +647,7 @@ estimate_abundances <- function(arg_list){
         est <- dens_est(observations, paras, view, land)$Nc;
     }
     if(obs_method == 1){
-        est <- chapman_est(observations, paras);
+        est <- chapman_est(observations, paras)$Nc;
     }
     if(obs_method == 2 | obs_method == 3){
         est <- sum(observations[,13]);
@@ -655,7 +655,7 @@ estimate_abundances <- function(arg_list){
     if(is.na(est[1]) == TRUE){
         stop("I couldn't estimate population; check observe_type?");
     }
-    arg_list$PARAS[100]         <- est;
+    arg_list$PARAS[100]         <- est[1];
     arg_list$observation_vector <- est;
     return(arg_list);
 }
