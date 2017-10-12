@@ -1142,7 +1142,7 @@ get_manager_sum <- function(arg_list){
         rows    <- which(acts[,1,1] == -2);
         culling <- costs[rows, 9, 2];
     }
-    u_castrating      <- arg_list$castrating;
+    u_castrating      <- arg_list$castration;
     if(is.null(u_castrating)){
         u_castrating  <- arg_list$GMSE$castration;
     }
@@ -1200,7 +1200,7 @@ get_user_sum <- function(arg_list){
     if(u_culling == TRUE){
         act_mat[,3] <- acts[rows, 9, ];
     }
-    u_castrating      <- arg_list$castrating;
+    u_castrating      <- arg_list$castration;
     if(is.null(u_castrating)){
         u_castrating  <- arg_list$GMSE$castration;
     }
