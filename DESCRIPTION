@@ -1,7 +1,7 @@
 Package: GMSE
 Type: Package
 Title: Generalised Management Strategy Evaluation Simulator
-Version: 0.3.0.0
+Version: 0.3.0.1
 Imports: grDevices, graphics, stats, shiny, shinydashboard, shinyjs
 Authors@R: c(person("A. Bradley", "Duthie", email = "brad.duthie@gmail.com",
                   role = c("aut", "cre"),
@@ -10,6 +10,8 @@ Authors@R: c(person("A. Bradley", "Duthie", email = "brad.duthie@gmail.com",
                     comment = c(ORCID = "0000-0002-1349-4463")),
              person("Jeremy", "Cusack", role = "ctb",
                     comment = c(ORCID = "0000-0003-3004-1586")),
+             person("Isabel", "Jones", role = "ctb",
+                    comment = c(ORCID = "0000-0002-8361-1370")),
              person("Erlend", "Nilsen", role = "ctb",
                     comment = c(ORCID = "0000-0002-5119-8331")),
              person("Rocio", "Pozo", role = "ctb"),
