@@ -141,7 +141,7 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
                         kill_crops = FALSE, stakeholders = 4, 
                         manage_caution = 1, land_ownership = FALSE, 
                         manage_freq = 1, converge_crit = 100, 
-                        manager_sense = 0.1, public_land    = 0, ...
+                        manager_sense = 0.1, public_land = 0, PARAS = NULL, ...
 ){
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
@@ -157,6 +157,13 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
                     tend_crop_yld, kill_crops, stakeholders, manage_caution,
                     land_ownership, manage_freq, converge_crit, manager_sense,
                     public_land); 
+    
+    if(is.null(PARAS) == FALSE){
+        paras <- PARAS;
+        return(list(gmse_user_input = as.vector(input_list), 
+                    gmse_para_vect  = as.vector(paras))
+               );
+    }
     
     user_res_opts  <- c(scaring, culling, castration, feeding, help_offspring);
     user_lnd_opts  <- c(tend_crops, kill_crops);
