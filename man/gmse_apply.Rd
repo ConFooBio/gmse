@@ -21,14 +21,7 @@ gmse_apply(res_mod = resource, obs_mod = observation, man_mod = manager,
 \item{...}{Arguments passed to user-defined functions, and passed to modify default parameter values that would otherwise be called for gmse default models. Any argument that can be passed to gmse can be specified explicitly, just as if it were an argument to gmse. Similarly, any argument taken by a user-defined function should be specified, though the function will work if the user-defined function has a default that is not specified explicitly.}
 }
 \description{
-The gmse_apply function is a flexible function that allows for user-defined
-sub-functions calling resource, observation, manager, and user models. Where
-such models are not specified, GMSE models resource, observation, manager, 
-and user are run by default. Any type of sub-model (e.g., numerical,
-individual-based) is permitted as long as the input and output are
-are appropriately specified. Only one time step is simulated per call to
-gmse_apply, so the function must be looped for simulation over time. Where
-model parameters are needed but not specified, defaults from gmse are used.
+The gmse_apply function is a flexible function that allows for user-defined sub-functions calling resource, observation, manager, and user models. Where such models are not specified, GMSE submodels 'resource', 'observation', 'manager', and 'user' are run by default. Any type of sub-model (e.g., numerical,  individual-based) is permitted as long as the input and output are appropriately specified. Only one time step is simulated per call to gmse_apply, so the function must be looped for simulation over time. Where model parameters are needed but not specified, defaults from gmse are used.
 }
 \examples{
 sim <- gmse_apply();
