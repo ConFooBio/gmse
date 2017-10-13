@@ -50,7 +50,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **OCT** [12](#u-12-OCT-2017), [6](#u-6-OCT-2017)
+     - **OCT** [13](#u-13-OCT-2017), [12](#u-12-OCT-2017), [6](#u-6-OCT-2017)
      - **SEP** [28](#u-28-SEP-2017), [27](#u-27-SEP-2017), [26](#u-26-SEP-2017), [25](#u-25-SEP-2017), [22](#u-22-SEP-2017), [15](#u-15-SEP-2017), [13](#u-13-SEP-2017), [8](#u-8-SEP-2017), [6](#u-6-SEP-2017)
      - **AUG** [28](#u-28-AUG-2017), [23](#u-23-AUG-2017), [17](#u-17-AUG-2017), [16](#u-16-AUG-2017), [15](#u-15-AUG-2017), [7](#u-7-AUG-2017)
      - **JUL** [7](#u-7-JUL-2017), [3](#u-3-JUL-2017)
@@ -89,6 +89,274 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-13-OCT-2017">Update: 13 OCT 2017</a>
+
+**GMSE v0.3.0.0 now available with gmse_apply**
+
+The `gmse_apply` function is now available on a new [GMSE version 0.3.0.0](https://github.com/bradduthie/gmse/releases/tag/v0.3.0.0). (minor tweaks to other functions have also been made, but nothing that changes the user experience of gmse -- mostly typos corrected in the documentation). The new function allows software users to integrate their own submodels (resource, observation, manager, and user) into GMSE, or to use their own submodels entirely within a single function.
+
+********************************************************************************
+
+**GMSE apply function**
+
+**The gmse_apply function is a flexible function that allows for user-defined sub-functions calling resource, observation, manager, and user models. Where such models are not specified, GMSE submodels 'resource', 'observation', 'manager', and 'user' are run by default. Any type of sub-model (e.g., numerical,  individual-based) is permitted as long as the input and output are appropriately specified. Only one time step is simulated per call to gmse_apply, so the function must be looped for simulation over time. Where model parameters are needed but not specified, defaults from gmse are used.**
+
+**gmse_apply arguments**
+
+- **res_mod** The function specifying the resource model. By default, the individual-based resource model from gmse is called with default parameter values. User-defined functions must either return an unnamed matrix or vector, or return a named list in which one list element is named either 'resource_array' or 'resource_vector', and arrays must follow the format of GMSE in terms of column number and type (if there is only one resource type, then the model can also just return a scalar value).
+
+- **obs_mod** The function specifying the observation model. By default, the individual-based observation model from gmse is called with default parameter values. User-defined functions must either return an unnamed matrix or vector, or return a named list in which one list element is named either 'observation_array' or 'observation_vector', and arrays must follow the format of GMSE in terms of column number and type  (if there is only one resource type, then the model can also just return a scalar value).
+
+- **man_mod** The function specifying the manager model. By default, the individual-based manager model that calls the genetic algorithm from gmse is used with default parameter values. User-defined functions must either return an unnamed matrix or vector, or return a named list in which one list element is named either 'manager_array' or 'manager_vector', and arrays must follow the (3 dimensional) format of the 'COST' array in GMSE in terms of column numbers and types, with appropriate rows for interactions and layers for agents (see documentation of GMSE for constructing these, if desired). User defined manager outputs will be recognised as costs by the default user model in gmse, but can be interpreted differently (e.g., total allowable catch) if specifying a custom user model.
+
+- **use_mod** The function specifying the user model. By default, the individual-based user model that calls the genetic algorithm from gmse is used with default parameter values. User-defined functions must either return an unnamed matrix or vector, or return a named list in which one list element is named either 'user_array' or 'user_vector', and arrays must follow the (3 dimensional) format of the 'ACTION' array in GMSE in terms of column numbers and types, with appropriate rows for interactions and layers for agents (see documentation of GMSE for constructing these, if desired).
+
+- **get_res** How the output should be organised. The default 'basic' attempts to distill results down to their key values from submodel outputs, including resource abundances and estimates, and manager policy and actions. An option 'custom' simply returns a large list that includes the output of every submodel. Any other option (e.g. 'full') will return a massive list with all of the input, output, and parameters used to run gmse_apply.
+
+- **...** Arguments passed to user-defined functions, and passed to modify default parameter values that would otherwise be called for gmse default models. Any argument that can be passed to gmse can be specified explicitly, just as if it were an argument to gmse. Similarly, any argument taken by a user-defined function should be specified, though the function will work if the user-defined function has a default that is not specified explicitly.
+
+********************************************************************************
+
+**Example uses of gmse_apply**
+
+A simple run of `gmse_apply()` will return one generation of gmse using default submodels and parameter values. 
+
+```{r, eval = FALSE}
+sim <- gmse_apply();
+```
+
+For `sim`, the default 'basic' results are returned as below.
+
+```
+$resource_results
+[1] 1102
+
+$observation_results
+[1] 1179.138
+
+$manager_results
+       scaring culling castration feeding help_offspring
+policy      NA      10         NA      NA             NA
+
+$user_results
+        resource_type scaring culling castration feeding help_offspring tend_crops kill_crops
+Manager             1      NA       0         NA      NA             NA         NA         NA
+user_2              1      NA      70         NA      NA             NA         NA         NA
+user_3              1      NA      75         NA      NA             NA         NA         NA
+user_4              1      NA      69         NA      NA             NA         NA         NA
+user_5              1      NA      74         NA      NA             NA         NA         NA
+```
+
+Note in the case above we have the total abundance of resources returned, the estimate of resource abundance from the observation function, the costs the manager sets for the only available action of culling, and the number of culls attempted by each user.
+
+The above was produced by all of the individual-based functions that are default in GMSE; custom generated subfunctions can instead be included provided that they fit the specifications described above. For example, we can define a very simple logistic growth function to send to `res_mod` instead.
+
+```{r, eval = FALSE}
+alt_res <- function(X, K = 2000, rate = 1){
+    X_1 <- X + rate*X*(1 - X/K);
+    return(X_1);
+}
+```
+
+The above function takes in a population size of `X` and returns a value `X_1` based on the population intrinsic growth rate `rate` and carrying capacity `K`. Iterating the logistic growth model by itself under default parameter values with a starting population of 100 will cause the population to increase to carrying capacity in roughly 7 generations. The function can be substituted into `gmse_apply` to use it instead of the default GMSE resource model.
+
+```{r, eval = FALSE}
+sim <- gmse_apply(res_mod = alt_res, X = 100, rate = 0.3);
+```
+
+The `gmse_apply` function will find the parameters it needs to run the `alt_res` function in place of the default resource function, either by running the default function values (e.g., `K = 2000`) or values specified directly into `gmse_apply` (e.g., `X = 100` and `rate = 0.3`). If an argument to a custom function is required but not provided either as a default or specified in `gmse_apply`, then an error will be returned.
+
+To integrate across different types of submodels, `gmse_apply` translates between vectors and arrays between each submodel. For example, because the default GMSE observation model requires a resource array with particular requirements for column identites, when a resource model subfunction returns a vector, or a list with a named element 'resource_vector', this vector is translated into an array that can be used by the observation model. Specifically, each element of the vector identifies the abundance of a resource type (and hence will usually be just a single value denoting abundance of the only focal population). If this is all the information provided, then a resource_array will be made with default GMSE parameter values with an identical number of rows to the abundance value (floored if the value is a non-integer; non-default values can also be put into this transformation from vector to array if they are specified in gmse_apply, e.g., through an argument such as `lambda = 0.8`). Similarly, a `resource_array` is also translated into a vector after the default individual-based resource model is run, should the observation model require simple abundances instead of an array. The same is true of `observation_vector` and `observation_array` objects returned by observation models, of `manager_vector` and `manager_array` (i.e., COST) objects returned by manager models, and of `user_vector` and `user_array` (i.e., ACTION) objects returned by user models. At each step, a translation between the two is made, with necessary adjustments that can be tweaked through arguments to `gmse_apply` when needed. Alternative observation, manager, and user, submodels, for example, are defined below; note that each requires a vector from the preceding model.
+
+```{r, eval = FALSE}
+# Alternative observation submodel
+alt_obs <- function(resource_vector){ 
+    X_obs <- resource_vector - 0.1 * resource_vector;
+    return(X_obs);
+}
+
+# Alternative manager submodel
+alt_man <- function(observation_vector){
+    policy <- observation_vector - 1000;
+    if(policy < 0){
+        policy <- 0;
+    }
+    return(policy);
+}
+
+# Alternative user submodel
+alt_usr <- function(manager_vector){
+    harvest <- manager_vector + manager_vector * 0.1;
+    return(harvest);
+}
+```
+
+All of these submodels are completely deterministic, so when run with the same parameter combinations, they produce replicable outputs.
+
+```{r, eval = FALSE}
+gmse_apply(res_mod = alt_res, obs_mod = alt_obs, 
+           man_mod = alt_man, use_mod = alt_usr, X = 1000);
+```
+
+The above, for example, produces the following output (Note that the `X` argument needs to be specified, but the rest of the subfunctions take vectors that `gmse_apply` recognises will become available after a previous submodel is run).
+
+```
+$resource_results
+[1] 1500
+
+$observation_results
+[1] 1350
+
+$manager_results
+[1] 350
+
+$user_results
+[1] 385
+```
+
+Note that the `manager_results` and `user_results` are ambiguous here, and can be interpreted as desired -- e.g., as total allowable catch and catches made, or as something like costs of catching set by the manager and effort to catching made by the user. Hence while manger output is set in terms of costs of performing each action, and user output is set in terms of action attempts, this need not be the case when using `gmse_apply` (though it should be recognised when using default GMSE manager and user functions).
+
+GMSE default submodels can be added in at any point.
+
+```{r, eval = FALSE}
+gmse_apply(res_mod = alt_res, obs_mod = observation, 
+           man_mod = alt_man, use_mod = alt_usr, X = 1000)
+```
+
+The above produces the results below.
+
+```
+$resource_results
+[1] 1500
+
+$observation_results
+[1] 1655.329
+
+$manager_results
+[1] 655.3288
+
+$user_results
+[1] 720.8617
+```
+
+If we wanted to, for example, specify a simple resource and observation model, but then take advantage of the genetic algorithm to predict policy decisions and user actions, we could use the default GMSE manager and user functions (written below explicitly, though this is not necessary).
+
+```{r, eval = FALSE}
+gmse_apply(res_mod = alt_res, obs_mod = alt_obs, 
+           man_mod = manager, use_mod = user, X = 1000)
+```
+
+The above produces the output below returning culling costs and culling actions attempted by four users (note that the default manager target abundance is 1000).
+
+```
+$resource_results
+[1] 1500
+
+$observation_results
+[1] 1350
+
+$manager_results
+       scaring culling castration feeding help_offspring
+policy      NA      10         NA      NA             NA
+
+$user_results
+        resource_type scaring culling castration feeding help_offspring tend_crops kill_crops
+Manager             1      NA       0         NA      NA             NA         NA         NA
+user_2              1      NA      70         NA      NA             NA         NA         NA
+user_3              1      NA      70         NA      NA             NA         NA         NA
+user_4              1      NA      71         NA      NA             NA         NA         NA
+user_5              1      NA      73         NA      NA             NA         NA         NA
+```
+
+Instead of using the `gmse` function, we might simulate multiple generations by calling `gmse_apply` through a loop, reassigning outputs where necessary for the next generation (where outputs are not reassigned, new defaults will be inserted in their place, so, e.g., if we were to just loop without reassigning any variables, nothing would update and we would be running the same model, effectively, multiple times). Below shows how this might be done.
+
+```{r, eval = FALSE}
+sim1      <- gmse_apply(get_res = "full", lambda = 0.3);
+RESOURCES <- sim1$resource_array;
+LAND      <- sim1$LAND;
+PARAS     <- sim1$PARAS;
+results   <- matrix(dat = NA, nrow = 40, ncol = 4);
+
+for(time_step in 1:40){
+    sim_new <- gmse_apply(RESOURCES = RESOURCES, LAND = LAND, PARAS = PARAS,
+                          COST = COST, ACTION = ACTION, stakeholders = 10,
+                          get_res   = "full", agent_view = 20);
+    
+    results[time_step, 1] <- sim_new$resource_vector;
+    results[time_step, 2] <- sim_new$observation_vector;
+    results[time_step, 3] <- sim_new$manager_vector;
+    results[time_step, 4] <- sim_new$user_vector;
+    
+    RESOURCES <- sim_new$resource_array;
+    LAND      <- sim_new$LAND;
+    PARAS     <- sim_new$PARAS;
+    COST      <- sim_new$COST;
+    ACTION    <- sim_new$ACTION;
+}
+
+colnames(results) <- c("Abundance", "Estimate", "Cull_cost", "Cull_attempts");
+```
+
+The above results in the following output for `results`.
+
+```
+      Abundance  Estimate Cull_cost Cull_attempts
+ [1,]      1195 1165.9726        10   716
+ [2,]      1045  939.9167       110   461
+ [3,]      1160 1160.0238        10   715
+ [4,]      1056 1183.8192        10   715
+ [5,]      1014  850.6841       110   468
+ [6,]      1171 1237.3587        10   717
+ [7,]      1026  993.4563       110   464
+ [8,]      1202  957.7632       110   464
+ [9,]      1394 1469.3635        10   702
+[10,]      1333 1457.4658        10   702
+[11,]      1277 1397.9774        10   702
+[12,]      1175 1415.8239        10   702
+[13,]      1088  701.9631       110   468
+[14,]      1275 1207.6145        10   718
+[15,]      1200 1332.5402        10   718
+[16,]      1116 1029.1493        45   512
+[17,]      1249 1814.3962        10   699
+[18,]      1141 1273.0518        10   722
+[19,]      1019  963.7121       110   455
+[20,]      1216 1629.9822        10   708
+[21,]      1088 1130.2796        10   708
+[22,]       988 1035.0982        38   537
+[23,]      1056 1029.1493        45   505
+[24,]      1154  749.5538       110   463
+[25,]      1344 1499.1077        10   722
+[26,]      1268 1386.0797        10   712
+[27,]      1165 1493.1588        10   707
+[28,]      1061 1070.7912        19   633
+[29,]      1019 1076.7400        17   663
+[30,]       961  600.8328       110   457
+[31,]      1135  874.4795       110   450
+[32,]      1338 1189.7680        10   701
+[33,]      1275 1600.2380        10   710
+[34,]      1174 1362.2844        10   709
+[35,]      1104 1112.4331        12   685
+[36,]      1003 1302.7960        10   715
+[37,]       828 1183.8192        10   712
+[38,]       649  785.2469       110   462
+[39,]       739 1023.2005        56   488
+[40,]       813  910.1725       110   455
+```
+
+Note that managers increase the cost of culling based on the time step's estimated abundance, and user culling attempts decrease when culling costs increase.
+
+In addition to the flexibility of allowing user-defined submodels, `gmse_apply` is also useful for modellers who might be interested in simulating processes not currently available in `gmse` by itself. For example, if we wanted to model a sudden environmental perturbation decreasing population size, or a sudden influx of new users, after 30 generations, we could do so in the loop.
+
+In the near future, the `gmse_apply` function will be included in the GMSE vignette and submitted to CRAN with the rest of v0.3.0.0 -- in the mean time, I believe that all major bugs have been ironed out, but please let me know or [report an issue](https://github.com/bradduthie/gmse/issues) if you are able to crash the function (i.e., if you run it and it causes R to crash -- you should always get an error message before this happens). 
+
+To download the latest GMSE v0.3.0.0, simply run the below in R (make sure that `devtools` is installed).
+
+```
+devtools::install_github("bradduthie/GMSE")
+```
+
+I welcome any feedback, and I expect to submit an update to CRAN around late October.
 
 > <a name="u-12-OCT-2017">Update: 12 OCT 2017</a>
 
