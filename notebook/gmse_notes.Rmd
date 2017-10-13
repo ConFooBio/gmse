@@ -93,7 +93,7 @@ library(rhandsontable)
 
 **GMSE v0.3.0.0 now available with gmse_apply**
 
-The `gmse_apply` function is now available on a new GMSE version 0.3.0.0. (minor tweaks to other functions have also been made, but nothing that changes the user experience of gmse -- mostly typos corrected in the documentation). The new function allows software users to integrate their own submodels (resource, observation, manager, and user) into GMSE, or to use their own submodels entirely within a single function.
+The `gmse_apply` function is now available on a new [GMSE version 0.3.0.0](https://github.com/bradduthie/gmse/releases/tag/v0.3.0.0). (minor tweaks to other functions have also been made, but nothing that changes the user experience of gmse -- mostly typos corrected in the documentation). The new function allows software users to integrate their own submodels (resource, observation, manager, and user) into GMSE, or to use their own submodels entirely within a single function.
 
 ********************************************************************************
 
