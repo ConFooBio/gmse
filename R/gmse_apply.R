@@ -1,13 +1,6 @@
 #' GMSE apply function
 #' 
-#' The gmse_apply function is a flexible function that allows for user-defined
-#' sub-functions calling resource, observation, manager, and user models. Where
-#' such models are not specified, GMSE models resource, observation, manager, 
-#' and user are run by default. Any type of sub-model (e.g., numerical,
-#' individual-based) is permitted as long as the input and output are
-#' are appropriately specified. Only one time step is simulated per call to
-#' gmse_apply, so the function must be looped for simulation over time. Where
-#' model parameters are needed but not specified, defaults from gmse are used.
+#'The gmse_apply function is a flexible function that allows for user-defined sub-functions calling resource, observation, manager, and user models. Where such models are not specified, GMSE submodels 'resource', 'observation', 'manager', and 'user' are run by default. Any type of sub-model (e.g., numerical,  individual-based) is permitted as long as the input and output are appropriately specified. Only one time step is simulated per call to gmse_apply, so the function must be looped for simulation over time. Where model parameters are needed but not specified, defaults from gmse are used.
 #'
 #' 
 #'@param res_mod The function specifying the resource model. By default, the individual-based resource model from gmse is called with default parameter values. User-defined functions must either return an unnamed matrix or vector, or return a named list in which one list element is named either 'resource_array' or 'resource_vector', and arrays must follow the format of GMSE in terms of column number and type (if there is only one resource type, then the model can also just return a scalar value).
