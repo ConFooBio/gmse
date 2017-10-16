@@ -49,7 +49,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **OCT** [13](#u-13-OCT-2017), [12](#u-12-OCT-2017), [6](#u-6-OCT-2017)
+     - **OCT** [16](#u-16-OCT-2017), [13](#u-13-OCT-2017), [12](#u-12-OCT-2017), [6](#u-6-OCT-2017)
      - **SEP** [28](#u-28-SEP-2017), [27](#u-27-SEP-2017), [26](#u-26-SEP-2017), [25](#u-25-SEP-2017), [22](#u-22-SEP-2017), [15](#u-15-SEP-2017), [13](#u-13-SEP-2017), [8](#u-8-SEP-2017), [6](#u-6-SEP-2017)
      - **AUG** [28](#u-28-AUG-2017), [23](#u-23-AUG-2017), [17](#u-17-AUG-2017), [16](#u-16-AUG-2017), [15](#u-15-AUG-2017), [7](#u-7-AUG-2017)
      - **JUL** [7](#u-7-JUL-2017), [3](#u-3-JUL-2017)
@@ -88,6 +88,12 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-16-OCT-2017">Update: 16 OCT 2017</a>
+
+**New group_think parameter in GMSE v0.3.1.0**
+
+A new `group_think` parameter has been developed by [Jeremy](https://twitter.com/jeremyjcusack) and me, and included into an updated v0.3.1.0. This parameter is defined as `FALSE` be default, but when set to be `TRUE` will cause all users to act as a single block instead of independently. In the code, what happens is that a single user (user ID number 2) runs through the genetic algorithm, but then instead of having the resulting actions apply to this user, they apply to all users so that the genetic algorithm only needs to be run once in the user model. This decreases simulation time, particularly when there are a lot of users to model, but at a cost of removing all variation in actions among users. The `group_think` parameter can be defined in both `gmse()` and `gmse_apply()`, but I have not added it as an option in `gmse_gui()`.
 
 > <a name="u-13-OCT-2017">Update: 13 OCT 2017</a>
 
