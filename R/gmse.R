@@ -137,6 +137,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     if(user_budget > 10000 | manager_budget > 10000){
         stop("User and manager budgets cannot exceed 10000");
     }
+    if(user_budget < 1 | manager_budget < 1){
+        stop("User and manager budgets must be at least 1");
+    }
     
     user_res_opts  <- c(scaring, culling, castration, feeding, help_offspring);
     user_lnd_opts  <- c(tend_crops, kill_crops);
