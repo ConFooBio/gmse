@@ -380,6 +380,27 @@ void do_acts(double ***action_array, double **resource_array, double *paras,
     free(action_clone);
 }
 
+/* =============================================================================
+ *  This copies actions from one agent to another
+ *  Inputs include:
+ *      action_array: An array of the action of agents
+ *      from: The layer of the action array to be copied
+ *      to: The layer of the action array to copy to
+ * ========================================================================== */
+void copycat(double ***action_array, int from, int to, double *paras){
+    
+    int ROWS, COLS, start_col, row, col;
+    
+    ROWS            = (int) paras[68];
+    COLS            = (int) paras[69];
+    start_col       = (int) paras[71];
+    
+    for(col = start_col; col < COLS; col++){
+        for(row = 0; row < ROWS; row++){
+            action_array[row][col][to] = action_array[row][col][from];
+        }
+    }
+}
 
 /* =============================================================================
  * MAIN OBSERVATION FUNCTION:
@@ -424,6 +445,7 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     int jacobian_dim;        /* Dimensions of the (square) Jacobian matrix */
     int protected_n;         /* Number of protected R objects */
     int vec_pos;             /* Vector position for making arrays */
+    int group_think;         /* Should only have one user decide actions */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
@@ -629,9 +651,19 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     
     send_agents_home(agent_array, land, paras);
     
-    for(agent = 1; agent < agent_number; agent++){ 
+    group_think = paras[106];
+    
+    if(group_think == 1 && agent_number > 2){
         ga(actions, costs, agent_array, resource_array, land, Jacobian_mat,
-           lookup, paras, agent, 0);
+           lookup, paras, 1, 0);
+        for(agent = 2; agent < agent_number; agent++){
+            copycat(actions, 1, agent, paras);
+        }
+    }else{
+        for(agent = 1; agent < agent_number; agent++){ 
+            ga(actions, costs, agent_array, resource_array, land, Jacobian_mat,
+               lookup, paras, agent, 0);
+        }
     }
     
     do_acts(actions, resource_array, paras, land);
