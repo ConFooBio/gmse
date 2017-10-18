@@ -4,9 +4,9 @@ author: A. Bradley Duthie, Jeremy J. Cusack, Erlend B. Nilsen, Roc&#0237;o Pozo,
   Sarobidy Rakotonarivo, Bram Van Moorter, and Nils Bunnefeld
 date: '`r Sys.Date()`'
 output:
+  html_document: default
   pdf_document:
     fig_caption: yes
-  html_document: default
   word_document:
     fig_caption: yes
     reference_docx: docx_template.docx
@@ -352,6 +352,7 @@ GMSE arguments and output
 
 Simulations are run using the gmse() function, which offers a range of options for setting parameter values (see Table 1 for some select examples). Output of gmse() is an exhaustive list that includes all resources and observations, all stakeholder decisions and actions, and all landscape properties in each time step of the simulation. Results are most easily interpreted visually, so a summary of simulation dynamics is plotted by default (the plot can also be called using the plot_gmse_results function). An example below shows how simulations are set and interpreted.
 
+\small
 
 |  Argument       | Default | Description                                                                                      |
 |-----------------|---------|--------------------------------------------------------------------------------------------------|
@@ -388,6 +389,8 @@ Simulations are run using the gmse() function, which offers a range of options f
 |  land_ownership |  FALSE  | Stakeholders own land and increase utility indirectly from landscape instead of resource use     |
 |  manage_freq    |  1      | Frequency (in time steps) with which managers revise and enact policy                            |
 |  public_land    |  0      | Proportion of land that is public (un-owned by stakeholders) if land_ownership = TRUE            |
+
+\normalsize
 
 **Table 1:** Select parameter values for initialising generalised management strategy evaluation simulations
 
