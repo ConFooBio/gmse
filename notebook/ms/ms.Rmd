@@ -253,7 +253,7 @@ Abstract
 
 1. Management strategy evaluation (MSE) is a powerful tool for simulating all key aspects of natural resource management under conditions of uncertainty.
 2. We present the R package GMSE, which generalises MSE using a game-theoretic approach to simulate adaptive decision-making management scenarios between stakeholders with competing objectives under complex social-ecological interactions and uncertainty.
-3. GMSE is agent-based and spatially explicit, and incorporates a high degree of realism through mechanistic modelling of links and feedbacks among stakeholders and with the ecosystem.
+3. GMSE models can be agent-based and spatially explicit, incorporating a high degree of realism through mechanistic modelling of links and feedbacks among stakeholders and with the ecosystem; additionally, user-defined sub-models can also be incorporated as functions into the broader GMSE framework. 
 4. We show how GMSE simulates a social-ecological system using the example of a waterfowl population in an agricultural landscape that is adaptively managed; simulated waterfowl exploit agricultural land, causing conflict between conservation interests and the interest of food producers maximising their crop yield.
 5. The R package GMSE is open source under GNU Public License; source code and documents are freely available on GitHub.
 
