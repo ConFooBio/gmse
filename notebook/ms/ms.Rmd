@@ -4,12 +4,12 @@ author: A. Bradley Duthie, Jeremy J. Cusack, Erlend B. Nilsen, Roc&#0237;o Pozo,
   Sarobidy Rakotonarivo, Bram Van Moorter, and Nils Bunnefeld
 date: '`r Sys.Date()`'
 output:
-  word_document:
-    fig_caption: yes
-    reference_docx: docx_template.docx
   pdf_document:
     fig_caption: yes
   html_document: default
+  word_document:
+    fig_caption: yes
+    reference_docx: docx_template.docx
 linestretch: 1
 header-includes:
 - \usepackage{natbib}
@@ -398,10 +398,10 @@ An example of resource management
 Here we consider the example of a managed natural resource whose abundance affects a group of stakeholders by temporarily decreasing the value of user land. This scenario could be interpreted in multiple ways; we consider a protected population of waterfowl that exploits agricultural land causing a conservation conflict with users [hereafter 'farmers', e.g., @Tuvendal2015; @Fox2016a; @Fox2017a]. Managers in this example might want to keep the abundance of waterfowl at a target level, while farmers might want to minimise the damage inflicted on their crops [e.g., @Madsen2017]. Using GMSE, it is possible to simulate waterfowl population dynamics, along with the continued monitoring and policy set by managers, and the actions that farmers take to protect their crop yields given the constraints of policy. We consider a population of waterfowl with an initial abundance and manager target abundance of 1000, but whose carrying capacity is 2000. Waterfowl consume and destroy all crop yield upon arrival to a landscape cell. In each time step, waterfowl are observed on subset of cells, then managers extrapolate from density per cell to estimate total population size. Managers then use these estimates to set costs of culling and scaring (non-lethal) waterfowl for 10 farmers. Farmers attempt to reduce the negative impact of waterfowl on the cropland that they own, working within the constraints of culling and scaring costs and their budget for performing these actions.
 
 ```{r, echo = TRUE}
-sim <- gmse(land_ownership = TRUE, stakeholders = 10, observe_type = 0, 
+sim <- gmse(land_ownership = TRUE, stakeholders = 5, observe_type = 0, 
             res_death_K = 2000, manage_target = 1000, RESOURCE_ini = 1000, 
-            user_budget = 5000, manager_budget = 5000, res_consume = 1, 
-            scaring = TRUE, times_observe = 1, plotting = FALSE);
+            user_budget = 1000, manager_budget = 1000, res_consume = 1, 
+            scaring = TRUE, plotting = FALSE);
 ```
 
 Parameters in gmse() not listed are set to default values. By plotting the output with plot_gmse_results, simulation results can be interpreted visually.
