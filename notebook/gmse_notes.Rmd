@@ -95,6 +95,10 @@ library(rhandsontable)
 
 An error with the `res_move_obs` parameter was identified by [Jeremy](https://twitter.com/jeremyjcusack). This parameter was supposed to only affect resource movement during *observation*, but an if statement corrected in [commit 5eeb88d285af57984171e7d72410659b3b441af3](https://github.com/bradduthie/gmse/commit/5eeb88d285af57984171e7d72410659b3b441af3) was causing `res_move_obs = FALSE` to stop moving entirely in the resource model. This has now been resolved in a patched GMSE v0.3.1.1, which is now available on GitHub.
 
+**New option for removal of resources**
+
+A new option has been included for the argument `res_death_type`. By setting `res_death_type = 3` in `gmse` or `gmse_apply`, resources can experience both density dependent (caused by `res_death_K`) and density independent (caused by `remove_pr`) removal simultaneously. Effects of each are independent of one another (i.e., both processes occur simultaneously, so the calculation of population size affecting removal due to carrying capacity includes resources that might experience density independent mortality).
+
 > <a name="u-16-OCT-2017">Update: 16 OCT 2017</a>
 
 **New group_think parameter in GMSE v0.3.1.0**
