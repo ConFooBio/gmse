@@ -49,7 +49,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **OCT** [16](#u-16-OCT-2017), [13](#u-13-OCT-2017), [12](#u-12-OCT-2017), [6](#u-6-OCT-2017)
+     - **OCT** [19](#u-19-OCT-2017), [16](#u-16-OCT-2017), [13](#u-13-OCT-2017), [12](#u-12-OCT-2017), [6](#u-6-OCT-2017)
      - **SEP** [28](#u-28-SEP-2017), [27](#u-27-SEP-2017), [26](#u-26-SEP-2017), [25](#u-25-SEP-2017), [22](#u-22-SEP-2017), [15](#u-15-SEP-2017), [13](#u-13-SEP-2017), [8](#u-8-SEP-2017), [6](#u-6-SEP-2017)
      - **AUG** [28](#u-28-AUG-2017), [23](#u-23-AUG-2017), [17](#u-17-AUG-2017), [16](#u-16-AUG-2017), [15](#u-15-AUG-2017), [7](#u-7-AUG-2017)
      - **JUL** [7](#u-7-JUL-2017), [3](#u-3-JUL-2017)
@@ -88,6 +88,12 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-19-OCT-2017">Update: 19 OCT 2017</a>
+
+**Bug fix concerning resource movement**
+
+An error with the `res_move_obs` parameter was identified by [Jeremy](https://twitter.com/jeremyjcusack). This parameter was supposed to only affect resource movement during *observation*, but an if statement corrected in [commit 5eeb88d285af57984171e7d72410659b3b441af3](https://github.com/bradduthie/gmse/commit/5eeb88d285af57984171e7d72410659b3b441af3) was causing `res_move_obs = FALSE` to stop moving entirely in the resource model. This has now been resolved in a patched GMSE v0.3.1.1, which is now available on GitHub.
 
 > <a name="u-16-OCT-2017">Update: 16 OCT 2017</a>
 
