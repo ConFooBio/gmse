@@ -301,7 +301,6 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     int res_num_total;       /* Total number of resources in returned array */
     int protected_n;         /* Number of protected R objects */
     int vec_pos;             /* Vector position for making arrays */
-    int move_res;            /* Should resources be allowed to move */
     int off_col;             /* The column where the offspring are held */
     int rm_col;              /* Column where removal is indiciated */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
@@ -379,7 +378,6 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     /* Do the biology here now */
     /* ====================================================================== */
     
-    move_res  = (int) paras[19]; /* Should the resources be moved?        */
     off_col   = (int) paras[38];
     rm_col    = (int) paras[43];
     
@@ -387,9 +385,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     add_time(res_old, paras);
     
     /* Resources move according to move function and parameter) */
-    if(move_res == 1){
-        res_mover(res_old, land, paras);
-    }
+    res_mover(res_old, land, paras);
 
     /* Identify, and calculate the number of, added individuals */
     res_add(res_old, paras);
