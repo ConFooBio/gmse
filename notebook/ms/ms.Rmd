@@ -5,18 +5,18 @@ author: A. Bradley Duthie, Jeremy J. Cusack, Erlend B. Nilsen, Roc&#0237;o Pozo,
 date: '`r Sys.Date()`'
 output:
   pdf_document:
+    citation_package: natbib
     fig_caption: yes
   html_document: default
   word_document:
     fig_caption: yes
     reference_docx: docx_template.docx
-linestretch: 1
 header-includes:
-- \usepackage{natbib}
 - \usepackage{lineno}
 - \linenumbers
-- \bibliographystyle{amnatnat}
+linestretch: 1
 bibliography: gmse.bib
+biblio-style: apalike
 ---
 
 ******************************
