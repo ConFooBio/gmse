@@ -49,7 +49,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **OCT** [19](#u-19-OCT-2017), [16](#u-16-OCT-2017), [13](#u-13-OCT-2017), [12](#u-12-OCT-2017), [6](#u-6-OCT-2017)
+     - **OCT** [23](#u-23-OCT-2017), [19](#u-19-OCT-2017), [16](#u-16-OCT-2017), [13](#u-13-OCT-2017), [12](#u-12-OCT-2017), [6](#u-6-OCT-2017)
      - **SEP** [28](#u-28-SEP-2017), [27](#u-27-SEP-2017), [26](#u-26-SEP-2017), [25](#u-25-SEP-2017), [22](#u-22-SEP-2017), [15](#u-15-SEP-2017), [13](#u-13-SEP-2017), [8](#u-8-SEP-2017), [6](#u-6-SEP-2017)
      - **AUG** [28](#u-28-AUG-2017), [23](#u-23-AUG-2017), [17](#u-17-AUG-2017), [16](#u-16-AUG-2017), [15](#u-15-AUG-2017), [7](#u-7-AUG-2017)
      - **JUL** [7](#u-7-JUL-2017), [3](#u-3-JUL-2017)
@@ -88,6 +88,12 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-23-OCT-2017">Update: 23 OCT 2017</a>
+
+**Bug fix concerning density-based estimation**
+
+An error with density-based resource estimation (`observe_type = 0`) at very high values of `agent_view` was identified by [Jeremy](https://twitter.com/jeremyjcusack). When managers had a view of the landscape that encompassed a number of cells that was calculated to be larger than the *actual* number of landscape cells (as defined by `land_dim_1 * land_dim_2`), the manager would understimate actual population size. This occurred only in the `manager.c` file and not in the equivalent R function shown during plotting. The bug was fixed in commit [a916b8f8a40041b5f08984cf73348108482dde59](https://github.com/bradduthie/gmse/commit/a916b8f8a40041b5f08984cf73348108482dde59) with a simple `if` statement. This has therefore been resolved in a patched GMSE v0.3.1.3, which is now availabe on GitHub.
 
 > <a name="u-19-OCT-2017">Update: 19 OCT 2017</a>
 
