@@ -51,7 +51,11 @@ gmse_summary <- function(gmse_results){
                                     manager_acts[,2] == res_types[j]);
             target <- manager_acts[target_row, 5];
             adjusr <- manager_acts[estim_row,  5];
-            observations[i,j+1] <- target - adjusr;
+            if(adjusr > 0){
+                observations[i,j+1] <- target - adjusr;
+            }else{
+                observations[i,j+1] <- target - adjusr;
+            }
             #---- Cost setting below
             costs[c_row, 1]  <- i;
             costs[c_row, 2]  <- res_types[j];
