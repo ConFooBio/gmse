@@ -75,6 +75,10 @@ void dens_est(double **obs_array, double *paras, double **agent_array,
     cells   = land_x * land_y; /* Plus one needed for zero index */
     tot_obs = 0;
     
+    if(area > cells){
+        area = cells;
+    }
+    
     for(resource = 0; resource < int_table_rows; resource++){
         abun_est[resource] = 0;
         if(interact_table[resource][0] == 0){ /* Change when turn off type? */
