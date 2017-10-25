@@ -36,7 +36,7 @@ gmse_apply <- function(res_mod  = resource,
     needed_args <- argument_list(res_mod, obs_mod, man_mod, use_mod, all_args);
     arg_vals    <- needed_args$all_arg_values; 
     arg_name    <- needed_args$all_arg_names;
-    
+
     names(arg_vals) <- arg_name;
     
     # ------ RESOURCE MODEL ----------------------------------------------------
@@ -518,7 +518,7 @@ translate_results <- function(arg_list, output){
             arg_list <- gmse_apply_build_cost(arg_list);
         }
         if(out_names[[i]] == "observation_array" | 
-           out_names[[i]] == "OBSERVATION"         ){
+           out_names[[i]] == "OBSERVATION"         ){               
             if("PARAS" %in% arg_names == FALSE){
                 stop("I can't find PARAS, and I need it");
             }
@@ -661,18 +661,30 @@ estimate_abundances <- function(arg_list){
     land         <- arg_list$LAND;
     view         <- arg_list$AGENTS[1, 9];
     obs_method   <- paras[9];
-    est          <- NA;
-    if(obs_method == 0){
-        est <- dens_est(observations, paras, view, land)$Nc;
-    }
-    if(obs_method == 1){
-        est <- chapman_est(observations, paras)$Nc;
-    }
-    if(obs_method == 2 | obs_method == 3){
-        est <- sum(observations[,13]);
-    }
-    if(is.na(est[1]) == TRUE){
-        stop("I couldn't estimate population; check observe_type?");
+    res_types    <- unique(observations[,2]);
+    est          <- rep(x = NA, times = length(res_types));
+    for(i in res_types){
+        esti       <- NA;
+        obs_subset <- observations[observations[,2] == i,];
+        obs_sub_ar <- is.array(obs_subset);
+        if(obs_method == 0 & obs_sub_ar == TRUE){
+            esti <- dens_est(obs_subset, paras, view, land)$Nc;
+        }
+        if(obs_method == 1 & obs_sub_ar == TRUE){
+            esti <- chapman_est(obs_subset, paras)$Nc;
+        }
+        if( (obs_method == 2 | obs_method == 3) & obs_sub_ar == TRUE ){
+            esti <- sum(obs_subset[,13]);
+        }
+        if(length(res_types) > 1 & is.na(esti[1]) == TRUE){
+            esti[1] <- 0;
+        }
+        if(is.na(esti[1]) == TRUE){
+            stop("I couldn't estimate population; check observe_type?
+                  Might not be enough resources to estimate (e.g., if there
+                  is more than one type of resources)");
+        }
+        est[i] <- esti;
     }
     arg_list$PARAS[100]         <- est[1];
     arg_list$observation_vector <- est;
