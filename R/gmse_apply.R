@@ -274,6 +274,18 @@ check_args <- function(arg_list, the_fun){
             stop(error);
         }
     }
+    if(which_fun == "man_mod"){
+        check_manager_res_types(arg_list);
+    }
+}
+
+check_manager_res_types <- function(arg_list){    
+    res_types <- unique(arg_list$OBSERVATION[,2]);
+    if(length(res_types) > 2){
+        stop("The GMSE manager function cannot yet handle more than two
+              resource types. Email the package creator and tell them that you
+              want this feature in gmse_apply, or add it as a GitHub issue");
+    }
 }
 
 prep_res <- function(arg_list, res_mod){
@@ -505,7 +517,10 @@ translate_results <- function(arg_list, output){
             arg_list$resource_vector <- typ_vec;
         }
         if(out_names[[i]] == "observation_vector"){
-            obs_arr <- make_resource(); # Dummy, since we already have estimate
+            res_tys     <- length(arg_list$observation_vector);
+            obs_arr     <- make_resource(resource_quantity = 10*res_tys);
+            res_idd     <- rep(x = 1:res_tys, each = 10);
+            obs_arr[,2] <- res_idd;
             arg_list$observation_array <- obs_arr;
             if("PARAS" %in% arg_names == FALSE){
                 stop("I can't find PARAS, and I need it");
