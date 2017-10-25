@@ -8,7 +8,7 @@ test_that("Default gmse_apply is returned with the right length and no error", {
     expect_equal(length(gmap), 4);
     expect_equal(length(gmap$resource_results), 1);
     expect_equal(length(gmap$observation_results), 1);
-    expect_equal(length(gmap$manager_results), 5);
+    expect_equal(length(gmap$manager_results), 6);
     expect_equal(dim(gmap$user_results), c(5, 8));
 })
 
@@ -49,7 +49,7 @@ comb_1 <- gmse_apply(alt_res, alt_obs, alt_man, user);
 test_that("Combination model 1", {
     expect_equal(comb_1$resource_results, 1500);
     expect_equal(comb_1$observation_results, 1350);
-    expect_equal(comb_1$manager_results[2], 350);
+    expect_equal(comb_1$manager_results[3], 350);
     expect_equal(dim(comb_1$user_results), c(5, 8));
 })
 
@@ -58,7 +58,7 @@ comb_2 <- gmse_apply(alt_res, alt_obs, manager, user);
 test_that("Combination model 2", {
     expect_equal(comb_2$resource_results, 1500);
     expect_equal(comb_2$observation_results, 1350);
-    expect_equal(length(comb_2$manager_results), 5);
+    expect_equal(length(comb_2$manager_results), 6);
     expect_equal(dim(comb_2$user_results), c(5, 8));
 })
 
@@ -81,16 +81,14 @@ test_that("Combination model 4", {
     expect_equal(is.numeric(comb_4$user_results), TRUE);
 })
 
-
 comb_5 <- gmse_apply(alt_res, observation, alt_man, user);
 
 test_that("Combination model 5", {
     expect_equal(comb_5$resource_results, 1500);
     expect_equal(is.numeric(comb_5$observation_results), TRUE);
-    expect_equal(length(comb_5$manager_results), 5);
+    expect_equal(length(comb_5$manager_results), 6);
     expect_equal(dim(comb_5$user_results), c(5, 8));
 })
-
 
 comb_6 <- gmse_apply(alt_res, observation, manager, alt_usr);
 
@@ -106,7 +104,7 @@ comb_7 <- gmse_apply(alt_res, observation, manager, user);
 test_that("Combination model 7", {
     expect_equal(comb_7$resource_results, 1500);
     expect_equal(is.numeric(comb_7$observation_results), TRUE);
-    expect_equal(length(comb_7$manager_results), 5);
+    expect_equal(length(comb_7$manager_results), 6);
     expect_equal(dim(comb_7$user_results), c(5, 8));
 })
 
@@ -115,7 +113,7 @@ comb_8 <- gmse_apply(resource, alt_obs, alt_man, user);
 test_that("Combination model 8", {
     expect_equal(is.numeric(comb_8$resource_results), TRUE);
     expect_equal(is.numeric(comb_8$observation_results), TRUE);
-    expect_equal(length(comb_8$manager_results), 5);
+    expect_equal(length(comb_8$manager_results), 6);
     expect_equal(dim(comb_8$user_results), c(5, 8));
 })
 
@@ -124,7 +122,7 @@ comb_9 <- gmse_apply(resource, alt_obs, manager, user);
 test_that("Combination model 9", {
     expect_equal(is.numeric(comb_9$resource_results), TRUE);
     expect_equal(is.numeric(comb_9$observation_results), TRUE);
-    expect_equal(length(comb_9$manager_results), 5);
+    expect_equal(length(comb_9$manager_results), 6);
     expect_equal(dim(comb_9$user_results), c(5, 8));
 })
 
@@ -151,7 +149,7 @@ comb_12 <- gmse_apply(resource, observation, alt_man, user);
 test_that("Combination model 12", {
     expect_equal(is.numeric(comb_12$resource_results), TRUE);
     expect_equal(is.numeric(comb_12$observation_results), TRUE);
-    expect_equal(length(comb_12$manager_results), 5);
+    expect_equal(length(comb_12$manager_results), 6);
     expect_equal(dim(comb_12$user_results), c(5, 8));
 })
 
@@ -164,13 +162,12 @@ test_that("Combination model 13", {
     expect_equal(is.numeric(comb_13$user_results), TRUE);
 })
 
-
 comb_14 <- gmse_apply(resource, observation, manager, user);
 
 test_that("Combination model 14", {
     expect_equal(is.numeric(comb_14$resource_results), TRUE);
     expect_equal(is.numeric(comb_14$observation_results), TRUE);
-    expect_equal(length(comb_14$manager_results), 5);
+    expect_equal(length(comb_14$manager_results), 6);
     expect_equal(dim(comb_14$user_results), c(5, 8));
 })
 
