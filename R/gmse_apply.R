@@ -1283,9 +1283,18 @@ get_user_sum <- function(arg_list){
                             "feeding", "help_offspring", "tend_crops", 
                             "kill_crops");
     act_row_names    <- rep(x = NA, length = dim(act_mat)[1]);
-    act_row_names[1] <- c("Manager");
-    for(u in 2:dim(act_mat)[1]){
-        act_row_names[u] <- paste("user_",u, sep = "");
+    res_types        <- unique(acts[,2,1]);
+    act_row_names[1:length(res_types)] <- c("Manager");
+    u_start  <- length(res_types) + 1;
+    u        <- 1;
+    t_count  <- 1;
+    for(i in u_start:dim(act_mat)[1]){
+        act_row_names[i] <- paste("user_",u, sep = "");
+        t_count          <- t_count + 1;
+        if(t_count > length(res_types)){
+            t_count <- 1;
+            u       <- u + 1;
+        }
     }
     rownames(act_mat) <- act_row_names;
     
