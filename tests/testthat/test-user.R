@@ -1,5 +1,5 @@
 library(GMSE);
-context("Manager model");
+context("User model");
 
 set.seed(1);
 res <- make_resource(model              = "IBM", 
