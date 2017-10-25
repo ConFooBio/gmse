@@ -417,12 +417,16 @@ check_name_results <- function(output, vec_name, mat_name, the_fun){
     outname       <- names(output);
     which_fun     <- deparse(substitute(the_fun));
     if(is.null(outname) == TRUE){
+        temp_out <- list();
         if(is.vector(output[[1]]) == TRUE){
-            names(output)[[1]] <- vec_name;
+            temp_out[[1]]        <- output;
+            names(temp_out)[[1]] <- vec_name;
         }
         if(is.matrix(output[[1]]) == TRUE){
-            names(output)[[1]] <- mat_name;
+            temp_out[[1]]        <- output;
+            names(temp_out)[[1]] <- mat_name;
         }
+        output <- temp_out;
     }
     accepted <- c("resource_vector", "resource_array", "observation_vector",
                   "observation_array", "manager_vector", "manager_array",
@@ -490,7 +494,7 @@ translate_results <- function(arg_list, output){
         }
         if(out_names[[i]] == "resource_vector"){
             tot_res <- floor(output[[i]]);
-            res_arr <- make_resource(resource_quantity = tot_res);
+            res_arr <- make_resource(resource_quantity = sum(tot_res));
             typeNum <- length(output[[i]]);
             types   <- rep(x = 1:typeNum, times = output[[i]]);
             res_arr[,2] <- types;
@@ -546,9 +550,6 @@ translate_results <- function(arg_list, output){
         }
         if(out_names[[i]] == "manager_array" | out_names[[i]] == "COST"){
             chk <- length(arg_list$ACTION[arg_list$ACTION[,1,1] == 1,1,1]);
-            if( chk != length(arg_list$manager_vector) ){
-                stop("manager model puts out too many resources in vec form");
-            }
             rows                    <- which(arg_list$ACTION[, 1, 1] == 1);
             arg_list$manager_vector <- arg_list$ACTION[rows, 9, 1];
         }
@@ -579,7 +580,7 @@ translate_results <- function(arg_list, output){
 }
 
 check_extinction <- function(arg_list){
-    if(arg_list$resource_vector < 2){
+    if(sum(arg_list$resource_vector) < 2){
         stop("Extinction has occurred -- no observation posible");
     }
     if(dim(arg_list$resource_array)[1] < 2){
@@ -1143,12 +1144,13 @@ gmse_apply_out <- function(arg_list, out, res_mod, obs_mod, man_mod, usr_mod,
 
 get_manager_sum <- function(arg_list){
     acts           <- arg_list$user_array;
-    costs          <- arg_list$manager_array
-    scaring        <- NA;
-    culling        <- NA;
-    castrating     <- NA;
-    feeding        <- NA;
-    help_offspring <- NA;
+    costs          <- arg_list$manager_array;
+    res_types      <- length(arg_list$resource_vector);
+    scaring        <- rep(x = NA, times = res_types);
+    culling        <- rep(x = NA, times = res_types);
+    castrating     <- rep(x = NA, times = res_types);
+    feeding        <- rep(x = NA, times = res_types);
+    help_offspring <- rep(x = NA, times = res_types);
     u_scaring      <- arg_list$scaring;
     if(is.null(u_scaring)){
         u_scaring <- arg_list$GMSE$scaring;
@@ -1190,11 +1192,15 @@ get_manager_sum <- function(arg_list){
         help_offspring <- costs[rows, 10, 2];
     }
     all_costs <- c(scaring, culling, castrating, feeding, help_offspring);
-    cost_mat  <- matrix(data = all_costs, nrow = 1);
-    colnames(cost_mat) <- c("scaring", "culling", "castration", "feeding",
-                            "help_offspring");
-    rownames(cost_mat) <- c("policy");
-    
+    cost_mat  <- matrix(data = all_costs, nrow = res_types);
+    cost_mat  <- cbind(1:res_types, cost_mat);
+    colnames(cost_mat) <- c("resource_type", "scaring", "culling", "castration",
+                            "feeding", "help_offspring");
+    cost_row_names <- rep(x = NA, length = dim(cost_mat)[1]);
+    for(i in 1:dim(cost_mat)[1]){
+        cost_row_names[i] <- paste("policy_",i, sep = "");
+    }
+    rownames(cost_mat) <- cost_row_names;
     return(cost_mat);
 }
 
