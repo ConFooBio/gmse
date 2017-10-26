@@ -160,6 +160,10 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
                );
     }
     
+    if(observe_type == 1){
+        times_observe <- 2;
+    }
+    
     user_res_opts  <- c(scaring, culling, castration, feeding, help_offspring);
     user_lnd_opts  <- c(tend_crops, kill_crops);
     
@@ -192,6 +196,32 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
     return( list(gmse_user_input = as.vector(input_list), 
                  gmse_para_vect  = as.vector(paras))
     );
+}
+
+paras_errors <- function(input_list){
+    if(input_list[7] < 0){
+        stop("ERROR: Agents cannot see negative distance");
+    }
+    if(input_list[8] < 0){
+        stop("ERROR: Agents cannot move negative distance");
+    }
+    if(input_list[9] < 1 | input_list[10 < 1]){
+        stop("ERROR: Carrying capacities must be positive");
+    }
+    if(input_list[15]  <  0 | input_list[15] > 3){
+        stop("ERROR: Unrecognised observe_type for GMSE observation model");
+    }
+    if(user_budget > 10000 | manager_budget > 10000){
+        stop("User and manager budgets cannot exceed 10000");
+    }
+    if(user_budget < 1 | manager_budget < 1){
+        stop("User and manager budgets must be at least 1");
+    }
+    
+    
+    if(input_list[48] < 2){
+        stop("ERROR: Need at least 2 stakeholders (1 manager & 1 user)");
+    }
 }
 
 argument_list <- function(res_mod, obs_mod, man_mod, use_mod, oth_vals){
