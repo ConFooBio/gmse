@@ -455,28 +455,39 @@ collect_land_ini <- function(arg_list){
     make_lnd_list[[1]] <- "IBM";
     make_lnd_list[[2]] <- arg_list$GMSE$land_dim_1;
     if("land_dim_1" %in% arg_names){
-        apos               <- which(arg_names == "land_dim_1");
-        make_lnd_list[[2]] <- arg_list[[apos]];
+        make_lnd_list[[2]] <- arg_list$land_dim_1;
     }
     make_lnd_list[[3]] <- arg_list$GMSE$land_dim_2;
     if("land_dim_2" %in% arg_names){
-        apos               <- which(arg_names == "land_dim_2");
-        make_lnd_list[[3]] <- arg_list[[apos]];
+        make_lnd_list[[3]] <- arg_list$land_dim_2;
     }
     make_lnd_list[[4]] <- 1;
     make_lnd_list[[5]] <- 1;
     make_lnd_list[[6]] <- 0;
-    if(arg_list$GMSE$land_ownership == TRUE){
-        publand     <- arg_list$GMSE$public_land;
-        stakes      <- arg_list$GMSE$stakeholders;
-        stake_pr    <- (1 - publand) / stakes;
-        land_alloc  <- c(publand, rep(x = stake_pr, times = stakes));
-    }else{
-        land_alloc  <- c(1, rep(x = 0, times = arg_list$GMSE$stakeholders)); 
+    make_lnd_list[[7]] <- 1;
+    make_lnd_list[[8]] <- 0
+    make_lnd_list[[9]] <- 3;
+    land_is_owned <- arg_list$GMSE$land_ownership;
+    if("land_ownership" %in% arg_names){
+        land_is_owned <- arg_list$land_ownership;
     }
-    make_lnd_list[[7]] <- 1:(arg_list$GMSE$stakeholders + 1);
-    make_lnd_list[[8]] <- land_alloc
-
+    stakeholders <- arg_list$GMSE$stakeholders;
+    if("stakeholders" %in% arg_names){
+        stakeholders <- arg_list$stakeholders;
+    }
+    public_land <- arg_list$GMSE$public_land;
+    if("public_land" %in% arg_names){
+        public_land <- arg_list$public_land;
+    }
+    if(land_is_owned == TRUE){
+        stake_pr    <- (1 - public_land) / stakeholders;
+        land_alloc  <- c(public_land, rep(x = stake_pr, times = stakeholders));
+    }else{
+        land_alloc  <- c(1, rep(x = 0, times = stakeholders)); 
+    }
+    make_lnd_list[[10]] <- 1:(stakeholders + 1);
+    make_lnd_list[[11]] <- land_alloc;
+    
     return(make_lnd_list);
 }
 
