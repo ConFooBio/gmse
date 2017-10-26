@@ -91,7 +91,7 @@ dens_est <- function(observation, paras, view = view, land = land){
     area    <- area * paras[12];
     ob_strt <- paras[42] + 1;
     endrow  <- dim(observation)[2];
-    tot_obs <- sum(observation[,21:endrow]);
+    tot_obs <- sum(observation[,ob_strt:endrow]);
     prp     <- tot_obs / area;
     est     <- prp * cells;
     lcp     <- prp - 1.96 * sqrt(prp / (vision * vision));
