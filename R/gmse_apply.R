@@ -153,6 +153,8 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
                     land_ownership, manage_freq, converge_crit, manager_sense,
                     public_land, group_think); 
     
+    paras_errors(input_list);
+    
     if(is.null(PARAS) == FALSE){
         paras <- PARAS;
         return(list(gmse_user_input = as.vector(input_list), 
@@ -205,20 +207,52 @@ paras_errors <- function(input_list){
     if(input_list[8] < 0){
         stop("ERROR: Agents cannot move negative distance");
     }
-    if(input_list[9] < 1 | input_list[10 < 1]){
+    if(input_list[9] < 1 | input_list[10] < 1){
         stop("ERROR: Carrying capacities must be positive");
+    }
+    if(input_list[11] != 1){
+        stop("ERROR: Only torus landscape possible in GMSE (edge_effect == 1)");
+    }
+    if(input_list[12] < 0 | input_list[12] > 3){
+        stop("ERROR: Unrecognised GMSE res_move_type");
+    }
+    if(input_list[13] != 2){
+        stop("ERROR: Currently, only res_birth_type == 2 is allowed by GMSE");
+    }
+    if(input_list[14] < 1 | input_list[14] > 3){
+        stop("ERROR: Unrecognised GMSE res_death_type");
     }
     if(input_list[15]  <  0 | input_list[15] > 3){
         stop("ERROR: Unrecognised observe_type for GMSE observation model");
     }
+    if(input_list[19]  <  0 | input_list[19] > 3){
+        stop("ERROR: Unrecognised obs_move_type for GMSE observation model");
+    }
+    if(input_list[20]  <  0){
+        stop("ERROR: Minimum resource age cannot be less than zero");
+    }
+    if(input_list[21]  <  0 | input_list[21] > 1){
+        stop("ERROR: res_move_obs must be TRUE/FALSE");
+    }
+    if(input_list[27]  <  0){
+        stop("ERROR: ga_popsize must be greater than zero");
+    }
+    if(input_list[28]  <  0){
+        stop("ERROR: ga_popsize must be greater than zero");
+    }
+    if(input_list[29]  <  0){
+        stop("ERROR: ga_popsize must be greater than zero");
+    }
+    if(input_list[27]  <  0){
+        stop("ERROR: ga_popsize must be greater than zero");
+    }
+    # <--- LEFT OFF HERE
     if(user_budget > 10000 | manager_budget > 10000){
         stop("User and manager budgets cannot exceed 10000");
     }
     if(user_budget < 1 | manager_budget < 1){
         stop("User and manager budgets must be at least 1");
     }
-    
-    
     if(input_list[48] < 2){
         stop("ERROR: Need at least 2 stakeholders (1 manager & 1 user)");
     }
