@@ -27,7 +27,7 @@ gmse_apply <- function(res_mod  = resource,
                        ){
 
     fun_warn(res_mod, obs_mod, man_mod, use_mod);
-   
+
     std_paras      <- pass_paras(...);
     all_args       <- as.list(sys.call());
     all_args$PARAS <- std_paras$gmse_para_vect;
@@ -51,7 +51,7 @@ gmse_apply <- function(res_mod  = resource,
     arg_vals    <- translate_results(arg_list = arg_vals, output = res_results);
     arg_vals    <- update_para_vec(arg_list   = arg_vals);
     check_extinction(arg_vals);
-    
+ 
     # ------ OBSERVATION MODEL -------------------------------------------------
     obs_args <- prep_obs(arg_list = arg_vals, obs_mod = obs_mod);
     check_args(arg_list = obs_args, the_fun = obs_mod);
@@ -63,7 +63,7 @@ gmse_apply <- function(res_mod  = resource,
     arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = obs_mod);
     arg_vals    <- translate_results(arg_list = arg_vals, output = obs_results);
     arg_vals    <- update_para_vec(arg_list   = arg_vals);
-    
+
     # ------ MANAGER MODEL -----------------------------------------------------
     man_args    <- prep_man(arg_list = arg_vals, man_mod = man_mod);
     check_args(arg_list = man_args, the_fun = man_mod);
@@ -154,6 +154,8 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
                     public_land, group_think); 
     
     paras_errors(input_list);
+    #agent_errors(input_list, ...);
+    #land_errors(input_list, ...);
     
     if(is.null(PARAS) == FALSE){
         paras <- PARAS;
@@ -199,6 +201,21 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
                  gmse_para_vect  = as.vector(paras))
     );
 }
+
+#agent_errors <- function(input_list, ...){
+#    arguments <- as.list(match.call());
+#    arg_names <- names(arguments);
+#    if("AGENTS"
+#    return(arg_names);
+#}
+
+#land_errors <- function(input_list, ...){
+#    arguments <- as.list(match.call());
+#    arg_names <- names(arguments);
+#    if("LAND"
+#    return(arg_names);
+#}
+
 
 paras_errors <- function(input_list){
     if(input_list[7] < 0){
@@ -247,14 +264,14 @@ paras_errors <- function(input_list){
         stop("ERROR: ga_popsize must be greater than zero");
     }
     # <--- LEFT OFF HERE
-    if(user_budget > 10000 | manager_budget > 10000){
-        stop("User and manager budgets cannot exceed 10000");
-    }
-    if(user_budget < 1 | manager_budget < 1){
-        stop("User and manager budgets must be at least 1");
-    }
+    #if(user_budget > 10000 | manager_budget > 10000){
+    #    stop("User and manager budgets cannot exceed 10000");
+    #}
+    #if(user_budget < 1 | manager_budget < 1){
+    #    stop("User and manager budgets must be at least 1");
+    #}
     if(input_list[48] < 2){
-        stop("ERROR: Need at least 2 stakeholders (1 manager & 1 user)");
+        stop("ERROR: Need at least 2 stakeholders");
     }
 }
 
@@ -602,7 +619,7 @@ translate_results <- function(arg_list, output){
             }
             arg_list$PARAS[9]   <- -1; # Tells manager to skip estimate
             arg_list            <- set_action_array(arg_list);
-            thetar  <- arg_list$ACTION[arg_list$ACTION[,1,1]==-2, 5, 1];
+            thetar  <- arg_list$ACTION[arg_list$ACTION[,1,1] == -2, 5, 1];
             theobs  <- arg_list$observation_vector;
             arg_list$ACTION[arg_list$ACTION[,1,1]==1, 5, 1] <- thetar - theobs;
             arg_list <- gmse_apply_build_cost(arg_list);
@@ -612,7 +629,7 @@ translate_results <- function(arg_list, output){
             if("PARAS" %in% arg_names == FALSE){
                 stop("I can't find PARAS, and I need it");
             }
-            arg_list <- estimate_abundances(arg_list);
+            arg_list            <- estimate_abundances(arg_list);
             arg_list$PARAS[9]   <- -1; # Tells manager to skip estimate
             arg_list            <- set_action_array(arg_list);
             thetar  <- arg_list$ACTION[arg_list$ACTION[,1,1]==-2, 5, 1];
@@ -639,7 +656,7 @@ translate_results <- function(arg_list, output){
             }
         }
         if(out_names[[i]] == "manager_array" | out_names[[i]] == "COST"){
-            chk <- length(arg_list$ACTION[arg_list$ACTION[,1,1] == 1,1,1]);
+            chk  <- length(arg_list$ACTION[arg_list$ACTION[,1,1] == 1,1,1]);
             rows                    <- which(arg_list$ACTION[, 1, 1] == 1);
             arg_list$manager_vector <- arg_list$ACTION[rows, 9, 1];
         }
@@ -751,14 +768,19 @@ estimate_abundances <- function(arg_list){
     land         <- arg_list$LAND;
     view         <- arg_list$AGENTS[1, 9];
     obs_method   <- paras[9];
-    res_types    <- unique(observations[,2]);
+    res_types    <- unique(observations[,2]);                                  
+    if(length(res_types) == 0){ ### INCLUDE TYPES A PRIORI FROM RESOURCE LIST
+        arg_list$PARAS[100]         <- 0;
+        arg_list$observation_vector <- 0; 
+        return(arg_list);
+    }
     est          <- rep(x = NA, times = length(res_types));
-    for(i in res_types){
+    for(i in res_types){                                                       
         esti       <- NA;
-        obs_subset <- observations[observations[,2] == i,];
+        obs_subset <- observations[observations[,2] == i,];                    
         obs_sub_ar <- is.array(obs_subset);
         if(obs_method == 0 & obs_sub_ar == TRUE){
-            esti <- dens_est(obs_subset, paras, view, land)$Nc;
+            esti <- dens_est(obs_subset, paras, view, land)$Nc;                
         }
         if(obs_method == 1 & obs_sub_ar == TRUE){
             esti <- chapman_est(obs_subset, paras)$Nc;
@@ -777,7 +799,7 @@ estimate_abundances <- function(arg_list){
         est[i] <- esti;
     }
     arg_list$PARAS[100]         <- est[1];
-    arg_list$observation_vector <- est;
+    arg_list$observation_vector <- est;                                    
     return(arg_list);
 }
 
@@ -1102,7 +1124,9 @@ add_man_defaults <- function(arg_list){
                               to       = "OBSERVATION");
     }
     if(is.na(arg_list$OBSERVATION[1]) == TRUE){
-        stop("I can't find observations for the manager model");
+        stop("I can't find observations for the manager model. The manager
+              might have failed to observe resources. This might be because
+              resources are low, or because the manager is off-landscape");
     }
     mod_pos <- which(arg_names == "model");
     if(is.na(arg_list[[mod_pos]][1]) == TRUE){
