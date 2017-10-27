@@ -157,6 +157,7 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
     
     ldims  <- land_errors(input_list, ...);
     stakes <- agent_errors(input_list, ldims, ...);
+    action_errors(input_list, stakes, ...);
     
     if(is.null(PARAS) == FALSE){
         paras <- PARAS;
@@ -239,32 +240,32 @@ land_errors <- function(input_list, ...){
         ld1      <- ld1_l;
         ld2      <- ld2_l;
     }
-    if(is.na(ld1_u) == FALSE & is.na(ld1_p) == FALSE){
+    if(is.na(ld1_u[1]) == FALSE & is.na(ld1_p[1]) == FALSE){
         if(ld1_u != ld1_p){
             stop("ERROR: PARAS and land_dim_1 disagree abount landscape size");
         }
     }
-    if(is.na(ld1_u) == FALSE & is.na(ld1_l) == FALSE){
+    if(is.na(ld1_u[1]) == FALSE & is.na(ld1_l[1]) == FALSE){
         if(ld1_u != ld1_l){
             stop("ERROR: LAND and land_dim_1 disagree about landscape size");
         }
     }
-    if(is.na(ld1_l) == FALSE & is.na(ld1_p) == FALSE){
+    if(is.na(ld1_l[1]) == FALSE & is.na(ld1_p[1]) == FALSE){
         if(ld1_l != ld1_p){
             stop("ERROR: PARAS and LAND disagree about landscape size (dim 1)");
         }
     }
-    if(is.na(ld2_u) == FALSE & is.na(ld2_p) == FALSE){
+    if(is.na(ld2_u[1]) == FALSE & is.na(ld2_p[1]) == FALSE){
         if(ld2_u != ld2_p){
             stop("ERROR: PARAS and land_dim_2 disagree abount landscape size");
         }
     }
-    if(is.na(ld2_u) == FALSE & is.na(ld2_l) == FALSE){
+    if(is.na(ld2_u[1]) == FALSE & is.na(ld2_l[1]) == FALSE){
         if(ld2_u != ld2_l){
             stop("ERROR: LAND and land_dim_2 disagree about landscape size");
         }
     }
-    if(is.na(ld2_l) == FALSE & is.na(ld2_p) == FALSE){
+    if(is.na(ld2_l[1]) == FALSE & is.na(ld2_p[1]) == FALSE){
         if(ld2_l != ld2_p){
             stop("ERROR: PARAS and LAND disagree about landscape size (dim 2)");
         }
@@ -294,9 +295,9 @@ agent_errors <- function(input_list, ldims, ...){
     if("AGENTS" %in% arg_names){
         stake_pos <- which(arg_names == "AGENTS")[1];
         loc_stake <- eval(arguments[[stake_pos]]);
-        as_stake  <- sum(loc_stake[,2] == 1);
+        as_stake  <- sum(loc_stake[,2] > 0);
         stakes    <- as_stake;
-        if(is.na(land_dim_1) == FALSE & is.na(land_dim_2) == FALSE){
+        if(is.na(land_dim_1[1]) == FALSE & is.na(land_dim_2[1]) == FALSE){
             max_d1 <- max(loc_stake[,5]);
             max_d2 <- max(loc_stake[,6]);
             if(max_d1 > land_dim_1 | max_d2 > land_dim_2){
@@ -306,7 +307,7 @@ agent_errors <- function(input_list, ldims, ...){
             }
         }
     }
-    if(is.na(is_stake) == FALSE & is.na(as_stake) == FALSE){
+    if(is.na(is_stake[1]) == FALSE & is.na(as_stake[1]) == FALSE){
         if(is_stake != as_stake){
             stop("ERROR: AGENT and stakeholders disagree about how many
                   stakeholders should exist in the model");
@@ -314,6 +315,101 @@ agent_errors <- function(input_list, ldims, ...){
     }
     return(stakes);
 }
+
+action_errors <- function(input_list, stakes, ...){
+    agents     <- NA;
+    if(is.na(stakes[1]) == FALSE){
+        agents     <- stakes + 1;
+    }
+    res_arr    <- NA;
+    res_types  <- NA;
+    arguments  <- as.list(match.call());
+    arg_names  <- names(arguments);
+    in_list    <- eval(arguments$input_list);
+    il_names   <- names(in_list);
+    if("RESOURCES" %in% arg_names){
+        res_pos <- which(arg_names == "RESOURCES")[1];
+        res_arr <- eval(arguments[[res_pos]]);
+    }
+    if("resource_array" %in% arg_names){
+        res_pos <- which(arg_names == "RESOURCES")[1];
+        res_arr <- eval(arguments[[res_pos]]);
+    }
+    if(is.na(res_arr[1]) == FALSE){
+        res_types <- length(unique(res_arr[,2]));
+    }
+    if("ACTION" %in% arg_names){
+        act_pos <- which(arg_names == "ACTION")[1];
+        act_arr <- eval(arguments[[act_pos]]);
+        if(is.na(agents[1]) == FALSE){
+            if(agents != dim(ACTION)[3]){
+                stop("The ACTION array has a different number of layers
+                      than there are total agents (manager plus stakeholders).
+                      Input arguments are contradictory.");
+            }
+        }
+        if(is.na(res_types[1]) == FALSE){
+            act_res_types <- length(unique(act_arr[,2,1]));
+            if(act_res_types != res_types){
+                stop("The number of resource types in the ACTION array
+                      contradicts something else that was set as an argument
+                      (most likely a resource array)");
+            }
+        }
+        if("COST" %in% arg_names){
+            cost_pos <- which(arg_names == "COST")[1];
+            cost_arr <- eval(arguments[[cost_pos]]);
+            if(identical(dim(cost_arr), dim(act_arr)) == FALSE){
+                stop("The dimensions of the COST and ACTION arrays need to be
+                      identical");
+            }
+        }
+        if("manager_array" %in% arg_names){
+            cost_pos <- which(arg_names == "manager_array")[1];
+            cost_arr <- eval(arguments[[cost_pos]]);
+            if(identical(dim(cost_arr), dim(act_arr)) == FALSE){
+                stop("The dimensions of the manager_array and 
+                      ACTION array need to be identical");
+            }
+        }
+    }
+    if("user_array" %in% arg_names){
+        act_pos <- which(arg_names == "user_array")[1];
+        act_arr <- eval(arguments[[act_pos]]);
+        if(is.na(agents[1]) == FALSE){
+            if(agents != dim(ACTION)[3]){
+                stop("The user_array has a different number of layers
+                      than there are total agents (manager plus stakeholders).
+                      Input arguments are contradictory.");
+            }
+        }
+        if(is.na(res_types[1]) == FALSE){
+            act_res_types <- length(unique(act_arr[,2,1]));
+            if(act_res_types != res_types){
+                stop("The number of resource types in the user_array
+                      contradicts something else that was set as an argument
+                      (most likely a resource array)");
+            }
+        }
+        if("COST" %in% arg_names){
+            cost_pos <- which(arg_names == "COST")[1];
+            cost_arr <- eval(arguments[[cost_pos]]);
+            if(identical(dim(cost_arr), dim(act_arr)) == FALSE){
+                stop("The dimensions of COST and user_array need to be
+                      identical");
+            }
+        }
+        if("manager_array" %in% arg_names){
+            cost_pos <- which(arg_names == "manager_array")[1];
+            cost_arr <- eval(arguments[[cost_pos]]);
+            if(identical(dim(cost_arr), dim(act_arr)) == FALSE){
+                stop("The dimensions of the manager_array and 
+                      user_array need to be identical");
+            }
+        }
+    }
+}
+
 
 paras_errors <- function(input_list){
     if(input_list[7] < 0){
