@@ -154,8 +154,8 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
                     public_land, group_think); 
     
     paras_errors(input_list);
-    #agent_errors(input_list, ...);
-    #land_errors(input_list, ...);
+    ldims <- land_errors(input_list, ...);
+    agent_errors(input_list, ldims, ...);
     
     if(is.null(PARAS) == FALSE){
         paras <- PARAS;
@@ -202,20 +202,113 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
     );
 }
 
-#agent_errors <- function(input_list, ...){
-#    arguments <- as.list(match.call());
-#    arg_names <- names(arguments);
-#    if("AGENTS"
-#    return(arg_names);
-#}
+land_errors <- function(input_list, ...){
+    arguments <- as.list(match.call());
+    in_list   <- eval(arguments$input_list);
+    il_names  <- names(in_list);
+    ld1_u     <- NA;
+    ld2_u     <- NA;
+    ld1_p     <- NA;
+    ld2_p     <- NA;
+    ld1_l     <- NA;
+    ld2_l     <- NA;
+    ld1       <- NA;
+    ld2       <- NA;
+    if("land_dim_1" %in% il_names){
+        ld1_u <- in_list$land_dim_1;
+        ld1   <- ld1_u;
+    }
+    if("land_dim_2" %in% il_names){
+        ld2_u <- in_list$land_dim_2;
+        ld1   <- ld2_u;
+    }
+    if("PARAS" %in% arguments){
+        para_pos <- which(arguments == "PARAS");
+        loc_para <- eval(arguments[[para_pos]]);
+        ld1_p    <- loc_para[13];
+        ld2_p    <- loc_para[14];
+        ld1      <- ld1_p;
+        ld2      <- ld2_p;
+    }
+    if("LAND" %in% arguments){
+        land_pos <- which(arguments == "LAND");
+        loc_land <- eval(arguments[[land_pos]]);
+        ld1_l    <- dim(loc_land)[1];
+        ld2_l    <- dim(loc_land)[2];
+        ld1      <- ld1_l;
+        ld2      <- ld2_l;
+    }
+    if(is.na(ld1_u) == FALSE & is.na(ld1_p) == FALSE){
+        if(ld1_u != ld1_p){
+            stop("ERROR: PARAS and land_dim_1 disagree abount landscape size");
+        }
+    }
+    if(is.na(ld1_u) == FALSE & is.na(ld1_l) == FALSE){
+        if(ld1_u != ld1_l){
+            stop("ERROR: LAND and land_dim_1 disagree about landscape size");
+        }
+    }
+    if(is.na(ld1_l) == FALSE & is.na(ld1_p) == FALSE){
+        if(ld1_l != ld1_p){
+            stop("ERROR: PARAS and LAND disagree about landscape size (dim 1)");
+        }
+    }
+    if(is.na(ld2_u) == FALSE & is.na(ld2_p) == FALSE){
+        if(ld2_u != ld2_p){
+            stop("ERROR: PARAS and land_dim_2 disagree abount landscape size");
+        }
+    }
+    if(is.na(ld2_u) == FALSE & is.na(ld2_l) == FALSE){
+        if(ld2_u != ld2_l){
+            stop("ERROR: LAND and land_dim_2 disagree about landscape size");
+        }
+    }
+    if(is.na(ld2_l) == FALSE & is.na(ld2_p) == FALSE){
+        if(ld2_l != ld2_p){
+            stop("ERROR: PARAS and LAND disagree about landscape size (dim 2)");
+        }
+    }
+    output <- c(ld1, ld2);
+    return(output);
+}
 
-#land_errors <- function(input_list, ...){
-#    arguments <- as.list(match.call());
-#    arg_names <- names(arguments);
-#    if("LAND"
-#    return(arg_names);
-#}
-
+agent_errors <- function(input_list, ldims, ...){
+    land_dim_1 <- ldims[1];
+    land_dim_2 <- ldims[2];
+    arguments  <- as.list(match.call());
+    arg_names  <- names(arguments);
+    in_list    <- eval(arguments$input_list);
+    il_names   <- names(in_list);
+    is_stake   <- NA;
+    as_stake   <- NA;
+    if("stakeholders" %in% il_names){
+        is_stake <- in_list$stakeholders;
+    }
+    if("AGENT" %in% arguments | "AGENT" %in% arg_names){
+        warning("Warning: You've included 'AGENT' as an argument -- did you mean
+               'AGENTS' instead to insert an agent array?", noBreaks. = TRUE);
+    }
+    if("AGENTS" %in% arg_names){
+        stake_pos <- which(arg_names == "AGENTS")[1];
+        loc_stake <- eval(arguments[[stake_pos]]);
+        as_stake  <- sum(loc_stake[,2] == 1);
+        if(is.na(land_dim_1) == FALSE & is.na(land_dim_2) == FALSE){
+            max_d1 <- max(loc_stake[,5]);
+            max_d2 <- max(loc_stake[,6]);
+            if(max_d1 > land_dim_1 | max_d2 > land_dim_2){
+                stop("ERROR: Some agents (manager or stakeholders) are located
+                      off of the landscape -- either the landscape is too small
+                      or the agent positions are set to be too large");
+            }
+        }
+    }
+    if(is.na(is_stake) == FALSE & is.na(as_stake) == FALSE){
+        if(is_stake != as_stake){
+            stop("ERROR: AGENT and stakeholders disagree about how many
+                  stakeholders should exist in the model");
+        }
+    }
+}
 
 paras_errors <- function(input_list){
     if(input_list[7] < 0){
