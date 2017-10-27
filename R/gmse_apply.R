@@ -147,15 +147,16 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
                     plotting, hunt, start_hunting, res_consume, ga_popsize,
                     ga_mingen, ga_seedrep, ga_sampleK, ga_chooseK, ga_mutation,
                     ga_crossover, move_agents, max_ages, minimum_cost,
-                    user_budget, manage_target, RESOURCE_ini, scaring, culling,
-                    castration, feeding, help_offspring, tend_crops,
-                    tend_crop_yld, kill_crops, stakeholders, manage_caution,
-                    land_ownership, manage_freq, converge_crit, manager_sense,
-                    public_land, group_think); 
+                    user_budget, manager_budget, manage_target, RESOURCE_ini, 
+                    scaring, culling, castration, feeding, help_offspring, 
+                    tend_crops, tend_crop_yld, kill_crops, stakeholders, 
+                    manage_caution, land_ownership, manage_freq, converge_crit, 
+                    manager_sense, public_land, group_think); 
     
     paras_errors(input_list);
-    ldims <- land_errors(input_list, ...);
-    agent_errors(input_list, ldims, ...);
+    
+    ldims  <- land_errors(input_list, ...);
+    stakes <- agent_errors(input_list, ldims, ...);
     
     if(is.null(PARAS) == FALSE){
         paras <- PARAS;
@@ -281,8 +282,10 @@ agent_errors <- function(input_list, ldims, ...){
     il_names   <- names(in_list);
     is_stake   <- NA;
     as_stake   <- NA;
+    stakes     <- NA;
     if("stakeholders" %in% il_names){
         is_stake <- in_list$stakeholders;
+        stakes   <- is_stake;
     }
     if("AGENT" %in% arguments | "AGENT" %in% arg_names){
         warning("Warning: You've included 'AGENT' as an argument -- did you mean
@@ -292,6 +295,7 @@ agent_errors <- function(input_list, ldims, ...){
         stake_pos <- which(arg_names == "AGENTS")[1];
         loc_stake <- eval(arguments[[stake_pos]]);
         as_stake  <- sum(loc_stake[,2] == 1);
+        stakes    <- as_stake;
         if(is.na(land_dim_1) == FALSE & is.na(land_dim_2) == FALSE){
             max_d1 <- max(loc_stake[,5]);
             max_d2 <- max(loc_stake[,6]);
@@ -308,6 +312,7 @@ agent_errors <- function(input_list, ldims, ...){
                   stakeholders should exist in the model");
         }
     }
+    return(stakes);
 }
 
 paras_errors <- function(input_list){
@@ -356,15 +361,50 @@ paras_errors <- function(input_list){
     if(input_list[27]  <  0){
         stop("ERROR: ga_popsize must be greater than zero");
     }
-    # <--- LEFT OFF HERE
-    #if(user_budget > 10000 | manager_budget > 10000){
-    #    stop("User and manager budgets cannot exceed 10000");
-    #}
-    #if(user_budget < 1 | manager_budget < 1){
-    #    stop("User and manager budgets must be at least 1");
-    #}
-    if(input_list[48] < 2){
+    if(input_list[37] < 1 | input_list[37] > 10000){
+        stop("User budget needs to be between 1 and 10000");
+    }
+    if(input_list[38] < 1 | input_list[37] > 10000){
+        stop("Manager budget needs to be between 1 and 10000");
+    }
+    if(input_list[40]  <  1){
+        stop("ERROR: Must have a positive number of initial resources");
+    }
+    if(input_list[41]  <  0 | input_list[41] > 1){
+        stop("ERROR: scaring must be TRUE/FALSE");
+    }
+    if(input_list[42]  <  0 | input_list[42] > 1){
+        stop("ERROR: culling must be TRUE/FALSE");
+    }
+    if(input_list[43]  <  0 | input_list[43] > 1){
+        stop("ERROR: castration must be TRUE/FALSE");
+    }
+    if(input_list[44]  <  0 | input_list[44] > 1){
+        stop("ERROR: feeding must be TRUE/FALSE");
+    }
+    if(input_list[45]  <  0 | input_list[45] > 1){
+        stop("ERROR: help_offspring must be TRUE/FALSE");
+    }
+    if(input_list[46]  <  0 | input_list[46] > 1){
+        stop("ERROR: tend_crops must be TRUE/FALSE");
+    }
+    if(input_list[48]  <  0 | input_list[48] > 1){
+        stop("ERROR: help_offspring must be TRUE/FALSE");
+    }
+    if(input_list[49] < 2){
         stop("ERROR: Need at least 2 stakeholders");
+    }
+    if(input_list[51] < 0 | input_list[51] > 1){
+        stop("ERROR: land_ownership must be TRUE/FALSE");
+    }
+    if(input_list[52] < 1 ){
+        stop("ERROR: manage_freq must be at least 1");
+    }
+    if(input_list[55] < 0 | input_list[55] > 1){
+        stop("ERROR: public_land must be between 0 and 1");
+    }
+    if(input_list[56] < 0 | input_list[56] > 1){
+        stop("ERROR: group_think must be TRUE/FALSE");
     }
 }
 
