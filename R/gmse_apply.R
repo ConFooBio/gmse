@@ -32,7 +32,7 @@ gmse_apply <- function(res_mod  = resource,
     all_args       <- as.list(sys.call());
     all_args$PARAS <- std_paras$gmse_para_vect;
     all_args$GMSE  <- formals(gmse);
-
+    
     needed_args <- argument_list(res_mod, obs_mod, man_mod, use_mod, all_args);
     arg_vals    <- needed_args$all_arg_values; 
     arg_name    <- needed_args$all_arg_names;
@@ -155,9 +155,9 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
     
     paras_errors(input_list);
     
-    ldims  <- land_errors(input_list, ...);
-    stakes <- agent_errors(input_list, ldims, ...);
-    action_errors(input_list, stakes, ...);
+    #ldims  <- land_errors(input_list, ...);
+    #stakes <- agent_errors(input_list, ldims, ...);
+    #action_errors(input_list, stakes, ...);
     
     if(is.null(PARAS) == FALSE){
         paras <- PARAS;
@@ -204,39 +204,27 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
     );
 }
 
-land_errors <- function(input_list, ...){
-    arguments <- as.list(match.call());
-    in_list   <- eval(arguments$input_list);
-    il_names  <- names(in_list);
-    ld1_u     <- NA;
-    ld2_u     <- NA;
+land_errors <- function(input_list, LAND = NULL, PARAS = NULL){
+    arguments <- as.list(match.call());          
+    in_list   <- eval(arguments$input_list);        
+    arg_names <- names(arguments);          
+    ld1_u     <- in_list[2];
+    ld2_u     <- in_list[3];    
     ld1_p     <- NA;
     ld2_p     <- NA;
     ld1_l     <- NA;
     ld2_l     <- NA;
     ld1       <- NA;
     ld2       <- NA;
-    if("land_dim_1" %in% il_names){
-        ld1_u <- in_list$land_dim_1;
-        ld1   <- ld1_u;
-    }
-    if("land_dim_2" %in% il_names){
-        ld2_u <- in_list$land_dim_2;
-        ld1   <- ld2_u;
-    }
-    if("PARAS" %in% arguments){
-        para_pos <- which(arguments == "PARAS");
-        loc_para <- eval(arguments[[para_pos]]);
-        ld1_p    <- loc_para[13];
-        ld2_p    <- loc_para[14];
+    if(is.null(PARAS) == FALSE){
+        ld1_p    <- PARA[13];
+        ld2_p    <- PARA[14];
         ld1      <- ld1_p;
         ld2      <- ld2_p;
     }
-    if("LAND" %in% arguments){
-        land_pos <- which(arguments == "LAND");
-        loc_land <- eval(arguments[[land_pos]]);
-        ld1_l    <- dim(loc_land)[1];
-        ld2_l    <- dim(loc_land)[2];
+    if(is.null(LAND) == FALSE){
+        ld1_l    <- dim(LAND)[1];
+        ld2_l    <- dim(LAND)[2];
         ld1      <- ld1_l;
         ld2      <- ld2_l;
     }
@@ -277,17 +265,12 @@ land_errors <- function(input_list, ...){
 agent_errors <- function(input_list, ldims, ...){
     land_dim_1 <- ldims[1];
     land_dim_2 <- ldims[2];
-    arguments  <- as.list(match.call());
+    arguments  <- as.list(match.call()); 
     arg_names  <- names(arguments);
     in_list    <- eval(arguments$input_list);
     il_names   <- names(in_list);
-    is_stake   <- NA;
-    as_stake   <- NA;
-    stakes     <- NA;
-    if("stakeholders" %in% il_names){
-        is_stake <- in_list$stakeholders;
-        stakes   <- is_stake;
-    }
+    as_stake   <- NA;                                                           
+    stakes     <- in_list[49];                                                        
     if("AGENT" %in% arguments | "AGENT" %in% arg_names){
         warning("Warning: You've included 'AGENT' as an argument -- did you mean
                'AGENTS' instead to insert an agent array?", noBreaks. = TRUE);
@@ -296,7 +279,6 @@ agent_errors <- function(input_list, ldims, ...){
         stake_pos <- which(arg_names == "AGENTS")[1];
         loc_stake <- eval(arguments[[stake_pos]]);
         as_stake  <- sum(loc_stake[,2] > 0);
-        stakes    <- as_stake;
         if(is.na(land_dim_1[1]) == FALSE & is.na(land_dim_2[1]) == FALSE){
             max_d1 <- max(loc_stake[,5]);
             max_d2 <- max(loc_stake[,6]);
@@ -307,10 +289,12 @@ agent_errors <- function(input_list, ldims, ...){
             }
         }
     }
-    if(is.na(is_stake[1]) == FALSE & is.na(as_stake[1]) == FALSE){
-        if(is_stake != as_stake){
+    if(is.na(as_stake[1]) == FALSE){
+        if(stakes != as_stake){
             stop("ERROR: AGENT and stakeholders disagree about how many
-                  stakeholders should exist in the model");
+                  stakeholders should exist in the model. If you have included
+                  your own AGENT array, make sure that 'stakeholders' is set to 
+                  the appropriate number of type 1 (col 2) agents");
         }
     }
     return(stakes);
@@ -503,6 +487,8 @@ paras_errors <- function(input_list){
         stop("ERROR: group_think must be TRUE/FALSE");
     }
 }
+
+
 
 argument_list <- function(res_mod, obs_mod, man_mod, use_mod, oth_vals){
     oth_names   <- names(oth_vals);
