@@ -134,8 +134,6 @@ apply_old_gmse <- function(arg_vals, old_list, ...){
     return(old_list);
 }
 
-
-
 fun_warn <- function(res_mod, obs_mod, man_mod, use_mod){
     if( is.function(res_mod) == "FALSE" ){
         stop( "ERROR: Resource model needs to be a function");
