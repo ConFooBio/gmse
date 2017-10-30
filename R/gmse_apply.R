@@ -30,9 +30,10 @@ gmse_apply <- function(res_mod  = resource,
 
     fun_warn(res_mod, obs_mod, man_mod, use_mod);
 
-    std_paras      <- pass_paras(...);
+    std_paras      <- pass_paras(old_list, ...);
     all_args       <- as.list(sys.call());
     all_args$PARAS <- std_paras$gmse_para_vect;
+    all_args$ilist <- std_paras$gmse_user_input; 
     all_args$GMSE  <- formals(gmse);
     
     needed_args <- argument_list(res_mod, obs_mod, man_mod, use_mod, all_args);
@@ -104,7 +105,11 @@ gmse_apply <- function(res_mod  = resource,
 # Subfunctions required                                                        #
 ################################################################################
 
-apply_old_gmse <- function(arg_vals, old_list, ...){
+apply_old_gmse <- function(arg_vals, old_list,  ...){
+    
+    input_list <- arg_vals$ilist; 
+    paras_errors(input_list);
+    
     list_add   <- as.list(match.call())[-1];
     names_old  <- names(old_list);
     names_arg  <- names(arg_vals);
@@ -149,18 +154,18 @@ fun_warn <- function(res_mod, obs_mod, man_mod, use_mod){
     }
 }
 
-pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,  
-                        res_movement = 20, remove_pr = 0.0, lambda = 0.30, 
-                        agent_view = 10, agent_move = 50, res_birth_K = 10000,
-                        res_death_K = 2000, edge_effect = 1, res_move_type = 1,
-                        res_birth_type = 2, res_death_type = 2, 
-                        observe_type = 0, fixed_mark = 50, fixed_recapt = 150, 
-                        times_observe = 1, obs_move_type  = 1, res_min_age = 0,
-                        res_move_obs = TRUE, Euclidean_dist = FALSE, 
-                        plotting = FALSE, hunt = FALSE, start_hunting = 95,  
-                        res_consume = 0.5, ga_popsize = 100, ga_mingen = 40, 
-                        ga_seedrep = 20, ga_sampleK = 20, ga_chooseK = 2,  
-                        ga_mutation = 0.1, ga_crossover = 0.1, 
+pass_paras <- function( old_list = NULL, time_max = 100, land_dim_1 = 100, 
+                        land_dim_2 = 100,  res_movement = 20, remove_pr = 0.0, 
+                        lambda = 0.30, agent_view = 10, agent_move = 50, 
+                        res_birth_K = 10000, res_death_K = 2000, 
+                        edge_effect = 1, res_move_type = 1, res_birth_type = 2, 
+                        res_death_type = 2, observe_type = 0, fixed_mark = 50, 
+                        fixed_recapt = 150, times_observe = 1, 
+                        obs_move_type = 1, res_min_age = 0, res_move_obs = TRUE, 
+                        Euclidean_dist = FALSE, plotting = FALSE, hunt = FALSE, 
+                        start_hunting = 95, res_consume = 0.5, ga_popsize = 100, 
+                        ga_mingen = 40, ga_seedrep = 20, ga_sampleK = 20, 
+                        ga_chooseK = 2, ga_mutation = 0.1, ga_crossover = 0.1, 
                         move_agents = TRUE, max_ages = 5, minimum_cost = 10,
                         user_budget = 1000, manager_budget = 1000,
                         manage_target = 1000, RESOURCE_ini = 1000, 
@@ -173,6 +178,11 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
                         manager_sense = 0.1, public_land = 0, 
                         group_think = FALSE, PARAS = NULL, ...
 ){
+    
+    if(is.null(PARAS) == FALSE){
+        stop("ERROR: Do not specify the PARAS vector directly; this will most
+              likely cause R to crash.");
+    }
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
                     lambda, agent_view, agent_move, res_birth_K, res_death_K,
@@ -188,18 +198,13 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
                     manage_caution, land_ownership, manage_freq, converge_crit, 
                     manager_sense, public_land, group_think); 
     
+    
     paras_errors(input_list);
     
     ldims  <- land_errors(input_list, ...);
     stakes <- agent_errors(input_list, ldims, ...);
     action_errors(input_list, stakes, ...);
-    
-    if(is.null(PARAS) == FALSE){
-        paras <- PARAS;
-        return(list(gmse_user_input = as.vector(input_list), 
-                    gmse_para_vect  = as.vector(paras))
-               );
-    }
+    old_list_errors(old_list, ...);
     
     if(observe_type == 1){
         times_observe <- 2;
@@ -239,9 +244,39 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
     );
 }
 
+
+old_list_errors <- function(old_list = NULL, RESOURCES = NULL, ACTION = NULL,
+                            resource_array = NULL, LAND = NULL, COST = NULL,
+                            manager_array  = NULL, user_array = NULL, 
+                            PARAS = NULL){
+    if(is.null(old_list) == FALSE){
+        if(is.null(RESOURCES) == FALSE){
+            stop("ERROR: Do not specify RESOURCES if using an old_list");
+        }
+        if(is.null(ACTION) == FALSE){
+            stop("ERROR: Do not specify ACTION if using an old_list");
+        }
+        if(is.null(resource_array) == FALSE){
+            stop("ERROR: Do not specify resource_array if using an old_list");
+        }
+        if(is.null(LAND) == FALSE){
+            stop("ERROR: Do not specify LAND if using an old_list");
+        }
+        if(is.null(COST) == FALSE){
+            stop("ERROR: Do not specify COST if using an old_list");
+        }
+        if(is.null(manager_array) == FALSE){
+            stop("ERROR: Do not specify manager_array if using an old_list");
+        }
+        if(is.null(user_array) == FALSE){
+            stop("ERROR: Do not specify user_array if using an old_list");
+        }
+    }
+}
+
 land_errors <- function(input_list, LAND = NULL, PARAS = NULL){
     arguments <- as.list(match.call());          
-    in_list   <- eval(arguments$input_list);        
+    in_list   <- eval(arguments$input_list);
     arg_names <- names(arguments);          
     ld1_u     <- in_list[2];
     ld2_u     <- in_list[3];    
@@ -249,11 +284,11 @@ land_errors <- function(input_list, LAND = NULL, PARAS = NULL){
     ld2_p     <- NA;
     ld1_l     <- NA;
     ld2_l     <- NA;
-    ld1       <- NA;
-    ld2       <- NA;
+    ld1       <- ld1_u;
+    ld2       <- ld2_u;
     if(is.null(PARAS) == FALSE){
-        ld1_p    <- PARA[13];
-        ld2_p    <- PARA[14];
+        ld1_p    <- PARAS[13];
+        ld2_p    <- PARAS[14];
         ld1      <- ld1_p;
         ld2      <- ld2_p;
     }
@@ -361,7 +396,7 @@ action_errors <- function(input_list, stakes, ...){
         act_pos <- which(arg_names == "ACTION")[1];
         act_arr <- eval(arguments[[act_pos]]);
         if(is.na(agents[1]) == FALSE){
-            if(agents != dim(ACTION)[3]){
+            if(agents != dim(act_arr)[3]){
                 stop("The ACTION array has a different number of layers
                       than there are total agents (manager plus stakeholders).
                       Input arguments are contradictory.");
@@ -396,7 +431,7 @@ action_errors <- function(input_list, stakes, ...){
         act_pos <- which(arg_names == "user_array")[1];
         act_arr <- eval(arguments[[act_pos]]);
         if(is.na(agents[1]) == FALSE){
-            if(agents != dim(ACTION)[3]){
+            if(agents != dim(act_arr)[3]){
                 stop("The user_array has a different number of layers
                       than there are total agents (manager plus stakeholders).
                       Input arguments are contradictory.");
