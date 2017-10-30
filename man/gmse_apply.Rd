@@ -5,7 +5,7 @@
 \title{GMSE apply function}
 \usage{
 gmse_apply(res_mod = resource, obs_mod = observation, man_mod = manager,
-  use_mod = user, get_res = "basic", ...)
+  use_mod = user, get_res = "basic", old_list = NULL, ...)
 }
 \arguments{
 \item{res_mod}{The function specifying the resource model. By default, the individual-based resource model from gmse is called with default parameter values. User-defined functions must either return an unnamed matrix or vector, or return a named list in which one list element is named either 'resource_array' or 'resource_vector', and arrays must follow the format of GMSE in terms of column number and type (if there is only one resource type, then the model can also just return a scalar value).}
@@ -17,6 +17,8 @@ gmse_apply(res_mod = resource, obs_mod = observation, man_mod = manager,
 \item{use_mod}{The function specifying the user model. By default, the individual-based user model that calls the genetic algorithm from gmse is used with default parameter values. User-defined functions must either return an unnamed matrix or vector, or return a named list in which one list element is named either 'user_array' or 'user_vector', and arrays must follow the (3 dimensional) format of the 'ACTION' array in GMSE in terms of column numbers and types, with appropriate rows for interactions and layers for agents (see documentation of GMSE for constructing these, if desired).}
 
 \item{get_res}{How the output should be organised. The default 'basic' attempts to distill results down to their key values from submodel outputs, including resource abundances and estimates, and manager policy and actions. An option 'custom' simply returns a large list that includes the output of every submodel. Any other option (e.g. 'none') will return a massive list with all of the input, output, and parameters used to run gmse_apply.}
+
+\item{old_list}{A an existing list of results from gmse_apply, produced by setting `get_res = TRUE` to be included in the function. The parameter and data structures from the previous run will be applied to the new run of gmse_apply, thereby making it easy to loop multiple generations. Additional arguments passed to `...` will over-ride those stored in the old list, allowing global parameter values to be updated (e.g., sub-models used, management options, genetic algorithm parameters).}
 
 \item{...}{Arguments passed to user-defined functions, and passed to modify default parameter values that would otherwise be called for gmse default models. Any argument that can be passed to gmse can be specified explicitly, just as if it were an argument to gmse. Similarly, any argument taken by a user-defined function should be specified, though the function will work if the user-defined function has a default that is not specified explicitly.}
 }
