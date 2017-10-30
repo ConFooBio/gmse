@@ -42,7 +42,7 @@ gmse_apply <- function(res_mod  = resource,
     names(arg_vals) <- arg_name;
 
     if(is.null(old_list) == FALSE){
-        
+        arg_vals <- apply_old_gmse(arg_vals, old_list, ...);
     }
     
     # ------ RESOURCE MODEL ----------------------------------------------------
@@ -103,6 +103,37 @@ gmse_apply <- function(res_mod  = resource,
 ################################################################################
 # Subfunctions required                                                        #
 ################################################################################
+
+apply_old_gmse <- function(arg_vals, old_list, ...){
+    list_add   <- as.list(match.call())[-1];
+    names_old  <- names(old_list);
+    names_arg  <- names(arg_vals);
+    names_add  <- names(list_add);
+    old_length <- length(old_list);
+    arg_length <- length(arg_vals);
+    add_length <- length(list_add);
+    for(i in 1:arg_length){
+        if(names_arg[[i]] %in% names_old == FALSE){
+            old_length                    <- old_length + 1;
+            old_list[[old_length]]        <- arg_vals[[i]];
+            names(old_list)[old_length]   <- names_arg[[i]];
+        }
+    }
+    for(i in 1:add_length){
+        if(names_add[[i]] %in% names_old == TRUE){
+            old_pos                <- which(names_old == names_add[[i]])[1];
+            old_list[[old_pos]]    <- list_add[[i]];
+        }else{
+            old_length                    <- old_length + 1;
+            old_list[[old_length]]        <- list_add[[i]];
+            names(old_list)[old_length]   <- names_add[[i]];
+        }
+    }
+    old_list$arg_vals <- NULL;
+    old_list$old_list <- NULL;
+    return(old_list);
+}
+
 
 
 fun_warn <- function(res_mod, obs_mod, man_mod, use_mod){
@@ -399,7 +430,6 @@ action_errors <- function(input_list, stakes, ...){
         }
     }
 }
-
 
 paras_errors <- function(input_list){
     if(input_list[7] < 0){
