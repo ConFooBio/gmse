@@ -8,6 +8,7 @@
 #'@param man_mod The function specifying the manager model. By default, the individual-based manager model that calls the genetic algorithm from gmse is used with default parameter values. User-defined functions must either return an unnamed matrix or vector, or return a named list in which one list element is named either 'manager_array' or 'manager_vector', and arrays must follow the (3 dimensional) format of the 'COST' array in GMSE in terms of column numbers and types, with appropriate rows for interactions and layers for agents (see documentation of GMSE for constructing these, if desired). User defined manager outputs will be recognised as costs by the default user model in gmse, but can be interpreted differently (e.g., total allowable catch) if specifying a custom user model.
 #'@param use_mod The function specifying the user model. By default, the individual-based user model that calls the genetic algorithm from gmse is used with default parameter values. User-defined functions must either return an unnamed matrix or vector, or return a named list in which one list element is named either 'user_array' or 'user_vector', and arrays must follow the (3 dimensional) format of the 'ACTION' array in GMSE in terms of column numbers and types, with appropriate rows for interactions and layers for agents (see documentation of GMSE for constructing these, if desired).
 #'@param get_res How the output should be organised. The default 'basic' attempts to distill results down to their key values from submodel outputs, including resource abundances and estimates, and manager policy and actions. An option 'custom' simply returns a large list that includes the output of every submodel. Any other option (e.g. 'none') will return a massive list with all of the input, output, and parameters used to run gmse_apply.
+#'@param old_list A an existing list of results from gmse_apply, produced by setting `get_res = TRUE` to be included in the function. The parameter and data structures from the previous run will be applied to the new run of gmse_apply, thereby making it easy to loop multiple generations. Additional arguments passed to `...` will over-ride those stored in the old list, allowing global parameter values to be updated (e.g., sub-models used, management options, genetic algorithm parameters).
 #'@param ... Arguments passed to user-defined functions, and passed to modify default parameter values that would otherwise be called for gmse default models. Any argument that can be passed to gmse can be specified explicitly, just as if it were an argument to gmse. Similarly, any argument taken by a user-defined function should be specified, though the function will work if the user-defined function has a default that is not specified explicitly.
 #'@examples
 #'sim <- gmse_apply();
@@ -23,6 +24,7 @@ gmse_apply <- function(res_mod  = resource,
                        man_mod  = manager, 
                        use_mod  = user,
                        get_res  = "basic",
+                       old_list = NULL,
                        ...
                        ){
 
@@ -38,6 +40,10 @@ gmse_apply <- function(res_mod  = resource,
     arg_name    <- needed_args$all_arg_names;
 
     names(arg_vals) <- arg_name;
+
+    if(is.null(old_list) == FALSE){
+        
+    }
     
     # ------ RESOURCE MODEL ----------------------------------------------------
     res_args <- prep_res(arg_list = arg_vals, res_mod = res_mod);
@@ -155,9 +161,9 @@ pass_paras <- function( time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
     
     paras_errors(input_list);
     
-    #ldims  <- land_errors(input_list, ...);
-    #stakes <- agent_errors(input_list, ldims, ...);
-    #action_errors(input_list, stakes, ...);
+    ldims  <- land_errors(input_list, ...);
+    stakes <- agent_errors(input_list, ldims, ...);
+    action_errors(input_list, stakes, ...);
     
     if(is.null(PARAS) == FALSE){
         paras <- PARAS;
