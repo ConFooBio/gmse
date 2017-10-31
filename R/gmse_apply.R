@@ -310,9 +310,9 @@ update_old_gmse <- function(arg_vals, ol, list_add){
         }
         ol$ga_sampleK <- list_add$ga_sampleK;
     }
-    if("ga_sampleK" %in% names_add){
-        if(list_add$ga_sampleK < 0){
-            stop("ERROR: ga_sampleK must be a non-negative integer");
+    if("ga_chooseK" %in% names_add){
+        if(list_add$ga_chooseK < 0){
+            stop("ERROR: ga_chooseK must be a non-negative integer");
         }
         if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
             ol$PARAS[26] <- list_add$ga_chooseK;
@@ -327,7 +327,7 @@ update_old_gmse <- function(arg_vals, ol, list_add){
     }
     if("ga_crossover" %in% names_add){
         if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[28] <- list_add$ga_mutation;
+            ol$PARAS[28] <- list_add$ga_crossover;
         }
         ol$ga_crossover <- list_add$ga_crossover;
     }
@@ -346,7 +346,8 @@ update_old_gmse <- function(arg_vals, ol, list_add){
     if("minimum_cost" %in% names_add){
         ol$COST          <- NA;
         ol$manager_array <- NA;
-        ol$minimum_cost  <- list_add$minimum_cost;
+        ol$ACTION        <- NA;
+        ol$user_array    <- NA;
         if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
             ol$PARAS[97] <- list_add$minimum_cost;
         }
