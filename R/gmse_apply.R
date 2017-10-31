@@ -455,6 +455,10 @@ update_old_gmse <- function(arg_vals, ol, list_add){
         }
     }
     if("tend_crop_yld" %in% names_add){
+        ol$COST              <- NA;
+        ol$manager_array     <- NA;
+        ol$ACTION            <- NA;
+        ol$user_array        <- NA;
         ol$tend_crop_yld     <- list_add$tend_crop_yld;
         if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
             ol$PARAS[80] <- list_add$tend_crop_yld;
@@ -468,7 +472,7 @@ update_old_gmse <- function(arg_vals, ol, list_add){
         ol$ACTION         <- NA;
         ol$user_array     <- NA;
         if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[55] <- list_add$stakeholders + 1;
+            ol$PARAS[55] <- list_add$stakeholders;
         }
         ol$stakeholders     <- list_add$stakeholders;
     }
@@ -622,7 +626,7 @@ pass_paras <- function( old_list = NULL, time_max = 100, land_dim_1 = 100,
     agt <- 17;
     lkr <- 2;
     lyr <- stakeholders + 1;
-    roc <- stakeholders + 1;
+    roc <- stakeholders + 3;
     coc <- 13;
     
     paras <- c(1, edge_effect, res_move_type, res_birth_type, res_death_type,
@@ -1023,8 +1027,8 @@ paras_errors <- function(input_list){
     if(input_list[48]  <  0 | input_list[48] > 1){
         stop("ERROR: help_offspring must be TRUE/FALSE");
     }
-    if(input_list[49] < 2){
-        stop("ERROR: Need at least 2 stakeholders");
+    if(input_list[49] < 1){
+        stop("ERROR: Need at least 1 stakeholder");
     }
     if(input_list[51] < 0 | input_list[51] > 1){
         stop("ERROR: land_ownership must be TRUE/FALSE");
