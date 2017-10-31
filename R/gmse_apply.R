@@ -355,7 +355,7 @@ update_old_gmse <- function(arg_vals, ol, list_add){
     }
     if("user_budget" %in% names_add){
         if(is.null(ol$AGENTS) == FALSE & is.na(ol$AGENTS)[1] == FALSE){
-            ol$AGENTS[ol$AGENTS[,2]==1, 17] <- list_add$user_budget;
+            ol$AGENTS[ol$AGENTS[,2]==1, 17] <-list_add$user_budget;
         }
         if(is.null(ol$AGENT) == FALSE & is.na(ol$AGENT)[1] == FALSE){
             ol$AGENTS[ol$AGENT[,2]==1, 17] <- list_add$user_budget;
@@ -472,7 +472,9 @@ update_old_gmse <- function(arg_vals, ol, list_add){
         ol$ACTION         <- NA;
         ol$user_array     <- NA;
         if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[55] <- list_add$stakeholders;
+            ol$PARAS[55] <- list_add$stakeholders + 1;
+            ol$PARAS[66] <- list_add$stakeholders + 1;
+            ol$PARAS[69] <- list_add$stakeholders + 3;
         }
         ol$stakeholders     <- list_add$stakeholders;
     }
@@ -504,6 +506,10 @@ update_old_gmse <- function(arg_vals, ol, list_add){
     }
     if("public_land" %in% names_add){
         ol$LAND           <- NA;
+        ol$COST           <- NA;
+        ol$manager_array  <- NA;
+        ol$ACTION         <- NA;
+        ol$user_array     <- NA;
         if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
             ol$PARAS[105] <- list_add$public_land;
         }
@@ -528,6 +534,14 @@ apply_old_gmse <- function(arg_vals, old_list,  ...){
     names_arg  <- names(arg_vals);
     names_add  <- names(list_add);
     
+    added      <- length(list_add);
+    
+    if(added > 2){
+        for(i in 3:length(list_add)){
+            list_add[[i]] <- eval(list_add[[i]]);
+        }
+    }
+
     old_list   <- update_old_gmse(arg_vals, old_list, list_add);
     
     old_length <- length(old_list);
