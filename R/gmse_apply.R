@@ -203,7 +203,7 @@ update_old_gmse <- function(arg_vals, ol, list_add){
     }
     if("res_move_type" %in% names_add){
         if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[2] <- list_add$res_move_type;
+            ol$PARAS[3] <- list_add$res_move_type;
         }
         ol$res_move_type <- list_add$res_move_type;
     }
