@@ -109,20 +109,23 @@ update_old_gmse <- function(arg_vals, ol, list_add){
     names_old  <- names(ol);
     names_arg  <- names(arg_vals);
     names_add  <- names(list_add);
+    if("manager_sense" %in% names_add){
+        ol$manager_sense     <- list_add$manager_sense;
+    }
     if("time_max" %in% names_add){
         stop("ERROR: time_max cannot be changed when old_list is included");
     }
     if("land_dim_1" %in% names_add){
         ol$LAND       <- NA;
         ol$land_dim_1 <- list_add$land_dim_1;
-        if(is.null(ol$PARAS) == FALSE | is.na(ol$PARAS)[1] == FALSE){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
             ol$PARAS[13] <- list_add$land_dim_1;
         }
     }
     if("land_dim_2" %in% names_add){
         ol$LAND       <- NA;
         ol$land_dim_2 <- list_add$land_dim_2;
-        if(is.null(ol$PARAS) == FALSE | is.na(ol$PARAS)[1] == FALSE){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
             ol$PARAS[14] <- list_add$land_dim_2;
         }
     }
@@ -134,9 +137,10 @@ update_old_gmse <- function(arg_vals, ol, list_add){
            is.na(ol$resource_array)[1] == FALSE){
             ol$resource_array[,7] <- list_add$res_movement;
         }
-        if(is.null(ol$PARAS) == FALSE | is.na(ol$PARAS)[1] == FALSE){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
             ol$PARAS[3] <- list_add$res_movement;
         }
+        ol$res_movement <- list_add$res_movement;
     }
     if("remove_pr" %in% names_add){
         if(is.null(ol$RESOURCES) == FALSE & is.na(ol$RESOURCES)[1] == FALSE){
@@ -146,6 +150,7 @@ update_old_gmse <- function(arg_vals, ol, list_add){
            is.na(ol$resource_array)[1] == FALSE){
             ol$resource_array[,9] <- list_add$remove_pr;
         }
+        ol$remove_pr <- list_add$remove_pr;
     }
     if("lambda" %in% names_add){
         if(is.null(ol$RESOURCES) == FALSE & is.na(ol$RESOURCES)[1] == FALSE){
@@ -155,51 +160,339 @@ update_old_gmse <- function(arg_vals, ol, list_add){
            is.na(ol$resource_array)[1] == FALSE){
             ol$resource_array[,10] <- list_add$lambda;
         }
+        #if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+        #    mas <- ol$GMSE$manager_sense
+        #    if(is.null(ol$manager_sense) == FALSE){
+        #        if(is.na(ol$manager_sense) == FALSE){
+        #            mas <- ol$manager_sense;
+        #        }
+        #    }
+        #    ol$PARAS[76]  <- -1*mas*(1+lambda);
+        #    ol$PARAS[77]  <- -1*mas*lambda;
+        #    ol$PARAS[78]  <-  1*lambda;
+        #    ol$PARAS[106] <- lambda;
+        #}
+        ol$lambda <- list_add$lambda;
     }
     if("agent_view" %in% names_add){
         if(is.null(ol$AGENTS) == FALSE & is.na(ol$AGENTS)[1] == FALSE){
             ol$AGENTS[,9] <- list_add$agent_view;
         }
+        ol$agent_view <- list_add$agent_view;
     }
     if("agent_move" %in% names_add){
         if(is.null(ol$AGENTS) == FALSE & is.na(ol$AGENTS)[1] == FALSE){
             ol$AGENTS[,7] <- list_add$agent_move;
         }
+        ol$agent_view <- list_add$agent_move;
     }
     if("res_birth_K" %in% names_add){
-        if(is.null(ol$PARAS) == FALSE | is.na(ol$PARAS)[1] == FALSE){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
             ol$PARAS[6] <- list_add$res_birth_K;
         }
+        ol$res_birth_K <- list_add$res_birth_K;
     }
     if("res_death_K" %in% names_add){
-        if(is.null(ol$PARAS) == FALSE | is.na(ol$PARAS)[1] == FALSE){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
             ol$PARAS[7] <- list_add$res_death_K;
         }
+        ol$res_death_K <- list_add$res_death_K;
     }
     if("edge_effect" %in% names_add){
         stop("ERROR: Cannot change edge_effect (must be torus)");
     }
     if("res_move_type" %in% names_add){
-        if(is.null(ol$PARAS) == FALSE | is.na(ol$PARAS)[1] == FALSE){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
             ol$PARAS[2] <- list_add$res_move_type;
         }
+        ol$res_move_type <- list_add$res_move_type;
     }
     if("res_birth_type" %in% names_add){
         stop("ERROR: Only res_birth_type = 2 is allowed by GMSE");
     }
     if("res_death_type" %in% names_add){
-        if(is.null(ol$PARAS) == FALSE | is.na(ol$PARAS)[1] == FALSE){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
             ol$PARAS[5] <- list_add$res_death_type;
         }
+        ol$res_death_type <- list_add$res_death_type;
     }
     if("observe_type" %in% names_add){
-        if(is.null(ol$PARAS) == FALSE | is.na(ol$PARAS)[1] == FALSE){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
             ol$PARAS[9] <- list_add$observe_type;
         }
+        ol$observe_type <- list_add$observe_type;
     }
     if("fixed_mark" %in% names_add){
-        if(is.null(ol$PARAS) == FALSE | is.na(ol$PARAS)[1] == FALSE){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
             ol$PARAS[11] <- list_add$fixed_mark;
+        }
+        ol$fixed_mark <- list_add$fixed_mark;
+    }
+    if("fixed_recapt" %in% names_add){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[103] <- list_add$fixed_recapt;
+        }
+        ol$fixed_recapt <- list_add$fixed_recapt;
+    }
+    if("times_observe" %in% names_add){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[12] <- list_add$times_observe;
+        }
+        ol$times_observe <- list_add$times_observe;
+    }
+    if("obs_move_type" %in% names_add){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[15] <- list_add$obs_move_type;
+        }
+        ol$obs_move_type <- list_add$obs_move_type;
+    }
+    if("res_min_age" %in% names_add){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[17] <- list_add$res_min_age;
+        }
+        ol$res_min_age <- list_add$res_min_age;
+    }
+    if("res_move_obs" %in% names_add){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[20] <- list_add$res_move_obs;
+        }
+        ol$res_move_obs  <- list_add$res_move_obs;
+    }
+    if("Euclidean_dist" %in% names_add){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[21] <- list_add$Euclidean_dist;
+        }
+        ol$Euclidean_dist <- list_add$Euclidean_dist;
+    }
+    if("res_consume" %in% names_add){
+        if(is.null(ol$RESOURCES) == FALSE & is.na(ol$RESOURCES)[1] == FALSE){
+            ol$RESOURCES[,15] <- list_add$res_consume;
+        }
+        if(is.null(ol$resource_array)  == FALSE & 
+           is.na(ol$resource_array)[1] == FALSE){
+            ol$resource_array[,15] <- list_add$res_consume;
+        }
+        ol$res_consume <- list_add$res_consume;
+    }
+    if("ga_popsize" %in% names_add){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[22] <- list_add$ga_popsize;
+        }
+        ol$ga_popsize <- list_add$ga_popsize;
+    }
+    if("ga_mingen" %in% names_add){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[23] <- list_add$ga_mingen;
+        }
+        ol$ga_mingen <- list_add$ga_mingen;
+    }
+    if("ga_seedrep" %in% names_add){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[24] <- list_add$ga_seedrep;
+        }
+        ol$ga_seedrep <- list_add$ga_seedrep;
+    }
+    if("ga_sampleK" %in% names_add){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[25] <- list_add$ga_sampleK;
+        }
+        ol$ga_sampleK <- list_add$ga_sampleK;
+    }
+    if("ga_chooseK" %in% names_add){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[26] <- list_add$ga_chooseK;
+        }
+        ol$ga_chooseK <- list_add$ga_chooseK;
+    }
+    if("ga_mutation" %in% names_add){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[27] <- list_add$ga_mutation;
+        }
+        ol$ga_mutation <- list_add$ga_mutation;
+    }
+    if("ga_crossover" %in% names_add){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[28] <- list_add$ga_mutation;
+        }
+        ol$ga_crossover <- list_add$ga_crossover;
+    }
+    if("move_agents" %in% names_add){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[29] <- list_add$move_agents;
+        }
+        ol$move_agents <- list_add$move_agents;
+    }
+    if("max_ages" %in% names_add){
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[30] <- list_add$max_ages;
+        }
+        ol$max_ages <- list_add$max_ages;
+    }
+    if("minimum_cost" %in% names_add){
+        ol$COST          <- NA;
+        ol$manager_array <- NA;
+        ol$minimum_cost  <- list_add$minimum_cost;
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[97] <- list_add$minimum_cost;
+        }
+        ol$minimum_cost <- list_add$minimum_cost;
+    }
+    if("user_budget" %in% names_add){
+        if(is.null(ol$AGENTS) == FALSE & is.na(ol$AGENTS)[1] == FALSE){
+            ol$AGENTS[ol$AGENTS[,2]==1, 17] <- list_add$user_budget;
+        }
+        if(is.null(ol$AGENT) == FALSE & is.na(ol$AGENT)[1] == FALSE){
+            ol$AGENTS[ol$AGENT[,2]==1, 17] <- list_add$user_budget;
+        }
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[98] <- list_add$user_budget;
+        }
+        ol$user_budget <- list_add$user_budget;
+    }
+    if("manager_budget" %in% names_add){
+        if(is.null(ol$AGENTS) == FALSE & is.na(ol$AGENTS)[1] == FALSE){
+            ol$AGENTS[ol$AGENTS[,2]==0, 17] <- list_add$manager_budget;
+        }
+        if(is.null(ol$AGENT) == FALSE & is.na(ol$AGENT)[1] == FALSE){
+            ol$AGENTS[ol$AGENT[,2]==0, 17] <- list_add$manager_budget;
+        }
+        ol$manager_budget <- list_add$manager_budget;
+    }
+    if("manage_target" %in% names_add){
+        ol$COST          <- NA;
+        ol$manager_array <- NA;
+        ol$manage_target <- list_add$manage_target;
+    }
+    if("RESOURCE_ini" %in% names_add){
+        ol$RESOURCES      <- NA;
+        ol$resource_array <- NA;
+        ol$RESOURCE_ini   <- list_add$RESOURCE_ini;
+    }
+    if("scaring" %in% names_add){
+        ol$COST          <- NA;
+        ol$manager_array <- NA;
+        ol$ACTION        <- NA;
+        ol$user_array    <- NA;
+        ol$scaring       <- list_add$scaring;
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[89] <- list_add$scaring;
+        }
+    }
+    if("culling" %in% names_add){
+        ol$COST          <- NA;
+        ol$manager_array <- NA;
+        ol$ACTION        <- NA;
+        ol$user_array    <- NA;
+        ol$culling       <- list_add$culling;
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[90] <- list_add$culling;
+        }
+    }
+    if("castration" %in% names_add){
+        ol$COST          <- NA;
+        ol$manager_array <- NA;
+        ol$ACTION        <- NA;
+        ol$user_array    <- NA;
+        ol$castration    <- list_add$castration;
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[91] <- list_add$castration;
+        }
+    }
+    if("feeding" %in% names_add){
+        ol$COST          <- NA;
+        ol$manager_array <- NA;
+        ol$ACTION        <- NA;
+        ol$user_array    <- NA;
+        ol$feeding       <- list_add$feeding;
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[92] <- list_add$feeding;
+        }
+    }
+    if("help_offspring" %in% names_add){
+        ol$COST           <- NA;
+        ol$manager_array  <- NA;
+        ol$ACTION         <- NA;
+        ol$user_array     <- NA;
+        ol$help_offspring <- list_add$help_offspring;
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[93] <- list_add$help_offspring;
+        }
+    }
+    if("kill_crops" %in% names_add){
+        ol$COST           <- NA;
+        ol$manager_array  <- NA;
+        ol$ACTION         <- NA;
+        ol$user_array     <- NA;
+        ol$kill_crops     <- list_add$kill_crops;
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[94] <- list_add$kill_crops;
+        }
+    }
+    if("tend_crops" %in% names_add){
+        ol$COST           <- NA;
+        ol$manager_array  <- NA;
+        ol$ACTION         <- NA;
+        ol$user_array     <- NA;
+        ol$tend_crops     <- list_add$tend_crops;
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[95] <- list_add$tend_crops;
+        }
+    }
+    if("tend_crop_yld" %in% names_add){
+        ol$tend_crop_yld     <- list_add$tend_crop_yld;
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[80] <- list_add$tend_crop_yld;
+        }
+    }
+    if("stakeholders" %in% names_add){
+        ol$AGENTS         <- NA;
+        ol$AGENT          <- NA;
+        ol$COST           <- NA;
+        ol$manager_array  <- NA;
+        ol$ACTION         <- NA;
+        ol$user_array     <- NA;
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[55] <- list_add$stakeholders + 1;
+        }
+        ol$stakeholders     <- list_add$stakeholders;
+    }
+    if("manage_caution" %in% names_add){
+        ol$manage_caution     <- list_add$manage_caution;
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[96] <- list_add$manage_caution;
+        }
+    }
+    if("land_ownership" %in% names_add){
+        ol$LAND           <- NA;
+        ol$COST           <- NA;
+        ol$manager_array  <- NA;
+        ol$ACTION         <- NA;
+        ol$user_array     <- NA;
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[104] <- list_add$land_ownership;
+        }
+        ol$land_ownership     <- list_add$land_ownership;
+    }
+    if("manage_freq" %in% names_add){
+        stop("ERROR: manage_freq cannot be changed when old_list is included");
+    }
+    if("converge_crit" %in% names_add){
+        ol$converge_crit     <- list_add$converge_crit;
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[99] <- list_add$converge_crit;
+        }
+    }
+    if("public_land" %in% names_add){
+        ol$LAND           <- NA;
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[105] <- list_add$public_land;
+        }
+        ol$public_land     <- list_add$public_land;
+    }
+    if("group_think" %in% names_add){
+        ol$group_think     <- list_add$group_think;
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[107] <- list_add$group_think;
         }
     }
     return(ol);
@@ -228,16 +521,7 @@ apply_old_gmse <- function(arg_vals, old_list,  ...){
             names(old_list)[old_length]   <- names_arg[[i]];
         }
     }
-    #for(i in 1:add_length){
-    #    if(names_add[[i]] %in% names_old == TRUE){
-    #        old_pos                <- which(names_old == names_add[[i]])[1];
-    #        old_list[[old_pos]]    <- list_add[[i]];
-    #    }else{
-    #        old_length                    <- old_length + 1;
-    #        old_list[[old_length]]        <- list_add[[i]];
-    #        names(old_list)[old_length]   <- names_add[[i]];
-    #    }
-    #}
+
     old_list$arg_vals <- NULL;
     old_list$old_list <- NULL;
     return(old_list);
