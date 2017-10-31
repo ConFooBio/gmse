@@ -275,30 +275,45 @@ update_old_gmse <- function(arg_vals, ol, list_add){
         ol$res_consume <- list_add$res_consume;
     }
     if("ga_popsize" %in% names_add){
+        if(list_add$ga_popsize < 2){
+            stop("ERROR: ga_popsize must be an integer > 2");
+        }
         if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
             ol$PARAS[22] <- list_add$ga_popsize;
         }
         ol$ga_popsize <- list_add$ga_popsize;
     }
     if("ga_mingen" %in% names_add){
+        if(list_add$ga_mingen < 2){
+            stop("ERROR: ga_mingen must be an integer > 2");
+        }
         if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
             ol$PARAS[23] <- list_add$ga_mingen;
         }
         ol$ga_mingen <- list_add$ga_mingen;
     }
     if("ga_seedrep" %in% names_add){
+        if(list_add$ga_seedrep < 0){
+            stop("ERROR: ga_mingen must be a non-negative integer");
+        }
         if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
             ol$PARAS[24] <- list_add$ga_seedrep;
         }
         ol$ga_seedrep <- list_add$ga_seedrep;
     }
     if("ga_sampleK" %in% names_add){
+        if(list_add$ga_sampleK < 0){
+            stop("ERROR: ga_sampleK must be a non-negative integer");
+        }
         if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
             ol$PARAS[25] <- list_add$ga_sampleK;
         }
         ol$ga_sampleK <- list_add$ga_sampleK;
     }
-    if("ga_chooseK" %in% names_add){
+    if("ga_sampleK" %in% names_add){
+        if(list_add$ga_sampleK < 0){
+            stop("ERROR: ga_sampleK must be a non-negative integer");
+        }
         if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
             ol$PARAS[26] <- list_add$ga_chooseK;
         }
@@ -948,16 +963,34 @@ paras_errors <- function(input_list){
         stop("ERROR: res_move_obs must be TRUE/FALSE");
     }
     if(input_list[27]  <  0){
-        stop("ERROR: ga_popsize must be greater than zero");
+        stop("ERROR: ga_popsize must be an integer greater than zero");
     }
     if(input_list[28]  <  0){
-        stop("ERROR: ga_popsize must be greater than zero");
+        stop("ERROR: ga_mingen must be an integer greater than zero");
     }
     if(input_list[29]  <  0){
-        stop("ERROR: ga_popsize must be greater than zero");
+        stop("ERROR: ga_seedrep must be an integer greater than zero");
     }
-    if(input_list[27]  <  0){
-        stop("ERROR: ga_popsize must be greater than zero");
+    if(input_list[30]  <  0){
+        stop("ERROR: ga_sampleK must be greater than zero");
+    }
+    if(input_list[31]  <  0){
+        stop("ERROR: ga_chooseK must be greater than zero");
+    }
+    if(is.na(input_list[27]) == FALSE & input_list[27] %% 1 != 0){
+        stop("ERROR: ga_popsize must be an integer greater than zero");
+    }
+    if(is.na(input_list[28]) == FALSE & input_list[28] %% 1 != 0){
+        stop("ERROR: ga_mingen must be an integer greater than zero");
+    }
+    if(is.na(input_list[29]) == FALSE & input_list[29] %% 1 != 0){
+        stop("ERROR: ga_seedrep must be an integer greater than zero");
+    }
+    if(is.na(input_list[30]) == FALSE & input_list[30] %% 1 != 0){
+        stop("ERROR: ga_sampleK must be greater than zero");
+    }
+    if(is.na(input_list[31]) == FALSE & input_list[31] %% 1 != 0){
+        stop("ERROR: ga_chooseK must be greater than zero");
     }
     if(input_list[37] < 1 | input_list[37] > 10000){
         stop("User budget needs to be between 1 and 10000");
