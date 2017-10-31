@@ -248,7 +248,7 @@ pass_paras <- function( old_list = NULL, time_max = 100, land_dim_1 = 100,
 old_list_errors <- function(old_list = NULL, RESOURCES = NULL, ACTION = NULL,
                             resource_array = NULL, LAND = NULL, COST = NULL,
                             manager_array  = NULL, user_array = NULL, 
-                            PARAS = NULL){
+                            PARAS = NULL, ...){
     if(is.null(old_list) == FALSE){
         if(is.null(RESOURCES) == FALSE){
             stop("ERROR: Do not specify RESOURCES if using an old_list");
@@ -274,7 +274,7 @@ old_list_errors <- function(old_list = NULL, RESOURCES = NULL, ACTION = NULL,
     }
 }
 
-land_errors <- function(input_list, LAND = NULL, PARAS = NULL){
+land_errors <- function(input_list, LAND = NULL, PARAS = NULL, ...){
     arguments <- as.list(match.call());          
     in_list   <- eval(arguments$input_list);
     arg_names <- names(arguments);          
@@ -297,6 +297,9 @@ land_errors <- function(input_list, LAND = NULL, PARAS = NULL){
         ld2_l    <- dim(LAND)[2];
         ld1      <- ld1_l;
         ld2      <- ld2_l;
+        if(is.null(ld1_l) == TRUE | is.null(ld2_l) == TRUE){
+            stop("ERROR: LAND dimensions are unclear -- needs to be an array");
+        }
     }
     if(is.na(ld1_u[1]) == FALSE & is.na(ld1_p[1]) == FALSE){
         if(ld1_u != ld1_p){
@@ -384,10 +387,16 @@ action_errors <- function(input_list, stakes, ...){
     if("RESOURCES" %in% arg_names){
         res_pos <- which(arg_names == "RESOURCES")[1];
         res_arr <- eval(arguments[[res_pos]]);
+        if(is.null(dim(res_arr)) == TRUE){
+            stop("ERROR: Dimensions of the RESOURCE array are unclear");
+        }
     }
     if("resource_array" %in% arg_names){
         res_pos <- which(arg_names == "RESOURCES")[1];
         res_arr <- eval(arguments[[res_pos]]);
+        if(is.null(dim(res_arr))){
+            stop("ERROR: Dimensions of the resource_array are unclear");
+        }
     }
     if(is.na(res_arr[1]) == FALSE){
         res_types <- length(unique(res_arr[,2]));
@@ -395,6 +404,9 @@ action_errors <- function(input_list, stakes, ...){
     if("ACTION" %in% arg_names){
         act_pos <- which(arg_names == "ACTION")[1];
         act_arr <- eval(arguments[[act_pos]]);
+        if(is.null(dim(act_arr)) == TRUE){
+            stop("ERROR: Dimensions of the ACTION array are unclear");
+        }
         if(is.na(agents[1]) == FALSE){
             if(agents != dim(act_arr)[3]){
                 stop("The ACTION array has a different number of layers
@@ -413,6 +425,9 @@ action_errors <- function(input_list, stakes, ...){
         if("COST" %in% arg_names){
             cost_pos <- which(arg_names == "COST")[1];
             cost_arr <- eval(arguments[[cost_pos]]);
+            if(is.null(dim(cost_arr)) == TRUE){
+                stop("ERROR: Dimensions of the COST array are unclear");
+            }
             if(identical(dim(cost_arr), dim(act_arr)) == FALSE){
                 stop("The dimensions of the COST and ACTION arrays need to be
                       identical");
@@ -421,6 +436,9 @@ action_errors <- function(input_list, stakes, ...){
         if("manager_array" %in% arg_names){
             cost_pos <- which(arg_names == "manager_array")[1];
             cost_arr <- eval(arguments[[cost_pos]]);
+            if(is.null(dim(cost_arr)) == TRUE){
+                stop("ERROR: Dimensions of the manager_array are unclear");
+            }
             if(identical(dim(cost_arr), dim(act_arr)) == FALSE){
                 stop("The dimensions of the manager_array and 
                       ACTION array need to be identical");
@@ -430,6 +448,9 @@ action_errors <- function(input_list, stakes, ...){
     if("user_array" %in% arg_names){
         act_pos <- which(arg_names == "user_array")[1];
         act_arr <- eval(arguments[[act_pos]]);
+        if(is.null(dim(act_arr))){
+            stop("ERROR: Dimensions of the user_array are unclear");
+        }
         if(is.na(agents[1]) == FALSE){
             if(agents != dim(act_arr)[3]){
                 stop("The user_array has a different number of layers
@@ -460,6 +481,46 @@ action_errors <- function(input_list, stakes, ...){
                 stop("The dimensions of the manager_array and 
                       user_array need to be identical");
             }
+        }
+    }
+    if("COST" %in% arg_names){
+        cpos <- which(arg_names == "COST")[1];
+        carr <- eval(arguments[[cpos]]);
+        if(is.null(dim(carr)) == TRUE){
+            stop("Incorrect dimensions set for the COST array");
+        }
+        if(dim(carr)[3] != 3){
+            stop("Incorrect dimensions set for the COST array");
+        }
+    }
+    if("manager_array" %in% arg_names){
+        cpos <- which(arg_names == "manager_array")[1];
+        carr <- eval(arguments[[cpos]]);
+        if(is.null(dim(carr)) == TRUE){
+            stop("Incorrect dimensions set for the manager_array");
+        }
+        if(dim(carr)[3] != 3){
+            stop("Incorrect dimensions set for the manager_array");
+        }
+    }
+    if("ACTION" %in% arg_names){
+        apos <- which(arg_names == "ACTION")[1];
+        aarr <- eval(arguments[[apos]]);
+        if(is.null(dim(aarr)) == TRUE){
+            stop("Incorrect dimensions set for the ACTION array");
+        }
+        if(dim(aarr)[3] != 3){
+            stop("Incorrect dimensions set for the ACTION array");
+        }
+    }
+    if("user_array" %in% arg_names){
+        apos <- which(arg_names == "user_array")[1];
+        aarr <- eval(arguments[[apos]]);
+        if(is.null(dim(aarr)) == TRUE){
+            stop("Incorrect dimensions set for the user_array");
+        }
+        if(dim(aarr)[3] != 3){
+            stop("Incorrect dimensions set for the user_array");
         }
     }
 }
