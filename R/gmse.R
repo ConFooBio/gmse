@@ -379,6 +379,23 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                lambda,  # 105. Birth rate parameter
                gtk      # 106. Group think behaviour specified?
     );
+    
+    input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
+                    lambda, agent_view, agent_move, res_birth_K, res_death_K,
+                    edge_effect, res_move_type, res_birth_type, res_death_type,
+                    observe_type, fixed_mark, fixed_recapt, times_observe,
+                    obs_move_type, res_min_age, res_move_obs, Euclidean_dist, 
+                    plotting, hunt, start_hunting, res_consume, ga_popsize,
+                    ga_mingen, ga_seedrep, ga_sampleK, ga_chooseK, ga_mutation,
+                    ga_crossover, move_agents, max_ages, minimum_cost,
+                    user_budget, manager_budget, manage_target, RESOURCE_ini, 
+                    scaring, culling, castration, feeding, help_offspring, 
+                    tend_crops, tend_crop_yld, kill_crops, stakeholders, 
+                    manage_caution, land_ownership, manage_freq, converge_crit, 
+                    manager_sense, public_land, group_think); 
+    
+    paras_errors(input_list);
+    
     RESOURCE_REC    <- NULL;
     RESOURCES       <- starting_resources;
     OBSERVATION_REC <- NULL;
