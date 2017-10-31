@@ -105,6 +105,106 @@ gmse_apply <- function(res_mod  = resource,
 # Subfunctions required                                                        #
 ################################################################################
 
+update_old_gmse <- function(arg_vals, ol, list_add){
+    names_old  <- names(ol);
+    names_arg  <- names(arg_vals);
+    names_add  <- names(list_add);
+    if("time_max" %in% names_add){
+        stop("ERROR: time_max cannot be changed when old_list is included");
+    }
+    if("land_dim_1" %in% names_add){
+        ol$LAND       <- NA;
+        ol$land_dim_1 <- list_add$land_dim_1;
+        if(is.null(ol$PARAS) == FALSE | is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[13] <- list_add$land_dim_1;
+        }
+    }
+    if("land_dim_2" %in% names_add){
+        ol$LAND       <- NA;
+        ol$land_dim_2 <- list_add$land_dim_2;
+        if(is.null(ol$PARAS) == FALSE | is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[14] <- list_add$land_dim_2;
+        }
+    }
+    if("res_movement" %in% names_add){
+        if(is.null(ol$RESOURCES) == FALSE & is.na(ol$RESOURCES)[1] == FALSE){
+            ol$RESOURCES[,7] <- list_add$res_movement;
+        }
+        if(is.null(ol$resource_array)  == FALSE & 
+           is.na(ol$resource_array)[1] == FALSE){
+            ol$resource_array[,7] <- list_add$res_movement;
+        }
+        if(is.null(ol$PARAS) == FALSE | is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[3] <- list_add$res_movement;
+        }
+    }
+    if("remove_pr" %in% names_add){
+        if(is.null(ol$RESOURCES) == FALSE & is.na(ol$RESOURCES)[1] == FALSE){
+            ol$RESOURCES[,9] <- list_add$remove_pr;
+        }
+        if(is.null(ol$resource_array)  == FALSE & 
+           is.na(ol$resource_array)[1] == FALSE){
+            ol$resource_array[,9] <- list_add$remove_pr;
+        }
+    }
+    if("lambda" %in% names_add){
+        if(is.null(ol$RESOURCES) == FALSE & is.na(ol$RESOURCES)[1] == FALSE){
+            ol$RESOURCES[,10] <- list_add$lambda;
+        }
+        if(is.null(ol$resource_array)  == FALSE & 
+           is.na(ol$resource_array)[1] == FALSE){
+            ol$resource_array[,10] <- list_add$lambda;
+        }
+    }
+    if("agent_view" %in% names_add){
+        if(is.null(ol$AGENTS) == FALSE & is.na(ol$AGENTS)[1] == FALSE){
+            ol$AGENTS[,9] <- list_add$agent_view;
+        }
+    }
+    if("agent_move" %in% names_add){
+        if(is.null(ol$AGENTS) == FALSE & is.na(ol$AGENTS)[1] == FALSE){
+            ol$AGENTS[,7] <- list_add$agent_move;
+        }
+    }
+    if("res_birth_K" %in% names_add){
+        if(is.null(ol$PARAS) == FALSE | is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[6] <- list_add$res_birth_K;
+        }
+    }
+    if("res_death_K" %in% names_add){
+        if(is.null(ol$PARAS) == FALSE | is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[7] <- list_add$res_death_K;
+        }
+    }
+    if("edge_effect" %in% names_add){
+        stop("ERROR: Cannot change edge_effect (must be torus)");
+    }
+    if("res_move_type" %in% names_add){
+        if(is.null(ol$PARAS) == FALSE | is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[2] <- list_add$res_move_type;
+        }
+    }
+    if("res_birth_type" %in% names_add){
+        stop("ERROR: Only res_birth_type = 2 is allowed by GMSE");
+    }
+    if("res_death_type" %in% names_add){
+        if(is.null(ol$PARAS) == FALSE | is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[5] <- list_add$res_death_type;
+        }
+    }
+    if("observe_type" %in% names_add){
+        if(is.null(ol$PARAS) == FALSE | is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[9] <- list_add$observe_type;
+        }
+    }
+    if("fixed_mark" %in% names_add){
+        if(is.null(ol$PARAS) == FALSE | is.na(ol$PARAS)[1] == FALSE){
+            ol$PARAS[11] <- list_add$fixed_mark;
+        }
+    }
+    return(ol);
+}
+
 apply_old_gmse <- function(arg_vals, old_list,  ...){
     
     input_list <- arg_vals$ilist; 
@@ -114,9 +214,13 @@ apply_old_gmse <- function(arg_vals, old_list,  ...){
     names_old  <- names(old_list);
     names_arg  <- names(arg_vals);
     names_add  <- names(list_add);
+    
+    old_list   <- update_old_gmse(arg_vals, old_list, list_add);
+    
     old_length <- length(old_list);
     arg_length <- length(arg_vals);
     add_length <- length(list_add);
+    
     for(i in 1:arg_length){
         if(names_arg[[i]] %in% names_old == FALSE){
             old_length                    <- old_length + 1;
@@ -124,16 +228,16 @@ apply_old_gmse <- function(arg_vals, old_list,  ...){
             names(old_list)[old_length]   <- names_arg[[i]];
         }
     }
-    for(i in 1:add_length){
-        if(names_add[[i]] %in% names_old == TRUE){
-            old_pos                <- which(names_old == names_add[[i]])[1];
-            old_list[[old_pos]]    <- list_add[[i]];
-        }else{
-            old_length                    <- old_length + 1;
-            old_list[[old_length]]        <- list_add[[i]];
-            names(old_list)[old_length]   <- names_add[[i]];
-        }
-    }
+    #for(i in 1:add_length){
+    #    if(names_add[[i]] %in% names_old == TRUE){
+    #        old_pos                <- which(names_old == names_add[[i]])[1];
+    #        old_list[[old_pos]]    <- list_add[[i]];
+    #    }else{
+    #        old_length                    <- old_length + 1;
+    #        old_list[[old_length]]        <- list_add[[i]];
+    #        names(old_list)[old_length]   <- names_add[[i]];
+    #    }
+    #}
     old_list$arg_vals <- NULL;
     old_list$old_list <- NULL;
     return(old_list);
@@ -1370,7 +1474,7 @@ set_action_array <- function(arg_list){
     user_budget <- arg_list$GMSE$user_budget;
     if("user_budget" %in% arg_name){
         ubpos          <- which(arg_name == "user_budget");
-        user_budget <- arg_list[[ubpos]];
+        user_budget    <- arg_list[[ubpos]];
     }
     manager_budget <- arg_list$GMSE$manager_budget;
     if("manager_budget" %in% arg_name){
