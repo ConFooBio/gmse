@@ -160,18 +160,18 @@ update_old_gmse <- function(arg_vals, ol, list_add){
            is.na(ol$resource_array)[1] == FALSE){
             ol$resource_array[,10] <- list_add$lambda;
         }
-        #if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-        #    mas <- ol$GMSE$manager_sense
-        #    if(is.null(ol$manager_sense) == FALSE){
-        #        if(is.na(ol$manager_sense) == FALSE){
-        #            mas <- ol$manager_sense;
-        #        }
-        #    }
-        #    ol$PARAS[76]  <- -1*mas*(1+lambda);
-        #    ol$PARAS[77]  <- -1*mas*lambda;
-        #    ol$PARAS[78]  <-  1*lambda;
-        #    ol$PARAS[106] <- lambda;
-        #}
+        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
+            mas <- ol$GMSE$manager_sense
+            if(is.null(ol$manager_sense) == FALSE){
+                if(is.na(ol$manager_sense) == FALSE){
+                    mas <- ol$manager_sense;
+                }
+            }
+            ol$PARAS[76]  <- -1*mas*(1+lambda);
+            ol$PARAS[77]  <- -1*mas*lambda;
+            ol$PARAS[78]  <-  1*lambda;
+            ol$PARAS[106] <- lambda;
+        }
         ol$lambda <- list_add$lambda;
     }
     if("agent_view" %in% names_add){
