@@ -377,12 +377,12 @@ update_old_gmse <- function(arg_vals, ol, list_add){
     if("manage_target" %in% names_add){
         ol$COST          <- NA;
         ol$manager_array <- NA;
+        ol$ACTION        <- NA;
+        ol$user_array    <- NA;
         ol$manage_target <- list_add$manage_target;
     }
     if("RESOURCE_ini" %in% names_add){
-        ol$RESOURCES      <- NA;
-        ol$resource_array <- NA;
-        ol$RESOURCE_ini   <- list_add$RESOURCE_ini;
+        stop("ERROR: Should not be initialising resources if using old_list");
     }
     if("scaring" %in% names_add){
         ol$COST          <- NA;
