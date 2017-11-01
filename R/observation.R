@@ -56,6 +56,12 @@ observation <- function(RESOURCES     = NULL,
         if(!is.array(AGENTS)){
             stop("Warning: Agents need to be in an array");
         }
+        if(dim(RESOURCES)[2] != 20){
+            stop("The RESOURCES array has the wrong number of columns");
+        }
+        if(dim(LAND)[3] != 3){
+            stop("The landscape doesn't have enough layers");
+        }
         # If all checks out, first put the type into PARAS for easier input
         PARAS[8]  <- agent_type;
         PARAS[9]  <- observe_type;
