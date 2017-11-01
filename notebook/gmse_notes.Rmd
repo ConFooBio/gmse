@@ -93,7 +93,7 @@ library(rhandsontable)
 
 > <a name="u-1-NOV-2017">Update: 1 NOV 2017</a>
 
-**CRAN read GMSE v0.3.1.7 -- more flexibility, better error messages**
+**CRAN ready GMSE v0.3.1.7 -- more flexibility, better error messages**
 
 I have now completed some substantial coding of error messages, which will be called in both `gmse` and `gmse_apply`. Essentially, these provide some help to software users who parameterise their models in a way that does not work with GMSE. For example, the parameter `stakeholders` is set to equal a negative number, an error message will be returned that informs the user that at least one stakeholder is required in the model. These error messages become a bit more important in `gmse_apply`, where it is possible for users to include arguments that don't make sense (e.g., arrays of incorrect dimensions, or arguments that contradict one another).
 
