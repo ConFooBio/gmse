@@ -10,6 +10,9 @@
 #'@param get_res How the output should be organised. The default 'basic' attempts to distill results down to their key values from submodel outputs, including resource abundances and estimates, and manager policy and actions. An option 'custom' simply returns a large list that includes the output of every submodel. Any other option (e.g. 'none') will return a massive list with all of the input, output, and parameters used to run gmse_apply.
 #'@param old_list A an existing list of results from gmse_apply, produced by setting `get_res = TRUE` to be included in the function. The parameter and data structures from the previous run will be applied to the new run of gmse_apply, thereby making it easy to loop multiple generations. Additional arguments passed to `...` will over-ride those stored in the old list, allowing global parameter values to be updated (e.g., sub-models used, management options, genetic algorithm parameters). Note that if these arguments are passed, the function will attempt to work with them even if it means removing previous list elements (e.g., if a new number of stakeholders is passed through stakeholder = new_value, then an entirely new AGENT array and user and manager arrays will need to be built).
 #'@param ... Arguments passed to user-defined functions, and passed to modify default parameter values that would otherwise be called for gmse default models. Any argument that can be passed to gmse can be specified explicitly, just as if it were an argument to gmse. Similarly, any argument taken by a user-defined function should be specified, though the function will work if the user-defined function has a default that is not specified explicitly.
+#'@details To integrate across different types of submodels, `gmse_apply` translates between vectors and arrays between each submodel. For example, because the default GMSE observation model requires a resource array with particular requirements for column identites, when a resource model subfunction returns a vector, or a list with a named element 'resource_vector', this vector is translated into an array that can be used by the observation model. Specifically, each element of the vector identifies the abundance of a resource type (and hence will usually be just a single value denoting abundance of the only focal population). If this is all the information provided, then a resource_array will be made with default GMSE parameter values with an identical number of rows to the abundance value (floored if the value is a non-integer; non-default values can also be put into this transformation from vector to array if they are specified in gmse_apply, e.g., through an argument such as `lambda = 0.8`). Similarly, a `resource_array` is also translated into a vector after the default individual-based resource model is run, should the observation model require simple abundances instead of an array. The same is true of `observation_vector` and `observation_array` objects returned by observation models, of `manager_vector` and `manager_array` (i.e., COST) objects returned by manager models, and of `user_vector` and `user_array` (i.e., ACTION) objects returned by user models. At each step, a translation between the two is made, with necessary adjustments that can be tweaked through arguments to `gmse_apply` when needed.
+#'
+#'Parameter changes are accommodated by rebuilding data structures whenever necessary. For example, if the number of stakeholders is changed (and by including an argument `stakeholders` to `gmse_apply`, it is assumed that stakeholders are changing even the value is identical to what is in the `old_list`), then a new array of agents will be built. If landscape dimensions are changed (i.e., if the argument `land_dim_1` or `land_dim_2` is included), then a new landscape willl be built. For custom defined GMSE sub-functions, arguments passed to `...` will *not* be found or updated, so changes to arguments of custom functions should be made directly to the `old_list`, or the use of `old_list` should be avoided.
 #'@examples
 #'sim <- gmse_apply();
 #'sim <- gmse_apply(stakeholders = 2);
@@ -2016,30 +2019,7 @@ add_usr_defaults <- function(arg_list){
 
 gmse_apply_out <- function(arg_list, out, res_mod, obs_mod, man_mod, usr_mod,
                            u_res, u_obs, u_man, u_usr){
-    if(out == "basic"){
-        b_list  <- list();
-        res_nme <- names(formals(res_mod));
-        obs_nme <- names(formals(obs_mod));
-        man_nme <- names(formals(man_mod));
-        usr_nme <- names(formals(usr_mod));
-        
-        res_out <- arg_list$resource_vector;
-        obs_out <- arg_list$observation_vector;
-        man_out <- arg_list$manager_vector;
-        if("manager_array" %in% usr_nme | "COST" %in% usr_nme){
-            man_out <- get_manager_sum(arg_list);
-        }
-        usr_out <- arg_list$user_vector;
-        if("manager_array" %in% usr_nme | "COST" %in% usr_nme){
-            usr_out <- get_user_sum(arg_list);
-        }
-        b_list$resource_results    <- res_out;
-        b_list$observation_results <- obs_out;
-        b_list$manager_results     <- man_out;
-        b_list$user_results        <- usr_out;
-        
-        return(b_list);
-    }    
+
     if(out == "custom"){
         c_list                     <- list();
         c_list$resource_results    <- u_res;
@@ -2049,6 +2029,33 @@ gmse_apply_out <- function(arg_list, out, res_mod, obs_mod, man_mod, usr_mod,
         
         return(c_list);
     }
+        
+    b_list  <- list();
+    res_nme <- names(formals(res_mod));
+    obs_nme <- names(formals(obs_mod));
+    man_nme <- names(formals(man_mod));
+    usr_nme <- names(formals(usr_mod));
+    
+    res_out <- arg_list$resource_vector;
+    obs_out <- arg_list$observation_vector;
+    man_out <- arg_list$manager_vector;
+    if("manager_array" %in% usr_nme | "COST" %in% usr_nme){
+        man_out <- get_manager_sum(arg_list);
+    }
+    usr_out <- arg_list$user_vector;
+    if("manager_array" %in% usr_nme | "COST" %in% usr_nme){
+        usr_out <- get_user_sum(arg_list);
+    }
+    b_list$resource_results    <- res_out;
+    b_list$observation_results <- obs_out;
+    b_list$manager_results     <- man_out;
+    b_list$user_results        <- usr_out;
+    
+    if(out == "basic"){
+        return(b_list);
+    }    
+
+    arg_list$basic_output <- b_list;
     
     return(arg_list);
 }
