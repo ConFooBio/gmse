@@ -49,6 +49,7 @@ library(rhandsontable)
 
  - **2017**
 
+     - **NOV** [1](#u-1-NOV-2017)
      - **OCT** [23](#u-23-OCT-2017), [19](#u-19-OCT-2017), [16](#u-16-OCT-2017), [13](#u-13-OCT-2017), [12](#u-12-OCT-2017), [6](#u-6-OCT-2017)
      - **SEP** [28](#u-28-SEP-2017), [27](#u-27-SEP-2017), [26](#u-26-SEP-2017), [25](#u-25-SEP-2017), [22](#u-22-SEP-2017), [15](#u-15-SEP-2017), [13](#u-13-SEP-2017), [8](#u-8-SEP-2017), [6](#u-6-SEP-2017)
      - **AUG** [28](#u-28-AUG-2017), [23](#u-23-AUG-2017), [17](#u-17-AUG-2017), [16](#u-16-AUG-2017), [15](#u-15-AUG-2017), [7](#u-7-AUG-2017)
@@ -88,6 +89,195 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-1-NOV-2017">Update: 1 NOV 2017</a>
+
+**CRAN read GMSE v0.3.1.7 -- more flexibility, better error messages**
+
+I have now completed some substantial coding of error messages, which will be called in both `gmse` and `gmse_apply`. Essentially, these provide some help to software users who parameterise their models in a way that does not work with GMSE. For example, the parameter `stakeholders` is set to equal a negative number, an error message will be returned that informs the user that at least one stakeholder is required in the model. These error messages become a bit more important in `gmse_apply`, where it is possible for users to include arguments that don't make sense (e.g., arrays of incorrect dimensions, or arguments that contradict one another).
+
+The function `gmse_apply` has also been improved to make looping it easier. What had been happening during testing was that we were finding it all to easy to crash R by reading in parameters that contradicted one another (e.g., changing setting the landscape dimensions through `land_dim_1` and `land_dim_2` caused a crash when also trying to add in a `LAND` of different dimension -- now this returns an error that `LAND and land_dim_1 disagree about landscape size`).  This has been resolved in two ways. First, I have included many error messages meant to catch bad and contradictory arguments in `gmse_apply` (and, to a lesser extent `gmse`); it is still possible to crash R by setting things incorrectly, but you have to work very hard to do it -- i.e., it almost has to be deliberate, as far as I can tell. Second, I have added the argument `old_list` to `gmse_apply`, which is `FALSE` by default, but can instead take the output of a previous full list return of  `gmse_apply` (where `get_res = Full`). An element of the full list includes the basic output from which key parameters can be pulled. As a reminder, the basic `gmse_apply` output looks like the below.
+
+```
+$resource_results
+[1] 1062
+
+$observation_results
+[1] 680.2721
+
+$manager_results
+         resource_type scaring culling castration feeding help_offspring
+policy_1             1      NA     110         NA      NA             NA
+
+$user_results
+        resource_type scaring culling castration feeding help_offspring tend_crops kill_crops
+Manager             1      NA       0         NA      NA             NA         NA         NA
+user_1              1      NA       9         NA      NA             NA         NA         NA
+user_2              1      NA       9         NA      NA             NA         NA         NA
+user_3              1      NA       9         NA      NA             NA         NA         NA
+user_4              1      NA       9         NA      NA             NA         NA         NA
+```
+
+An example `gmse_apply` used in a loop is below.
+
+```{r, eval = FALSE}
+to_scare <- FALSE;
+sim_old  <- gmse_apply(scaring = to_scare, get_res = "Full", stakeholders = 6);
+sim_sum  <- matrix(data = NA, nrow = 20, ncol = 7);
+for(time_step in 1:20){
+    sim_new               <- gmse_apply(scaring = to_scare, get_res = "Full", 
+                                        old_list = sim_old);
+    sim_sum[time_step, 1] <- time_step;
+    sim_sum[time_step, 2] <- sim_new$basic_output$resource_results[1];
+    sim_sum[time_step, 3] <- sim_new$basic_output$observation_results[1];
+    sim_sum[time_step, 4] <- sim_new$basic_output$manager_results[2];
+    sim_sum[time_step, 5] <- sim_new$basic_output$manager_results[3];
+    sim_sum[time_step, 6] <- sum(sim_new$basic_output$user_results[,2]); 
+    sim_sum[time_step, 7] <- sum(sim_new$basic_output$user_results[,3]); 
+    sim_old               <- sim_new;
+    print(time_step);
+}
+colnames(sim_sum) <- c("Time", "Pop_size", "Pop_est", "Scare_cost", 
+                       "Cull_cost", "Scare_count", "Cull_count");
+```
+
+The ouput `sim_sum` is shown below.
+
+```
+      Time Pop_size   Pop_est Scare_cost Cull_cost Scare_count Cull_count
+ [1,]    1      733  839.0023         NA       110          NA         54
+ [2,]    2      768  702.9478         NA       110          NA         54
+ [3,]    3      824  725.6236         NA       110          NA         54
+ [4,]    4      933  907.0295         NA       110          NA         54
+ [5,]    5     1180  816.3265         NA       110          NA         54
+ [6,]    6     1345 1224.4898         NA        10          NA        426
+ [7,]    7     1114 1269.8413         NA        10          NA        425
+ [8,]    8      820  884.3537         NA       110          NA         54
+ [9,]    9      952  793.6508         NA       110          NA         54
+[10,]   10     1101  884.3537         NA       110          NA         54
+[11,]   11     1299 1111.1111         NA        12          NA        402
+[12,]   12     1079  907.0295         NA       110          NA         54
+[13,]   13     1227 1564.6259         NA        10          NA        431
+[14,]   14      934  839.0023         NA       110          NA         54
+[15,]   15     1065 1133.7868         NA        10          NA        423
+[16,]   16      768  725.6236         NA       110          NA         54
+[17,]   17      869  929.7052         NA       110          NA         54
+[18,]   18      949  907.0295         NA       110          NA         54
+[19,]   19     1049  884.3537         NA       110          NA         54
+[20,]   20     1200 1020.4082         NA        64          NA         90
+```
+
+We can take advantage of `gmse_apply` to dynamically change parameter values mid-loop. For example, below shows the same code, but with a policy of scaring introduced on time step 10.
+
+```{r, eval = FALSE}
+to_scare <- FALSE;
+sim_old  <- gmse_apply(scaring = to_scare, get_res = "Full", stakeholders = 6);
+sim_sum  <- matrix(data = NA, nrow = 20, ncol = 7);
+for(time_step in 1:20){
+    sim_new               <- gmse_apply(scaring = to_scare, get_res = "Full", 
+                                        old_list = sim_old);
+    sim_sum[time_step, 1] <- time_step;
+    sim_sum[time_step, 2] <- sim_new$basic_output$resource_results[1];
+    sim_sum[time_step, 3] <- sim_new$basic_output$observation_results[1];
+    sim_sum[time_step, 4] <- sim_new$basic_output$manager_results[2];
+    sim_sum[time_step, 5] <- sim_new$basic_output$manager_results[3];
+    sim_sum[time_step, 6] <- sum(sim_new$basic_output$user_results[,2]); 
+    sim_sum[time_step, 7] <- sum(sim_new$basic_output$user_results[,3]); 
+    sim_old               <- sim_new;
+    if(time_step == 10){
+        to_scare <- TRUE;
+    }
+    print(time_step);
+}
+colnames(sim_sum) <- c("Time", "Pop_size", "Pop_est", "Scare_cost", 
+                       "Cull_cost", "Scare_count", "Cull_count");
+```
+
+The above simulation results in the following output for `sim_sum`.
+
+```
+      Time Pop_size   Pop_est Scare_cost Cull_cost Scare_count Cull_count
+ [1,]    1      745  657.5964         NA       110          NA         54
+ [2,]    2      805 1111.1111         NA        12          NA        400
+ [3,]    3      473  634.9206         NA       110          NA         54
+ [4,]    4      504  566.8934         NA       110          NA         54
+ [5,]    5      577  498.8662         NA       110          NA         54
+ [6,]    6      600  430.8390         NA       110          NA         54
+ [7,]    7      648  612.2449         NA       110          NA         54
+ [8,]    8      714  702.9478         NA       110          NA         54
+ [9,]    9      813  612.2449         NA       110          NA         54
+[10,]   10      914 1020.4082         NA        64          NA         90
+[11,]   11     1011 1179.1383         57        10          49        301
+[12,]   12      858  725.6236         10       110         193         37
+[13,]   13     1011 1043.0839         37        30           0        198
+[14,]   14      989 1043.0839         57        30           0        198
+[15,]   15      983 1065.7596         48        20          10        270
+[16,]   16      851  839.0023         10       110         193         37
+[17,]   17      962 1111.1111         38        12          58        306
+[18,]   18      783  612.2449         10       110         193         37
+[19,]   19      862  816.3265         10       110         193         37
+[20,]   20      963  702.9478         10       110         182         38
+```
+
+Hence, in addition to [all of the other benefits](https://bradduthie.github.io/gmse/notebook/gmse_notes.html#u-13-OCT-2017) of `gmse_apply`, one new feature is that we can use it to study change in policy availability -- in this case, what happens when scaring is introduced as a possible policy option. Similar things can be done, for example, to see how manager or user power changes over time. In the example below, users' budgets increase by 100 every time step, with the manager's budget remaining the same. The consequence appears to be decreased population stability and a higher likelihood of extinction.
+
+```{r, eval = FALSE}
+ub          <- 500;
+sim_old     <- gmse_apply(get_res = "Full", stakeholders = 6, user_budget = ub);
+sim_sum     <- matrix(data = NA, nrow = 20, ncol = 6);
+for(time_step in 1:20){
+    sim_new               <- gmse_apply(get_res = "Full", old_list = sim_old,
+                                        user_budget = ub);
+    sim_sum[time_step, 1] <- time_step;
+    sim_sum[time_step, 2] <- sim_new$basic_output$resource_results[1];
+    sim_sum[time_step, 3] <- sim_new$basic_output$observation_results[1];
+    sim_sum[time_step, 4] <- sim_new$basic_output$manager_results[3];
+    sim_sum[time_step, 5] <- sum(sim_new$basic_output$user_results[,3]);
+    sim_sum[time_step, 6] <- ub;
+    sim_old               <- sim_new;
+    ub                    <- ub + 100;
+    print(time_step);
+}
+colnames(sim_sum) <- c("Time", "Pop_size", "Pop_est", "Cull_cost", "Cull_count",
+                       "User_budget");
+
+```
+
+The output of `sim_sum` is below.
+
+```
+      Time Pop_size   Pop_est Cull_cost Cull_count User_budget
+ [1,]    1     1215 1405.8957        10        292         500
+ [2,]    2     1065 1224.4898        10        336         600
+ [3,]    3      833  680.2721       110         36         700
+ [4,]    4      936  907.0295       110         42         800
+ [5,]    5     1174 1224.4898        10        401         900
+ [6,]    6      887  521.5420       110         54        1000
+ [7,]    7      988  680.2721       110         60        1100
+ [8,]    8     1084  975.0567       110         60        1200
+ [9,]    9     1208  861.6780       110         66        1300
+[10,]   10     1360 1133.7868        10        520        1400
+[11,]   11      975  861.6780       110         78        1500
+[12,]   12     1079 1156.4626        10        560        1600
+[13,]   13      597  770.9751       110         90        1700
+[14,]   14      595  476.1905       110         96        1800
+[15,]   15      586  612.2449       110        102        1900
+[16,]   16      584  770.9751       110        108        2000
+[17,]   17      557  589.5692       110        114        2100
+[18,]   18      519  521.5420       110        120        2200
+[19,]   19      469  521.5420       110        120        2300
+[20,]   20      430  453.5147       110        126        2400
+```
+
+There is an important note to make about changing arguments to `gmse_apply` when `old_list` is being used: The function `gmse_apply` is trying to avoid a crash, so **the function will accomodate parameter changes by rebuilding data structures if necessary**. For example, if you change the number of stakeholders (and by including an argument `stakeholders` to `gmse_apply`, it is assumed that stakeholders are changing even they are not), then a new array of agents will need to be built. If you change landscape dimensions (or just include the argument `land_dim_1` or `land_dim_2`), then a new landscape willl be built. This is mentioned in the documentation.
+
+GMSE v0.3.3.7 passes all CRAN checks in Rstudio. I will make sure that the code works with [win-builder](http://win-builder.r-project.org/), then prepare the new submission. Alternatively, as always, the newest GMSE version can be downloaded through GitHub if you have `devtools` installed in R.
+
+```
+devtools::install_github("bradduthie/GMSE")
+```
+
+I will soon update the manuscript for GMSE and upload it to biorXiv.
 
 > <a name="u-23-OCT-2017">Update: 23 OCT 2017</a>
 
