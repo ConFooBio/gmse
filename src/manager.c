@@ -392,7 +392,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
  
     /* SOME STANDARD DECLARATIONS OF KEY VARIABLES AND POINTERS               */
     /* ====================================================================== */
-    int xloc, yloc, i;       /* Index of x & y locations on the landscape */ 
+    int xloc, yloc;          /* Index of x & y locations on the landscape */ 
     int land_x, land_y;      /* x and y maximum location given LANDSCAPE */
     int zloc, land_z;        /* z locations */
     int c_x, c_y, c_z;       /* Dimensions of cost array */
