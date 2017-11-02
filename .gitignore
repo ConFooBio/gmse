@@ -6,6 +6,7 @@ src/*.o
 src/*.so
 src/*.dll
 inst/doc
+notebook/ms/comments
 notebook/ms/docx_template.docx
 notebook/ms/ms.docx
 notebook/ms/ms.pdf
