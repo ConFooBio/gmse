@@ -121,7 +121,7 @@ Madsen, J., Williams, J.~H., Johnson, F.~A., Tombre, I.~M., Dereliev, S., and
   Kuijken, E. (2017).
 \newblock {Implementation of the first adaptive management plan for a European
   migratory waterbird population: The case of the Svalbard pink-footed goose
-  Anser brachyrhynchus}.
+  \emph{Anser brachyrhynchus}}.
 \newblock {\em Ambio}, 46:275--289.
 
 \bibitem[Melbourne-Thomas et~al., 2017]{Melbourne-Thomas2017}
@@ -153,25 +153,25 @@ M{\"{u}}ller-Hansen, F., Schl{\"{u}}ter, M., M{\"{a}}s, M., Hegselmann, R.,
 Nuno, A., Bunnefeld, N., and Milner-Gulland, E.~J. (2013).
 \newblock {Matching observations and reality: Using simulation models to
   improve monitoring under uncertainty in the Serengeti}.
-\newblock {\em Journal of Applied Ecology}, 50(2):488--498.
+\newblock {\em Journal of Applied Ecology}, 50:488--498.
 
 \bibitem[O'Connell, 2017]{OConnell2017}
 O'Connell, E. (2017).
-\newblock {Towards adaptation of water resource Systems to climatic and
+\newblock {Towards adaptation of water resource systems to climatic and
   socio-economic change}.
-\newblock {\em Water Resources Management}, 31(10):2965--2984.
+\newblock {\em Water Resources Management}, 31:2965--2984.
 
 \bibitem[Pozo et~al., 2017]{Pozo2017}
 Pozo, R.~A., Coulson, T., Mcculloch, G., and Stronza, A.~L. (2017).
-\newblock {Determining baselines for human-elephant conflict : A matter of
+\newblock {Determining baselines for human-elephant conflict: A matter of
   time}.
-\newblock {\em PLoS One}, 12(6):e0178840.
+\newblock {\em PLoS One}, 12:e0178840.
 
 \bibitem[Punt et~al., 2016]{Punt2016}
 Punt, A.~E., Butterworth, D.~S., de~Moor, C.~L., {De Oliveira}, J. A.~A., and
   Haddon, M. (2016).
 \newblock {Management strategy evaluation: Best practices}.
-\newblock {\em Fish and Fisheries}, 17(2):303--334.
+\newblock {\em Fish and Fisheries}, 17:303--334.
 
 \bibitem[Redpath et~al., 2015]{Redpath2015a}
 Redpath, S.~M., Guti{\'{e}}rrez, R.~J., {Wood, K}, A., and Young, J.~C.,
@@ -184,7 +184,7 @@ Redpath, S.~M., Young, J., Evely, A., Adams, W.~M., Sutherland, W.~J.,
   Whitehouse, A., Amar, A., Lambert, R.~A., Linnell, J. D.~C., Watt, A., and
   Guti{\'{e}}rrez, R.~J. (2013).
 \newblock {Understanding and managing conservation conflicts}.
-\newblock {\em Trends in Ecology {\&} Evolution}, 28(2):100--109.
+\newblock {\em Trends in Ecology and Evolution}, 28:100--109.
 
 \bibitem[Schl{\"{u}}ter et~al., 2017]{Schluter2017}
 Schl{\"{u}}ter, M., Baeza, A., Dressler, G., Frank, K., Groeneveld, J., Jager,
@@ -200,19 +200,19 @@ Schl{\"{u}}ter, M., McAllister, R. R.~J., Arlinghaus, R., Bunnefeld, N.,
   Nicholson, E., Quaas, M., and St{\"{o}}ven, M. (2012).
 \newblock {New horizons for managing the environment: A review of coupled
   social-ecological systems modeling}.
-\newblock {\em Natural Resource Modeling}, 25(1):219--272.
+\newblock {\em Natural Resource Modeling}, 25:219--272.
 
 \bibitem[Strand et~al., 2012]{Strand2012}
 Strand, O., Nilsen, E.~B., Solberg, E.~J., and Linnell, J. C.~D. (2012).
 \newblock {Can management regulate the population size of wild reindeer
-  (Rangifer tarandus) through harvest?}
+  (\emph{Rangifer tarandus}) through harvest?}
 \newblock {\em Canadian Journal of Zoology}, 90:163--171.
 
 \bibitem[Sundt-Hansen et~al., 2015]{Sundt-Hansen2015}
 Sundt-Hansen, L., Huisman, J., Skoglund, H., and Hindar, K. (2015).
-\newblock {Farmed Atlantic salmon Salmo salar L. parr may reduce early survival
-  of wild fish}.
-\newblock {\em Journal of Fish Biology}, 86(6):1699--1712.
+\newblock {Farmed Atlantic salmon \emph{Salmo salar} L. parr may reduce early
+  survival of wild fish}.
+\newblock {\em Journal of Fish Biology}, 86:1699--1712.
 
 \bibitem[Tilman et~al., 2016]{Tilman2016}
 Tilman, A.~R., Watson, J.~R., and Levin, S. (2016).
@@ -230,6 +230,6 @@ Tu, M.~T., Wolff, E., and Lamersdorf, W. (2000).
 Tuvendal, M. and Elmberg, J. (2015).
 \newblock {A handshake between markets and hierarchies: Geese as an example of
   successful collaborative management of ecosystem services}.
-\newblock {\em Sustainability}, 7(12):15937--15954.
+\newblock {\em Sustainability}, 7:15937--15954.
 
 \end{thebibliography}
