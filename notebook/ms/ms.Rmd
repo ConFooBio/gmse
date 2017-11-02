@@ -1,6 +1,6 @@
 ---
 title: 'GMSE: an R package for generalised management strategy evaluation'
-author: A. Bradley Duthie, Jeremy J. Cusack, Erlend B. Nilsen, Roc&#0237;o Pozo, O.
+author: A. Bradley Duthie, Jeremy J. Cusack, Isabel L. Jones, Erlend B. Nilsen, Roc&#0237;o Pozo, O.
   Sarobidy Rakotonarivo, Bram Van Moorter, and Nils Bunnefeld
 date: '`r Sys.Date()`'
 output:
@@ -442,7 +442,7 @@ logistic_res_mod <- function(X_0, K = 2000, gr = 1){
 sim <- gmse_apply(res_mod = logistic_res_mod, X_0 = 1000, gr = 0.3, stakeholders = 5);
 ```
 
-The `gmse_apply` function simulates a single GMSE time step, and therefore must be looped for simulations over multiple time steps. Within loops, GMSE arguments can be redefined to simulate changing conditions (e.g., change in policy availability or stakeholder budgets, see Supporting Information 2).
+The `gmse_apply` function simulates a single GMSE time step, and therefore must be looped for simulations over multiple time steps. Within loops, GMSE arguments can be redefined to simulate changing conditions (e.g., change in policy availability or stakeholder budgets, see Supporting Information 2), thereby allowing many management scenarios to be simulated *in silico*.
 
 Availability
 ===================================================
