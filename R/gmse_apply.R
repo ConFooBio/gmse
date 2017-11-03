@@ -48,7 +48,7 @@ gmse_apply <- function(res_mod  = resource,
     if(is.null(old_list) == FALSE){
         arg_vals <- apply_old_gmse(arg_vals, old_list, ...);
     }
-    
+ 
     # ------ RESOURCE MODEL ----------------------------------------------------
     res_args <- prep_res(arg_list = arg_vals, res_mod = res_mod);
     check_args(arg_list = res_args, the_fun = res_mod);
@@ -1365,7 +1365,7 @@ add_results <- function(arg_list, output){
     out_names <- names(output);
     for(i in 1:length(output)){
         if(out_names[[i]] %in% arg_names == TRUE){
-            rep_pos <- which(arg_names == out_names[[i]]);
+            rep_pos <- which(arg_names == out_names[[i]])[1];
             arg_list[[rep_pos]] <- output[[i]];
         }else{
             arg_list_length                    <- length(arg_list) + 1;
