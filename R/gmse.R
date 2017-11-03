@@ -423,7 +423,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         RESOURCES             <- RESOURCE_NEW[[1]];
         LANDSCAPE_r           <- RESOURCE_NEW[[2]];
         paras                 <- RESOURCE_NEW[[3]];
-        
+ 
         OBSERVATION_NEW   <- observation(RESOURCES      = RESOURCES,
                                          LAND           = LANDSCAPE_r,
                                          PARAS          = paras,
@@ -466,6 +466,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
             );
             ACTION <- MANAGER[[4]];
             COST   <- MANAGER[[5]];
+            paras  <- MANAGER[[6]];
         }
         
         USERS <- user(RESOURCES  = RESOURCES,
@@ -483,6 +484,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         LANDSCAPE_r  <- USERS[[3]];
         ACTION       <- USERS[[4]];
         COST         <- USERS[[5]];
+        paras        <- USERS[[6]];
         
         RESOURCE_REC[[time]]     <- RESOURCES;
         OBSERVATION_REC[[time]]  <- OBSERVATION_NEW[[1]];
