@@ -371,13 +371,11 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                usb,     # 97. The user budget
                cnv,     # 98. The convergence criteria of the genetic algorithm
                rsi,     # 99. Estimate of res type 1 from the observation model
-               0,       # 100. Upper CI for res type 1 estimate
-               0,       # 101. Lower CI for res type 1 estimate
+               lambda,  # 100. Birth rate parameter
+               gtk,     # 101. Group think behaviour specified?
                fxr,     # 102. The number of recaptures in RMR estimation
                ldo,     # 103. Is there land ownership among stakeholders
-               pub,     # 104. How much public land is there (proportion)
-               lambda,  # 105. Birth rate parameter
-               gtk      # 106. Group think behaviour specified?
+               pub      # 104. How much public land is there (proportion)
     );
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
