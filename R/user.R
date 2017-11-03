@@ -76,7 +76,8 @@ user <- function(RESOURCES  = NULL,
     if(check_model == 0){
         stop("Invalid model selected (Must be 'IBM')");
     }
-    names(USER_OUT) <- c("RESOURCES", "AGENTS", "LAND", "ACTION", "COST");
+    names(USER_OUT) <- c("RESOURCES", "AGENTS", "LAND", "ACTION", "COST", 
+                         "PARAS");
     return(USER_OUT);
 }
 
