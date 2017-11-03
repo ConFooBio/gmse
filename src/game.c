@@ -262,12 +262,12 @@ void res_to_counts(double ***population, int **interact_table, double *paras,
     double foc_effect, lambda;
     
     int_num = (int) paras[60];
-    lambda  = paras[105];
+    lambda  = paras[100];
     
     foc_effect  = 0.0;
     foc_effect -= population[row][7][agent];  /* Times birth account for repr?*/
-    foc_effect -= population[row][8][agent] * (1 + lambda);
-    foc_effect -= population[row][9][agent] * lambda;
+    foc_effect -= population[row][8][agent]  * (1.0 + lambda);
+    foc_effect -= population[row][9][agent]  * lambda;
     foc_effect += population[row][10][agent] * lambda;
     foc_effect += population[row][11][agent]; /* But should affect offspring? */
     interest_row = 0;

@@ -828,8 +828,8 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
             vec_pos++;
         }
     }
-    paras[61] = new_obs;
-    paras[62] = obs_columns;
+    paras[61] = (double) new_obs;
+    paras[62] = (double) obs_columns;
 
     SEXP NEW_AGENTS;
     PROTECT( NEW_AGENTS = allocMatrix(REALSXP, agent_number, agent_traits) );

@@ -50,7 +50,7 @@ void dens_est(double **obs_array, double *paras, double **agent_array,
     int i, resource, agents, int_table_rows;
     int view, a_type, land_x, land_y, type1, type2, type3, view_col;
     int area, cells, times_obs, tot_obs, t1_col, t2_col, t3_col;
-    double prop_obs, estimate, cp_err, lcp, ucp, vision;
+    double prop_obs, estimate, vision;
 
     a_type         = (int) paras[7];  /* Type of agent does the observing */
     times_obs      = (int) paras[11];
@@ -87,16 +87,11 @@ void dens_est(double **obs_array, double *paras, double **agent_array,
             type3    = interact_table[resource][t3_col];
             tot_obs  = res_obs(obs_array, paras, type1, type2, type3);
             prop_obs = (double) tot_obs / area;
-            cp_err   = 1.965 * sqrt(prop_obs / (vision * vision));
-            lcp      = prop_obs - cp_err;
-            ucp      = prop_obs + cp_err;
             estimate = prop_obs * cells;
 
             abun_est[resource] = estimate;
             if(resource == 0){
                 paras[99]  = abun_est[resource];
-                paras[100] = cells * lcp;
-                paras[101] = cells * ucp;
             }
         }
     }
@@ -116,7 +111,7 @@ double chapman_est(double **obs_array, double *paras, int type1, int type2,
     int row, col, trait_number, obs_array_rows, obs_array_cols;
     int total_marks, recaptures, mark_start, recapture_start;
     int n, K, k, t1_col, t2_col, t3_col;
-    double estimate, floored_est, a, b, varNc;
+    double estimate, floored_est;
     
     total_marks     = (int) paras[11];
     trait_number    = (int) paras[41];
@@ -161,12 +156,7 @@ double chapman_est(double **obs_array, double *paras, int type1, int type2,
     floored_est = floor(estimate);
 
     if(type1 == 1 && type2 == 0 && type3 == 0){
-        a          = log(n + 1) + log(K + 1) + log(n - k) + log(K - k);
-        b          = log(k + 1) + log(k + 1) + log(k + 2);
-        varNc      = exp(a - b);
         paras[99]  = floored_est;
-        paras[100] = floored_est + (1.965 * sqrt(varNc));
-        paras[101] = floored_est - (1.965 * sqrt(varNc));
     }
     
     return floored_est;
@@ -240,8 +230,6 @@ void transect_est(double **obs_array, double *paras, double *abun_est,
         }
     }
     paras[99]   = abun_est[0];
-    paras[100]  = abun_est[0];
-    paras[101]  = abun_est[0];
 }
 
 /* =============================================================================

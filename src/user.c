@@ -445,7 +445,7 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     int jacobian_dim;        /* Dimensions of the (square) Jacobian matrix */
     int protected_n;         /* Number of protected R objects */
     int vec_pos;             /* Vector position for making arrays */
-    int group_think;         /* Should only have one user decide actions */
+    int group_think;         /* Should one user do the thinking for all */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
@@ -649,11 +649,11 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     /* Do the biology here now */
     /* ====================================================================== */
     
+    group_think = (int) paras[101];
+    
     send_agents_home(agent_array, land, paras);
     
-    group_think = (int) paras[106];
-    
-    if(group_think == 1 && agent_number > 2){
+    if(group_think > 0 && agent_number > 2){
         ga(actions, costs, agent_array, resource_array, land, Jacobian_mat,
            lookup, paras, 1, 0);
         for(agent = 2; agent < agent_number; agent++){
