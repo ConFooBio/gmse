@@ -651,7 +651,7 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     
     send_agents_home(agent_array, land, paras);
     
-    group_think = paras[106];
+    group_think = (int) paras[106];
     
     if(group_think == 1 && agent_number > 2){
         ga(actions, costs, agent_array, resource_array, land, Jacobian_mat,
