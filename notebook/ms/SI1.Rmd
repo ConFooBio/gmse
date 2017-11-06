@@ -1,8 +1,7 @@
 ---
 title: 'GMSE: an R package for generalised management strategy evaluation'
-subtitle: 'Supporting Information 1'
-author: A. Bradley Duthie, Jeremy J. Cusack, Isabel L. Jones, Erlend B. Nilsen, Roc&#0237;o Pozo, O.
-  Sarobidy Rakotonarivo, Bram Van Moorter, and Nils Bunnefeld
+author: A. Bradley Duthie, Jeremy J. Cusack, Isabel L. Jones, Erlend B. Nilsen, Roc&#0237;o
+  Pozo, O. Sarobidy Rakotonarivo, Bram Van Moorter, and Nils Bunnefeld
 date: '`r Sys.Date()`'
 output:
   pdf_document:
@@ -12,14 +11,16 @@ output:
   word_document:
     fig_caption: yes
     reference_docx: docx_template.docx
+linestretch: 1
+subtitle: Supporting Information 1
 header-includes:
 - \usepackage{lineno}
 - \linenumbers
-linestretch: 1
 ---
 
 ```{r, echo = FALSE}
 library(GMSE);
+sim <- gmse_apply(get_res = "Full", stakeholders = 2);
 ```
 
 Extended introduction to the genetic algorithm applied in GMSE
@@ -30,9 +31,29 @@ A genetic algorithm is called in the predefined GMSE manager and user models to 
 Key data structures used
 ================================================================================
 
+The focal data structure used for tracking manager and user decisions is a three dimensional array, which we will call `ACTION` (also returned as `user_array` by `gmse_apply`). Rows of `ACTION` correspond to recipients of actions (resources, landscapes, or potentially other agents), and columns correspond to either recipient properties or actions allocated to recipients. Each layer of `ACTION` corresponds to a unique agent, the first of which is the manager; additional layers correspond to each user. Below shows an `ACTION` array, which corresponds to a GMSE model with one manager and two users.
+
+
+```{r, echo = FALSE}
+samp_ACTION <- sim$ACTION;
+dimnames(samp_ACTION)[[1]] <- c("Resource", "Landscape", "Res_cost", "U1_cost", "U2_cost");
+dimnames(samp_ACTION)[[2]] <- c("Act", "Type_1", "Type_2", "Type_3", "Util.", "U_land", "U_loc.", "Scare", "Cull", "Castrate", "Feed", "Help_off", "None");
+dimnames(samp_ACTION)[[3]] <- c("Manager_Actions", "User_1_Actions", "User_2_Actions");
+print(samp_ACTION);
+```
+
+The above array holds all of the information on manager and user actions in the six right-most columns of each array layer. The first seven columns contain information about which resources are affected, and how they are affected. The first column `Act` identifies the type of action being performed; a value of -2 defines a direct action to a resource (e.g., culling of the resource), and a value of -1 defines direct action to a landscape (e.g., increasing yield). Positive values are currently only meaningful for `Manager_Actions`, where a value of 1 defines an action setting a uniform cost of users' direct actions on resources (i.e., costs where `Act = -2` for `User_1_Actions` and `User_2_Actions`). All other values for `Act` are meaningless in GMSE 0.3.1.7, but might be expanded upon in future versions to allow for modification of specific user costs enacted by managers (i.e., managers having different policies for different users) or other users (e.g., users increasing the costs of other users' actions due to conflict or cooperation). Similarly, columns 2-4 refer to resource or landscape types, but only `Type_1 = 1`, `Type_2 = 0`, and `Type_3 = 0 ` are allowed in GMSE v0.3.1.7 (i.e., only one type of resource is permitted), but future versions might allow for different resource types (e.g., `Type_1` might be used to designate species, and `Type_2` and `Type_3` could designate stage or sex). For the rest of this supporting information, we will therefore focus only on rows 1-3 of `ACTION`. Column 5 `Util.` of `ACTION` defines the utility associated with the resource (where `Act = -2`) or landscape (where `Act = -1`). For managers, the target resource abundance set with GMSE argument `manage_target` is found in row 1 (1000 in `ACTION` above); for users, the value in row 1 identifies whether resources are preferred to increase (if positive) or decrease (if negative). Values of column 5 in row 2 similarly identifies whether landscape cell output is preferred by users to increase or decrease (managers do not currently have preferences for landscape output). Of special note is row 3 for `Manager_Actions`, which defines the marginal utility of resources; that is, the adjustment to resource abundance that the manager will attempt to make based on the `manage_target` and the estimated abundance produced by the observation model (in the case of the above, resource abundance is estimated at ca 1065.76, so the manager will set policy in attempt to reduce the population size by ca 65.76 resources). Column 6 `U_land` defines whether or not the utility attached to the resource or landscape output depends on it being on a landscape cell that is owned by the acting user. Related, column 7 `U_loc.` defines whether or not actions can be performed only on a landscape cell that is owned by the acting user. Hence values of columns 6 and 7 are binary, and affected by the `land_ownership` argument in `gmse`. Finally, columns 8-13 correspond to specific actions, either direct (where `Act < 0`) or indirect by setting policy (for row 3 of `Manager_Actions` where `Res_cost = 1`). The last column 13 `None` corresponds with no actions. See [GMSE documentation](https://cran.r-project.org/web/packages/GMSE/GMSE.pdf) for details about the effects of each action.
+
+
+
+
 
 General overview of key aspects of the genetic algorithm 
 ================================================================================
+
+It is the `ACTION` array that is affected by the genetic algorithm. 
+
+
 
 Crossover
 --------------------------------------------------------------------------------
