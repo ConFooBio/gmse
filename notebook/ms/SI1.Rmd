@@ -16,6 +16,8 @@ subtitle: Supporting Information 1
 header-includes:
 - \usepackage{lineno}
 - \linenumbers
+bibliography: gmse.bib
+biblio-style: apalike
 ---
 
 ```{r, echo = FALSE}
@@ -68,8 +70,12 @@ At the start of each genetic algorithm, a population of size `ga_popsize` is ini
 Crossover
 --------------------------------------------------------------------------------
 
+A single generation of the genetic algorithm begins with a uniform crossover [@Hamblin2013], by which actions of individuals in `POPULATION` are randomly swapped with some probability. To implement crossover, each individual selects a partner, then exchanges corresponding array elements affecting agent actions (columns 8-13) with their partner at a fixed probability of `ga_crossover`.
+
 Mutation
 --------------------------------------------------------------------------------
+
+Following crossover, `POPULATION` array elements affecting agent actions (columns 8-13) mutate at a fixed probability of `ga_mutation`. For each array element, a random uniform number $u \in [0, 1]$ is sampled. If $u$ is greater than `1 - (0.5 * ga_mutation)`, then the value of the array element is increased by 1. If $u$ is less than `0.5 * ga_mutation`, then the value of the array element is decreased by 1; when this decrease results in a negative value, the mutated value is multiplied by -1 to equal 1.
 
 Cost constraint
 --------------------------------------------------------------------------------
@@ -108,3 +114,7 @@ $$ F_{user} = \sum_{i=1}^{N} \Delta A_{i} \times U_{i} $$.
 Where $F_{user}$ is user fitness, $N$ is the total number of things that might be of interest (at the moment $N = 2$ in GMSE, one resource and, potentially, one landscape value), $\Delta A_{i}$ is the change in the abundance of thing $i$, and $U_{i}$ is the utility of thing $i$ from the perspective of the user (apologies for the LaTeX code -- attached a PNG of the conversion). I want to stress though that I would not consider this equation to be central to the GMSE framework -- if someone else has a better approach for defining fitness, or defining any of the terms listed above, or wants to expand upon it to include new things, then that would be awesome! The above just works well as a heuristic tool to get users to act in such a way as to maximise their interests in harvesting or getting more crop yield (as is my intent), but it's not based on first principles and I don't claim it to be particularly special.
 
 The values of $\Delta A_{i}$ are calculated for resources and the landscape in the functions res_to_counts and land_to_counts, respectively (and $U_{i}$ is specified a priori in the model depending on other parameters -- namely land_ownership). Again, a bit of heuristic is needed here because there cannot be any perfect way of exactly predicting how a users actions will increase or decrease resources -- there are too many complex factors (e.g., behaviour of other stakeholders, demographic stochasticity, movement of resources on the landscape, and interactions between resources and the landscape). Even if we could include all of these things somehow, it would be a bit unrealistic in that real stakeholders would never have this much information. The predicted direct effect of actions on resources is shown in lines 268-272 ( https://github.com/bradduthie/gmse/blob/master/src/game.c#L268 ), and the array 'jaco' (a sort of Jacobian matrix) accounts for interactions between landscape and resources on line 286. Something similar happens in the land_to_counts function. The manager's genetic algorithm works in a similar way (the above equation applies), but with the need to dynamically update utility values based on current resource abundance, and to account for the predicted actions of users in finding $\Delta A_{i}$.
+
+
+References
+================================================================================
