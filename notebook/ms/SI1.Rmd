@@ -30,7 +30,7 @@ Extended introduction to the genetic algorithm applied in GMSE
 
 A genetic algorithm is called in the predefined GMSE manager and user models to simulate human decision making. As of GMSE version 0.3.1.9, this includes one independent call to the genetic algorithm for each decision-making agent in every GMSE time step. Therefore, one run of the genetic algorithm occurs to simulate the manager's policy setting decisions in each time step (unless otherwise defined through non-default `manage_freq` values greater than 1), and one run occurs to simulate each individual user's action decisions in each time step (unless otherwise defined through non-default `group_think = TRUE`, in which case one user makes decisions that all other users follow identically. Each run of the genetic algorithm mimics the evolution by natural selection of a population of potential manager or user strategies over multiple generations, with the highest fitness strategy in the terminal generation being selected as the one that the manager or user decides to implement. For clarity, as in the main text, we use 'time step' to refer to a full GMSE cycle (in which multiple genetic algorithms may be run) and 'generation' to refer to a single, non-overlapping, generation of potential strategies that evolve within a genetic algorithm (see Figure 1 of the main text). Below, we explain the genetic algorithm in detail, as it occurs in GMSE v0.3.1.9 (future versions of GMSE might expand upon this framework). We first explain the key data structures used, then provide an overview of how a population of strategies is initialised, and the  subsequent processes of crossover, mutation, cost constraint, fitness evaluation, tournament selection, and replacement. We then explain the fitness functions of managers and users in more detail.
 
-Key data structures used
+<a name="Key_data_structures_used">Key data structures used
 ================================================================================
 
 The focal data structure used for tracking manager and user decisions is a three dimensional array, which we will call `ACTION` (also returned as `user_array` by `gmse_apply`). Rows of `ACTION` correspond to the entities affected by actions (resources, landscape properties, or potentially other agents), and columns correspond either to properties of the affected entities, or to the actions potentially allocated to them. Each layer of `ACTION` corresponds to a unique agent, the first of which is the manager; additional layers correspond to users. Below shows an `ACTION` array for a GMSE model with one manager and two users.
@@ -176,7 +176,14 @@ The above conditions for applying the metaheuristic approach are clearly satisfi
 Manager fitness function
 --------------------------------------------------------------------------------
 
-Manager fitness is affected by a manager's utility for resources and the projected change in resource abundance caused by the manager's policy. Manager utility is defined as the difference between `manage_target` and the estimation of population abundance as produced by the GMSE observation model. Manager utility can therefore change in each GMSE time step as resource abundance (and its estimate) changes; when the estimated resource abundance is greater than `manage_target`, manager utility is negative, and when the estimated resource abundance is less than `manage_target`, manager utility is positive.
+Manager fitness is affected by a manager's utility for resources and the projected change in resource abundance caused by the manager's policy. Manager utility is defined as the difference between `manage_target` and the estimation of population abundance as produced by the GMSE observation model (see "[Key data structures used](#Key_data_structures_used)" above). Manager utility can therefore change in each GMSE time step as resource abundance (and its estimate) changes; when the estimated resource abundance is greater than `manage_target`, manager utility is negative, and when the estimated resource abundance is less than `manage_target`, manager utility is positive. To get fitness, first the change in resource abundance ($\Delta A$) predicted by the manager's policy is calculated, and the squared difference between $\Delta A$ and the manager utility ($U_{manager}$) is calculated to obtain a utility deviation for the individual $i$,
+
+$$ D_{i} = (\Delta A - U_{manager})^2.$$
+
+The value of $D_{i}$ increases as $\Delta A$ gets further from $U_{manager}$; i.e, $D_{i}$ is high when manager's set policy that does not get closer to their `manage_target` abundance. Fitness is defined by first finding the maximum $D_{i}$ value among all `ga_popsize` individuals ($D_{max}$), then subracting this value from $D_{i}$ for each individual,
+
+$$ Fitness_{i} = D_{max} - D_{i}.$$
+
 
 
 
