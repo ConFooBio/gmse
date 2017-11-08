@@ -173,28 +173,35 @@ assess how good it is. That is, you know a good one when you see it.
 
 The above conditions for applying the metaheuristic approach are clearly satisfied for manager and user decisions, given the complexity of adaptive management and socio-ecological interactions. 
 
-Manager fitness function
+Fitness function for managers
 --------------------------------------------------------------------------------
 
-Manager fitness is affected by a manager's utility for resources and the projected change in resource abundance caused by the manager's policy. Manager utility is defined as the difference between `manage_target` and the estimation of population abundance as produced by the GMSE observation model (see "[Key data structures used](#Key_data_structures_used)" above). Manager utility can therefore change in each GMSE time step as resource abundance (and its estimate) changes; when the estimated resource abundance is greater than `manage_target`, manager utility is negative, and when the estimated resource abundance is less than `manage_target`, manager utility is positive. To get fitness, first the change in resource abundance ($\Delta A$) predicted by the manager's policy is calculated, and the squared difference between $\Delta A$ and the manager utility ($U_{manager}$) is calculated to obtain a utility deviation for the individual $i$,
+Individual fitness as calculated for managers ($F_{i}^{m}$) is affected by a manager's utility for resources and the projected change in resource abundance caused by the individual's policy (i.e., the contents of their `POPULATION` layer, specifically row 3). Manager utility for a resource ($U^{m}_{res}$) is defined as the difference between `manage_target` and the estimation of population abundance as produced by the GMSE observation model (see "[Key data structures used](#Key_data_structures_used)" above). Manager utility can therefore change in each GMSE time step as resource abundance (and its estimate from the observation model) changes; when the estimated resource abundance is greater than `manage_target`, $U^{m}_{res}$ is negative, and when the estimated resource abundance is less than `manage_target`, $U^{m}$ is positive. To get individual fitness, first the change in resource abundance predicted by the individual's policy ($\Delta A_{i}$) is calculated, and the squared difference between $\Delta A_{i}$ and $U^{m}_{res}$ is calculated to obtain a utility deviation for the individual $i$,
 
-$$ D_{i} = (\Delta A - U_{manager})^2.$$
+$$ D_{i} = (\Delta A_{i} - U^{m}_{res})^2. $$
 
-The value of $D_{i}$ increases as $\Delta A$ gets further from $U_{manager}$; i.e, $D_{i}$ is high when manager's set policy that does not get closer to their `manage_target` abundance. Fitness is defined by first finding the maximum $D_{i}$ value among all `ga_popsize` individuals ($D_{max}$), then subracting this value from $D_{i}$ for each individual,
+The value of $D_{i}$ increases as $\Delta A_{i}$ gets further from $U^{m}_{res}$; i.e, $D_{i}$ is high when $i$ sets a policy that does not get closer to the `manage_target` abundance. Fitness is defined by first finding the maximum $D_{i}$ value among all `ga_popsize` individuals ($D_{max}$), then subtracting this value from $D_{i}$ for each individual,
 
-$$ Fitness_{i} = D_{max} - D_{i}.$$
+$$ F_{i} = D_{max} - D_{i}. $$
+
+We have explained how $U^{m}_{res}$ is calculated in the [above section on key data structures](#Key_data_structures_used). We now explain in more detail how individuals in the genetic algorithm calculate their actions will affect $\Delta A_{i}$. Below explains calculations for a single individual $i$ in the genetic algorithm, so we will drop the use of subscripts $i$ to refer to individuals; instead we use subscripts $j$ to refer to actions (e.g., scaring, culling, etc.). 
+
+To predict change resource abundance as a consequence of policy, an individual first needs to know the total number of actions of all types $j$ performed by users in the previous time step ($X_{j}^{old}$), and the cost of performing each action ($C_{old}^{j}$). This information is collected from `ACTION` and `COST` arrays. The individual then needs to predict how their policy (i.e., the costs that they set users to perform an action) will affect the new total number of each action performed ($X_{j}^{new}$). To do this, the individual assumes that total user actions performed under their policy will change in proportion to that of the old policy. The predicted total number of a particular action $j$ performed is thereby calculated as, 
+
+$$ X_{j}^{new} =  (X_{j}^{old} + 1) \frac{C^{old}_{j}}{C^{new}_{j}}. $$
+
+The variable $C_{new}^{j}$ defines the new cost set by the individual for action $j$. A value of 1 is added to ($X_{j}^{old}$) to model some degree of caution by the manager (this can be changed from the default 1 using `manage_caution`), especially so that managers do not na&#0239;vely assume that users will not perform an action just because they did not perform it in the previous time step. Otherwise, if $X_{j}^{old} = 0$, then the manager would always assume that a change in the cost of an action would have no affect on the number of times the action was performed by users; a value of 1 assumes that at least one user will perform the action in the new time step.
+
+The predicted consequences of $X^{new}_{j}$ for resource abundance differ for each possible action. For each action, no consequence is predicted if the policy is not allowed by a simulation of GMSE (e.g., `scaring = FALSE`).
 
 
 
 
 
-To project the change in resource abundance as a consequence of policy, the manager needs to know the total number of actions of all types performed by users in the previous time step.
-
-To avoid having managers na&#0239;vely assuming that users will not perform an action because they did not perform it (or performed it very rarely) in the previous time step, managers always assume that users will perform at least `manager_caution` of each available action (default value of 1).
 
 
 
-User fitness function
+Fitness function for users
 --------------------------------------------------------------------------------
 
 
