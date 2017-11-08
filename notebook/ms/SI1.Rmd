@@ -173,10 +173,12 @@ assess how good it is. That is, you know a good one when you see it.
 
 The above conditions for applying the metaheuristic approach are clearly satisfied for manager and user decisions, given the complexity of adaptive management and socio-ecological interactions. 
 
-
-
 Manager fitness function
 --------------------------------------------------------------------------------
+
+
+
+
 
 User fitness function
 --------------------------------------------------------------------------------

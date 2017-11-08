@@ -14,7 +14,7 @@ Hamblin, S. (2013).
 \bibitem[Luke, 2013]{Luke2013}
 Luke, S. (2013).
 \newblock {\em {Essentials of Metaheuristics}}.
-\newblock Lulu. Available for free at
-  http://cs.gmu.edu/?sean/book/metaheuristics/.
+\newblock Lulu, second edition, available at
+  {https://cs.gmu.edu/{\textasciitilde}sean/book/metaheuristics/Essentials.pdf}.
 
 \end{thebibliography}
