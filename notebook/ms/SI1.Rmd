@@ -60,7 +60,68 @@ Note that in default GMSE parameters, `culling = TRUE`, but all other actions ar
 General overview of key aspects of the genetic algorithm 
 ================================================================================
 
-The genetic algorithm updates a single layer of the `ACTION` array, which defines to the decisions of a single agent (either the manager or a user). The corresponding layer of the `COST` array remains unchanged, and serves only to ensure that `ACTION` values do not exceed `manager_budget` or `user_budget` for managers and users, respectively. The genetic algorithm proceeds by first initialising a large population of new `ACTION` layers. In each generation, these layers crossover and mutate, generating variation in agent decisions; costs constrain this variation from exceeding a maximum budget, then the fitness of each layer is evaluated based on how much it increases the agent's utility. A tournament is used to select high fitness layers, and these selected layers become the new generation of layers; generations continue until a minimum number of generations (`ga_mingen`) have passed and a convergence criteria is satisfied such that the increase in mean fitness from the previous generation is below the threshold `converge_crit`.
+The genetic algorithm updates a single layer of the `ACTION` array, which defines to the decisions of a single agent (either the manager or a user). The corresponding layer of the `COST` array remains unchanged, and serves only to ensure that `ACTION` values do not exceed `manager_budget` or `user_budget` for managers and users, respectively. The genetic algorithm proceeds by first initialising a large population of new `ACTION` layers. In each generation, these layers crossover and mutate, generating variation in agent decisions; costs constrain this variation from exceeding a maximum budget, then the fitness of each layer is evaluated based on how much it increases the agent's utility. A tournament is used to select high fitness layers, and these selected layers become the new generation of layers; generations continue until a minimum number of generations (`ga_mingen`) have passed and a convergence criteria is satisfied such that the increase in mean fitness from the previous generation is below the threshold `converge_crit` (Figure 1).
+
+```{r, echo=FALSE, fig.height=1.75, fig.width=6}
+mbox <- function(x0, x1, y0, y1){
+    xx <- seq(from=x0, to=x1, length.out = 100);
+    yy <- seq(from=y0, to=y1, length.out = 100);
+    xd <- c(rep(x0, 100), xx, rep(x1,100), rev(xx));
+    yd <- c(yy, rep(y1,100), rev(yy), rep(y0, 100));
+    return(list(x=xd, y=yd));
+}
+par(mar=c(0,0,0,0));
+# ===============================================================
+plot(x=0, y=0, type="n", xlim=c(0,100), ylim=c(40,100), xaxt="n", yaxt="n",
+     xlab="",ylab="");
+ibox <- mbox(x0 = 0,  x1 = 10, y0 = 90, y1 = 70);
+polygon(x = ibox$x, y = ibox$y, lwd = 3, border = "black", col = "white");
+cbox <- mbox(x0 = 15, x1 = 25, y0 = 90, y1 = 70);
+polygon(x = cbox$x, y = cbox$y, lwd = 3, border = "black", col = "white");
+ubox <- mbox(x0 = 30, x1 = 40, y0 = 90, y1 = 70);
+polygon(x = ubox$x, y = ubox$y, lwd = 3, border = "black", col = "white");
+nbox <- mbox(x0 = 45, x1 = 55, y0 = 90, y1 = 70);
+polygon(x = nbox$x, y = nbox$y, lwd = 3, border = "black", col = "white");
+fbox <- mbox(x0 = 60, x1 = 70, y0 = 90, y1 = 70);
+polygon(x = fbox$x, y = fbox$y, lwd = 3, border = "black", col = "white");
+tbox <- mbox(x0 = 75, x1 = 85, y0 = 90, y1 = 70);
+polygon(x = tbox$x, y = tbox$y, lwd = 3, border = "black", col = "white");
+rbox <- mbox(x0 = 90, x1 = 100, y0 = 90, y1 = 70);
+polygon(x = rbox$x, y = rbox$y, lwd = 3, border = "black", col = "white");
+text(x=5,  y=80, labels="Initialisation", col="black", cex = 0.5);
+text(x=20, y=80, labels="Crossover", col="black", cex = 0.5);
+text(x=35, y=80, labels="Mutation", col="black", cex = 0.5);
+text(x=50, y=82, labels="Cost", col="black", cex = 0.5);
+text(x=50, y=78, labels="constraint", col="black", cex = 0.5);
+text(x=65, y=82, labels="Fitness", col="black", cex = 0.5);
+text(x=65, y=78, labels="evaluation", col="black", cex = 0.5);
+text(x=80, y=82, labels="Tournament", col="black", cex = 0.5);
+text(x=80, y=78, labels="selection", col="black", cex = 0.5);
+text(x=95, y=80, labels="Replacement", col="black", cex = 0.5);
+arrows(x0=10, x1=14, y0=80, y1=80, lwd=2, length=0.10);
+arrows(x0=25, x1=29, y0=80, y1=80, lwd=2, length=0.10);
+arrows(x0=40, x1=44, y0=80, y1=80, lwd=2, length=0.10);
+arrows(x0=55, x1=59, y0=80, y1=80, lwd=2, length=0.10);
+arrows(x0=70, x1=74, y0=80, y1=80, lwd=2, length=0.10);
+arrows(x0=85, x1=89, y0=80, y1=80, lwd=2, length=0.10);
+
+arrows(x0 = 95, x1 = 95, y0 = 70, y1 = 68, lwd = 2, length = 0);
+arrows(x0 = 90, x1 = 20, y0 = 65, y1 = 65, lwd = 2, length = 0);
+arrows(x0 = 20, x1 = 20, y0 = 65, y1 = 70, lwd = 2, length = 0.05);
+text(x=88, y=63, labels="No", col="black", cex = 0.5);
+rbox <- mbox(x0 = 90, x1 = 100, y0 = 62, y1 = 68);
+polygon(x = rbox$x, y = rbox$y, lwd = 3, border = "black", col = "black");
+text(x=95, y=65, labels="Termination?", col="white", cex = 0.5);
+fbox <- mbox(x0 = 75, x1 = 85, y0 = 60, y1 = 50);
+polygon(x = fbox$x, y = fbox$y, lwd = 3, border = "black", col = "white");
+text(x=80, y=57, labels="Agent", col="black", cex = 0.5);
+text(x=80, y=53, labels="decision", col="black", cex = 0.5);
+arrows(x0 = 95, x1 = 95, y0 = 62, y1 = 55, lwd = 2, length = 0);
+arrows(x0 = 95, x1 = 85, y0 = 55, y1 = 55, lwd = 2, length = 0.05);
+text(x=88, y=53, labels="Yes", col="black", cex = 0.5);
+```
+
+**Figure 1:** Conceptual overview of the GMSE genetic algorithm
 
 Initialisation
 --------------------------------------------------------------------------------
@@ -80,20 +141,39 @@ Following crossover, `POPULATION` array elements affecting agent actions (column
 Cost constraint
 --------------------------------------------------------------------------------
 
+Variation in manager or user actions generated by crossover and mutation might result in strategies that exceed `manager_budget` or `user_budget`, respectively. Left unchecked, this over-budgeting could lead to unnacceptably high fitness strategies, so strategies that are over budget following crossover and mutation need to be brought back within budgetary constraints. To do this, the genetic algorithm first checks to see if an individual in `POPULATION` is over budget. If so, then an action is randomly selected and removed, and budget use is reassessed; this random removal of an action and subsequent budget reassessment continues until the individual does not exceed their budget. 
+
 Fitness evaluation
 --------------------------------------------------------------------------------
+
+Once all individuals in `POPULATION` are within budget, the fitness of each individual is assessed. Fitness assessment works differently for managers versus users because managers need to consider the consequences of their decisions on user actions, and how those actions will affect resource abundance. In contrast, user actions need to consider the consequences of their decisions on resource abundance or landscape output. Fitness of an individual is defined by a real number that increases with the degree to which an individual's actions are predicted to increase their utility (recall that managers and users assign resources or landscape output a utility value). Details for how fitness is calculated are provided below.
 
 Tournament selection
 --------------------------------------------------------------------------------
 
-Replacement
+After each individual in `POPULATION` is assigned a fitness, a tournament is used to select individuals of higher fitness. Tournament selection is an especially flexible, non-parametric method that samples a subset of individuals from the total population and chooses the fittest of the subset for replacement [@Hamblin2013]. In GMSE, tournament selection proceeds by randomly sampling `ga_sampleK` individuals from the total `POPULATION` with replacement. The fitnesses of the subset of `ga_sampleK` individuals are compared, and the `ga_chooseK` individuals of highest fitness are retained (if `ga_sampleK` $\geq$ `ga_chooseK`, then all `ga_sampleK` are chosen, but this is not recommended). Tournaments selecting `ga_chooseK` individuals from random subsets of size `ga_sampleK` continue until a total of `ga_popsize` individuals are retained.
+
+Replacement and termination
 --------------------------------------------------------------------------------
 
-
+Once a new set of `ga_popsize` individuals is retained through tournament selection, these individuals replace the previous `POPULATION` array. The genetic algorithm terminates if and only if a minimum number of generations has passed (`ga_mingen`) and a convergence criteria (`converge_crit`) is satisfied. The convergence criteria checks the difference between the mean fitness of individuals in the new generation versus the previous generation; if this difference is less than `converge_crit`, then termination does not occur (it is usually fine to use the default GMSE `converge_crit = 100` and `ga_mingen = 40`, which nearly always terminates the genetic algorithm after 40 generations having identified adaptive manager or user strategies). If termination conditions are not satisfied, then the `POPULATION` of individuals begins a new generation of crossover, mutation, cost constraint, fitness evaluation, and tournament selection (Figure 1).
 
 
 Detailed explanation of manager and user fitness functions
 ================================================================================
+
+Here we explain how candidate manager and user fitness strategies in a `POPULATION` array (see above) are calculated. We emphasise that the fitness functions used in GMSE v0.3.1.9 are intended to be heuristic tools for identifying reasonable manager and user behaviours. In practice, our fitness functions identify behaviours that are well-aligned with manager and user interests for harvesting or crop yield, but they are not intended to identify *optimal* decisions. This practical, metaheuristic approach is consistent with the objectives of Management Strategy Evaluation [@Bunnefeld2011], and is well-suited for the use of genetic algorithms [@Hamblin2013]. @Luke2013 describes the metaheuristic approach more generally (original emphasis retained):
+
+> Metaheuristics are applied to *I know it when I see it* problems. They’re algorithms used to find
+answers to problems when you have very little to help you: you don’t know beforehand what the
+optimal solution looks like, you don’t know how to go about finding it in a principled way, you
+have very little heuristic information to go on, and brute-force search is out of the question because
+the space is too large. *But* if you’re given a candidate solution to your problem, you *can* test it and
+assess how good it is. That is, you know a good one when you see it.
+
+The above conditions for applying the metaheuristic approach are clearly satisfied for manager and user decisions, given the complexity of adaptive management and socio-ecological interactions. 
+
+
 
 Manager fitness function
 --------------------------------------------------------------------------------
@@ -114,6 +194,14 @@ $$ F_{user} = \sum_{i=1}^{N} \Delta A_{i} \times U_{i} $$.
 Where $F_{user}$ is user fitness, $N$ is the total number of things that might be of interest (at the moment $N = 2$ in GMSE, one resource and, potentially, one landscape value), $\Delta A_{i}$ is the change in the abundance of thing $i$, and $U_{i}$ is the utility of thing $i$ from the perspective of the user (apologies for the LaTeX code -- attached a PNG of the conversion). I want to stress though that I would not consider this equation to be central to the GMSE framework -- if someone else has a better approach for defining fitness, or defining any of the terms listed above, or wants to expand upon it to include new things, then that would be awesome! The above just works well as a heuristic tool to get users to act in such a way as to maximise their interests in harvesting or getting more crop yield (as is my intent), but it's not based on first principles and I don't claim it to be particularly special.
 
 The values of $\Delta A_{i}$ are calculated for resources and the landscape in the functions res_to_counts and land_to_counts, respectively (and $U_{i}$ is specified a priori in the model depending on other parameters -- namely land_ownership). Again, a bit of heuristic is needed here because there cannot be any perfect way of exactly predicting how a users actions will increase or decrease resources -- there are too many complex factors (e.g., behaviour of other stakeholders, demographic stochasticity, movement of resources on the landscape, and interactions between resources and the landscape). Even if we could include all of these things somehow, it would be a bit unrealistic in that real stakeholders would never have this much information. The predicted direct effect of actions on resources is shown in lines 268-272 ( https://github.com/bradduthie/gmse/blob/master/src/game.c#L268 ), and the array 'jaco' (a sort of Jacobian matrix) accounts for interactions between landscape and resources on line 286. Something similar happens in the land_to_counts function. The manager's genetic algorithm works in a similar way (the above equation applies), but with the need to dynamically update utility values based on current resource abundance, and to account for the predicted actions of users in finding $\Delta A_{i}$.
+
+
+
+
+
+
+
+
 
 
 References

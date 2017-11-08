@@ -1,9 +1,20 @@
 \begin{thebibliography}{}
 
+\bibitem[Bunnefeld et~al., 2011]{Bunnefeld2011}
+Bunnefeld, N., Hoshino, E., and Milner-Gulland, E.~J. (2011).
+\newblock {Management strategy evaluation: A powerful tool for conservation?}
+\newblock {\em Trends in Ecology and Evolution}, 26:441--447.
+
 \bibitem[Hamblin, 2013]{Hamblin2013}
 Hamblin, S. (2013).
 \newblock {On the practical usage of genetic algorithms in ecology and
   evolution}.
 \newblock {\em Methods in Ecology and Evolution}, 4:184--194.
+
+\bibitem[Luke, 2013]{Luke2013}
+Luke, S. (2013).
+\newblock {\em {Essentials of Metaheuristics}}.
+\newblock Lulu. Available for free at
+  http://cs.gmu.edu/?sean/book/metaheuristics/.
 
 \end{thebibliography}
