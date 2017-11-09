@@ -164,7 +164,7 @@ Once a new set of `ga_popsize` individuals is retained through tournament select
 Detailed explanation of manager and user fitness functions
 ================================================================================
 
-Here we explain how the fitnesses of candidate manager and user strategies in a `POPULATION` array (see above) are calculated. We emphasise that the fitness functions used in GMSE v0.3.1.9 are intended to be heuristic tools for identifying reasonable manager and user behaviours. In practice, our fitness functions identify behaviours that are well-aligned with manager and user interests for harvesting or crop yield, but they are not intended to identify *optimal* decisions. This practical, metaheuristic approach is consistent with the objectives of Management Strategy Evaluation [@Bunnefeld2011], and is well-suited for the use of genetic algorithms [@Hamblin2013]. @Luke2013 describes the metaheuristic approach more generally (original emphasis retained):
+Here we explain how the fitnesses of candidate manager and user strategies in a `POPULATION` array (see above) are calculated. We emphasise that the fitness functions used in GMSE v0.3.1.9 are intended to be heuristic tools for identifying reasonable manager and user behaviours. In practice, our fitness functions identify behaviours that are well-aligned with manager and user interests for harvesting or crop yield, but they are not intended to identify *optimal* decisions. This practical, metaheuristic approach is consistent with the objectives of management strategy evaluation [@Bunnefeld2011], and is well-suited for the use of genetic algorithms [@Hamblin2013]. @Luke2013 describes the metaheuristic approach more generally (original emphasis retained):
 
 > Metaheuristics are applied to *I know it when I see it* problems. They’re algorithms used to find
 answers to problems when you have very little to help you: you don’t know beforehand what the
@@ -173,7 +173,7 @@ have very little heuristic information to go on, and brute-force search is out o
 the space is too large. *But* if you’re given a candidate solution to your problem, you *can* test it and
 assess how good it is. That is, you know a good one when you see it.
 
-The above conditions for applying the metaheuristic approach are clearly satisfied for manager and user decisions, given the complexity of adaptive management and socio-ecological interactions. 
+Given the complexity of adaptive management and socio-ecological interactions, the above conditions for applying the metaheuristic approach are clearly satisfied for manager and user decisions.
 
 Fitness function for managers
 --------------------------------------------------------------------------------
@@ -196,11 +196,11 @@ The variable $C^{new}_{j}$ defines the new cost set by the individual for action
 
 The predicted consequences of $X^{new}_{j}$ for resource abundance differ for each possible action. For each action, no consequence is predicted if the policy is not allowed by a simulation of GMSE (e.g., `culling = FALSE`). For allowed actions, the parameter `manager_sense` ($\sigma$) modulates predicted consequences for abundance by some factor; this is useful because not all actions attempted by users will be realised, and a value of $\sigma = 1$ tends to greatly overestimate how much the actions attempted by users will actually translate to a change in resource abundance. In practice, the default $\sigma = 0.1$ performs well. Allowed actions are predicted by managers to have the following effects:
 
-- `scaring` is assumed to be nonlethal and therefore have an effect of zero on the total abundance of a resource.
-- `culling` is assumed to have an effect of $-\sigma(1 + \lambda)$, where $\lambda$ is the GMSE argument `lambda` that defines the baseline population growth rate of resources.
-- `castration` is assumed to have an effect of $-\sigma\lambda$.
-- `feeding` is assumed to have an effect of $\lambda$.
-- `help_offspring` is assumed to have an effect of $\sigma$.
+- `scaring` is assumed to be nonlethal and therefore have no effect on resource number.
+- `culling` decreases resource number by $\sigma(1 + \lambda)$, where $\lambda$ is the GMSE argument `lambda` that defines the baseline population growth rate of resources.
+- `castration` decreases resource number by $\sigma\lambda$.
+- `feeding` increases resource number by $\lambda$.
+- `help_offspring` increases resource number by $\sigma$.
 
 These effects cannot be altered directly in `gmse` or `gmse_apply` (though parameter values can of course be changed using `manager_sense` and `lambda` arguments), but future versions of GMSE might include different predicted effects to increase precision or allow for multiple resource types or different actions. The summation of $X^{new}_{j}$ for all actions defines the predicted change in resource abundance caused by the policy of an individual $i$, $\Delta A_{i}$.
 
@@ -208,31 +208,41 @@ These effects cannot be altered directly in `gmse` or `gmse_apply` (though param
 Fitness function for users
 --------------------------------------------------------------------------------
 
-The previous section described the fitness function applied when individual's fitness was evaluated for managers; here we explain a separate fitness function that is applied when individuals are instead evaluated for users. Individual fitness as calculated for users ($F_{i}^{u}$) is affected by a user's utility for resources and landscape output (i.e., the predicted summed values of the landscape cells that they own), and the project change in each caused by the user's actions (i.e., the contents of their `POPULATION` layer, specifically rows 1 and 2).
+The previous section described the fitness function applied when individual's fitness was evaluated for managers; here we explain a separate fitness function that is applied when individuals are instead evaluated for users. Individual fitness as calculated for users ($F_{i}^{u}$) is affected by a user's utility for resources ($U^{u}_{res}$) and landscape output ($U^{u}_{land}$), and the predicted change in each caused by the user's actions ($\Delta A_{i}$ and $\Delta L_{i}$ for predicted change in resource abundance and summed values of the landscape cells owned by $i$, respectively). Individual fitness is defined for users below,
 
+$$F_{i}^{u} = \Delta A_{i} U^{u}_{res} + \Delta L_{i} U^{u}_{land} $$.
 
+Note that $F_{i}^{u}$ increases when $\Delta A_{i}$ and $\Delta L_{i}$ are of the same sign as $U^{u}_{res}$ and $U^{u}_{land}$, respectively. Further, in GMSE v0.3.1.9, only one term of the equation is nonzero. When `land_ownership = FALSE` (default, modelling users that harvest resources), $U^{u}_{res} = -1$ and $U^{u}_{land} = 0$, and when `land_ownership = TRUE`, $U^{u}_{res} = -1$ and $U^{u}_{land} = 100$ (modelling farmers trying to increase crop yield). Hence users only have a single objective of either decreasing resource abundance or increasing landscape output, though landscape output might be increased indirectly by decreasing resource abundance if `resource_consume` is greater than zero.
 
+User actions are predicted to affect resources in the following way:
 
+- `scaring` decreases resource number by $1$.
+- `culling` decreases resource number by $1 + \lambda$.
+- `castration` decreases resource number by $\lambda$.
+- `feeding` increases resource number by $\lambda$.
+- `help_offspring` increases resource number by $\sigma$.
 
+The number of each action performed is multiplied by its effect, and the sum of all these products is the predicted $\Delta A_{i}$,
 
+$$\Delta A_{i} = (\lambda) Feeds + Helps -Scares - (1 + \lambda) Culls - (\lambda) Castrations.$$
 
+There are only two possible actions that users can take to directly affect landscape output, tending crops (`tend_crops`) and killing crops (`kill_crops`). The increase in landscape output is modulated by the parameter `tend_crop_yld` ($\phi$). User actions are therefore predicted to have the following effects for one landscape cell:
 
-Thanks for the clarification regarding the equation. I'll try to answer as best as I can -- apologies if this has been unclear. At the broadest scale, the equation for user fitness would be on L367 in the strategy_fitness function ( https://github.com/bradduthie/gmse/blob/master/src/game.c#L376 ). Here's what's going on: Users are predicting how their actions will change the quantities of things in the model (either resources or landscape output), and these changes are individually multiplied by the users' utilities for that thing. The change multiplied by utility for each thing is summed across all things to get a value for fitness. Note that positive change times positive utility, and negative change times negative utility, will increase fitness (i.e., increasing the thing users want more of and decreasing the things they want less of). Hence, an equation describing user fitness would be the below,
+- `tend_crops` will increase landscape output by $\phi$.
+- `kill_crops` will decrease landscape output by 1 (since the output of a cell is 1 by default, this action removes all output on a landscape cell).
 
-$$ F_{user} = \sum_{i=1}^{N} \Delta A_{i} \times U_{i} $$.
+Actions on resources can also have indirect affects on $\Delta L_{i}$ when resources consume output on the landscape (i.e., when `res_consume` is greater than zero), which we define as $r$. The predicted $\Delta L_{i}$ is therefore,
 
-Where $F_{user}$ is user fitness, $N$ is the total number of things that might be of interest (at the moment $N = 2$ in GMSE, one resource and, potentially, one landscape value), $\Delta A_{i}$ is the change in the abundance of thing $i$, and $U_{i}$ is the utility of thing $i$ from the perspective of the user (apologies for the LaTeX code -- attached a PNG of the conversion). I want to stress though that I would not consider this equation to be central to the GMSE framework -- if someone else has a better approach for defining fitness, or defining any of the terms listed above, or wants to expand upon it to include new things, then that would be awesome! The above just works well as a heuristic tool to get users to act in such a way as to maximise their interests in harvesting or getting more crop yield (as is my intent), but it's not based on first principles and I don't claim it to be particularly special.
+$$\Delta L_{i} = (\phi)Tends - Kills + r\Delta A_{i}.$$
 
-The values of $\Delta A_{i}$ are calculated for resources and the landscape in the functions res_to_counts and land_to_counts, respectively (and $U_{i}$ is specified a priori in the model depending on other parameters -- namely land_ownership). Again, a bit of heuristic is needed here because there cannot be any perfect way of exactly predicting how a users actions will increase or decrease resources -- there are too many complex factors (e.g., behaviour of other stakeholders, demographic stochasticity, movement of resources on the landscape, and interactions between resources and the landscape). Even if we could include all of these things somehow, it would be a bit unrealistic in that real stakeholders would never have this much information. The predicted direct effect of actions on resources is shown in lines 268-272 ( https://github.com/bradduthie/gmse/blob/master/src/game.c#L268 ), and the array 'jaco' (a sort of Jacobian matrix) accounts for interactions between landscape and resources on line 286. Something similar happens in the land_to_counts function. The manager's genetic algorithm works in a similar way (the above equation applies), but with the need to dynamically update utility values based on current resource abundance, and to account for the predicted actions of users in finding $\Delta A_{i}$.
+That is, the change in landscape output equals the increase in output from tending crops, minus the number of crops destroyed, plus the change in resource abundance times the effect that resource abundance has on landscape output.
 
+Future development of fitness functions
+--------------------------------------------------------------------------------
 
-
-
-
-
-
-
+The fitness functions defined above are useful heuristics for simulating manager and user decision-making in a way that produces realistic, *I know it when I see it*, strategies. Future versions of GMSE might improve upon these heuristics to generate more accurate or more realistic models of human decision making. Such improvements could incorporate additional information such as memory of actions from multiple past time steps, or a continually updated estimate for how actions are predicted to affect resource abundance in a simulation (e.g., through a dynamic `manager_sense`). Alternatively, future improvements could usefully incorporate knowledge of human decision making collected from empirical observation of human behaviour during conservation conflicts. While such possibilities could be useful for future GMSE modelling, repeated simulations demonstrate the ability of the current GMSE genetic algorithm to find adaptive strategies for managers attempting to keep resources at target abundance, and users attempting to maximise their harvests or crop yields. It should therefore be useful as a tool for modelling manager and user decisions in a generalised management strategy evaluation framework.
 
 
 References
 ================================================================================
+
