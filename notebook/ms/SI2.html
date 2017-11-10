@@ -118,216 +118,284 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">GMSE: an R package for generalised management strategy evaluation</h1>
-<h3 class="subtitle"><em>Supporting Information 1</em></h3>
+<h3 class="subtitle"><em>Supporting Information 2</em></h3>
 <h4 class="author"><em>A. Bradley Duthie, Jeremy J. Cusack, Isabel L. Jones, Erlend B. Nilsen, Rocío Pozo, O. Sarobidy Rakotonarivo, Bram Van Moorter, and Nils Bunnefeld</em></h4>
 <h4 class="date"><em>2017-11-10</em></h4>
 
 </div>
 
 
-<div id="extended-introduction-to-the-genetic-algorithm-applied-in-gmse" class="section level1">
-<h1>Extended introduction to the genetic algorithm applied in GMSE</h1>
-<p>A genetic algorithm is called in the predefined GMSE manager and user models to simulate human decision making. As of GMSE version 0.3.1.9, this includes one independent call to the genetic algorithm for each decision-making agent in every GMSE time step. Therefore, one run of the genetic algorithm occurs to simulate the manager’s policy-setting decisions in each time step (unless otherwise defined through non-default <code>manage_freq</code> values greater than 1), and one run occurs to simulate each individual user’s action decisions in each time step (unless otherwise defined through non-default <code>group_think = TRUE</code>, in which case one user makes decisions that all other users copy). Each run of the genetic algorithm mimics the evolution by natural selection of a population of potential manager or user strategies over multiple generations, with the highest fitness strategy in the terminal generation being selected as the one that the manager or user decides to implement. For clarity, as in the main text, we use ‘time step’ to refer to a full GMSE cycle (in which multiple genetic algorithms may be run) and ‘generation’ to refer to a single, non-overlapping, generation of potential strategies that evolve within a genetic algorithm (see Figure 1 of the main text). Below, we explain the genetic algorithm in detail, as it occurs in GMSE v0.3.1.9 (future versions of GMSE might expand upon this framework, and we highlight some of these potential avenues for expansion). We first explain the key data structures used, then provide an overview of how a population of strategies is initialised, and the subsequent processes of crossover, mutation, cost constraint, fitness evaluation, tournament selection, and replacement. We then explain the fitness functions of managers and users in more detail.</p>
-</div>
-<div id="key-data-structures-used" class="section level1">
-<h1><a name="Key_data_structures_used">Key data structures used</a></h1>
-<p>The focal data structure used for tracking manager and user decisions is a three dimensional array, which we will call <code>ACTION</code> (also returned as <code>user_array</code> by <code>gmse_apply</code>). Rows of <code>ACTION</code> correspond to the entities affected by actions (resources, landscape properties, or potentially other agents), and columns correspond either to properties of the affected entities, or to the actions potentially allocated to them. Each layer of <code>ACTION</code> corresponds to a unique agent, the first of which is the manager; additional layers correspond to users. Below shows an <code>ACTION</code> array for a GMSE model with one manager and two users.</p>
-<pre><code>## , , Manager_Actions
+<div id="extended-introduction-to-the-gmse-apply-function-gmse_apply" class="section level1">
+<h1>Extended introduction to the GMSE apply function (<code>gmse_apply</code>)</h1>
+<p>The <code>gmse_apply</code> function is a flexible function that allows for user-defined sub-functions calling resource, observation, manager, and user models. Where such models are not specified, predefined GMSE submodels ‘resource’, ‘observation’, ‘manager’, and ‘user’ are run by default. Any type of sub-model (e.g., numerical, individual-based) is permitted as long as the input and output are appropriately specified. Only one time step is simulated per call to <code>gmse_apply</code>, so the function must be looped for simulation over time. Where model parameters are needed but not specified, defaults from GMSE are used. In this Supporting Information, we demonstrate some uses of <code>gmse_apply</code>, and how it might be used to simulate myriad management scenarios <em>in silico</em>.</p>
+<p>A simple run of <code>gmse_apply()</code> returns one generation of GMSE using predefined submodels and default parameter values.</p>
+<pre class="r"><code>sim_1 &lt;- gmse_apply();</code></pre>
+<p>For <code>sim_1</code>, the default ‘basic’ results are returned as below, which summarise key values for all submodels.</p>
+<pre class="r"><code>print(sim_1);</code></pre>
+<pre><code>## $resource_results
+## [1] 1086
 ## 
-##           Act Type_1 Type_2 Type_3      Util. U_land U_loc. Scare Cull
-## Resource   -2      1      0      0 1000.00000      0      0     0    0
-## Landscape  -1      1      0      0    0.00000      0      0     0    0
-## Res_cost    1      1      0      0  -88.43537      0      0    10   15
-## U1_cost     2      1      0      0    0.00000      0      0     0    0
-## U2_cost     3      1      0      0    0.00000      0      0     0    0
-##           Castrate Feed Help_off None
-## Resource         0    0        0    0
-## Landscape        0    0        0    0
-## Res_cost        10   10       10  105
-## U1_cost          0    0        0    0
-## U2_cost          0    0        0    0
+## $observation_results
+## [1] 907.0295
 ## 
-## , , User_1_Actions
+## $manager_results
+##          resource_type scaring culling castration feeding help_offspring
+## policy_1             1      NA     110         NA      NA             NA
 ## 
-##           Act Type_1 Type_2 Type_3 Util. U_land U_loc. Scare Cull Castrate
-## Resource   -2      1      0      0    -1      0      0     0   60        0
-## Landscape  -1      1      0      0     0      0      0     0    0        0
-## Res_cost    1      1      0      0     0      0      0     0    0        0
-## U1_cost     2      1      0      0     0      0      0     0    0        0
-## U2_cost     3      1      0      0     0      0      0     0    0        0
-##           Feed Help_off None
-## Resource     0        0    3
-## Landscape    0        0    7
-## Res_cost     0        0    0
-## U1_cost      0        0    0
-## U2_cost      0        0    0
+## $user_results
+##         resource_type scaring culling castration feeding help_offspring
+## Manager             1      NA       0         NA      NA             NA
+## user_1              1      NA       9         NA      NA             NA
+## user_2              1      NA       9         NA      NA             NA
+## user_3              1      NA       9         NA      NA             NA
+## user_4              1      NA       9         NA      NA             NA
+##         tend_crops kill_crops
+## Manager         NA         NA
+## user_1          NA         NA
+## user_2          NA         NA
+## user_3          NA         NA
+## user_4          NA         NA</code></pre>
+<p>Note that in the case above we have the total abundance of resources returned (<code>sim_1$resource_results</code>), the estimate of resource abundance from the observation function (<code>sim_1$observation_results</code>, the costs the manager sets for the only available action of culling (<code>sim_1$manager_results</code>), and the number of culls attempted by each user (<code>sim_1$user_results</code>). By default, only one resource type is used, but custom subfunctions could potentially allow for models with multiple resource types. Any custom subfunctions can replace GMSE predefined functions, provided that they have appropriately defined inputs and outputs (see <a href="https://cran.r-project.org/web/packages/GMSE/GMSE.pdf">GMSE documentation</a>). For example, we can define a very simple logistic growth function to send to <code>res_mod</code> instead.</p>
+<pre class="r"><code>alt_res &lt;- function(X, K = 2000, rate = 1){
+    X_1 &lt;- X + rate*X*(1 - X/K);
+    return(X_1);
+}</code></pre>
+<p>The above function takes in a population size of <code>X</code> and returns a value <code>X_1</code> based on the population intrinsic growth rate <code>rate</code> and carrying capacity <code>K</code>. Iterating the logistic growth model by itself under default parameter values with a starting population of 100 will cause the population to increase to carrying capacity in ca seven generations. The function can be substituted into <code>gmse_apply</code> to use it instead of the predefined GMSE resource model.</p>
+<pre class="r"><code>sim_2 &lt;- gmse_apply(res_mod = alt_res, X = 100, rate = 0.3);</code></pre>
+<p>The <code>gmse_apply</code> function will find the parameters it needs to run the <code>alt_res</code> function in place of the default resource function, either by running the default function values (e.g., <code>K = 2000</code>) or values specified directly into <code>gmse_apply</code> (e.g., <code>X = 100</code> and <code>rate = 0.3</code>). If an argument to a custom function is required but not provided either as a default or specified in <code>gmse_apply</code>, then an error will be returned. Results for the above <code>sim_2</code> are returned below.</p>
+<pre class="r"><code>print(sim_2);</code></pre>
+<pre><code>## $resource_results
+## [1] 128
 ## 
-## , , User_2_Actions
+## $observation_results
+## [1] 181.4059
 ## 
-##           Act Type_1 Type_2 Type_3 Util. U_land U_loc. Scare Cull Castrate
-## Resource   -2      1      0      0    -1      0      0     0   65        0
-## Landscape  -1      1      0      0     0      0      0     0    0        0
-## Res_cost    1      1      0      0     0      0      0     0    0        0
-## U1_cost     2      1      0      0     0      0      0     0    0        0
-## U2_cost     3      1      0      0     0      0      0     0    0        0
-##           Feed Help_off None
-## Resource     0        0    0
-## Landscape    0        0    2
-## Res_cost     0        0    0
-## U1_cost      0        0    0
-## U2_cost      0        0    0</code></pre>
-<p>The above array holds all of the information on manager and user actions. The first seven columns contain information about which entities are affected, and how they are affected. The first column <code>Act</code> identifies the type of action being performed; a value of -2 defines a direct action to a resource (e.g., culling of the resource), and a value of -1 defines direct action to a landscape (e.g., increasing yield). Positive values are currently only meaningful for <code>Manager_Actions</code>, where a value of 1 defines an action setting a uniform cost of users’ direct actions on resources (i.e., costs where <code>Act = -2</code> for <code>User_1_Actions</code> and <code>User_2_Actions</code>). All other values for <code>Act</code> are meaningless in GMSE 0.3.1.9, but might be expanded upon in future versions to allow for modification of specific user costs enacted by managers (i.e., managers having different policies for different users) or other users (e.g., users increasing the costs of other users’ actions due to conflict or cooperation). For the rest of this supporting information, we will therefore focus only on rows 1-3 of <code>ACTION</code>.</p>
-<p>Columns 2-4 refer to resource or landscape types, but only <code>Type_1 = 1</code>, <code>Type_2 = 0</code>, and <code>Type_3 = 0</code> are allowed in predefined GMSE v0.3.1.9 manager and user sub-models (i.e., only one type of resource is permitted). Future versions might allow for different resource types (e.g., <code>Type_1</code> might be used to designate species, and <code>Type_2</code> and <code>Type_3</code> could designate stage or sex). Column 5 <code>Util.</code> of <code>ACTION</code> defines the utility associated with the resource (where <code>Act = -2</code>) or landscape (where <code>Act = -1</code>). For managers, the target resource abundance set with the GMSE argument <code>manage_target</code> is found in row 1 (1000 in <code>ACTION</code> above); for users, the value in row 1 identifies whether resources are preferred to increase (if positive) or decrease (if negative). Values of column 5 in row 2 similarly identify whether landscape cell output is preferred by users to increase or decrease (managers do not currently have preferences for landscape output). Of special note is row 3 for <code>Manager_Actions</code>, which defines the <em>current</em> manager’s utility for resources; that is, the adjustment to resource abundance that the manager will attempt to make based on the <code>manage_target</code> and the most recent estimate of resource abundance produced by the observation model (in the case of the above, resource abundance is estimated at ca 1088.44, so the manager will set policy in attempt to change the population size by ca -88.44 resources). Column 6 <code>U_land</code> defines whether or not the utility attached to the resource or landscape output depends on it being on a landscape cell that is owned by the acting user. Related, column 7 <code>U_loc.</code> defines whether or not actions can be performed only on a landscape cell that is owned by the acting user. Hence values of columns 6 and 7 are binary, and affected by the <code>land_ownership</code> argument in <code>gmse</code> and <code>gmse_apply</code>. Finally, columns 8-13 correspond to specific actions, either direct (where <code>Act &lt; 0</code>) or indirect by setting policy (for row 3 of <code>Manager_Actions</code> where <code>Act = 1</code>). The last column 13 <code>None</code> corresponds with no actions. See <a href="https://cran.r-project.org/web/packages/GMSE/GMSE.pdf">GMSE documentation</a> for details about the effects of each action.</p>
-<p>Constraints on the values that elements in the <code>ACTION</code> array can take are defined by a <code>COST</code> array (also returned as <code>manager_array</code> by <code>gmse_apply</code>) of dimensions identical to <code>ACTION</code>. Elements of <code>COST</code> define how many units from the <code>manager_budget</code> or <code>user_budget</code> are needed to perform a single action; a <code>minimum_cost</code> for actions is defined as an argument in GMSE (10 by default). All values in <code>COST</code> columns 1-7 are set to 10001, one higher than the highest possible <code>manager_budget</code> or <code>user_budget</code>, so neither managers nor users can affect resource types or utilities. Columns 8-13 are also set to 10001, except where actions are allowed. Below shows the <code>COST</code> array that corresponds to the above <code>ACTION</code> array.</p>
-<pre><code>## , , Manager_Costs
+## $manager_results
+##          resource_type scaring culling castration feeding help_offspring
+## policy_1             1      NA     110         NA      NA             NA
 ## 
-##             Act Type_1 Type_2 Type_3 Util. U_land U_loc. Scare  Cull
-## Resource  10001  10001  10001  10001 10001  10001  10001 10001 10001
-## Landscape 10001  10001  10001  10001 10001  10001  10001 10001 10001
-## Res_cost  10001  10001  10001  10001 10001  10001  10001 10001    10
-## U1_cost   10001  10001  10001  10001 10001  10001  10001 10001 10001
-## U2_cost   10001  10001  10001  10001 10001  10001  10001 10001 10001
-##           Castrate  Feed Help_off  None
-## Resource     10001 10001    10001    10
-## Landscape    10001 10001    10001    10
-## Res_cost     10001 10001    10001    10
-## U1_cost      10001 10001    10001 10001
-## U2_cost      10001 10001    10001 10001
+## $user_results
+##         resource_type scaring culling castration feeding help_offspring
+## Manager             1      NA       0         NA      NA             NA
+## user_1              1      NA       9         NA      NA             NA
+## user_2              1      NA       9         NA      NA             NA
+## user_3              1      NA       9         NA      NA             NA
+## user_4              1      NA       9         NA      NA             NA
+##         tend_crops kill_crops
+## Manager         NA         NA
+## user_1          NA         NA
+## user_2          NA         NA
+## user_3          NA         NA
+## user_4          NA         NA</code></pre>
+<div id="how-gmse_apply-integrates-across-submodels" class="section level2">
+<h2>How <code>gmse_apply</code> integrates across submodels</h2>
+<p>To integrate across different types of submodels, <code>gmse_apply</code> translates between vectors and arrays between each submodel. For example, because the default GMSE observation model requires a resource array with particular requirements for column identites, when a resource model subfunction returns a vector, or a list with a named element ‘resource_vector’, this vector is translated into an array that can be used by the observation model. Specifically, each element of the vector identifies the abundance of a resource type (and hence will usually be just a single value denoting abundance of the only focal population). If this is all the information provided, then a ‘resource_array’ will be made with default GMSE parameter values with an identical number of rows to the abundance value (floored if the value is a non-integer; non-default values can also be put into this transformation from vector to array if they are specified in <code>gmse_apply</code>, e.g., through an argument such as <code>lambda = 0.8</code>). Similarly, a <code>resource_array</code> is also translated into a vector after the default individual-based resource model is run, should the observation model require simple abundances instead of an array. The same is true of <code>observation_vector</code> and <code>observation_array</code> objects returned by observation models, of <code>manager_vector</code> and <code>manager_array</code> (i.e., <code>COST</code> in the <code>gmse</code> function) objects returned by manager models, and of <code>user_vector</code> and <code>user_array</code> (i.e., <code>ACTION</code> in the <code>gmse</code> function) objects returned by user models. At each step, a translation between the two is made, with necessary adjustments that can be tweaked through arguments to <code>gmse_apply</code> when needed. Alternative observation, manager, and user, submodels, for example, are defined below; note that each requires a vector from the preceding model.</p>
+<pre class="r"><code># Alternative observation submodel
+alt_obs &lt;- function(resource_vector){ 
+    X_obs &lt;- resource_vector - 0.1 * resource_vector;
+    return(X_obs);
+}
+
+# Alternative manager submodel
+alt_man &lt;- function(observation_vector){
+    policy &lt;- observation_vector - 1000;
+    if(policy &lt; 0){
+        policy &lt;- 0;
+    }
+    return(policy);
+}
+
+# Alternative user submodel
+alt_usr &lt;- function(manager_vector){
+    harvest &lt;- manager_vector + manager_vector * 0.1;
+    return(harvest);
+}</code></pre>
+<p>All of these submodels are completely deterministic, so when run with the same parameter combinations, they produce replicable outputs.</p>
+<pre class="r"><code>gmse_apply(res_mod = alt_res, obs_mod = alt_obs, 
+           man_mod = alt_man, use_mod = alt_usr, X = 1000);</code></pre>
+<pre><code>## $resource_results
+## [1] 1500
 ## 
-## , , User_1_Costs
+## $observation_results
+## [1] 1350
 ## 
-##             Act Type_1 Type_2 Type_3 Util. U_land U_loc. Scare  Cull
-## Resource  10001  10001  10001  10001 10001  10001  10001 10001    15
-## Landscape 10001  10001  10001  10001 10001  10001  10001 10001 10001
-## Res_cost  10001  10001  10001  10001 10001  10001  10001 10001 10001
-## U1_cost   10001  10001  10001  10001 10001  10001  10001 10001 10001
-## U2_cost   10001  10001  10001  10001 10001  10001  10001 10001 10001
-##           Castrate  Feed Help_off  None
-## Resource     10001 10001    10001    10
-## Landscape    10001 10001    10001    10
-## Res_cost     10001 10001    10001 10001
-## U1_cost      10001 10001    10001 10001
-## U2_cost      10001 10001    10001 10001
+## $manager_results
+## [1] 350
 ## 
-## , , User_2_Costs
+## $user_results
+## [1] 385</code></pre>
+<p>Note that the <code>manager_results</code> and <code>user_results</code> are ambiguous here, and can be interpreted as desired – e.g., as total allowable catch and catches made, or as something like costs of catching set by the manager and effort to catching made by the user. Hence while manger output is set in terms of costs of performing each action, and user output is set in terms of action attempts, this need not be the case when using <code>gmse_apply</code> (though it should be recognised when using default GMSE manager and user functions). GMSE default submodels can be added in at any point.</p>
+<pre class="r"><code>gmse_apply(res_mod = alt_res, obs_mod = observation, 
+           man_mod = alt_man, use_mod = alt_usr, X = 1000)</code></pre>
+<pre><code>## $resource_results
+## [1] 1500
 ## 
-##             Act Type_1 Type_2 Type_3 Util. U_land U_loc. Scare  Cull
-## Resource  10001  10001  10001  10001 10001  10001  10001 10001    15
-## Landscape 10001  10001  10001  10001 10001  10001  10001 10001 10001
-## Res_cost  10001  10001  10001  10001 10001  10001  10001 10001 10001
-## U1_cost   10001  10001  10001  10001 10001  10001  10001 10001 10001
-## U2_cost   10001  10001  10001  10001 10001  10001  10001 10001 10001
-##           Castrate  Feed Help_off  None
-## Resource     10001 10001    10001    10
-## Landscape    10001 10001    10001    10
-## Res_cost     10001 10001    10001 10001
-## U1_cost      10001 10001    10001 10001
-## U2_cost      10001 10001    10001 10001</code></pre>
-<p>Note that in default GMSE parameters, <code>culling = TRUE</code>, but all other actions are set to <code>FALSE</code>. Hence the <code>Cull</code> column 9 is the only column besides column 13 <code>None</code> in which cost is less than 10001. Manager’s actions in <code>ACTION</code> directly affect the cost of users performing one of the five possible actions on resources (columns 8-12). This can be verified in <code>ACTION</code> where the manager has set the cost of culling to 15 (row 3), and the corresponding <code>COST</code> of resource culling is 15 for both users (row 1). The cost of the manager affecting the cost of user actions is always set to the <code>minimum_cost</code>; here the default 10 is used. This <code>minimum_cost</code> also defines cost values for <code>None</code>, in which the user or manager does nothing, as might occur if the manager wants to permit culling and therefore does not want to invest any of their <code>manager_budget</code> to increasing the cost of culling. Both <code>ACTION</code> and <code>COST</code> are updated in each time step unless <code>manage_freq &gt; 1</code>, in which case <code>COST</code> and <code>Manager_Actions</code> in <code>ACTION</code> are updated at the frequency defined.</p>
+## $observation_results
+## [1] 1587.302
+## 
+## $manager_results
+## [1] 587.3016
+## 
+## $user_results
+## [1] 646.0317</code></pre>
+<p>It is possible to, for example, specify a simple resource and observation model, but then take advantage of the genetic algorithm to predict policy decisions and user actions. This can be done by using the default GMSE manager and user functions (written below explicitly, though this is not necessary).</p>
+<pre class="r"><code>gmse_apply(res_mod = alt_res, obs_mod = alt_obs, 
+           man_mod = manager, use_mod = user, X = 1000)</code></pre>
+<pre><code>## $resource_results
+## [1] 1500
+## 
+## $observation_results
+## [1] 1350
+## 
+## $manager_results
+##          resource_type scaring culling castration feeding help_offspring
+## policy_1             1      NA      10         NA      NA             NA
+## 
+## $user_results
+##         resource_type scaring culling castration feeding help_offspring
+## Manager             1      NA       0         NA      NA             NA
+## user_1              1      NA      70         NA      NA             NA
+## user_2              1      NA      68         NA      NA             NA
+## user_3              1      NA      72         NA      NA             NA
+## user_4              1      NA      69         NA      NA             NA
+##         tend_crops kill_crops
+## Manager         NA         NA
+## user_1          NA         NA
+## user_2          NA         NA
+## user_3          NA         NA
+## user_4          NA         NA</code></pre>
 </div>
-<div id="general-overview-of-key-aspects-of-the-genetic-algorithm" class="section level1">
-<h1>General overview of key aspects of the genetic algorithm</h1>
-<p>The genetic algorithm updates a single layer of the <code>ACTION</code> array, which defines the decisions of a single agent (either the manager or a user). The corresponding layer of the <code>COST</code> array remains unchanged, and serves only to ensure that <code>ACTION</code> values do not exceed <code>manager_budget</code> or <code>user_budget</code> for managers and users, respectively. The genetic algorithm proceeds by first initialising a large (but temporary) population of new <code>ACTION</code> layers. In each generation, these layers crossover and mutate, generating variation in potential agent decisions; costs constrain this variation from exceeding a maximum budget, then the fitness of each layer is evaluated based on how the layer is predicted to affect resources or landscape output to which the agent has assigned some utility. A tournament is used to select high fitness layers, and these selected layers become the new generation of layers; generations continue until a minimum number of generations (<code>ga_mingen</code>) have passed and a convergence criteria is satisfied such that the increase in mean fitness from the previous generation is below the threshold <code>converge_crit</code> (Figure S1-1).</p>
-<p><img src="data:image/png;base64,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" width="576" /></p>
-<p><strong>Figure S1-1:</strong> Conceptual overview of the GMSE genetic algorithm</p>
-<div id="initialisation" class="section level2">
-<h2>Initialisation</h2>
-<p>At the start of each genetic algorithm, a population of size <code>ga_popsize</code> is initialised (hereafter the <code>POPULATION</code> array). This population is held in a 3D array of <code>ga_popsize</code> layers. Each layer includes an identical number of rows and columns as in <code>ACTION</code>, and one layer defines a single ‘individual’ in the population. The first seven columns of <code>ACTION</code> are replicated exactly for all individuals, and remain unchanged throughout the genetic algorithm thereby preserving the information about which entities are affected by actions in a given row. The remaining columns are either also replicated exactly as in <code>ACTION</code> (i.e., initialised to be the same decisions as in a previous time step), or randomly seeded with values given the constraints of <code>manager_budget</code> or <code>user_budget</code> (i.e., initialised to random decision making). The number of exact replicates initialised is set using <code>ga_seedrep</code> (if <code>ga_seedrep</code> <span class="math inline">\(\geq\)</span> <code>ga_popsize</code>, then all individuals are seeded as replicates). After the <code>POPULATION</code> of <code>ga_popsize</code> individuals is initialised, a loop simulating the adaptive evolution of <code>POPULATION</code> in non-overlapping generations begins (see Figure S1-1 above).</p>
-</div>
-<div id="crossover" class="section level2">
-<h2>Crossover</h2>
-<p>A single generation of the genetic algorithm begins with a uniform crossover <span class="citation">(Hamblin 2013)</span>, by which actions of individuals in <code>POPULATION</code> are randomly swapped with some probability. To implement crossover, each individual selects a partner, then exchanges corresponding array elements affecting agent actions (columns 8-13) with their partner at a fixed probability of <code>ga_crossover</code>.</p>
-</div>
-<div id="mutation" class="section level2">
-<h2>Mutation</h2>
-<p>Following crossover, <code>POPULATION</code> array elements affecting agent actions (columns 8-13) mutate at a fixed probability of <code>ga_mutation</code>. For each array element, a random uniform number <span class="math inline">\(u \in [0, 1]\)</span> is sampled. If <span class="math inline">\(u\)</span> is greater than <code>1 - (0.5 * ga_mutation)</code>, then the value of the array element is increased by 1. If <span class="math inline">\(u\)</span> is less than <code>0.5 * ga_mutation</code>, then the value of the array element is decreased by 1; when this decrease results in a negative value, the mutated value is multiplied by -1 to equal 1.</p>
-</div>
-<div id="cost-constraint" class="section level2">
-<h2>Cost constraint</h2>
-<p>Variation in manager or user actions generated by crossover and mutation might result in strategies that exceed <code>manager_budget</code> or <code>user_budget</code>, respectively. Left unchecked, this over-budgeting could lead to unnacceptably high fitness strategies, so strategies that are over budget following crossover and mutation need to be brought back within budgetary constraints. To do this, the genetic algorithm first checks to see if an individual in <code>POPULATION</code> is over budget. If so, then an action is randomly selected and removed, and budget use is reassessed; this random removal of an action and subsequent budget reassessment continues until the individual does not exceed their budget.</p>
-</div>
-<div id="fitness-evaluation" class="section level2">
-<h2>Fitness evaluation</h2>
-<p>Once all individuals in <code>POPULATION</code> are within budget, the fitness of each individual is assessed. Fitness assessment works differently for managers versus users because managers need to consider the consequences of their decisions on user actions, and how those actions will affect resource abundance. In contrast, user actions need to consider the consequences of their decisions on resource abundance or landscape output. Individual fitness is defined by a real number that increases with the degree to which an individual’s actions are predicted to increase entities of positive utility and decrease entities of negative utility (recall that managers and users assign resources or landscape output a utility value). Details for how fitness is calculated are provided below.</p>
-</div>
-<div id="tournament-selection" class="section level2">
-<h2>Tournament selection</h2>
-<p>After each individual in <code>POPULATION</code> is assigned a fitness, a tournament is used to select individuals. Tournament selection is an especially flexible, non-parametric method that samples a subset of individuals from the total population and chooses the fittest of the subset for replacement <span class="citation">(Hamblin 2013)</span>. In GMSE, tournament selection proceeds by randomly sampling <code>ga_sampleK</code> individuals from the total <code>POPULATION</code> with replacement. The fitnesses of the subset of <code>ga_sampleK</code> individuals are compared, and the <code>ga_chooseK</code> individuals of highest fitness are retained (if <code>ga_sampleK</code> <span class="math inline">\(\geq\)</span> <code>ga_chooseK</code>, then all <code>ga_sampleK</code> are chosen, but this is not recommended). Tournaments selecting <code>ga_chooseK</code> individuals from random subsets of size <code>ga_sampleK</code> continue until a total of <code>ga_popsize</code> individuals are retained.</p>
-</div>
-<div id="replacement-and-termination" class="section level2">
-<h2>Replacement and termination</h2>
-<p>Once a new set of <code>ga_popsize</code> individuals is retained through tournament selection, these individuals replace the previous <code>POPULATION</code> array. The genetic algorithm terminates if and only if a minimum number of generations has passed (<code>ga_mingen</code>) and a convergence criteria (<code>converge_crit</code>) is satisfied. The convergence criteria checks the difference between the mean fitness of individuals in the new generation versus the previous generation; if this difference is greater than <code>converge_crit</code>, then termination does not occur (this prevents termination from occuring while fitness is still increasing, though it is usually fine to use the default GMSE <code>converge_crit = 100</code> and <code>ga_mingen = 40</code>, which nearly always terminates the genetic algorithm after 40 generations having identified adaptive manager or user strategies). Due to the way in which fitness is calculated (see below), in practice, <code>converge_crit</code> currently applies only to users. If termination conditions are not satisfied, then the <code>POPULATION</code> of individuals begins a new generation of crossover, mutation, cost constraint, fitness evaluation, and tournament selection (Figure S1-1).</p>
-</div>
-</div>
-<div id="detailed-explanation-of-manager-and-user-fitness-functions" class="section level1">
-<h1>Detailed explanation of manager and user fitness functions</h1>
-<p>Here we explain how the fitnesses of candidate manager and user strategies in a <code>POPULATION</code> array (see above) are calculated. We emphasise that the fitness functions used in GMSE v0.3.1.9 are intended to be heuristic tools for identifying reasonable manager and user behaviours. In practice, our fitness functions identify behaviours that are well-aligned with manager and user interests for harvesting or crop yield, but they are not intended to identify <em>optimal</em> decisions. This practical, metaheuristic approach is consistent with the objectives of management strategy evaluation <span class="citation">(Bunnefeld, Hoshino, and Milner-Gulland 2011)</span>, and is well-suited for the use of genetic algorithms <span class="citation">(Hamblin 2013)</span>. <span class="citation">Luke (2013)</span> describes the metaheuristic approach more generally (original emphasis retained):</p>
-<blockquote>
-<p>Metaheuristics are applied to <em>I know it when I see it</em> problems. They’re algorithms used to find answers to problems when you have very little to help you: you don’t know beforehand what the optimal solution looks like, you don’t know how to go about finding it in a principled way, you have very little heuristic information to go on, and brute-force search is out of the question because the space is too large. <em>But</em> if you’re given a candidate solution to your problem, you <em>can</em> test it and assess how good it is. That is, you know a good one when you see it.</p>
-</blockquote>
-<p>Given the complexity of adaptive management and socio-ecological interactions, the above conditions for applying the metaheuristic approach are clearly satisfied for manager and user decisions. With this in mind, we now explain the details of manager and user fitness functions; that is, how GMSE assesses whether or not a strategy is a good one.</p>
-<div id="fitness-function-for-managers" class="section level2">
-<h2>Fitness function for managers</h2>
-<p>Individual fitness as calculated for managers (<span class="math inline">\(F_{i}^{m}\)</span>) is affected by a manager’s utility for resources and the projected change in resource abundance caused by the individual’s policy (i.e., the contents of their <code>POPULATION</code> layer, specifically row 3). Manager utility for a resource (<span class="math inline">\(U^{m}_{res}\)</span>) is defined as the difference between <code>manage_target</code> and the estimation of population abundance as produced by the GMSE observation model (see “<a href="#Key_data_structures_used">Key data structures used</a>” above). Manager utility can therefore change in each GMSE time step as estimated resource abundance changes; when the estimated resource abundance is greater than <code>manage_target</code>, <span class="math inline">\(U^{m}_{res}\)</span> is negative, and when the estimated resource abundance is less than <code>manage_target</code>, <span class="math inline">\(U^{m}_{res}\)</span> is positive. To get individual fitness, first the change in resource abundance predicted by the individual’s policy (<span class="math inline">\(\Delta A_{i}\)</span>) is calculated, then the squared difference between <span class="math inline">\(\Delta A_{i}\)</span> and <span class="math inline">\(U^{m}_{res}\)</span> is calculated to obtain a utility deviation (<span class="math inline">\(D_{i}\)</span>) for the individual <span class="math inline">\(i\)</span>,</p>
-<p><span class="math display">\[ D_{i} = (\Delta A_{i} - U^{m}_{res})^2. \]</span></p>
-<p>The value of <span class="math inline">\(D_{i}\)</span> increases as <span class="math inline">\(\Delta A_{i}\)</span> gets further from <span class="math inline">\(U^{m}_{res}\)</span>; i.e, <span class="math inline">\(D_{i}\)</span> is high when <span class="math inline">\(i\)</span> sets a policy that is not predicted to get closer to the <code>manage_target</code> abundance. Fitness is defined by first finding the maximum <span class="math inline">\(D_{i}\)</span> value among all <code>ga_popsize</code> individuals (<span class="math inline">\(D_{max}\)</span>), then subtracting <span class="math inline">\(D_{i}\)</span> from this value for each individual,</p>
-<p><span class="math display">\[ F^{m}_{i} = D_{max} - D_{i}. \]</span></p>
-<p>We have explained how <span class="math inline">\(U^{m}_{res}\)</span> is calculated in the <a href="#Key_data_structures_used">above section on key data structures</a>. We now explain in more detail how individuals in the genetic algorithm calculate how their actions will affect <span class="math inline">\(\Delta A_{i}\)</span>.</p>
-<p>To predict change resource abundance as a consequence of policy, an individual first needs to know the total number of actions of all types <span class="math inline">\(j\)</span> (e.g., scaring, culling, etc.) performed by users in the previous time step (<span class="math inline">\(X_{\bullet, j}\)</span>), and the cost of performing each action (<span class="math inline">\(C_{\bullet, j}\)</span>). This information is collected from <code>ACTION</code> and <code>COST</code> arrays. The individual then needs to predict how their policy (i.e., the costs that they set for users to perform an action) will affect the new total number of each action performed (<span class="math inline">\(X_{i,j}\)</span>). To do this, the individual assumes that total user actions performed under their policy will change in proportion to that of the old policy. The predicted total number of a particular action <span class="math inline">\(j\)</span> performed under the policy of <span class="math inline">\(i\)</span> is thereby calculated as,</p>
-<p><span class="math display">\[ X_{i,j} =  (X_{\bullet, j} + 1) \frac{C_{\bullet, j}}{C_{i,j}}. \]</span></p>
-<p>The variable <span class="math inline">\(C_{i,j}\)</span> defines the new cost set by the individual <span class="math inline">\(i\)</span> for action <span class="math inline">\(j\)</span>. A value of 1 is added to (<span class="math inline">\(X_{\bullet, j}\)</span>) to model some degree of caution by the manager (this can be changed from the default 1 using <code>manage_caution</code>), especially so that managers do not naïvely assume that users will not perform an action just because they did not perform it in the previous time step. Otherwise, if <span class="math inline">\(X_{\bullet, j} = 0\)</span>, then the manager would always assume that a change in the cost of an action would have no effect on the number of times the action was performed by users; a value of 1 assumes that at least one user will perform the action in the new time step.</p>
-<p>The predicted consequences of <span class="math inline">\(X_{i,j}\)</span> for resource abundance differ for each possible action. For each action, no consequence is predicted if the policy is not allowed by a simulation of GMSE (e.g., <code>culling = FALSE</code>). For allowed actions, the parameter <code>manager_sense</code> (<span class="math inline">\(\sigma\)</span>) modulates predicted consequences for abundance by some factor; this is useful because not all actions attempted by users will be realised, and a value of <span class="math inline">\(\sigma = 1\)</span> tends to greatly overestimate how much the actions attempted by users will actually translate to a change in resource abundance. In practice, the default <span class="math inline">\(\sigma = 0.1\)</span> performs well. Allowed actions are predicted by managers to have the following effects:</p>
-<ul>
-<li><code>scaring</code> is assumed to be nonlethal and therefore have no effect on resource number.</li>
-<li><code>culling</code> decreases resource number by <span class="math inline">\(\sigma(1 + \lambda)\)</span>, where <span class="math inline">\(\lambda\)</span> is the GMSE argument <code>lambda</code> that defines the baseline population growth rate of resources.</li>
-<li><code>castration</code> decreases resource number by <span class="math inline">\(\sigma\lambda\)</span>.</li>
-<li><code>feeding</code> increases resource number by <span class="math inline">\(\lambda\)</span>.</li>
-<li><code>help_offspring</code> increases resource number by <span class="math inline">\(\sigma\)</span>.</li>
-</ul>
-<p>These effects cannot be altered directly in <code>gmse</code> or <code>gmse_apply</code> (though parameter values can of course be changed using <code>manager_sense</code> and <code>lambda</code> arguments), but future versions of GMSE might include different predicted effects to increase precision or allow for multiple resource types or different actions. The summation of <span class="math inline">\(X_{i,j}\)</span> for all actions defines the predicted change in resource abundance caused by the policy of an individual <span class="math inline">\(i\)</span>, <span class="math inline">\(\Delta A_{i}\)</span>.</p>
-</div>
-<div id="fitness-function-for-users" class="section level2">
-<h2>Fitness function for users</h2>
-<p>The previous section described the fitness function applied when individual’s fitness was evaluated for managers; here we explain a separate fitness function that is applied when individuals are instead evaluated for users. Individual fitness as calculated for users (<span class="math inline">\(F_{i}^{u}\)</span>) is affected by a user’s utility for resources (<span class="math inline">\(U^{u}_{res}\)</span>) and landscape output (<span class="math inline">\(U^{u}_{land}\)</span>), and the predicted change in each caused by the user’s actions (<span class="math inline">\(\Delta A_{i}\)</span> and <span class="math inline">\(\Delta L_{i}\)</span> for predicted change in resource abundance and summed values of the landscape cells owned by <span class="math inline">\(i\)</span>, respectively). Individual fitness is defined for users below,</p>
-<p><span class="math display">\[F_{i}^{u} = \Delta A_{i} U^{u}_{res} + \Delta L_{i} U^{u}_{land}. \]</span></p>
-<p>Note that <span class="math inline">\(F_{i}^{u}\)</span> increases when <span class="math inline">\(\Delta A_{i}\)</span> and <span class="math inline">\(\Delta L_{i}\)</span> are of the same sign as <span class="math inline">\(U^{u}_{res}\)</span> and <span class="math inline">\(U^{u}_{land}\)</span>, respectively. Further, in GMSE v0.3.1.9, only one term of the equation is nonzero. When <code>land_ownership = FALSE</code> (default, modelling users that harvest resources), <span class="math inline">\(U^{u}_{res} = -1\)</span> and <span class="math inline">\(U^{u}_{land} = 0\)</span>, and when <code>land_ownership = TRUE</code>, <span class="math inline">\(U^{u}_{res} = 0\)</span> and <span class="math inline">\(U^{u}_{land} = 100\)</span> (modelling farmers trying to increase crop yield). Hence users only have a single objective of either decreasing resource abundance or increasing landscape output, though landscape output might be increased indirectly by decreasing resource abundance if <code>resource_consume</code> is greater than zero.</p>
-<p>User actions are predicted to affect resources in the following way:</p>
-<ul>
-<li><code>scaring</code> decreases resource number by <span class="math inline">\(1\)</span>.</li>
-<li><code>culling</code> decreases resource number by <span class="math inline">\(1 + \lambda\)</span>.</li>
-<li><code>castration</code> decreases resource number by <span class="math inline">\(\lambda\)</span>.</li>
-<li><code>feeding</code> increases resource number by <span class="math inline">\(\lambda\)</span>.</li>
-<li><code>help_offspring</code> increases resource number by <span class="math inline">\(\sigma\)</span>.</li>
-</ul>
-<p>The number of each action performed is multiplied by its effect, and the sum of all these products is the predicted <span class="math inline">\(\Delta A_{i}\)</span>,</p>
-<p><span class="math display">\[\Delta A_{i} = (\lambda) Feeds + Helps -Scares - (1 + \lambda) Culls - (\lambda) Castrations.\]</span></p>
-<p>There are only two possible actions that users can take to directly affect landscape output, tending crops (<code>tend_crops</code>) and killing crops (<code>kill_crops</code>). The increase in landscape output is modulated by the parameter <code>tend_crop_yld</code> (<span class="math inline">\(\phi\)</span>). User actions are therefore predicted to have the following effects for one landscape cell:</p>
-<ul>
-<li><code>tend_crops</code> will increase landscape output by <span class="math inline">\(\phi\)</span>.</li>
-<li><code>kill_crops</code> will decrease landscape output by 1 (since the output of a cell is 1 by default, this action removes all output on a landscape cell).</li>
-</ul>
-<p>Actions on resources can also have indirect effects on <span class="math inline">\(\Delta L_{i}\)</span> when resources consume output on the landscape; we define the value <code>res_consume</code> as <span class="math inline">\(r\)</span>. The predicted <span class="math inline">\(\Delta L_{i}\)</span> is then,</p>
-<p><span class="math display">\[\Delta L_{i} = (\phi)Tends - Kills - r\Delta A_{i}.\]</span></p>
-<p>That is, the change in landscape output equals the increase in output from tending crops, minus the number of crops destroyed, minus the change in resource abundance times the effect that resource abundance has on landscape output (note that if user actions decrease resource abundance, then this last term will be positive, increasing landscape output).</p>
-</div>
-<div id="future-development-of-fitness-functions" class="section level2">
-<h2>Future development of fitness functions</h2>
-<p>The fitness functions defined above are useful heuristics for simulating manager and user decision-making in a way that produces realistic, <em>I know it when I see it</em>, strategies. Future versions of GMSE might improve upon these heuristics to generate more accurate or more realistic models of human decision making. Such improvements could incorporate additional information such as memory of actions from multiple past time steps, or a continually updated estimate for how actions are predicted to affect resource abundance or landscape output in a simulation (e.g., through a dynamic <code>manager_sense</code>). Alternatively, future improvements could usefully incorporate knowledge of human decision making collected from empirical observation of human behaviour during conservation conflicts. While such possibilities could be useful for future GMSE modelling, repeated simulations demonstrate the ability of the current GMSE genetic algorithm to find adaptive strategies for managers attempting to keep resources at target abundance, and users attempting to maximise their harvests or crop yields. It is therefore useful as a tool for modelling manager and user decisions in a generalised management strategy evaluation framework.</p>
+<div id="running-gmse-simulations-by-looping-gmse_apply" class="section level2">
+<h2>Running GMSE simulations by looping <code>gmse_apply</code></h2>
+<p>Instead of using the <code>gmse</code> function, multiple simulations of GMSE can be run by calling <code>gmse_apply</code> through a loop, reassigning outputs where necessary for the next generation. This is best accomplished using the argument <code>old_list</code>, which allows previous full results from <code>gmse_apply</code> to be reinserted into the <code>gmse_apply</code> function. The argument <code>old_list</code> is <code>NULL</code> by default, but can instead take the output of a previous full list return of <code>gmse_apply</code>. This <code>old_list</code> produced when <code>get_res = Full</code> includes all data structures and parameter values necessary for a unique simulation of GMSE. An exampe of using <code>get_res</code> and <code>old_list</code> in tandem to loop <code>gmse_apply</code> is shown below.</p>
+<pre class="r"><code>to_scare  &lt;- FALSE;
+sim_old   &lt;- gmse_apply(scaring = to_scare, get_res = &quot;Full&quot;, stakeholders = 6);
+sim_sum_1 &lt;- matrix(data = NA, nrow = 20, ncol = 7);
+for(time_step in 1:20){
+    sim_new               &lt;- gmse_apply(scaring = to_scare, get_res = &quot;Full&quot;, 
+                                        old_list = sim_old);
+    sim_sum_1[time_step, 1] &lt;- time_step;
+    sim_sum_1[time_step, 2] &lt;- sim_new$basic_output$resource_results[1];
+    sim_sum_1[time_step, 3] &lt;- sim_new$basic_output$observation_results[1];
+    sim_sum_1[time_step, 4] &lt;- sim_new$basic_output$manager_results[2];
+    sim_sum_1[time_step, 5] &lt;- sim_new$basic_output$manager_results[3];
+    sim_sum_1[time_step, 6] &lt;- sum(sim_new$basic_output$user_results[,2]); 
+    sim_sum_1[time_step, 7] &lt;- sum(sim_new$basic_output$user_results[,3]); 
+    sim_old                 &lt;- sim_new;
+}
+colnames(sim_sum_1) &lt;- c(&quot;Time&quot;, &quot;Pop_size&quot;, &quot;Pop_est&quot;, &quot;Scare_cost&quot;, 
+                         &quot;Cull_cost&quot;, &quot;Scare_count&quot;, &quot;Cull_count&quot;);
+print(sim_sum_1);</code></pre>
+<pre><code>##       Time Pop_size   Pop_est Scare_cost Cull_cost Scare_count Cull_count
+##  [1,]    1      789  770.9751         NA       110          NA         54
+##  [2,]    2      855  884.3537         NA       110          NA         54
+##  [3,]    3      927  952.3810         NA       110          NA         54
+##  [4,]    4     1027 1065.7596         NA        20          NA        300
+##  [5,]    5      955  929.7052         NA       110          NA         54
+##  [6,]    6     1044 1133.7868         NA        10          NA        417
+##  [7,]    7      759  929.7052         NA       110          NA         54
+##  [8,]    8      835  793.6508         NA       110          NA         54
+##  [9,]    9      940 1020.4082         NA        64          NA         90
+## [10,]   10     1030 1156.4626         NA        10          NA        430
+## [11,]   11      738  975.0567         NA       110          NA         54
+## [12,]   12      808 1065.7596         NA        20          NA        300
+## [13,]   13      583  589.5692         NA       110          NA         54
+## [14,]   14      622  770.9751         NA       110          NA         54
+## [15,]   15      698  362.8118         NA       110          NA         54
+## [16,]   16      785  770.9751         NA       110          NA         54
+## [17,]   17      846  770.9751         NA       110          NA         54
+## [18,]   18      969  975.0567         NA       110          NA         54
+## [19,]   19     1100 1269.8413         NA        10          NA        438
+## [20,]   20      796  589.5692         NA       110          NA         54</code></pre>
+<p>Note that one element of the full list <code>gmse_apply</code> output is the ‘basic_output’ itself, which is produced by default when <code>get_res = &quot;basic&quot;</code>. This is what is being used to store the output of <code>sim_new</code> into <code>sim_sum_1</code>. Next, we show how the flexibility of <code>gmse_apply</code> can be used to dynamically redefine simulation conditions.</p>
 </div>
 </div>
-<div id="references" class="section level1 unnumbered">
-<h1>References</h1>
-<div id="refs" class="references">
-<div id="ref-Bunnefeld2011">
-<p>Bunnefeld, Nils, Eriko Hoshino, and Eleanor J Milner-Gulland. 2011. “Management strategy evaluation: A powerful tool for conservation?” <em>Trends in Ecology and Evolution</em> 26: 441–47. doi:<a href="https://doi.org/10.1016/j.tree.2011.05.003">10.1016/j.tree.2011.05.003</a>.</p>
-</div>
-<div id="ref-Hamblin2013">
-<p>Hamblin, Steven. 2013. “On the practical usage of genetic algorithms in ecology and evolution.” <em>Methods in Ecology and Evolution</em> 4: 184–94. doi:<a href="https://doi.org/10.1111/2041-210X.12000">10.1111/2041-210X.12000</a>.</p>
-</div>
-<div id="ref-Luke2013">
-<p>Luke, Sean. 2013. <em>Essentials of Metaheuristics</em>. Lulu, second edition, available at https://cs.gmu.edu/~sean/book/metaheuristics/Essentials.pdf. doi:<a href="https://doi.org/10.1007/s10710-011-9139-0">10.1007/s10710-011-9139-0</a>.</p>
-</div>
-</div>
+<div id="changing-simulation-conditions-using-gmse_apply" class="section level1">
+<h1>Changing simulation conditions using <code>gmse_apply</code></h1>
+<p>We can take advantage of <code>gmse_apply</code> to dynamically change parameter values mid-loop. For example, below shows the same code used in the previous example, but with a policy of scaring introduced on time step 10.</p>
+<pre class="r"><code>to_scare  &lt;- FALSE;
+sim_old   &lt;- gmse_apply(scaring = to_scare, get_res = &quot;Full&quot;, stakeholders = 6);
+sim_sum_2 &lt;- matrix(data = NA, nrow = 20, ncol = 7);
+for(time_step in 1:20){
+    sim_new               &lt;- gmse_apply(scaring = to_scare, get_res = &quot;Full&quot;, 
+                                        old_list = sim_old);
+    sim_sum_2[time_step, 1] &lt;- time_step;
+    sim_sum_2[time_step, 2] &lt;- sim_new$basic_output$resource_results[1];
+    sim_sum_2[time_step, 3] &lt;- sim_new$basic_output$observation_results[1];
+    sim_sum_2[time_step, 4] &lt;- sim_new$basic_output$manager_results[2];
+    sim_sum_2[time_step, 5] &lt;- sim_new$basic_output$manager_results[3];
+    sim_sum_2[time_step, 6] &lt;- sum(sim_new$basic_output$user_results[,2]); 
+    sim_sum_2[time_step, 7] &lt;- sum(sim_new$basic_output$user_results[,3]); 
+    sim_old               &lt;- sim_new;
+    if(time_step == 10){
+        to_scare &lt;- TRUE;
+    }
+}
+colnames(sim_sum_2) &lt;- c(&quot;Time&quot;, &quot;Pop_size&quot;, &quot;Pop_est&quot;, &quot;Scare_cost&quot;, 
+                         &quot;Cull_cost&quot;, &quot;Scare_count&quot;, &quot;Cull_count&quot;);
+print(sim_sum_2);</code></pre>
+<pre><code>##       Time Pop_size   Pop_est Scare_cost Cull_cost Scare_count Cull_count
+##  [1,]    1      735  702.9478         NA       110          NA         54
+##  [2,]    2      769  793.6508         NA       110          NA         54
+##  [3,]    3      812  680.2721         NA       110          NA         54
+##  [4,]    4      900  770.9751         NA       110          NA         54
+##  [5,]    5     1088 1247.1655         NA        10          NA        428
+##  [6,]    6      753  748.2993         NA       110          NA         54
+##  [7,]    7      811  680.2721         NA       110          NA         54
+##  [8,]    8      884 1179.1383         NA        10          NA        424
+##  [9,]    9      548  521.5420         NA       110          NA         54
+## [10,]   10      597  566.8934         NA       110          NA         54
+## [11,]   11      661  748.2993         10       110         202         36
+## [12,]   12      712  702.9478         10       110         171         39
+## [13,]   13      768  884.3537         10       110         193         37
+## [14,]   14      872 1043.0839         34        31           0        192
+## [15,]   15      811  816.3265         10       110         182         38
+## [16,]   16      904  929.7052         10       110         210         35
+## [17,]   17     1004 1020.4082         31        64          92         47
+## [18,]   18     1133 1292.5170         44        10          63        306
+## [19,]   19      982  997.7324         10       110         213         35
+## [20,]   20     1093 1043.0839         33        30           0        198</code></pre>
+<p>Hence, in addition to the previously explained benefits of the flexible <code>gmse_apply</code> function, one particularly useful feature is that we can use it to study change in policy availability – in the above case, what happens when scaring is suddenly introduced as a possible policy option. Similar things can be done, for example, to see how manager or user power changes over time. In the example below, users’ budgets increase by 100 every time step, with the manager’s budget remaining the same. The consequence of this increasing user budget is higher rates of culling and decreased population size.</p>
+<pre class="r"><code>ub          &lt;- 500;
+sim_old     &lt;- gmse_apply(get_res = &quot;Full&quot;, stakeholders = 6, user_budget = ub);
+sim_sum_3   &lt;- matrix(data = NA, nrow = 20, ncol = 6);
+for(time_step in 1:20){
+    sim_new               &lt;- gmse_apply(get_res = &quot;Full&quot;, old_list = sim_old,
+                                        user_budget = ub);
+    sim_sum_3[time_step, 1] &lt;- time_step;
+    sim_sum_3[time_step, 2] &lt;- sim_new$basic_output$resource_results[1];
+    sim_sum_3[time_step, 3] &lt;- sim_new$basic_output$observation_results[1];
+    sim_sum_3[time_step, 4] &lt;- sim_new$basic_output$manager_results[3];
+    sim_sum_3[time_step, 5] &lt;- sum(sim_new$basic_output$user_results[,3]);
+    sim_sum_3[time_step, 6] &lt;- ub;
+    sim_old               &lt;- sim_new;
+    ub                    &lt;- ub + 100;
+}
+colnames(sim_sum_3) &lt;- c(&quot;Time&quot;, &quot;Pop_size&quot;, &quot;Pop_est&quot;, &quot;Cull_cost&quot;, &quot;Cull_count&quot;,
+                         &quot;User_budget&quot;);
+print(sim_sum_3);</code></pre>
+<pre><code>##       Time Pop_size   Pop_est Cull_cost Cull_count User_budget
+##  [1,]    1      929 1360.5442        10        298         500
+##  [2,]    2      712  476.1905       110         30         600
+##  [3,]    3      764  816.3265       110         36         700
+##  [4,]    4      884  929.7052       110         42         800
+##  [5,]    5     1084 1020.4082        64         84         900
+##  [6,]    6     1167 1655.3288        10        423        1000
+##  [7,]    7      867 1179.1383        10        451        1100
+##  [8,]    8      503  362.8118       110         60        1200
+##  [9,]    9      515  680.2721       110         66        1300
+## [10,]   10      539  544.2177       110         72        1400
+## [11,]   11      554  589.5692       110         78        1500
+## [12,]   12      549  476.1905       110         84        1600
+## [13,]   13      514  634.9206       110         90        1700
+## [14,]   14      505  521.5420       110         96        1800
+## [15,]   15      482  294.7846       110        102        1900
+## [16,]   16      443  521.5420       110        108        2000
+## [17,]   17      405  589.5692       110        114        2100
+## [18,]   18      378  566.8934       110        118        2200
+## [19,]   19      306  113.3787       110        120        2300
+## [20,]   20      231  204.0816       110        126        2400</code></pre>
+<p>There is an important note to make about changing arguments to <code>gmse_apply</code> when <code>old_list</code> is being used: The function <code>gmse_apply</code> is trying to avoid a crash, so <code>gmse_apply</code> will accomodate parameter changes by rebuilding data structures if necessary. For example, if the number of stakeholders is changed (and by including an argument <code>stakeholders</code> to <code>gmse_apply</code>, it is assumed that stakeholders are changing even they are not), then a new array of agents will need to be built. If landscape dimensions are changed (or just include the argument <code>land_dim_1</code> or <code>land_dim_2</code>), then a new landscape willl be built. For most simulation purposes, this will not introduce any undesirable effect on simulation results, but it should be noted and understood when developing models.</p>
 </div>
 
 
