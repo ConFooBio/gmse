@@ -17,6 +17,8 @@ header-includes:
 linestretch: 1
 bibliography: gmse.bib
 biblio-style: apalike
+link-citations: true
+linkcolor: blue
 ---
 
 ******************************

@@ -18,6 +18,8 @@ linestretch: 1
 bibliography: gmse.bib
 subtitle: Supporting Information 1
 biblio-style: apalike
+link-citations: true
+linkcolor: blue
 ---
 
 ```{r, echo = FALSE}

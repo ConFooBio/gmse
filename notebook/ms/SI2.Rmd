@@ -4,13 +4,15 @@ author: A. Bradley Duthie, Jeremy J. Cusack, Isabel L. Jones, Erlend B. Nilsen, 
   Pozo, O. Sarobidy Rakotonarivo, Bram Van Moorter, and Nils Bunnefeld
 date: '`r Sys.Date()`'
 output:
-  word_document:
-    fig_caption: yes
-    reference_docx: docx_template.docx
   pdf_document:
     citation_package: natbib
     fig_caption: yes
   html_document: default
+  word_document:
+    fig_caption: yes
+    reference_docx: docx_template.docx
+link-citations: yes
+linkcolor: blue
 linestretch: 1
 subtitle: Supporting Information 2
 header-includes:
