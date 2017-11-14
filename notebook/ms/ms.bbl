@@ -68,12 +68,6 @@ Fischer, J., Abson, D.~J., Bergsten, A., {French Collier}, N., Dorresteijn, I.,
 \newblock {Reframing the food-biodiversity challenge}.
 \newblock {\em Trends in Ecology and Evolution}, 32:335--345.
 
-\bibitem[Fox et~al., 2016]{Fox2016a}
-Fox, A.~D., Elmberg, J., Tombre, I.~M., and Hessel, R. (2016).
-\newblock {Agriculture and herbivorous waterfowl: A review of the scientific
-  basis for improved management}.
-\newblock {\em Biological Reviews}, 92:854--877.
-
 \bibitem[Fox and Madsen, 2017]{Fox2017a}
 Fox, A.~D. and Madsen, J. (2017).
 \newblock {Threatened species to super-abundance: The unexpected international
@@ -123,6 +117,12 @@ Madsen, J., Williams, J.~H., Johnson, F.~A., Tombre, I.~M., Dereliev, S., and
   migratory waterbird population: The case of the Svalbard pink-footed goose
   \emph{Anser brachyrhynchus}}.
 \newblock {\em Ambio}, 46:275--289.
+
+\bibitem[Mason et~al., 2017]{Mason2017}
+Mason, T.~H., Keane, A., Redpath, S.~M., and Bunnefeld, N. (2017).
+\newblock {The changing environment of conservation conflict: geese and farming
+  in Scotland}.
+\newblock {\em Journal of Applied Ecology}, page \emph{In press}.
 
 \bibitem[Melbourne-Thomas et~al., 2017]{Melbourne-Thomas2017}
 Melbourne-Thomas, J., Constable, A.~J., Fulton, E.~A., Corney, S.~P., Trebilco,
@@ -226,10 +226,10 @@ Tu, M.~T., Wolff, E., and Lamersdorf, W. (2000).
 \newblock {\em Proceedings 11th International Workshop on Database and Expert
   Systems Applications}, pages 1029--1033.
 
-\bibitem[Tuvendal and Elmberg, 2015]{Tuvendal2015}
-Tuvendal, M. and Elmberg, J. (2015).
-\newblock {A handshake between markets and hierarchies: Geese as an example of
-  successful collaborative management of ecosystem services}.
-\newblock {\em Sustainability}, 7:15937--15954.
+\bibitem[Tulloch et~al., 2017]{Tulloch2017}
+Tulloch, A. I.~T., Nicol, S., and Bunnefeld, N. (2017).
+\newblock {Quantifying the expected value of uncertain management choices for
+  over-abundant Greylag Geese}.
+\newblock {\em Biological Conservation}, 214:147--155.
 
 \end{thebibliography}
