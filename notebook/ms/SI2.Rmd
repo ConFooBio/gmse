@@ -1,7 +1,7 @@
 ---
 title: 'GMSE: an R package for generalised management strategy evaluation'
 author: A. Bradley Duthie, Jeremy J. Cusack, Isabel L. Jones, Erlend B. Nilsen, Roc&#0237;o
-  Pozo, O. Sarobidy Rakotonarivo, Bram Van Moorter, and Nils Bunnefeld
+  A. Pozo, O. Sarobidy Rakotonarivo, Bram Van Moorter, and Nils Bunnefeld
 date: '`r Sys.Date()`'
 output:
   pdf_document:
