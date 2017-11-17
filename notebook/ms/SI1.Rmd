@@ -15,11 +15,11 @@ header-includes:
 - \usepackage{lineno}
 - \linenumbers
 linestretch: 1
+link-citations: yes
+linkcolor: blue
 bibliography: gmse.bib
 subtitle: Supporting Information 1
 biblio-style: apalike
-link-citations: true
-linkcolor: blue
 ---
 
 ```{r, echo = FALSE}
@@ -155,7 +155,7 @@ Once all individuals in `POPULATION` are within budget, the fitness of each indi
 Tournament selection
 --------------------------------------------------------------------------------
 
-After each individual in `POPULATION` is assigned a fitness, a tournament is used to select individuals. Tournament selection is an especially flexible, non-parametric method that samples a subset of individuals from the total population and chooses the fittest of the subset for replacement [@Hamblin2013]. In GMSE, tournament selection proceeds by randomly sampling `ga_sampleK` individuals from the total `POPULATION` with replacement. The fitnesses of the subset of `ga_sampleK` individuals are compared, and the `ga_chooseK` individuals of highest fitness are retained (if `ga_sampleK` $\geq$ `ga_chooseK`, then all `ga_sampleK` are chosen, but this is not recommended). Tournaments selecting `ga_chooseK` individuals from random subsets of size `ga_sampleK` continue until a total of `ga_popsize` individuals are retained.
+After each individual in `POPULATION` is assigned a fitness, a tournament is used to select individuals. Tournament selection is an especially flexible, non-parametric method that samples a subset of individuals from the total population and chooses the fittest of the subset for replacement [@Hamblin2013]. In GMSE, tournament selection proceeds by randomly sampling `ga_sampleK` individuals from the total `POPULATION` with replacement. The fitnesses of the subset of `ga_sampleK` individuals are compared, and the `ga_chooseK` individuals of highest fitness are retained (if `ga_sampleK` $\geq$ `ga_chooseK`, then all `ga_sampleK` are chosen, but this will prevent adaptive evolution and is therefore not recommended). Tournaments selecting `ga_chooseK` individuals from random subsets of size `ga_sampleK` continue until a total of `ga_popsize` individuals are retained.
 
 Replacement and termination
 --------------------------------------------------------------------------------
