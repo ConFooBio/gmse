@@ -1,22 +1,31 @@
 ---
 title: 'GMSE: an R package for generalised management strategy evaluation'
-author: A. Bradley Duthie&#xb9;&#xb3;, Jeremy J. Cusack&#xb9;, Isabel L. Jones&#xb9;, Erlend B. Nilsen&#xb2;, Roc&#0237;o A. Pozo&#xb9;, O. Sarobidy Rakotonarivo&#xb9;, Bram Van Moorter&#xb2;, and Nils Bunnefeld&#xb9;
-date: "[1] Biological and Environmental Sciences, University of Stirling, Stirling, UK
-[2] Norwegian Institute for Nature Research, Trondheim, Norway [3] alexander.duthie@stir.ac.uk"
+author: A. Bradley Duthie&#xb9;&#xb3;, Jeremy J. Cusack&#xb9;, Isabel L. Jones&#xb9;,
+  Erlend B. Nilsen&#xb2;, Roc&#0237;o A. Pozo&#xb9;, O. Sarobidy Rakotonarivo&#xb9;,
+  Bram Van Moorter&#xb2;, and Nils Bunnefeld&#xb9;
+date: '[1] Biological and Environmental Sciences, University of Stirling, Stirling,
+  UK [2] Norwegian Institute for Nature Research, Trondheim, Norway [3] alexander.duthie@stir.ac.uk,
+  Biological and Environmental Sciences 3A149 University of Stirling Stirling, FK9
+  4LA, UK'
 output:
+  word_document:
+    fig_caption: yes
+    reference_docx: docx_template.docx
   pdf_document:
     citation_package: natbib
     fig_caption: yes
   html_document: default
-  word_document:
-    fig_caption: yes
-    reference_docx: docx_template.docx
 header-includes:
-linestretch: 1
+- \usepackage{fancyhdr}
+- \pagestyle{fancy}
+- \fancyhead[R]{GMSE, AN R PACKAGE}
+- \usepackage{lineno}
+- \linenumbers
+linestretch: 2
+link-citations: yes
+linkcolor: blue
 bibliography: gmse.bib
 biblio-style: apalike
-link-citations: true
-linkcolor: blue
 ---
 
 ******************************
@@ -247,6 +256,7 @@ plot_gmse_results_vign <- function(res, obs, land, agents, paras, ACTION, COST){
 }
 ```
 
+\newpage
 
 Abstract
 ===================================================
@@ -256,6 +266,9 @@ Abstract
 3. GMSE models can be agent-based and spatially explicit, incorporating a high degree of realism through mechanistic modelling of links and feedbacks among stakeholders and with the ecosystem; additionally, user-defined sub-models can also be incorporated as functions into the broader GMSE framework. 
 4. We show how GMSE simulates a social-ecological system using the example of an adaptively managed waterfowl population on an agricultural landscape; simulated waterfowl exploit agricultural land, causing conflict between conservation interests and the interest of food producers maximising their crop yield.
 5. The R package GMSE is open source under GNU Public License; source code and documents are freely available on GitHub.
+
+**Key words:** *adaptive management, conservation conflict, ecological modelling, game theory, management strategy evaluation*
+
 
 Introduction
 ===================================================
@@ -272,7 +285,7 @@ GMSE allows researchers to address adaptive management questions *in silico* thr
 GMSE model structure
 ===================================================
 
-GMSE builds off of the MSE framework (Figure 1). The workhorse function `gmse` runs simulations using four predefined submodels, which can be parameterised to fit various case studies; more tailored submodels can also be defined using the `gmse_apply` function (see below). (1) A population of discrete resources (e.g., a managed species) with individual traits (e.g., location, age) is modelled on a spatially-explicit landscape and can simulate resource birth, movement, interaction with the landscape, and death; the discrete nature of resources causes demographic stochasticity, and therefore uncertainty. This sub-model is unique in not relying on other sub-models because ecological dynamics can be simulated in the absence of observation and management. (2) Observation is modelled in one of four ways: resource counting on a subset of landscape cells [e.g., @Nuno2013], marking and recapturing a fixed number of resources, and resource counting across the whole landscape either one linear transect or one rectangular block at a time (during which resources might move). Sampling error from all observation types generates a range of uncertainties that depend on monitoring effort. (3) Managers analyse data collected from observations to estimate resource abundance, then compare this estimate with their pre-defined target abundance. Policy is developed by calling the genetic algorithm (see below), which works within a manager's constraints to find costs for user actions on the resource (e.g., culling, scaring, etc.) that minimise deviation from the target abundance, as informed by the predicted consequences of each action on resource abundance and user action histories. After a suitable policy is found, (4) users perform actions that affect resources or landscape cells. Users respond to policy individually, each calling the genetic algorithm to find actions that maximise their own utilities (e.g., maximise resource use or landscape yield) within their imposed constraints. Once each user has found an adaptive strategy, user actions affect resources and landscape cells, feeding back into the resource sub-model.
+GMSE builds off of the MSE framework (Fig. 1). The workhorse function `gmse` runs simulations using four predefined submodels, which can be parameterised to fit various case studies; more tailored submodels can also be defined using the `gmse_apply` function (see below). (1) A population of discrete resources (e.g., a managed species) with individual traits (e.g., location, age) is modelled on a spatially-explicit landscape and can simulate resource birth, movement, interaction with the landscape, and death; the discrete nature of resources causes demographic stochasticity, and therefore uncertainty. This sub-model is unique in not relying on other sub-models because ecological dynamics can be simulated in the absence of observation and management. (2) Observation is modelled in one of four ways: resource counting on a subset of landscape cells [e.g., @Nuno2013], marking and recapturing a fixed number of resources, and resource counting across the whole landscape either one linear transect or one rectangular block at a time (during which resources might move). Sampling error from all observation types generates a range of uncertainties that depend on monitoring effort. (3) Managers analyse data collected from observations to estimate resource abundance, then compare this estimate with their pre-defined target abundance. Policy is developed by calling the genetic algorithm (see below), which works within a manager's constraints to find costs for user actions on the resource (e.g., culling, scaring, etc.) that minimise deviation from the target abundance, as informed by the predicted consequences of each action on resource abundance and user action histories. After a suitable policy is found, (4) users perform actions that affect resources or landscape cells. Users respond to policy individually, each calling the genetic algorithm to find actions that maximise their own utilities (e.g., maximise resource use or landscape yield) within their imposed constraints. Once each user has found an adaptive strategy, user actions affect resources and landscape cells, feeding back into the resource sub-model.
 
 ```{r, echo = FALSE, fig.height = 4, fig.width = 4, fig.align = 'left', fig.cap = "Description of one time step of the generalised management strategy evaluation framework, which is comprised of four separate sub-models."}
 mbox <- function(x0, x1, y0, y1){
@@ -420,9 +433,9 @@ plot_gmse_results_vign(res = sim$resource, obs = sim$observation,
                        ACTION = sim$action, COST = sim$cost);
 ```
 
-Figure 2 shows the landscape broken down by resource position and farmer land ownership in the upper left and right hand panels, respectively. The waterfowl population fluctuates around the manager's target size of 1000, but the manager's estimate of population size deviates from its actual size due to observation uncertainty (compare black and blue lines in the middle left panel). Because the waterfowl have a direct negative effect on landscape yield, total landscape yield (orange line of the middle left panel), along with the yield of individual farmers (right middle panel), is low when waterfowl abundance is high, and vice versa.
+Fig. 2 shows the landscape broken down by resource position and farmer land ownership in the upper left and right hand panels, respectively. The waterfowl population fluctuates around the manager's target size of 1000, but the manager's estimate of population size deviates from its actual size due to observation uncertainty (compare black and blue lines in the middle left panel). Because the waterfowl have a direct negative effect on landscape yield, total landscape yield (orange line of the middle left panel), along with the yield of individual farmers (right middle panel), is low when waterfowl abundance is high, and vice versa.
 
-Only the estimates of population size from the observation model are available to the manager, so policy change at any time step is driven primarily by the deviation of the currently estimated population size from the manager's target and the actions of farmers in the previous time step. Hence, when the population size is estimated to be below (above) the manager's target, the manager increases (decreases) the cost of culling and decreases (increases) the cost of scaring. Because the manager does not know in advance how farmers will react to policy change, they assume a proportional response in total actions with respect to a change in cost (e.g., doubling the cost of culling will decrease stakeholder culling by $1/2$). Farmers responding to policy are interested only in minimising waterfowl's exploitation of their crops, so they will either cull or scare to remove the waterfowl from their land, depending on which option is more effective (i.e., cheaper). This is reflected in the bottom left versus right panels of Figure 2; when managers decrease culling costs relative to scaring, farmers respond with more total culling, and vice versa. Farmer decisions then affect waterfowl distribution and abundance, impacting future crop yield and policy.
+Only the estimates of population size from the observation model are available to the manager, so policy change at any time step is driven primarily by the deviation of the currently estimated population size from the manager's target and the actions of farmers in the previous time step. Hence, when the population size is estimated to be below (above) the manager's target, the manager increases (decreases) the cost of culling and decreases (increases) the cost of scaring. Because the manager does not know in advance how farmers will react to policy change, they assume a proportional response in total actions with respect to a change in cost (e.g., doubling the cost of culling will decrease stakeholder culling by $1/2$). Farmers responding to policy are interested only in minimising waterfowl's exploitation of their crops, so they will either cull or scare to remove the waterfowl from their land, depending on which option is more effective (i.e., cheaper). This is reflected in the bottom left versus right panels of Fig. 2; when managers decrease culling costs relative to scaring, farmers respond with more total culling, and vice versa. Farmer decisions then affect waterfowl distribution and abundance, impacting future crop yield and policy.
 
 Graphical User Interface (GUI)
 ===================================================
