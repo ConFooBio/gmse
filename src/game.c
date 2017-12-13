@@ -571,9 +571,6 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
         for(i = 0; i < int_num; i++){
             change_dev += (count_change[i]-utils[i])*(count_change[i]-utils[i]);
         }
-        if(change_dev > max_dev){
-            max_dev = change_dev;
-        }
         dev_from_util[agent] = change_dev;
     }
     for(agent = 0; agent < pop_size; agent++){
@@ -595,6 +592,52 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
     free(dev_from_util);
     free(utils);
     free(count_change);
+}
+
+/* =============================================================================
+ * This function will find the most fit of a vector of strategies
+ *   fitnesses: The fitness vector (higher values reflect higher fitness)
+ *   popsize: the length of the fitness vector
+ * ========================================================================== */
+int find_most_fit(double *fitnesses, int popsize){
+    
+    int most_fit, layer;
+    
+    most_fit = 0;
+    for(layer = 0; layer < popsize; layer++){
+        if(fitnesses[layer] > fitnesses[most_fit]){
+            most_fit = layer;
+        }
+    }
+    
+    return most_fit;
+}
+
+/* =============================================================================
+ * This function finds the percent change in fitness of a strategy
+ *   new_fitness: The new fitness from current genetic algorithm generation
+ *   old_fitness: The fitness from the previous genetic algorithm generation
+ *   managing: Whether (1) or not (0) fitness assessment is for managers
+ * ========================================================================== */
+double get_fitness_change(double new_fitness, double old_fitness, int managing){
+    
+    double fit_change;
+    
+    if(managing == 1){
+        if(old_fitness == 0){
+            old_fitness = -1;
+            new_fitness--;
+        }
+        fit_change  = 100 * (old_fitness - new_fitness) / new_fitness;
+    }else{
+        if(old_fitness == 0){
+            old_fitness = 1;
+            new_fitness++;
+        }
+        fit_change  = 100 * (new_fitness - old_fitness) / old_fitness;
+    }
+    
+    return fit_change;
 }
 
 /* =============================================================================
@@ -712,9 +755,9 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double **JACOBIAN, int **lookup, double *paras, 
         int agent, int managing){
     
-    int row, col, gen, layer, most_fit, popsize;
-    int generations, xdim, ydim, agentID, old_fitness, fit_change, *winners;
-    double budget, converge_crit, ***POPULATION, *fitnesses;
+    int row, col, gen, layer, most_fit, popsize, new_fitness;
+    int generations, xdim, ydim, agentID, old_fitness, *winners;
+    double budget, converge_crit, fit_change, ***POPULATION, *fitnesses;
 
     popsize        = (int) paras[21];
     generations    = (int) paras[22];
@@ -774,18 +817,12 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
    
         place_winners(&POPULATION, winners, paras);
         
-        most_fit = 0;
-        for(layer = 0; layer < popsize; layer++){
-            if(fitnesses[layer] > fitnesses[most_fit]){
-                most_fit = layer;
-            }
-        }
+        most_fit    = find_most_fit(fitnesses, popsize);
+        new_fitness = fitnesses[most_fit];
         
-        if(old_fitness == 0){
-            old_fitness = -1;
-        }
-        fit_change  = (fitnesses[most_fit] - old_fitness) / old_fitness;
-        old_fitness = fitnesses[most_fit];
+        fit_change  = get_fitness_change(new_fitness, old_fitness, managing);
+        
+        old_fitness = new_fitness;
 
         gen++;
     }
@@ -806,3 +843,5 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     }
     free(POPULATION);
 }
+
+
