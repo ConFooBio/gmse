@@ -49,7 +49,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **DEC** [13](#u-13-NOV-2017)
+     - **DEC** [13](#u-13-DEC-2017)
      - **NOV** [1](#u-1-NOV-2017)
      - **OCT** [23](#u-23-OCT-2017), [19](#u-19-OCT-2017), [16](#u-16-OCT-2017), [13](#u-13-OCT-2017), [12](#u-12-OCT-2017), [6](#u-6-OCT-2017)
      - **SEP** [28](#u-28-SEP-2017), [27](#u-27-SEP-2017), [26](#u-26-SEP-2017), [25](#u-25-SEP-2017), [22](#u-22-SEP-2017), [15](#u-15-SEP-2017), [13](#u-13-SEP-2017), [8](#u-8-SEP-2017), [6](#u-6-SEP-2017)
@@ -91,7 +91,7 @@ library(rhandsontable)
 <a name="updates">Project updates:</a>
 ================================================================================
 
-> <a name="u-13-NOV-2017">Update: 13 DEC 2017</a>
+> <a name="u-13-DEC-2017">Update: 13 DEC 2017</a>
 
 **Improved convergence criteria**
 
