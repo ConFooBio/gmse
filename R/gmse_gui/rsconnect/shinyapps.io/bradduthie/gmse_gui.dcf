@@ -1,10 +1,12 @@
 name: gmse_gui
 title: gmse_gui
+username:
 account: bradduthie
 server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
 appId: 205319
-bundleId: 1000035
+bundleId: 1132774
 url: https://bradduthie.shinyapps.io/gmse_gui/
-when: 1506526686.62637
+when: 1513181793.02368
 asMultiple: FALSE
 asStatic: FALSE
