@@ -625,16 +625,16 @@ double get_fitness_change(double new_fitness, double old_fitness, int managing){
     
     if(managing == 1){
         if(old_fitness == 0){
-            old_fitness = -1;
+            old_fitness = -1.0;
             new_fitness--;
         }
-        fit_change  = 100 * (old_fitness - new_fitness) / new_fitness;
+        fit_change  = 100.0 * (old_fitness - new_fitness) / new_fitness;
     }else{
         if(old_fitness == 0){
             old_fitness = 1;
             new_fitness++;
         }
-        fit_change  = 100 * (new_fitness - old_fitness) / old_fitness;
+        fit_change  = 100.0 * (new_fitness - old_fitness) / old_fitness;
     }
     
     return fit_change;
@@ -794,7 +794,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     initialise_pop(ACTION, COST, paras, agent, budget, POPULATION, agentID);
     
     gen          = 0;
-    old_fitness  = -1.0;
+    old_fitness  = -10000.0;
     fit_change   = 10000;
     while(gen < generations || fit_change > converge_crit){
         
