@@ -599,7 +599,7 @@ pass_paras <- function( old_list = NULL, time_max = 100, land_dim_1 = 100,
                         tend_crops = FALSE, tend_crop_yld = 0.2, 
                         kill_crops = FALSE, stakeholders = 4, 
                         manage_caution = 1, land_ownership = FALSE, 
-                        manage_freq = 1, converge_crit = 100, 
+                        manage_freq = 1, converge_crit = 1, 
                         manager_sense = 0.1, public_land = 0, 
                         group_think = FALSE, PARAS = NULL, ...
 ){
