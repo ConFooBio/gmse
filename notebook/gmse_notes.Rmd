@@ -49,6 +49,7 @@ library(rhandsontable)
 
  - **2017**
 
+     - **DEC** [13](#u-13-NOV-2017)
      - **NOV** [1](#u-1-NOV-2017)
      - **OCT** [23](#u-23-OCT-2017), [19](#u-19-OCT-2017), [16](#u-16-OCT-2017), [13](#u-13-OCT-2017), [12](#u-12-OCT-2017), [6](#u-6-OCT-2017)
      - **SEP** [28](#u-28-SEP-2017), [27](#u-27-SEP-2017), [26](#u-26-SEP-2017), [25](#u-25-SEP-2017), [22](#u-22-SEP-2017), [15](#u-15-SEP-2017), [13](#u-13-SEP-2017), [8](#u-8-SEP-2017), [6](#u-6-SEP-2017)
@@ -89,6 +90,18 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-13-NOV-2017">Update: 13 DEC 2017</a>
+
+**Improved convergence criteria**
+
+I have introduced and then immediately resolved [Issue #39](https://github.com/bradduthie/gmse/issues/39). 
+
+The convergence criteria has now been fixed with commit [f598d8e52b47ef2017cac13d09aac1fb7aa6b506](https://github.com/bradduthie/gmse/commit/f598d8e52b47ef2017cac13d09aac1fb7aa6b506). To do this, I re-configured some of the genetic algorithm code into easier to read functions for checking the fitness increase. Now two separate ways of checking the increase in fitness from one genetic algorithm generation to the next exist; one for managers and one for users. This is needed because user fitness values are greater than zero and increase as their utility is maximised, but manager fitness values are less than zero and increase toward zero as their utility is maximised. The genetic algorithm now checks for a percentage improvement in fitness.
+
+Now the default value of `converge_crit` equals 1, which means it does actually play a role sometimes (or is expected to). The genetic algorithm will continue until the percent increase in fitness from the previous generation is less than one percent. In practice, this doesn't noticeably affect much, but it does allow better strategies to be found more quickly, and without having to play with `ga_mingen` to find them under extreme parameter settings (e.g., huge budgets and rapid shifts in abundance).
+
+The new fix has now been checked and built with [Winbuilder](https://win-builder.r-project.org/) into v0.3.2.0, but I am leaving this on the development branch for now in anticipation of other potential improvements to be made soon.
 
 > <a name="u-1-NOV-2017">Update: 1 NOV 2017</a>
 
