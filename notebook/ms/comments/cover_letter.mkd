@@ -1,0 +1,15 @@
+Dear Professor Freckleton,
+
+Please find attached the manuscript ``GMSE: an R package for generalised management strategy evaluation'', which we hope you will consider for publication as an Application in Methods and Ecology and Evolution. 
+
+The effective management of populations remains a major challenge in conservation biology, and modelling efforts in this area face the particular difficulty of accounting for both ecological dynamics and human decision making, and the uncertainty that comes with both of these processes in managing social-ecological systems. Further, accessible tools for simulating adaptive management under these conditions are not widely available to many researchers or managers. We introduce a new Generalised Management Strategy Evaluation, which incorporates human decision making flexibly through the use of genetic algorithms, and which will serve as a foundation for future social-ecological modelling.
+
+Our manuscript describes a new R package for modelling the adaptive management of populations. This software incorporates all key aspects of the social-ecological system, including: resource dynamics, monitoring, management, and user actions. These aspects of the system are modelled in a highly modular way, and can be parameterised to model real-world scenarios of conservation concern, including scenarios of potential conflict between stakeholders. Software users can simulate adaptive management in one of three ways: 1) a graphical user interface, 2) a predefined workhorse function `gmse`, or 3) a flexible functoin `gmse_apply`, which allows software users to incorporate their own custom sub-models into the broader GMSE framework.
+
+The GMSE R package forms the foundational software for a broader 'ConFooBio' project, which addresses conflicts between biodiversity and food security under conditions of uncertainty. Our software is open source under GNU Public License and can be downloaded from the CRAN repository. All code underlying GMSE is freely available on GitHub.
+
+All persons entitled to authorship have been so named, and all authors have seen and agree with the contents of the manuscript. We certify that the submission is original work and is not under review at any other journal or book. 
+
+Sincerely,
+
+Brad Duthie on behalf of all authors
