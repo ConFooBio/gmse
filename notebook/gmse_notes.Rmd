@@ -40,7 +40,7 @@ library(rhandsontable)
 
 > **This notebook tracks progress on the development of [GMSE software](https://bradduthie.github.io/gmse/) R package, for game-theoretic management strategy evaluation, and related issues surrounding the development and application of game theory for addressing questions of biodiversity and food security.**
 
-********************************************************************************
+*******************************************************************************
 
 <a name="contents">Contents:</a>
 ================================================================================
@@ -112,7 +112,7 @@ Note that we could use a switch function (or something like it in R) to make $A 
 The value of $\mu$ would depend on `res_death_type`, and be processed in `make_resource`, which is used in both `gmse` and `gmse_apply`.  If `res_death_type = 1` (density independent, rarely used), then `\mu` is simply equal to `remov_pr`. If `res_death_type = 2` (density dependent), then `\mu` could be found perhaps using something like the following:
 
 `mu =  (RESOURCE_ini * lambda) / (RESOURCE_ini + RESOURCE_ini * lambda)`
-
+gi
 This would get a value that is at least proportional to expected mortality rate of a resource (if `res_death_type = 3`, then we could use the some of types 1 and 2). Overall, the documentation should perhaps recommend finding a stable set of age distributions for a particular set of parameter combinations when using `gmse_appy` (i.e., through simulation), then using that distribution as an initial condition. But something like the above could probably get close to whatever the stable age distribution would be, at least close enough to make the decline in population size trivial.
 
 I will start to consider some of the above as a potential default for the next version of GMSE. The best way to do this is probably to look at how code from the `res_remove` function in the `resource.c` file can best be integrated into a function called by the R function `make_resource` (i.e., either use the equations, or estimates of them, or somehow call `res_remove` directly).
