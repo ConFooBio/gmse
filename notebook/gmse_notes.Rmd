@@ -50,7 +50,7 @@ library(rhandsontable)
 
  - **2017**
 
-     - **DEC** [13](#u-13-DEC-2017)
+     - **DEC** [13](#u-13-DEC-2017), [21](#u-21-DEC-2017)
      - **NOV** [1](#u-1-NOV-2017)
      - **OCT** [23](#u-23-OCT-2017), [19](#u-19-OCT-2017), [16](#u-16-OCT-2017), [13](#u-13-OCT-2017), [12](#u-12-OCT-2017), [6](#u-6-OCT-2017)
      - **SEP** [28](#u-28-SEP-2017), [27](#u-27-SEP-2017), [26](#u-26-SEP-2017), [25](#u-25-SEP-2017), [22](#u-22-SEP-2017), [15](#u-15-SEP-2017), [13](#u-13-SEP-2017), [8](#u-8-SEP-2017), [6](#u-6-SEP-2017)
@@ -91,6 +91,32 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-21-DEC-2017">Update: 21 DEC 2017</a>
+
+**New [Issue #40](https://github.com/bradduthie/gmse/issues/40): Age distribution bump**
+
+Running simulations using `gmse_apply`, [jeremycusack](https://github.com/jeremycusack) noticed a small but noticeable sharp decline in the population size at a generation equal to the maximum age of resources in the population (used a maximum age of 20). This decline is caused by the initial seed of resources having a uniform age distribution.  In the first generation, these resources reproduce offspring that all have an age of zero, leading to an age structure in the population with many zero age individuals and a uniform distribution of ages greater than zero. The initial seed of individuals with random ages died gradually, but there were enough individuals in the initial offspring cohort that made it to the maximum age for it to have a noticeable effect in decreasing population size (i.e., all of these resources died on the `maximum_age + 1` time step). 
+
+This effect can be avoided entirely given sufficient burn in generations of a model, and is less of a problem when the maximum age is low because this allows the age distribution to stabilise sooner. Further, using `gmse_apply` can avoid the issue by directly manipulating resources ages after the initial generation. Nevertheless, it would be useful to have a different default of age distributions instead of a uniform distribution. 
+
+One way to do this would be to find the age ($A$) at which a resource is expected to be alive with a probability of $0.5$, after accounting for mortality ($\mu$). This is simply calculated below:
+
+$(1 - \mu)^A = 0.5$
+
+The above can be re-arranged to find A,
+
+$A = \frac{log(0.5)}{log(1 - \mu)}$.
+
+Note that we could use a switch function (or something like it in R) to make $A = 0$ when $\mu = 1$, and revert to a uniform distribution of $\mu = 0$ (though this should rarely happen).
+
+The value of $\mu$ would depend on `res_death_type`, and be processed in `make_resource`, which is used in both `gmse` and `gmse_apply`.  If `res_death_type = 1` (density independent, rarely used), then `\mu` is simply equal to `remov_pr`. If `res_death_type = 2` (density dependent), then `\mu` could be found perhaps using something like the following:
+
+`mu =  (RESOURCE_ini * lambda) / (RESOURCE_ini + RESOURCE_ini * lambda)`
+gi
+This would get a value that is at least proportional to expected mortality rate of a resource (if `res_death_type = 3`, then we could use the some of types 1 and 2). Overall, the documentation should perhaps recommend finding a stable set of age distributions for a particular set of parameter combinations when using `gmse_appy` (i.e., through simulation), then using that distribution as an initial condition. But something like the above could probably get close to whatever the stable age distribution would be, at least close enough to make the decline in population size trivial.
+
+I will start to consider some of the above as a potential default for the next version of GMSE. The best way to do this is probably to look at how code from the `res_remove` function in the `resource.c` file can best be integrated into a function called by the R function `make_resource` (i.e., either use the equations, or estimates of them, or somehow call `res_remove` directly).
 
 > <a name="u-13-DEC-2017">Update: 13 DEC 2017</a>
 
