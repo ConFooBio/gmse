@@ -84,7 +84,7 @@ library(rhandsontable)
 
 [References consulted and annotated (Mendeley)](#ref)
 
-[References cited](#cited)
+[References cited](#cited)g
 
 ********************************************************************************
 
