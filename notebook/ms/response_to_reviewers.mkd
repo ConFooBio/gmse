@@ -1,0 +1,194 @@
+Response to Methods in Ecology and Evolution reviewers
+================================================================================
+
+Below includes all comments from the Associate Editor and two anonymous reviewers, along with our responses to these comments.
+
+Associate Editor Comments
+--------------------------------------------------------------------------------
+
+We have received reviews from two highly qualified reviewers, both are supportive of the goals of the paper but Reviewer 1 expresses some substantial concerns. In particular, they are concerned that the information necessary to successfully implement the GMSE approach by managers is lacking. I recommend responding to many of issues raised by Reviewer 1 by providing a series of detailed vignettes as part of the R package. These vignettes would lead managers through different scenarios, explaining how to change the parameters to model different possibilities and how to interpret the output. Additionally, as the ultimate goal of the GMSE approach is to lead to better resource management decisions it would be helpful to provide evidence that it is beneficial. For example, can you find a real-life case study and retroactively use your approach to illustrate how it would lead to different and better management decisions and outcomes? In any revision please ensure that you respond to all reviewer comments and ensure that the R code meets the new Policy on Publishing code (details available at: http://besjournals.onlinelibrary.wiley.com/hub/journal/10.1111/(ISSN)2041-210X/journal-resources/policy-on-publishing-code.html)
+
+
+Reviewer 1 Comments
+--------------------------------------------------------------------------------
+
+**Reviewer 1 General comments:**
+
+This paper introduces the R package, generalized management strategy evaluation (GMSE) with an example. This paper is useful to understand the outline of GMSE in order to simulate socio-ecological dynamics under various situations. GMSE incorporates game-theoretic approach. I think GMSE has a potential to contribute to understand the dynamics of resource and human behavior under various conditions. However I have several concerns in this paper. First this package is called as “generalized” management strategy evaluation, but I think that the name is not appropriate. The authors need to explain why including game-theoretic approach becomes “generalized” approach? Second I wonder how influential GMSE is for management. GMSE could be useful to derive some insights for management. However it is not useful to solve specific problems because the dynamics of a resource population, managers and users are very simplified. There are various parameters so it is not easy to derive general insights for management. Is it possible that we change the five actions based on researchers’ or users’ aims? The authors need to explain how to use GMSE for management more explicitly. Third the authors should explain how to COST array even if we cannot choose values freely. Fourth I wonder whether the dynamics depend on initial conditions. If the dynamics depend on initial conditions, we need caution in interpreting the results such as Fig. 2 and we need to take average on results of many simulation runs. Even if the dynamics do not depend on initial conditions, it is good to show the way to write data on other files such as csv files to analyze outputs for our own purposes.
+
+**Author response to Reviewer 1 General comments:**
+
+
+
+**Reviewer 1 specific comment 1:**
+
+1. line 30: Why do the authors mention food security here? I think that the benefit of farmers is more appropriate rather than food security. In some contexts, food security may be an appropriate terms but it is confusing in this paper.
+
+**Author response to Reviewer 1 specific comment 1:**
+
+
+
+**Reviewer 1 specific comment 2:**
+
+2. line 37: The term “all aspects” is overly exaggerated.
+
+**Author response to Reviewer 1 specific comment 2:**
+
+We have replaced this with the term "multiple aspects"
+
+**Reviewer 1 specific comment 3:**
+
+3. figure 1 and others: the term “generations” is confusing. This indicates generation in genetic algorithms but some readers may think that it also corresponds to generations of agents or resources. Other words may be better than multiple generations in Fig 1.
+
+**Author response to Reviewer 1 specific comment 3:**
+
+The term "generation" is typically used in the literature of genetic algorithms (e.g., Hamblin 2012), reflecting that the process is analogous to biological evolution by natural selection. Given that the broader GMSE framework also models simulated biological populations, we have replaced "generation" with "iteration".
+
+**Reviewer 1 specific comment 4:**
+
+4. line 108-116: the word “managers” is also confusing. I thought that we need to consider multiple managers in the manager model and they have the same strategy which derives highest fitness. The author should choose word “manager” in management model and genetic algorithms. The last sentence in this paragraph should come first.
+
+**Author response to Reviewer 1 specific comment 4:**
+
+We have placed the last sentence of this paragraph as the first sentence, as suggested (line XXX). We also now clarify that the genetic algorithm creates a population of evolving "manager strategies" or "user strategies" (lines XXX). This avoids any confusion that there are multiple managers or users within a single genetic algorithm -- rather, multiple strategies being considered for a single manager or user.
+
+**Reviewer 1 specific comment 5:**
+
+5. figure 2 or other: it was not clear that only one individual exists in one cell and carrying capacity is capacity for landscapes not for one cell. Should add explanations.
+
+**Author response to Reviewer 1 specific comment 5:**
+
+We now explain that is possible for resources in the population to exist on the same cell (line XXX), and that carrying capacity is for the entire landscape, not a single cell (line XXX).
+
+**Reviewer 1 specific comment 6:**
+
+6. appendix 1: I think that the values, 10001, in ACTION array correspond to land_dim_1* land_dim_2+1. If so, it is good to mention this. If we change land_dim_1 or land_dim_2, will the values be adjusted automatically?
+
+**Author response to Reviewer 1 specific comment 6:**
+
+This is a reasonable inference, and we appreciate Reviewer 1 for drawing attention to it. However, the value 10001 is actionally a maximum cost allowed in the modelling that is unrelated to land dimensions. We now state this explicitly in Appendix 1 to avoid confusion (line XXX).
+
+**Reviewer 1 specific comment 7:**
+
+7. appendix 1: How should we need effort to find appropriate values of parameters used in genetic algorithms. If it could be substantial, the authors should mention the possibility.
+
+**Author response to Reviewer 1 specific comment 7:**
+
+The objective fo the genetic algorithm is not necessarily to produce optimal strategies, but strategies that are adaptive and flexible in making decisions. Finding a set of parameters to be used in the genetic algorithm to produce adaptive strategies is not especially difficult, but the genetic algorithm will be more effective given more strict convergence criterial and a lower minimum generation times. We now emphasise this more in Appendix 1 (line XXX).
+
+**Reviewer 1 specific comment 8:**
+
+8. appendix 1: I could not follow the effects of actions such as sigma(1+lambda). I do not think effects of culling and help off springs have relationships. However sigma was used in the effects of both actions. The authors should explain why those parameters are used in effects of actions.
+
+**Author response to Reviewer 1 specific comment 8:**
+
+In our new version of GMSE, we change the predicted effect of each action (XXX EXPLAIN THIS XXX). In our revision, we now go into greater detail to explain why these parameters are what they are (lines XXX).
+
+**Reviewer 1 specific comment 9:**
+
+9. appendix 1: “scaring is assumed to be nonlethal and therefore have no effect on resource number” but what happens to the resources?
+
+**Author response to Reviewer 1 specific comment 9:**
+
+We now clarify that the resources are moved to a different, randomly chosen, cell on the landscape (line XXX).
+
+**Reviewer 1 specific comment 10:**
+
+10. The word “resource” was confusing to me because crop is resource for farmers.
+
+
+**Author response to Reviewer 1 specific comment 10:**
+
+We now clarify in the text why we use the word 'resource' (line XXX). Although we interpret resources as populations of conservation interest throughout our paper, there is nothing to preclude software users from modelling the management of other types of (e.g., non-biological) resources such as minerals.
+
+**Reviewer 1 specific comment 11:**
+
+11. I thought it is better if we can customize placement of land of each farmers.
+
+**Author response to Reviewer 1 specific comment 11:**
+
+Although this kind of customisation is not possible using the function `gmse`, we now explain how this can be done using `gmse_apply` (line XXX).
+
+
+Reviewer 2 Comments
+--------------------------------------------------------------------------------
+
+**Reviewer 2 General comments:**
+
+I found the article to be of general interest to the readership of this journal. The paper was well written and covers the background and use of MSE well. Some further references to early MSE work (Sainsbury, Polacheck, Smith, de la Mare – references below) and mention of some of the broader current uses too (including marine conservation and sport) would provide greater context and applicability. As is stated the main initial use for MSE was in fisheries. Fisheries are still using MSE and looking for opportunities to test management strategies across platforms. As such, I think a paragraph or two on how the GMSE package can (if it can) be adapted for a fisheries example would be useful to the broader (fisheries) MSE readership. A comparison against other existing MSE packages (eg FLR) would be beneficial. Also, I found the end of the article to be somewhat abrupt and would benefit from a Discussion/Conclusion section.
+
+Sainsbury, K.J., A.E. Punt and A.D.M. Smith (2000), ‘Design of operational management strategies for achieving fishery ecosystem objectives’, ICES Journal of Marine Science, 57, 731–41.
+
+Polacheck, T., N.L. Klaer, C. Millar and A.L. Preece (1999), ‘An initial evaluation of management strategies for southern bluefin tuna’, ICES Journal of Marine Science, 56, 811–26.
+
+Smith, A. D. M., Sainsbury, K. J., and Stevens, R. A. 1999. Implementing effective fisheries-management systems – management strategy evaluation and the Australian partnership approach. – ICES Journal of Marine Science, 56: 967–979.
+
+De la Mare, W. K. 1996. Some recent developments in the management of marine living resources. In Frontiers of Population Ecology, pp. 599–616. Ed. by R. B. Floyd, A. W.
+
+Shepherd, and P. J. De Barro. CSIRO Publishing, Melbourne, Australia.
+
+Moore, J.E., Curtis, K.A., Lewison, R.L., Dillingham, P.W., Cope, J.M., Fordham, S.V., Heppell, S.S., Pardo, S.A., Simpfendorfer, C.A.,
+
+Tuck, G.N., and Zhou, S. 2013. Evaluating sustainability of fisheries bycatch mortality for marine megafauna: a review of conservation reference points for data-limited populations. Environmental Conservation. 40: 329 -344.
+
+**Author response to Reviewer 2 General comments:**
+
+
+
+
+**Reviewer 2 specific comment 1:**
+
+36: Additional references to MSE eg Smith, Sainsbury etc.
+
+**Author response to Reviewer 2 specific comment 1:**
+
+We now include these references to MSE (line XXX).
+
+**Reviewer 2 specific comment 2:**
+
+72: observation examples are provided, but here it would also be useful to describe possible
+fisheries examples, such as lengths, ages, rates of capture, that are typically used in fisheries MSE.
+
+**Author response to Reviewer 2 specific comment 1:**
+
+We now include an observation example typical of fisheries (line XXX -- NEED TO ADD CODE TO GMSE).
+
+**Reviewer 2 specific comment 3:**
+
+137: Does scaring allow the waterfowl to move to adjacent cells and simply ‘shift’ the problem?
+Clarify.
+
+**Author response to Reviewer 2 specific comment 3:**
+
+We now clarify that scaring moves waterfowl to another cell, and therefore shifts the problem to another location (as is realistic for many systems in which scaring is non-lethal) See (line XXX).
+
+**Reviewer 2 specific comment 4:**
+
+Figure 2 (and the text, eg line 148). What is the estimation model? In fisheries this is a stock
+assessment of some description. Clarify.
+
+**Author response to Reviewer 2 specific comment 4:**
+
+We now clarify how the resources are observed in the text (line XXX).
+
+**Reviewer 2 specific comment 5:**
+
+182: Discussion/Conclusion? Acknowledgements?
+
+
+**Author response to Reviewer 2 specific comment 5:**
+
+
+
+
+Author references
+--------------------------------------------------------------------------------
+
+Hamblin, S. (2013). On the practical usage of genetic algorithms in ecology and evolution. Methods in Ecology and Evolution, 4(2), 184–194. https://doi.org/10.1111/2041-210X.12000
+
+
+
+
+
+
+
