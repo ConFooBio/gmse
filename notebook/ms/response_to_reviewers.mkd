@@ -133,7 +133,7 @@ Tuck, G.N., and Zhou, S. 2013. Evaluating sustainability of fisheries bycatch mo
 
 **Author response to Reviewer 2 General comments:**
 
-
+GMSE default options are more mechanistic than FLR, but phenomenological models can also be incorporated into gmse_apply as desired.
 
 
 **Reviewer 2 specific comment 1:**
