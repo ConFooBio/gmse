@@ -95,22 +95,26 @@ get_goose_paras <- function(data, init_params = NULL){
     return(get_parameters);
 }
 
-goose_plot_pred <- function(data, year_start = 1987, ylim = c(10000, 60000)){
+goose_plot_pred <- function(data, year_start = 1987, ylim = c(10000, 60000),
+                            plot = TRUE){
     params <- get_goose_paras(data = data);
     Npred  <- goose_pred(para = params$par, data = data);
     yrs    <- year_start:(year_start + length(data$y) - 1);
-    plot(x =  yrs, y = data$y, pch = 1, ylim = ylim, cex.lab = 1.5,
-         xlab="Year", ylab="Population size")         # Observed time series
-    points(x = yrs, y = Npred, pch = 19, col = "red") # Predicted time series
-    oend <- length(data$y);
-    points(x = yrs[3:oend], y = data$y[2:(oend - 1)], pch = 19, col = "blue");
+    if(plot == TRUE){
+        plot(x =  yrs, y = data$y, pch = 1, ylim = ylim, cex.lab = 1.5,
+             xlab="Year", ylab="Population size")         # Observed time series
+        points(x = yrs, y = Npred, pch = 19, col = "red") # Predict time series
+        oend <- length(data$y);
+        points(x = yrs[3:oend], y = data$y[2:(oend - 1)], pch = 19, 
+               col = "blue");
+    }
     return(Npred);
 }
 
-goose_predict_and_plot <- function(file){
-    dat    <- read.csv("Standardised_dataset_IslayGBG.csv")
+goose_predict_and_plot <- function(file, plot = TRUE){
+    dat    <- read.csv("Standardised_dataset_IslayGBG.csv");
     data   <- goose_clean_data(file);
-    goosep <- goose_plot_pred(data = data);
+    goosep <- goose_plot_pred(data = data, plot = plot);
     return(goosep);
 }
 
