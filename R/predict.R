@@ -114,4 +114,4 @@ goose_predict_and_plot <- function(file){
     return(goosep);
 }
 
-
+predicted <- goose_predict_and_plot(file = "Standardised_dataset_IslayGBG.csv");
