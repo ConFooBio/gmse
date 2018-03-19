@@ -102,6 +102,7 @@ goose_plot_pred <- function(data, year_start = 1987, ylim = c(10000, 60000),
     Npred  <- goose_pred(para = params$par, data = data);
     yrs    <- year_start:(year_start + length(data$y) - 1);
     if(plot == TRUE){
+        par(mar = c(5, 5, 1, 1));
         plot(x =  yrs, y = data$y, pch = 1, ylim = ylim, cex.lab = 1.5,
              xlab="Year", ylab="Population size")         # Observed time series
         points(x = yrs, y = Npred, pch = 19, col = "red") # Predict time series
@@ -113,10 +114,32 @@ goose_plot_pred <- function(data, year_start = 1987, ylim = c(10000, 60000),
 }
 
 goose_predict_and_plot <- function(file, plot = TRUE){
-    dat    <- read.csv("Standardised_dataset_IslayGBG.csv");
+    dat    <- read.csv(file);
     data   <- goose_clean_data(file);
     goosep <- goose_plot_pred(data = data, plot = plot);
     return(goosep);
 }
 
-predicted <- goose_predict_and_plot(file = "Standardised_dataset_IslayGBG.csv");
+goose_gmse_popmod <- function(goose_data){
+    N_pred <- goose_plot_pred(data = goose_data, plot = FALSE);
+    N_last <- length(N_pred);
+    New_N  <- as.numeric(N_pred[N_last]);
+    return(New_N);
+}
+
+#predicted <- goose_predict_and_plot(file = "Standardised_dataset_IslayGBG.csv");
+
+
+goose_data <- goose_clean_data(file = "Standardised_dataset_IslayGBG.csv")
+
+gmse_apply(res_mod = goose_gmse_popmod, goose_data = dat);
+
+
+
+
+
+
+
+
+
+
