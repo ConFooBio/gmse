@@ -64,7 +64,7 @@ goose_pred <- function(para, data){
   G_temp_coeff <- para[4]; # Effect of temperature on Greenland in August
   I_temp_coeff <- para[5]; # Effect of temperature on Islay the previous winter
   AIG_2_yrs    <- para[6]; # Effect of area of improved grassland 2 years prior
-  hunting_bag  <- para[7]; # Effect of hunting bag
+  #hunting_bag  <- para[7]; # Effect of hunting bag
   
   data_rows <- dim(data)[1];
   N_pred    <- rep(x = NA, times = data_rows);
@@ -77,8 +77,9 @@ goose_pred <- function(para, data){
       I_temp_adj   <- I_temp_coeff * data$IslayTemp[time - 1];
       AIG_2_adj    <- AIG_2_yrs    * data$AIG.sc[time - 2];
       adjusted     <- G_rain_adj + G_temp_adj + I_temp_adj + AIG_2_adj
-      hunted       <- hunting_bag  * goose_now;
-      N_pred[time] <- goose_repr * (goose_dens + adjusted) + goose_now - hunted;
+      #hunted       <- hunting_bag  * goose_now;
+      N_pred[time] <- goose_repr * (goose_dens + adjusted) + goose_now - 
+                      data$HB[time - 1];
   }
   
   return(N_pred);
@@ -86,7 +87,7 @@ goose_pred <- function(para, data){
 
 get_goose_paras <- function(data, init_params = NULL){
     if( is.null(init_params) == TRUE ){
-        init_params    <- c(0.1,6,0,0,0,0,0);
+        init_params    <- c(0.1,6,0,0,0,0);
     }
     contr_paras    <- list(trace = 1, fnscale = -1, maxit = 1000, factr = 1e-8,
                            pgtol = 0);
@@ -127,18 +128,108 @@ goose_gmse_popmod <- function(goose_data){
     return(New_N);
 }
 
-#predicted <- goose_predict_and_plot(file = "Standardised_dataset_IslayGBG.csv");
+goose_gmse_obsmod <- function(resource_vector){
+    return(resource_vector);
+}
+
+goose_gmse_manmod <- function(observation_vector, manage_target){
+    manager_vector <- observation_vector - manage_target;
+    if(manager_vector < 0){
+        manager_vector <- 0;
+    }
+    return(manager_vector);
+}
+
+goose_gmse_usrmod <- function(manager_vector){
+    user_vector <- manager_vector;
+    return(user_vector);
+}
+
+goose_sim_paras <- function(goose_data){
+    last_row <- dim(goose_data)[1];
+    for(col in 1:dim(goose_data)[2]){
+        if( is.na(goose_data[last_row, col]) == TRUE ){
+            if(col < 6){
+                goose_data[last_row, col] <- 0;
+            }else{
+                all_dat   <- goose_data[,col];
+                avail_dat <- all_dat[!is.na(all_dat)];
+                rand_val  <- sample(x = avail_dat, size = 1);
+                goose_data[last_row, col] <- rand_val;
+            }
+        }
+    }
+    return(goose_data);
+}
+
+sim_goose_data <- function(gmse_results, goose_data){
+    gmse_pop   <- gmse_results$resource_results;
+    gmse_obs   <- gmse_results$observation_results;
+    if(length(gmse_results$manager_results) > 1){
+        gmse_man   <- gmse_results$manager_results[3];
+    }else{
+        gmse_man   <- as.numeric(gmse_results$manager_results);
+    }
+    if(length(gmse_results$user_results) > 1){
+        gmse_cul   <- sum(gmse_results$user_results[,3]);
+    }else{
+        gmse_cul   <- as.numeric(gmse_results$user_results);
+    }
+    goose_data <- goose_sim_paras(goose_data);
+    rows       <- dim(goose_data)[1];
+    cols       <- dim(goose_data)[2];
+    goose_data[rows, 3]    <- gmse_cul;
+    goose_data[rows, 4:5]  <- 0;
+    goose_data[rows, cols] <- gmse_cul;
+    new_r     <- rep(x = 0, times = cols);
+    new_r[1]  <- goose_data[rows, 1] + 1;
+    new_r[2]  <- gmse_obs - gmse_cul;
+    new_r[3]  <- 0; 
+    new_r[4]  <- 0;
+    new_r[5]  <- 0;
+    new_r[6]  <- sample(x = goose_data[,6], size = 1);
+    new_r[7]  <- sample(x = goose_data[,7], size = 1);
+    new_r[8]  <- sample(x = goose_data[,8], size = 1);
+    new_r[9]  <- sample(x = goose_data[,9], size = 1);
+    new_r[10] <- gmse_obs - gmse_cul;
+    new_r[11] <- sample(x = goose_data[,11], size = 1);
+    new_r[12] <- 0;
+    new_dat   <- rbind(goose_data, new_r);
+    return(new_dat);
+}
+
+predicted <- goose_predict_and_plot(file = "toy_data.csv");
 
 
-goose_data <- goose_clean_data(file = "Standardised_dataset_IslayGBG.csv")
-
-gmse_apply(res_mod = goose_gmse_popmod, goose_data = dat);
+goose_data <- goose_clean_data(file = "toy_data.csv")
 
 
+gmse_res   <- gmse_apply(res_mod = goose_gmse_popmod, 
+                         obs_mod = goose_gmse_obsmod,
+                         man_mod = goose_gmse_manmod,
+                         use_mod = goose_gmse_usrmod,
+                         goose_data = goose_data,
+                         manage_target = 2000,
+                         stakeholders = 1, get_res = "full");
+
+goose_data <- sim_goose_data(gmse_results = gmse_res$basic, 
+                             goose_data = goose_data);
 
 
 
+gmse_res_new   <- gmse_apply(res_mod = goose_gmse_popmod, 
+                             obs_mod = goose_gmse_obsmod,
+                             man_mod = goose_gmse_manmod,
+                             use_mod = goose_gmse_usrmod,
+                             goose_data = goose_data,
+                             manage_target = 2000,
+                             stakeholders = 1, get_res = "full",
+                             old_list = gmse_res);
 
+gmse_res <- gmse_res_new;
+
+goose_data <- sim_goose_data(gmse_results = gmse_res$basic, 
+                             goose_data = goose_data);
 
 
 
