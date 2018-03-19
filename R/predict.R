@@ -47,13 +47,14 @@ goose_clean_data <- function(file){
 
 goose_growth <- function(para, data){
   
-  N_pred <- goose_pred(para = para, data = data);
+    data_rows <- dim(data)[1];
+    N_pred <- goose_pred(para = para, data = data);
   
-  DEV    <- N_pred[3:data_rows] - data$y[3:data_rows];
-  sq_Dev <- DEV * DEV;
-  pr_sum <- sum( sq_Dev / N_pred[3:data_rows] );
-  SS_tot <- (1 / pr_sum) * 1000;
-  return(SS_tot);
+    DEV    <- N_pred[3:data_rows] - data$y[3:data_rows];
+    sq_Dev <- DEV * DEV;
+    pr_sum <- sum( sq_Dev / N_pred[3:data_rows] );
+    SS_tot <- (1 / pr_sum) * 1000;
+    return(SS_tot);
 }
 
 goose_pred <- function(para, data){
