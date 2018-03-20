@@ -205,19 +205,23 @@ sim_goose_data <- function(gmse_results, goose_data){
 }
 
 
-
 gmse_goose <- function(data_file = "toy_data.csv", years = 10, manage_target,
                        max_HB, plot = TRUE){
     # -- Initialise ------------------------------------------------------------
     proj_yrs   <- years;
-    goose_data <- goose_clean_data(file = "toy_data.csv");
+    goose_data <- goose_clean_data(file = data_file);
     last_year  <- goose_data[dim(goose_data)[1], 1];
+    
+    assign("goose_data", goose_data, envir = globalenv() );
+    assign("manage_target", manage_target, envir = globalenv() );
+    assign("max_HB", max_HB, envir = globalenv() );
+    
     gmse_res   <- gmse_apply(res_mod = goose_gmse_popmod, 
                              obs_mod = goose_gmse_obsmod,
                              man_mod = goose_gmse_manmod,
                              use_mod = goose_gmse_usrmod,
                              goose_data = goose_data,
-                             manage_target = 20000, max_HB = max_HB,
+                             manage_target = manage_target, max_HB = max_HB,
                              stakeholders = 1, get_res = "full");
     goose_data <- sim_goose_data(gmse_results = gmse_res$basic, 
                                  goose_data = goose_data);
@@ -228,14 +232,15 @@ gmse_goose <- function(data_file = "toy_data.csv", years = 10, manage_target,
                                      man_mod = goose_gmse_manmod,
                                      use_mod = goose_gmse_usrmod,
                                      goose_data = goose_data,
-                                     manage_target = 20000, max_HB = max_HB,
+                                     manage_target = manage_target, 
+                                     max_HB = max_HB,
                                      stakeholders = 1, get_res = "full");
-       gmse_res <- gmse_res_new;
+       gmse_res   <- gmse_res_new;
        goose_data <- sim_goose_data(gmse_results = gmse_res$basic, 
                                     goose_data = goose_data);
        years <- years - 1;
     }
-    if(plot = TRUE){
+    if(plot == TRUE){
         dat <- goose_data[-1,];
         yrs <- dat[,1];
         NN  <- dat[,2];
@@ -258,40 +263,6 @@ gmse_goose <- function(data_file = "toy_data.csv", years = 10, manage_target,
     }
     return(goose_data);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
