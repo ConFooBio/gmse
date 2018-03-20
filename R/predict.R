@@ -213,7 +213,7 @@ gmse_goose <- function(data_file = "toy_data.csv", years = 10, manage_target,
     last_year  <- goose_data[dim(goose_data)[1], 1];
     
     assign("goose_data", goose_data, envir = globalenv() );
-    assign("manage_target", manage_target, envir = globalenv() );
+    assign("target", manage_target, envir = globalenv() );
     assign("max_HB", max_HB, envir = globalenv() );
     
     gmse_res   <- gmse_apply(res_mod = goose_gmse_popmod, 
@@ -221,11 +221,14 @@ gmse_goose <- function(data_file = "toy_data.csv", years = 10, manage_target,
                              man_mod = goose_gmse_manmod,
                              use_mod = goose_gmse_usrmod,
                              goose_data = goose_data,
-                             manage_target = manage_target, max_HB = max_HB,
+                             manage_target = target, max_HB = max_HB,
                              stakeholders = 1, get_res = "full");
     goose_data <- sim_goose_data(gmse_results = gmse_res$basic, 
                                  goose_data = goose_data);
     assign("goose_data", goose_data, envir = globalenv() );
+    assign("target", manage_target, envir = globalenv() );
+    assign("max_HB", max_HB, envir = globalenv() );
+    assign("gmse_res", gmse_res, envir = globalenv() );
     # -- Simulate --------------------------------------------------------------
     while(years > 0){
         gmse_res_new   <- gmse_apply(res_mod = goose_gmse_popmod, 
@@ -233,13 +236,17 @@ gmse_goose <- function(data_file = "toy_data.csv", years = 10, manage_target,
                                      man_mod = goose_gmse_manmod,
                                      use_mod = goose_gmse_usrmod,
                                      goose_data = goose_data,
-                                     manage_target = manage_target, 
+                                     manage_target = target, 
                                      max_HB = max_HB,
                                      stakeholders = 1, get_res = "full");
+       assign("gmse_res_new", gmse_res_new, envir = globalenv() );
        gmse_res   <- gmse_res_new;
+       assign("gmse_res", gmse_res, envir = globalenv() );
        goose_data <- sim_goose_data(gmse_results = gmse_res$basic, 
                                     goose_data = goose_data);
        assign("goose_data", goose_data, envir = globalenv() );
+       assign("target", manage_target, envir = globalenv() );
+       assign("max_HB", max_HB, envir = globalenv() );
        years <- years - 1;
     }
     if(plot == TRUE){
