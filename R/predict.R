@@ -207,9 +207,11 @@ sim_goose_data <- function(gmse_results, goose_data){
 
 
 gmse_goose <- function(data_file = "toy_data.csv", years = 10, manage_target,
-                       max_HB){
+                       max_HB, plot = TRUE){
     # -- Initialise ------------------------------------------------------------
-    goose_data <- goose_clean_data(file = "toy_data.csv")
+    proj_yrs   <- years;
+    goose_data <- goose_clean_data(file = "toy_data.csv");
+    last_year  <- goose_data[dim(goose_data)[1], 1];
     gmse_res   <- gmse_apply(res_mod = goose_gmse_popmod, 
                              obs_mod = goose_gmse_obsmod,
                              man_mod = goose_gmse_manmod,
@@ -232,6 +234,27 @@ gmse_goose <- function(data_file = "toy_data.csv", years = 10, manage_target,
        goose_data <- sim_goose_data(gmse_results = gmse_res$basic, 
                                     goose_data = goose_data);
        years <- years - 1;
+    }
+    if(plot = TRUE){
+        dat <- goose_data[-1,];
+        yrs <- dat[,1];
+        NN  <- dat[,2];
+        HB  <- dat[,3];
+        pry <- (last_year+1):(yrs[length(yrs)]-1+20);
+        plot(x = yrs, y = NN, xlab = "Year", ylab = "Population size",
+             cex = 1.25, pch = 20, type = "b", ylim = c(0, max(NN)), 
+             cex.lab = 1.5, cex.axis = 1.5, lwd = 2);
+        polygon(x = c(pry, rev(pry)), 
+                y = c(rep(x = -10000, times = proj_yrs + 20), 
+                      rep(x = 2*max(NN), times = proj_yrs + 20)), 
+                col = "grey", border = NA);
+        box();
+        points(x = yrs, y = NN, cex = 1.25, pch = 20, type = "b");
+        points(x = yrs, y = HB, type = "b", cex = 1.25, col = "red", 
+               pch = 20, lwd = 2);
+        abline(h = manage_target, lwd = 0.8, lty = "dotted");
+        text(x = dat[5,1], y = max(NN), labels = "Observed", cex = 2.5);
+        text(x = pry[5], y = max(NN), labels = "Projected", cex = 2.5);
     }
     return(goose_data);
 }
