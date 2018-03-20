@@ -64,7 +64,7 @@ goose_pred <- function(para, data){
   G_temp_coeff <- para[4]; # Effect of temperature on Greenland in August
   I_temp_coeff <- para[5]; # Effect of temperature on Islay the previous winter
   AIG_2_yrs    <- para[6]; # Effect of area of improved grassland 2 years prior
-  #hunting_bag  <- para[7]; # Effect of hunting bag
+  hunting_bag  <- para[7]; # Effect of hunting bag
   
   data_rows <- dim(data)[1];
   N_pred    <- rep(x = NA, times = data_rows);
@@ -77,9 +77,9 @@ goose_pred <- function(para, data){
       I_temp_adj   <- I_temp_coeff * data$IslayTemp[time - 1];
       AIG_2_adj    <- AIG_2_yrs    * data$AIG.sc[time - 2];
       adjusted     <- G_rain_adj + G_temp_adj + I_temp_adj + AIG_2_adj
-      #hunted       <- hunting_bag  * goose_now;
+      hunted       <- hunting_bag  * goose_now;
       N_pred[time] <- goose_repr * (goose_dens + adjusted) + goose_now - 
-                      data$HB[time - 1];
+                      goose_now * hunting_bag;
   }
   
   return(N_pred);
@@ -87,7 +87,7 @@ goose_pred <- function(para, data){
 
 get_goose_paras <- function(data, init_params = NULL){
     if( is.null(init_params) == TRUE ){
-        init_params    <- c(0.1,6,0,0,0,0);
+        init_params    <- c(0.1,6,0,0,0,0, 0);
     }
     contr_paras    <- list(trace = 1, fnscale = -1, maxit = 1000, factr = 1e-8,
                            pgtol = 0);
@@ -125,6 +125,7 @@ goose_gmse_popmod <- function(goose_data){
     N_pred <- goose_plot_pred(data = goose_data, plot = FALSE);
     N_last <- length(N_pred);
     New_N  <- as.numeric(N_pred[N_last]);
+    New_N  <- New_N - (0.03 * New_N);
     if(New_N < 1){
         stop("Extinction has occurred");
     }
@@ -184,8 +185,9 @@ sim_goose_data <- function(gmse_results, goose_data){
     goose_data <- goose_sim_paras(goose_data);
     rows       <- dim(goose_data)[1];
     cols       <- dim(goose_data)[2];
-    goose_data[rows, 3]    <- gmse_cul;
-    goose_data[rows, 4:5]  <- 0;
+    goose_data[rows, 3]    <- gmse_obs * 0.03;
+    goose_data[rows, 4]    <- 0;
+    goose_data[rows, 5]    <- 0;
     goose_data[rows, cols] <- gmse_cul;
     new_r     <- rep(x = 0, times = cols);
     new_r[1]  <- goose_data[rows, 1] + 1;
@@ -203,7 +205,6 @@ sim_goose_data <- function(gmse_results, goose_data){
     new_dat   <- rbind(goose_data, new_r);
     return(new_dat);
 }
-
 
 gmse_goose <- function(data_file = "toy_data.csv", years = 10, manage_target,
                        max_HB, plot = TRUE){
@@ -254,7 +255,8 @@ gmse_goose <- function(data_file = "toy_data.csv", years = 10, manage_target,
         yrs <- dat[,1];
         NN  <- dat[,2];
         HB  <- dat[,3];
-        pry <- (last_year+1):(yrs[length(yrs)]-1+20);
+        pry <- (last_year):(yrs[length(yrs)]-2+20);
+        par(mar = c(5, 5, 1, 1));
         plot(x = yrs, y = NN, xlab = "Year", ylab = "Population size",
              cex = 1.25, pch = 20, type = "b", ylim = c(0, max(NN)), 
              cex.lab = 1.5, cex.axis = 1.5, lwd = 2);
@@ -272,6 +274,54 @@ gmse_goose <- function(data_file = "toy_data.csv", years = 10, manage_target,
     }
     return(goose_data);
 }
+
+
+gmse_goose_multiplot <- function(proj_yrs = 10, manage_target = 26000, 
+                                 max_HB = 1200, iterations = 10){
+    goose_multidata <- NULL;
+    for(i in 1:iterations){
+        goose_multidata[[i]] <- gmse_goose(manage_target = manage_target, 
+                                           max_HB = max_HB, plot = FALSE);
+        print(paste("Simulating ---------------------------------------> ",i));
+    }
+    goose_data <- goose_multidata[[1]];
+    dat        <- goose_data[-1,];
+    last_year  <- dat[dim(dat)[1], 1];
+    yrs        <- dat[,1];
+    NN         <- dat[,2];
+    HB         <- dat[,3];
+    pry        <- (last_year - proj_yrs - 1):last_year;
+    obsrvd     <- 1:(dim(dat)[1] - proj_yrs - 1);
+    par(mar = c(5, 5, 1, 1));
+    plot(x = yrs, y = NN, xlab = "Year", ylab = "Population size",
+         cex = 1.25, pch = 20, type = "n", ylim = c(0, max(NN)), 
+         cex.lab = 1.5, cex.axis = 1.5, lwd = 2);
+    polygon(x = c(pry, 2*last_year, 2*last_year, rev(pry)), 
+            y = c(rep(x = -10000, times = length(pry) + 1), 
+                  rep(x = 2*max(NN), times = length(pry) + 1)), 
+            col = "grey", border = NA);
+    box();
+    points(x = yrs[obsrvd], y = NN[obsrvd], cex = 1.25, pch = 20, type = "b");
+    abline(h = manage_target, lwd = 0.8, lty = "dotted");
+    text(x = dat[5,1], y = max(NN), labels = "Observed", cex = 2.5);
+    text(x = pry[5], y = max(NN), labels = "Projected", cex = 2.5);
+    for(i in 1:length(goose_multidata)){
+        goose_data <- goose_multidata[[i]];
+        dat <- goose_data[-1,];
+        yrs <- dat[,1];
+        NN  <- dat[,2];
+        HB  <- dat[,3];
+        pry <- (last_year):(yrs[length(yrs)]-2+20);
+        points(x = yrs, y = NN, pch = 20, type = "l", lwd = 0.6);
+    }
+}
+
+
+
+
+
+
+
 
 
 
