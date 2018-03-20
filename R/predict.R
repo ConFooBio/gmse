@@ -125,6 +125,9 @@ goose_gmse_popmod <- function(goose_data){
     N_pred <- goose_plot_pred(data = goose_data, plot = FALSE);
     N_last <- length(N_pred);
     New_N  <- as.numeric(N_pred[N_last]);
+    if(New_N < 1){
+        stop("Extinction has occurred");
+    }
     return(New_N);
 }
 
@@ -140,8 +143,11 @@ goose_gmse_manmod <- function(observation_vector, manage_target){
     return(manager_vector);
 }
 
-goose_gmse_usrmod <- function(manager_vector){
+goose_gmse_usrmod <- function(manager_vector, max_HB){
     user_vector <- manager_vector;
+    if(user_vector > max_HB){
+        user_vector <- max_HB;
+    }
     return(user_vector);
 }
 
@@ -198,38 +204,72 @@ sim_goose_data <- function(gmse_results, goose_data){
     return(new_dat);
 }
 
-predicted <- goose_predict_and_plot(file = "toy_data.csv");
 
 
-goose_data <- goose_clean_data(file = "toy_data.csv")
-
-
-gmse_res   <- gmse_apply(res_mod = goose_gmse_popmod, 
-                         obs_mod = goose_gmse_obsmod,
-                         man_mod = goose_gmse_manmod,
-                         use_mod = goose_gmse_usrmod,
-                         goose_data = goose_data,
-                         manage_target = 2000,
-                         stakeholders = 1, get_res = "full");
-
-goose_data <- sim_goose_data(gmse_results = gmse_res$basic, 
-                             goose_data = goose_data);
-
-
-
-gmse_res_new   <- gmse_apply(res_mod = goose_gmse_popmod, 
+gmse_goose <- function(data_file = "toy_data.csv", years = 10, manage_target,
+                       max_HB){
+    # -- Initialise ------------------------------------------------------------
+    goose_data <- goose_clean_data(file = "toy_data.csv")
+    gmse_res   <- gmse_apply(res_mod = goose_gmse_popmod, 
                              obs_mod = goose_gmse_obsmod,
                              man_mod = goose_gmse_manmod,
                              use_mod = goose_gmse_usrmod,
                              goose_data = goose_data,
-                             manage_target = 2000,
-                             stakeholders = 1, get_res = "full",
-                             old_list = gmse_res);
+                             manage_target = 20000, max_HB = max_HB,
+                             stakeholders = 1, get_res = "full");
+    goose_data <- sim_goose_data(gmse_results = gmse_res$basic, 
+                                 goose_data = goose_data);
+    # -- Simulate --------------------------------------------------------------
+    while(years > 0){
+        gmse_res_new   <- gmse_apply(res_mod = goose_gmse_popmod, 
+                                     obs_mod = goose_gmse_obsmod,
+                                     man_mod = goose_gmse_manmod,
+                                     use_mod = goose_gmse_usrmod,
+                                     goose_data = goose_data,
+                                     manage_target = 20000, max_HB = max_HB,
+                                     stakeholders = 1, get_res = "full");
+       gmse_res <- gmse_res_new;
+       goose_data <- sim_goose_data(gmse_results = gmse_res$basic, 
+                                    goose_data = goose_data);
+       years <- years - 1;
+    }
+    return(goose_data);
+}
 
-gmse_res <- gmse_res_new;
 
-goose_data <- sim_goose_data(gmse_results = gmse_res$basic, 
-                             goose_data = goose_data);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
