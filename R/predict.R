@@ -225,6 +225,7 @@ gmse_goose <- function(data_file = "toy_data.csv", years = 10, manage_target,
                              stakeholders = 1, get_res = "full");
     goose_data <- sim_goose_data(gmse_results = gmse_res$basic, 
                                  goose_data = goose_data);
+    assign("goose_data", goose_data, envir = globalenv() );
     # -- Simulate --------------------------------------------------------------
     while(years > 0){
         gmse_res_new   <- gmse_apply(res_mod = goose_gmse_popmod, 
@@ -238,6 +239,7 @@ gmse_goose <- function(data_file = "toy_data.csv", years = 10, manage_target,
        gmse_res   <- gmse_res_new;
        goose_data <- sim_goose_data(gmse_results = gmse_res$basic, 
                                     goose_data = goose_data);
+       assign("goose_data", goose_data, envir = globalenv() );
        years <- years - 1;
     }
     if(plot == TRUE){
