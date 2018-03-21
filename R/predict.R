@@ -132,7 +132,9 @@ goose_gmse_popmod <- function(goose_data){
     return(New_N);
 }
 
-goose_gmse_obsmod <- function(resource_vector){
+goose_gmse_obsmod <- function(resource_vector, obs_error){
+    obs_err <- rnorm(n = 1, mean = resource_vector[1], sd = obs_error);
+    resource_vector <- resource_vector + obs_err;
     return(resource_vector);
 }
 
@@ -193,7 +195,7 @@ sim_goose_data <- function(gmse_results, goose_data){
     goose_data[rows, cols] <- gmse_cul;
     new_r     <- rep(x = 0, times = cols);
     new_r[1]  <- goose_data[rows, 1] + 1;
-    new_r[2]  <- gmse_obs - gmse_cul;
+    new_r[2]  <- gmse_pop - gmse_cul;
     new_r[3]  <- 0; 
     new_r[4]  <- 0;
     new_r[5]  <- 0;
@@ -201,15 +203,15 @@ sim_goose_data <- function(gmse_results, goose_data){
     new_r[7]  <- sample(x = goose_data[,7], size = 1);
     new_r[8]  <- sample(x = goose_data[,8], size = 1);
     new_r[9]  <- sample(x = goose_data[,9], size = 1);
-    new_r[10] <- gmse_obs - gmse_cul;
+    new_r[10] <- gmse_pop - gmse_cul;
     new_r[11] <- sample(x = goose_data[,11], size = 1);
     new_r[12] <- 0;
     new_dat   <- rbind(goose_data, new_r);
     return(new_dat);
 }
 
-gmse_goose <- function(data_file = "toy_data.csv", years = 10, manage_target,
-                       max_HB, plot = TRUE){
+gmse_goose <- function(data_file = "toy_data.csv", obs_error = 1438.614, 
+                       years = 10, manage_target, max_HB, plot = TRUE){
     # -- Initialise ------------------------------------------------------------
     proj_yrs   <- years;
     goose_data <- goose_clean_data(file = data_file);
@@ -218,12 +220,12 @@ gmse_goose <- function(data_file = "toy_data.csv", years = 10, manage_target,
     assign("goose_data", goose_data, envir = globalenv() );
     assign("target", manage_target, envir = globalenv() );
     assign("max_HB", max_HB, envir = globalenv() );
-    
+    assign("obs_error", obs_error, envir = globalenv() );
     gmse_res   <- gmse_apply(res_mod = goose_gmse_popmod, 
                              obs_mod = goose_gmse_obsmod,
                              man_mod = goose_gmse_manmod,
                              use_mod = goose_gmse_usrmod,
-                             goose_data = goose_data,
+                             goose_data = goose_data, obs_error = obs_error,
                              manage_target = target, max_HB = max_HB,
                              stakeholders = 1, get_res = "full");
     goose_data <- sim_goose_data(gmse_results = gmse_res$basic, 
@@ -231,6 +233,7 @@ gmse_goose <- function(data_file = "toy_data.csv", years = 10, manage_target,
     assign("goose_data", goose_data, envir = globalenv() );
     assign("target", manage_target, envir = globalenv() );
     assign("max_HB", max_HB, envir = globalenv() );
+    assign("obs_error", obs_error, envir = globalenv() );
     assign("gmse_res", gmse_res, envir = globalenv() );
     # -- Simulate --------------------------------------------------------------
     while(years > 0){
@@ -240,7 +243,7 @@ gmse_goose <- function(data_file = "toy_data.csv", years = 10, manage_target,
                                      use_mod = goose_gmse_usrmod,
                                      goose_data = goose_data,
                                      manage_target = target, 
-                                     max_HB = max_HB,
+                                     max_HB = max_HB, obs_error = obs_error,
                                      stakeholders = 1, get_res = "full");
        assign("gmse_res_new", gmse_res_new, envir = globalenv() );
        gmse_res   <- gmse_res_new;
@@ -250,6 +253,7 @@ gmse_goose <- function(data_file = "toy_data.csv", years = 10, manage_target,
        assign("goose_data", goose_data, envir = globalenv() );
        assign("target", manage_target, envir = globalenv() );
        assign("max_HB", max_HB, envir = globalenv() );
+       assign("obs_error", obs_error, envir = globalenv() );
        years <- years - 1;
     }
     if(plot == TRUE){
