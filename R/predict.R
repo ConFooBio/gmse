@@ -182,10 +182,12 @@ sim_goose_data <- function(gmse_results, goose_data){
     }else{
         gmse_cul   <- as.numeric(gmse_results$user_results);
     }
+    I_G_cul_pr <- (goose_data[,3] + goose_data[,5]) / goose_data[,10];
+    I_G_cul_pr <- mean(I_G_cul_pr[-length(I_G_cul_pr)]);
     goose_data <- goose_sim_paras(goose_data);
     rows       <- dim(goose_data)[1];
     cols       <- dim(goose_data)[2];
-    goose_data[rows, 3]    <- gmse_obs * 0.03;
+    goose_data[rows, 3]    <- gmse_obs * I_G_cul_pr;
     goose_data[rows, 4]    <- 0;
     goose_data[rows, 5]    <- 0;
     goose_data[rows, cols] <- gmse_cul;
@@ -276,11 +278,13 @@ gmse_goose <- function(data_file = "toy_data.csv", years = 10, manage_target,
 }
 
 
-gmse_goose_multiplot <- function(proj_yrs = 10, manage_target = 26000, 
+gmse_goose_multiplot <- function(data_file = "toy_data.csv", 
+                                 proj_yrs = 10, manage_target = 26000, 
                                  max_HB = 1200, iterations = 10){
     goose_multidata <- NULL;
     for(i in 1:iterations){
-        goose_multidata[[i]] <- gmse_goose(manage_target = manage_target, 
+        goose_multidata[[i]] <- gmse_goose(data_file = data_file,
+                                           manage_target = manage_target, 
                                            max_HB = max_HB, plot = FALSE);
         print(paste("Simulating ---------------------------------------> ",i));
     }
