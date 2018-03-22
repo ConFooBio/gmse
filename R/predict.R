@@ -127,15 +127,22 @@ goose_gmse_popmod <- function(goose_data){
     New_N  <- as.numeric(N_pred[N_last]);
     New_N  <- New_N - (0.03 * New_N);
     if(New_N < 1){
-        stop("Extinction has occurred");
+        New_N <- 1;
+        warning("Extinction has occurred");
     }
     return(New_N);
 }
 
-goose_gmse_obsmod <- function(resource_vector, obs_error){
-    obs_err <- rnorm(n = 1, mean = resource_vector[1], sd = obs_error);
-    resource_vector <- resource_vector + obs_err;
-    return(resource_vector);
+goose_gmse_obsmod <- function(resource_vector, obs_error, use_est){
+    obs_err    <- rnorm(n = 1, mean = 0, sd = obs_error);
+    obs_vector <- resource_vector + obs_err;
+    if(use_est == -1){
+        obs_vector <- obs_vector - abs(obs_error * 1.96);
+    }
+    if(use_est == 1){
+        obs_vector <- obs_vector + abs(obs_error * 1.96);
+    }
+    return(obs_vector);
 }
 
 goose_gmse_manmod <- function(observation_vector, manage_target){
@@ -190,7 +197,7 @@ sim_goose_data <- function(gmse_results, goose_data){
     rows       <- dim(goose_data)[1];
     cols       <- dim(goose_data)[2];
     goose_data[rows, 3]    <- gmse_obs * I_G_cul_pr;
-    goose_data[rows, 4]    <- 0;
+    goose_data[rows, 4]    <- gmse_cul;
     goose_data[rows, 5]    <- 0;
     goose_data[rows, cols] <- gmse_cul;
     new_r     <- rep(x = 0, times = cols);
@@ -210,30 +217,40 @@ sim_goose_data <- function(gmse_results, goose_data){
     return(new_dat);
 }
 
-gmse_goose <- function(data_file = "toy_data.csv", obs_error = 1438.614, 
-                       years = 10, manage_target, max_HB, plot = TRUE){
+gmse_goose <- function(data_file = "toy_data.csv", manage_target, max_HB, 
+                       obs_error = 1438.614, years = 10, use_est = "normal",
+                       plot = TRUE){
     # -- Initialise ------------------------------------------------------------
     proj_yrs   <- years;
     goose_data <- goose_clean_data(file = data_file);
     last_year  <- goose_data[dim(goose_data)[1], 1];
-    
+    use_est    <- 0;
+    if(use_est == "cautious"){
+        use_est <- -1;
+    }
+    if(use_est == "aggressive"){
+        use_est <- 1;
+    }
     assign("goose_data", goose_data, envir = globalenv() );
     assign("target", manage_target, envir = globalenv() );
     assign("max_HB", max_HB, envir = globalenv() );
     assign("obs_error", obs_error, envir = globalenv() );
+    assign("use_est", use_est, envir = globalenv() );
     gmse_res   <- gmse_apply(res_mod = goose_gmse_popmod, 
                              obs_mod = goose_gmse_obsmod,
                              man_mod = goose_gmse_manmod,
                              use_mod = goose_gmse_usrmod,
                              goose_data = goose_data, obs_error = obs_error,
                              manage_target = target, max_HB = max_HB,
-                             stakeholders = 1, get_res = "full");
+                             use_est = use_est, stakeholders = 1, 
+                             get_res = "full");
     goose_data <- sim_goose_data(gmse_results = gmse_res$basic, 
                                  goose_data = goose_data);
     assign("goose_data", goose_data, envir = globalenv() );
     assign("target", manage_target, envir = globalenv() );
     assign("max_HB", max_HB, envir = globalenv() );
     assign("obs_error", obs_error, envir = globalenv() );
+    assign("use_est", use_est, envir = globalenv() );
     assign("gmse_res", gmse_res, envir = globalenv() );
     # -- Simulate --------------------------------------------------------------
     while(years > 0){
@@ -242,9 +259,12 @@ gmse_goose <- function(data_file = "toy_data.csv", obs_error = 1438.614,
                                      man_mod = goose_gmse_manmod,
                                      use_mod = goose_gmse_usrmod,
                                      goose_data = goose_data,
-                                     manage_target = target, 
+                                     manage_target = target, use_est = use_est,
                                      max_HB = max_HB, obs_error = obs_error,
                                      stakeholders = 1, get_res = "full");
+       if(as.numeric(gmse_res_new$basic[1]) == 1){
+           break;      
+       }
        assign("gmse_res_new", gmse_res_new, envir = globalenv() );
        gmse_res   <- gmse_res_new;
        assign("gmse_res", gmse_res, envir = globalenv() );
@@ -254,12 +274,13 @@ gmse_goose <- function(data_file = "toy_data.csv", obs_error = 1438.614,
        assign("target", manage_target, envir = globalenv() );
        assign("max_HB", max_HB, envir = globalenv() );
        assign("obs_error", obs_error, envir = globalenv() );
+       assign("use_est", use_est, envir = globalenv() );
        years <- years - 1;
     }
     if(plot == TRUE){
         dat <- goose_data[-1,];
         yrs <- dat[,1];
-        NN  <- dat[,2];
+        NN  <- dat[,10];
         HB  <- dat[,3];
         pry <- (last_year):(yrs[length(yrs)]-2+20);
         par(mar = c(5, 5, 1, 1));
@@ -282,23 +303,26 @@ gmse_goose <- function(data_file = "toy_data.csv", obs_error = 1438.614,
 }
 
 
-gmse_goose_multiplot <- function(data_file = "toy_data.csv", 
-                                 proj_yrs = 10, manage_target = 26000, 
-                                 max_HB = 1200, iterations = 10){
+gmse_goose_multiplot <- function(data_file = "toy_data.csv", proj_yrs = 10, 
+                                 obs_error = 1438.614, manage_target = 26000, 
+                                 max_HB = 1200, iterations = 10, 
+                                 use_est = "normal"){
     goose_multidata <- NULL;
     for(i in 1:iterations){
         goose_multidata[[i]] <- gmse_goose(data_file = data_file,
+                                           obs_error = obs_error,
                                            manage_target = manage_target, 
-                                           max_HB = max_HB, plot = FALSE);
+                                           max_HB = max_HB, plot = FALSE,
+                                           use_est = use_est);
         print(paste("Simulating ---------------------------------------> ",i));
     }
     goose_data <- goose_multidata[[1]];
     dat        <- goose_data[-1,];
     last_year  <- dat[dim(dat)[1], 1];
     yrs        <- dat[,1];
-    NN         <- dat[,2];
+    NN         <- dat[,10];
     HB         <- dat[,3];
-    pry        <- (last_year - proj_yrs - 1):last_year;
+    pry        <- (last_year - proj_yrs):last_year;
     obsrvd     <- 1:(dim(dat)[1] - proj_yrs - 1);
     par(mar = c(5, 5, 1, 1));
     plot(x = yrs, y = NN, xlab = "Year", ylab = "Population size",
@@ -317,18 +341,72 @@ gmse_goose_multiplot <- function(data_file = "toy_data.csv",
         goose_data <- goose_multidata[[i]];
         dat <- goose_data[-1,];
         yrs <- dat[,1];
-        NN  <- dat[,2];
+        NN  <- dat[,10];
         HB  <- dat[,3];
         pry <- (last_year):(yrs[length(yrs)]-2+20);
         points(x = yrs, y = NN, pch = 20, type = "l", lwd = 0.6);
     }
+    return(goose_multidata);
 }
 
 
-
-
-
-
+gmse_print_multiplot <- function(goose_multidata, manage_target, proj_yrs,
+                                 type = 0){
+    iters      <- length(goose_multidata);
+    rows       <- dim(goose_multidata[[1]])[1];
+    goose_data <- goose_multidata[[1]];
+    dat        <- goose_data;
+    last_year  <- dat[dim(dat)[1], 1];
+    yrs        <- dat[,1];
+    NN         <- dat[,10];
+    HB         <- dat[,3];
+    pry        <- (last_year - proj_yrs):last_year;
+    obsrvd     <- 1:(dim(dat)[1] - proj_yrs);
+    par(mar = c(5, 5, 1, 1));
+    plot(x = yrs, y = NN, xlab = "Year", ylab = "Population size",
+         cex = 1.25, pch = 20, type = "n", ylim = c(0, max(NN)), 
+         cex.lab = 1.5, cex.axis = 1.5, lwd = 2);
+    polygon(x = c(pry, 2*last_year, 2*last_year, rev(pry)), 
+            y = c(rep(x = -10000, times = length(pry) + 1), 
+                  rep(x = 2*max(NN), times = length(pry) + 1)), 
+            col = "grey", border = NA);
+    box();
+    points(x = yrs[obsrvd], y = NN[obsrvd], cex = 1.25, pch = 20, type = "b");
+    abline(h = manage_target, lwd = 0.8, lty = "dotted");
+    text(x = dat[5,1], y = max(NN), labels = "Observed", cex = 2.5);
+    text(x = pry[5], y = max(NN), labels = "Projected", cex = 2.5);
+    if(type == 0){
+        for(i in 1:iters){
+            goose_data <- goose_multidata[[i]];
+            dat <- goose_data;
+            yrs <- dat[,1];
+            NN  <- dat[,10];
+            HB  <- dat[,3];
+            pry <- (last_year+1):(yrs[length(yrs)]-1+20);
+            points(x = yrs, y = NN, pch = 20, type = "l", lwd = 0.6);
+        }
+    }
+    if(type == 1){
+        NN  <- matrix(data = 0, nrow = rows, ncol = iters);
+        yrs <- goose_multidata[[1]][,1];
+        for(i in 1:iters){
+            goose_data <- goose_multidata[[i]];
+            dat        <- goose_data;
+            NN[,i]     <- dat[,2];
+        }
+        py <- (rows - proj_yrs + 1):(rows-1); 
+        NN_qu <- apply(X = NN, MARGIN = 1, FUN = quantile);
+        points(x = yrs[py], y = NN_qu[3,py], cex = 1.25, pch = 20, lwd = 2, 
+               type = "b");
+        arrows(x0 = yrs[py], x1 = yrs[py], y0 = NN_qu[3,py], y1 = NN_qu[2,py], 
+               angle = 90, length = 0.1);
+        arrows(x0 = yrs[py], x1 = yrs[py], y0 = NN_qu[3,py], y1 = NN_qu[4,py], 
+               angle = 90, length = 0.1);
+        points(x = yrs[py], y = NN_qu[1,py], cex = 0.8, pch = 25, bg = "red");
+        points(x = yrs[py], y = NN_qu[5,py], cex = 0.8, pch = 24, bg = "red");
+    }
+}
+    
 
 
 
