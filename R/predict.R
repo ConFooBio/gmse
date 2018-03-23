@@ -297,7 +297,7 @@ gmse_goose <- function(data_file = "toy_data.csv", manage_target, max_HB,
                pch = 20, lwd = 2);
         abline(h = manage_target, lwd = 0.8, lty = "dotted");
         text(x = dat[5,1], y = max(NN), labels = "Observed", cex = 2.5);
-        text(x = pry[5], y = max(NN), labels = "Projected", cex = 2.5);
+        text(x = pry[5] + 1, y = max(NN), labels = "Projected", cex = 2.5);
     }
     return(goose_data);
 }
@@ -406,7 +406,54 @@ gmse_print_multiplot <- function(goose_multidata, manage_target, proj_yrs,
         points(x = yrs[py], y = NN_qu[5,py], cex = 0.8, pch = 24, bg = "red");
     }
 }
-    
+
+
+
+
+years <- 10;
+goose_data <- t1;
+manage_target <- 29000;
+ry  <- (dim(goose_data)[1] - 10):(dim(goose_data)[1]);
+pry <- goose_data[ry,1];
+
+proj_yrs   <- years;
+last_year  <- goose_data[dim(goose_data)[1], 1];
+dat <- goose_data;
+yrs <- dat[,1];
+NN  <- dat[,10];
+HB  <- dat[,3];
+par(mfrow = c(1,2), mar = c(5, 5, 1, 1));
+plot(x = yrs, y = NN, xlab = "Year", ylab = "Population size",
+     cex = 1.25, pch = 20, type = "l", ylim = c(0, max(NN)), 
+     cex.lab = 1.5, cex.axis = 1.25, lwd = 2);
+polygon(x = c(pry, 20028, 20028, rev(pry)), 
+        y = c(rep(x = -10000, times = length(pry) + 1), 
+              rep(x = 2*max(NN), times = length(pry) + 1)), 
+        col = "grey", border = NA);
+box();
+points(x = yrs, y = NN, cex = 1, pch = 20, type = "l", lwd = 2);
+abline(h = manage_target, lwd = 0.8, lty = "dotted");
+text(x = dat[5,1], y = max(NN)-400, labels = "Observed", cex = 1.5);
+text(x = pry[5] + 1, y = max(NN)-400, labels = "Projected", cex = 1.5);
+
+
+plot(x = yrs, y = goose_data[,12], xlab = "Year", ylab = "Hunting bag",
+     cex = 1.25, pch = 20, type = "l", ylim = c(0, max(goose_data[,12])+500), 
+     cex.lab = 1.5, cex.axis = 1.25, lwd = 2, col = "red");
+polygon(x = c(pry, 20028, 20028, rev(pry)), 
+        y = c(rep(x = -10000, times = length(pry) + 1), 
+              rep(x = 2*max(NN), times = length(pry) + 1)), 
+        col = "grey", border = NA);
+points(x = yrs, y = goose_data[,12], xlab = "Year", ylab = "Hunting bag",
+     cex = 1.25, pch = 20, type = "l",
+     cex.lab = 1.5, cex.axis = 1.25, lwd = 2, col = "red");
+box();
+text(x = dat[5,1], y = max(goose_data[,12])+460, labels = "Observed", cex = 1.5);
+text(x = pry[5] + 1, y = max(goose_data[,12])+460, labels = "Projected", cex = 1.5);
+
+
+
+
 
 
 
