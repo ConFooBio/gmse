@@ -1,0 +1,31 @@
+---
+title: 'GMSE: an R package for generalised management strategy evaluation'
+subtitle: Supporting Information 3
+author: A. Bradley Duthie&#xb9;&#xb3;, Jeremy J. Cusack&#xb9;, Isabel L. Jones&#xb9;, Erlend B. Nilsen&#xb2;, Roc&#0237;o A. Pozo&#xb9;, O. Sarobidy Rakotonarivo&#xb9;, Bram Van Moorter&#xb2;, and Nils Bunnefeld&#xb9;
+date: "[1] Biological and Environmental Sciences, University of Stirling, Stirling, UK
+[2] Norwegian Institute for Nature Research, Trondheim, Norway [3] alexander.duthie@stir.ac.uk"
+output:
+  pdf_document:
+    citation_package: natbib
+    fig_caption: yes
+  html_document: default
+  word_document:
+    fig_caption: yes
+    reference_docx: docx_template.docx
+header-includes:
+linestretch: 1
+bibliography: gmse.bib
+biblio-style: apalike
+link-citations: true
+linkcolor: blue
+---
+
+```{r, echo = FALSE}
+library(GMSE);
+```
+
+An example of management conflict using GMSE
+================================================================================
+
+Agents in GMSE (managers and users) are goal-oriented, and their behaviour is therefore driven to maximise a particular utility of interest such as a target density of resources (managers), or a suitable resource or landscape harvest size (users). This model feature allows GMSE to evaluate the actions of agents in the context of their individual objectives, and to therefore quantify the degree to which those objectives are or are not achieved. When the actions of one party clashes with the objectives of another party, the objectives of one might be expressed at the expense of the other, causing conservation conflict [@Redpath2013]. Currently, there is no standard way to measure conservation conflict in a social-ecological system, and previous modelling approaches have not meaningfully separated agent objectives from agent actions. We suggest that a useful starting point to developing such a metric is reflected in the deviation of an individual's actions from their objectives, the former of which is restricted by the actions of other individuals. Here we show how GMSE can be used to evaluate the amount of conflict in a simulated social-ecological system under different management options.
+
