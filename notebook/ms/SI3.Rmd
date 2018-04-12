@@ -27,5 +27,22 @@ library(GMSE);
 An example of management conflict using GMSE
 ================================================================================
 
-Agents in GMSE (managers and users) are goal-oriented, and their behaviour is therefore driven to maximise a particular utility of interest such as a target density of resources (managers), or a suitable resource or landscape harvest size (users). This model feature allows GMSE to evaluate the actions of agents in the context of their individual objectives, and to therefore quantify the degree to which those objectives are or are not achieved. When the actions of one party clashes with the objectives of another party, the objectives of one might be expressed at the expense of the other, causing conservation conflict [@Redpath2013]. Currently, there is no standard way to measure conservation conflict in a social-ecological system, and previous modelling approaches have not meaningfully separated agent objectives from agent actions. We suggest that a useful starting point to developing such a metric is reflected in the deviation of an individual's actions from their objectives, the former of which is restricted by the actions of other individuals. Here we show how GMSE can be used to evaluate the amount of conflict in a simulated social-ecological system under different management options.
+Agents in GMSE (managers and users) are goal-oriented, and their behaviour is therefore driven to maximise a particular utility of interest such as a target density of resources (managers), or a suitable resource or landscape harvest size (users). This model feature allows GMSE to evaluate the actions of agents in the context of their individual objectives, and to therefore quantify the degree to which those objectives are or are not achieved. When the actions of one party clashes with the objectives of another party, the objectives of one might be expressed at the expense of the other, causing conservation conflict [@Redpath2013]. Currently, there is no standard way to measure conservation conflict in a social-ecological system, and previous modelling approaches have not meaningfully separated agent objectives from agent actions. We suggest that a useful starting point to developing such a metric is to quantify the deviation of an individual's actions from their objectives, the former of which is restricted by the actions of other individuals. Here we show how GMSE can be used to evaluate the amount of conflict in a simulated social-ecological system under different management options.
 
+To demonstrate how GMSE can be used to understand conflict in social-ecological systems, we build upon the [example of resource management](https://www.biorxiv.org/content/biorxiv/early/2017/11/17/221432.full.pdf#page=5) in the main text. We consider a protected population of waterfowl that exploits agricultural land and is therefore a source of conservation conflict [e.g., @Fox2017a; @Mason2017; @Tulloch2017]. As in the main text example, the objective of managers is to keep waterfowl at a target abundance, while the objective of farmers is to maximise agricultural production on their landscape. Here we consider a more complex simulation to reflect a scenario likely to occur in a real social-ecological system. In contrast to the main text, we consider a population of waterfowl that is abundant enough to substantially decrease yield. We consider a community of 100 farmers, each of which has a farm of 50 landscape cells, which could be interpreted as hectares of arable cropland. We additionally include landscape cells that are not owned by farmers using the `public_land` argument; these cells can be interpreted as public land on which waterfowl might forage, but which do not affect farmers' agricultural production. We further assume an intrinsic growth rate of 0.5, and other parameters as provided by literature for geese (fix this).
+
+
+```{r, echo = TRUE}
+sim <- gmse(land_ownership = TRUE, stakeholders = 100, observe_type = 0, 
+            res_death_K = 20000, manage_target = 10000, RESOURCE_ini = 8000, 
+            user_budget = 1000, manager_budget = 8000, res_consume = 1, 
+            scaring = FALSE, plotting = FALSE, public_land = 0.5);
+```
+
+The results are plotted below.
+
+```{r, eval = FALSE}
+plot_gmse_results(res = sim$resource, obs = sim$observation, land = sim$land, 
+                  agents = sim$agents, paras = sim$paras, ACTION = sim$action, 
+                  COST = sim$cost);
+```
