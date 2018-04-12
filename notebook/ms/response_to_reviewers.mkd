@@ -26,7 +26,7 @@ This paper introduces the R package, generalized management strategy evaluation 
 
 **Author response to Reviewer 1 specific comment 1:**
 
-
+We have changed 'food security' to 'agricultural production'. 
 
 **Reviewer 1 specific comment 2:**
 
@@ -42,7 +42,7 @@ We have replaced this with the term "multiple aspects"
 
 **Author response to Reviewer 1 specific comment 3:**
 
-The term "generation" is typically used in the literature of genetic algorithms (e.g., Hamblin 2012), reflecting that the process is analogous to biological evolution by natural selection. Given that the broader GMSE framework also models simulated biological populations, we have replaced "generation" with "iteration".
+The term "generation" is typically used in the literature of genetic algorithms (e.g., Hamblin 2012), reflecting that the process is analogous to biological evolution by natural selection. Given that the broader GMSE framework also models simulated biological populations, we have replaced "generation" with "iteration" to avoid confusion.
 
 **Reviewer 1 specific comment 4:**
 
