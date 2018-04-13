@@ -600,9 +600,8 @@ plot_gmse_results <- function(res, obs, land, agents, paras, ACTION, COST){
         }
     }
     
-    minK <- min(para_vec[6:7]);
+    ymaxi <- max(paras[,33]) + (0.1 * (max(paras[,33])));
     
-    ymaxi    <- minK + (minK * (1 + res[[1]][1,10])); # Add for birth rate
     time_max <- length(res);
     for(i in 1:(time_max-1)){
         res_t    <- res[[i]];
@@ -900,9 +899,13 @@ plot_gmse_effort <- function(agents, paras, ACTION, COST){
                    lwd = 1, col = cols[1]);
         }
         axis(side = 4, at = c(50, 100),  labels = c(50, 100), cex.axis = 1.5);
+        lcex  <- 1.5
+        if(max_time < 100){
+            lcex <- lcex * (max_time / 100);
+        }
         legend(x = 1, y = y2 + y2*0.1, fill = cols[1:5], horiz = TRUE,
                legend = c("scaring", "culling", "castration", "feeding", 
-                          "helping"), bty = "n", cex = 1.5);
+                          "helping"), bty = "n", cex = lcex);
         abline(h = y1 + y1*0.1, lwd = 2);
     }else{
         plot(x = 1:max_time, y = scar_eff[,1], type = "n", xaxt= "n", 
