@@ -74,7 +74,7 @@ This is a reasonable inference, and we appreciate Reviewer 1 for drawing attenti
 
 **Author response to Reviewer 1 specific comment 7:**
 
-The objective fo the genetic algorithm is not necessarily to produce optimal strategies, but strategies that are adaptive and flexible in making decisions. Finding a set of parameters to be used in the genetic algorithm to produce adaptive strategies is not especially difficult, but the genetic algorithm will be more effective given more strict convergence criterial and a lower minimum generation times. We now emphasise this more in Appendix 1 (line XXX).
+The objective for the genetic algorithm is not necessarily to produce optimal strategies, but strategies that are adaptive and flexible in making decisions. Finding a set of parameters to be used in the genetic algorithm to produce adaptive strategies is not especially difficult, but the genetic algorithm will be more effective given more strict convergence criterial and a higher minimum generation times. We now emphasise this more in Appendix 1 in a new section, 'Choosing genetic algorithm parameter values' (line XXX).
 
 **Reviewer 1 specific comment 8:**
 

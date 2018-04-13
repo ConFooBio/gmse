@@ -240,22 +240,21 @@ That is, the change in landscape output equals the increase in output from tendi
 Choosing genetic algorithm parameter values
 --------------------------------------------------------------------------------
 
-Options for adjusting 
+Options for adjusting genetic algorithm parameter values in `gmse` and `gmse_apply` are shown below.
 
-
-| GMSE argument       | Default | Description |
-|---------------------|---------|-------------|
+| GMSE argument       | Default | Description                                  |
+|---------------------|---------|----------------------------------------------|
 | `ga_popsize`        | 100     | The number of individuals in the population temporary simulated during a single run of the genetic algorithm. |
 | `ga_mingen`         | 40      | The minimum number of iterations that a genetic algorithm will run before settling on an agent's strategy. |
-| `ga_seedrep`        | 20      | The number of individuas in the population to be initiaised with the current agent's strategy (e.g., from a previous time step in the broader GMSE simulation), as opposed to being initialised with random strategies. | 
+| `ga_seedrep`        | 0       | The number of individuas in the population to be initiaised with the current agent's strategy (e.g., from a previous time step in the broader GMSE simulation), as opposed to being initialised with random strategies. | 
 | `ga_sampleK`        | 20      | For the tournament step of the genetic agorithm, how many strategies are selected at random from the larger population (with replacement) to be included a the tournament. |
 | `ga_chooseK`        | 2       | Four the tournament step of the genetic agorithm, how many strategies are selected as winners of the tournament, to be included in the next iteration. |
 | `ga_mutation`       | 0.1     | The mutation rate of any action in an agent's strategy |
 | `ga_crossover`      | 0.1     | The crossover rate of any action in an agent's strategy; crossover events occur with a different randomly selected strategy in the population. |
 | `ga_converge_crit`  | 1       | The percent increase in strategy fitness from one iteration to the next below which the convergence criteria is satisfied. Iterations wil continue as long as fitness increase is above this convergence criteria. |
-| `group_think`       | FALSE   | Whether or not all users (i.e., not including the manager) have identical strategies. If TRUE, then one genetic algorithm will be run and applied to a users >
+| `group_think`       | FALSE   | Whether or not all users (i.e., not including the manager) have identical strategies. If TRUE, then one genetic algorithm will be run and applied to all users. |
 
-
+Given the heuristic goals of the genetic algorithm to mimic the goal-oriented behaviour of agents, default parameters are typically sufficient for agent decision making. Key parameters can be adjusted if more precision in decision making is desired, but these adjustments will come at a cost of simulation efficiency. For example, increasing `ga_popsize` or `ga_mingen`, or decreasing `ga_converge_crit`, might fine tune strategies more effectively, but this will cause the genetic algorithm to take longer every time that it is run, ultimately slowing down GMSE simulations. Alternativey, setting `group_think = TRUE` will greatly speed up GMSE simulations when many users are being simulated, but this comes at the cost of among-user variation in decision making. Overall, we recommend first using default values in the genetic algorithm before exploring how other parameter value options affect simulation dynamics; for a more general discussion about selecting parameter values in genetic algorithms, see @Hamblin2013.
 
 
 Future development of fitness functions
