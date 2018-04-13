@@ -17,7 +17,7 @@ test_that("Dimensions of simulation observation output are correct", {
 })
 
 test_that("Dimensions of simulation paras output are correct", {
-    expect_equal(dim(sim[[3]])[2], 105);
+    expect_equal(dim(sim[[3]])[2], 106);
 })
 
 test_that("Dimensions of simulation landscape output are correct", {
