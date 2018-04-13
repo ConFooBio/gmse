@@ -1014,11 +1014,11 @@ paras_errors <- function(input_list){
     if(is.na(input_list[31]) == FALSE & input_list[31] %% 1 != 0){
         stop("ERROR: ga_chooseK must be greater than zero");
     }
-    if(input_list[37] < 1 | input_list[37] > 10000){
-        stop("User budget needs to be between 1 and 10000");
+    if(input_list[37] < 1 | input_list[37] > 100000){
+        stop("User budget needs to be between 1 and 100000");
     }
-    if(input_list[38] < 1 | input_list[37] > 10000){
-        stop("Manager budget needs to be between 1 and 10000");
+    if(input_list[38] < 1 | input_list[37] > 100000){
+        stop("Manager budget needs to be between 1 and 100000");
     }
     if(input_list[40]  <  1){
         stop("ERROR: Must have a positive number of initial resources");
@@ -1060,8 +1060,6 @@ paras_errors <- function(input_list){
         stop("ERROR: group_think must be TRUE/FALSE");
     }
 }
-
-
 
 argument_list <- function(res_mod, obs_mod, man_mod, use_mod, oth_vals){
     oth_names   <- names(oth_vals);
