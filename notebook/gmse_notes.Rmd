@@ -33,8 +33,10 @@ library(rhandsontable)
 
 <br>
 
-[![](http://www.r-pkg.org/badges/version/GMSE?color=yellowgreen)](https://cran.r-project.org/package=GMSE) [![](http://cranlogs.r-pkg.org/badges/grand-total/GMSE?color=yellowgreen)](http://cranlogs.r-pkg.org/badges/grand-total/GMSE)
-[![](http://cranlogs.r-pkg.org/badges/last-month/GMSE?color=yellowgreen)](http://cranlogs.r-pkg.org/badges/last-month/GMSE)
+<!--- 
+[![](https://www.r-pkg.org/badges/version/GMSE?color=yellowgreen)](https://cran.r-project.org/package=GMSE) [![](https://cranlogs.r-pkg.org/badges/grand-total/GMSE?color=yellowgreen)](http://cranlogs.r-pkg.org/badges/grand-total/GMSE)
+[![](https://cranlogs.r-pkg.org/badges/last-month/GMSE?color=yellowgreen)](http://cranlogs.r-pkg.org/badges/last-month/GMSE)
+--->
 
 ********************************************************************************
 
@@ -47,9 +49,13 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - **2018**
+
+     - **APR** [13](#u-13-APR-2018)
+
  - **2017**
 
-     - **DEC** [13](#u-13-DEC-2017), [21](#u-21-DEC-2017)
+     - **DEC** [21](#u-21-DEC-2017), [13](#u-13-DEC-2017)
      - **NOV** [1](#u-1-NOV-2017)
      - **OCT** [23](#u-23-OCT-2017), [19](#u-19-OCT-2017), [16](#u-16-OCT-2017), [13](#u-13-OCT-2017), [12](#u-12-OCT-2017), [6](#u-6-OCT-2017)
      - **SEP** [28](#u-28-SEP-2017), [27](#u-27-SEP-2017), [26](#u-26-SEP-2017), [25](#u-25-SEP-2017), [22](#u-22-SEP-2017), [15](#u-15-SEP-2017), [13](#u-13-SEP-2017), [8](#u-8-SEP-2017), [6](#u-6-SEP-2017)
@@ -90,6 +96,49 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-13-APR-2018">Update: 13 APR 2018</a>
+
+I have re-worked the way that a manager restimates how the change in their policy affects users' actions. The new `new_act` function in the genetic algorithm (`games.c`) performs well for getting more precise cost settings. The former way of doing it was much more of a blunt instrument, and it had a ceiling issue -- that is, the manager would believe that higher costs caused fewer actions *even when* the resulting cost was over the users' budgets.
+
+```
+/* =============================================================================
+ * This function updates an action based on the change in costs & paras
+ *     old_cost: The old cost of an action, as calculated in policy_to_counts
+ *     new_cost: The new cost of an action, as calculated in policy_to_counts
+ *     paras: Vector of global parameters
+ * ========================================================================== */
+int new_act(double old_cost, double new_cost, double old_act, double *paras){
+    
+    int total_acts;
+    double users, max_to_spend, acts_per_user, cost_per_user, total_cost;
+    double pr_on_act, budget_for_act, mgr_budget, min_cost;
+    
+    users        = paras[54] - 1; /* Minus one for the manager */
+    min_cost     = paras[96];     /* Minimum cost of an action */
+    max_to_spend = paras[97];     /* Maximum per user budget   */
+    mgr_budget   = paras[105];    /* Manager's total budget    */
+    
+    total_cost    = 0.0;
+    if(old_cost < mgr_budget){
+        total_cost    = old_act * old_cost; /* Total cost devoted to action */
+    }
+
+    cost_per_user = (total_cost / users); /* Cost devoted per user */
+    pr_on_act     = cost_per_user / max_to_spend;    /* Pr. devoted to action */
+
+    /* Assume that the proportion of the budget a user spends will not change */
+    budget_for_act = max_to_spend * pr_on_act;
+
+    /* Calculate how many actions to expect given acts per user and users */
+    acts_per_user  = budget_for_act / (new_cost + min_cost);  
+    total_acts     = (double) users * acts_per_user;
+
+    return(total_acts);
+}
+```
+
+This new way of assessing how users will act is now the function to be run in the background of all manager genetic agorithms. Very nicely, this also resolves an annoyance with the maximum allowed budgets. Previously, it was unclear why maximum budgets greater than 10000 were causing problems (managers were making bad predictions). I have now set the maximum budget to an order of magnitude higher, and there are no longer any apparent issues. A new version of GMSE will soon have this update.
 
 > <a name="u-21-DEC-2017">Update: 21 DEC 2017</a>
 
