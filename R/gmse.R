@@ -59,7 +59,7 @@
 #'@param land_ownership This value defines whether stakeholders own land and their actions are restricted to land that they own. If FALSE, then stakeholders can act on any landscape cell; if TRUE, then agents can only act on their own cells. The default of this value is FALSE.
 #'@param manage_freq This is the frequency with which policy is set by managers; a value of 1 means that policy is set in the manager model every time step; a value of 2 means that poilcy is set in the manager model every other time step, etc. The default value is 1.
 #'@param converge_crit This is the convergence criteria for terminating a genetic algorithm. After continuing for the minimum number of generations, `ga_mingen`, the genetic algorithm will terminate if the convergence criteria is met. Usually making this criteria low doesn't do much to improve adaptive strategies; the default value is 1, which means that the genetic algorithm will continue as long as there is greater than a 1 percent increase in strategy fitness.
-#'@param manager_sense This adjusts the sensitivity that a manager assumes their actions have with respect to changes in costs (their policy). For example, given a `manage_sense` value of 0.1, if the cost of culling resources doubles, then instead of a manager assuming the the number of culled resources will be cut in half, the manager will instead assume that the number of resources culled will be cut by one half times one tenth. As a general rule, a value of ca 0.1 allows the manager to predict stake-holder responses to policy accurately; future versions of GMSE could allow managers to adjust this dynamically based on simulation history.
+#'@param manager_sense This adjusts the sensitivity that a manager assumes their actions have with respect to changes in costs (their policy). For example, given a `manage_sense` value of 0.8, if the cost of culling resources doubles, then instead of a manager assuming the the number of culled resources per user will be cut in half, the manager will instead assume that the number of resources culled will be cut by one half times eight tenths. As a general rule, a value of ca 0.8 allows the manager to predict stake-holder responses to policy accurately; future versions of GMSE could allow managers to adjust this dynamically based on simulation history.
 #'@param public_land The proportion of the landscape that will be public, and not owned by stakeholders. The remaining proportion of the landscape will be evenly divided among stakeholders. Note that this option is only available when land_ownership == TRUE.
 #'@param group_think If TRUE, all users will have identical actions; the genetic algorithm will find actions for one user and copy them for all users. This is a useful option if a lot of users are required but variation among user decisions can be ignored.
 #'@return A large list is returned that includes detailed simulation histories for the resource, observation, management, and user models. This list includes eight elements, most of which are themselves complex lists of arrays: (1) A list of length `time_max` in which each element is an array of resources as they exist at the end of each time step. Resource arrays include all resources and their attributes (e.g., locations, growth rates, offspring, how they are affected by stakeholders, etc.). (2) A list of length `time_max` in which each element is an array of resource observations from the observation model. Observation arrays are similar to resource arrays, except that they can have a smaller number of rows if not all resources are observed, and they have additional columns that show the history of each resource being observed over the course of `times_observe` observations in the observation model. (3) A 2D array showing parameter values at each time step (unique rows); most of these values are static but some (e.g., resource number) change over time steps. (4) A list of length `time_max` in which each element is an array of the landscape that identifies proportion of crop production per cell. This allows for looking at where crop production is increased or decreased over time steps as a consequence of resource and stakeholder actions. (5) The total time the simulation took to run (not counting plotting time). (6) A 2D array of agents and their traits. (7) A list of length `time_max` in which each element is a 3D array of the costs of performing each action for managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in costs of particular actions can therefore be be examined over time. (8) A list of length `time_max` in which each element is a 3D array of the actions performed by managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in actions of agents can therefore be examined over time. Because the above lists cannot possibly be interpreted by eye all at once in the simulation output, it is highly recommended that the contents of a simulation be stored and interprted individually if need be; alternativley, simulations can more easily be interpreted through plots when `plotting = TRUE`.
@@ -123,7 +123,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   land_ownership = FALSE, # Do stake-holders act on their land?
                   manage_freq    = 1,     # Frequency that management enacted
                   converge_crit  = 1,     # Convergence criteria
-                  manager_sense  = 0.1,   # Manager sensitivity
+                  manager_sense  = 0.8,   # Manager sensitivity
                   public_land    = 0,     # Proportion of landscape public
                   group_think    = FALSE  # All users behave identically
 ){
@@ -134,8 +134,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     if(observe_type == 1){
         times_observe <- 2;
     }
-    if(user_budget > 10000 | manager_budget > 10000){
-        stop("User and manager budgets cannot exceed 10000");
+    if(user_budget > 100000 | manager_budget > 100000){
+        stop("User and manager budgets cannot exceed 100000");
     }
     if(user_budget < 1 | manager_budget < 1){
         stop("User and manager budgets must be at least 1");
@@ -270,6 +270,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     ldo <- land_ownership;
     pub <- public_land;
     gtk <- group_think;
+    mab <- manager_budget;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -346,9 +347,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                0,       # 72. Total actions in the action array
                17,      # 73. The column to adjust the castration of a resource
                0,       # 74. Manager's projected change if resource moved
-               -1*mas*(1+lambda), # 75. Manager's proj change if res killed
-               -1*mas*lambda,     # 76. Manager's proj change if res castrated
-               1*lambda,          # 77. Manager's proj change if reso growth +
+               -1*mas,        # 75. Manager's proj change if res killed
+               -1*mas*lambda, # 76. Manager's proj change if res castrated
+               1*lambda,      # 77. Manager's proj change if reso growth +
                1*mas,   # 78. Manager's projected change if resource offspring +
                tcy,     # 79. User's improvement of land (proportion)
                1,       # 80. Landscape layer on which crop yield is located
@@ -376,7 +377,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                fxr,     # 102. The number of recaptures in RMR estimation
                ldo,     # 103. Is there land ownership among stakeholders
                pub,     # 104. How much public land is there (proportion)
-               1        # 105. New value to check memory allocation
+               mab      # 105. Manager budget
     );
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
