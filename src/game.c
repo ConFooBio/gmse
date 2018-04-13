@@ -417,7 +417,7 @@ void apply_min_costs(double ***population, double *paras, int agentID){
  *    agent_array: The agent array
  * ========================================================================== */
 void sum_array_layers(double ***array, double **out, int get_mean, 
-                      double *paras, double **agent_array){
+                      double *paras, double **agent_array, int layer_start){
     
     int row, col, layer, layer_count, ROWS, COLS, layers;
 
@@ -427,7 +427,7 @@ void sum_array_layers(double ***array, double **out, int get_mean,
     
     layer_count = 0;
     if(get_mean == 1){
-        for(layer = 0; layer < layers; layer++){
+        for(layer = layer_start; layer < layers; layer++){
             if(agent_array[layer][1] > 0){
                 layer_count++;
             }
@@ -436,7 +436,7 @@ void sum_array_layers(double ***array, double **out, int get_mean,
     for(row = 0; row < ROWS; row++){
         for(col = 0; col < COLS; col++){
             out[row][col] = 0;
-            for(layer = 0; layer < layers; layer++){
+            for(layer = layer_start; layer < layers; layer++){
                 if(agent_array[layer][1] > 0){
                     if(get_mean == 1){
                         out[row][col] += array[row][col][layer] / layer_count;
@@ -459,25 +459,28 @@ int new_act(double old_cost, double new_cost, double old_act, double *paras){
     
     int total_acts;
     double users, max_to_spend, acts_per_user, cost_per_user, total_cost;
-    double pr_on_act, budget_for_act;
+    double pr_on_act, budget_for_act, mgr_budget, min_cost;
     
-    users        = (double) paras[54] - 1; /* Minus one for the manager */
-    max_to_spend = (double) paras[97];     /* Maximum per user budget   */
+    users        = paras[54] - 1; /* Minus one for the manager */
+    min_cost     = paras[96];     /* Minimum cost of an action */
+    max_to_spend = paras[97];     /* Maximum per user budget   */
+    mgr_budget   = paras[105];    /* Manager's total budget    */
     
-    total_cost    = old_act * old_cost;  /* Total cost devoted to action */
+    total_cost    = 0.0;
+    if(old_cost < mgr_budget){
+        total_cost    = old_act * old_cost; /* Total cost devoted to action */
+    }
 
-    cost_per_user = total_cost / users;           /* Cost devoted per user */
-    pr_on_act     = cost_per_user / max_to_spend; /* Prop. devoted to action */
+    cost_per_user = (total_cost / users); /* Cost devoted per user */
+    pr_on_act     = cost_per_user / max_to_spend;    /* Pr. devoted to action */
 
     /* Assume that the proportion of the budget a user spends will not change */
     budget_for_act = max_to_spend * pr_on_act;
 
     /* Calculate how many actions to expect given acts per user and users */
-    acts_per_user  = floor(new_cost / budget_for_act);  
-    total_acts     = users * acts_per_user;
-    
-    printf("%f\t%f\t%f\t%f\t%f\n\n", total_cost, cost_per_user, pr_on_act, budget_for_act, acts_per_user);
-    
+    acts_per_user  = budget_for_act / (new_cost + min_cost);  
+    total_acts     = (double) users * acts_per_user;
+
     return(total_acts);
 }
 
@@ -562,8 +565,8 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
         m_lyr++;
     }
     
-    sum_array_layers(ACTION, merged_acts, 0, paras, agent_array);
-    sum_array_layers(COST,  merged_costs, 0, paras, agent_array);
+    sum_array_layers(ACTION, merged_acts, 0, paras, agent_array, 0);
+    sum_array_layers(COST,  merged_costs, 1, paras, agent_array, 1);
     
     for(i = 0; i < ROWS; i++){ /* Actions > 0 to respond to possible change */
         for(j = 7; j < COLS; j++){
