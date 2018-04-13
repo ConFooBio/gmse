@@ -450,6 +450,38 @@ void sum_array_layers(double ***array, double **out, int get_mean,
 }
 
 /* =============================================================================
+ * This function updates an action based on the change in costs & paras
+ *     old_cost: The old cost of an action, as calculated in policy_to_counts
+ *     new_cost: The new cost of an action, as calculated in policy_to_counts
+ *     paras: Vector of global parameters
+ * ========================================================================== */
+int new_act(double old_cost, double new_cost, double old_act, double *paras){
+    
+    int total_acts;
+    double users, max_to_spend, acts_per_user, cost_per_user, total_cost;
+    double pr_on_act, budget_for_act;
+    
+    users        = (double) paras[54] - 1; /* Minus one for the manager */
+    max_to_spend = (double) paras[97];     /* Maximum per user budget   */
+    
+    total_cost    = old_act * old_cost;  /* Total cost devoted to action */
+
+    cost_per_user = total_cost / users;           /* Cost devoted per user */
+    pr_on_act     = cost_per_user / max_to_spend; /* Prop. devoted to action */
+
+    /* Assume that the proportion of the budget a user spends will not change */
+    budget_for_act = max_to_spend * pr_on_act;
+
+    /* Calculate how many actions to expect given acts per user and users */
+    acts_per_user  = floor(new_cost / budget_for_act);  
+    total_acts     = users * acts_per_user;
+    
+    printf("%f\t%f\t%f\t%f\t%f\n\n", total_cost, cost_per_user, pr_on_act, budget_for_act, acts_per_user);
+    
+    return(total_acts);
+}
+
+/* =============================================================================
  * This function updates a temporary action array for changes in policy
  *     population: The population array of agents in the genetic algorithm
  *     merged_acts: The action 2D array of summed elements across 3D ACTION
@@ -465,7 +497,7 @@ void policy_to_counts(double ***population, double **merged_acts, int agent,
                       int action_row, int manager_row, double *paras){
     
     int col, COLS;
-    double old_cost, new_cost, cost_change, new_action;
+    double old_cost, new_cost, old_act, cost_change, new_action;
     
     COLS   = (int) paras[69];
     
@@ -476,9 +508,10 @@ void policy_to_counts(double ***population, double **merged_acts, int agent,
             new_cost = 1;
             population[manager_row][col][agent] = new_cost;
         }
-        cost_change = old_cost / new_cost;
-        new_action  = merged_acts[action_row][col] * cost_change;
-        act_change[action_row][col] = floor(new_action);
+        old_act     = merged_acts[action_row][col];
+        new_action  = new_act(old_cost, new_cost, old_act, paras);
+
+        act_change[action_row][col] = new_action;
     }
 }
 
@@ -530,7 +563,7 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
     }
     
     sum_array_layers(ACTION, merged_acts, 0, paras, agent_array);
-    sum_array_layers(COST,  merged_costs, 1, paras, agent_array);
+    sum_array_layers(COST,  merged_costs, 0, paras, agent_array);
     
     for(i = 0; i < ROWS; i++){ /* Actions > 0 to respond to possible change */
         for(j = 7; j < COLS; j++){
