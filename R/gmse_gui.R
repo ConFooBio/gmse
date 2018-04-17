@@ -215,7 +215,7 @@ gmse_gui <- function(){
                                         sliderInput("res_birth_K",
                                                     "Carrying capacity applied to birth",
                                                     min   = 10,
-                                                    max   = 10000,
+                                                    max   = 100000,
                                                     step  = 10,
                                                     value = 10000)
                                ),
@@ -224,7 +224,7 @@ gmse_gui <- function(){
                                         sliderInput("res_death_K",
                                                     "Carrying capacity applied to death",
                                                     min   = 10,
-                                                    max   = 10000,
+                                                    max   = 100000,
                                                     step  = 10,
                                                     value = 2000)
                                ),
@@ -242,7 +242,7 @@ gmse_gui <- function(){
                                         sliderInput("RESOURCE_ini",
                                                     "Initial population size",
                                                     min   = 10,
-                                                    max   = 10000,
+                                                    max   = 100000,
                                                     step  = 10,
                                                     value = 1000)
                                )
@@ -360,7 +360,7 @@ gmse_gui <- function(){
                                         sliderInput("manager_budget",
                                                     "Total manager policy-setting budget",
                                                     min   = 100,
-                                                    max   = 10000,
+                                                    max   = 100000,
                                                     step  = 100,
                                                     value = 1000)
                                ),
@@ -369,7 +369,7 @@ gmse_gui <- function(){
                                         sliderInput("manage_target",
                                                     "Target size of the resource population",
                                                     min   = 10,
-                                                    max   = 10000,
+                                                    max   = 100000,
                                                     step  = 10,
                                                     value = 1000)
                                ),
@@ -486,7 +486,7 @@ gmse_gui <- function(){
                                         sliderInput("user_budget",
                                                     "Total user action budget",
                                                     min   = 100,
-                                                    max   = 10000,
+                                                    max   = 100000,
                                                     step  = 100,
                                                     value = 1000)
                                )
