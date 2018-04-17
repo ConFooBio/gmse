@@ -88,10 +88,10 @@ test_that("Dimensions of observation arrays in user model are correct", {
 })
 
 test_that("Users act according to costs", {
-    expect_equal(min(usem[[5]][,1:7,1]), 10001);
-    expect_equal(max(usem[[5]][,1:7,2]), 10001);
+    expect_equal(min(usem[[5]][,1:7,1]), 100001);
+    expect_equal(max(usem[[5]][,1:7,2]), 100001);
     expect_equal(min(usem[[5]]), 10);
-    expect_equal(max(usem[[5]]), 10001);
+    expect_equal(max(usem[[5]]), 100001);
     expect_equal(usem[[4]][1,8:13,2], c(0, 0, 1, 0, 1, 0));
     expect_equal(usem[[4]][2,8:13,2], c(1, 1, 1, 1, 0, 0));
     expect_equal(usem[[4]][3,8:13,2], c(0, 0, 2, 0, 0, 1));

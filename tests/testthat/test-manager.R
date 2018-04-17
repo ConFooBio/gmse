@@ -89,10 +89,10 @@ test_that("Dimensions of observation arrays in manager model are correct", {
 })
 
 test_that("Manager sets costs of acting on resources", {
-    expect_equal(min(mana[[5]][,1:7,1]), 10001);
-    expect_equal(max(mana[[5]][,1:7,2]), 10001);
+    expect_equal(min(mana[[5]][,1:7,1]), 100001);
+    expect_equal(max(mana[[5]][,1:7,2]), 100001);
     expect_equal(min(mana[[5]]), 10);
-    expect_equal(max(mana[[5]]), 10001);
+    expect_equal(max(mana[[5]]), 100001);
     expect_equal(mana[[4]][4:5,8:13,1], mana[[5]][1:2,8:13,2]);
 })
 

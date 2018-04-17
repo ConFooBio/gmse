@@ -67,8 +67,8 @@ comb_3 <- gmse_apply(alt_res, alt_obs, manager, alt_usr);
 test_that("Combination model 3", {
     expect_equal(comb_3$resource_results, 1500);
     expect_equal(comb_3$observation_results, 1350);
-    expect_equal(comb_3$manager_results, 10);
-    expect_equal(comb_3$user_results, 11);
+    expect_equal(is.numeric(comb_3$manager_results), TRUE);
+    expect_equal(is.numeric(comb_3$user_results), TRUE);
 })
 
 
@@ -95,8 +95,8 @@ comb_6 <- gmse_apply(alt_res, observation, manager, alt_usr);
 test_that("Combination model 6", {
     expect_equal(comb_6$resource_results, 1500);
     expect_equal(is.numeric(comb_6$observation_results), TRUE);
-    expect_equal(comb_6$manager_results, 10);
-    expect_equal(comb_6$user_results, 11);
+    expect_equal(is.numeric(comb_6$manager_results), TRUE);
+    expect_equal(is.numeric(comb_6$user_results), TRUE);
 })
 
 comb_7 <- gmse_apply(alt_res, observation, manager, user);

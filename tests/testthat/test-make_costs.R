@@ -35,7 +35,7 @@ test_that("Dimensions of cost array are correct", {
 })
 
 test_that("Values on the cost array are accurate", {
-    expect_equal(c(min(cost), max(cost)), c(10, 10001));
+    expect_equal(c(min(cost), max(cost)), c(10, 100001));
 })
 
 set.seed(Sys.time())
