@@ -46,56 +46,57 @@ Simulating goose management
 Below, we first allow only the culling of geese by users and plot the dynamics of the social-ecological from a single simulation. Next, we run the same simulation but allow users to scare geese from their landscape cells; we then use the model to make inferences regarding how scaring as a management option might affect goose population dynamics, agricultural production, and conservation conflict in the system.
 
 ```{r, echo = TRUE}
-sim <- gmse(manager_budget = 100000, user_budget = 100000, res_death_K = 93870, 
-            manage_target = 70000, RESOURCE_ini = 35000, plotting = FALSE, 
-            stakeholders = 80, land_ownership = TRUE, public_land = 0.4, 
-            scaring = FALSE, lambda = 0.150, remove_pr = 0.122, time_max = 20, 
-            res_death_type = 3, res_consume = 0.01, res_birth_K = 200000, 
-            observe_type = 3, agent_view = 1);
+sim_1 <- gmse(manager_budget = 10000, user_budget = 10000, plotting = FALSE, 
+              res_death_K = 93870, manage_target = 70000, RESOURCE_ini = 35000, 
+              stakeholders = 80, land_ownership = TRUE, public_land = 0.4, 
+              scaring = FALSE, lambda = 0.150, remove_pr = 0.122, time_max = 20, 
+              res_death_type = 3, res_consume = 0.01, res_birth_K = 200000, 
+              observe_type = 3, agent_view = 1);
 ```
 
-The results are plotted below.
+The results of the above simulation are plotted in Figure SI3-1 below. 
 
 ```{r, eval = TRUE, fig.height = 8}
-plot_gmse_results(res = sim$resource, obs = sim$observation, land = sim$land, 
-                  agents = sim$agents, paras = sim$paras, ACTION = sim$action, 
-                  COST = sim$cost);
+plot_gmse_results(res = sim_1$resource, obs = sim_1$observation, 
+                  land = sim_1$land, agents = sim_1$agents, paras = sim_1$paras, 
+                  ACTION = sim_1$action, COST = sim_1$cost);
 ```
 
 Look at the conflict
 
 ```{r, eval = TRUE, fig.height = 7, fig.width = 6}
-plot_gmse_effort(sim$agents, sim$paras, ACTION = sim$action, COST = sim$cost);
+plot_gmse_effort(sim_1$agents, sim_1$paras, ACTION = sim_1$action, 
+                 COST = sim_1$cost);
 ```
 
 Now try scaring to see what happens.
 
 ```{r, echo = TRUE, fig.height = 8}
-sim <- gmse(manager_budget = 10000, user_budget = 10000, res_death_K = 93870, 
-            manage_target = 70000, RESOURCE_ini = 63000, plotting = FALSE, 
-            stakeholders = 20, land_ownership = TRUE, land_dim_1 = 50, 
-            land_dim_2 = 50, public_land = 0.4, scaring = TRUE, lambda = 0.275, 
-            remove_pr = 0.122, time_max = 20, res_death_type = 3, ga_seedrep = 0, 
-            ga_mingen = 100, res_consume = 0.02);
+sim_2 <- gmse(manager_budget = 10000, user_budget = 10000, plotting = FALSE, 
+              res_death_K = 93870, manage_target = 70000, RESOURCE_ini = 35000, 
+              stakeholders = 80, land_ownership = TRUE, public_land = 0.4, 
+              scaring = TRUE, lambda = 0.150, remove_pr = 0.122, time_max = 20, 
+              res_death_type = 3, res_consume = 0.01, res_birth_K = 200000, 
+              observe_type = 3, agent_view = 1);
 ```
 
 The results are plotted below.
 
-References
---------------------------------------------------------------------------------
-
 ```{r, eval = TRUE, fig.height = 8}
-plot_gmse_results(res = sim$resource, obs = sim$observation, land = sim$land, 
-                  agents = sim$agents, paras = sim$paras, ACTION = sim$action, 
-                  COST = sim$cost);
+plot_gmse_results(res = sim_2$resource, obs = sim_2$observation, 
+                  land = sim_2$land, agents = sim_2$agents, paras = sim_2$paras,
+                  ACTION = sim_2$action, COST = sim_2$cost);
 ```
 
 Look at the conflict
 
 ```{r, eval = TRUE, fig.height = 7, fig.width = 6}
-plot_gmse_effort(sim$agents, sim$paras, ACTION = sim$action, COST = sim$cost);
+plot_gmse_effort(sim_2$agents, sim_2$paras, ACTION = sim_2$action, 
+                 COST = sim_2$cost);
 ```
 
 
+References
+--------------------------------------------------------------------------------
 
 
