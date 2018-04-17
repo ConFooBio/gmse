@@ -56,20 +56,21 @@ sim_1 <- gmse(manager_budget = 10000, user_budget = 10000, plotting = FALSE,
 
 The results of the above simulation are plotted in Figure SI3-1 below. 
 
-```{r, eval = TRUE, fig.height = 8}
+```{r, eval = TRUE, fig.height = 8, fig.cap = "Results of a GMSE simulation using parameters estimated for Taiga Been Geese Central Management Unit. This example includes 80 farmers whose objective is to maximise their agricultural output, and one manager whose objective is to keep geese at a target abundance, over 20 simulated time steps. Goose locations at the end of the simulation are shown in the upper left panel, while the upper right panel shows the same landscape broken down among the 80 farmers (upper 60% of the landscape in multiple colours), along with non-agricultural land (lower 40% of the landscape in blue). Actual goose abundance is shown in the middle left panel (black solid line), along with its estimate by the manager (blue solid line). Horizontal red and blue dotted lines show landscape-level goose carrying capacity enacted on adult mortality and the manager's target for goose abundance, respectively. The organge line shows the total percent of landscape cells (including non-farmed cells) yield, as decreased by geese. The middle right panel shows this yield for each individual farmer, and for the public land (lower line in blue). The lower left panel shows the cost of culling for farmers, as set by the manager, and the lower right panel shows the total number of culls attempted by farmers over time."}
 plot_gmse_results(res = sim_1$resource, obs = sim_1$observation, 
                   land = sim_1$land, agents = sim_1$agents, paras = sim_1$paras, 
                   ACTION = sim_1$action, COST = sim_1$cost);
 ```
 
-Look at the conflict
+The above Figure SI3-1 shows the dynamics of goose abundance and agricultural yield, along with how managers react to change in abundance and farmers react to manager policy. In the case of the simulation above, goose population begins to decline, causing managers to set policy to increase the cost of culling. This higher cost of culling restricts farmers from culling on their land, leading to fewer total culling actions. In this case, the abundance of geese continues downward, while agricultural yield increases over time. We can investigate the conflict between management policy and farmers using the `plot_gmse_effort` function in GMSE.
 
-```{r, eval = TRUE, fig.height = 7, fig.width = 6}
+```{r, eval = TRUE, fig.height = 7, fig.width = 6, fig.cap = "Permissiveness that each manager exhibits for each farmer action (black lines) and the effort that each individual farmer puts into each action over time (coloured lines). Each panel row reports a different action (in decreasing order: scaring, culling, castration, feeding, and helping). The left axis shows the permissiveness that a manager has for the focal action (black line), which is calculated as 100 minus the percent of the manager's budget that is put into increasing the cost of the focal action. For example, if the manager puts all of their effort (total budget) into increasing the cost of culling, then permissiveness of culling is 0; if the manager puts no effort into increasing culling cost, then permissiveness of culling is 100. The right axis shows effort that farmers put into an action (coloured lines), which defined as the percentage of a farmer's budget put into a particular action (note, values might not add up to 100 because farmers are not forced to use their entire budget)."}
 plot_gmse_effort(sim_1$agents, sim_1$paras, ACTION = sim_1$action, 
                  COST = sim_1$cost);
 ```
 
-Now try scaring to see what happens.
+Black lines indicate how permissive a manager is toward a particular action on a scale of 0 to 100, while coloured lines indicate how much effort farmers expend on a given action. When black lines are far below coloured lines, we can (cautiously) interpret this as a conflict between management of the goose population and farmer's interest in agricultural production. These time periods represent instances in which managers are not at very permissive of a particular action (in this case culling), but farmers continue to expend effort to do the action anyway.
+
 
 ```{r, echo = TRUE, fig.height = 8}
 sim_2 <- gmse(manager_budget = 10000, user_budget = 10000, plotting = FALSE, 
