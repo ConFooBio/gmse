@@ -241,9 +241,9 @@ plot_gmse_effort <- function(agents, paras, ACTION, COST){
 An example of management conflict using GMSE
 ================================================================================
 
-Agents in GMSE (managers and users) are goal-oriented, and their behaviour is therefore driven to maximise a particular utility of interest such as a target density of resources (managers), or a suitable resource or landscape harvest size (users). This model feature allows GMSE to evaluate the actions of agents in the context of their individual objectives, and to therefore quantify the degree to which those objectives are or are not achieved. When the actions of one party clashes with the objectives of another party, the objectives of one might be expressed at the expense of the other, causing conservation conflict [@Redpath2013]. Currently, there is no standard way to measure conservation conflict in a social-ecological system, and previous modelling approaches have not meaningfully separated agent objectives from agent actions. We suggest that a starting point to developing a useful metric of conservation conflict is to quantify the deviation of an individual's actions from their objectives, the former of which is restricted by the actions of other individuals. Here we show how GMSE can be used to evaluate the amount of conflict in a simulated social-ecological system under different management options.
+Agents in GMSE (managers and users) are goal-oriented, and their behaviour is therefore driven to maximise a particular utility of interest such as a target density of resources (managers), or a suitable resource or landscape harvest size (users). This model feature allows GMSE to evaluate the actions of agents in the context of their individual objectives, and to therefore quantify the degree to which those objectives are or are not achieved. When the actions of one party clashes with the objectives of another party, the objectives of one might be expressed at the expense of the other, causing conservation conflict [@Redpath2013]. Currently, there is no standard way to measure conservation conflict in a social-ecological system, and previous modelling approaches have not meaningfully separated agent objectives from agent actions. We suggest that a starting point to developing a useful metric of conservation conflict is to quantify the deviation of an individual's actions from their objectives  (i.e., of actual actions from desired actions), the former of which is restricted by the actions of other individuals. Here we show how GMSE can be used to evaluate the amount of conflict in a simulated social-ecological system under different management options.
 
-To demonstrate how GMSE can be used to understand conflict in social-ecological systems, we build upon the [example of resource management](https://www.biorxiv.org/content/biorxiv/early/2017/11/17/221432.full.pdf#page=5) in the main text. We consider a protected population of waterfowl that exploits agricultural land and is therefore a source of conservation conflict [e.g., @Fox2017a; @Mason2017; @Tulloch2017]. As in the main text example, the objective of managers is to keep waterfowl at a target abundance, while the objective of farmers is to maximise agricultural production on their landscape. Here we consider a more complex simulation to reflect a scenario that is likely to occur in a real social-ecological system. We parameterise our model using demographic information from the Taiga Bean Geese (*Anser fabalis fabalis*), a managed population that is hunted for sport in Fennoscandinavia [@Johnson2018]. Taiga Bean Geese can also cause agricultural damage, which can potentially lead to conflict between farmers and management objectives [@Johnson2018].
+To demonstrate how GMSE can be used to understand conflict in social-ecological systems, we build upon the [example of resource management](https://www.biorxiv.org/content/biorxiv/early/2017/11/17/221432.full.pdf#page=5) in the main text. We consider a protected population of waterfowl that exploits agricultural land and is therefore a source of conservation conflict [e.g., @Fox2017a; @Mason2017; @Tulloch2017]. As in the main text example, the objective of the manager is to keep waterfowl at a target abundance, while the objective of farmers is to maximise agricultural production on their landscape. Here we consider a more complex simulation, with a level of detail that more accurately reflects a scenario that might occur in a real social-ecological system. We parameterise our model using demographic information from the Taiga Bean Goose (*Anser fabalis fabalis*), a managed population that is hunted for sport in Fennoscandinavia [@Johnson2018]. Taiga Bean Geese can cause agricultural damage, which can potentially lead to conflict between farmers and management objectives [@Johnson2018].
 
 Using demographic parameters in simulations
 --------------------------------------------------------------------------------
@@ -291,10 +291,6 @@ Black lines indicate how permissive a manager is toward a particular action on a
 
 We can model the consequences for goose population dynamics, agricultural produciton, and conservation conflict when scaring is a policy option available to the manager. The code below is a simulation identical to the one just described, but with a scaring option included through `scaring = TRUE`.
 
-```{r, echo = FALSE}
-sim_2 <- gmse(time_max = 30, scaring = TRUE, plotting = FALSE);
-```
-
 ```{r, echo = TRUE, fig.height = 6, eval = FALSE}
 sim_2 <- gmse(manager_budget = 10000, user_budget = 10000, res_death_K = 93870, 
              manage_target = 70000, RESOURCE_ini = 35000, plotting = FALSE, 
@@ -303,6 +299,12 @@ sim_2 <- gmse(manager_budget = 10000, user_budget = 10000, res_death_K = 93870,
              res_death_type = 3, res_consume = 0.02, res_birth_K = 200000, 
              observe_type = 3, agent_view = 1, converge_crit = 0.1);
 ```
+
+```{r, echo = FALSE, eval = TRUE}
+load("data/SI3-scare_sim.rda"); # Avoids long compiling time
+sim_2 <- sim;
+```
+
 
 The results are plotted in Figure 3. 
 
