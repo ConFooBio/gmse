@@ -601,6 +601,9 @@ plot_gmse_results <- function(res, obs, land, agents, paras, ACTION, COST){
     }
     
     ymaxi <- max(paras[,33]) + (0.1 * (max(paras[,33])));
+    if(ymaxi < para_vec[7]){
+        ymaxi <- para_vec[7] + (0.1 * para_vec[7]);
+    }
     
     time_max <- length(res);
     for(i in 1:(time_max-1)){
