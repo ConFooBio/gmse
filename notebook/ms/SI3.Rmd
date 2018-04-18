@@ -1,9 +1,10 @@
 ---
 title: 'GMSE: an R package for generalised management strategy evaluation'
-subtitle: Supporting Information 3
-author: A. Bradley Duthie&#xb9;&#xb3;, Jeremy J. Cusack&#xb9;, Isabel L. Jones&#xb9;, Erlend B. Nilsen&#xb2;, Roc&#0237;o A. Pozo&#xb9;, O. Sarobidy Rakotonarivo&#xb9;, Bram Van Moorter&#xb2;, and Nils Bunnefeld&#xb9;
-date: "[1] Biological and Environmental Sciences, University of Stirling, Stirling, UK
-[2] Norwegian Institute for Nature Research, Trondheim, Norway [3] alexander.duthie@stir.ac.uk"
+author: A. Bradley Duthie&#xb9;&#xb3;, Jeremy J. Cusack&#xb9;, Isabel L. Jones&#xb9;,
+  Erlend B. Nilsen&#xb2;, Roc&#0237;o A. Pozo&#xb9;, O. Sarobidy Rakotonarivo&#xb9;,
+  Bram Van Moorter&#xb2;, and Nils Bunnefeld&#xb9;
+date: '[1] Biological and Environmental Sciences, University of Stirling, Stirling,
+  UK [2] Norwegian Institute for Nature Research, Trondheim, Norway [3] alexander.duthie@stir.ac.uk'
 output:
   pdf_document:
     citation_package: natbib
@@ -12,16 +13,229 @@ output:
   word_document:
     fig_caption: yes
     reference_docx: docx_template.docx
-header-includes:
+header-includes: null
 linestretch: 1
-bibliography: gmse.bib
-biblio-style: apalike
-link-citations: true
+link-citations: yes
 linkcolor: blue
+bibliography: gmse.bib
+subtitle: Supporting Information 3
+biblio-style: apalike
 ---
 
 ```{r, echo = FALSE}
 library(GMSE);
+plot_gmse_effort <- function(agents, paras, ACTION, COST){
+    
+    cols      <- c("green", "indianred1", "indianred3", "deepskyblue1",
+                   "deepskyblue2");
+    
+    users    <- dim(agents[[1]])[1];
+    max_time <- length(ACTION);
+    
+    para_vec <- paras[1,];
+    
+    allowed  <- sum(para_vec[89:93]);
+
+    scar_cst  <- matrix(data = 0, nrow = max_time, ncol = users);
+    cull_cst  <- matrix(data = 0, nrow = max_time, ncol = users);
+    cast_cst  <- matrix(data = 0, nrow = max_time, ncol = users);
+    feed_cst  <- matrix(data = 0, nrow = max_time, ncol = users);
+    help_cst  <- matrix(data = 0, nrow = max_time, ncol = users);
+    
+    scar_act  <- matrix(data = 0, nrow = max_time, ncol = users);
+    cull_act  <- matrix(data = 0, nrow = max_time, ncol = users);
+    cast_act  <- matrix(data = 0, nrow = max_time, ncol = users);
+    feed_act  <- matrix(data = 0, nrow = max_time, ncol = users);
+    help_act  <- matrix(data = 0, nrow = max_time, ncol = users);
+
+    scar_eff  <- matrix(data = 0, nrow = max_time, ncol = users);
+    cull_eff  <- matrix(data = 0, nrow = max_time, ncol = users);
+    cast_eff  <- matrix(data = 0, nrow = max_time, ncol = users);
+    feed_eff  <- matrix(data = 0, nrow = max_time, ncol = users);
+    help_eff  <- matrix(data = 0, nrow = max_time, ncol = users);    
+
+    act_costs  <- matrix(data = 0, nrow = max_time, ncol = 5);
+    pol_effort <- matrix(data = 0, nrow = max_time, ncol = 5);
+    min_cost   <- para_vec[97];
+    
+    for(time in 1:max_time){
+        #-- Scaring cost and actions
+        scar_cst[time, 1] <- COST[[time]][3, 8, 1];
+        for(user in 2:users){
+            scar_cst[time, user] <- COST[[time]][1, 8, user];
+        }
+        scar_act[time, 1] <- ACTION[[time]][3, 8, 1] - min_cost;
+        for(user in 2:users){
+            scar_act[time, user] <- ACTION[[time]][1, 8, user];
+        }
+        scar_eff[time,] <- scar_act[time,]*scar_cst[time,]/agents[[time]][,17];
+        #-- Culling cost and actions
+        cull_cst[time, 1] <- COST[[time]][3, 9, 1];
+        for(user in 2:users){
+            cull_cst[time, user] <- COST[[time]][1, 9, user];
+        }
+        cull_act[time, 1] <- ACTION[[time]][3, 9, 1] - min_cost;
+        for(user in 2:users){
+            cull_act[time, user] <- ACTION[[time]][1, 9, user];
+        }
+        cull_eff[time,] <- cull_act[time,]*cull_cst[time,]/agents[[time]][,17];
+        #-- Castration cost and actions
+        cast_cst[time, 1] <- COST[[time]][3, 10, 1];
+        for(user in 2:users){
+            cast_cst[time, user] <- COST[[time]][1, 10, user];
+        }
+        cast_act[time, 1] <- ACTION[[time]][3, 10, 1] - min_cost;
+        for(user in 2:users){
+            cast_act[time, user] <- ACTION[[time]][1, 10, user];
+        }
+        cast_eff[time,] <- cast_act[time,]*cast_cst[time,]/agents[[time]][,17];
+        #-- Feeding cost and actions
+        feed_cst[time, 1] <- COST[[time]][3, 11, 1];
+        for(user in 2:users){
+            feed_cst[time, user] <- COST[[time]][1, 11, user];
+        }
+        feed_act[time, 1] <- ACTION[[time]][3, 11, 1] - min_cost;
+        for(user in 2:users){
+            feed_act[time, user] <- ACTION[[time]][1, 11, user];
+        }
+        feed_eff[time,] <- feed_act[time,]*feed_cst[time,]/agents[[time]][,17];
+        #-- Helping cost and actions
+        help_cst[time, 1] <- COST[[time]][3, 12, 1];
+        for(user in 2:users){
+            help_cst[time, user] <- COST[[time]][1, 12, user];
+        }
+        help_act[time, 1] <- ACTION[[time]][3, 12, 1] - min_cost;
+        for(user in 2:users){
+            help_act[time, user] <- ACTION[[time]][1, 12, user];
+        }
+        help_eff[time,] <- help_act[time,]*help_cst[time,]/agents[[time]][,17];
+    }
+
+    # -- Turn these into percentages:
+    scar_eff <- scar_eff * 100;
+    cull_eff <- cull_eff * 100;
+    cast_eff <- cast_eff * 100;
+    feed_eff <- feed_eff * 100;
+    help_eff <- help_eff * 100;
+    
+    par(mfrow = c(5, 1), mar = c(0, 0, 0, 0), oma = c(6, 6, 4, 6));
+    y1 <- 100;
+    y2 <- 130;
+    lcex  <- 1.5
+    if(max_time < 100){
+        lcex <- 0.9;
+    }
+    #---- Scaring
+    if(para_vec[89] == 1){
+        plot(x = 1:max_time, y = 100 - scar_eff[,1], type = "l", lwd = 2, 
+             cex.axis = 1.5, xaxt = "n", ylim = c(0, y2), yaxt = "n");
+        axis(side = 2, at = c(50, 100), labels = c(50, 100), cex.axis = 1.5);
+        par(new = TRUE);
+        plot(x = 1:max_time, y = scar_eff[,2], type = "n", lwd = 2, 
+             ylim = c(0, y2), xaxt="n", yaxt="n", 
+             cex.axis = 1.5);
+        for(stakeholder in 2:users){
+            points(x = 1:max_time, y = scar_eff[,stakeholder], type = "l", 
+                   lwd = 1, col = cols[1]);
+        }
+        axis(side = 4, at = c(50, 100),  labels = c(50, 100), cex.axis = 1.5);
+        legend(x = 1, y = 135, fill = cols[1:5], horiz = TRUE,
+               legend = c("scaring", "culling", "castration", "feeding", 
+                          "helping"), bty = "n", cex = lcex);
+        abline(h = 105, lwd = 2);
+    }else{
+        plot(x = 1:max_time, y = scar_eff[,1], type = "n", xaxt= "n", 
+             yaxt = "n", ylim = c(0, y2));
+        text(x = 0, y = 88, cex = 2, labels = "No scaring allowed",
+             pos = 4);
+        abline(h = 105, lwd = 2);
+        legend(x = 1, y = 135, fill = cols[1:5], horiz = TRUE,
+               legend = c("scaring", "culling", "castration", "feeding", 
+                          "helping"), bty = "n", cex = lcex);
+    }
+    #---- Culling
+    if(para_vec[90] == 1){
+        plot(x = 1:max_time, y = 100 - cull_eff[,1], type = "l", lwd = 2, 
+             cex.axis = 1.5, xaxt = "n", ylim = c(0, y1), yaxt = "n");
+        axis(side = 2, at = c(50, 100), labels = c(50, 100), cex.axis = 1.5);
+        par(new = TRUE);
+        plot(x = 1:max_time, y = cull_eff[,2], type = "n", lwd = 2, 
+             ylim = c(0, y1), xaxt="n", yaxt="n", cex.axis = 1.5);
+        for(stakeholder in 2:users){
+            points(x = 1:max_time, y = cull_eff[,stakeholder], type = "l", 
+                   lwd = 1, col = cols[2]);
+        }
+        axis(side = 4, at = c(50, 100), labels = c(50, 100), cex.axis = 1.5);
+    }else{
+        plot(x = 1:max_time, y = cull_act[,1], type = "n", xaxt= "n", 
+             yaxt = "n", ylim = c(0, 100));
+        text(x = 0, y = 90, cex = 2, labels = "No culling allowed",
+             pos = 4);
+    }
+    #---- Castrating
+    if(para_vec[91] == 1){
+        plot(x = 1:max_time, y = 100 - cast_eff[,1], type = "l", lwd = 2, 
+             cex.axis = 1.5, xaxt = "n", ylim = c(0, y1), yaxt = "n");
+        axis(side = 2, at = c(50, 100), labels = c(50, 100), cex.axis = 1.5);
+        par(new = TRUE);
+        plot(x = 1:max_time, y = cast_eff[,2], type = "n", lwd = 2, 
+             ylim = c(0, y1), xaxt="n", yaxt="n", cex.axis = 1.5);
+        for(stakeholder in 2:users){
+            points(x = 1:max_time, y = cast_eff[,stakeholder], type = "l", 
+                   lwd = 1, col = cols[3]);
+        }
+        axis(side = 4, at = c(50, 100), labels = c(50, 100), cex.axis = 1.5);
+    }else{
+        plot(x = 1:max_time, y = cast_act[,1], type = "n", xaxt= "n", 
+             yaxt = "n", ylim = c(0, 100));
+        text(x = 0, y = 90, cex = 2, labels = "No castration allowed",
+             pos = 4);
+    }
+    #---- Axes labels
+    mtext("Manager's permissiveness of user action", 
+          side = 2, line = 3.5, cex = 1.5, col = "black");
+    mtext("Percentage of user action effort expended", 
+          side = 4, line = 3.5, cex = 1.5, col = "black");
+    #---- Feeding
+    if(para_vec[92] == 1){
+        plot(x = 1:max_time, y = 100 - feed_eff[,1], type = "l", lwd = 2, 
+             cex.axis = 1.5, xaxt = "n", ylim = c(0, y1), yaxt = "n");
+        axis(side = 2, at = c(50, 100), labels = c(50, 100), cex.axis = 1.5);
+        par(new = TRUE);
+        plot(x = 1:max_time, y = feed_eff[,2], type = "n", lwd = 2, 
+             ylim = c(0, y1), xaxt="n", yaxt="n", cex.axis = 1.5);
+        for(stakeholder in 2:users){
+            points(x = 1:max_time, y = feed_eff[,stakeholder], type = "l", 
+                   lwd = 1, col = cols[4]);
+        }
+        axis(side = 4, at = c(50, 100), labels = c(50, 100), cex.axis = 1.5);
+    }else{
+        plot(x = 1:max_time, y = feed_act[,1], type = "n", xaxt= "n", 
+             yaxt = "n", ylim = c(0, 100));
+        text(x = 0, y = 90, cex = 2, labels = "No feeding allowed",
+             pos = 4);
+    }
+    #---- Helping
+    if(para_vec[93] == 1){
+        plot(x = 1:max_time, y = 100 - help_eff[,1], type = "l", lwd = 2, 
+             cex.axis = 1.5, xaxt = "n", ylim = c(0, y1), yaxt = "n");
+        axis(side = 2, at = c(50, y2), labels = c(50, 100), cex.axis = 1.5);
+        par(new = TRUE);
+        plot(x = 1:max_time, y = help_eff[,2], type = "n", lwd = 2, 
+             ylim = c(0, y1), xaxt="n", yaxt="n", cex.axis = 1.5);
+        for(stakeholder in 2:users){
+            points(x = 1:max_time, y = help_eff[,stakeholder], type = "l", 
+                   lwd = 1, col = cols[5]);
+        }
+        axis(side = 4, at = c(50, 100), labels = c(50, 100), cex.axis = 1.5);
+    }else{
+        plot(x = 1:max_time, y = help_act[,1], type = "n", cex.axis = 1.5,
+             yaxt = "n", ylim = c(0, 100));
+        text(x = 0, y = 90, cex = 2, labels = "No helping offspring allowed",
+             pos = 4);
+    }    
+    mtext("Time step", side = 1, line = 3.5, cex = 1.5, col = "black");
+}
 ```
 
 An example of management conflict using GMSE
@@ -45,18 +259,22 @@ Simulating goose management
 
 Below, we first allow only the culling of geese by users and plot the dynamics of the social-ecological system from a single simulation. Next, we run the same simulation but allow users to scare geese from their landscape cells; we then use the model to make inferences regarding how scaring as a management option might affect goose population dynamics, agricultural production, and conservation conflict in the system. All simulations are run using the `gmse` function, but novice R users may prefer run all of the simulations below using the browser-based GMSE GUI by calling `gmse_gui()` from the R command line. Alternatively, experienced R users may prefer simulate by looping time steps through `gmse_apply`, which allows more flexibility for incorporating custom submodels and dynamically adjusting parameter values. We emphasise that the simulations below are intended only to demonstrate one use of GMSE on a species of conservation interest, not to make recommendations for management of Taiga Bean Geese.
 
-```{r, echo = TRUE}
-sim_1 <- gmse(manager_budget = 10000, user_budget = 10000, plotting = FALSE, 
-              res_death_K = 93870, manage_target = 70000, RESOURCE_ini = 35000, 
-              stakeholders = 80, land_ownership = TRUE, public_land = 0.4, 
-              scaring = FALSE, lambda = 0.150, remove_pr = 0.122, time_max = 20, 
-              res_death_type = 3, res_consume = 0.01, res_birth_K = 200000, 
-              observe_type = 3, agent_view = 1);
+```{r, echo = TRUE, eval = FALSE}
+sim_1 <- gmse(manager_budget = 10000, user_budget = 10000, res_death_K = 93870, 
+             manage_target = 70000, RESOURCE_ini = 35000, plotting = FALSE, 
+             stakeholders = 80, land_ownership = TRUE, public_land = 0.4, 
+             scaring = FALSE, lambda = 0.275, remove_pr = 0.122, time_max = 40, 
+             res_death_type = 3, res_consume = 0.02, res_birth_K = 200000, 
+             observe_type = 3, agent_view = 1, converge_crit = 0.1);
+```
+
+```{r}
+sim_1 <- gmse(time_max = 30, plotting = FALSE);
 ```
 
 The results of the above simulation are plotted in Figure SI3-1 below. 
 
-```{r, eval = TRUE, fig.height = 8, fig.cap = "Results of a GMSE simulation using parameters estimated for Taiga Been Geese Central Management Unit. This example includes 80 farmers whose objective is to maximise their agricultural output, and one manager whose objective is to keep geese at a target abundance, over 20 simulated time steps. Goose locations at the end of the simulation are shown in the upper left panel, while the upper right panel shows the same landscape broken down among the 80 farmers (upper 60% of the landscape in multiple colours), along with non-agricultural land (lower 40% of the landscape in blue). Actual goose abundance is shown in the middle left panel (black solid line), along with its estimate by the manager (blue solid line). Horizontal red and blue dotted lines show landscape-level goose carrying capacity enacted on adult mortality and the manager's target for goose abundance, respectively. The organge line shows the total percent of landscape cells (including non-farmed cells) yield, as decreased by geese. The middle right panel shows this yield for each individual farmer, and for the public land (lower line in blue). The lower left panel shows the cost of culling for farmers, as set by the manager, and the lower right panel shows the total number of culls attempted by farmers over time."}
+```{r, eval = TRUE, fig.height = 7, fig.cap = "Results of a GMSE simulation using parameters estimated for Taiga Been Geese Central Management Unit. This example includes 80 farmers whose objective is to maximise their agricultural output, and one manager whose objective is to keep geese at a target abundance, over 20 simulated time steps. Goose locations at the end of the simulation are shown in the upper left panel, while the upper right panel shows the same landscape broken down among the 80 farmers (upper 60% of the landscape in multiple colours), along with non-agricultural land (lower 40% of the landscape in blue). Actual goose abundance is shown in the middle left panel (black solid line), along with its estimate by the manager (blue solid line). Horizontal red and blue dotted lines show landscape-level goose carrying capacity enacted on adult mortality and the manager's target for goose abundance, respectively. The organge line shows the total percent of landscape cells (including non-farmed cells) yield, as decreased by geese. The middle right panel shows this yield for each farmer, and for the public land (lower line in blue). The lower left panel shows the cost of culling for farmers, as set by the manager, and the lower right panel shows the total number of culls attempted by farmers over time."}
 plot_gmse_results(res = sim_1$resource, obs = sim_1$observation, 
                   land = sim_1$land, agents = sim_1$agents, paras = sim_1$paras, 
                   ACTION = sim_1$action, COST = sim_1$cost);
@@ -64,21 +282,24 @@ plot_gmse_results(res = sim_1$resource, obs = sim_1$observation,
 
 The above Figure SI3-1 shows the dynamics of goose abundance and agricultural yield, along with how managers react to change in abundance and farmers react to manager policy. In the case of the simulation above, goose population begins to decline, causing managers to set policy to increase the cost of culling. This higher cost of culling restricts farmers from culling on their land, leading to fewer total culling actions. In this case, the abundance of geese continues downward, while agricultural yield increases over time. We can investigate the conflict between management policy and farmers using the `plot_gmse_effort` function in GMSE.
 
-```{r, eval = TRUE, fig.height = 7, fig.width = 6, fig.cap = "Permissiveness that each manager exhibits for each farmer action (black lines) and the effort that each individual farmer puts into each action over time (coloured lines). Each panel row reports a different action (in decreasing order: scaring, culling, castration, feeding, and helping). The left axis shows the permissiveness that a manager has for the focal action (black line), which is calculated as 100 minus the percent of the manager's budget that is put into increasing the cost of the focal action. For example, if the manager puts all of their effort (total budget) into increasing the cost of culling, then permissiveness of culling is 0; if the manager puts no effort into increasing culling cost, then permissiveness of culling is 100. The right axis shows effort that farmers put into an action (coloured lines), which defined as the percentage of a farmer's budget put into a particular action (note, values might not add up to 100 because farmers are not forced to use their entire budget)."}
+```{r, eval = TRUE, echo = TRUE, fig.height = 7, fig.width = 6, fig.cap = "Permissiveness that each manager exhibits for each farmer action (black lines) and the effort that each individual farmer puts into each action over time (coloured lines). Each panel row reports a different action (in decreasing order: scaring, culling, castration, feeding, and helping). The left axis shows the permissiveness that a manager has for the focal action (black line), which is calculated as 100 minus the percent of the manager's budget that is put into increasing the cost of the focal action. For example, if the manager puts all of their effort (total budget) into increasing the cost of culling, then permissiveness of culling is 0; if the manager puts no effort into increasing culling cost, then permissiveness of culling is 100. The right axis shows effort that farmers put into an action (coloured lines), which defined as the percentage of a farmer's budget put into a particular action (note, values might not add up to 100 because farmers are not forced to use their entire budget)."}
 plot_gmse_effort(sim_1$agents, sim_1$paras, ACTION = sim_1$action, 
                  COST = sim_1$cost);
 ```
 
 Black lines indicate how permissive a manager is toward a particular action on a scale of 0 to 100, while coloured lines indicate how much effort farmers expend on a given action. When black lines are far below coloured lines, we can (cautiously) interpret this as a conflict between management of the goose population and farmer's interest in agricultural production. These time periods represent instances in which managers are not at very permissive of a particular action (in this case culling), but farmers continue to expend effort to do the action anyway.
 
+```{r}
+sim_2 <- gmse(time_max = 30, scaring = TRUE, plotting = FALSE);
+```
 
-```{r, echo = TRUE, fig.height = 8}
-sim_2 <- gmse(manager_budget = 10000, user_budget = 10000, plotting = FALSE, 
-              res_death_K = 93870, manage_target = 70000, RESOURCE_ini = 35000, 
-              stakeholders = 80, land_ownership = TRUE, public_land = 0.4, 
-              scaring = TRUE, lambda = 0.150, remove_pr = 0.122, time_max = 20, 
-              res_death_type = 3, res_consume = 0.01, res_birth_K = 200000, 
-              observe_type = 3, agent_view = 1);
+```{r, echo = TRUE, fig.height = 6, eval = FALSE}
+sim_2 <- gmse(manager_budget = 10000, user_budget = 10000, res_death_K = 93870, 
+             manage_target = 70000, RESOURCE_ini = 35000, plotting = FALSE, 
+             stakeholders = 80, land_ownership = TRUE, public_land = 0.4, 
+             scaring = TRUE, lambda = 0.275, remove_pr = 0.122, time_max = 40, 
+             res_death_type = 3, res_consume = 0.02, res_birth_K = 200000, 
+             observe_type = 3, agent_view = 1, converge_crit = 0.1);
 ```
 
 The results are plotted below.
@@ -95,9 +316,5 @@ Look at the conflict
 plot_gmse_effort(sim_2$agents, sim_2$paras, ACTION = sim_2$action, 
                  COST = sim_2$cost);
 ```
-
-
-References
---------------------------------------------------------------------------------
 
 
