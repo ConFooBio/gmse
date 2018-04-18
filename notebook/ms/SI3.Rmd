@@ -263,13 +263,15 @@ Below, we first only allow culling as a policy option and plot the dynamics of t
 sim_1 <- gmse(manager_budget = 10000, user_budget = 10000, res_death_K = 93870, 
              manage_target = 70000, RESOURCE_ini = 35000, plotting = FALSE, 
              stakeholders = 80, land_ownership = TRUE, public_land = 0.4, 
-             scaring = FALSE, lambda = 0.275, remove_pr = 0.122, time_max = 40, 
+             scaring = FALSE, lambda = 0.275, remove_pr = 0.122, time_max = 30, 
              res_death_type = 3, res_consume = 0.02, res_birth_K = 200000, 
-             observe_type = 3, agent_view = 1, converge_crit = 0.1);
+             observe_type = 3, agent_view = 1, converge_crit = 0.01, 
+             ga_mingen = 200);
 ```
 
-```{r}
-sim_1 <- gmse(time_max = 30, plotting = FALSE);
+```{r, echo = FALSE, eval = TRUE}
+load("data/SI3-cull_sim.rda"); # Avoids long compiling time
+sim_1 <- sim;
 ```
 
 The results of the above simulation are plotted in Figure 1 below. 
@@ -295,9 +297,10 @@ We can model the consequences for goose population dynamics, agricultural produc
 sim_2 <- gmse(manager_budget = 10000, user_budget = 10000, res_death_K = 93870, 
              manage_target = 70000, RESOURCE_ini = 35000, plotting = FALSE, 
              stakeholders = 80, land_ownership = TRUE, public_land = 0.4, 
-             scaring = TRUE, lambda = 0.275, remove_pr = 0.122, time_max = 40, 
+             scaring = TRUE, lambda = 0.275, remove_pr = 0.122, time_max = 30, 
              res_death_type = 3, res_consume = 0.02, res_birth_K = 200000, 
-             observe_type = 3, agent_view = 1, converge_crit = 0.1);
+             observe_type = 3, agent_view = 1, converge_crit = 0.01, 
+             ga_mingen = 200);
 ```
 
 ```{r, echo = FALSE, eval = TRUE}
