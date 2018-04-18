@@ -884,7 +884,11 @@ plot_gmse_effort <- function(agents, paras, ACTION, COST){
     
     par(mfrow = c(5, 1), mar = c(0, 0, 0, 0), oma = c(6, 6, 4, 6));
     y1 <- 100;
-    y2 <- y1 * 1.2
+    y2 <- 130;
+    lcex  <- 1.5
+    if(max_time < 40){
+        lcex <- 1 + lcex * (max_time / 100);
+    }
     #---- Scaring
     if(para_vec[89] == 1){
         plot(x = 1:max_time, y = 100 - scar_eff[,1], type = "l", lwd = 2, 
@@ -899,23 +903,19 @@ plot_gmse_effort <- function(agents, paras, ACTION, COST){
                    lwd = 1, col = cols[1]);
         }
         axis(side = 4, at = c(50, 100),  labels = c(50, 100), cex.axis = 1.5);
-        lcex  <- 1.5
-        if(max_time < 100){
-            lcex <- lcex * (max_time / 100);
-        }
-        legend(x = 1, y = y2 + y2*0.1, fill = cols[1:5], horiz = TRUE,
+        legend(x = 1, y = 135, fill = cols[1:5], horiz = TRUE,
                legend = c("scaring", "culling", "castration", "feeding", 
                           "helping"), bty = "n", cex = lcex);
-        abline(h = y1 + y1*0.1, lwd = 2);
+        abline(h = 105, lwd = 2);
     }else{
         plot(x = 1:max_time, y = scar_eff[,1], type = "n", xaxt= "n", 
-             yaxt = "n", ylim = c(0, 110));
-        text(x = 0, y = 90, cex = 2, labels = "No scaring allowed",
+             yaxt = "n", ylim = c(0, y2));
+        text(x = 2, y = 90, cex = 2, labels = "No scaring allowed",
              pos = 4);
-        abline(h = 100, lwd = 2);
-        legend(x = 1, y = 119, fill = cols[1:5], horiz = TRUE,
+        abline(h = 105, lwd = 2);
+        legend(x = 1, y = 135, fill = cols[1:5], horiz = TRUE,
                legend = c("scaring", "culling", "castration", "feeding", 
-                          "helping"), bty = "n", cex = 1.5);
+                          "helping"), bty = "n", cex = lcex);
     }
     #---- Culling
     if(para_vec[90] == 1){
@@ -933,7 +933,7 @@ plot_gmse_effort <- function(agents, paras, ACTION, COST){
     }else{
         plot(x = 1:max_time, y = cull_act[,1], type = "n", xaxt= "n", 
              yaxt = "n", ylim = c(0, 100));
-        text(x = 0, y = 90, cex = 2, labels = "No culling allowed",
+        text(x = 2, y = 90, cex = 2, labels = "No culling allowed",
              pos = 4);
     }
     #---- Castrating
@@ -952,7 +952,7 @@ plot_gmse_effort <- function(agents, paras, ACTION, COST){
     }else{
         plot(x = 1:max_time, y = cast_act[,1], type = "n", xaxt= "n", 
              yaxt = "n", ylim = c(0, 100));
-        text(x = 0, y = 90, cex = 2, labels = "No castration allowed",
+        text(x = 2, y = 90, cex = 2, labels = "No castration allowed",
              pos = 4);
     }
     #---- Axes labels
@@ -976,14 +976,14 @@ plot_gmse_effort <- function(agents, paras, ACTION, COST){
     }else{
         plot(x = 1:max_time, y = feed_act[,1], type = "n", xaxt= "n", 
              yaxt = "n", ylim = c(0, 100));
-        text(x = 0, y = 90, cex = 2, labels = "No feeding allowed",
+        text(x = 2, y = 90, cex = 2, labels = "No feeding allowed",
              pos = 4);
     }
     #---- Helping
     if(para_vec[93] == 1){
         plot(x = 1:max_time, y = 100 - help_eff[,1], type = "l", lwd = 2, 
              cex.axis = 1.5, xaxt = "n", ylim = c(0, y1), yaxt = "n");
-        axis(side = 2, at = c(50, 100), labels = c(50, 100), cex.axis = 1.5);
+        axis(side = 2, at = c(50, y2), labels = c(50, 100), cex.axis = 1.5);
         par(new = TRUE);
         plot(x = 1:max_time, y = help_eff[,2], type = "n", lwd = 2, 
              ylim = c(0, y1), xaxt="n", yaxt="n", cex.axis = 1.5);
@@ -995,7 +995,7 @@ plot_gmse_effort <- function(agents, paras, ACTION, COST){
     }else{
         plot(x = 1:max_time, y = help_act[,1], type = "n", cex.axis = 1.5,
              yaxt = "n", ylim = c(0, 100));
-        text(x = 0, y = 90, cex = 2, labels = "No helping offspring allowed",
+        text(x = 2, y = 90, cex = 2, labels = "No helping offspring allowed",
              pos = 4);
     }    
     mtext("Time step", side = 1, line = 3.5, cex = 1.5, col = "black");
