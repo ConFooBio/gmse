@@ -304,19 +304,28 @@ sim_2 <- gmse(manager_budget = 10000, user_budget = 10000, res_death_K = 93870,
              observe_type = 3, agent_view = 1, converge_crit = 0.1);
 ```
 
-The results are plotted in Figure 3.
+The results are plotted in Figure 3. 
 
-```{r, eval = TRUE, fig.height = 8}
+```{r, eval = TRUE, fig.height = 8, fig.cap = "Results of a GMSE simulation using parameters estimated for Taiga Been Geese Central Management Unit in which scaring is permitted. Simulation output is interpreted as in Figure 1"}
 plot_gmse_results(res = sim_2$resource, obs = sim_2$observation, 
                   land = sim_2$land, agents = sim_2$agents, paras = sim_2$paras,
                   ACTION = sim_2$action, COST = sim_2$cost);
 ```
 
-Look at the conflict
+When scaring is introduced to an otherwise identical simulation (compare Figure 3 to Figure 1), the goose population increases as before, but it achieves the managers target population size and stabilises 2-3 time steps earlier. The reason for this earlier stabilisation is due to the change in farmer's actions as a consequence of the introduced scaring policy. At the start of the simulation, managers adjust policy by quickly increasing the cost of culling and decreasing the cost of scaring. In response, farmers turn to scaring rather than culling to remove geese from their land cells (Figure 3). This is in contrast to the simulation in which scaring was not an option, and farmers simply culled as much as possible despite the high costs (Figure 1). After the population has risen to slightly above the manager's target, the cost of culling again decreases, with the manager balancing the incentivisation of culling and scaring. The consequence of scaring as an available policy also reveals some potentially unexpected outcomes, such as increased variance in among-farmer agricultural production, which arises as geese are scared from one area of the landscape to another.
 
-```{r, eval = TRUE, fig.height = 7, fig.width = 6}
+We can use the `plot_gmse_effort` function as before to investigate how the inclusion of scaring as a policy option might affect conservation conflict. Conflict results when scaring is included are plotted in Figure 4.
+
+```{r, eval = TRUE, fig.height = 7, fig.width = 6, fig.cap = "Permissiveness that each manager exhibits for each farmer action (black lines) and the effort that each individual farmer puts into each action over time (coloured lines) given scaring as a possible policy option. Simulation output is intepreted as in Figure 2."}
 plot_gmse_effort(sim_2$agents, sim_2$paras, ACTION = sim_2$action, 
                  COST = sim_2$cost);
 ```
+
+Unlike the case in which culling was the only policy option (compare Figure 4 to Figure 2), the effort that farmers expended on a given action did not typically rise above the manager's permissiveness of the action. Hence, under the conditions of this model, the inclusion of scaring as a policy option has reduced conservation conflict in the social-ecological system. We again emphasise that the simulations presented here only serve as an example of how GMSE could be used as a tool for simulating social-ecological systems and understanding the potential for conflict; it is not intended to inform policy in Taiga Bean Geese or any other specific system.
+
+Conclusions and future development
+--------------------------------------------------------------------------------
+
+The GMSE function `gmse` and its graphical user interface counterpart `gmse_gui` offer wide set of options for parameterising simulations to fit empirical case studies of conservation interest using default GMSE natural resource, observation, manager, and user sub-models. Future development of these sub-models might usefully incorporate additional details relevant to specific case studies, such population structure, multiple natural resource and user types, or different policy and action possibilities. [Requests for new features](https://github.com/bradduthie/gmse/issues) and contributions to GMSE can be made through [GitHub](https://github.com/bradduthie/gmse). Additionally, where entirely different types of sub-models are required, the `gmse_apply` function [can be used](https://bradduthie.github.io/gmse_SI2.pdf) to more flexibly simulate social-ecological systems.
 
 
