@@ -29,7 +29,7 @@ library(GMSE);
 Fine-tuning simulation conditions using `gmse_apply`
 ================================================================================
 
-Here we demonstrate how simulations in GMSE can be more fine-tuned to specific empirical situations through the use of `gmse_apply`. To do this, we use the same scenario described in [Supporting Information 3](); we first recreate the basic scenario run in `gmse` using `gmse_apply`, and then build in additional modelling details including (1) custom placement of user land, (2) parameterisation of individual user budgets, and (3) density-dependent movement of resources. We emphasise that these simulations are provided only to demonstrate the use of GMSE, and specifically to show the flexibility of the `gmse_apply` function, not to accurately recreate the dynamics of a specific system or make management recommendations.
+Here we demonstrate how simulations in GMSE can be more fine-tuned to specific empirical situations through the use of `gmse_apply`. To do this, we use the same scenario described in [Supporting Information 3](); we first recreate the basic scenario run in `gmse` using `gmse_apply`, and then build in additional modelling details including (1) [custom placement of user land](#land), (2) [parameterisation of individual user budgets](#budgets), and (3) [density-dependent movement of resources](#movement). We emphasise that these simulations are provided only to demonstrate the use of GMSE, and specifically to show the flexibility of the `gmse_apply` function, not to accurately recreate the dynamics of a specific system or make management recommendations.
 
 We reconsider the case of a protected waterfowl population that exploits agricultural land [e.g., @Fox2017a; @Mason2017; @Tulloch2017; @Cusack2018]. The manager attempts to keep the watefowl at a target abundance, while users (farmers) attempt to maximise agricultural yield on the land that they own. We again parameterise our model using demographic information from the Taiga Bean Goose (*Anser fabalis fabalis*), as reported by @Johnson2018 and @AEWA2016. Relevant parameter values are listed in the table below.
 
@@ -44,7 +44,7 @@ We reconsider the case of a protected waterfowl population that exploits agricul
 
 Table: GMSE simulation parameter values inspired by @Johnson2018 and @AEWA2016
 
-Additionally, we continue to use the following values for consistency, except in the case of `stakeholders`, where we reduce the number of farmers to `stakehoders = 8` and increase `user_budget` to 100000. This is done to for two reasons. First, it speeds up simulations for the purpose of demonstration; second, it makes the presentation of landscape ownership easier (see below).
+Additionally, we continue to use the following values for consistency, except in the case of `stakeholders`, where we reduce the number of farmers to `stakeholders = 8` and increase `user_budget` to 100000. This is done to for two reasons. First, it speeds up simulations for the purpose of demonstration; second, it makes the presentation of landscape ownership easier (see below).
 
 | Parameter         | Value    | Description                                      |
 |-------------------|----------|--------------------------------------------------|
@@ -111,15 +111,100 @@ The above output from `sim_sum_1` shows the table that holds the information we 
 
 We now show how to adjust the landscape to manually adjust land ownership in `gmse_apply`.
 
-Customising the GMSE landscape
+1. <a name="land">Custom placement of user land</a>
 ================================================================================
 
-By default, all farmers in GMSE are allocated the same number of landscape cells, which are simply placed in order of the farmer's ID. Public landscape is produced by placing landscape cells that are technically owned by the manager, and therefore have landscape cell values of 0. The image below shows this landscape for the eight farmers from `sim_old`
+By default, all farmers in GMSE are allocated the same number of landscape cells, which are simply placed in order of the farmer's ID. Public landscape is produced by placing landscape cells that are technically owned by the manager, and therefore have landscape cell values of 0. The image below shows this landscape for the eight farmers from `sim_old`.
 
 ```{r}
-image(x = sim_old$LAND[,,3], colors = topo.colors(9));
+image(x = sim_old$LAND[,,3], col = topo.colors(9), xaxt = "n", yaxt = "n");
 ```
 
+We can change the ownership of cells by manipulating `sim_old$LAND[,,3]`. First we initialise a new `sim_old` below.
+
+```{r, echo = TRUE, eval = TRUE}
+sim_old  <- gmse_apply(get_res = "Full", remove_pr = 0.122, lambda = 0.275,
+                       res_death_K = 93870, RESOURCE_ini = 35000, 
+                       manage_target = 70000, res_death_type = 3,
+                       manager_budget = 10000, user_budget = 100000,
+                       public_land = 0.4, stakeholders = 8, 
+                       land_ownership = TRUE, res_consume = 0.02, 
+                       observe_type = 3, agent_view = 1);
+```
+
+Because we have not specified landscape dimensions in the above, the landscape reverts to the default size of 100 by 100 cells. We can then manually assign landscape cells to the eight farmers, whose IDs range from 2-9 (ID value 1 is the manager). Below we do this to make eight different sized farms.
+
+```{r}
+sim_old$LAND[1:20,   1:20,  3] <- 2; 
+sim_old$LAND[1:20,  21:40,  3] <- 3;
+sim_old$LAND[1:20,  41:60,  3] <- 4;
+sim_old$LAND[1:20,  61:80,  3] <- 5;
+sim_old$LAND[1:20,  81:100, 3] <- 6;
+sim_old$LAND[21:40,  1:50,  3] <- 7;
+sim_old$LAND[21:40, 51:100, 3] <- 8;
+sim_old$LAND[41:60,  1:100, 3] <- 9;
+sim_old$LAND[61:100, 1:100, 3] <- 1; # Public land
+image(x = sim_old$LAND[,,3], col = topo.colors(9), xaxt = "n", yaxt = "n");
+```
+
+The above image shows the modified landscape stored in `sim_old`, which can now be incorporated into simulations using `gmse_apply`. We can think of all the plots on the left side of the landscape as farms of various sizes, while the blue area of the landscape on the right is public land.
+
+2. <a name="budgets">Parameterisation of individual user budgets</a>
+================================================================================
+
+Perhaps we want to assume that farmers have different budgets, which are perhaps correlated in some way to the number of landscape cells that they own. Custom user budgets can be set by manipulating `sim_old$AGENTS`, the last column of which holds the budget for each user. Agent IDs (as stored on the landscape above) correspond to rows of `sim_old$AGENTS`, so individual budgets can be directly input as desired. We can do this manually (e.g., `sim_old$AGENTS[2, 17] <- 4000`), or, alternatively, if farmer budget positively correlates to landscape owned, we can use a loop to input values as below.
+
+```{r}
+for(ID in 2:9){
+    cells_owned            <- sum(sim_old$LAND[,,3] == ID);
+    sim_old$AGENTS[ID, 17] <- 100 * cells_owned;
+}
+```
+
+The number of cells owned by each farmer is therefore listed in the table below.
+
+```{r, echo = FALSE}
+budget_table <- rbind(sim_old$AGENTS[,1], sim_old$AGENTS[,17]);
+row.names(budget_table) <- c("ID", "Budget");
+kable(budget_table, caption = "Custom created budgets for manager and users");
+```
+
+As with `sim_old$LAND` values, changes to `sim_old$AGENTS` will be retained in simulations looped through `gmse_apply`.
+
+3. <a name="movement">Density-dependent movement of resources</a>
+================================================================================
+
+Lastly, we consider a more nuanced change to simulations, in which the rules for movement of resources are modified to account for density-dependence. Assume that geese tend to avoid aggregating, such that if a goose is located on the same cell as too many other geese, then it will move with a high probability at the end of a time step. Programming this movement rule can be accomplished by creating a new function to apply to the resource data array `sim_old$resource_array`. Below, a custom function is defined that causes a goose to move up to 5 cells in any direction if it finds itself on a cell with more than 10 other geese. As with default GMSE simulations, movement is based on a torus landscape.
+
+```{r}
+avoid_aggregation <- function(goose_table, land_dim_1 = 100, land_dim_2 = 100){
+    goose_number <- dim(goose_table)[1]    # How many geese are there?
+    for(goose in 1:goose_number){          # Loop through all rows of geese
+        x_loc  <- goose_table[goose, 5];
+        y_loc  <- goose_table[goose, 6];
+        shared <- sum(goose_table[,5] == x_loc & goose_table[,6] == y_loc);
+        if(shared > 10){
+            new_x <- x_loc <- sample(x = -5:5, size = 1);
+            new_y <- y_loc <- sample(x = -5:5, size = 1);
+            if(new_x < 0){ # The 'if' statements below apply the torus
+                new_x <- land_dim_1 + new_x;
+            }
+            if(new_x >= land_dim_1){
+                new_x <- new_x - land_dim_1;
+            }
+            if(new_y < 0){
+                new_y <- land_dim_2 + new_x;
+            }
+            if(new_y >= land_dim_2){
+                new_y <- new_y - land_dim_2;
+            }
+            goose_table[goose, 5] <- new_x;
+            goose_table[goose, 6] <- new_y;
+        }
+    }
+    return(goose_table);
+}
+```
 
 
 
