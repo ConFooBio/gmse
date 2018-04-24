@@ -1243,7 +1243,7 @@ collect_res_ini <- function(arg_list){
         make_res_list[[9]] <- arg_list[[apos]];
     }
     make_res_list[[10]] <- arg_list$GMSE$max_ages;
-    if("res_consume" %in% arg_names){
+    if("max_ages" %in% arg_names){
         apos               <- which(arg_names == "max_ages");
         make_res_list[[10]] <- arg_list[[apos]];
     }
