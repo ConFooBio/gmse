@@ -22,3 +22,42 @@ subtitle: Supporting Information 4
 biblio-style: apalike
 ---
 
+Fine-tuning simulation conditions using `gmse_apply`
+================================================================================
+
+Here we demonstrate how simulations in GMSE can be more fine-tuned to specific empirical situations through the use of `gmse_apply`. To do this, we use the same scenario described in [Supporting Information 3](); we first recreate the basic scenario run in `gmse` using `gmse_apply`, and then build in additional modelling details including (1) custom placement of user land, (2) parameterisation of individual user budgets, and (3) density-dependent movement of resources. We emphasise that these simulations are provided only to demonstrate the use of GMSE, and specifically to show the flexibility of the `gmse_apply` function, not to accurately recreate the dynamics of a specific system or make management recommendations.
+
+We reconsider the case of a protected waterfowl population that exploits agricultural land [e.g., @Fox2017a; @Mason2017; @Tulloch2017; @Cusack2018]. The manager attempts to keep the watefowl at a target abundance, while users (farmers) attempt to maximise agricultural yield on the land that they own. We again parameterise our model using demographic information from the Taiga Bean Goose (*Anser fabalis fabalis*), as reported by @Johnson2018 and @AEWA2016. Relevant parameter values are listed in the table below.
+
+| Parameter         | Value    | Description                                      |
+|-------------------|----------|--------------------------------------------------|
+| `remove_pr`       | 0.122    | Goose density-independent mortality probability  |
+| `lambda`          | 0.275    | Expected offspring production per time step      |
+| `res_death_K`     | 93870    | Goose carrying capacity (on adult mortality)     |
+| `RESOURCE_ini`    | 35000    | Initial goose abundance                          |
+| `manage_target`   | 70000    | Manager's target goose abundance                 |
+| `res_death_type`  | 3        | Mortality (density and density-indepent sources) |
+
+Table: GMSE simulation parameter values inspired by @Johnson2018 and @AEWA2016
+
+Additionally, we continue to use the following values for consistency.
+
+| Parameter         | Value    | Description                                      |
+|-------------------|----------|--------------------------------------------------|
+| `manager_budget`  | 10000    | Manager's budget for setting policy options      |
+| `user_budget`     | 10000    | Users' budgets for actions                       |
+| `public_land`     | 0.4      | Proportion of the landscape that is public       |
+| `stakeholders`    | 80       | Number of stakeholders                           |
+| `land_ownership`  | TRUE     | Users own landscape cells                        |
+| `res_consume`     | 0.02     | Landscape cell output consumed by a resource     | 
+| `observe_type`    | 3        | Observation model type (survey)                  |
+| `agent_view`      | 1        | Cells managers can see when conducting a survey  |
+
+Table: Non-default GMSE parameter values chosen by authors
+
+All other values are set to GMSE defaults, except where specifically noted otherwise.
+
+Re-creating `gmse` simulations using `gmse_apply`
+================================================================================
+
+We now recreate the simulations in [Supporting Information 3](), which were run using the `gmse` function, in `gmse_apply`. Doing so requires us to first initialise simulations using one run of `gmse_apply`, then loop through multiple time steps that again call `gmse_apply` and saving the results of interest.
