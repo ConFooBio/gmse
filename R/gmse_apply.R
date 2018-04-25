@@ -33,6 +33,10 @@ gmse_apply <- function(res_mod  = resource,
 
     fun_warn(res_mod, obs_mod, man_mod, use_mod);
 
+    if(is.null(old_list) == FALSE){
+        old_list <- swap_old_gmse(old_list);
+    }
+    
     std_paras      <- pass_paras(old_list, ...);
     all_args       <- as.list(sys.call());
     all_args$PARAS <- std_paras$gmse_para_vect;
@@ -107,6 +111,34 @@ gmse_apply <- function(res_mod  = resource,
 ################################################################################
 # Subfunctions required                                                        #
 ################################################################################
+
+swap_old_gmse   <- function(ol){
+    names_old <- names(ol);
+    if("resource_array" %in% names_old == TRUE){
+        if(identical(ol$resource_array, ol$RESOURCES) == FALSE){
+            ol$RESOURCES <- ol$resource_array;
+        }
+        if(identical(ol$resource_array, ol$RESOURCE) == FALSE){
+            ol$RESOURCE <- ol$resource_array;
+        }
+    }
+    if("observation_array" %in% names_old == TRUE){
+        if(identical(ol$observation_array, ol$OBSERVATION) == FALSE){
+            ol$OBSERVATION <- ol$observation_array;
+        }
+    }
+    if("manager_array" %in% names_old == TRUE){
+        if(identical(ol$manager_array, ol$COST) == FALSE){
+            ol$COST <- ol$manager_array;
+        }
+    }
+    if("user_array" %in% names_old == TRUE){
+        if(identical(ol$user_array, ol$ACTION) == FALSE){
+            ol$ACTION <- ol$user_array;
+        }
+    }
+    return(ol);
+}
 
 update_old_gmse <- function(arg_vals, ol, list_add){
     names_old  <- names(ol);
@@ -527,6 +559,7 @@ update_old_gmse <- function(arg_vals, ol, list_add){
     return(ol);
 }
 
+
 apply_old_gmse <- function(arg_vals, old_list,  ...){
     
     input_list <- arg_vals$ilist; 
@@ -622,7 +655,6 @@ pass_paras <- function( old_list = NULL, time_max = 100, land_dim_1 = 100,
                     tend_crops, tend_crop_yld, kill_crops, stakeholders, 
                     manage_caution, land_ownership, manage_freq, converge_crit, 
                     manager_sense, public_land, group_think); 
-    
     
     paras_errors(input_list);
     
@@ -817,7 +849,7 @@ action_errors <- function(input_list, stakes, ...){
         }
     }
     if("resource_array" %in% arg_names){
-        res_pos <- which(arg_names == "RESOURCES")[1];
+        res_pos <- which(arg_names == "resource_array")[1];
         res_arr <- eval(arguments[[res_pos]]);
         if(is.null(dim(res_arr))){
             stop("ERROR: Dimensions of the resource_array are unclear");
