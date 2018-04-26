@@ -66,7 +66,7 @@ We now explain that is possible for resources in the population to exist on the 
 
 **Author response to Reviewer 1 specific comment 6:**
 
-This is a reasonable inference, and we appreciate Reviewer 1 for drawing attention to it. However, the value 10001 is actionally a maximum cost allowed in the modelling that is unrelated to land dimensions. We now state this explicitly in Appendix 1 to avoid confusion (line XXX).
+This is a reasonable inference, and we appreciate Reviewer 1 for drawing attention to it. However, the value 10001 is actionally a maximum cost allowed in the modelling that is unrelated to land dimensions. We now state this explicitly in Appendix 1 to avoid confusion (line XXX). In our newest version of GMSE, maximum allowable budgets have been increased, so this number is now an order of magnitude higher (100001).
 
 **Reviewer 1 specific comment 7:**
 
@@ -74,7 +74,7 @@ This is a reasonable inference, and we appreciate Reviewer 1 for drawing attenti
 
 **Author response to Reviewer 1 specific comment 7:**
 
-The objective for the genetic algorithm is not necessarily to produce optimal strategies, but strategies that are adaptive and flexible in making decisions. Finding a set of parameters to be used in the genetic algorithm to produce adaptive strategies is not especially difficult, but the genetic algorithm will be more effective given more strict convergence criterial and a higher minimum generation times. We now emphasise this more in Appendix 1 in a new section, 'Choosing genetic algorithm parameter values' (line XXX).
+The objective for the genetic algorithm is not necessarily to produce optimal strategies, but strategies that are adaptive and flexible in making decisions. Finding a set of parameters to be used in the genetic algorithm to produce adaptive strategies is not especially difficult, and default values in GMSE are chosen to be sufficient for this objective. Nevertheless, it is true that the genetic algorithm will be more effective given more strict convergence criterial and a higher minimum generation times. We now emphasise this more in Appendix 1 in a new section, 'Choosing genetic algorithm parameter values' (line XXX).
 
 **Reviewer 1 specific comment 8:**
 
@@ -96,10 +96,9 @@ We now clarify that the resources are moved to a different, randomly chosen, cel
 
 10. The word “resource” was confusing to me because crop is resource for farmers.
 
-
 **Author response to Reviewer 1 specific comment 10:**
 
-We now clarify in the text why we use the word 'resource' (line XXX). Although we interpret resources as populations of conservation interest throughout our paper, there is nothing to preclude software users from modelling the management of other types of (e.g., non-biological) resources such as minerals.
+We now clarify in the text why we use the word 'resource' (line XXX). Although we interpret resources as populations of conservation interest throughout our paper, there is nothing to preclude software users from modelling the management of other types of (e.g., non-biological) resources.
 
 **Reviewer 1 specific comment 11:**
 
@@ -107,7 +106,7 @@ We now clarify in the text why we use the word 'resource' (line XXX). Although w
 
 **Author response to Reviewer 1 specific comment 11:**
 
-Although this kind of customisation is not possible using the function `gmse`, we now explain how this can be done using `gmse_apply` (line XXX).
+Although this kind of customisation is not possible using the function `gmse`, we now explain how this can be done using `gmse_apply` in detail in a new supporting information (Supporting Information 4).
 
 
 Reviewer 2 Comments
