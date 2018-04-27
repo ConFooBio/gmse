@@ -1,0 +1,62 @@
+---
+title: 'GMSE: an R package for generalised management strategy evaluation'
+author: A. Bradley Duthie&#xb9;&#xb3;, Jeremy J. Cusack&#xb9;, Isabel L. Jones&#xb9;,
+  Erlend B. Nilsen&#xb2;, Roc&#0237;o A. Pozo&#xb9;, O. Sarobidy Rakotonarivo&#xb9;,
+  Bram Van Moorter&#xb2;, and Nils Bunnefeld&#xb9;
+date: '[1] Biological and Environmental Sciences, University of Stirling, Stirling,
+  UK [2] Norwegian Institute for Nature Research, Trondheim, Norway [3] alexander.duthie@stir.ac.uk'
+output:
+  pdf_document:
+    citation_package: natbib
+    fig_caption: yes
+  html_document: default
+  word_document:
+    fig_caption: yes
+    reference_docx: docx_template.docx
+header-includes: null
+linestretch: 1
+link-citations: yes
+linkcolor: blue
+bibliography: gmse.bib
+subtitle: Supporting Information 5
+biblio-style: apalike
+---
+
+install.packages(c("ggplot2"));
+install.packages(c("FLCore"), repos="http://flr-project.org/R");
+install.packages(c("ggplotFL"), repos="http://flr-project.org/R");
+
+library(FLCore);
+library(ggplotFL);
+
+data(ple4);
+p4sr <-as.FLSR(ple4[-1])
+
+model(p4sr) <- ricker()
+p4sr2       <- fmle(p4sr)
+
+a <- params(p4sr2)[[1]];
+b <- params(p4sr2)[[2]];
+
+rec(p4sr2);
+ssb(p4sr2);
+
+
+
+rec_year    <- as.numeric(attributes(rec(p4sr2))$dimnames$year);
+ssb_year    <- as.numeric(attributes(ssb(p4sr2))$dimnames$year);
+recruitment <- NULL;
+for(year in 1:length(rec_year)){
+    recruitment[year] <- rec(p4sr)[[year]];
+}
+spawning_stock_biomass <- NULL;
+for(year in 1:length(ssb_year)){
+    spawning_stock_biomass[year] <- ssb(p4sr)[[year]];
+}
+
+
+rec <- a * spawning_stock_biomass * exp(-b * spawning_stock_biomass);
+
+
+
+rec(p4sr)[[51]] <- 4300
