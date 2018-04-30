@@ -250,7 +250,7 @@ We parameterise our model using demographic information from the Taiga Bean Goos
 Using demographic parameters in simulations
 --------------------------------------------------------------------------------
 
-Our goal is not to provide a detailed case study of the Taiga Bean Geese, but rather to demonstrate how such a case study would be possible in GMSE. For simplicity, here we assess conflict using only the `gmse` function to show how parameter values can be set to provide useful results. Novice R users may prefer to run all of the simulations below using the browser-based GMSE GUI by calling `gmse_gui()` from the R command line. Alternatively, experienced R users may prefer to simulate by [looping time steps](https://bradduthie.github.io/gmse_SI2.pdf#page=5) through `gmse_apply`, which allows more flexibility for incorporating custom sub-models and dynamically adjusting parameter values. Where available, we use estimated demographic parameter values from @Johnson2018 and @AEWA2016. Where GMSE parameter values are not available, we use reasonable values or GMSE defaults. To make model inferences for real case studies, we strongly recommend simulating across a range of parameter values when empirical estimates are unavailable, as social-ecological dynamics might be sensitive to these unknown values.
+Our goal is not to provide a detailed case study of the Taiga Bean Geese, but rather to demonstrate how such a case study would be possible in GMSE. For simplicity, here we assess conflict using only the `gmse` function to show how parameter values can be set to provide useful results. Novice R users may prefer to run all of the simulations below using the browser-based GMSE GUI by calling `gmse_gui()` from the R command line. Alternatively, experienced R users may prefer to simulate by [looping time steps](SI2.pdf#page=5) through `gmse_apply`, which allows more flexibility for incorporating custom sub-models and dynamically adjusting parameter values. Where available, we use estimated demographic parameter values from @Johnson2018 and @AEWA2016. Where GMSE parameter values are not available, we use reasonable values or GMSE defaults. To make model inferences for real case studies, we strongly recommend simulating across a range of parameter values when empirical estimates are unavailable, as social-ecological dynamics might be sensitive to these unknown values.
 
 @Johnson2018 recently estimated key demographic parameters of the Taiga Bean Geese from the Central Management Unit, which includes geese that breed in "Northern most Sweden, Northern Norway, Northern and Central Finland, and adjacent North-wester parts of Russia, wintering mostly in Southern Sweden and South-east Denmark" [@AEWA2016]. They estimated goose survival under ideal conditions to be ca 0.878; this can be interpreted in our model by setting mortality to `remove_pr = 1 - 0.878`. Similarly, @Johnson2018 estimated mean reproductive rate and carrying capacity to be 0.55 and 93870, respectively, so we set `lambda = 0.275` (for simplicity, we simply use half the mean reproductive rate; GMSE does not currently distinguish female and male individuals) and `res_death_K = 93870`. The global abundance of Taiga Bean Geese in 2009 was ca 63000 [@Fox2010], and ca 35000 in the Central Management Unit [@AEWA2016], which we can take as a starting abundance for our simulations (`RESOURCE_ini = 35000`). And the International Single Species Action Plan has a target population size of ca 70000 in the Central Management Unit [@AEWA2016], which we can use as a management target (`manage_target = 70000`). We simulate social-ecological dynamics over 30 time steps, which could be interpreted as years.
 
@@ -272,8 +272,8 @@ sim_1 <- gmse(manager_budget = 10000, user_budget = 10000, res_death_K = 93870,
 ```
 
 ```{r, echo = FALSE, eval = TRUE}
-load("../data/SI3-cull_sim.rda"); # Avoids long compiling time
-sim_1 <- sim;
+load("data/SI3-cull_sim.rda"); # Avoids long compiling time
+sim_1 <- sim_cull;
 ```
 
 The results of the above simulation are plotted in Figure 1 below. 
@@ -306,8 +306,8 @@ sim_2 <- gmse(manager_budget = 10000, user_budget = 10000, res_death_K = 93870,
 ```
 
 ```{r, echo = FALSE, eval = TRUE}
-load("../data/SI3-scare_sim.rda"); # Avoids long compiling time
-sim_2 <- sim;
+load("data/SI3-scare_sim.rda"); # Avoids long compiling time
+sim_2 <- sim_scare;
 ```
 
 
