@@ -1,7 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 notebook*
-vignettes*
 tests/testthat/test-make_gmse.R
 R/gmse_gui/app.R
 R/gmse_gui/rsconnect*
