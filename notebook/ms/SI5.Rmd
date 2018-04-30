@@ -60,6 +60,32 @@ Just re-create the herring 'rec' and 'ssb' data, then read it into an FLquant da
 --->
 
 
+```{r}
+newFL <- FLSR()
+ssb.n <- read.csv("notebook/ms/data/SI5/nsher_ssb.csv")
+rec.n <- read.csv("notebook/ms/data/SI5/nsher_rec.csv")
+ssb.m <- as.matrix(ssb.n)
+rec.m <- as.matrix(rec.n);
+Frec.m <- FLQuant(ref.m, dimnames=list(age=1, year = 1960:2004))
+Fssb.m <- FLQuant(ssb.m, dimnames=list(age=1, year = 1960:2004))
+Frec.m@units <- "10^3"
+
+newFL@rec <- Frec.m
+newFL@ssb <- Fssb.m
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
