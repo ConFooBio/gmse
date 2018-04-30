@@ -6,21 +6,21 @@
 \usage{
 gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
   res_movement = 20, remove_pr = 0, lambda = 0.3, agent_view = 10,
-  agent_move = 50, res_birth_K = 10000, res_death_K = 2000,
+  agent_move = 50, res_birth_K = 1e+05, res_death_K = 2000,
   edge_effect = 1, res_move_type = 1, res_birth_type = 2,
-  res_death_type = 2, observe_type = 0, fixed_mark = 50,
-  fixed_recapt = 150, times_observe = 1, obs_move_type = 1,
+  res_death_type = 2, observe_type = 0, fixed_mark = 100,
+  fixed_recapt = 500, times_observe = 1, obs_move_type = 1,
   res_min_age = 0, res_move_obs = TRUE, Euclidean_dist = FALSE,
   plotting = TRUE, hunt = FALSE, start_hunting = 95, res_consume = 0.5,
   ga_popsize = 100, ga_mingen = 40, ga_seedrep = 20, ga_sampleK = 20,
   ga_chooseK = 2, ga_mutation = 0.1, ga_crossover = 0.1,
   move_agents = TRUE, max_ages = 5, minimum_cost = 10,
-  user_budget = 1000, manager_budget = 1000, manage_target = 1000,
+  user_budget = 10000, manager_budget = 10000, manage_target = 1000,
   RESOURCE_ini = 1000, scaring = FALSE, culling = TRUE,
   castration = FALSE, feeding = FALSE, help_offspring = FALSE,
   tend_crops = FALSE, tend_crop_yld = 0.2, kill_crops = FALSE,
   stakeholders = 4, manage_caution = 1, land_ownership = FALSE,
-  manage_freq = 1, converge_crit = 1, manager_sense = 0.8,
+  manage_freq = 1, converge_crit = 0.1, manager_sense = 0.8,
   public_land = 0, group_think = FALSE)
 }
 \arguments{
@@ -40,7 +40,7 @@ gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
 
 \item{agent_move}{This value determines how far agents can move. At the moment, this does not affect much in the simulation because agent movement does not affect agent actions (interactions with resources can be limited to stakeholder's owned land, but do not currently depend on where an agent is on the landscape -- effectively assuming that agents are mobile enough to do what they want to do to resources). The one exception is for density-based estimation, which can be biased by low values of agent_move by causing the manager to sample the same (or nearby) landscape cells to estimate total resource abundance; if resources are spatially autocorrelated, then managers might over or under-estimate total abundance. Therefore, as a default, this value is set to 50 so that managers can move to any cell on a (torus) landscape in a time step, removing any bias for density sampling.}
 
-\item{res_birth_K}{This value is the carrying capacity on new resources added per time step (e.g., birth). If more offspring are born in a time step than res_birth_K, then offspring are randomly removed from the population until offspring born equals res_birth_K. By default, carrying capacity is effectively applied to death instead of birth, so the default value of res_birth_K is set to 10000 (and hence not enacted because the number of births is never this high).}
+\item{res_birth_K}{This value is the carrying capacity on new resources added per time step (e.g., birth). If more offspring are born in a time step than res_birth_K, then offspring are randomly removed from the population until offspring born equals res_birth_K. By default, carrying capacity is effectively applied to death instead of birth, so the default value of res_birth_K is set to 100000 (and hence not enacted because the number of births is never this high).}
 
 \item{res_death_K}{This value is the carrying capacity on resources in the population. Carrying capacity is realised by an increase in mortality probability as resource abundance approaches res_death_K. In each time step, realised mortality probability equals the number of resources over carrying capacity divided by the number of resources (i.e., [resource count - carrying capacity] / resource count). Hence, as the resource abundance increases above carrying capcity, mortality probability also increases in proportion, generating some stochasticity in resource survival. Note that carrying capacity is independent of user actions; if a user culls a resource this culling is applied after mortality probability due to carrying capacity has already been calculated. The default value for res_death_K is 2000.}
 
@@ -78,7 +78,7 @@ gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
 
 \item{ga_popsize}{The size of populations of agents in the genetic algorithm (not resources in the simulation). The actions of each agent in the simulation are duplicated `ga_popsize` times, and this population of individual agent actions undergoes a process of natural selection to find an adaptive strategy. Selection is naturally stronger in larger populations, but a default population size of 100 is more than sufficient to find adaptive strategies.}
 
-\item{ga_mingen}{The minimum number of generations in the genetic algorithms of the simulation (*not* the number of time steps in the simulation itself). The actions of each agent in the simulation are duplicated `ga_popsize` times, and this population of individual agent actions undergoes a process of natural selection at least `ga_mingen` times to find an adaptive strategy. If convergence criteria `converge_crit` is set to a default value of 100, then the genetic algorithm will almost always continue for exactly `ga_mingen` generations. The default value is 20, which is usually plenty for finding adaptive agent strategies -- the objective is not to find optimal strategies, but strategies that are strongly in line with agent interests.}
+\item{ga_mingen}{The minimum number of generations in the genetic algorithms of the simulation (*not* the number of time steps in the simulation itself). The actions of each agent in the simulation are duplicated `ga_popsize` times, and this population of individual agent actions undergoes a process of natural selection at least `ga_mingen` times to find an adaptive strategy. If convergence criteria `converge_crit` is set to a default value of 100, then the genetic algorithm will almost always continue for exactly `ga_mingen` generations. The default value is 40, which is usually plenty for finding adaptive agent strategies -- the objective is not to find optimal strategies, but strategies that are strongly in line with agent interests.}
 
 \item{ga_seedrep}{At the start of each genetic algorithm, `ga_popsize` replicate agents are produced; `ga_seedrep` of these replicates are *exact* replicates, while the rest have random actions to introduce variation into the population. Because adaptive agent strategies are not likely to change wildly from one generation to the next, it is highly recommended to use some value of `ga_seedrep` greater than zero; the default value is 20, which does a good job of finding adaptive strategies.}
 
@@ -96,11 +96,11 @@ gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
 
 \item{minimum_cost}{This is the mimimum cost of any action in the manager and user models. Higher values allow managers to have greater precision when setting policy. For example, managers believe (typically correctly) that they will double culling number by setting the cost of culling at 1 instead of 2. If actions always cost at least some minium value, then some increment just above that value is always available to more precisely affect user actions. Hence it is generally better to simply give everyone a bigger budget and set a minimum cost, giving more precision to managers to fine tune policy. The default value of minimum_cost is therefore set to 10.}
 
-\item{user_budget}{This is the total budget of each stakeholder for performing actions. The cost of performing an action is determined by the `miminimum_cost` of actions, and the policy set by the manager. The default `user_budget` is 1000. The maximum budget is 10000.}
+\item{user_budget}{This is the total budget of each stakeholder for performing actions. The cost of performing an action is determined by the `miminimum_cost` of actions, and the policy set by the manager. The default `user_budget` is 1000. The maximum budget is 100000.}
 
 \item{manager_budget}{This is the total budget for the manager when setting policy. Higher budgets make it easier to restrict the actions of stakeholders; lower budgets make it more difficult for managers to limit the actions of stakeholders by setting policy. The default `manager_budget` is 1000. The maximum budget is 10000.}
 
-\item{manage_target}{This is the target resource abundance that the manager attempts to keep the population at; the default value is 1000.}
+\item{manage_target}{This is the target resource abundance that the manager attempts to keep the population at; the default value is 10000.}
 
 \item{RESOURCE_ini}{This is the initial abundance of resources at the start of the simulation; the default is 1000.}
 

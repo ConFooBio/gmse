@@ -272,7 +272,7 @@ sim_1 <- gmse(manager_budget = 10000, user_budget = 10000, res_death_K = 93870,
 ```
 
 ```{r, echo = FALSE, eval = TRUE}
-load("data/SI3-cull_sim.rda"); # Avoids long compiling time
+load("../data/SI3-cull_sim.rda"); # Avoids long compiling time
 sim_1 <- sim;
 ```
 
@@ -306,7 +306,7 @@ sim_2 <- gmse(manager_budget = 10000, user_budget = 10000, res_death_K = 93870,
 ```
 
 ```{r, echo = FALSE, eval = TRUE}
-load("data/SI3-scare_sim.rda"); # Avoids long compiling time
+load("../data/SI3-scare_sim.rda"); # Avoids long compiling time
 sim_2 <- sim;
 ```
 

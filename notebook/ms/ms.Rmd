@@ -8,9 +8,6 @@ date: '[1] Biological and Environmental Sciences, University of Stirling, Stirli
   Biological and Environmental Sciences 3A149 University of Stirling Stirling, FK9
   4LA, UK'
 output:
-  word_document:
-    fig_caption: yes
-    reference_docx: docx_template.docx
   pdf_document:
     citation_package: natbib
     fig_caption: yes

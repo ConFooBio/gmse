@@ -39,10 +39,6 @@ The FLR toolset includes [a series of pacakges](http://www.flr-project.org/#pack
 Modelling stock-recruitment for the population model
 ================================================================================
 
-<!---
-Just re-create the herring 'rec' and 'ssb' data, then read it into an FLquant data type. Then the whole analysis can be done as before, but with access to the data in GMSE. Add the model in too.
---->
-
 Here we closely follow [a tutorial from the FLR project](http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html). To build the stock-recruitment model, the following packages are needed.
 
 ```{r, eval = FALSE}
@@ -59,20 +55,29 @@ library(FLFleet)
 library(ggplotFL);
 ```
 
+<!---
+Just re-create the herring 'rec' and 'ssb' data, then read it into an FLquant data type. Then the whole analysis can be done as before, but with access to the data in GMSE. Add the model in too.
+--->
+
+
+
+
+
+
 The data below are derived from the [FLR tutorial](http://www.flr-project.org/doc/Loading_your_data_into_FLR.html), and the code below downloads the example data files into a temporary folder. 
 
 ```{r}
-temp_dir <- tempdir()
-download.file("http://flr-project.org/doc/src/loading_data.zip", file.path(dir, "loading_data.zip"))
-unzip(file.path(temp_dir, "loading_data.zip"), exdir = temp_dir);
+#temp_dir <- tempdir()
+#download.file("http://flr-project.org/doc/src/loading_data.zip", file.path(dir, "loading_data.zip"))
+#unzip(file.path(temp_dir, "loading_data.zip"), exdir = temp_dir);
 ```
 
 We can read in the example file below and convert it into a matrix to be used in an [FLQuant](http://www.flr-project.org/FLCore/reference/FLQuant.html) object. Rows in this matrix indicate ages.
 
 ```{r}
-fish_data <- read.csv(file.path(temp_dir, "catch_numbers.csv"), row = 1);
-fish_data <- as.matrix(fish_data);
-print(fish_data[,1:8]);
+#fish_data <- read.csv(file.path(temp_dir, "catch_numbers.csv"), row = 1);
+#fish_data <- as.matrix(fish_data);
+#print(fish_data[,1:8]);
 ```
 
 For simplicity, we merge these ages down into a single vector.
