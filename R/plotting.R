@@ -140,7 +140,7 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, COST,
     lnds <- NULL;
     ages <- NULL;
     land_cols <- c("#F2F2F2FF", "#ECB176FF", "#000000"); 
-    cols      <- c("green", "indianred1", "indianred3", "deepskyblue1",
+    cols      <- c("green", "firebrick1", "firebrick4", "deepskyblue1",
                    "deepskyblue2");
     
     max_action <- 0;
@@ -267,7 +267,7 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, COST,
         y_upper_limit <- max_action + (0.25 * max_action);
         plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, y_upper_limit),
              xlim=c(0,time_max), xlab="Time Step", ylab="Actions made",
-             cex.lab=1.25);
+             cex.lab = 1.25, yaxs = "i");
         if(paras[89] == 1){
             points(x=gens, y=res_acts[,1], type="l", col=cols[1], lwd=2);
         }
@@ -337,7 +337,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
     lnds <- NULL;
     ages <- NULL;
     land_cols <- c("#F2F2F2FF", "#ECB176FF", "#000000"); 
-    cols      <- c("green", "indianred1", "indianred3", "deepskyblue1",
+    cols      <- c("green", "firebrick1", "firebrick4", "deepskyblue1",
                    "deepskyblue2");
    
     case  <- paras[9];
@@ -489,7 +489,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
         y_upper_limit <- max_action + (0.25 * max_action);
         plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, y_upper_limit),
              xlim=c(0,time_max), xlab="Time Step", ylab="Actions made",
-             cex.lab=1.25);
+             cex.lab=1.25, yaxs="i");
         if(paras[89] == 1){
             points(x=gens, y=res_acts[,1], type="l", col=cols[1], lwd=2);
         }
@@ -571,7 +571,7 @@ plot_gmse_results <- function(res, obs, land, agents, paras, ACTION, COST){
     ages <- NULL;
     stky <- NULL;
     land_cols <- c("#F2F2F2FF", "#ECB176FF", "#000000"); 
-    cols      <- c("green", "indianred1", "indianred3", "deepskyblue1",
+    cols      <- c("green", "firebrick4", "firebrick1", "deepskyblue1",
                    "deepskyblue2");
     
     case  <- para_vec[9];
@@ -745,7 +745,7 @@ plot_gmse_results <- function(res, obs, land, agents, paras, ACTION, COST){
     y_upper_limit <- max_action + (0.25 * max_action);
     plot(x = gens, y = gens, pch = 20, type = "n", lwd = 2, 
          ylim = c(0, y_upper_limit), xlim = c(0, time_max), xlab = "Time Step", 
-         ylab = "Actions made", cex.lab = 1.25);
+         ylab = "Actions made", cex.lab = 1.25, yaxs="i");
     if(para_vec[89] == 1){
         points(x = gens, y = res_acts[,1], type = "l", col = cols[1], lwd = 2);
     }
@@ -793,7 +793,7 @@ plot_gmse_results <- function(res, obs, land, agents, paras, ACTION, COST){
 #'@export
 plot_gmse_effort <- function(agents, paras, ACTION, COST){
     
-    cols      <- c("green", "indianred1", "indianred3", "deepskyblue1",
+    cols      <- c("green", "firebrick1", "firebrick4", "deepskyblue1",
                    "deepskyblue2");
     
     users    <- dim(agents[[1]])[1];
