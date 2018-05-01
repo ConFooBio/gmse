@@ -51,27 +51,37 @@ To start, we need to read in the `FLCore`, `FLFleet` and `ggplotFL` libraries.
 
 ```{r}
 library(FLCore);
-library(FLFleet)
-library(ggplotFL);
+#library(FLFleet)
+#library(ggplotFL);
 ```
 
-<!---
-Just re-create the herring 'rec' and 'ssb' data, then read it into an FLquant data type. Then the whole analysis can be done as before, but with access to the data in GMSE. Add the model in too.
---->
-
+For a simplified example in GMSE, we will simulate the process of stock recruitment over multiple time steps using an example stock-recruitment model. The stock-recruitment model describes the relationship between stock-recruitment and spawning stock biomass. The sample that we will work from is a recreation of the North Sea Herring (`nsher`) dataset available in the `FLCore` package. This data set includes recruitment and spawning stock biomass data between 1960 and 2004. First, we initialise an empty `FLSR` object and read in the recreated CSV data files. 
 
 ```{r}
-newFL <- FLSR()
-ssb.n <- read.csv("notebook/ms/data/SI5/nsher_ssb.csv")
-rec.n <- read.csv("notebook/ms/data/SI5/nsher_rec.csv")
-ssb.m <- as.matrix(ssb.n)
-rec.m <- as.matrix(rec.n);
-Frec.m <- FLQuant(ref.m, dimnames=list(age=1, year = 1960:2004))
-Fssb.m <- FLQuant(ssb.m, dimnames=list(age=1, year = 1960:2004))
-Frec.m@units <- "10^3"
+newFL        <- FLSR(); # Initialises the empty FLSR object
+rec.n        <- read.csv("data/SI5/nsher_rec.csv");
+ssb.n        <- read.csv("data/SI5/nsher_ssb.csv");
+print(rec.n);
+```
 
-newFL@rec <- Frec.m
-newFL@ssb <- Fssb.m
+The recruitment (`rec.n`) and spawning stock biomass (`ssb.n`) data need to be in the form of a vector, array, matrix to use them with `FLQuant`. We will convert `rec.n` and `ssb.n` into matrices.
+
+```{r}
+rec.m        <- as.matrix(rec.n);
+ssb.m        <- as.matrix(ssb.n);
+```
+
+```{r}
+Frec.m       <- FLQuant(rec.m, dimnames=list(age=1, year = 1960:2004));
+Fssb.m       <- FLQuant(ssb.m, dimnames=list(age=1, year = 1960:2004));
+Frec.m@units <- "10^3";
+Fssb.m@units <- "t*10^3";
+
+newFL@rec    <- Frec.m;
+newFL@ssb    <- Fssb.m;
+newFL@range  <- c(0, 1960, 0, 2004);
+
+model(newFL) <- ricker();
 ```
 
 
@@ -86,7 +96,7 @@ newFL@ssb <- Fssb.m
 
 
 
-
+<!---
 
 
 
@@ -178,3 +188,7 @@ rec <- a * spawning_stock_biomass * exp(-b * spawning_stock_biomass);
 
 
 rec(p4sr)[[51]] <- 4300
+
+
+
+--->
