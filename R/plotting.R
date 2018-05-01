@@ -188,7 +188,7 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, COST,
         par(mar=c(4,4,1,4));
         plot(x=gens, y=abun, pch=20, type="l", lwd=2, ylim=c(0, ymaxi),
              xlim=c(0,time_max), xlab="Time Step", ylab="Abundance",
-             cex.lab=1.25);
+             cex.lab=1.25, yaxs="i");
         new_est   <- sum(obs_t[,13]);
         est       <- c(est, new_est);
         points(x=gens, y=est, pch=20, type="l", lwd=2, col="cyan4");
@@ -198,7 +198,7 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, COST,
         par(new=TRUE);
         plot(x=gens, y=lnds, pch=20, type="l", lwd=3, col="orange", xlab = "",
              xlim=c(0, time_max), ylim = c(0, 100), xaxt="n", yaxt="n", 
-             ylab = "");
+             ylab = "", yaxs="i");
         axis(side=4, at=c(0, 25, 50, 75, 100));
         mtext("Mean % Yield", side = 4, line = 2.4);
         # ------------ Panel 4 (middle right);
@@ -206,7 +206,7 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, COST,
         cell_number <- dim(land3)[1] * dim(land3)[2];
         plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, 100),
              xlim=c(0,time_max), xlab="Time Step", ylab="Stake-holder % yield",
-             cex.lab=1.25);
+             cex.lab=1.25, yaxs="i");
         stake_colors <- topo.colors( dim(age_t)[1] );
         for(stakeholder in 1:dim(ages)[2]){
             max_yield   <- sum(land3 == stakeholder);
@@ -229,7 +229,7 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, COST,
         y_upper_limit <- max_cost + (0.25 * max_cost);
         plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, y_upper_limit),
              xlim=c(0,time_max), xlab="Time Step", ylab="Cost of actions",
-             cex.lab=1.25);
+             cex.lab=1.25, yaxs="i");
         if(paras[89] == 1){
             points(x=gens, y=res_costs[,1], type="l", col=cols[1], lwd=2);
         }
@@ -397,7 +397,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
         par(mar=c(4,5,1,5));
         plot(x=gens, y=abun, pch=20, type="l", lwd=2, ylim=c(0, ymaxi),
              xlim=c(0,time_max), xlab="Time Step", ylab="Abundance",
-             cex.lab=1.25);
+             cex.lab=1.25, yaxs="i");
         if(!is.null(obs_t) & case == 1){
             analysis <- chapman_est(observation=obs_t, paras = paras);
             est      <- c(est, analysis$Nc);
@@ -420,7 +420,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
         par(new=TRUE);
         plot(x=gens, y=lnds, pch=20, type="l", lwd=3, col="orange", xlab = "",
              xlim=c(0, time_max), ylim = c(0, 100), xaxt="n", yaxt="n", 
-             ylab = "");
+             ylab = "", yaxs="i");
         axis(side=4, at=c(0, 25, 50, 75, 100));
         mtext("Mean % Yield", side = 4, line = 2.4);
         # ------------ Panel 4 (middle right);
@@ -428,7 +428,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
         cell_number <- dim(land3)[1] * dim(land3)[2];
         plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, 100),
              xlim=c(0,time_max), xlab="Time Step", ylab="Stake-holder % yield",
-             cex.lab=1.25);
+             cex.lab=1.25, yaxs="i");
         stake_colors <- topo.colors( dim(age_t)[1] );
         for(stakeholder in 1:dim(ages)[2]){
             max_yield   <- sum(land3 == stakeholder);
@@ -451,7 +451,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
         y_upper_limit <- max_cost + (0.25 * max_cost);
         plot(x=gens, y=gens, pch=20, type="n", lwd=2, ylim=c(0, y_upper_limit),
              xlim=c(0,time_max), xlab="Time Step", ylab="Cost of actions",
-             cex.lab=1.25);
+             cex.lab=1.25, yaxs="i");
         if(paras[89] == 1){
             points(x=gens, y=res_costs[,1], type="l", col=cols[1], lwd=2);
         }
@@ -661,7 +661,7 @@ plot_gmse_results <- function(res, obs, land, agents, paras, ACTION, COST){
     par(mar = c(4, 5, 1, 5));
     plot(x = gens, y = abun, pch = 20, type="l", lwd = 2, ylim = c(0, ymaxi),
          xlim=c(0, time_max), xlab = "Time Step", ylab = "Abundance",
-         cex.lab=1.25);
+         cex.lab=1.25, yaxs="i");
     if(case == 0 | case == 1){
         polygon(y = c(lci,rev(uci)), x = c(gens, rev(gens)), border = NA,
                 col="lightblue");
@@ -677,7 +677,7 @@ plot_gmse_results <- function(res, obs, land, agents, paras, ACTION, COST){
     par(new = TRUE);
     plot(x = gens, y = lnds, pch = 20, type = "l", lwd = 3, col = "orange", 
          xlab = "", xlim = c(0, time_max), ylim = c(0, 100), xaxt="n", yaxt="n", 
-         ylab = "");
+         ylab = "", yaxs="i");
     axis(side = 4, at = c(0, 25, 50, 75, 100));
     mtext("Mean % Yield", side = 4, line = 2.4);
     # ------------ Panel 4 (middle right);
@@ -685,7 +685,7 @@ plot_gmse_results <- function(res, obs, land, agents, paras, ACTION, COST){
     cell_number <- dim(land3)[1] * dim(land3)[2];
     plot(x = gens, y = gens, pch = 20, type = "n", lwd = 2, ylim = c(0, 100),
          xlim = c(0, time_max), xlab = "Time Step", 
-         ylab = "Stake-holder % yield", cex.lab = 1.25);
+         ylab = "Stake-holder % yield", cex.lab = 1.25, yaxs="i");
     stake_colors <- topo.colors( dim(age_t)[1] );
     if(para_vec[104] > 0){
         for(stakeholder in 1:dim(ages)[2]){
@@ -706,7 +706,7 @@ plot_gmse_results <- function(res, obs, land, agents, paras, ACTION, COST){
     y_upper_limit <- max_cost + (0.25 * max_cost);
     plot(x = gens, y = gens, pch = 20, type = "n", lwd = 2, 
          ylim = c(0, y_upper_limit), xlim = c(0, time_max), xlab = "Time Step", 
-         ylab = "Cost of actions", cex.lab = 1.25);
+         ylab = "Cost of actions", cex.lab = 1.25, yaxs="i");
     if(para_vec[89] == 1){
         points(x = gens, y = res_costs[,1], type = "l", col = cols[1], lwd = 2);
     }
