@@ -19,6 +19,14 @@ Jardim, E., Eero, M., Silva, A., Ulrich, C., Pawlowski, L., Riveiro, I.,
 \newblock {Testing spatial heterogeneity with stock assessment models}.
 \newblock {\em PLoS One}, 13:e0190891.
 
+\bibitem[Kell et~al., 2007]{Kell2007}
+Kell, L.~T., Mosqueira, I., Grosjean, P., Fromentin, J.-M., Garcia, D.,
+  Hillary, R., Jardim, E., Mardle, S., Pastoors, M.~A., Poos, J.~J., Scott, F.,
+  and Scott, R.~D. (2007).
+\newblock {FLR: an open-source framework for the evaluation and development of
+  management strategies}.
+\newblock {\em ICES Journal of Marine Science}, 64(4):640--646.
+
 \bibitem[Kolody and Jumppanen, 2016]{Kolody2016}
 Kolody, D. and Jumppanen, P. (2016).
 \newblock {IOTC Yellowfin and Bigeye Tuna Management Strategy Evaluation: Phase
@@ -36,6 +44,11 @@ Polacheck, T., Klaer, N.~L., Millar, C., and Preece, A.~L. (1999).
 \newblock {An initial evalutaion of management strategies for the southern
   bluefin tuna fishery}.
 \newblock {\em ICES Journal of Marine Science}, 56(6):811--826.
+
+\bibitem[Ricker, 1954]{Ricker1954}
+Ricker, W.~E. (1954).
+\newblock {Stock and recruitment}.
+\newblock {\em Journal of the Fisheries Board of Canada}, 11(5):559--623.
 
 \bibitem[Sainsbury et~al., 2000]{Sainsbury2000}
 Sainsbury, K.~J., Punt, A.~E., and Smith, A.~D. (2000).

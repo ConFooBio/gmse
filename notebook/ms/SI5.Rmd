@@ -1,8 +1,8 @@
 ---
 title: 'GMSE: an R package for generalised management strategy evaluation'
 author: A. Bradley Duthie&#xb9;&#xb3;, Jeremy J. Cusack&#xb9;, Isabel L. Jones&#xb9;,
-  Erlend B. Nilsen&#xb2;, Roc&#0237;o A. Pozo&#xb9;, O. Sarobidy Rakotonarivo&#xb9;,
-  Bram Van Moorter&#xb2;, and Nils Bunnefeld&#xb9;
+  Jeroen Minderman&#xb9;, Erlend B. Nilsen&#xb2;, Roc&#0237;o A. Pozo&#xb9;, 
+  O. Sarobidy Rakotonarivo&#xb9;, Bram Van Moorter&#xb2;, and Nils Bunnefeld&#xb9;
 date: '[1] Biological and Environmental Sciences, University of Stirling, Stirling,
   UK [2] Norwegian Institute for Nature Research, Trondheim, Norway [3] alexander.duthie@stir.ac.uk'
 output:
@@ -22,6 +22,7 @@ subtitle: Supporting Information 5
 biblio-style: apalike
 ---
 
+
 Integration and simulation with fisheries
 ================================================================================
 
@@ -39,29 +40,24 @@ The FLR toolset includes [a series of pacakges](http://www.flr-project.org/#pack
 Modelling stock-recruitment for the population model
 ================================================================================
 
-Here we closely follow [a tutorial from the FLR project](http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html). To build the stock-recruitment model, the following packages are needed.
+Here we closely follow [a tutorial from the FLR project](http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html). To build the stock-recruitment model, the `FLCore` package is needed [@Kell2007].
 
 ```{r, eval = FALSE}
-install.packages(c("ggplot2"));
 install.packages(c("FLCore"), repos="http://flr-project.org/R");
-install.packages(c("ggplotFL"), repos="http://flr-project.org/R");
 ```
 
-To start, we need to read in the `FLCore`, `FLFleet` and `ggplotFL` libraries.
+To start, we need to read in the `FLCore` library.
 
 ```{r}
 library(FLCore);
-#library(FLFleet)
-#library(ggplotFL);
 ```
 
-For a simplified example in GMSE, we will simulate the process of stock recruitment over multiple time steps using an example stock-recruitment model. The stock-recruitment model describes the relationship between stock-recruitment and spawning stock biomass. The sample that we will work from is a recreation of the North Sea Herring (`nsher`) dataset available in the `FLCore` package. This data set includes recruitment and spawning stock biomass data between 1960 and 2004. First, we initialise an empty `FLSR` object and read in the recreated CSV data files. 
+For a simplified example in GMSE, we will simulate the process of stock recruitment over multiple time steps using an example stock-recruitment model. The stock-recruitment model describes the relationship between stock-recruitment and spawning stock biomass. The sample that we will work from is a recreation of the North Sea Herring (`nsher`) dataset available in the `FLCore` package [@Kell2007]. This data set includes recruitment and spawning stock biomass data between 1960 and 2004. First, we initialise an empty `FLSR` object and read in the recreated CSV data files. 
 
 ```{r}
 newFL        <- FLSR(); # Initialises the empty FLSR object
 rec.n        <- read.csv("data/SI5/nsher_rec.csv");
 ssb.n        <- read.csv("data/SI5/nsher_ssb.csv");
-print(rec.n);
 ```
 
 The recruitment (`rec.n`) and spawning stock biomass (`ssb.n`) data need to be in the form of a vector, array, matrix to use them with `FLQuant`. We will convert `rec.n` and `ssb.n` into matrices.
@@ -71,124 +67,77 @@ rec.m        <- as.matrix(rec.n);
 ssb.m        <- as.matrix(ssb.n);
 ```
 
+We can then construct two `FLQuant` objects, specifying the relevant years and units.
+
 ```{r}
 Frec.m       <- FLQuant(rec.m, dimnames=list(age=1, year = 1960:2004));
 Fssb.m       <- FLQuant(ssb.m, dimnames=list(age=1, year = 1960:2004));
 Frec.m@units <- "10^3";
 Fssb.m@units <- "t*10^3";
+```
 
-newFL@rec    <- Frec.m;
-newFL@ssb    <- Fssb.m;
-newFL@range  <- c(0, 1960, 0, 2004);
+We then place the recruitment and spawning stock biomass data into the `FLSR` object that we created.
 
+```{r}
+rec(newFL)    <- Frec.m;
+ssb(newFL)    <- Fssb.m;
+range(newFL)  <- c(0, 1960, 0, 2004);
+```
+
+The `FLCore` package offers several stock-recruitment models. Here we use a Ricker model of stock recruitment [@Ricker1954], and insert this model into the `FLSR` object below.
+
+```{r}
 model(newFL) <- ricker();
 ```
 
+Parameters for the Ricker stock-recruitment model can be estimated with maximum likelihood.
 
-
-
-
-
-
-
-
-
-
-
-
-<!---
-
-
-
-The data below are derived from the [FLR tutorial](http://www.flr-project.org/doc/Loading_your_data_into_FLR.html), and the code below downloads the example data files into a temporary folder. 
-
-```{r}
-#temp_dir <- tempdir()
-#download.file("http://flr-project.org/doc/src/loading_data.zip", file.path(dir, "loading_data.zip"))
-#unzip(file.path(temp_dir, "loading_data.zip"), exdir = temp_dir);
+```{r, echo = FALSE, messages = FALSE, cache = FALSE, comment = FALSE, results = "hide"}
+newFL <- fmle(newFL);
 ```
 
-We can read in the example file below and convert it into a matrix to be used in an [FLQuant](http://www.flr-project.org/FLCore/reference/FLQuant.html) object. Rows in this matrix indicate ages.
-
-```{r}
-#fish_data <- read.csv(file.path(temp_dir, "catch_numbers.csv"), row = 1);
-#fish_data <- as.matrix(fish_data);
-#print(fish_data[,1:8]);
+```{r, eval = FALSE}
+newFL <- fmle(newFL);
 ```
 
-For simplicity, we merge these ages down into a single vector.
+Diagnostic plots, identical to those of the [modelling stock-recruitment tutorial](http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html) for the `nsher_ri` example, are shown below.
 
-```{r}
-fish_data <- apply(X = fish_data, MARGIN = 2, FUN = sum);
+```{r, fig.height = 7}
+plot(newFL);
 ```
 
-We can now create a new [FLQuant](http://www.flr-project.org/FLCore/reference/FLQuant.html) object with the `fish_data` vector. This process is important; down below, it will be repeated in a function that gets used within the GMSE population model, as GMSE will need to incorporate newly simulated data in each time step.
-
-
-```{r}
-fish_data_flq <- FLQuant(fish_data, dimnames = list(year = 1957:2011));
-```
-
-
-
-
-
-
-
-
-
-
-
-The data below include sample results for recruitment and spawning-stock biomass (SSB) of North Sea herring. 
+We now have a working example of a stock-recruitment model, but for our integration with `gmse_apply`, we will want a function that automates the above to simulate the process of updating the stock-recruitment model. We do this using the custom function created below.
 
 ```{r}
-data(nsher);
-```
-
-These data are structured using `FLStock`, an [S4](https://stat.ethz.ch/R-manual/R-devel/library/methods/html/Classes_Details.html) class of R objects. The code below creates an `FLSR` object, needed to create a stock-recruitment model.
-
-```{r}
-summary(nsher);
-```
-
-Notice that under `Model`, a Ricker model of stock-recruitment has already been fitted (many stock-recruitment models are available in FLCore; see the [FLSR tutorial](http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html) for more about fitting different models) and parameterised with Maximum Likelihood Estimation (MLE).  The code below shows how to apply the Beverton-Holt model model as an alternative, and the  `fmle` function parameterises the Beverton-Holt model model using the data in `nsher` and MLE.
-
-```{r}
-model(nsher) <- bevholt();
-nsher        <- fmle(nsher);
-summary(nsher);
-```
-
-We will use these tools to update the population model in GMSE.
-
-
-
-a <- params(nsher)[[1]];
-b <- params(nsher)[[2]];
-
-rec(p4sr2);
-ssb(p4sr2);
-
-
-
-rec_year    <- as.numeric(attributes(rec(p4sr2))$dimnames$year);
-ssb_year    <- as.numeric(attributes(ssb(p4sr2))$dimnames$year);
-recruitment <- NULL;
-for(year in 1:length(rec_year)){
-    recruitment[year] <- rec(p4sr)[[year]];
+update_SR_model <- function(rec_m, ssb_m, years){
+    Frec_m       <- FLQuant(rec.m, dimnames=list(age=1, year = years));
+    Fssb_m       <- FLQuant(ssb.m, dimnames=list(age=1, year = years));
+    Frec_m@units <- "10^3";
+    Fssb_m@units <- "t*10^3";
+    rec(newFL)   <- Frec.m;
+    ssb(newFL)   <- Fssb.m;
+    range(newFL) <- c(0, years[1], 0, years[length(years)]);
+    model(newFL) <- ricker();
+    newFL        <- fmle(newFL);
+    return(newFL);
 }
-spawning_stock_biomass <- NULL;
-for(year in 1:length(ssb_year)){
-    spawning_stock_biomass[year] <- ssb(p4sr)[[year]];
+```
+
+The above function will be used within another custom function to predict the next time step of recruitment.
+
+```{r}
+predict_recruitment <- function(rec_m, ssb_m, years, new_ssb){
+    newFL <- update_SR_model(rec_m, ssb_m, years);
+    a     <- params(newFL)[[1]] # Extract 'a' parameter of the Ricker model
+    b     <- params(newFL)[[2]] # Extract 'b' parameter of the Ricker model
+    rec   <- a * new_ssb * exp(-b * new_ssb); # Predict the new recruitment
+    return(recruitment)
 }
+```
+
+In `gmse_apply`, we will use the `predict_recruitment` function above as the resource (i.e., operational) model. The `new_ssb` reads in the new spawning stock biomass, which will be calculated from the built-in GMSE `user` model.
+
+Integrating `predict_recruitment` with `gmse_apply`
+================================================================================
 
 
-rec <- a * spawning_stock_biomass * exp(-b * spawning_stock_biomass);
-
-
-
-rec(p4sr)[[51]] <- 4300
-
-
-
---->
