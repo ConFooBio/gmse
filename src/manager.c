@@ -563,7 +563,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
                 vec_pos++;
             }
         }
-    } /* ACTION is now stored as actions */
+    } /* ACTION is now stored as costs */
     
     /* Code below remakes the AGENT matrix for easier use */
     agent_number        = dim_AGENT[0];
