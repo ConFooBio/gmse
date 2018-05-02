@@ -1899,8 +1899,8 @@ get_old_actions <- function(arg_list){
         act_vector[is.na(act_vector)] <- 0;
         arg_list$ACTION[1,8:12,2] <- act_vector;
         man_vector <- as.vector(arg_list$basic_output$manager_results[1,2:6]);
-        man_vector[is.na(man_vector)] <- sim_new$GMSE$minimum_cost;
-        arg_list$ACTION[3,8:13,1] <- c(man_vector, sim_new$GMSE$minimum_cost);
+        man_vector[is.na(man_vector)] <- arg_list$GMSE$minimum_cost;
+        arg_list$ACTION[3,8:13,1] <- c(man_vector, arg_list$GMSE$minimum_cost);
     }
     return(arg_list);
 }
