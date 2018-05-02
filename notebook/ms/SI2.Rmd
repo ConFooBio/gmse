@@ -99,20 +99,20 @@ Note that the `manager_results` and `user_results` are ambiguous here, and can b
 
 ```{r, eval = TRUE}
 gmse_apply(res_mod = alt_res, obs_mod = observation, 
-           man_mod = alt_man, use_mod = alt_usr, X = 1000)
+           man_mod = alt_man, use_mod = alt_usr, X = 1000);
 ```
 
 It is possible to, for example, specify a simple resource and observation model, but then take advantage of the genetic algorithm to predict policy decisions and user actions. This can be done by using the default GMSE manager and user functions (written below explicitly, though this is not necessary).
 
 ```{r, eval = TRUE}
 gmse_apply(res_mod = alt_res, obs_mod = alt_obs, 
-           man_mod = manager, use_mod = user, X = 1000)
+           man_mod = manager, use_mod = user, X = 1000);
 ```
 
 Running GMSE simulations by looping `gmse_apply`
 --------------------------------------------------------------------------------
 
-Instead of using the `gmse` function, multiple simulations of GMSE can be run by calling `gmse_apply` through a loop, reassigning outputs where necessary for the next generation. This is best accomplished using the argument `old_list`, which allows previous full results from `gmse_apply` to be reinserted into the `gmse_apply` function. The argument `old_list` is `NULL` by default, but can instead take the output of a previous full list return of  `gmse_apply`. This `old_list` produced when `get_res = Full` includes all data structures and parameter values necessary for a unique simulation of GMSE. An exampe of using `get_res` and `old_list` in tandem to loop `gmse_apply` is shown below.
+Instead of using the `gmse` function, multiple simulations of GMSE can be run by calling `gmse_apply` through a loop, reassigning outputs where necessary for the next generation. This is best accomplished using the argument `old_list`, which allows previous full results from `gmse_apply` to be reinserted into the `gmse_apply` function. The argument `old_list` is `NULL` by default, but can instead take the output of a previous full list return of  `gmse_apply`. This `old_list` produced when `get_res = Full` includes all data structures and parameter values necessary for a unique simulation of GMSE. Note that custom functions sent to `gmse_apply` still need to be specified (`res_mod`, `obs_mod`, `man_mod`, and `use_mod`). An exampe of using `get_res` and `old_list` in tandem to loop `gmse_apply` is shown below.
 
 ```{r, eval = TRUE}
 to_scare  <- FALSE;
