@@ -123,7 +123,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   land_ownership = FALSE, # Do stake-holders act on their land?
                   manage_freq    = 1,     # Frequency that management enacted
                   converge_crit  = 0.1,   # Convergence criteria
-                  manager_sense  = 0.9,   # Manager sensitivity
+                  manager_sense  = 0.1,   # Manager sensitivity
                   public_land    = 0,     # Proportion of landscape public
                   group_think    = FALSE  # All users behave identically
 ){
@@ -134,8 +134,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     if(observe_type == 1){
         times_observe <- 2;
     }
-    if(user_budget > 100000 | manager_budget > 100000){
-        stop("User and manager budgets cannot exceed 100000");
+    if(user_budget > 10000 | manager_budget > 10000){
+        stop("User and manager budgets cannot exceed 10000");
     }
     if(user_budget < 1 | manager_budget < 1){
         stop("User and manager budgets must be at least 1");

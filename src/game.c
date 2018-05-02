@@ -502,19 +502,25 @@ void policy_to_counts(double ***population, double **merged_acts, int agent,
     int col, COLS;
     double old_cost, new_cost, old_act, cost_change, new_action;
     
-    COLS   = (int) paras[69];
+    COLS   = (int) paras[69];          
     
     for(col = 7; col < COLS; col++){
         old_cost    = merged_costs[action_row][col];
-        new_cost    = population[manager_row][col][agent];
+        new_cost    = population[manager_row][col][agent];          
         if(new_cost <= 0){
             new_cost = 1;
             population[manager_row][col][agent] = new_cost;
         }
-        old_act     = merged_acts[action_row][col];
+        /*
+        old_act     = merged_acts[action_row][col];  
         new_action  = new_act(old_cost, new_cost, old_act, paras);
-
         act_change[action_row][col] = new_action;
+         */
+        
+        cost_change = old_cost / new_cost;
+        new_action  = merged_acts[action_row][col] * cost_change;
+        act_change[action_row][col] = floor(new_action);
+        
     }
 }
 
@@ -573,11 +579,11 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
             merged_acts[i][j] += paras[95];
         }
     }
-    
+
     max_dev = 0;
     for(agent = 0; agent < pop_size; agent++){
         for(action_row = 0; action_row < int_num; action_row++){
-            count_change[action_row] = 0; 
+            count_change[action_row] = 0;
             utils[action_row]        = 0; 
             manager_row              = 0;
             type1                    = population[action_row][1][agent];
