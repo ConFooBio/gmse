@@ -15,12 +15,12 @@ gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
   ga_popsize = 100, ga_mingen = 40, ga_seedrep = 20, ga_sampleK = 20,
   ga_chooseK = 2, ga_mutation = 0.1, ga_crossover = 0.1,
   move_agents = TRUE, max_ages = 5, minimum_cost = 10,
-  user_budget = 10000, manager_budget = 10000, manage_target = 1000,
+  user_budget = 1000, manager_budget = 1000, manage_target = 1000,
   RESOURCE_ini = 1000, scaring = FALSE, culling = TRUE,
   castration = FALSE, feeding = FALSE, help_offspring = FALSE,
   tend_crops = FALSE, tend_crop_yld = 0.2, kill_crops = FALSE,
   stakeholders = 4, manage_caution = 1, land_ownership = FALSE,
-  manage_freq = 1, converge_crit = 0.1, manager_sense = 0.8,
+  manage_freq = 1, converge_crit = 0.1, manager_sense = 0.9,
   public_land = 0, group_think = FALSE)
 }
 \arguments{
@@ -100,7 +100,7 @@ gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
 
 \item{manager_budget}{This is the total budget for the manager when setting policy. Higher budgets make it easier to restrict the actions of stakeholders; lower budgets make it more difficult for managers to limit the actions of stakeholders by setting policy. The default `manager_budget` is 1000. The maximum budget is 10000.}
 
-\item{manage_target}{This is the target resource abundance that the manager attempts to keep the population at; the default value is 10000.}
+\item{manage_target}{This is the target resource abundance that the manager attempts to keep the population at; the default value is 1000.}
 
 \item{RESOURCE_ini}{This is the initial abundance of resources at the start of the simulation; the default is 1000.}
 
@@ -130,7 +130,7 @@ gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
 
 \item{converge_crit}{This is the convergence criteria for terminating a genetic algorithm. After continuing for the minimum number of generations, `ga_mingen`, the genetic algorithm will terminate if the convergence criteria is met. Usually making this criteria low doesn't do much to improve adaptive strategies; the default value is 1, which means that the genetic algorithm will continue as long as there is greater than a 1 percent increase in strategy fitness.}
 
-\item{manager_sense}{This adjusts the sensitivity that a manager assumes their actions have with respect to changes in costs (their policy). For example, given a `manage_sense` value of 0.8, if the cost of culling resources doubles, then instead of a manager assuming the the number of culled resources per user will be cut in half, the manager will instead assume that the number of resources culled will be cut by one half times eight tenths. As a general rule, a value of ca 0.8 allows the manager to predict stake-holder responses to policy accurately; future versions of GMSE could allow managers to adjust this dynamically based on simulation history.}
+\item{manager_sense}{This adjusts the sensitivity that a manager assumes their actions have with respect to changes in costs (their policy). For example, given a `manage_sense` value of 0.9, if the cost of culling resources doubles, then instead of a manager assuming the the number of culled resources per user will be cut in half, the manager will instead assume that the number of resources culled will be cut by one half times eight tenths. As a general rule, a value of ca 0.8 allows the manager to predict stake-holder responses to policy accurately; future versions of GMSE could allow managers to adjust this dynamically based on simulation history.}
 
 \item{public_land}{The proportion of the landscape that will be public, and not owned by stakeholders. The remaining proportion of the landscape will be evenly divided among stakeholders. Note that this option is only available when land_ownership == TRUE.}
 
