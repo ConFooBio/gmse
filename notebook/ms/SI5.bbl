@@ -1,5 +1,10 @@
 \begin{thebibliography}{}
 
+\bibitem[Bunnefeld et~al., 2011]{Bunnefeld2011}
+Bunnefeld, N., Hoshino, E., and Milner-Gulland, E.~J. (2011).
+\newblock {Management strategy evaluation: A powerful tool for conservation?}
+\newblock {\em Trends in Ecology and Evolution}, 26(9):441--447.
+
 \bibitem[Carruthers and Butterworth, 2018a]{Carruthers2018a}
 Carruthers, T. and Butterworth, D. (2018a).
 \newblock {ABT-MSE : An R package for atlantic bluefin tuna management strategy
@@ -44,6 +49,12 @@ Polacheck, T., Klaer, N.~L., Millar, C., and Preece, A.~L. (1999).
 \newblock {An initial evalutaion of management strategies for the southern
   bluefin tuna fishery}.
 \newblock {\em ICES Journal of Marine Science}, 56(6):811--826.
+
+\bibitem[Punt et~al., 2016]{Punt2016}
+Punt, A.~E., Butterworth, D.~S., de~Moor, C.~L., {De Oliveira}, J. A.~A., and
+  Haddon, M. (2016).
+\newblock {Management strategy evaluation: Best practices}.
+\newblock {\em Fish and Fisheries}, 17(2):303--334.
 
 \bibitem[Ricker, 1954]{Ricker1954}
 Ricker, W.~E. (1954).
