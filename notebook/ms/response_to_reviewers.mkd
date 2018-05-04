@@ -8,6 +8,11 @@ Associate Editor Comments
 
 We have received reviews from two highly qualified reviewers, both are supportive of the goals of the paper but Reviewer 1 expresses some substantial concerns. In particular, they are concerned that the information necessary to successfully implement the GMSE approach by managers is lacking. I recommend responding to many of issues raised by Reviewer 1 by providing a series of detailed vignettes as part of the R package. These vignettes would lead managers through different scenarios, explaining how to change the parameters to model different possibilities and how to interpret the output. Additionally, as the ultimate goal of the GMSE approach is to lead to better resource management decisions it would be helpful to provide evidence that it is beneficial. For example, can you find a real-life case study and retroactively use your approach to illustrate how it would lead to different and better management decisions and outcomes? In any revision please ensure that you respond to all reviewer comments and ensure that the R code meets the new Policy on Publishing code (details available at: http://besjournals.onlinelibrary.wiley.com/hub/journal/10.1111/(ISSN)2041-210X/journal-resources/policy-on-publishing-code.html)
 
+**Author response to AE Comments**
+
+We thank the AE for these helpful comments and their suggestions. As recommended, we have written a series of detailed vignettes, now incorporated with the R package GMSE v0.4.0.3; these include six vignettes intended to address revewers' concerns and provide a more detailed explanation of some of the key features of GMSE. After reading reviewer comments, we recognised that we had underemphasised an important novelty of the GMSE package, which is the goal-oriented behaviour of the manager and users in the default manager and user submodels, and hence the ability to investigate conflict among agents with different objectives. We also agree that it would be useful to provide a real-life case study in which GMSE simulations could shed light on management decisions. Hence, following recommendations of Reviewer 1, in the new Supporting Information 3, we consider an example case study of the management of geese under the condition of agricultural conflict. Management of geese populations has received considerable interest in recent years, as many populations in northern Europe have undergone recent exponential growth, leading to conflict with people in the agricultural community (Cusack et al. 2018). In Supporting Information 3, we show how demographic parameters collected from a recent study of the Taiga Bean Goose (Answer fabalis fabalis) can be used in the main `gmse` function (and by extension, the browser-based graphical user interface `gmse_gui`) to predict population dynamics, agricultural damage, and manager and user decision-making under different policy options. By demonstrating the use of the `plot_gmse_effort` function, we now show how conservation conflict changes when scaring is included as a policy option. In Supporting Information 4, we build off of this case study to show how the `gmse_apply` function allows for further customisation, including (1) custom placement of user land (as requested by Reviewer 2), parameterisation of individual farmer budgets, and (3) custom density-dependent rules for goose movement. In Supporting Information 5, we show how GMSE can be integrated with the widely used Fisheries Library in R (FLR) using `gmse_apply`, and provide a general comparison to the FLR project (requested by Reviewer 2). Finally, in Supporting Information 6, we provide an example of how GMSE can be used to investigate the relationship between management frequency and extinction risk, illustrating the importance of replicating simulation runs and demonstrating how to write GMSE output to CSV files (as requested by Reviewer 1). All of these vignettes are now incorporated into the CRAN package GMSE v0.4.0.3.
+
+In addition to this requested series of vignettes, we have also addressed all comments of reviewers below and revised the manuscript accordingly. All our R code meets the new Policy on Publishing code, and we believe that the comments of the AE and reviewers have led to revisions that have substantially improved this manuscript and the GMSE package.
 
 Reviewer 1 Comments
 --------------------------------------------------------------------------------
@@ -18,7 +23,10 @@ This paper introduces the R package, generalized management strategy evaluation 
 
 **Author response to Reviewer 1 General comments:**
 
-
+1. It is generalised both because of the game-theoretic, goal-oriented, approach of agents, but also because the flexibility of gmse_apply allows GMSE to be a generalised tool for modelling. This is now explained in SI5, and in a new conclusion section (requested by Reviewer 2)
+2. We now show in SI3, SI4, and SI6 how GMSE can be applied to management questions more clearly; SI5 also helps here for how a fisheries example would be integrated through FLR.
+3. We now include a new vignette SI7 that explains the key default data structures of GMSE, including the cost array (note that these defaults do not need to be used for custom models in gmse_apply). This SI7 also explains how to summarise gmse simulations into a single CSV file structure using `gmse_sim_results` (addressing concern 4).
+4. The default submodels are individual-based (i.e., "agent-based models"), and stochastic processes in these submodels do mean that dynamics depend on initial conditions. In SI6, we now highlight the advantages, and potential disadvantages, of using an individual-based modelling approach; we show how replicate simulations can be run to infer extinction risk at different management frequencies.
 
 **Reviewer 1 specific comment 1:**
 
@@ -66,7 +74,7 @@ We now explain that is possible for resources in the population to exist on the 
 
 **Author response to Reviewer 1 specific comment 6:**
 
-This is a reasonable inference, and we appreciate Reviewer 1 for drawing attention to it. However, the value 10001 is actionally a maximum cost allowed in the modelling that is unrelated to land dimensions. We now state this explicitly in Appendix 1 to avoid confusion (line XXX). In our newest version of GMSE, maximum allowable budgets have been increased, so this number is now an order of magnitude higher (100001).
+This is a reasonable inference, and we appreciate Reviewer 1 for drawing attention to it. However, the value 10001 is actionally a maximum cost allowed in the modelling that is unrelated to land dimensions. We now state this explicitly in Appendix 1 to avoid confusion (line XXX). In our newest version of GMSE v0.4.0.3, maximum allowable budgets have been increased, so this number is now an order of magnitude higher (100001). 
 
 **Reviewer 1 specific comment 7:**
 
@@ -74,7 +82,7 @@ This is a reasonable inference, and we appreciate Reviewer 1 for drawing attenti
 
 **Author response to Reviewer 1 specific comment 7:**
 
-The objective for the genetic algorithm is not necessarily to produce optimal strategies, but strategies that are adaptive and flexible in making decisions. Finding a set of parameters to be used in the genetic algorithm to produce adaptive strategies is not especially difficult, and default values in GMSE are chosen to be sufficient for this objective. Nevertheless, it is true that the genetic algorithm will be more effective given more strict convergence criterial and a higher minimum generation times. We now emphasise this more in Appendix 1 in a new section, 'Choosing genetic algorithm parameter values' (line XXX).
+The objective for the genetic algorithm is not necessarily to produce optimal strategies, but strategies that are adaptive and flexible in making decisions. Finding a set of parameters to be used in the genetic algorithm to produce adaptive strategies is not especially difficult, and default values in GMSE are chosen to be sufficient for this objective. Nevertheless, it is true that the genetic algorithm will be more effective given more strict convergence criterial and a higher minimum generation times. We now emphasise this more in Supporting Information 1 in a new section, 'Choosing genetic algorithm parameter values' (line XXX).
 
 **Reviewer 1 specific comment 8:**
 
@@ -106,7 +114,7 @@ We now clarify in the text why we use the word 'resource' (line XXX). Although w
 
 **Author response to Reviewer 1 specific comment 11:**
 
-Although this kind of customisation is not possible using the function `gmse`, we now explain how this can be done using `gmse_apply` in detail in a new supporting information (Supporting Information 4).
+We now demonstrate how this can be done using `gmse_apply` in a new vignette (Supporting Information 4). This vignette also shows how individual user (e.g., farmer) budgets can be customised, and custom functions can be created to tweak the movement rules of resources.
 
 
 Reviewer 2 Comments
@@ -132,7 +140,9 @@ Tuck, G.N., and Zhou, S. 2013. Evaluating sustainability of fisheries bycatch mo
 
 **Author response to Reviewer 2 General comments:**
 
-GMSE default options are more mechanistic than FLR, but phenomenological models can also be incorporated into gmse_apply as desired.
+We thank Reviewer 2 for their helpful comments. We now include references to the early work that Reviewer 2 pointed out to put our software in a broader context. While the word count limitation of the main text has precluded us from devoting additional paragraphs to adaptation of GMSE for fisheries and comparison with packages such as FLR, we now devote an extensive seven page vignette to the subject (Supporting Information 5). This new SI5 includes background that relates GMSE to a fisheries context, shows how the gmse_apply function could be integrated with the FLR package to use an FLR operational model with the genetic algorithm of GMSE if desired, and comments more generally on some key differences between GMSE and existing MSE packages such as FLR (namely, the individual-based, mechanistic approach of GMSE as a flexible simulation tool).
+
+We agree that the end of the article seems abrupt. We have therefore included a brief concluding paragraph, which emphasises the key goals and features of the GMSE software. Acknowledgements now place GMSE in the context of the broader ConFooBio project, investigating situations of conservation conflict.
 
 
 **Reviewer 2 specific comment 1:**
@@ -150,7 +160,7 @@ fisheries examples, such as lengths, ages, rates of capture, that are typically 
 
 **Author response to Reviewer 2 specific comment 1:**
 
-We now include an observation example typical of fisheries (line XXX -- NEED TO ADD CODE TO GMSE).
+We now include a modelling example typical of fisheries in a new vignette (Supporting Information 5), which demonstrates how modelling from the FLR library can be integrated into gmse_apply (see our response to Reviewer 2 General comments). This new example focuses on recruitment and spawning stock biomass, and shows more generally how fisheries-specific submodels could be incorporated into the broader GMSE framework.
 
 **Reviewer 2 specific comment 3:**
 
@@ -174,14 +184,15 @@ We now clarify how the resources are observed in the text (line XXX).
 
 182: Discussion/Conclusion? Acknowledgements?
 
-
 **Author response to Reviewer 2 specific comment 5:**
 
-
+We now add a brief Conclusion and Acknowledgements section.
 
 
 Author references
 --------------------------------------------------------------------------------
+
+Cusack, J. J., Duthie, A. B., Rakotonarivo, S., Pozo, R. A., Mason, T. H. E., Månsson, J., … Bunnefeld, N. (2018). Time series analysis reveals synchrony and asynchrony between conflict management effort and increasing large grazing bird populations in northern Europe. Conservation Letters, e12450. https://doi.org/10.1111/conl.12450
 
 Hamblin, S. (2013). On the practical usage of genetic algorithms in ecology and evolution. Methods in Ecology and Evolution, 4(2), 184–194. https://doi.org/10.1111/2041-210X.12000
 
