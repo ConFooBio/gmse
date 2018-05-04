@@ -6,10 +6,10 @@ author: A. Bradley Duthie&#xb9;&#xb3;, Jeremy J. Cusack&#xb9;, Isabel L. Jones&#
 date: '[1] Biological and Environmental Sciences, University of Stirling, Stirling,
   UK [2] Norwegian Institute for Nature Research, Trondheim, Norway [3] alexander.duthie@stir.ac.uk'
 output:
-  html_document: default
   pdf_document:
     citation_package: natbib
     fig_caption: yes
+  html_document: default
   word_document:
     fig_caption: yes
     reference_docx: docx_template.docx
@@ -23,8 +23,39 @@ subtitle: 'GMSE: an R package for generalised management strategy evaluation (Su
 biblio-style: apalike
 ---
 
+```{r, echo = FALSE}
+library(GMSE);
+```
+
+The individual-based approach of default GMSE submodels
+================================================================================
+
+The default submodels of GMSE (`resource`, `observation`, `manager`, `user`) are individual-based (also called 'agent-based'), meaning that they model discrete individuals (resources or agents), which in GMSE are represented by individual table rows (`RESOURCES`, `AGENTS`, `OBSERVATION`) or layers of three-dimensional arrays (`COST`, `ACTION`). Individual-based models (IBMs) have been a useful approach in ecology for decades [@Uchmanski1996; @Grimm1999], providing both a pragmatic tool for the mechanistic modelling of complex populations and a powerful technique for theoretical investigation. A key advantage of the individual-based modelling approach is the discrete nature of individuals, which allows for detailed trait variation and complex interactions among individuals. In GMSE, some of the most important traits for resources include types, ages, demographic parameter values, locations, etc., and for agents (manager and users), traits include different types, utilities, budgets, etc. The traits that resources and managers have can potentially affect their interactions, and default GMSE submodels take advantage of this by simulating interactions explicitly on a landscape (see [SI7](SI7.pdf) for an introduction to GMSE default data structures).
+
 Replicate simulations as a tool for model inference
 ================================================================================
 
-The default submodels of GMSE (`resource`, `observation`, `manager`, `user`) are individual-based (also called 'agent-based'), meaning that they model discrete individuals (resources or agents), which in GMSE are represented by individual table rows (`RESOURCES`, `AGENTS`, `OBSERVATION`) or layers of three-dimensional arrays (`COST`, `ACTION`). Individual-based modelling has been a useful approach in ecology for decades [@Uchmanski1996; @Grimm1999], providing both a pragmatic tool for the mechanistic modelling of complex populations and a powerful technique for theoretical investigation. A key advantage of the individual-based modelling approach is the discrete nature of individuals, which allows for detailed trait variation and complex interactions among individuals. In GMSE, some of the most important traits for resources include types, ages, demographic parameter values, locations, etc., and for agents (manager and users), traits include different types, utilities, budgets, etc. The traits that resources and managers have can potentially affect their interactions, and default GMSE submodels take advantage of this by simulating interactions explicitly on a landscape (see [SI7](SI7.pdf) for an introduction to GMSE default data structures).
+Modelling complex interactions among discrete individuals mechanistically typically causes some degree of stochasticity in IBMs (in the code, this is caused by the sampling of random values, which determine probabilistically whether or not events such as birth or death occur for individuals), reflecting the uncertainty that is inherent to complex systems. We can see a simple example of this by calling `gmse_apply` under the same default conditions twice.
+
+```{r}
+rand_eg_1 <- gmse_apply();
+print(rand_eg_1);
+```
+
+Although the second call to `gmse_apply` has identical initial conditions, because resource demographics (e.g., birth and death) and agent decision making (e.g., policy generation and user actions) is not deterministic, a slightly different result is obtained.
+
+```{r}
+rand_eg_2 <- gmse_apply();
+print(rand_eg_2);
+```
+
+To make meaningful model inferences, it is often necessary to replicate simulations under the same initial conditions to understand the range of predicted outcomes for a particular set of parameter values. This can be computationally intense, but it can also lead to a more robust understanding of the range of dynamics that might be expected in a system. Additionally, when parameter values are unknown but believed to be important, replicate simulations can be applied across a range of values to understand how a particular parameter might affect system dynamics. Below, we show how to use the `gmse_replicates` function to simulate a simple example of a managed population that is hunted by users. This function calls `gmse` multiple times and aggregates the results from replicate simulations into a single table.
+
+
+
+
+
+
+
+
 
