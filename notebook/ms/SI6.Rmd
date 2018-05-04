@@ -1,16 +1,15 @@
 ---
-title: 'Management frequency and extinction risk'
-subtitle: 'GMSE: an R package for generalised management strategy evaluation (Supporting Information 5)'
+title: "Management frequency and extinction risk"
 author: A. Bradley Duthie&#xb9;&#xb3;, Jeremy J. Cusack&#xb9;, Isabel L. Jones&#xb9;,
-  Jeroen Minderman&#xb9;, Erlend B. Nilsen&#xb2;, Roc&#0237;o A. Pozo&#xb9;, 
-  O. Sarobidy Rakotonarivo&#xb9;, Bram Van Moorter&#xb2;, and Nils Bunnefeld&#xb9;
+  Jeroen Minderman&#xb9;, Erlend B. Nilsen&#xb2;, Roc&#0237;o A. Pozo&#xb9;, O. Sarobidy
+  Rakotonarivo&#xb9;, Bram Van Moorter&#xb2;, and Nils Bunnefeld&#xb9;
 date: '[1] Biological and Environmental Sciences, University of Stirling, Stirling,
   UK [2] Norwegian Institute for Nature Research, Trondheim, Norway [3] alexander.duthie@stir.ac.uk'
 output:
+  html_document: default
   pdf_document:
     citation_package: natbib
     fig_caption: yes
-  html_document: default
   word_document:
     fig_caption: yes
     reference_docx: docx_template.docx
@@ -19,10 +18,13 @@ linestretch: 1
 link-citations: yes
 linkcolor: blue
 bibliography: gmse.bib
+subtitle: 'GMSE: an R package for generalised management strategy evaluation (Supporting
+  Information 5)'
 biblio-style: apalike
 ---
 
 Replicate simulations as a tool for model inference
 ================================================================================
 
-The default submodels of GMSE (`resource`, `observation`, `manager`, `user`) are individual-based (also called 'agent-based'), meaning that they model discrete individuals (resources or agents), which GMSE are represented by individual table rows (`RESOURCES`, `AGENTS`, `OBSERVATION`) or layers of three-dimensional arrays (`COST`, `ACTION`). Individual-based modelling has been a useful approach in ecology for decades [@Uchmanski1996; @Grimm1999], providing both a pragmatic tool for the mechanistic modelling of complex populations and a powerful technique for theoretical investigation. A key advantage of the individual-based modelling approach is the discrete nature of individuals, which allows for detailed trait variation and complex interactions among individuals. In GMSE, some of the most important traits for resources include different types, ages, demographic paramater values, locations, etc., and for agents (manager and users), this can include different types, goals, budgets, etc. 
+The default submodels of GMSE (`resource`, `observation`, `manager`, `user`) are individual-based (also called 'agent-based'), meaning that they model discrete individuals (resources or agents), which GMSE are represented by individual table rows (`RESOURCES`, `AGENTS`, `OBSERVATION`) or layers of three-dimensional arrays (`COST`, `ACTION`). Individual-based modelling has been a useful approach in ecology for decades [@Uchmanski1996; @Grimm1999], providing both a pragmatic tool for the mechanistic modelling of complex populations and a powerful technique for theoretical investigation. A key advantage of the individual-based modelling approach is the discrete nature of individuals, which allows for detailed trait variation and complex interactions among individuals. In GMSE, some of the most important traits for resources include types, ages, demographic paramater values, locations, etc., and for agents (manager and users), traits include different types, utilities, budgets, etc. The traits that resources and managers have can potentially affect their interactions, and default GMSE submodels take advantage of this by simulating interactions explicitly on a landscape (see [SI7](SI7.pdf) for an introduction to GMSE default data structures).
+
