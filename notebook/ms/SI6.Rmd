@@ -51,7 +51,22 @@ print(rand_eg_2);
 
 To make meaningful model inferences, it is often necessary to replicate simulations under the same initial conditions to understand the range of predicted outcomes for a particular set of parameter values. This can be computationally intense, but it can also lead to a more robust understanding of the range of dynamics that might be expected in a system. Additionally, when parameter values are unknown but believed to be important, replicate simulations can be applied across a range of values to understand how a particular parameter might affect system dynamics. Below, we show how to use the `gmse_replicates` function to simulate a simple example of a managed population that is hunted by users. This function calls `gmse` multiple times and aggregates the results from replicate simulations into a single table.
 
+For a single simulation, the `gmse_table` function prints out key information from a `gmse` simulation result. The example provided in the GMSE documentation is below.
 
+```{r}
+gmse_sim  <- gmse(time_max = 10, plotting = FALSE);
+sim_table <- gmse_table(gmse_sim = gmse_sim);
+print(sim_table)
+```
+
+We can also only record the last time step in `gmse_table`. 
+
+```{r}
+sim_table_last <- gmse_table(gmse_sim = gmse_sim, all_time = FALSE);
+print(sim_table_last)
+```
+
+The `gmse_replicates` function replicates multiple simulations under the same initial conditions, then returns a table showing the values of all simulations. This can be useful, for example, for testing how often a population is expected to go to extinction or carrying capacity under a given set of parameter values.
 
 
 
