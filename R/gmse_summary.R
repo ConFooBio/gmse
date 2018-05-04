@@ -125,15 +125,16 @@ gmse_summary <- function(gmse_results){
             }
         }
     }
-    cost_col <- c("time_step", "resource_type", "scaring", "culling",
-                  "castration", "feeding", "helping", "tend_crop", 
-                  "kill_crop", "unused");
+    cost_col <- c("time_step", "resource_type", "cost_scaring", "cost_culling",
+                  "cost_castration", "cost_feeding", "cost_helping", 
+                  "cost_tend_crop", "cost_kill_crop", "cost_unused");
     colnames(costs)        <- cost_col;
     colnames(resources)    <- res_colna;
     colnames(observations) <- res_colna;
-    action_col <- c("time_step", "user_ID", "resource_type", "scaring", 
-                    "culling", "castration", "feeding", "helping", "tend_crop",
-                    "kill_crop", "unused", "crop_yield", "harvested");
+    action_col <- c("time_step", "user_ID", "resource_type", "act_scaring", 
+                    "act_culling", "act_castration", "act_feeding", 
+                    "act_helping", "act_tend_crop", "act_kill_crop", 
+                    "act_unused", "crop_yield", "harvested");
     colnames(actions) <- action_col;
     the_summary <- list(resources    = resources, 
                         observations = observations, 
@@ -142,4 +143,48 @@ gmse_summary <- function(gmse_results){
     return(the_summary);
 }
 
-
+#' GMSE table results
+#' 
+#' The gmse_table function takes results created from simulations of the gmse
+#' and concatenates key results from a large list into a more manageable data 
+#' table.
+#'
+#'@param gmse_sim The output of a `gmse` simulation.
+#'@param print_CSV Should the table be printed to a CSV file? If so, specify the filename here.
+#'@param hide_unused_options Whether or not to hide results from policy options when creating the resulting table. If `TRUE` (default), then policy and user actions that are not allowed in a simulation will not be placed as columns. If `FALSE`, then these columns will be placed with values of `NA`.
+#'@param all_time Whether or not results from each time step from the simulation should be individually placed as a row in the resulting table (`TRUE` by default). If `FALSE`, then only the last row will be placed.
+#'@return A table with one or more rows of results, each of which indicates a unique `gmse` simulation for a given time step. Columns represent key simulation including resource densities, observation estimates, policy, and user actions.
+#'@examples
+#'sim       <- gmse(time_max = 10);
+#'sim_table <- gmse_table(gmse_sim = sim);
+#'@export
+gmse_table <- function(gmse_sim, hide_unused_options = TRUE, all_time = TRUE){
+    
+    time_steps <- gmse_sim$paras[,1];
+    max_time   <- length(time_steps);
+    sim        <- gmse_summary(gmse_sim);
+    res_rows   <- sim$resources;
+    estimate   <- sim$observations[,-1];
+    cost_rows  <- sim$costs[,-1];
+    act_rows   <- matrix(data = NA, nrow = max_time, ncol = 10);
+    for(act in 1:10){
+        act_rows[,act] <- tapply(sim$actions[,act + 3], sim$actions[,1], sum);
+    }
+    colnames(res_rows) <- c("time_step", "resources");
+    colnames(act_rows) <- colnames(sim$actions[,4:13]);
+    results            <- cbind(res_rows, estimate, cost_rows, act_rows);
+    results            <- results[,-4];
+    
+    if(hide_unused_options == TRUE){
+        retain  <- is.na(results[1,]) == FALSE;
+        results <- results[,retain];
+    }
+    
+    if(all_time == FALSE){
+        last_step <- dim(results)[1];
+        results   <- results[last_step,];
+    }
+    
+    
+    return(results);
+}
