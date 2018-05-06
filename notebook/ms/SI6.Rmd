@@ -66,11 +66,73 @@ sim_table_last <- gmse_table(gmse_sim = gmse_sim, all_time = FALSE);
 print(sim_table_last)
 ```
 
-The `gmse_replicates` function replicates multiple simulations under the same initial conditions, then returns a table showing the values of all simulations. This can be useful, for example, for testing how often a population is expected to go to extinction or carrying capacity under a given set of parameter values.
+The `gmse_replicates` function replicates multiple simulations under the same initial conditions, then returns a table showing the values of all simulations. This can be useful, for example, for testing how often a population is expected to go to extinction or carrying capacity under a given set of parameter values. First, we demonstrate the `gmse_replicates` function for simulations of 20 time steps; other parameter values are set to default values, except `plotting`, which we set to `FALSE` to avoid plotting each simulation result. We run 10 replicates below.
 
+```{r, echo = FALSE, messages = FALSE, cache = FALSE, comment = FALSE, results = "hide"}
+gmse_reps1 <- gmse_replicates(replicates = 10, time_max = 20, plotting = FALSE);
+print(gmse_reps1);
+```
 
+```{r, eval = FALSE}
+gmse_reps1 <- gmse_replicates(replicates = 10, time_max = 20, plotting = FALSE);
+print(gmse_reps1);
+```
 
+```{r, echo = FALSE}
+print(gmse_reps1);
+```
 
+Note from the results above that resources in all simulations persisted for 20 time steps, which means that extinction never occurred. We can also see that the population in all simulations never terminated at a density near the default carrying capacity of `res_death_K = 2000`, and was instead consistently near the target population size of `manage_target = 1000`. If we wish to define management success as having a population density near target levels after 20 time steps (perhaps interpreted as 20 years), then we might assess this population as successfully managed under the conditions of the simulation. We can then see what happens if managers only respond to changes in the social-ecological system with a change in policy once every two years, perhaps as a consequence of reduced funding for management or increasing demands for management attention elsewhere. This can be done by changing the default `manage_freq = 1` to `manage_freq = 2`.
 
+```{r, echo = FALSE, messages = FALSE, cache = FALSE, comment = FALSE, results = "hide"}
+gmse_reps2 <- gmse_replicates(replicates = 10, time_max = 20, plotting = FALSE,
+                             manage_freq = 2);
+print(gmse_reps2);
+```
 
+```{r, eval = FALSE}
+gmse_reps2 <- gmse_replicates(replicates = 10, time_max = 20, plotting = FALSE, 
+                             manage_freq = 2);
+print(gmse_reps2);
+```
+
+```{r, echo = FALSE}
+print(gmse_reps2);
+```
+
+Note that while extinction is still non-existent in these simulations, when populations are managed less frequently, they tend to be less close to the target size of 1000 after 20 generations. The median population size of `gmse_reps1` (management in every time step) is `r median(gmse_reps1[,2])`, with a maximum of `r max(gmse_reps1[,2])` and minimum of `r min(gmse_reps1[,2])`. While the median population size of `gmse_reps2` (management every two time steps) is `r median(gmse_reps2[,2])`, with a maximum of `r max(gmse_reps2[,2])` and minimum of `r min(gmse_reps2[,2])`. We can then see what happens when management occurs only once in every three time steps.
+
+```{r, echo = FALSE, messages = FALSE, cache = FALSE, comment = FALSE, results = "hide"}
+gmse_reps3 <- gmse_replicates(replicates = 10, time_max = 20, plotting = FALSE,
+                             manage_freq = 3);
+print(gmse_reps3);
+```
+
+```{r, eval = FALSE}
+gmse_reps3 <- gmse_replicates(replicates = 10, time_max = 20, plotting = FALSE, 
+                             manage_freq = 3);
+print(gmse_reps3);
+```
+
+```{r, echo = FALSE}
+print(gmse_reps3);
+```
+
+Given a management frequency of once every three time steps, the median population size of `gmse_reps3` (management in every time step) is `r median(gmse_reps3[,2])`, with a maximum of `r max(gmse_reps3[,2])` and minimum of `r min(gmse_reps3[,2])`. There are still no extinctions in the population, so below we change the management frequency to once every four time steps.
+
+```{r, echo = FALSE, messages = FALSE, cache = FALSE, comment = FALSE, results = "hide"}
+gmse_reps4 <- gmse_replicates(replicates = 10, time_max = 20, plotting = FALSE,
+                             manage_freq = 4);
+print(gmse_reps4);
+```
+
+```{r, eval = FALSE}
+gmse_reps4 <- gmse_replicates(replicates = 10, time_max = 20, plotting = FALSE, 
+                             manage_freq = 4);
+print(gmse_reps4);
+```
+
+```{r, echo = FALSE}
+print(gmse_reps4);
+```
 
