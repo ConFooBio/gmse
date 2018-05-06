@@ -128,6 +128,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   group_think    = FALSE  # All users behave identically
 ){
     
+    time_max <- time_max + 1; # Add to avoid confusion (see loop below)
     if(observe_type  <  0 | observe_type > 3){
         observe_type <- 0;
     }
@@ -506,7 +507,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         proc_check_end  <- proc.time();
         time_taken      <- proc_check_end - proc_check_start;
         if(time_taken[3] > 5){
-            print(paste("Generation ", time, "of ", time_max));
+            print(paste("Generation ", time, "of ", time_max - 1));
             proc_check_start <- proc.time();
         }
 
