@@ -160,13 +160,13 @@ gmse_summary <- function(gmse_results){
 #'@export
 gmse_table <- function(gmse_sim, hide_unused_options = TRUE, all_time = TRUE){
     
-    time_steps <- gmse_sim$paras[,1];
-    max_time   <- length(time_steps);
+    time_steps <- 1:max(gmse_sim$paras[,1]);
+    t_max      <- length(time_steps);
     sim        <- gmse_summary(gmse_sim);
     res_rows   <- sim$resources;
     estimate   <- sim$observations[,-1];
     cost_rows  <- sim$costs[,-1];
-    act_rows   <- matrix(data = NA, nrow = max_time, ncol = 10);
+    act_rows   <- matrix(data = NA, nrow = t_max, ncol = 10);
     for(act in 1:10){
         act_rows[,act] <- tapply(sim$actions[,act + 3], sim$actions[,1], sum);
     }
