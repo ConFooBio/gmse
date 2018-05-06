@@ -24,6 +24,6 @@ and concatenates key results from a large list into a more manageable data
 table.
 }
 \examples{
-sim       <- gmse();
+sim       <- gmse(time_max = 10);
 sim_table <- gmse_table(gmse_sim = sim);
 }
