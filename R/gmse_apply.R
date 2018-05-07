@@ -55,7 +55,7 @@ gmse_apply <- function(res_mod  = resource,
  
     # ------ RESOURCE MODEL ----------------------------------------------------
     res_args <- prep_res(arg_list = arg_vals, res_mod = res_mod);
-    check_args(arg_list = res_args, the_fun = res_mod);
+    check_args(arg_list = res_args, the_fun = res_mod);     
     res_results <- do.call(what = res_mod, args = res_args);
     res_results <- check_name_results(output   = res_results, 
                                       vec_name = "resource_vector", 
