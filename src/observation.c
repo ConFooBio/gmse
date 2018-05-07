@@ -491,9 +491,6 @@ void transect(double **resource_array, double *paras, int start_x, int start_y,
     }
 }
 
-
-
-
 /* =============================================================================
  * MAIN OBSERVATION FUNCTION:
  * ===========================================================================*/
