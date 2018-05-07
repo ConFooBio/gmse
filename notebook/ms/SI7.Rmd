@@ -1,0 +1,130 @@
+---
+title: "Default GMSE data structures"
+author: A. Bradley Duthie&#xb9;&#xb3;, Jeremy J. Cusack&#xb9;, Isabel L. Jones&#xb9;,
+  Jeroen Minderman&#xb9;, Erlend B. Nilsen&#xb2;, Roc&#0237;o A. Pozo&#xb9;, O. Sarobidy
+  Rakotonarivo&#xb9;, Bram Van Moorter&#xb2;, and Nils Bunnefeld&#xb9;
+date: '[1] Biological and Environmental Sciences, University of Stirling, Stirling,
+  UK [2] Norwegian Institute for Nature Research, Trondheim, Norway [3] alexander.duthie@stir.ac.uk'
+output:
+  pdf_document:
+    citation_package: natbib
+    fig_caption: yes
+  html_document: default
+  word_document:
+    fig_caption: yes
+    reference_docx: docx_template.docx
+header-includes: null
+linestretch: 1
+link-citations: yes
+linkcolor: blue
+bibliography: gmse.bib
+subtitle: 'GMSE: an R package for generalised management strategy evaluation (Supporting
+  Information 7)'
+biblio-style: apalike
+---
+
+```{r, echo = FALSE}
+library(GMSE);
+```
+
+The most important (default) GMSE data structures
+================================================================================
+
+The default submodels of GMSE (`resource`, `observation`, `manager`, and `user`) use a small number of default data structures to hold the information needed in simulations. While these default submodels do not necessarily need to be used in every run in GMSE (see use of [use of](SI2.pdf) `gmse_apply`), they will be used in any run of `gmse`, and in any call of `gmse_apply` that does not run with entirely custom submodels. Simulation and model inference does not require an understanding of the default data structures, but such an understanding can be especially useful when running `gmse_apply` if there is a need to extract uncommonly used information, change key simulated values (e.g., landscape properties, agent budgets, or resource movement rules as in [Supporting Infromation 4](SI4.pdf)), or build custom individual-based submodels. Here we provide a brief explanation of the following key data structures (each name below is listed as named in the output `gmse_apply` when `get_res = "Full"`).
+
+1. [`AGENTS`](#agents)
+2. [`resource_array`](#resources) (or `RESOURCES`)
+3. [`observation_array`](#observation) (or `OBSERVATION`)
+4. [`manager_array`](#cost) (or `COST`)
+5. `user_array` (or `ACTION`)
+6. `LAND`
+
+Note that these are not the only data structures used in GMSE, but they are the only ones that can potentially be usefully modified in GMSE v0.4.0.3 (see, e.g., [Supporting Infromation 4](SI4.pdf)), so they are the ones that we focus on here. Additionally, any custom subfunction that returns an array rather than a single value should adhere to the same structure as the these defaults if any default GMSE functions are to be used in `gmse_apply`. We can investigate each data structure by running a single simulation of `gmse_apply`.
+
+```{r}
+sim <- gmse_apply(get_res = "Full");
+```
+
+The full list output of `sim` holds each structure by name (in the case where two names are used, e.g., `resource_array` and `RESOURCES`, both are identical, but the lower case `resource_array` takes precedence in case of a change). Each data structure can be examined, changed, and incorporated into a new simulation (e.g., `new_sim <- gmse_apply(old_list = sim)`).
+
+1. <a name = "agents">AGENTS</a>
+================================================================================
+
+The `AGENTS` data structure is a two dimensional array with a fixed number of `r dim(sim$AGENTS)[2]` columns and a number of rows that is always equal to the total number of manager and users (each row is an individual agent).
+
+```{r}
+print(sim$AGENTS);
+```
+
+In the default case above, there are five agents (one manager and four user), each represented by a unique row. Columns in the array represent the agent traits listed below.
+
+1. ID (each agent gets a unique number)
+2. Type 1 (0 indicates the manager; 1 indicates users)
+3. Type 2 (currently unused)
+4. Type 3 (currently unused)
+5. x-location on the landscape (typically ignored)
+6. y-location on the landscape (typically ignored)
+7. Movement distance (typically ignored)
+8. Time parameter (typically ignored)
+9. Distance of vision (currently used only for managers)
+10. Error parameter (currently unused)
+11. Resource marking parameter (currently used only for managers)
+12. Resource tally parameter (currently used only for managers)
+13. Unused column 1
+14. Unused column 2
+15. Unused column 3
+16. Yield from owned land (zero for users when default `land_ownership = FALSE`)
+17. Budget
+
+It is obvious from the above list that most columns represent traits that are either typically ignored or currently not in use. This is intended to allow for easier future development of default model options and potential customisation of submodels in `gmse_apply`. We anticipate that future versions of GMSE will contain multiple user types with unique traits and among-user interactions.
+
+2. <a name = "resources">resource_array</a>
+================================================================================
+
+The `resource_array` (also accessible as `RESOURCES`) is a two dimensional array with a fixed number of `r dim(sim$resource_array)[2]` columns and a number of rows that is always equal to the total number of resources (each row is an individual resource). In the above simulation, `sim$resource_array` includes `r dim(sim$resource_array)[1]` rows, so we only print out the first eight for illustration.
+
+```{r}
+print(sim$resource_array[1:8,]);
+```
+
+Columns in the resource array represent the individual resource traits listed below.
+
+1. ID (each resource gets a unique number)
+2. Type 1 (currently all resources are of type 1)
+3. Type 2 (currently unused)
+4. Type 3 (currently unused)
+5. x-location on the landscape
+6. y-location on the landscape
+7. Movement distance
+8. Time parameter (typically ignored)
+9. Removal (i.e., death) probability
+10. Growth (i.e., birth) probability
+11. Offspring produced
+12. Age (initial resources are given a random age between 1 and the maximum age sampled from a uniform distribution; offspring always start at age zero in their time step of birth)
+13. Marking indicator (used in the observation function)
+14. Tallying indicator (used in the observation function)
+15. Proportion of a landscape cell the resource consumes in a time step
+16. Has the resource been scared by an agent?
+17. Has the resource been culled by an agent?
+18. Has the resource been castrated by an agent?
+19. Has the resource's growth rath been increased by an agent?
+20. Has the resource's offspring production been increased by an agent?
+
+In the case of columns 16-20, the value is either zero (if no action has occurred), or some positive integer that matches the ID of the agent that has performed the act (e.g., if column 17 equals 3, then that means that the agent with ID 3 culled the resource in the corresponding row; where more than one agent's action is possible per time step -- as in scaring -- the integer reflects the most recently acting agent). We anticipate that future versions of gmse will contain multiple resource types, and might add rows to include additional resource traits.
+
+3. <a name = "observation">observation_array</a>
+================================================================================
+
+The `observation_array` (also accessible as `OBSERVATION`) is a two dimensional array, the number of rows and columns of which depend on the type of observation being made (i.e., `observe_type`, which can take integer values from 0-3; see the [GMSE reference manual](https://cran.r-project.org/package=GMSE) for more information about built-in observation types that are available in GMSE). The first 20 columns of `observation_array` contain the same individual resource traits as in `resource_array`, while any additional columns provide information about how and when a resource was observed. The number of rows in `observation_array` is always equal to or less than that of `resource_array`; each resource that is observed at least once is placed into one unique row, while unobserved resources are not included as rows in the `observation_array`. In `sim`, there are `r dim(sim$observation_array)[1]` rows, meaning that `r dim(sim$resource_array)[1] - dim(sim$observation_array)[1]` were not observed at all in this time step. Below we print out the first eight rows of the observation array.
+
+```{r}
+print(sim$observation_array[1:8,]);
+```
+
+In the case of the default parameters, the observation array has only two additional columns; the first added column 21 is currently unused, and all values in this column are zero. The second added column 22 contains a value of 1 confirming that the resource was observed. Additional options will add different numbers of columns with different values. For example, when `observe_type = 0` (managers observe all resources on a random subset of the landscape, the size of which is determined by their distance of vision) but `times_observe > 1`, managers sample more than one random subset of the landscape. A new column is added for each sampled subset, and a 1 is placed in the relevant column if the resource is observed (these collected data are then used to estimate population size). This process simulates the data collection of resources (and potentially resource trait measurements) as might be performed by observers within the system. It therefore takes a virtual ecologist approach; this enables the integration of theory and empirical work and can improve the mechanistic understanding of social-ecological systems [@Zurell2010]. 
+
+4. <a name = "cost">manager_array</a>
+================================================================================
+
+
+
