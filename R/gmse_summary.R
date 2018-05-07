@@ -150,7 +150,6 @@ gmse_summary <- function(gmse_results){
 #' table.
 #'
 #'@param gmse_sim The output of a `gmse` simulation.
-#'@param print_CSV Should the table be printed to a CSV file? If so, specify the filename here.
 #'@param hide_unused_options Whether or not to hide results from policy options when creating the resulting table. If `TRUE` (default), then policy and user actions that are not allowed in a simulation will not be placed as columns. If `FALSE`, then these columns will be placed with values of `NA`.
 #'@param all_time Whether or not results from each time step from the simulation should be individually placed as a row in the resulting table (`TRUE` by default). If `FALSE`, then only the last row will be placed.
 #'@return A table with one or more rows of results, each of which indicates a unique `gmse` simulation for a given time step. Columns represent key simulation including resource densities, observation estimates, policy, and user actions.
