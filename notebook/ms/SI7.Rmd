@@ -36,7 +36,7 @@ The default submodels of GMSE (`resource`, `observation`, `manager`, and `user`)
 2. [`resource_array`](#resources) (or `RESOURCES`)
 3. [`observation_array`](#observation) (or `OBSERVATION`)
 4. [`manager_array`](#cost) (or `COST`)
-5. `user_array` (or `ACTION`)
+5. [`user_array`](#action) (or `ACTION`)
 6. `LAND`
 
 Note that these are not the only data structures used in GMSE, but they are the only ones that can potentially be usefully modified in GMSE v0.4.0.3 (see, e.g., [Supporting Infromation 4](SI4.pdf)), so they are the ones that we focus on here. Additionally, any custom subfunction that returns an array rather than a single value should adhere to the same structure as the these defaults if any default GMSE functions are to be used in `gmse_apply`. We can investigate each data structure by running a single simulation of `gmse_apply`.
@@ -121,10 +121,32 @@ The `observation_array` (also accessible as `OBSERVATION`) is a two dimensional 
 print(sim$observation_array[1:8,]);
 ```
 
-In the case of the default parameters, the observation array has only two additional columns; the first added column 21 is currently unused, and all values in this column are zero. The second added column 22 contains a value of 1 confirming that the resource was observed. Additional options will add different numbers of columns with different values. For example, when `observe_type = 0` (managers observe all resources on a random subset of the landscape, the size of which is determined by their distance of vision) but `times_observe > 1`, managers sample more than one random subset of the landscape. A new column is added for each sampled subset, and a 1 is placed in the relevant column if the resource is observed (these collected data are then used to estimate population size). This process simulates the data collection of resources (and potentially resource trait measurements) as might be performed by observers within the system. It therefore takes a virtual ecologist approach; this enables the integration of theory and empirical work and can improve the mechanistic understanding of social-ecological systems [@Zurell2010]. 
+In the case of the default parameters, the observation array has only two additional columns; the first added column 21 is currently unused, and all values in this column are zero. The second added column 22 contains a value of 1 confirming that the resource was observed. Additional options will add different numbers of columns with different values. For example, when `observe_type = 0` (managers observe all resources on a random subset of the landscape, the size of which is determined by their distance of vision) but `times_observe > 1`, managers sample more than one random subset of the landscape. A new column is added for each sampled subset, and a 1 is placed in the relevant column if the resource is observed (these collected data are then used to estimate population size). An example where `times_observe = 4` is shown below.
+
+```{r}
+sim_t0_4 <- gmse_apply(get_res = "Full", times_observe = 4);
+print(sim_t0_4$observation_array[1:8,]);
+```
+
+This process simulates the data collection of resources (and potentially resource trait measurements) as might be performed by observers within the system. It therefore takes a virtual ecologist approach; this enables the integration of theory and empirical work and can improve the mechanistic understanding of social-ecological systems [@Zurell2010]. 
 
 4. <a name = "cost">manager_array</a>
 ================================================================================
+
+For context, it might be easier to understand `manager_array` after reading about `user_array` [below](#action). The `manager_array` (also accessible as `COST`) is a three dimensional array, each layer of which corresponds to a unique agent (rows of agents correpond to layers of `manager_array`). Hence, in the simulation output `sim$manager_array`, there are `r dim(sim$manager_array)[3]` layers. Each layer in `manager_array` has `r dim(sim$manager_array)[2]` columns, and a number of rows that varies depending on the number of agents and resource types. In GMSE v0.4.0.3, only the first four rows are used. Two layers of `sim$manager_array` are shown below, the first being that of the manager and the second being that of the first user.
+
+```{r}
+print(sim$manager_array[,,1:2]);
+```
+
+Each element in the array indicates the cost of performing a particular action. The minimum value in `sim$manager_array` is therefore `r min(sim$manager_array)`, reflecting the default `minimum_cost` value of `r sim$GMSE$minimum_cost`. 
+
+
+5. <a name = "action">user_array</a>
+================================================================================
+
+
+
 
 
 
