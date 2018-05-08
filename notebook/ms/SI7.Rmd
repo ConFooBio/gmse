@@ -30,7 +30,7 @@ library(GMSE);
 The most important (default) GMSE data structures
 ================================================================================
 
-The default submodels of GMSE (`resource`, `observation`, `manager`, and `user`) use a small number of default data structures to hold the information needed in simulations. While these default submodels do not necessarily need to be used in every run in GMSE (see use of [use of](SI2.pdf) `gmse_apply`), they will be used in any run of `gmse`, and in any call of `gmse_apply` that does not run with entirely custom submodels. Simulation and model inference does not require an understanding of the default data structures, but such an understanding can be especially useful when running `gmse_apply` if there is a need to extract uncommonly used information, change key simulated values (e.g., landscape properties, agent budgets, or resource movement rules as in [Supporting Infromation 4](SI4.pdf)), or build custom individual-based submodels. Here we provide a brief explanation of the following key data structures (each name below is listed as named in the output `gmse_apply` when `get_res = "Full"`).
+The default submodels of GMSE (`resource`, `observation`, `manager`, and `user`) use a small number of default data structures to hold the information needed in simulations. While these default submodels do not necessarily need to be used in every run in GMSE (see use of [use of](SI2.pdf) `gmse_apply`), they will be used in any run of `gmse`, and in any call of `gmse_apply` that does not run with entirely custom submodels. Simulation and model inference does not require an understanding of the default data structures, but such an understanding can be especially useful when running `gmse_apply` if there is a need to extract uncommonly used information, change key simulated values (e.g., landscape properties, agent budgets, or resource movement rules as in [Supporting Information 4](SI4.pdf)), or build custom individual-based submodels. Here we provide a brief explanation of the following key data structures (each name below is listed as named in the output `gmse_apply` when `get_res = "Full"`).
 
 1. [`AGENTS`](#agents)
 2. [`resource_array`](#resources) (or `RESOURCES`)
@@ -45,7 +45,7 @@ Note that these are not the only data structures used in GMSE, but they are the 
 sim <- gmse_apply(get_res = "Full");
 ```
 
-The full list output of `sim` holds each structure by name (in the case where two names are used, e.g., `resource_array` and `RESOURCES`, both are identical, but the lower case `resource_array` takes precedence in case of a change). Each data structure can be examined, changed, and incorporated into a new simulation (e.g., `new_sim <- gmse_apply(old_list = sim)`).
+The full list output of `sim` holds each structure by name (in the case where two names are used, e.g., `resource_array` and `RESOURCES`, both are identical, but the lower case `resohttps://twitter.com/existentialcoms/status/993513186547548160urce_array` takes precedence in case of a change). Each data structure can be examined, changed, and incorporated into a new simulation (e.g., `new_sim <- gmse_apply(old_list = sim)`).
 
 1. <a name = "agents">AGENTS</a>
 ================================================================================
@@ -133,17 +133,45 @@ This process simulates the data collection of resources (and potentially resourc
 4. <a name = "cost">manager_array</a>
 ================================================================================
 
-For context, it might be easier to understand `manager_array` after reading about `user_array` [below](#action). The `manager_array` (also accessible as `COST`) is a three dimensional array, each layer of which corresponds to a unique agent (rows of agents correpond to layers of `manager_array`). Hence, in the simulation output `sim$manager_array`, there are `r dim(sim$manager_array)[3]` layers. Each layer in `manager_array` has `r dim(sim$manager_array)[2]` columns, and a number of rows that varies depending on the number of agents and resource types. In GMSE v0.4.0.3, only the first four rows are used. Two layers of `sim$manager_array` are shown below, the first being that of the manager and the second being that of the first user.
+For context, it might be easier to understand `manager_array` after reading about `user_array` [below](#action). The `manager_array` (also accessible as `COST`) is a three dimensional array, each layer of which corresponds to a unique agent (rows of agents correpond to layers of `manager_array`). Hence, in the simulation output `sim$manager_array`, there are `r dim(sim$manager_array)[3]` layers. Each layer in `manager_array` has `r dim(sim$manager_array)[2]` columns, and a number of rows that varies depending on the number of agents and resource types. As of GMSE v0.4.0.3, only the first three rows are used. Two layers of `sim$manager_array` are shown below, the first being that of the manager and the second being that of the first user.
 
 ```{r}
 print(sim$manager_array[,,1:2]);
 ```
 
-Each element in the array indicates the cost of performing a particular action. The minimum value in `sim$manager_array` is therefore `r min(sim$manager_array)`, reflecting the default `minimum_cost` value of `r sim$GMSE$minimum_cost`. 
+Each element in the array indicates the cost of performing a particular action. In the code, this is the cost of changing an element in `user_array` (which has the same dimensions as `manager_array`). The minimum value in `sim$manager_array` is therefore `r min(sim$manager_array)`, reflecting the default `minimum_cost` value of `r sim$GMSE$minimum_cost`. The maximum value is 100001, which is one higher than the maximum possible manager or user budget. Where cost is 100001, actions can therefore never be performed. An explanation of the rows and columns of `manager_array` is provided [below](#action) in the description of `user_array`. 
 
 
 5. <a name = "action">user_array</a>
 ================================================================================
+
+When considering the three dimensional `user_array` (also accessible as `ACTION`), it is helpful to keep in mind that each layer corresponds to the actions of a particular agent, that each column corresponds to a particular type of action, and that each row corresponds to a particular resource, agent, or group that the action will affect. The cost of performing any action in this array is held in `manager_array`, wherein an action's cost in `manager_array` is held in the same array element as the action itself in `user_array`. Recall from the [manager array](#cost) that the first layer of `user_array` corresponds to the manager actions, and that remaining layers correspond to user actions; there are therefore as many layers in `user_array` as there are agents in the model, and each row of [`AGENTS`](#agents) corresponds to equivalent layer of `user_array` (e.g., the manager agent, ID = 1, is in the first row of `AGENTS` and the first layer of `user_array`). The first two layers of `user_array` are shown below.
+
+```{r}
+print(sim$user_array[,,1:2]);
+```
+
+Note that there are more columns in this array than there are possible actions in GMSE. This is because there are several actions that are not actions per se, but properties of agents. As of GMSE v0.4.0.3, these properties cannot be changed by other agents. Column of `user_array` are as follows.
+
+1. The type of agent or resource being affected by an action. A value of -2 indicates that actions have a direct effect on a resource (e.g., scaring, culling, etc.). A value of -1 indicates that actions have a direct effect on a landscape layer. Positive integer values indicate actions that affect other agents, where each integer corresponds to the agents' IDs. Where the integer value is identical with the agent's own ID (e.g., row 3 in layer 1 where the element `sim$user_array[3, 1, 1] = 1`), actions affect all other agents in the model. As of GMSE v0.4.0.3, all rows except 1-3 are unused because agents do not affect one anothers actions individually; they either affect all other agents' actions indiscriminately (in the case of the manager setting policy) or do not affect other agents' actions at all (in the case of users). This data structure, however, is designed so that future versions of GMSE will allow users to affect one another directly (representing, e.g., different groups of agents lobbying for different interests, among-user conflict, etc.).
+2. Type 1 of the agent or resource of interest (in practice, this is currently unused).
+3. Type 2 of the agent or resource of interest (currently unused).
+4. Type 3 of the agent or resource of interest (currently unused).
+5. Utility associated with the recipient of the action. For example, in the case of the resource (row 1), positive values indicate that the agent wants more of these resources, while negative values indicate that the agent wants fewer. In the case of the manager (layer 1), the value in the first row is `manage_target`, while the value in the third row is the change in resource number needed to achieve target value (i.e., `manage_target = ` `r sim$GMSE$manage_target`, and the manager's estimate is `sim$observation_vector = ` `r sim$observation_vector`. The former minus the latter is `r round(sim$GMSE$manage_target - sim$observation_vector, digits = 5)`).
+6. Whether or not the utility associated with the recipient of the action is dependent upon that recipient being on land owned by the actor (e.g., if users only care about resources on landscape cells that they own, then this value is 1 instead of 0).
+7. Whether or not actions on the recipient are possible if the recipient is not on land owned by the actor (e.g., if users cannot cull resources that are not on their own land, then this value is 1 instead of 0).
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
