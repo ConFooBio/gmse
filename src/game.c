@@ -500,7 +500,7 @@ void policy_to_counts(double ***population, double **merged_acts, int agent,
                       int action_row, int manager_row, double *paras){
     
     int col, COLS;
-    double old_cost, new_cost, old_act, cost_change, new_action;
+    double old_cost, new_cost, old_act, new_action;
     
     COLS   = (int) paras[69];
     
