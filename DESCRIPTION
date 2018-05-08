@@ -37,7 +37,7 @@ Description: Integrates game theory and ecological theory to construct
     gmse_gui() functions.
 URL: https://bradduthie.github.io/gmse/
 BugReports: https://github.com/bradduthie/gmse/issues
-Depends: R (>= 3.3.3)
+Depends: R (>= 3.3.0)
 License: GPL (>=2)
 LazyData: TRUE
 VignetteBuilder: R.rsp
