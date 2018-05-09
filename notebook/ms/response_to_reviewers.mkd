@@ -147,10 +147,9 @@ Tuck, G.N., and Zhou, S. 2013. Evaluating sustainability of fisheries bycatch mo
 
 **Author response to Reviewer 2 General comments:**
 
-We thank Reviewer 2 for their helpful comments. We now include references to the early work that Reviewer 2 pointed out to put our software in a broader context. While the word count limitation of the main text has precluded us from devoting additional paragraphs to adaptation of GMSE for fisheries and comparison with packages such as FLR, we now devote an extensive seven page vignette to the subject (Supporting Information 5). This new SI5 includes background that relates GMSE to a fisheries context, shows how the gmse_apply function could be integrated with the FLR package to use an FLR operational model with the genetic algorithm of GMSE if desired, and comments more generally on some key differences between GMSE and existing MSE packages such as FLR (namely, the individual-based, mechanistic approach of GMSE as a flexible simulation tool).
+We thank Reviewer 2 for their helpful comments. We now include references to the early work that Reviewer 2 pointed out to put our software in a broader context (e.g., LXXX). While the word count limitation of the main text has precluded us from devoting additional paragraphs to adaptation of GMSE for fisheries and comparison with packages such as FLR, we now devote an extensive seven page vignette to the subject (Supporting Information 5). This new SI5 includes background that relates GMSE to a fisheries context, shows how the gmse_apply function could be integrated with the FLR package to use an FLR operational model with the genetic algorithm of GMSE if desired, and comments more generally on some key differences between GMSE and existing MSE packages such as FLR (namely, the individual-based, mechanistic approach of GMSE as a flexible simulation tool -- see also SI6).
 
-We agree that the end of the article seems abrupt. We have therefore included a brief concluding paragraph, which emphasises the key goals and features of the GMSE software. Acknowledgements now place GMSE in the context of the broader ConFooBio project, investigating situations of conservation conflict.
-
+We agree that the end of the article seemed abrupt. We have therefore included a brief concluding paragraph, which emphasises the key goals and features of the GMSE software. Acknowledgements now place GMSE in the context of the broader ConFooBio project, investigating situations of conservation conflict.
 
 **Reviewer 2 specific comment 1:**
 
@@ -167,7 +166,7 @@ fisheries examples, such as lengths, ages, rates of capture, that are typically 
 
 **Author response to Reviewer 2 specific comment 1:**
 
-We now include a modelling example typical of fisheries in a new vignette (Supporting Information 5), which demonstrates how modelling from the FLR library can be integrated into gmse_apply (see our response to Reviewer 2 General comments). This new example focuses on recruitment and spawning stock biomass, and shows more generally how fisheries-specific submodels could be incorporated into the broader GMSE framework.
+We now include a modelling example typical of fisheries in a new vignette (SI5), which demonstrates how modelling from the FLR library can be integrated into gmse_apply (see our response to Reviewer 2's General comments). This new example focuses on recruitment and spawning stock biomass, and shows more generally how fisheries-specific submodels could be incorporated into the broader GMSE framework.
 
 **Reviewer 2 specific comment 3:**
 
