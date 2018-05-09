@@ -10,9 +10,9 @@ We have received reviews from two highly qualified reviewers, both are supportiv
 
 **Author response to AE Comments**
 
-We thank the AE for these helpful comments and their suggestions. As recommended, we have written a series of detailed vignettes, now incorporated with the R package GMSE v0.4.0.3; these include six vignettes intended to address revewers' concerns and provide a more detailed explanation of some of the key features of GMSE. After reading reviewer comments, we recognised that we had underemphasised an important novelty of the GMSE package, which is the goal-oriented behaviour of the manager and users in the default manager and user submodels, and hence the ability to investigate conflict among agents with different objectives. We also agree that it would be useful to provide a real-life case study in which GMSE simulations could shed light on management decisions. Hence, following recommendations of Reviewer 1, in the new Supporting Information 3, we consider an example case study of the management of geese under the condition of agricultural conflict. Management of geese populations has received considerable interest in recent years, as many populations in northern Europe have undergone recent exponential growth, leading to conflict with people in the agricultural community (Cusack et al. 2018). In Supporting Information 3, we show how demographic parameters collected from a recent study of the Taiga Bean Goose (Answer fabalis fabalis) can be used in the main `gmse` function (and by extension, the browser-based graphical user interface `gmse_gui`) to predict population dynamics, agricultural damage, and manager and user decision-making under different policy options. By demonstrating the use of the `plot_gmse_effort` function, we now show how conservation conflict changes when scaring is included as a policy option. In Supporting Information 4, we build off of this case study to show how the `gmse_apply` function allows for further customisation, including (1) custom placement of user land (as requested by Reviewer 2), parameterisation of individual farmer budgets, and (3) custom density-dependent rules for goose movement. In Supporting Information 5, we show how GMSE can be integrated with the widely used Fisheries Library in R (FLR) using `gmse_apply`, and provide a general comparison to the FLR project (requested by Reviewer 2). Finally, in Supporting Information 6, we provide an example of how GMSE can be used to investigate the relationship between management frequency and extinction risk, illustrating the importance of replicating simulation runs and demonstrating how to write GMSE output to CSV files (as requested by Reviewer 1). All of these vignettes are now incorporated into the CRAN package GMSE v0.4.0.3.
+We thank the AE for these helpful comments and their suggestions. As recommended, we have written a series of detailed vignettes, now incorporated with the updated R package GMSE v0.4.0.3; these include six vignettes intended to address revewers' concerns and provide a more detailed explanation of some of the key features of GMSE. After reading reviewer comments, we recognised that we had underemphasised an important novelty of the GMSE package, which is the goal-oriented behaviour of the manager and users in the default manager and user submodels, and hence the ability to investigate conflict among agents with different objectives. We also agree that it would be useful to provide a real-life case study in which GMSE simulations could shed light on management decisions. Hence, following recommendations of Reviewer 1, in the new Supporting Information 3, we consider an example case study of the management of geese under the condition of agricultural conflict. Management of geese populations has received considerable interest in recent years, as many populations in northern Europe have undergone recent exponential growth, leading to conflict with people in the agricultural community (Cusack et al. 2018). In Supporting Information 3, we show how demographic parameters collected from a recent study of the Taiga Bean Goose (Answer fabalis fabalis) can be used in the main `gmse` function (and by extension, the browser-based graphical user interface `gmse_gui`) to predict population dynamics, agricultural damage, and manager and user decision-making under different policy options. By demonstrating the use of the `plot_gmse_effort` function, we now show how conservation conflict changes when scaring is included as a policy option. In Supporting Information 4, we build off of this case study to show how the `gmse_apply` function allows for further customisation, including (1) custom placement of user land (as requested by Reviewer 2), parameterisation of individual farmer budgets, and (3) custom density-dependent rules for goose movement. In Supporting Information 5, we show how GMSE can be integrated with the widely used Fisheries Library in R (FLR) using `gmse_apply`, and provide a general comparison to the FLR project (requested by Reviewer 2). Finally, in Supporting Information 6, we provide an example of how GMSE can be used to investigate the relationship between management frequency and extinction risk, illustrating the importance of replicating simulation runs and demonstrating how to write GMSE output to CSV files (as requested by Reviewer 1). All of these vignettes are now incorporated into the CRAN package GMSE v0.4.0.3.
 
-In addition to this requested series of vignettes, we have also addressed all comments of reviewers below and revised the manuscript accordingly. All our R code meets the new Policy on Publishing code, and we believe that the comments of the AE and reviewers have led to revisions that have substantially improved this manuscript and the GMSE package.
+In addition to this requested series of vignettes, we have also addressed all comments of reviewers below and revised the manuscript accordingly. All our R code meets the new Policy on Publishing code, and we believe that the comments of the AE and reviewers have led to revisions that have substantially improved this manuscript and the GMSE package. All line numbers that we cite in our response refer to the revised version of the manuscript.
 
 Reviewer 1 Comments
 --------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ Where appropriate, we have referenced SI1-7 throughout the main text of the manu
 
 **Author response to Reviewer 1 specific comment 1:**
 
-We have changed 'food security' to 'agricultural production'. 
+We have changed 'food security' to 'agricultural production' (L30). 
 
 **Reviewer 1 specific comment 2:**
 
@@ -49,7 +49,7 @@ We have changed 'food security' to 'agricultural production'.
 
 **Author response to Reviewer 1 specific comment 2:**
 
-We have replaced this with the term "multiple aspects"
+We have replaced this with the term "multiple aspects" (L38).
 
 **Reviewer 1 specific comment 3:**
 
@@ -65,7 +65,7 @@ The term "generation" is typically used in the literature of genetic algorithms 
 
 **Author response to Reviewer 1 specific comment 4:**
 
-We have placed the last sentence of this paragraph as the first sentence, as suggested (line XXX). We also now clarify that the genetic algorithm creates a population of evolving "manager strategies" or "user strategies" (lines XXX). This avoids any confusion that there are multiple managers or users within a single genetic algorithm -- rather, multiple strategies being considered for a single manager or user.
+We have placed the last sentence of this paragraph as the first sentence, as suggested (L110). We also now clarify that the genetic algorithm creates a population of evolving "manager strategies" or "user strategies" (L111). This avoids any confusion that there are multiple managers or users within a single genetic algorithm -- rather, multiple strategies being considered for a single manager or user.
 
 **Reviewer 1 specific comment 5:**
 
@@ -73,7 +73,7 @@ We have placed the last sentence of this paragraph as the first sentence, as sug
 
 **Author response to Reviewer 1 specific comment 5:**
 
-We now explain that is possible for resources in the population to exist on the same cell (line XXX), and that carrying capacity is for the entire landscape, not a single cell (line XXX).
+We now explain that is possible for resources in the population to exist on the same cell, and that carrying capacity is for the entire landscape, not a single cell (caption of Figure 2 on page 11).
 
 **Reviewer 1 specific comment 6:**
 
@@ -97,7 +97,16 @@ The objective for the genetic algorithm is not necessarily to produce optimal st
 
 **Author response to Reviewer 1 specific comment 8:**
 
-In our new version of GMSE, we change the predicted effect of each action (XXX EXPLAIN THIS XXX). In our revision, we now go into greater detail to explain why these parameters are what they are (lines XXX).
+We now clarify how these effects work in the genetic algorithm explained in SI1. Note, as we now emphasise more clearly, that these are not the effects of actions in the user model per se, but rather what the manager *predicts* will happen to resources given each action. Since birth, death, movement, etc., have not yet occurred, the manager bases their predictions upon how these processes are predicted to change population size (e.g., scared resources only move from one place to another, so no change in population size occurs). The variable $\sigma$ (`manager_sense` in GMSE) simply modulates the effect that the manager predicts that their policy-setting will have on *any* action, be it culling or helping offspring (note, a typo in our original submission left out the sigma on feeding; this has been fixed). This is useful because even when a manager changes the incentive for a particular action (by changing the cost), the goal-oriented nature of GMSE and the genetic algorithm does not force users to take these actions in proportion to the change in incentive; hence, the manager 
+
+In our revision, we now go into greater detail to explain the utility of sigma (i.e., `manage_sense`):
+
+"[...] we emphasise that whether or not these effects are realised will depend later on the user model, to which the manager does not have access" (line XXX).
+
+"Note that $\sigma$ is included in all of the predicted actions above as a modulator for how strongly the manager predicts users will respond to a change in manager policy (e.g., a value of 0 would predict no reaction on the part of users to a change in policy, while a value of 1 would predict that an action would increase in exact proportion to its decrease in cost)." (SI1 line XXX).
+
+We have also greatly improved the manager fitness function in GMSE v0.4.0.3, and consequently changed the default sigma value to `manage_sense = 0.9` (new C function in the code: https://github.com/bradduthie/gmse/blob/rev/src/game.c#L458 ).
+
 
 **Reviewer 1 specific comment 9:**
 
@@ -105,7 +114,7 @@ In our new version of GMSE, we change the predicted effect of each action (XXX E
 
 **Author response to Reviewer 1 specific comment 9:**
 
-We now clarify that the resources are moved to a different, randomly selected, cell on the landscape (L139).
+We now clarify that the resources are moved to a different, randomly selected, cell on the landscape in SI1 ("resources are moved to a random cell on the landscape, as sampled from a uniform distribution such that movement to any given cell is equally probable"). We also add some text to clarify this in the main text (L139 and an updated Table 1).
 
 **Reviewer 1 specific comment 10:**
 
@@ -113,7 +122,7 @@ We now clarify that the resources are moved to a different, randomly selected, c
 
 **Author response to Reviewer 1 specific comment 10:**
 
-We now clarify in the text why we use the word 'resource' (line XXX). Although we interpret resources as populations of conservation interest throughout our paper, there is nothing to preclude software users from modelling the management of other types of (e.g., non-biological) resources.
+We now clarify in the text why we use the word 'resource' (L51). Although we interpret resources as populations of conservation interest throughout our paper, there is nothing to preclude software users from modelling the management of other types of (e.g., non-biological) resources.
 
 **Reviewer 1 specific comment 11:**
 
@@ -175,7 +184,7 @@ Clarify.
 
 **Author response to Reviewer 2 specific comment 3:**
 
-We now clarify that scaring moves waterfowl to another randomly selected landscape cell, and therefore shifts the problem to another location (as is realistic for many systems in which scaring is non-lethal) See (L139).
+We now clarify that scaring moves waterfowl to another randomly selected landscape cell, and therefore shifts the problem to another location (as is realistic for many systems in which scaring is non-lethal) See (L139 and an updated Table 1).
 
 **Reviewer 2 specific comment 4:**
 
