@@ -77,7 +77,7 @@ sim_old  <- gmse_apply(get_res = "Full", remove_pr = 0.122, lambda = 0.275,
                        ga_mingen = 200);
 ```
 
-Note that the argument `get_res = "Full"` causes `sim_old` retain all of the relevant data structures for simulating a new time step and recording simulation results. This includes the key simulation output, which is located in `sim_old$basic_output`, which is printed below.
+Note that the argument `get_res = "Full"` causes `sim_old` to retain all of the relevant data structures for simulating a new time step and recording simulation results. This includes the key simulation output, which is located in `sim_old$basic_output`, which is printed below.
 
 ```{r, echo = FALSE}
 print(sim_old$basic_output);
@@ -177,7 +177,7 @@ As with `sim_old$LAND` values, changes to `sim_old$AGENTS` will be retained in s
 3. <a name="movement">Density-dependent movement of resources</a>
 ================================================================================
 
-Lastly, we consider a more nuanced change to simulations, in which the rules for movement of resources are modified to account for density-dependence. Assume that geese tend to avoid aggregating, such that if a goose is located on the same cell as too many other geese, then it will move at the start of a time step. Programming this movement rule can be accomplished by creating a new function to apply to the resource data array `sim_old$resource_array`. Below, a custom function is defined that causes a goose to move up to 5 cells in any direction if it finds itself on a cell with more than 10 other geese. As with default GMSE simulations, movement is based on a torus landscape.
+Lastly, we consider a more nuanced change to simulations, in which the rules for movement of resources are modified to account for density-dependence. Assume that geese tend to avoid aggregating, such that if a goose is located on the same cell as too many other geese, then it will move at the start of a time step. Programming this movement rule can be accomplished by creating a new function to apply to the resource data array `sim_old$resource_array`. Below, a custom function is defined that causes a goose to move up to 5 cells in any direction if it finds itself on a cell with more than 10 other geese. As with default GMSE simulations, movement is based on a torus landscape (where no landscape edge exists, so that if resources move off of one side of the landscape they appear on the opposite side).
 
 ```{r}
 avoid_aggregation <- function(goose_table, land_dim_1 = 100, land_dim_2 = 100){

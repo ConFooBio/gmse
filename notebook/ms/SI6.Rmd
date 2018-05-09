@@ -160,7 +160,7 @@ print(gmse_reps5);
 print(gmse_reps5);
 ```
 
-When manager can only make policy decisions once every five time steps, extinction occurs in `r sum(gmse_reps5[,2] < 20)` out of 10 simulated populations before year 20. If we wanted to summarise these results, we could plot how extinction risk changes with increasing `manage_freq`.
+When a manager can only make policy decisions once every five time steps, extinction occurs in `r sum(gmse_reps5[,2] < 20)` out of 10 simulated populations before year 20. If we wanted to summarise these results, we could plot how extinction risk changes with increasing `manage_freq`.
 
 ```{r, fig.height = 5}
 ext_risk1 <- sum(gmse_reps1[,2] < 20);
