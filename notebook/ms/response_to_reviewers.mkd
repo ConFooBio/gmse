@@ -25,7 +25,7 @@ This paper introduces the R package, generalized management strategy evaluation 
 
 We thank Reviewer 1 for their helpful comments. We appreciate their concerns and have attempted to further improve upon our software and our manuscript to show the full potential of GMSE to contribute to the understanding of social-ecological dynamics. We have done this by revising the R package and the main text of the manuscript, and by providing a series of vignettes (listed here as Supporting Information, SI), as requested by the AE. These vignettes are all available as part of the new R package GMSE v0.4.0.3, now available on CRAN. Below we individually address the four listed concerns of Reviewer 1.
 
-Concern 1: Reviewer 1 requested more explanation for the use of the term 'generalised' in our package. The descriptor "Generalised" is an accurate description of what GMSE provides, but refers primarily to the generality of the software rather than the approach (as Reviewer 1 reasonably inferred). We now make this clearer in a new conclusion section (requested by Reviewer 2), and it is further explained in the new SI5. In particular, the flexibility of `gmse_apply` allows GMSE to be a generalised tool for both theoretical investigations and targeted models applying a MSE framework. Nevertheless, we also further explain how the game-theoretic, goal-oriented, approach of agents does generalise the MSE approach; this is emphasised in more detail in SI3 and SI4.
+Concern 1: Reviewer 1 requested more explanation for the use of the term 'generalised' in our package. The descriptor "Generalised" is an accurate description of what GMSE provides, but refers primarily to the generality of the software rather than the approach (as Reviewer 1 reasonably inferred). We see how wording in the abstract made this unclear; we fix this wording (L13) and now make this clearer in a new conclusion section (requested by Reviewer 2), and it is further explained in the new SI5. In particular, the flexibility of `gmse_apply` allows GMSE to be a generalised tool for both theoretical investigations and targeted models applying a MSE framework. Nevertheless, we also further explain how the game-theoretic, goal-oriented, approach of agents does generalise the MSE approach; this is emphasised in more detail in SI3 and SI4.
 
 Concern 2: Reviewer 1 questions how GMSE can be used for management. We now show examples of this in detail in SI3 and SI4, where GMSE is applied to a specific management scenario. The example provided in SI5 also shows how insights for a fisheries example could be gained by integrating GMSE with the very well-established FLR package. In SI6, we explain how a simulation approach and individual-based modelling can be useful to model populations and investigate local extinction risk under conditions of uncertainty. The five actions to which Reviewer 1 refers can be turned on or off, but changing what actions are available is currently only possible through customised functions and `gmse_apply` -- we provide SI7 to give a bit more explanation for how this might be done. We anticipate that future versions of GMSE will include additional user actions.
 
@@ -105,7 +105,7 @@ In our new version of GMSE, we change the predicted effect of each action (XXX E
 
 **Author response to Reviewer 1 specific comment 9:**
 
-We now clarify that the resources are moved to a different, randomly chosen, cell on the landscape (line XXX).
+We now clarify that the resources are moved to a different, randomly selected, cell on the landscape (L139).
 
 **Reviewer 1 specific comment 10:**
 
@@ -147,7 +147,7 @@ Tuck, G.N., and Zhou, S. 2013. Evaluating sustainability of fisheries bycatch mo
 
 **Author response to Reviewer 2 General comments:**
 
-We thank Reviewer 2 for their helpful comments. We now include references to the early work that Reviewer 2 pointed out to put our software in a broader context (e.g., LXXX). While the word count limitation of the main text has precluded us from devoting additional paragraphs to adaptation of GMSE for fisheries and comparison with packages such as FLR, we now devote an extensive seven page vignette to the subject (Supporting Information 5). This new SI5 includes background that relates GMSE to a fisheries context, shows how the gmse_apply function could be integrated with the FLR package to use an FLR operational model with the genetic algorithm of GMSE if desired, and comments more generally on some key differences between GMSE and existing MSE packages such as FLR (namely, the individual-based, mechanistic approach of GMSE as a flexible simulation tool -- see also SI6).
+We thank Reviewer 2 for their helpful comments. We now include references to the early work that Reviewer 2 pointed out to put our software in a broader context (L41). While the word count limitation of the main text has precluded us from devoting additional paragraphs to adaptation of GMSE for fisheries and comparison with packages such as FLR, we now devote an extensive seven page vignette to the subject (Supporting Information 5). This new SI5 includes background that relates GMSE to a fisheries context, shows how the gmse_apply function could be integrated with the FLR package to use an FLR operational model with the genetic algorithm of GMSE if desired, and comments more generally on some key differences between GMSE and existing MSE packages such as FLR (namely, the individual-based, mechanistic approach of GMSE as a flexible simulation tool -- see also SI6).
 
 We agree that the end of the article seemed abrupt. We have therefore included a brief concluding paragraph, which emphasises the key goals and features of the GMSE software. Acknowledgements now place GMSE in the context of the broader ConFooBio project, investigating situations of conservation conflict.
 
@@ -157,7 +157,7 @@ We agree that the end of the article seemed abrupt. We have therefore included a
 
 **Author response to Reviewer 2 specific comment 1:**
 
-We now include these references to MSE (line XXX).
+We now include these references to MSE (L41).
 
 **Reviewer 2 specific comment 2:**
 
@@ -175,7 +175,7 @@ Clarify.
 
 **Author response to Reviewer 2 specific comment 3:**
 
-We now clarify that scaring moves waterfowl to another cell, and therefore shifts the problem to another location (as is realistic for many systems in which scaring is non-lethal) See (line XXX).
+We now clarify that scaring moves waterfowl to another randomly selected landscape cell, and therefore shifts the problem to another location (as is realistic for many systems in which scaring is non-lethal) See (L139).
 
 **Reviewer 2 specific comment 4:**
 
@@ -184,7 +184,7 @@ assessment of some description. Clarify.
 
 **Author response to Reviewer 2 specific comment 4:**
 
-We now clarify how the resources are observed in the text (line XXX).
+We now clarify how the resources are observed in the text (line XXX). Detailed explanation of built-in observation functions are provided in the R documentation.
 
 **Reviewer 2 specific comment 5:**
 
