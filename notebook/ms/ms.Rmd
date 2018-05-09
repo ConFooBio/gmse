@@ -371,7 +371,7 @@ Simulations using the default GMSE sub-models described above are run using the 
 |  remove_pr      |  0      | Density-independent probability of resource mortality during a time step                         |
 |  lambda         |  0.3    | Poisson rate parameter for resource offspring number produced during a time step                 |
 |  agent_view     |  10     | How far managers can see on the landscape for resource counting when observe_type = 0            |
-|  res_birth_K    |  10000  | Carrying capacity applied to the number of resources added during a time step                    |
+|  res_birth_K    |  100000 | Carrying capacity applied to the number of resources added during a time step                    |
 |  res_death_K    |  2000   | Carrying capacity applied to the number of resources removed during a time step                  |
 |  res_move_type  |  1      | Type of resource movement (default is up to res_movement cells in any direction)                 |
 |  observe_type   |  0      | Type of resource observation (default is density-based; i.e, counting a subset on the landscape) |
