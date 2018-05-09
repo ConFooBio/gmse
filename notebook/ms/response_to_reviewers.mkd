@@ -23,10 +23,17 @@ This paper introduces the R package, generalized management strategy evaluation 
 
 **Author response to Reviewer 1 General comments:**
 
-1. It is generalised both because of the game-theoretic, goal-oriented, approach of agents, but also because the flexibility of gmse_apply allows GMSE to be a generalised tool for modelling. This is now explained in SI5, and in a new conclusion section (requested by Reviewer 2)
-2. We now show in SI3, SI4, and SI6 how GMSE can be applied to management questions more clearly; SI5 also helps here for how a fisheries example would be integrated through FLR.
-3. We now include a new vignette SI7 that explains the key default data structures of GMSE, including the cost array (note that these defaults do not need to be used for custom models in gmse_apply).
-4. The default submodels are individual-based (i.e., "agent-based models"), and stochastic processes in these submodels do mean that dynamics depend on initial conditions. In SI6, we now highlight the advantages, and potential disadvantages, of using an individual-based modelling approach; we show how replicate simulations can be run to infer extinction risk at different management frequencies. SI6 also explains how to summarise gmse simulations using the `gmse_table` function, and how to write this into a single CSV file.
+We thank Reviewer 1 for their helpful comments. We appreciate their concerns and have attempted to further improve upon our software and our manuscript to show the full potential of GMSE to contribute to the understanding of social-ecological dynamics. We have done this by revising the R package and the main text of the manuscript, and by providing a series of vignettes (listed here as Supporting Information, SI), as requested by the AE. These vignettes are all available as part of the new R package GMSE v0.4.0.3, now available on CRAN. Below we individually address the four listed concerns of Reviewer 1.
+
+Concern 1: Reviewer 1 requested more explanation for the use of the term 'generalised' in our package. The descriptor "Generalised" is an accurate description of what GMSE provides, but refers primarily to the generality of the software rather than the approach (as Reviewer 1 reasonably inferred). We now make this clearer in a new conclusion section (requested by Reviewer 2), and it is further explained in the new SI5. In particular, the flexibility of `gmse_apply` allows GMSE to be a generalised tool for both theoretical investigations and targeted models applying a MSE framework. Nevertheless, we also further explain how the game-theoretic, goal-oriented, approach of agents does generalise the MSE approach; this is emphasised in more detail in SI3 and SI4.
+
+Concern 2: Reviewer 1 questions how GMSE can be used for management. We now show examples of this in detail in SI3 and SI4, where GMSE is applied to a specific management scenario. The example provided in SI5 also shows how insights for a fisheries example could be gained by integrating GMSE with the very well-established FLR package. In SI6, we explain how a simulation approach and individual-based modelling can be useful to model populations and investigate local extinction risk under conditions of uncertainty. The five actions to which Reviewer 1 refers can be turned on or off, but changing what actions are available is currently only possible through customised functions and `gmse_apply` -- we provide SI7 to give a bit more explanation for how this might be done. We anticipate that future versions of GMSE will include additional user actions.
+
+Concern 3: Reviewer 1 requests an explanation of the COST array. We now explain this array, along with all other major default data structures in the new vignette SI7. Note that these data structures can potentially be manipulated in `gmse_apply`, or replaced in the case of highly custom submodels.
+
+Concern 4. Reviewer 1 questions whether or not the dynamics of our simulations depend on initial conditions. Default GMSE submodels are individual-based (i.e., "agent-based models"), and stochastic processes in these submodels do mean that dynamics will depend on initial conditions. This is by design, and we now recognise that an introduction to the individual-based approach is appropriate. In SI6, we now highlight the advantages, and potential disadvantages, of using an individual-based modelling approach; we show how replicate simulations can be run to infer extinction risk at different management frequencies using the new `gmse_replicates` function in GMSE v0.4.0.3. SI6 also explains how to summarise gmse simulations using the new `gmse_table` function, and how to write this into a single CSV file.
+
+Where appropriate, we have referenced SI1-7 throughout the main text of the manuscript to provide links to relevant vignettes. We believe that these vignettes addressing Reviewer 1's concerns have greatly contributed to our R package and the manuscript.
 
 **Reviewer 1 specific comment 1:**
 
@@ -74,7 +81,7 @@ We now explain that is possible for resources in the population to exist on the 
 
 **Author response to Reviewer 1 specific comment 6:**
 
-This is a reasonable inference, and we appreciate Reviewer 1 for drawing attention to it. However, the value 10001 is actually a maximum cost allowed in the modelling that is unrelated to land dimensions. We now state this explicitly in Appendix 1 to avoid confusion (line XXX). In our newest version of GMSE v0.4.0.3, maximum allowable budgets have been increased, so this number is now an order of magnitude higher (100001). 
+This is a reasonable inference, and we appreciate Reviewer 1 for drawing attention to it. However, the value 10001 is actually a maximum cost allowed in the modelling that is unrelated to land dimensions. We now state this explicitly in SI1 to avoid confusion (line XXX). In our newest version of GMSE v0.4.0.3, maximum allowable budgets have been increased, so this number is now an order of magnitude higher (100001). 
 
 **Reviewer 1 specific comment 7:**
 
@@ -82,7 +89,7 @@ This is a reasonable inference, and we appreciate Reviewer 1 for drawing attenti
 
 **Author response to Reviewer 1 specific comment 7:**
 
-The objective for the genetic algorithm is not necessarily to produce optimal strategies, but strategies that are adaptive and flexible in making decisions. Finding a set of parameters to be used in the genetic algorithm to produce adaptive strategies is not especially difficult, and default values in GMSE are chosen to be sufficient for this objective. Nevertheless, it is true that the genetic algorithm will be more effective given more strict convergence criterial and a higher minimum generation times. We now emphasise this more in Supporting Information 1 in a new section, 'Choosing genetic algorithm parameter values' (line XXX).
+The objective for the genetic algorithm is not necessarily to produce optimal strategies, but strategies that are adaptive and flexible in making decisions. Finding a set of parameters to be used in the genetic algorithm to produce adaptive strategies is not especially difficult, and default values in GMSE are chosen to be sufficient for this objective. Nevertheless, it is true that the genetic algorithm will be more effective given more strict convergence criterial and a higher minimum generation times. We now emphasise this more in SI1 in a new section, 'Choosing genetic algorithm parameter values' (line XXX).
 
 **Reviewer 1 specific comment 8:**
 
@@ -114,7 +121,7 @@ We now clarify in the text why we use the word 'resource' (line XXX). Although w
 
 **Author response to Reviewer 1 specific comment 11:**
 
-We now demonstrate how this can be done using `gmse_apply` in a new vignette (Supporting Information 4). This vignette also shows how individual user (e.g., farmer) budgets can be customised, and custom functions can be created to tweak the movement rules of resources.
+We now demonstrate how this can be done using `gmse_apply` in a new vignette (SI4). This vignette also shows how individual user (e.g., farmer) budgets can be customised, and custom functions can be created to tweak the movement rules of resources.
 
 
 Reviewer 2 Comments
