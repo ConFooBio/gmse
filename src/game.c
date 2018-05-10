@@ -458,12 +458,11 @@ void sum_array_layers(double ***array, double **out, int get_mean,
 int new_act(double old_cost, double new_cost, double old_act, double *paras){
     
     int total_acts;
-    double users, max_to_spend, acts_per_user, cost_per_user, total_cost;
+    double users, acts_per_user, total_cost;
     double budget_for_act, mgr_budget, min_cost;
     
     users        = paras[54] - 1; /* Minus one for the manager */
     min_cost     = paras[96];     /* Minimum cost of an action */
-    max_to_spend = paras[97];     /* Maximum per user budget   */
     mgr_budget   = paras[105];    /* Manager's total budget    */
     
     total_cost    = 0.0;
