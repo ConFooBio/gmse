@@ -13,7 +13,9 @@ output:
   word_document:
     fig_caption: yes
     reference_docx: docx_template.docx
-header-includes: null
+header-includes:
+- \usepackage{lineno}
+- \linenumbers
 linestretch: 1
 link-citations: yes
 linkcolor: blue
@@ -51,7 +53,7 @@ print(rand_eg_2);
 
 To make meaningful model inferences, it is often necessary to replicate simulations under the same initial conditions to understand the range of predicted outcomes for a particular set of parameter values. This can be computationally intense, but it can also lead to a more robust understanding of the range of dynamics that might be expected within a system. Additionally, when parameter values are unknown but believed to be important, replicate simulations can be applied across a range of values to understand how a particular parameter might affect system dynamics. Below, we show how to use the `gmse_replicates` function to simulate a simple example of a managed population that is hunted by users. This function calls `gmse` multiple times and aggregates the results from replicate simulations into a single table.
 
-For a single simulation, the `gmse_table` function prints out key information from a `gmse` simulation result. The example provided in the GMSE documentation is below.
+For a single simulation, the `gmse_table` function prints out key information from a `gmse` simulation result. The example provided in the [GMSE documentation](https://cran.r-project.org/package=GMSE) is below.
 
 ```{r}
 gmse_sim  <- gmse(time_max = 10, plotting = FALSE);
@@ -62,7 +64,7 @@ print(sim_table)
 The above table can be saved as a CSV file using the `write.csv` function.
 
 ```{r, eval = FALSE}
-write.csv(x= sim_table, file = "file_path/gmse_table");
+write.csv(x= sim_table, file = "file_path/gmse_table_name.csv");
 ```
 
 Instead of recording all time steps in the simulation, we can instead record only the last time step in `gmse_table` using the `all_time` argument. 

@@ -13,8 +13,9 @@ output:
   word_document:
     fig_caption: yes
     reference_docx: docx_template.docx
-header-includes: null
-linestretch: 1
+header-includes: 
+- \usepackage{lineno}
+- \linenumbers
 link-citations: yes
 linkcolor: blue
 bibliography: gmse.bib
@@ -30,7 +31,7 @@ library(GMSE);
 The most important (default) GMSE data structures
 ================================================================================
 
-The default sub-models of GMSE (`resource`, `observation`, `manager`, and `user`) use a small number of default data structures to hold the information needed in simulations. While these default sub-models do not necessarily need to be used in every run in GMSE (see [use of](SI2.pdf) `gmse_apply`), they will be used in any run of the `gmse` function, and in any call of the `gmse_apply` function that does not run with entirely custom sub-models. Simulation and model inference do not require an understanding of the default data structures, but such an understanding can be especially useful when running `gmse_apply` if there is a need to extract uncommonly used information, change key simulated values (e.g., landscape properties, agent budgets, or resource movement rules as in [Supporting Information 4](SI4.pdf)), or build custom individual-based sub-models. Here we provide a brief explanation of the following key data structures (each name below is listed as it is named in the output `gmse_apply` when `get_res = "Full"`).
+The default sub-models of GMSE (`resource`, `observation`, `manager`, and `user`) use a small number of default data structures to hold the information needed in simulations. While these default sub-models do not necessarily need to be used in every run in GMSE (see [use of](SI2.pdf) `gmse_apply`), they will be used in any run of the `gmse` function, and in any call of the `gmse_apply` function that does not run with entirely custom sub-models. Simulation and model inference do not require an understanding of the default data structures, but such an understanding can be especially useful when running `gmse_apply` if there is a need to extract uncommonly used information, change key simulated values (e.g., landscape properties, agent budgets, or resource movement rules, as in [SI4](SI4.pdf)), or build custom individual-based sub-models. Here we provide a brief explanation of the following key data structures (each name below is listed as it is named in the output `gmse_apply` when `get_res = "Full"`).
 
 1. [`AGENTS`](#agents)
 2. [`resource_array`](#resources) (or `RESOURCES`)
@@ -39,7 +40,7 @@ The default sub-models of GMSE (`resource`, `observation`, `manager`, and `user`
 5. [`user_array`](#action) (or `ACTION`)
 6. [`LAND`](#land)
 
-Note that these are not the only data structures used in GMSE, but they are the only ones that can be easily modified in GMSE v0.4.0.3 (see, e.g., [Supporting Infromation 4](SI4.pdf)), so they are the ones that we focus on here. Additionally, any custom subfunction that returns an array rather than a single value should adhere to the same structure as the these defaults if any default GMSE functions are to be used in `gmse_apply`. We can investigate each data structure by running a single simulation of `gmse_apply`.
+Note that these are not the only data structures used in GMSE, but they are the only ones that can be easily modified in GMSE v0.4.0.3 (see, e.g., [SI4](SI4.pdf)), so they are the ones that we focus on here. Additionally, any custom subfunction that returns an array rather than a single value should adhere to the same structure as these defaults if any default GMSE functions are to be used in `gmse_apply`. We can investigate each data structure by running a single simulation of `gmse_apply`.
 
 ```{r}
 sim <- gmse_apply(get_res = "Full");
@@ -110,7 +111,7 @@ Columns in the resource array represent the individual resource traits listed be
 19. Has the resource's growth rate been increased by an agent?
 20. Has the resource's offspring production been increased by an agent?
 
-In the case of columns 16-20, the value is either zero (if no action has occurred), or some positive integer that matches the ID of the agent that has performed the act (e.g., if column 17 equals 3, then that means that the agent with ID = 3 culled the resource in the corresponding row; where more than one agent's action is possible per time step -- as in scaring -- the integer reflects the most recently acting agent). We anticipate that future versions of gmse will contain multiple resource types, and might add rows to include additional resource traits.
+In the case of columns 16-20, the value is either zero (if no action has occurred), or some positive integer that matches the ID of the agent that has performed the act (e.g., if column 17 equals 3, then that means that the agent with ID = 3 culled the resource in the corresponding row; where more than one agent's action is possible per time step -- as in scaring -- the integer reflects the most recently acting agent). We anticipate that future versions of gmse will contain multiple resource types, and might add columns to include additional resource traits.
 
 3. observation_array {#observation}
 ================================================================================
@@ -178,12 +179,12 @@ Events in default GMSE sub-models occur on a spatially-explicit landscape `LAND`
 print(sim$LAND[1:8,1:8,]);
 ```
 
-In the case of the above, all of the cells in this square patch of landscape are owned by agent 1 (i.e., the manager; see `sim$LAND[,,3]`), and we can see that crop production on this patch of land has been decreased from 1 in several cells as a consequence of consumption by resources. In [Supporting Information 4](SI4.pdf), we show how landscape cell values can be manipulated to customise the placement of land ownership.
+In the case of the above, all of the cells in this square patch of landscape are owned by agent 1 (i.e., the manager; see `sim$LAND[,,3]`), and we can see that crop production on this patch of land has been decreased from 1 in several cells as a consequence of consumption by resources (see `sim$LAND[„2]`). In [SI4](SI4.pdf), we show how landscape cell values can be manipulated to customise the placement of land ownership.
 
 Conclusions
 ================================================================================
 
-We have focused on the data structures [`AGENTS`](#agents), [`resource_array`](#resources), [`observation_array`](#observation), [`manager_array`](#cost), [`user_array`](#action), and [`LAND`](#land) because these are the data structures that can be most readily manipulated to customise GMSE simulations. An example of how to do this within a loop using `gmse_apply` can be found in [Supporting Information 4](SI4.pdf). While other data structures exist within GMSE (e.g., see the output of `gmse_apply` when `get_res = Full`), we do not recommend manipulating these structures for custom simulations.
+We have focused on the data structures [`AGENTS`](#agents), [`resource_array`](#resources), [`observation_array`](#observation), [`manager_array`](#cost), [`user_array`](#action), and [`LAND`](#land) because these are the data structures that can be most readily manipulated to customise GMSE simulations. An example of how to do this within a loop using `gmse_apply` can be found in [SI4](SI4.pdf). While other data structures exist within GMSE (e.g., see the output of `gmse_apply` when `get_res = Full`), we do not recommend manipulating these structures for custom simulations.
 
 Many data structures contain elements that are unused in GMSE v0.4.0.3, and in all cases this is designed for ease of ongoing development of new GMSE features. Requests for new features can be made on GitHub using the [GMSE Wiki](https://github.com/bradduthie/gmse/wiki) or the [GMSE Issues](https://github.com/bradduthie/gmse/issues) page.
 
