@@ -117,7 +117,7 @@ Next, we show how to adjust the landscape to manually set land ownership in `gms
 
 By default, all farmers in GMSE are allocated the same number of landscape cells, which are simply placed in order of the farmer's ID. Public land is produced by placing landscape cells that are technically owned by the manager, and therefore have landscape cell values of 1. The image below shows this landscape for the eight farmers from `sim_old`.
 
-```{r}
+```{r, fig.cap = "Default position of land ownership by farmers."}
 image(x = sim_old$LAND[,,3], col = topo.colors(9), xaxt = "n", yaxt = "n");
 ```
 
@@ -136,7 +136,7 @@ sim_old  <- gmse_apply(get_res = "Full", remove_pr = 0.122, lambda = 0.275,
 
 Because we have not specified landscape dimensions in the above, the landscape reverts to the default size of 100 by 100 cells. We can then manually assign landscape cells to the eight farmers, whose IDs range from 2-9 (ID value 1 is the manager). Below we do this to make eight different sized farms.
 
-```{r}
+```{r, fig.cap = "Land ownership by farmers as customised in gmse_apply."}
 sim_old$LAND[1:20,   1:20,  3] <- 2; 
 sim_old$LAND[1:20,  21:40,  3] <- 3;
 sim_old$LAND[1:20,  41:60,  3] <- 4;

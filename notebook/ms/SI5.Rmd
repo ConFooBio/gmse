@@ -106,7 +106,7 @@ newFL <- fmle(newFL);
 
 Diagnostic plots, identical to those of the [modelling stock-recruitment tutorial](http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html) for the `nsher_ri` example, are shown below.
 
-```{r, fig.height = 6.2}
+```{r, fig.height = 6.2, fig.cap = "Output of the FLR plot function for an example Ricker model of stock recruitment on North Sea Herring data."}
 plot(newFL);
 ```
 
