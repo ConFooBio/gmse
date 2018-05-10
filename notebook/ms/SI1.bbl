@@ -11,4 +11,10 @@ Hamblin, S. (2013).
   evolution}.
 \newblock {\em Methods in Ecology and Evolution}, 4(2):184--194.
 
+\bibitem[Luke, 2013]{Luke2013}
+Luke, S. (2013).
+\newblock {\em {Essentials of Metaheuristics}}.
+\newblock Lulu, second edition, available at
+  {https://cs.gmu.edu/{\textasciitilde}sean/book/metaheuristics/Essentials.pdf}.
+
 \end{thebibliography}
