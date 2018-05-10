@@ -458,6 +458,16 @@ Availability
 
 The GMSE package can be downloaded from CRAN (https://cran.r-project.org/package=GMSE) or GitHub (https://github.com/bradduthie/gmse). GMSE is open source under GNU Public License.
 
+Conclusions
+===================================================
+
+
+
+Acknowledgements
+===================================================
+
+This project was funded by the European Research Council under the European Union's H2020/ERC grant agreement no. 679651 (ConFooBio) to NB. ABD is funded by a Leverhulme Trust Early Career Fellowship. We thank two anonymous reviewers for very helpful comments.
+
 References
 ===================================================
 
