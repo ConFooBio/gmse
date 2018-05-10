@@ -81,7 +81,7 @@ We now explain that is possible for resources in the population to exist on the 
 
 **Author response to Reviewer 1 specific comment 6:**
 
-This is a reasonable inference, and we appreciate Reviewer 1 for drawing attention to it. However, the value 10001 is actually a maximum cost allowed in the modelling that is unrelated to land dimensions. We now state this explicitly in SI1 to avoid confusion (line XXX). In our newest version of GMSE v0.4.0.3, maximum allowable budgets have been increased, so this number is now an order of magnitude higher (100001). 
+This is a reasonable inference, and we appreciate Reviewer 1 for drawing attention to it. However, the value 10001 is actually a maximum cost allowed in the modelling that is unrelated to land dimensions. We now state this explicitly in SI1 to avoid confusion (SI1 L111-115). In our newest version of GMSE v0.4.0.3, maximum allowable budgets have been increased, so this number is now an order of magnitude higher (100001). 
 
 **Reviewer 1 specific comment 7:**
 
@@ -89,7 +89,7 @@ This is a reasonable inference, and we appreciate Reviewer 1 for drawing attenti
 
 **Author response to Reviewer 1 specific comment 7:**
 
-The objective for the genetic algorithm is not necessarily to produce optimal strategies, but strategies that are adaptive and flexible in making decisions. Finding a set of parameters to be used in the genetic algorithm to produce adaptive strategies is not especially difficult, and default values in GMSE are chosen to be sufficient for this objective. Nevertheless, it is true that the genetic algorithm will be more effective given more strict convergence criterial and a higher minimum generation times. We now emphasise this more in SI1 in a new section, 'Choosing genetic algorithm parameter values' (line XXX).
+The objective for the genetic algorithm is not necessarily to produce optimal strategies, but strategies that are adaptive and flexible in making decisions. Finding a set of parameters to be used in the genetic algorithm to produce adaptive strategies is not especially difficult, and default values in GMSE are chosen to be sufficient for this objective. Nevertheless, it is true that the genetic algorithm will be more effective given more strict convergence criterial and a higher minimum generation times. We now emphasise this more in SI1 in a new section, 'Choosing genetic algorithm parameter values' (SI1 L357).
 
 **Reviewer 1 specific comment 8:**
 
@@ -101,9 +101,9 @@ We now clarify how these effects work in the genetic algorithm explained in SI1.
 
 In our revision, we now go into greater detail to explain the utility of sigma (i.e., `manage_sense`):
 
-"[...] we emphasise that whether or not these effects are realised will depend later on the user model, to which the manager does not have access" (line XXX).
+"[...] we emphasise that whether or not these effects are realised will depend later on the user model, to which the manager does not have access" (SI1 L304).
 
-"Note that $\sigma$ is included in all of the predicted actions above as a modulator for how strongly the manager predicts users will respond to a change in manager policy (e.g., a value of 0 would predict no reaction on the part of users to a change in policy, while a value of 1 would predict that an action would increase in exact proportion to its decrease in cost)." (SI1 line XXX).
+"Note that $\sigma$ is included in all of the predicted actions above as a modulator for how strongly the manager predicts users will respond to a change in manager policy (e.g., a value of 0 would predict no reaction on the part of users to a change in policy, while a value of 1 would predict that an action would increase in exact proportion to its decrease in cost)." (SI1 L314).
 
 We have also improved the manager fitness function in GMSE v0.4.0.3, and, after testing, consequently changed the default sigma value to `manage_sense = 0.9` (new C function in the code: https://github.com/bradduthie/gmse/blob/rev/src/game.c#L458 ).
 
