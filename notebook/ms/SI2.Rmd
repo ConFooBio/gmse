@@ -25,15 +25,15 @@ library(GMSE);
 Extended introduction to the GMSE apply function (`gmse_apply`)
 ================================================================================
 
-The `gmse_apply` function is a flexible function that allows for user-defined sub-functions calling resource, observation, manager, and user models. Where such models are not specified, predefined GMSE submodels 'resource', 'observation', 'manager', and 'user' are run by default. Any type of sub-model (e.g., numerical,  individual-based) is permitted as long as the input and output are appropriately specified. Only one time step is simulated per call to `gmse_apply`, so the function must be looped for simulation over time. Where model parameters are needed but not specified, defaults from GMSE are used. In this Supporting Information, we demonstrate some uses of `gmse_apply`, and how it might be used to simulate myriad management scenarios *in silico*.
+The `gmse_apply` function is a flexible function that allows for user-defined sub-functions calling resource, observation, manager, and user models. Where such models are not specified, predefined GMSE sub-models 'resource', 'observation', 'manager', and 'user' are run by default. Any type of sub-model (e.g., numerical,  individual-based) is permitted as long as the input and output are appropriately specified. Only one time step is simulated per call to `gmse_apply`, so the function must be looped for simulation over time. Where model parameters are needed but not specified, defaults from GMSE are used. In this Supporting Information, we demonstrate some uses of `gmse_apply`, and how it might be used to simulate myriad management scenarios *in silico*.
 
-A simple run of `gmse_apply()` returns one generation of GMSE using predefined submodels and default parameter values. 
+A simple run of `gmse_apply()` returns one generation of GMSE using predefined sub-models and default parameter values. 
 
 ```{r, eval = TRUE}
 sim_1 <- gmse_apply();
 ```
 
-For `sim_1`, the default 'basic' results are returned as below, which summarise key values for all submodels.
+For `sim_1`, the default 'basic' results are returned as below, which summarise key values for all sub-models.
 
 ```{r, eval = TRUE}
 print(sim_1);
@@ -60,19 +60,19 @@ The `gmse_apply` function will find the parameters it needs to run the `alt_res`
 print(sim_2);
 ```
 
-How `gmse_apply` integrates across submodels
+How `gmse_apply` integrates across sub-models
 --------------------------------------------------------------------------------
 
-To integrate across different types of submodels, `gmse_apply` translates between vectors and arrays between each submodel. For example, because the default GMSE observation model requires a resource array with particular requirements for column identites, when a resource model subfunction returns a vector, or a list with a named element 'resource_vector', this vector is translated into an array that can be used by the observation model. Specifically, each element of the vector identifies the abundance of a resource type (and hence will usually be just a single value denoting abundance of the only focal population). If this is all the information provided, then a 'resource_array' will be made with default GMSE parameter values with an identical number of rows to the abundance value (floored if the value is a non-integer; non-default values can also be put into this transformation from vector to array if they are specified in `gmse_apply`, e.g., through an argument such as `lambda = 0.8`). Similarly, a `resource_array` is also translated into a vector after the default individual-based resource model is run, should the observation model require simple abundances instead of an array. The same is true of `observation_vector` and `observation_array` objects returned by observation models, of `manager_vector` and `manager_array` (i.e., `COST` in the `gmse` function) objects returned by manager models, and of `user_vector` and `user_array` (i.e., `ACTION` in the `gmse` function) objects returned by user models. At each step, a translation between the two is made, with necessary adjustments that can be tweaked through arguments to `gmse_apply` when needed. Alternative observation, manager, and user, submodels, for example, are defined below; note that each requires a vector from the preceding model.
+To integrate across different types of sub-models, `gmse_apply` translates between vectors and arrays between each sub-model. For example, because the default GMSE observation model requires a resource array with particular requirements for column identites, when a resource model subfunction returns a vector, or a list with a named element 'resource_vector', this vector is translated into an array that can be used by the observation model. Specifically, each element of the vector identifies the abundance of a resource type (and hence will usually be just a single value denoting abundance of the only focal population). If this is all the information provided, then a 'resource_array' will be made with default GMSE parameter values with an identical number of rows to the abundance value (floored if the value is a non-integer; non-default values can also be put into this transformation from vector to array if they are specified in `gmse_apply`, e.g., through an argument such as `lambda = 0.8`). Similarly, a `resource_array` is also translated into a vector after the default individual-based resource model is run, should the observation model require simple abundances instead of an array. The same is true of `observation_vector` and `observation_array` objects returned by observation models, of `manager_vector` and `manager_array` (i.e., `COST` in the `gmse` function) objects returned by manager models, and of `user_vector` and `user_array` (i.e., `ACTION` in the `gmse` function) objects returned by user models. At each step, a translation between the two is made, with necessary adjustments that can be tweaked through arguments to `gmse_apply` when needed. Alternative observation, manager, and user, sub-models, for example, are defined below; note that each requires a vector from the preceding model.
 
 ```{r, eval = TRUE}
-# Alternative observation submodel
+# Alternative observation sub-model
 alt_obs <- function(resource_vector){ 
     X_obs <- resource_vector - 0.1 * resource_vector;
     return(X_obs);
 }
 
-# Alternative manager submodel
+# Alternative manager sub-model
 alt_man <- function(observation_vector){
     policy <- observation_vector - 1000;
     if(policy < 0){
@@ -81,21 +81,21 @@ alt_man <- function(observation_vector){
     return(policy);
 }
 
-# Alternative user submodel
+# Alternative user sub-model
 alt_usr <- function(manager_vector){
     harvest <- manager_vector + manager_vector * 0.1;
     return(harvest);
 }
 ```
 
-All of these submodels are completely deterministic, so when run with the same parameter combinations, they produce replicable outputs.
+All of these sub-models are completely deterministic, so when run with the same parameter combinations, they produce replicable outputs.
 
 ```{r, eval = TRUE}
 gmse_apply(res_mod = alt_res, obs_mod = alt_obs, 
            man_mod = alt_man, use_mod = alt_usr, X = 1000);
 ```
 
-Note that the `manager_results` and `user_results` are ambiguous here, and can be interpreted as desired -- e.g., as total allowable catch and catches made, or as something like costs of catching set by the manager and effort to catching made by the user. Hence while manger output is set in terms of costs of performing each action, and user output is set in terms of action attempts, this need not be the case when using `gmse_apply` (though it should be recognised when using default GMSE manager and user functions). GMSE default submodels can be added in at any point.
+Note that the `manager_results` and `user_results` are ambiguous here, and can be interpreted as desired -- e.g., as total allowable catch and catches made, or as something like costs of catching set by the manager and effort to catching made by the user. Hence while manger output is set in terms of costs of performing each action, and user output is set in terms of action attempts, this need not be the case when using `gmse_apply` (though it should be recognised when using default GMSE manager and user functions). GMSE default sub-models can be added in at any point.
 
 ```{r, eval = TRUE}
 gmse_apply(res_mod = alt_res, obs_mod = observation, 

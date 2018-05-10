@@ -105,7 +105,7 @@ In our revision, we now go into greater detail to explain the utility of sigma (
 
 "Note that $\sigma$ is included in all of the predicted actions above as a modulator for how strongly the manager predicts users will respond to a change in manager policy (e.g., a value of 0 would predict no reaction on the part of users to a change in policy, while a value of 1 would predict that an action would increase in exact proportion to its decrease in cost)." (SI1 line XXX).
 
-We have also greatly improved the manager fitness function in GMSE v0.4.0.3, and consequently changed the default sigma value to `manage_sense = 0.9` (new C function in the code: https://github.com/bradduthie/gmse/blob/rev/src/game.c#L458 ).
+We have also improved the manager fitness function in GMSE v0.4.0.3, and, after testing, consequently changed the default sigma value to `manage_sense = 0.9` (new C function in the code: https://github.com/bradduthie/gmse/blob/rev/src/game.c#L458 ).
 
 
 **Reviewer 1 specific comment 9:**
