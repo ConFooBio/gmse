@@ -459,7 +459,7 @@ int new_act(double old_cost, double new_cost, double old_act, double *paras){
     
     int total_acts;
     double users, max_to_spend, acts_per_user, cost_per_user, total_cost;
-    double pr_on_act, budget_for_act, mgr_budget, min_cost;
+    double budget_for_act, mgr_budget, min_cost;
     
     users        = paras[54] - 1; /* Minus one for the manager */
     min_cost     = paras[96];     /* Minimum cost of an action */
@@ -471,14 +471,10 @@ int new_act(double old_cost, double new_cost, double old_act, double *paras){
         total_cost    = old_act * old_cost; /* Total cost devoted to action */
     }
 
-    cost_per_user = (total_cost / users); /* Cost devoted per user */
-    pr_on_act     = cost_per_user / max_to_spend;    /* Pr. devoted to action */
+    budget_for_act = (total_cost / users);  /* Cost devoted per user */
 
-    /* Assume that the proportion of the budget a user spends will not change */
-    budget_for_act = max_to_spend * pr_on_act;
-
-    /* Calculate how many actions to expect given acts per user and users */
-    acts_per_user  = budget_for_act / (new_cost + min_cost);  
+    /* Calculate how many actions to expect per user, then total actions */
+    acts_per_user  = budget_for_act / (new_cost + min_cost);
     total_acts     = (double) users * acts_per_user;
 
     return(total_acts);
