@@ -159,7 +159,7 @@ Perhaps we want to assume that farmers have different budgets, which are correla
 ```{r}
 for(ID in 2:9){
     cells_owned            <- sum(sim_old$LAND[,,3] == ID);
-    sim_old$AGENTS[ID, 17] <- 100 * cells_owned;
+    sim_old$AGENTS[ID, 17] <- 10 * cells_owned;
 }
 ```
 
@@ -240,7 +240,7 @@ sim_old$LAND[61:100, 1:100, 3] <- 1;
 # Change the budgets of each farmer based on the land they own
 for(ID in 2:9){
     cells_owned            <- sum(sim_old$LAND[,,3] == ID);
-    sim_old$AGENTS[ID, 17] <- 100 * cells_owned;
+    sim_old$AGENTS[ID, 17] <- 10 * cells_owned;
 }
 # Begin simulating time steps for the system
 sim_sum_2 <- matrix(data = NA, nrow = 30, ncol = 5);
