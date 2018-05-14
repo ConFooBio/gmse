@@ -51,6 +51,7 @@ library(rhandsontable)
 
  - **2018**
 
+     - **MAY** [14](#u-14-MAY-2018)
      - **APR** [13](#u-13-APR-2018)
 
  - **2017**
@@ -96,6 +97,10 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-14-MAY-2018">Update: 14 MAY 2018</a>
+
+A new GMSE v0.4.0.3 has now been pushed to the master branch on GitHub and has been submitted to CRAN. The biggest update in this new version is a series of vignettes, plus a minor improvement to the genetic algorithm. More updates will follow soon, including some re-organisation of the GMSE project and a new manuscript submission.
 
 > <a name="u-13-APR-2018">Update: 13 APR 2018</a>
 
