@@ -192,7 +192,7 @@ assessment of some description. Clarify.
 
 **Author response to Reviewer 2 specific comment 4:**
 
-We now clarify how the resources are observed in the text (line XXX) and in supporting information (SI7). Detailed explanation of built-in observation functions are provided in the R documentation.
+We now clarify how the resources are observed in the text (L137) and in supporting information (SI7). Detailed explanation of built-in observation functions are provided in the R documentation.
 
 **Reviewer 2 specific comment 5:**
 
