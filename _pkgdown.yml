@@ -1,0 +1,37 @@
+pandoc: 1.17.2
+pkgdown: 1.0.0
+pkgdown_sha: ~
+articles:
+  GMSE: GMSE.html
+  SI1: SI1.html
+  SI2: SI2.html
+  SI3: SI3.html
+  SI4: SI4.html
+  SI5: SI5.html
+  SI6: SI6.html
+  SI7: SI7.html
+
+reference:
+  - title: Simulation functions
+    contents:
+    - gmse
+    - gmse_apply
+    - gmse_gui
+    - gmse_replicates
+
+  - title: Summary functions
+    contents:
+    - gmse_summary
+    - gmse_table
+
+  - title: Plotting functions
+    contents:
+    - plot_gmse_results
+    - plot_gmse_effort
+
+navbar:
+  right:
+    - text: "Lab notebook"
+      href: ../notebook/gmse_notes.html
+    - icon: fa-github
+      href: https://github.com/bradduthie/GMSE

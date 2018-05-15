@@ -1,0 +1,13 @@
+pandoc: 1.17.2
+pkgdown: 1.0.0
+pkgdown_sha: ~
+articles:
+  GMSE: GMSE.html
+  SI1: SI1.html
+  SI2: SI2.html
+  SI3: SI3.html
+  SI4: SI4.html
+  SI5: SI5.html
+  SI6: SI6.html
+  SI7: SI7.html
+
