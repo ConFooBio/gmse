@@ -174,7 +174,7 @@ new_rec <- predict_recruitment(rec_m = rec.m, ssb_m = ssb.m, years = 1960:2004,
 obs_rec <- obs_ssb(new_rec);
 ```
 
-An initial run of these models gives values of `r round(new_rec, digits = 2)` for `new_rec` and `r round(obs_rec, digits = 2)` for `obs_rec`. We are now ready to use the built-in manager and user sub-models in `gmse_apply`. We will assume that managers attempt to keep a recruitment of 5000, and that there are 10 independent fishers [stakeholders in gmse_apply says 10, is that a difference?] who attempt to maximise their catch. We assign a user budget of `manager_budget = 10000`, and all other values are set to GMSE defaults. In the built-in GMSE functions, the manager will use the estimate of recruitment based on `obs_rec` and use it to set the cost of harvesting (`culling` in GMSE).
+An initial run of these models gives values of `r round(new_rec, digits = 2)` for `new_rec` and `r round(obs_rec, digits = 2)` for `obs_rec`. We are now ready to use the built-in manager and user sub-models in `gmse_apply`. We will assume that managers attempt to keep a recruitment of 5000, and that there are 10 independent fishers who attempt to maximise their catch. We assign a user budget of `manager_budget = 10000`, and all other values are set to GMSE defaults. In the built-in GMSE functions, the manager will use the estimate of recruitment based on `obs_rec` and use it to set the cost of harvesting (`culling` in GMSE).
 
 ```{r, eval = FALSE}
 yrspan       <- 1960:2004;
