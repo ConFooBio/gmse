@@ -80,7 +80,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="../../notebook/gmse_notes.html">Lab notebook</a>
+  <a href="https://bradduthie.github.io/gmse/notebook/gmse_notes.html">Lab notebook</a>
 </li>
 <li>
   <a href="https://github.com/bradduthie/GMSE">
@@ -229,26 +229,26 @@
                        <span class="dt">ga_mingen =</span> <span class="dv">200</span>);</code></pre></div>
 <p>Note that the argument <code>get_res = "Full"</code> causes <code>sim_old</code> to retain all of the relevant data structures for simulating a new time step and recording simulation results. This includes the key simulation output, which is located in <code>sim_old$basic_output</code>, which is printed below.</p>
 <pre><code>## $resource_results
-## [1] 34229
+## [1] 34192
 ## 
 ## $observation_results
-## [1] 34229
+## [1] 34192
 ## 
 ## $manager_results
 ##          resource_type scaring culling castration feeding help_offspring
-## policy_1             1      NA     511         NA      NA             NA
+## policy_1             1      NA     507         NA      NA             NA
 ## 
 ## $user_results
 ##         resource_type scaring culling castration feeding help_offspring
 ## Manager             1      NA       0         NA      NA             NA
-## user_1              1      NA     190         NA      NA             NA
+## user_1              1      NA     192         NA      NA             NA
 ## user_2              1      NA     190         NA      NA             NA
-## user_3              1      NA     190         NA      NA             NA
-## user_4              1      NA     190         NA      NA             NA
-## user_5              1      NA     189         NA      NA             NA
-## user_6              1      NA     190         NA      NA             NA
-## user_7              1      NA     190         NA      NA             NA
-## user_8              1      NA     190         NA      NA             NA
+## user_3              1      NA     191         NA      NA             NA
+## user_4              1      NA     191         NA      NA             NA
+## user_5              1      NA     191         NA      NA             NA
+## user_6              1      NA     191         NA      NA             NA
+## user_7              1      NA     191         NA      NA             NA
+## user_8              1      NA     191         NA      NA             NA
 ##         tend_crops kill_crops
 ## Manager         NA         NA
 ## user_1          NA         NA
@@ -274,36 +274,36 @@ for(time_step in <span class="dv">1</span>:<span class="dv">30</span>){
                          <span class="st">"Cull_count"</span>);
 <span class="kw">print</span>(sim_sum_1);</code></pre></div>
 <pre><code>##       Time Pop_size Pop_est Cull_cost Cull_count
-##  [1,]    1    32607   32607       816        963
-##  [2,]    2    32100   32100       929        844
-##  [3,]    3    32373   32373       953        825
-##  [4,]    4    33361   33361       980        802
-##  [5,]    5    37643   37643      1004        785
-##  [6,]    6    38886   38886       990        794
-##  [7,]    7    40103   40103      1001        785
-##  [8,]    8    41895   41895       995        790
-##  [9,]    9    43742   43742       996        790
-## [10,]   10    46079   46079       985        800
-## [11,]   11    48450   48450      1003        785
-## [12,]   12    50727   50727       999        786
-## [13,]   13    53364   53364       995        789
-## [14,]   14    56236   56236       995        791
-## [15,]   15    59148   59148       996        787
-## [16,]   16    62449   62449      1001        785
-## [17,]   17    66127   66127       990        794
-## [18,]   18    69702   69702       992        793
-## [19,]   19    73409   73409        10      29184
-## [20,]   20    47545   47545      1008        779
-## [21,]   21    49784   49784       982        801
-## [22,]   22    52071   52071       997        786
-## [23,]   23    54685   54685       995        793
-## [24,]   24    57405   57405      1006        778
-## [25,]   25    60532   60532      1004        784
-## [26,]   26    63548   63548       981        801
-## [27,]   27    67200   67200      1003        785
-## [28,]   28    71345   71345        10      29197
-## [29,]   29    44981   44981      1010        778
-## [30,]   30    47183   47183       995        793</code></pre>
+##  [1,]    1    32634   32634       841        930
+##  [2,]    2    32261   32261       964        817
+##  [3,]    3    32546   32546       979        802
+##  [4,]    4    33209   33209      1007        779
+##  [5,]    5    37280   37280      1010        778
+##  [6,]    6    38443   38443       988        794
+##  [7,]    7    39604   39604       995        792
+##  [8,]    8    41241   41241       998        786
+##  [9,]    9    43153   43153       998        786
+## [10,]   10    45304   45304       994        793
+## [11,]   11    47827   47827       999        786
+## [12,]   12    50276   50276       991        793
+## [13,]   13    52517   52517       997        786
+## [14,]   14    55111   55111      1006        780
+## [15,]   15    58122   58122       992        793
+## [16,]   16    61406   61406       991        793
+## [17,]   17    64564   64564       987        794
+## [18,]   18    68084   68084       996        788
+## [19,]   19    72195   72195        10      29077
+## [20,]   20    46055   46055      1010        778
+## [21,]   21    48367   48367       982        801
+## [22,]   22    50817   50817       998        786
+## [23,]   23    53347   53347       990        794
+## [24,]   24    56169   56169       994        793
+## [25,]   25    59100   59100       998        786
+## [26,]   26    62134   62134       992        793
+## [27,]   27    65177   65177       997        787
+## [28,]   28    68742   68742       989        794
+## [29,]   29    72823   72823        10      29116
+## [30,]   30    46512   46512      1010        778</code></pre>
 <p>The above output from <code>sim_sum_1</code> shows the data frame that holds the information we were interested in pulling out of our simulation results. All of this information was available under the list element <code>sim_new$basic_output</code>, but other list elements of <code>sim_new</code> might also be useful to record. It is important to remember that this example of <code>gmse_apply</code> is using the default resource, observation, manager, and user sub-models. Custom sub-models could produce different outputs in <code>sim_new</code> (see <a href="SI2.pdf">SI2</a> for examples). For default sub-models, there are some list elements that might be especially useful. These elements can potentially be edited <em>within the above loop</em> to dynamically adjust simulations. For more explanation of built-in GMSE data arrays, see <a href="SI7.pdf">SI7</a>.</p>
 <ul>
 <li>
@@ -489,36 +489,36 @@ for(time_step in <span class="dv">1</span>:<span class="dv">30</span>){
                          <span class="st">"Cull_count"</span>);
 <span class="kw">print</span>(sim_sum_2);</code></pre></div>
 <pre><code>##       Time Pop_size Pop_est Cull_cost Cull_count
-##  [1,]    1    33768   33768       789         73
-##  [2,]    2    34168   34168       886         64
-##  [3,]    3    35221   35221       948         60
-##  [4,]    4    36768   36768       943         60
-##  [5,]    5    42236   42236       964         60
-##  [6,]    6    44128   44128       970         60
-##  [7,]    7    46439   46439       998         56
-##  [8,]    8    49212   49212       969         60
-##  [9,]    9    52332   52332       981         60
-## [10,]   10    55673   55673       986         60
-## [11,]   11    59417   59417       996         57
-## [12,]   12    63267   63267      1010         52
-## [13,]   13    67434   67434       997         57
-## [14,]   14    71898   71898       460        124
-## [15,]   15    76817   76817       381        153
-## [16,]   16    81998   81998       417        138
-## [17,]   17    87503   87503       416        140
-## [18,]   18    93419   93419       411        140
-## [19,]   19    99782   99782       453        125
-## [20,]   20   101892  101892       386        150
-## [21,]   21   102420  102420       348        167
-## [22,]   22   102952  102952       387        151
-## [23,]   23   103366  103366       417        138
-## [24,]   24   103450  103450       409        140
-## [25,]   25   103486  103486       420        138
-## [26,]   26   103585  103585       412        139
-## [27,]   27   103571  103571       424        135
-## [28,]   28   103670  103670       403        142
-## [29,]   29   103624  103624       409        141
-## [30,]   30   103691  103691       449        127</code></pre>
+##  [1,]    1    33912   33912       774         74
+##  [2,]    2    34273   34273       916         61
+##  [3,]    3    35205   35205       959         60
+##  [4,]    4    36829   36829       978         60
+##  [5,]    5    42391   42391       981         60
+##  [6,]    6    44369   44369       974         60
+##  [7,]    7    46758   46758       976         60
+##  [8,]    8    49571   49571       996         59
+##  [9,]    9    52947   52947      1001         52
+## [10,]   10    56775   56775       996         55
+## [11,]   11    60991   60991       994         59
+## [12,]   12    65041   65041      1001         52
+## [13,]   13    69299   69299       998         54
+## [14,]   14    74085   74085       459        125
+## [15,]   15    79076   79076       395        149
+## [16,]   16    84445   84445       420        138
+## [17,]   17    90226   90226       436        134
+## [18,]   18    96293   96293       425        137
+## [19,]   19   100574  100574       424        137
+## [20,]   20   101937  101937       430        136
+## [21,]   21   102501  102501       437        134
+## [22,]   22   102801  102801       429        135
+## [23,]   23   102680  102680       426        137
+## [24,]   24   103168  103168       429        136
+## [25,]   25   103106  103106       431        137
+## [26,]   26   103003  103003       412        140
+## [27,]   27   103202  103202       437        134
+## [28,]   28   103344  103344       430        136
+## [29,]   29   103708  103708       420        138
+## [30,]   30   103775  103775       417        138</code></pre>
 </div>
 <div id="conclusions" class="section level1">
 <h1 class="hasAnchor">

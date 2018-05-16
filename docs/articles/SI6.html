@@ -80,7 +80,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="../../notebook/gmse_notes.html">Lab notebook</a>
+  <a href="https://bradduthie.github.io/gmse/notebook/gmse_notes.html">Lab notebook</a>
 </li>
 <li>
   <a href="https://github.com/bradduthie/GMSE">
@@ -126,22 +126,22 @@
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rand_eg_1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_apply.html">gmse_apply</a></span>();
 <span class="kw">print</span>(rand_eg_1);</code></pre></div>
 <pre><code>## $resource_results
-## [1] 1082
+## [1] 1112
 ## 
 ## $observation_results
-## [1] 1020.408
+## [1] 770.9751
 ## 
 ## $manager_results
 ##          resource_type scaring culling castration feeding help_offspring
-## policy_1             1      NA      62         NA      NA             NA
+## policy_1             1      NA      67         NA      NA             NA
 ## 
 ## $user_results
 ##         resource_type scaring culling castration feeding help_offspring
 ## Manager             1      NA       0         NA      NA             NA
-## user_1              1      NA      16         NA      NA             NA
-## user_2              1      NA      16         NA      NA             NA
-## user_3              1      NA      16         NA      NA             NA
-## user_4              1      NA      16         NA      NA             NA
+## user_1              1      NA      14         NA      NA             NA
+## user_2              1      NA      14         NA      NA             NA
+## user_3              1      NA      14         NA      NA             NA
+## user_4              1      NA      14         NA      NA             NA
 ##         tend_crops kill_crops
 ## Manager         NA         NA
 ## user_1          NA         NA
@@ -152,22 +152,22 @@
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rand_eg_2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_apply.html">gmse_apply</a></span>();
 <span class="kw">print</span>(rand_eg_2);</code></pre></div>
 <pre><code>## $resource_results
-## [1] 1102
+## [1] 1100
 ## 
 ## $observation_results
-## [1] 1292.517
+## [1] 1201.814
 ## 
 ## $manager_results
 ##          resource_type scaring culling castration feeding help_offspring
-## policy_1             1      NA      60         NA      NA             NA
+## policy_1             1      NA      69         NA      NA             NA
 ## 
 ## $user_results
 ##         resource_type scaring culling castration feeding help_offspring
 ## Manager             1      NA       0         NA      NA             NA
-## user_1              1      NA      16         NA      NA             NA
-## user_2              1      NA      16         NA      NA             NA
-## user_3              1      NA      16         NA      NA             NA
-## user_4              1      NA      16         NA      NA             NA
+## user_1              1      NA      14         NA      NA             NA
+## user_2              1      NA      14         NA      NA             NA
+## user_3              1      NA      14         NA      NA             NA
+## user_4              1      NA      14         NA      NA             NA
 ##         tend_crops kill_crops
 ## Manager         NA         NA
 ## user_1          NA         NA
@@ -181,165 +181,165 @@
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sim_table &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_table.html">gmse_table</a></span>(<span class="dt">gmse_sim =</span> gmse_sim);
 <span class="kw">print</span>(sim_table)</code></pre></div>
 <pre><code>##       time_step resources  estimate cost_culling cost_unused act_culling
-##  [1,]         1      1079 1405.8957           57          53          68
-##  [2,]         2      1119  884.3537          110           0          36
-##  [3,]         3      1221 1587.3016           10         100         309
-##  [4,]         4      1065 1269.8413           10         100         400
-##  [5,]         5       743  793.6508          110           0          36
-##  [6,]         6       927  907.0295          110           0          36
-##  [7,]         7      1054  975.0567          110           0          36
-##  [8,]         8      1184 1564.6259           10         100         302
-##  [9,]         9      1067  952.3810          110           0          36
-## [10,]        10      1214  975.0567          110           0          36
+##  [1,]         1      1108 1179.1383           51          59          76
+##  [2,]         2      1122  997.7324          110           0          36
+##  [3,]         3      1203  816.3265          110           0          36
+##  [4,]         4      1307 1269.8413           10         100         301
+##  [5,]         5      1194 1519.2744           10         100         400
+##  [6,]         6      1008 1111.1111           22          88         180
+##  [7,]         7       953  997.7324          110           0          36
+##  [8,]         8      1079  839.0023          110           0          36
+##  [9,]         9      1214 1065.7596           45          65          88
+## [10,]        10      1333 1405.8957           10         100         335
 ##       act_unused harvested
-##  [1,]          4        68
-##  [2,]          2        36
-##  [3,]         90       309
-##  [4,]          0       400
-##  [5,]          2        36
-##  [6,]          2        36
-##  [7,]          1        36
-##  [8,]         98       302
-##  [9,]          2        36
-## [10,]          2        36</code></pre>
+##  [1,]          9        76
+##  [2,]          3        36
+##  [3,]          2        36
+##  [4,]         99       301
+##  [5,]          0       400
+##  [6,]          3       180
+##  [7,]          3        36
+##  [8,]          2        36
+##  [9,]          3        88
+## [10,]         65       335</code></pre>
 <p>The above table can be saved as a CSV file using the <code>write.csv</code> function.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">write.csv</span>(<span class="dt">x=</span> sim_table, <span class="dt">file =</span> <span class="st">"file_path/gmse_table_name.csv"</span>);</code></pre></div>
 <p>Instead of recording all time steps in the simulation, we can instead record only the last time step in <code>gmse_table</code> using the <code>all_time</code> argument.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sim_table_last &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_table.html">gmse_table</a></span>(<span class="dt">gmse_sim =</span> gmse_sim, <span class="dt">all_time =</span> <span class="ot">FALSE</span>);
 <span class="kw">print</span>(sim_table_last)</code></pre></div>
 <pre><code>##    time_step    resources     estimate cost_culling  cost_unused 
-##      10.0000    1214.0000     975.0567     110.0000       0.0000 
+##       10.000     1333.000     1405.896       10.000      100.000 
 ##  act_culling   act_unused    harvested 
-##      36.0000       2.0000      36.0000</code></pre>
+##      335.000       65.000      335.000</code></pre>
 <p>The <code>gmse_replicates</code> function replicates multiple simulations <code>replicates</code> times under the same initial conditions, then returns a table showing the values of all simulations. This can be useful, for example, for testing how frequently a population is expected to go to extinction or carrying capacity under a given set of parameter values. First, we demonstrate the <code>gmse_replicates</code> function for simulations of up to 20 time steps. The <code>gmse_replicates</code> function accepts all arguments used in <code>gmse</code>, and also all arguments of <code>gmse_table</code> (<code>all_time</code> and <code>hide_unused_options</code>) to summarise multiple <code>gmse</code> results. Here we use default <code>gmse</code> values in replicate simulations, except <code>plotting</code>, which we set to <code>FALSE</code> to avoid plotting each simulation result. We run 10 replicates below.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gmse_reps1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_replicates.html">gmse_replicates</a></span>(<span class="dt">replicates =</span> <span class="dv">10</span>, <span class="dt">time_max =</span> <span class="dv">20</span>, <span class="dt">plotting =</span> <span class="ot">FALSE</span>);
 <span class="kw">print</span>(gmse_reps1);</code></pre></div>
 <pre><code>##       time_step resources  estimate cost_culling cost_unused act_culling
-##  [1,]        20      1236  861.6780          108           2          36
-##  [2,]        20       736  657.5964          110           0          36
-##  [3,]        20       830  680.2721          110           0          36
-##  [4,]        20       966  702.9478          110           0          36
-##  [5,]        20      1399 1451.2472           10         100         356
-##  [6,]        20       765  975.0567          110           0          36
-##  [7,]        20      1294 1564.6259           10         100         353
-##  [8,]        20       687  544.2177          110           0          36
-##  [9,]        20      1248 1247.1655           10         100         302
-## [10,]        20      1216 1360.5442           10         100         400
+##  [1,]        20      1082  861.6780          110           0          36
+##  [2,]        20      1069 1065.7596           32          78         124
+##  [3,]        20       971 1065.7596           45          65          88
+##  [4,]        20      1432 1541.9501           10         100         400
+##  [5,]        20      1147  884.3537          110           0          36
+##  [6,]        20      1211 1020.4082          108           2          36
+##  [7,]        20      1029 1133.7868           17          93         232
+##  [8,]        20      1353 1541.9501           10         100         316
+##  [9,]        20      1248 1564.6259           10         100         307
+## [10,]        20       956 1065.7596           44          66          88
 ##       act_unused harvested
-##  [1,]          4        36
-##  [2,]          2        36
-##  [3,]          3        36
-##  [4,]          2        36
-##  [5,]         44       356
-##  [6,]          1        36
-##  [7,]         47       353
-##  [8,]          3        36
-##  [9,]         97       302
-## [10,]          0       400</code></pre>
+##  [1,]          2        36
+##  [2,]          0       124
+##  [3,]          2        88
+##  [4,]          0       400
+##  [5,]          2        36
+##  [6,]          3        36
+##  [7,]          2       232
+##  [8,]         84       316
+##  [9,]         93       307
+## [10,]          6        88</code></pre>
 <p>Note from the results above that resources in all simulations persisted for 20 time steps, which means that extinction never occurred. We can also see that the population in all simulations never terminated at a density near the default carrying capacity of <code>res_death_K = 2000</code>, and was instead consistently near the target population size of <code>manage_target = 1000</code>. If we wish to define management success as having a population density near target levels after 20 time steps (perhaps interpreted as 20 years), then we might assess this population as successfully managed under the conditions of the simulation. We can then see what happens if managers only respond to changes in the social-ecological system with a change in policy once every two years, perhaps as a consequence of reduced funding for management or increasing demands for management attention elsewhere. This can be done by changing the default <code>manage_freq = 1</code> to <code>manage_freq = 2</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gmse_reps2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_replicates.html">gmse_replicates</a></span>(<span class="dt">replicates  =</span> <span class="dv">10</span>, <span class="dt">time_max =</span> <span class="dv">20</span>, <span class="dt">plotting =</span> <span class="ot">FALSE</span>, 
                               <span class="dt">manage_freq =</span> <span class="dv">2</span>);
 <span class="kw">print</span>(gmse_reps2);</code></pre></div>
-<pre><code>##       time_step resources   estimate cost_culling cost_unused act_culling
-##  [1,]        20       590  498.86621          110           0          36
-##  [2,]        20       745  748.29932          110           0          36
-##  [3,]        20       939  929.70522          110           0          36
-##  [4,]        20        95   90.70295          110           0          36
-##  [5,]        20       748  793.65079          110           0          36
-##  [6,]        20      1508 1814.05896           10         100         289
-##  [7,]        20       999 1247.16553           10         100         400
-##  [8,]        20       325  226.75737          110           0          36
-##  [9,]        20      1353 1201.81406           10         100         310
-## [10,]        20       745  544.21769          110           0          36
+<pre><code>##       time_step resources  estimate cost_culling cost_unused act_culling
+##  [1,]        20      1081 1065.7596           45          65          88
+##  [2,]        20       416  362.8118          110           0          36
+##  [3,]        20      1392 1609.9773           10         100         321
+##  [4,]        20      1705 1292.5170           10         100         300
+##  [5,]        20       326  362.8118          110           0          36
+##  [6,]        20      1041 1383.2200           10         100         400
+##  [7,]        20      1483 1405.8957           10         100         400
+##  [8,]        20       743  861.6780          110           0          36
+##  [9,]        20      1035  770.9751          110           0          36
+## [10,]        20       558  498.8662          110           0          36
 ##       act_unused harvested
-##  [1,]          4        36
-##  [2,]          4        36
-##  [3,]          1        36
-##  [4,]          3        36
-##  [5,]          0        36
-##  [6,]        111       289
+##  [1,]          2        88
+##  [2,]          3        36
+##  [3,]         79       321
+##  [4,]         97       300
+##  [5,]          2        36
+##  [6,]          0       400
 ##  [7,]          0       400
-##  [8,]          1        36
-##  [9,]         89       310
-## [10,]          1        36</code></pre>
-<p>Note that while extinction still does not occur in these simulations, when populations are managed less frequently, they tend to be less close to the target size of 1000 after 20 generations. The median population size of <code>gmse_reps1</code> (management in every time step) was 1091, with a maximum of 1399 and minimum of 687. The median population size of the newly simulated <code>gmse_reps2</code> (management every two time steps) is 746.5, with a maximum of 1508 and minimum of 95. We can now see what happens when management occurs only once in every three time steps.</p>
+##  [8,]          3        36
+##  [9,]          3        36
+## [10,]          3        36</code></pre>
+<p>Note that while extinction still does not occur in these simulations, when populations are managed less frequently, they tend to be less close to the target size of 1000 after 20 generations. The median population size of <code>gmse_reps1</code> (management in every time step) was 1114.5, with a maximum of 1432 and minimum of 956. The median population size of the newly simulated <code>gmse_reps2</code> (management every two time steps) is 1038, with a maximum of 1705 and minimum of 326. We can now see what happens when management occurs only once in every three time steps.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gmse_reps3 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_replicates.html">gmse_replicates</a></span>(<span class="dt">replicates =</span> <span class="dv">10</span>, <span class="dt">time_max =</span> <span class="dv">20</span>, <span class="dt">plotting =</span> <span class="ot">FALSE</span>, 
                              <span class="dt">manage_freq =</span> <span class="dv">3</span>);
 <span class="kw">print</span>(gmse_reps3);</code></pre></div>
 <pre><code>##       time_step resources  estimate cost_culling cost_unused act_culling
-##  [1,]        20      1157  657.5964          110           0          36
-##  [2,]        20      1217 1133.7868           17          93         232
-##  [3,]        20       913  612.2449          109           1          36
-##  [4,]        20      1158  929.7052          108           2          36
-##  [5,]        20      1362  861.6780          109           1          36
-##  [6,]        20      1485 2131.5193           10         100         400
-##  [7,]        20       214  385.4875          110           0          36
-##  [8,]        15         0    0.0000          110           0          36
-##  [9,]        20       530  566.8934          110           0          36
-## [10,]        20      1736  997.7324          110           0          36
+##  [1,]        20      1295  907.0295          110           0          36
+##  [2,]        20      1014 1315.1927           10         100         400
+##  [3,]        20       271  204.0816          110           0          36
+##  [4,]        20       778  566.8934          110           0          36
+##  [5,]        20       544  408.1633          110           0          36
+##  [6,]        20       584  612.2449          108           2          36
+##  [7,]        20       546 1269.8413           10         100         400
+##  [8,]        20      1046 1269.8413           10         100         400
+##  [9,]        20       783 1496.5986           10         100         400
+## [10,]         9         0    0.0000          110           0          36
 ##       act_unused harvested
-##  [1,]          4        36
-##  [2,]          1       232
-##  [3,]          4        36
-##  [4,]          4        36
-##  [5,]          3        36
-##  [6,]          0       400
-##  [7,]          2        36
-##  [8,]          1         0
-##  [9,]          2        36
-## [10,]          3        36</code></pre>
-<p>Given a management frequency of once every three time steps, the median population size of <code>gmse_reps3</code> (management in every time step) is 1157.5, with a maximum of 1736 and minimum of 0. The number of extinctions observed in these replicate populations was 1. Below we change the management frequency to once every four time steps.</p>
+##  [1,]          1        36
+##  [2,]          0       400
+##  [3,]          2        36
+##  [4,]          1        36
+##  [5,]          2        36
+##  [6,]          5        36
+##  [7,]          0       400
+##  [8,]          0       400
+##  [9,]          0       400
+## [10,]          3         0</code></pre>
+<p>Given a management frequency of once every three time steps, the median population size of <code>gmse_reps3</code> (management in every time step) is 681, with a maximum of 1295 and minimum of 0. The number of extinctions observed in these replicate populations was 1. Below we change the management frequency to once every four time steps.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gmse_reps4 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_replicates.html">gmse_replicates</a></span>(<span class="dt">replicates =</span> <span class="dv">10</span>, <span class="dt">time_max =</span> <span class="dv">20</span>, <span class="dt">plotting =</span> <span class="ot">FALSE</span>, 
                              <span class="dt">manage_freq =</span> <span class="dv">4</span>);
 <span class="kw">print</span>(gmse_reps4);</code></pre></div>
 <pre><code>##       time_step resources   estimate cost_culling cost_unused act_culling
-##  [1,]        20      1986 1746.03175           10         100         339
-##  [2,]        20         0    0.00000          110           0          36
-##  [3,]         9         0   22.67574          110           0          36
-##  [4,]        20       190  204.08163          110           0          36
-##  [5,]        19         0 1383.21995           10         100         400
-##  [6,]        20       744  544.21769          110           0          36
-##  [7,]        20       218  158.73016          108           2          36
-##  [8,]        20      1082 1247.16553           10         100         302
-##  [9,]        20        62   45.35147          109           1          36
-## [10,]        13         0    0.00000          110           0          36
+##  [1,]        20       152   68.02721          110           0          36
+##  [2,]        20      1740 1700.68027           10         100         302
+##  [3,]         7         0    0.00000          108           2          36
+##  [4,]        13         0  136.05442          110           0          36
+##  [5,]        20       788  839.00227          110           0          36
+##  [6,]        20      1429 1224.48980           10         100         303
+##  [7,]        17         2    0.00000          110           0          36
+##  [8,]        12         0    0.00000          110           0          36
+##  [9,]        20       300  181.40590          110           0          36
+## [10,]        20         0    0.00000          110           0          36
 ##       act_unused harvested
-##  [1,]         60       339
-##  [2,]          2         0
+##  [1,]          2        36
+##  [2,]         98       302
 ##  [3,]          2         0
-##  [4,]          4        36
-##  [5,]          0         0
-##  [6,]          1        36
-##  [7,]          6        36
-##  [8,]         97       302
-##  [9,]          2        36
+##  [4,]          3         0
+##  [5,]          3        36
+##  [6,]         97       303
+##  [7,]          1         2
+##  [8,]          2         0
+##  [9,]          0        36
 ## [10,]          2         0</code></pre>
-<p>Now note from the first column of <code>gmse_reps4</code> above that 3 populations did not persist to the 20th time step; i.e., 4 populations went to extinction (note that GMSE has a minimum resource population size of 5). This has occured because managers cannot respond quickly enough to changes in the population density, and therefore cannot increase the cost of culling to maintain target resource levels if population size starts to decrease. We can see the extinction risk increase even further if management only occurs once every 5 time steps.</p>
+<p>Now note from the first column of <code>gmse_reps4</code> above that 4 populations did not persist to the 20th time step; i.e., 5 populations went to extinction (note that GMSE has a minimum resource population size of 5). This has occured because managers cannot respond quickly enough to changes in the population density, and therefore cannot increase the cost of culling to maintain target resource levels if population size starts to decrease. We can see the extinction risk increase even further if management only occurs once every 5 time steps.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gmse_reps5 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_replicates.html">gmse_replicates</a></span>(<span class="dt">replicates =</span> <span class="dv">10</span>, <span class="dt">time_max =</span> <span class="dv">20</span>, <span class="dt">plotting =</span> <span class="ot">FALSE</span>, 
                              <span class="dt">manage_freq =</span> <span class="dv">5</span>);
 <span class="kw">print</span>(gmse_reps5);</code></pre></div>
 <pre><code>##       time_step resources estimate cost_culling cost_unused act_culling
-##  [1,]         5         0        0          109           1          36
-##  [2,]         5         0        0          109           1          36
+##  [1,]         5         0        0          110           0          36
+##  [2,]         5         0        0          110           0          36
 ##  [3,]         5         0        0          110           0          36
-##  [4,]         5         0        0          108           2          36
+##  [4,]         5         0        0          109           1          36
 ##  [5,]         5         0        0          110           0          36
-##  [6,]         5         0        0          110           0          36
-##  [7,]         5         0        0          109           1          36
+##  [6,]         5         0        0          109           1          36
+##  [7,]         5         0        0          110           0          36
 ##  [8,]         5         0        0          110           0          36
 ##  [9,]         5         0        0          110           0          36
 ## [10,]         5         0        0          109           1          36
 ##       act_unused harvested
-##  [1,]          2         0
+##  [1,]          4         0
 ##  [2,]          1         0
-##  [3,]          2         0
-##  [4,]          4         0
+##  [3,]          3         0
+##  [4,]          2         0
 ##  [5,]          3         0
 ##  [6,]          2         0
 ##  [7,]          3         0
-##  [8,]          3         0
-##  [9,]          3         0
-## [10,]          3         0</code></pre>
+##  [8,]          4         0
+##  [9,]          2         0
+## [10,]          0         0</code></pre>
 <p>When a manager can only make policy decisions once every five time steps, extinction occurs in 10 out of 10 simulated populations before year 20. If we wanted to summarise these results, we could plot how extinction risk changes with increasing <code>manage_freq</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ext_risk1 &lt;-<span class="st"> </span><span class="kw">sum</span>(gmse_reps1[,<span class="dv">2</span>] &lt;<span class="st"> </span><span class="dv">20</span>);
 ext_risk2 &lt;-<span class="st"> </span><span class="kw">sum</span>(gmse_reps2[,<span class="dv">2</span>] &lt;<span class="st"> </span><span class="dv">20</span>);
