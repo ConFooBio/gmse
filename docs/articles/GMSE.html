@@ -78,7 +78,17 @@
   </ul>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="../../notebook/gmse_notes.html">Lab notebook</a>
+</li>
+<li>
+  <a href="https://github.com/bradduthie/GMSE">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -336,10 +346,13 @@ Description of one time step of the generalised management strategy evaluation f
             <span class="dt">user_budget =</span> <span class="dv">1000</span>, <span class="dt">manager_budget =</span> <span class="dv">1000</span>, <span class="dt">res_consume =</span> <span class="dv">1</span>, 
             <span class="dt">scaring =</span> <span class="ot">TRUE</span>, <span class="dt">plotting =</span> <span class="ot">FALSE</span>);</code></pre></div>
 <pre><code>## [1] "Initialising simulations ... "
-## [1] "Generation  22 of  100"
+## [1] "Generation  16 of  100"
+## [1] "Generation  29 of  100"
+## [1] "Generation  36 of  100"
 ## [1] "Generation  44 of  100"
-## [1] "Generation  68 of  100"
-## [1] "Generation  90 of  100"</code></pre>
+## [1] "Generation  55 of  100"
+## [1] "Generation  74 of  100"
+## [1] "Generation  92 of  100"</code></pre>
 <p>Parameters in <code>gmse</code> not listed are set to default values. By plotting the output with <code>plot_gmse_results</code>, simulation results can be interpreted visually (manager and user decisions can also be interpreted using the <code>plot_gmse_effort</code> function, see <a href="SI3.pdf">SI3</a> and <a href="SI4.pdf">SI4</a> for an expanded example).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/plot_gmse_results.html">plot_gmse_results</a></span>(<span class="dt">res =</span> sim$resource, <span class="dt">obs =</span> sim$observation, <span class="dt">land =</span> sim$land, 
                   <span class="dt">agents =</span> sim$agents, <span class="dt">paras =</span> sim$paras, <span class="dt">ACTION =</span> sim$action, 
