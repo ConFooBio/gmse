@@ -51,7 +51,7 @@ library(rhandsontable)
 
  - **2018**
 
-     - **MAY** [14](#u-14-MAY-2018)
+     - **MAY** [16](#u-16-MAY-2018), [14](#u-14-MAY-2018)
      - **APR** [13](#u-13-APR-2018)
 
  - **2017**
@@ -97,6 +97,10 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-16-MAY-2018">Update: 16 MAY 2018</a>
+
+GMSE v0.4.0.3 is [now available on CRAN](https://cran.r-project.org/package=GMSE). A [new website for GMSE](https://bradduthie.github.io/gmse/) has also been launched. This website was built with the R package [pkgdown](https://github.com/r-lib/pkgdown), recently released [on CRAN](https://cran.r-project.org/package=pkgdown). The site contains all of the vignettes and documentation for GMSE, and also includes a link to this lab notebook. A submission of the accompanying manuscript will soon be uploaded on [bioRxiv](https://www.biorxiv.org/).
 
 > <a name="u-14-MAY-2018">Update: 14 MAY 2018</a>
 
