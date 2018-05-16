@@ -104,7 +104,7 @@ gmse_apply(res_mod = alt_res, obs_mod = observation,
            man_mod = alt_man, use_mod = alt_usr, X = 1000);
 ```
 
-It is possible to, e.g., specify a simple resource and observation model, but then take advantage of the genetic algorithm to predict policy decisions and user actions (see [SI5](SI5.pdf) for a fisheries example). This can be done by using the default GMSE manager and user functions (written below explicitly, though this is not necessary).
+It is possible to, e.g., specify a simple resource and observation model, but then take advantage of the genetic algorithm to predict policy decisions and user actions (see [SI5](SI5.html) for a fisheries example). This can be done by using the default GMSE manager and user functions (written below explicitly, though this is not necessary).
 
 ```{r, eval = TRUE}
 gmse_apply(res_mod = alt_res, obs_mod = alt_obs, 
