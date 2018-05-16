@@ -188,8 +188,8 @@ We have focused on the data structures [`AGENTS`](#agents), [`resource_array`](#
 
 Many data structures contain elements that are unused in GMSE v0.4.0.3, and in all cases this is designed for ease of ongoing development of new GMSE features. Requests for new features can be made on GitHub using the [GMSE Wiki](https://github.com/bradduthie/gmse/wiki) or the [GMSE Issues](https://github.com/bradduthie/gmse/issues) page.
 
-
-
+References
+================================================================================
 
 
 

@@ -112,7 +112,7 @@ The above output from `sim_sum_1` shows the data frame that holds the informatio
 
 Next, we show how to adjust the landscape to manually set land ownership in `gmse_apply`.
 
-1. <a name="land">Custom placement of user land</a>
+Custom placement of user land {#land}
 ================================================================================
 
 By default, all farmers in GMSE are allocated the same number of landscape cells, which are simply placed in order of the farmer's ID. Public land is produced by placing landscape cells that are technically owned by the manager, and therefore have landscape cell values of 1. The image below shows this landscape for the eight farmers from `sim_old`.
@@ -151,7 +151,7 @@ image(x = sim_old$LAND[,,3], col = topo.colors(9), xaxt = "n", yaxt = "n");
 
 The above image shows the modified landscape stored in `sim_old`, which can now be incorporated into simulations using `gmse_apply`. We can think of all the plots on the left side of the landscape as farms of various sizes, while the blue area of the landscape on the right is public land.
 
-2. <a name="budgets">Parameterisation of individual user budgets</a>
+Parameterisation of individual user budgets {#budgets}
 ================================================================================
 
 Perhaps we want to assume that farmers have different budgets, which are correlated in some way to the number of landscape cells that they own. Custom user budgets can be set by manipulating `sim_old$AGENTS`, the last column of which (column 17) holds the budget for each user. Agent IDs (as stored on the landscape above) correspond to rows of `sim_old$AGENTS`, so individual budgets can be directly input as desired. We can do this manually (e.g., `sim_old$AGENTS[2, 17] <- 4000`), or, alternatively, if farmer budget positively correlates to landscape owned, we can use a loop to input values as below.
@@ -174,7 +174,7 @@ pander(budget_table);
 
 As with `sim_old$LAND` values, changes to `sim_old$AGENTS` will be retained in simulations looped through `gmse_apply`.
 
-3. <a name="movement">Density-dependent movement of resources</a>
+Density-dependent movement of resources {#movement}
 ================================================================================
 
 Lastly, we consider a more nuanced change to simulations, in which the rules for movement of resources are modified to account for density-dependence. Assume that geese tend to avoid aggregating, such that if a goose is located on the same cell as too many other geese, then it will move at the start of a time step. Programming this movement rule can be accomplished by creating a new function to apply to the resource data array `sim_old$resource_array`. Below, a custom function is defined that causes a goose to move up to 5 cells in any direction if it finds itself on a cell with more than 10 other geese. As with default GMSE simulations, movement is based on a torus landscape (where no landscape edge exists, so that if resources move off of one side of the landscape they appear on the opposite side).
@@ -268,7 +268,8 @@ Conclusions
 
 In this example, we showed how the built-in resource, observation, manager, and user sub-models can be customised by manipulating the data within the data structures that they use. The goal was to show how software users can work with these existing sub-models and data structures to customise GMSE simulations. Readers seeking even greater flexibility (e.g., replacing an entire built-in sub-model with a custom sub-model) should refer to [SI2](SI2.pdf) that introduces `gmse_apply` more generally. Future versions of GMSE are likely to expand on the built-in options available for simulation; requests for such expansions, or contributions, can be submitted to [GitHub](https://github.com/bradduthie/gmse/issues).
 
-
+References
+================================================================================
 
 
 

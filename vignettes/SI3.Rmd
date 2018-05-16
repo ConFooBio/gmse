@@ -337,4 +337,5 @@ Conclusions and future development
 
 The GMSE function `gmse` and its graphical user interface counterpart `gmse_gui` offer wide a suite of options for parameterising simulations to fit empirical case studies of conservation interest using default GMSE natural resource, observation, manager, and user sub-models. Future development of these sub-models might usefully incorporate additional details relevant to specific case studies, such population structure, multiple natural resource and user types, or different manager policy and user action possibilities. [Requests for new features](https://github.com/bradduthie/gmse/issues) and contributions to GMSE can be made through [GitHub](https://github.com/bradduthie/gmse). Additionally, where entirely different types of sub-models are required, the `gmse_apply` function [can be used](https://bradduthie.github.io/gmse_SI2.pdf) to more flexibly simulate social-ecological systems. In [SI4](SI4.pdf), we show an example of this using the same Taiga Bean Geese case study that we did here.
 
-\clearpage
+References
+================================================================================
