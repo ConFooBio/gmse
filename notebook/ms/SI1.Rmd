@@ -140,7 +140,7 @@ A single iteration of the genetic algorithm begins with a uniform crossover [@Ha
 Mutation {#mutation}
 --------------------------------------------------------------------------------
 
-Following crossover, `POPULATION` array elements affecting agent actions (columns 8-13) mutate at a fixed probability of `ga_mutation`. For each array element, a random uniform number $u \in [0, 1]$ is sampled. If $u$ is greater than `1 - (0.5 * ga_mutation)`, then the value of the array element is increased by 1. If $u$ is less than `0.5 * ga_mutation`, then the value of the array element is decreased by 1; when this decrease results in a negative value, the mutated value is multiplied by -1 to equal 1.
+Following crossover, `POPULATION` array elements affecting agent actions (columns 8-13) mutate at a fixed probability of `ga_mutation`. For each array element, a random uniform number $u \in [0, 1]$ is sampled. If $u$ is greater than `1 - (0.5 * ga_mutation)`, then the value of the array element is increased by 1. If $u$ is less than `0.5 * ga_mutation`, then the value of the array element is decreased by 1; when this decrease results in a negative value, the mutated value is multiplied by -1 to be positive.
 
 Cost constraint {#constraint}
 --------------------------------------------------------------------------------

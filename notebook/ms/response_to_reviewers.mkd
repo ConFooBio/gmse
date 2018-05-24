@@ -1,3 +1,16 @@
+Dear Prof. Jana Vamosi,
+
+Thank you very much for your decision on our manuscript (MEE-17-11-992), ``GMSE: an R package for generalised management strategy evaluation'', which we hope you will further consider for publication as an Application in Methods and Ecology and Evolution. We are grateful for the positive feedback provided by the Associate Editor and two anonymous reviewers, and we have revised our software and our manuscript carefully to address all referee concerns. In particular, the new version of GMSE v0.4.0.3, available on CRAN and GitHub, now includes a series of seven detailed vignettes, as recommended by the AE. 
+
+Managing populations effectively remains a major challenge in conservation biology, and our GMSE R package provides a flexible tool for simulating social-ecological dynamics. GMSE software has been developed as part of a broader ERC-funded ConFooBio project for understanding and resolving conflicts between food security and biodiversity under uncertainty, and the GMSE R package is uniquely able to simulate scenarios of conservation conflict by modelling the goal-driven behaviour of stakeholders through the use of genetic algorithms. In addition, GMSE is highly flexible, and capable of integrating with widely-used existing software (e.g., The Fisheries Library in R). In our revised manuscript and supporting vignettes, we now highlight the capabilities of GMSE more comprehensively, and where appropriate we have introduced new functions to the GMSE software to address referee concerns.
+
+Our revision conforms to MEE word limitations, and our R code meets the new Policy on Publishing code. All persons entitled to authorship have been so named, and all authors have seen and agree with the contents of the manuscript. We certify that the submission is original work and is not under review at any other journal or book. 
+
+Sincerely,
+
+Manuscript Author
+
+
 Response to Methods in Ecology and Evolution reviewers
 ================================================================================
 
