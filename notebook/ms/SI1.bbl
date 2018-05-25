@@ -1,5 +1,17 @@
 \begin{thebibliography}{}
 
+\bibitem[Adami et~al., 2016]{Adami2016}
+Adami, C., Schossau, J., and Hintze, A. (2016).
+\newblock {Evolutionary game theory using agent-based methods}.
+\newblock {\em Physics of Life Reviews}, 19:1--26.
+
+\bibitem[Balmann and Happe, 2000]{Balmann2000}
+Balmann, A. and Happe, K. (2000).
+\newblock {Applying parallel genetic algorithms to economic problems: The case
+  of agricultural land markets}.
+\newblock In {\em IIFET Conference ``Microbehavior and Macroresults''.
+  Proceedings.}, Corvallis, Oregon, USA.
+
 \bibitem[Bunnefeld et~al., 2011]{Bunnefeld2011}
 Bunnefeld, N., Hoshino, E., and Milner-Gulland, E.~J. (2011).
 \newblock {Management strategy evaluation: A powerful tool for conservation?}
@@ -11,10 +23,35 @@ Hamblin, S. (2013).
   evolution}.
 \newblock {\em Methods in Ecology and Evolution}, 4(2):184--194.
 
-\bibitem[Luke, 2013]{Luke2013}
-Luke, S. (2013).
-\newblock {\em {Essentials of Metaheuristics}}.
-\newblock Lulu, second edition, available at
-  {https://cs.gmu.edu/{\textasciitilde}sean/book/metaheuristics/Essentials.pdf}.
+\bibitem[Kark et~al., 2015]{Kark2015}
+Kark, S., Tulloch, A., Gordon, A., Mazor, T., Bunnefeld, N., and Levin, N.
+  (2015).
+\newblock {Cross-boundary collaboration: Key to the conservation puzzle}.
+\newblock {\em Current Opinion in Environmental Sustainability}, 12:12--24.
+
+\bibitem[Lee, 2012]{Lee2012}
+Lee, C.~S. (2012).
+\newblock {Multi-objective game-theory models for conflict analysis in
+  reservoir watershed management}.
+\newblock {\em Chemosphere}, 87(6):608--613.
+
+\bibitem[Redpath et~al., 2018]{Redpath2018}
+Redpath, S.~M., Keane, A., Andr{\'{e}}n, H., Baynham-Herd, Z., Bunnefeld, N.,
+  Duthie, A.~B., Frank, J., Garcia, C.~A., M{\aa}nsson, J., Nilsson, L.,
+  Pollard, C. R.~J., Rakotonarivo, O.~S., Salk, C.~F., and Travers, H. (2018).
+\newblock {Games as Tools to Address Conservation Conflicts}.
+\newblock {\em Trends in Ecology and Evolution}, 33(6):415--426.
+
+\bibitem[Tilman et~al., 2016]{Tilman2016}
+Tilman, A.~R., Watson, J.~R., and Levin, S. (2016).
+\newblock {Maintaining cooperation in social-ecological systems:}.
+\newblock {\em Theoretical Ecology}.
+
+\bibitem[Tu et~al., 2000]{Tu2000}
+Tu, M.~T., Wolff, E., and Lamersdorf, W. (2000).
+\newblock {Genetic algorithms for automated negotiations: a FSM-based
+  application approach}.
+\newblock {\em Proceedings 11th International Workshop on Database and Expert
+  Systems Applications}, pages 1029--1033.
 
 \end{thebibliography}
