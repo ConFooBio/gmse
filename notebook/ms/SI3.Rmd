@@ -252,7 +252,53 @@ We parameterise our model using demographic information from the Taiga Bean Goos
 Using demographic parameters in simulations
 --------------------------------------------------------------------------------
 
-Our goal is not to provide a detailed case study of the Taiga Bean Geese, but rather to demonstrate how such a case study would be possible in GMSE. For simplicity, here we assess conflict using only the `gmse` function to show how parameter values can be set to provide useful results. Novice R users may prefer to run all of the simulations below using the browser-based GMSE GUI by calling `gmse_gui()` from the R command line. Alternatively, experienced R users may prefer to simulate by [looping time steps](SI2.pdf#page=5) through `gmse_apply`, which allows more flexibility for incorporating custom sub-models and dynamically adjusting parameter values. Where available, we use estimated demographic parameter values from @Johnson2018 and @AEWA2016. Where GMSE parameter values are not available, we use reasonable values or GMSE defaults. To make model inferences for real case studies, we strongly recommend [replicating simulations](SI6.pdf) and simulating across a range of parameter values when empirical estimates are unavailable, as social-ecological dynamics might be sensitive to these unknown values.
+Our goal is not to provide a detailed case study of the Taiga Bean Geese, but rather to demonstrate how such a case study would be possible in GMSE. For simplicity, here we assess conflict using only the `gmse` function to show how parameter values can be set to provide useful results. Novice R users may prefer to run all of the simulations below using the browser-based GMSE GUI by calling `gmse_gui()` from the R command line. Alternatively, experienced R users may prefer to simulate by [looping time steps](SI2.pdf#page=5) through `gmse_apply`, which allows more flexibility for incorporating custom sub-models and dynamically adjusting parameter values. 
+
+Simulations using the default GMSE sub-models described above are run using the `gmse` function, which offers a range of options for setting parameter values (see Table 1 for some select examples). Output of `gmse` is an exhaustive list that includes all resources and observations, all stakeholder decisions and actions, and all landscape properties in each time step of the simulation. Results are most easily interpreted visually, so a summary of simulation dynamics is plotted by default (the plot can also be called using the `plot_gmse_results` function, and summaries of results can be obtained using `gmse_summary` and `gmse_table`). An example below shows how simulations are set and interpreted.
+
+\small
+
+|  Argument       | Default | Description                                                                                      |
+|-----------------|---------|--------------------------------------------------------------------------------------------------|
+|  time_max       |  100    | Maximum time steps in simulation                                                                 |
+|  land_dim_1     |  100    | Width of the landscape (horizontal cells)                                                        |
+|  land_dim_2     |  100    | Height of the landscape (vertical cells)                                                         |
+|  res_movement   |  20     | Distance (cells) a resource can move in any direction (for movement rules, see res_move_type)    |
+|  remove_pr      |  0      | Density-independent probability of resource mortality during a time step                         |
+|  lambda         |  0.3    | Poisson rate parameter for resource offspring number produced during a time step                 |
+|  agent_view     |  10     | How far managers can see on the landscape for resource counting when observe_type = 0            |
+|  res_birth_K    |  100000 | Carrying capacity applied to the number of resources added during a time step                    |
+|  res_death_K    |  2000   | Carrying capacity applied to the number of resources removed during a time step                  |
+|  res_move_type  |  1      | Type of resource movement (default is up to res_movement cells in any direction)                 |
+|  observe_type   |  0      | Type of resource observation (default is density-based; i.e, counting a subset on the landscape) |
+|  fixed_mark     |  50     | For mark-recapture observation (observe_type = 1), number of marked resources                    |
+|  fixed_recapt   |  150    | For mark-recapture observation (observe_type = 1), number of recaptured resources                |
+|  times_observe  |  1      | For density-based observation (observe_type = 0), landscape subsets viewed during observation    |
+|  res_consume    |  0.5    | Pr. of a landscape cell's value reduced by the presence of a resource in a time step             |
+|  max_ages       |  5      | The maximum number of time steps a resource can persist before it is removed                     |
+|  minimum_cost   |  10     | The minimum cost of a user performing any action                                                 |
+|  user_budget    |  1000   | A user's budget per time step for performing any number of actions                               |
+|  manager_budget |  1000   | A manager's budget per time step for setting policy                                              |
+|  manage_target  |  1000   | The manager's target resource abundance                                                          |
+|  RESOURCE_ini   |  1000   | The initial abundance of resources                                                               |
+|  scaring        |  FALSE  | Resource scaring (moves a resource to a random landscape cell) is a policy option                |
+|  culling        |  TRUE   | Resource culling (removes a resource entirely) is a policy option                                |
+|  castration     |  FALSE  | Resource castration (sets a resource's lambda to zero) is a policy option                        |
+|  feeding        |  FALSE  | Resource feeding (increases a resource's lambda) is a policy option                              |
+|  help_offspring |  FALSE  | Resource helping (increases a resource's offspring number) is a policy option                    |
+|  tend_crops     |  FALSE  | Users can increase landscape cell values                                                         |
+|  tend_crop_yld  |  0.2    | Proportional increase per landscape cell from tend_crops action                                  |
+|  kill_crops     |  FALSE  | Users can decrease landscape cell values to zero                                                 |
+|  stakeholders   |  4      | Number of users in the simulation                                                                |
+|  land_ownership |  FALSE  | Users own land and increase utility indirectly from landscape instead of resource use            |
+|  manage_freq    |  1      | Frequency (in time steps) with which managers revise and enact policy                            |
+|  public_land    |  0      | Proportion of land that is public (un-owned by users) if land_ownership = TRUE                   |
+
+\normalsize
+
+Table 1: Select parameter values for initialising generalised management strategy evaluation simulations
+
+Where available, we use estimated demographic parameter values from @Johnson2018 and @AEWA2016. Where GMSE parameter values are not available, we use reasonable values or GMSE defaults. To make model inferences for real case studies, we strongly recommend [replicating simulations](SI6.pdf) and simulating across a range of parameter values when empirical estimates are unavailable, as social-ecological dynamics might be sensitive to these unknown values.
 
 @Johnson2018 recently estimated key demographic parameters of the Taiga Bean Geese from the Central Management Unit, which includes geese that breed in "Northern most Sweden, Northern Norway, Northern and Central Finland, and adjacent North-western parts of Russia, wintering mostly in Southern Sweden and South-east Denmark" [@AEWA2016]. They estimated goose survival under ideal conditions to be ca 0.878; this can be interpreted in our model by setting mortality to `remove_pr = 1 - 0.878`. Similarly, @Johnson2018 estimated mean reproductive rate and carrying capacity to be 0.55 and 93870, respectively, so we set `lambda = 0.275` (for simplicity, we simply use half the mean reproductive rate; GMSE does not currently distinguish female and male individuals) and `res_death_K = 93870`. The global abundance of Taiga Bean Geese in 2009 was ca 63000 [@Fox2010], with ca 35000 in the Central Management Unit [@AEWA2016], which we can take as a starting abundance for our simulations (`RESOURCE_ini = 35000`). The International Single Species Action Plan has a target population size of ca 70000 in the Central Management Unit [@AEWA2016], which we can use as a management target (`manage_target = 70000`). We simulate social-ecological dynamics over 30 time steps, which could be interpreted as years.
 
