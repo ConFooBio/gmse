@@ -4,5 +4,3 @@ notebook*
 tests/testthat/test-make_gmse.R
 R/gmse_gui/app.R
 R/gmse_gui/rsconnect*
-_pkgdown.yml
-docs*
