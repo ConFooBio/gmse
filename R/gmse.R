@@ -271,7 +271,6 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     ldo <- land_ownership;
     pub <- public_land;
     gtk <- group_think;
-    mab <- manager_budget;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -377,8 +376,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                gtk,     # 101. Group think behaviour specified?
                fxr,     # 102. The number of recaptures in RMR estimation
                ldo,     # 103. Is there land ownership among stakeholders
-               pub,     # 104. How much public land is there (proportion)
-               mab      # 105. Manager budget
+               pub      # 104. How much public land is there (proportion)
     );
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
