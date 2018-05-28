@@ -454,16 +454,18 @@ void sum_array_layers(double ***array, double **out, int get_mean,
  *     old_cost: The old cost of an action, as calculated in policy_to_counts
  *     new_cost: The new cost of an action, as calculated in policy_to_counts
  *     paras: Vector of global parameters
+ *     agent_array: The agent array
  * ========================================================================== */
-int new_act(double old_cost, double new_cost, double old_act, double *paras){
+int new_act(double old_cost, double new_cost, double old_act, double *paras,
+            double **agent_array){
     
     int total_acts;
     double users, acts_per_user, total_cost;
     double budget_for_act, mgr_budget, min_cost;
     
-    users        = paras[54] - 1; /* Minus one for the manager */
-    min_cost     = paras[96];     /* Minimum cost of an action */
-    mgr_budget   = paras[105];    /* Manager's total budget    */
+    users        = paras[54] - 1;      /* Minus one for the manager */
+    min_cost     = paras[96];          /* Minimum cost of an action */
+    mgr_budget   = agent_array[0][16]; /* Manager's total budget    */
     
     total_cost    = 0.0;
     if(old_cost < mgr_budget){
@@ -489,10 +491,12 @@ int new_act(double old_cost, double new_cost, double old_act, double *paras){
  *     action_row: The row where the action and old costs are located
  *     manager_row: The row where the new costs from the manager are located
  *     paras: Vector of global parameters
+ *     agent_array: The agent array
  * ========================================================================== */
 void policy_to_counts(double ***population, double **merged_acts, int agent,
                       double **merged_costs, double **act_change, 
-                      int action_row, int manager_row, double *paras){
+                      int action_row, int manager_row, double *paras,
+                      double **agent_array){
     
     int col, COLS;
     double old_cost, new_cost, old_act, new_action;
@@ -508,7 +512,7 @@ void policy_to_counts(double ***population, double **merged_acts, int agent,
         }
         
         old_act     = merged_acts[action_row][col];
-        new_action  = new_act(old_cost, new_cost, old_act, paras);
+        new_action  = new_act(old_cost, new_cost, old_act, paras, agent_array);
 
         act_change[action_row][col] = new_action;
     }
@@ -587,7 +591,8 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
                 manager_row++;
             }
             policy_to_counts(population, merged_acts, agent, merged_costs, 
-                             act_change, action_row, manager_row, paras);
+                             act_change, action_row, manager_row, paras,
+                             agent_array);
             foc_effect  = 0.0;
             foc_effect  += (paras[74] * paras[88] * act_change[action_row][7]);
             foc_effect  += (paras[75] * paras[89] * act_change[action_row][8]);
