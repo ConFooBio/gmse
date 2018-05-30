@@ -459,13 +459,22 @@ void sum_array_layers(double ***array, double **out, int get_mean,
 int new_act(double old_cost, double new_cost, double old_act, double *paras,
             double **agent_array){
     
-    int total_acts;
-    double users, acts_per_user, total_cost;
+    double users, acts_per_user, total_cost, total_acts;
     double budget_for_act, mgr_budget, min_cost;
     
     users        = paras[54] - 1;      /* Minus one for the manager */
     min_cost     = paras[96];          /* Minimum cost of an action */
     mgr_budget   = agent_array[0][16]; /* Manager's total budget    */
+    
+    /*
+     * FIXIT: 
+     * 
+     * Loop through each stakeholder in `agent_array`, and individually check
+     * to see how each should change their actions given their budget and their
+     * previous actions. Find the expected action of each stakeholder then add
+     * it to the previous action. Make sure it works with Jeremy's code.
+     * 
+     */
     
     total_cost    = 0.0;
     if(old_cost < mgr_budget){
@@ -475,9 +484,9 @@ int new_act(double old_cost, double new_cost, double old_act, double *paras,
     budget_for_act = (total_cost / users);  /* Cost devoted per user */
 
     /* Calculate how many actions to expect per user, then total actions */
-    acts_per_user  = budget_for_act / (new_cost + min_cost);
+    acts_per_user  = budget_for_act / new_cost;
     total_acts     = (double) users * acts_per_user;
-
+    
     return(total_acts);
 }
 
@@ -486,7 +495,7 @@ int new_act(double old_cost, double new_cost, double old_act, double *paras,
  *     population: The population array of agents in the genetic algorithm
  *     merged_acts: The action 2D array of summed elements across 3D ACTION
  *     agent: The agent (layer) in the population being simulated
- *     merged_costs: The mean cost paid for each element in the ACTION array
+ *     merged_costs: The total cost paid for each element in the ACTION array
  *     act_change: The array of predicted new actions given new costs
  *     action_row: The row where the action and old costs are located
  *     manager_row: The row where the new costs from the manager are located
