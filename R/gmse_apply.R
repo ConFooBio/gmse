@@ -80,7 +80,7 @@ gmse_apply <- function(res_mod  = resource,
 
     # ------ MANAGER MODEL -----------------------------------------------------
     man_args    <- prep_man(arg_list = arg_vals, man_mod = man_mod);
-    check_args(arg_list = man_args, the_fun = man_mod); 
+    check_args(arg_list = man_args, the_fun = man_mod);
     man_results <- do.call(what = man_mod, args = man_args);
     man_results <- check_name_results(output   = man_results, 
                                       vec_name = "manager_vector", 
@@ -88,7 +88,7 @@ gmse_apply <- function(res_mod  = resource,
     arg_vals    <- add_results(arg_list = arg_vals, output = man_results);
     arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = man_mod);
     arg_vals    <- translate_results(arg_list = arg_vals, output = man_results);
-    arg_vals    <- update_para_vec(arg_list   = arg_vals);
+    arg_vals    <- update_para_vec(arg_list   = arg_vals); 
     
     # ------ USER MODEL --------------------------------------------------------
     usr_args    <- prep_usr(arg_list = arg_vals, usr_mod = use_mod);
@@ -1884,15 +1884,15 @@ prep_man <- function(arg_list, man_mod){
         arg_pos         <- which(man_name[arg] == arg_name);
         man_args[[arg]] <- arg_list[[arg_pos]];
     }
-    names(man_args) <- man_name; 
+    names(man_args) <- man_name;
     return(man_args);
 }
 
 get_old_actions <- function(arg_list){
-    cols_action <- dim(arg_list$ACTION)[1];
+    cols_action <- dim(arg_list$ACTION)[2];
     user_places <- which(arg_list$AGENTS[,2] > 0);
     old_actions <- sum(arg_list$ACTION[,8:cols_action,user_places]);
-    if( old_actions == 0 & is.null(arg_list$basic_output) == FALSE ){
+    if( old_actions <= 0 & is.null(arg_list$basic_output) == FALSE ){
         tot_actions <- apply(X = arg_list$basic_output$user_results, MARGIN = 2, 
                              FUN = sum);
         act_vector  <- as.vector(tot_actions[2:6]);
