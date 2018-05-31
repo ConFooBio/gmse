@@ -446,7 +446,7 @@ void sum_array_layers(double ***array, double **out, int get_mean,
                         out[row][col] += array[row][col][layer];
                     }
                 }
-            }                
+            } 
         }
     }
 }
