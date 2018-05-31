@@ -152,7 +152,7 @@ void crossover(double ***population, double *paras, int agentID){
 void mutation(double ***population, double *paras, int agentID){
     
     int agent, row, col, start_col, col_check, pop_size, ROWS, COLS;
-    int col_start_other, col_start_self;
+    int col_start_other, col_start_self, mu_magnitude;
     double do_mutation, half_pr, pr;
 
     pop_size        = (int) paras[21];
@@ -174,10 +174,12 @@ void mutation(double ***population, double *paras, int agentID){
             for(col = start_col; col < COLS; col++){
                 do_mutation = runif(0,1);
                 if( do_mutation < half_pr){
-                    population[row][col][agent]--;
+                    mu_magnitude                 = get_rand_int(1, 4);
+                    population[row][col][agent] -= mu_magnitude;
                 }
                 if( do_mutation > (1 - half_pr) ){
-                    population[row][col][agent]++;
+                    mu_magnitude                 = get_rand_int(1, 4);
+                    population[row][col][agent] += mu_magnitude;
                 }
                 if( population[row][col][agent] < 0 ){
                     population[row][col][agent] *= -1;    
@@ -453,41 +455,16 @@ void sum_array_layers(double ***array, double **out, int get_mean,
  * This function updates an action based on the change in costs & paras
  *     old_cost: The old cost of an action, as calculated in policy_to_counts
  *     new_cost: The new cost of an action, as calculated in policy_to_counts
+ *     old_act: Old action count
  *     paras: Vector of global parameters
- *     agent_array: The agent array
  * ========================================================================== */
-int new_act(double old_cost, double new_cost, double old_act, double *paras,
-            double **agent_array){
+int new_action(double old_cost, double new_cost, double old_act){
     
-    double users, acts_per_user, total_cost, total_acts;
-    double budget_for_act, mgr_budget, min_cost;
+    double new_act;
+  
+    new_act = old_act * (old_cost / new_cost);
     
-    users        = paras[54] - 1;      /* Minus one for the manager */
-    min_cost     = paras[96];          /* Minimum cost of an action */
-    mgr_budget   = agent_array[0][16]; /* Manager's total budget    */
-    
-    /*
-     * FIXIT: 
-     * 
-     * Loop through each stakeholder in `agent_array`, and individually check
-     * to see how each should change their actions given their budget and their
-     * previous actions. Find the expected action of each stakeholder then add
-     * it to the previous action. Make sure it works with Jeremy's code.
-     * 
-     */
-    
-    total_cost    = 0.0;
-    if(old_cost < mgr_budget){
-        total_cost    = old_act * old_cost; /* Total cost devoted to action */
-    }
-
-    budget_for_act = (total_cost / users);  /* Cost devoted per user */
-
-    /* Calculate how many actions to expect per user, then total actions */
-    acts_per_user  = budget_for_act / new_cost;
-    total_acts     = (double) users * acts_per_user;
-    
-    return(total_acts);
+    return(new_act);
 }
 
 /* =============================================================================
@@ -504,26 +481,28 @@ int new_act(double old_cost, double new_cost, double old_act, double *paras,
  * ========================================================================== */
 void policy_to_counts(double ***population, double **merged_acts, int agent,
                       double **merged_costs, double **act_change, 
-                      int action_row, int manager_row, double *paras,
-                      double **agent_array){
+                      int action_row, int manager_row, double *paras){
     
     int col, COLS;
-    double old_cost, new_cost, old_act, new_action;
+    double old_cost, new_cost, old_act, new_act;
     
     COLS   = (int) paras[69];
     
     for(col = 7; col < COLS; col++){
         old_cost    = merged_costs[action_row][col];
-        new_cost    = population[manager_row][col][agent];
+        new_cost    = old_cost;
+        if(new_cost < merged_costs[0][0]){
+            new_cost    = population[manager_row][col][agent];
+        }
         if(new_cost <= 0){
             new_cost = 1;
             population[manager_row][col][agent] = new_cost;
         }
         
-        old_act     = merged_acts[action_row][col];
-        new_action  = new_act(old_cost, new_cost, old_act, paras, agent_array);
-
-        act_change[action_row][col] = new_action;
+        old_act  = merged_acts[action_row][col];
+        new_act  = new_action(old_cost, new_cost, old_act);
+        
+        act_change[action_row][col] = new_act;
     }
 }
 
@@ -575,7 +554,7 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
     }
     
     sum_array_layers(ACTION, merged_acts, 0, paras, agent_array, 0);
-    sum_array_layers(COST,  merged_costs, 1, paras, agent_array, 1);
+    sum_array_layers(COST,  merged_costs, 1, paras, agent_array, 0);
     
     for(i = 0; i < ROWS; i++){ /* Actions > 0 to respond to possible change */
         for(j = 7; j < COLS; j++){
@@ -600,8 +579,7 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
                 manager_row++;
             }
             policy_to_counts(population, merged_acts, agent, merged_costs, 
-                             act_change, action_row, manager_row, paras,
-                             agent_array);
+                             act_change, action_row, manager_row, paras);
             foc_effect  = 0.0;
             foc_effect  += (paras[74] * paras[88] * act_change[action_row][7]);
             foc_effect  += (paras[75] * paras[89] * act_change[action_row][8]);
@@ -616,6 +594,9 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
         change_dev = 0;
         for(i = 0; i < int_num; i++){
             change_dev += (count_change[i]-utils[i])*(count_change[i]-utils[i]);
+        }
+        if(change_dev > max_dev){
+            max_dev = change_dev;
         }
         dev_from_util[agent] = change_dev;
     }
