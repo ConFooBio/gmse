@@ -88,7 +88,7 @@ gmse_apply <- function(res_mod  = resource,
     arg_vals    <- add_results(arg_list = arg_vals, output = man_results);
     arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = man_mod);
     arg_vals    <- translate_results(arg_list = arg_vals, output = man_results);
-    arg_vals    <- update_para_vec(arg_list   = arg_vals); 
+    arg_vals    <- update_para_vec(arg_list   = arg_vals);
     
     # ------ USER MODEL --------------------------------------------------------
     usr_args    <- prep_usr(arg_list = arg_vals, usr_mod = use_mod);
@@ -101,7 +101,7 @@ gmse_apply <- function(res_mod  = resource,
     arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = use_mod);
     arg_vals    <- translate_results(arg_list = arg_vals, output = usr_results);
     arg_vals    <- update_para_vec(arg_list   = arg_vals);
-    
+
     res <- gmse_apply_out(arg_vals, get_res, res_mod, obs_mod, man_mod, use_mod,
                           res_results, obs_results, man_results, usr_results);
     
