@@ -3,7 +3,10 @@
 * win-builder (devel)
 
 ## R CMD check results
-There were no ERRORs, WARNINGs, or NOTEs. 
+There were no ERRORs, WARNINGs. One NOTE recognises the
+non-standard files/directories '_pkgdown.ml' and 'docs',
+which are used to produce the website associated with
+this R package on GitHub.
 
 ## dontrun wraps
 As with previous CRAN  submissions of
