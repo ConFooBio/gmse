@@ -1,0 +1,58 @@
+---
+title: "PhD Studentship: Using artificial intelligence to improve decision-making in conservation conflicts"
+author: ""
+date: ""
+output: html_document
+---
+
+********************************************************************************
+
+**We are looking for a PhD student to work with us on conservation conflict at the [University of Stirling](http://stir.ac.uk), in partnership with [Newcastle University](https://www.ncl.ac.uk/) and [Scottish Natural Heritage](https://www.nature.scot/).**
+
+********************************************************************************
+
+Project Description
+-----------------------------------------------
+
+The conservation of biodiversity is increasingly coming into conflict with stakeholders who rely on natural resources for their livelihoods and well-being [1]. Long-term conservation of populations therefore requires an understanding of conflict among stakeholders, and a strategy for managing conflict effectively. Conflict and cooperation between rational decision-makers can be studied formally using game theory. But conservation conflicts are highly complex, meaning that simple game-theoretic models are unlikely to understand and predict human decision-making [2].
+
+Meanwhile, artificial intelligence has shown rapid progress in recent years, particularly in the context of decision-making in complex games [3]. The use of flexible artificial intelligence provides a promising avenue for investigating situations of human conflict and finding solutions to major global problems. For conservation conflicts, the initial development of artificial intelligence in stakeholder decision-making is available in the recently published [GMSE R package](https://confoobio.github.io/gmse/) (Generalised Management Strategy Evaluation) [4], which uses genetic algorithms to model human decision-making and  its effect populations [5]. Nevertheless, modelling complex negotiations, interactions among stakeholders, and the biological impact on populations remains a challenge, and requires new conceptual ideas and modelling techniques.
+
+This project will develop and apply artificial intelligence to simulate the decision-making of stakeholders under situations of conservation conflict and the biological response of populations. Stakeholders and organisms will be modelled discretely using an agent-based modelling framework, allowing for potentially complex interactions within simulations [6].
+
+<br> 
+
+![](https://raw.githubusercontent.com/bradduthie/gmse/1727ea37f32f0f40df8ee6e8277d0d1723c88639/notebook/images/GMSE_logo_name.png)
+
+<br>
+
+The primary objective is to develop a flexible tool for the agent-based modelling of stakeholder decision-making and its  ecological consequences under conditions of conservation conflict, and to then apply this tool to one or more real-world case studies. Additional objectives might include the modelling and simulation of multi-species ecological systems under management, or the development of a graphical user interface for model users.
+
+The student should have a background or very strong interest in programming (ideally in R, C, or C++), and an interest in applying social-ecological modelling to conservation biology. They will benefit from a team of experts in modelling and game-theory, and will interact more broadly with a network of researchers involved in case studies of real-world conservation conflicts.
+
+Application Procedure
+-----------------------------------------------
+
+To apply, please email Dr. Duthie [alexander.duthie@stir.ac.uk](mailto:alexander.duthie@stir.ac.uk) (CC Dr. Mill [aileen.mill@ncl.ac.uk](mailto:aileen.mill@ncl.ac.uk)  and Prof. Bunnefeld [nils.bunnefeld@stir.ac.uk](nils.bunnefeld@stir.ac.uk)) with (1) a one page cover letter indicating why you are interested in this project, (2) your CV with contact information for two references, and (3) full transcripts of previous qualifications obtained. The deadline for application is 27 JUL 2018. 
+
+Funding Notes
+-----------------------------------------------
+
+Please note that this project is in competition with others for funding, and success will depend on the quality of applications received. 
+
+References
+-----------------------------------------------
+
+[1] Redpath, SM, et al. (2013). Understanding and managing conservation conflicts. Trends in Ecology & Evolution, 28(2), 100-109.
+
+[2] Redpath, SM, et al. (2018). Games as tools to address conservation conflicts. Trends in Ecology and Evolution, 33(6), 415-426.
+
+[3] Moravčík, M, et al. (2017). DeepStack: Expert-level artificial intelligence in heads-up no-limit poker. Science, 356(6337), 508-513.
+
+[4] Duthie, AB, et al. (2018). GMSE: an R package for generalised management strategy evaluation. Methods in Ecology and Evolution. In review. (pre-print here)
+
+[5] Hamblin, S (2013). On the practical usage of genetic algorithms in ecology and evolution. Methods in Ecology and Evolution, 4(2), 184-194.
+
+[6] McLane, AJ, et al. (2011). The role of agent-based models in wildlife ecology and management. Ecological Modelling, 222(8), 1544–1556.
+
+
