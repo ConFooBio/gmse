@@ -1,8 +1,11 @@
 ---
-title: "PhD Studentship: Using artificial intelligence to improve decision-making in conservation conflicts"
-author: ""
-date: ""
-output: html_document
+title: 'PhD Studentship: Using artificial intelligence to improve decision-making
+  in conservation conflicts'
+author: ''
+date: ''
+output:
+  html_document: default
+  word_document: default
 ---
 
 ********************************************************************************
@@ -49,7 +52,7 @@ References
 
 [3] Moravčík, M, et al. (2017). DeepStack: Expert-level artificial intelligence in heads-up no-limit poker. Science, 356(6337), 508-513.
 
-[4] Duthie, AB, et al. (2018). GMSE: an R package for generalised management strategy evaluation. Methods in Ecology and Evolution. In review. (pre-print here)
+[4] Duthie, AB, et al. (2018). GMSE: an R package for generalised management strategy evaluation. Methods in Ecology and Evolution. In review. (pre-print [here](https://www.biorxiv.org/content/early/2018/05/16/221432))
 
 [5] Hamblin, S (2013). On the practical usage of genetic algorithms in ecology and evolution. Methods in Ecology and Evolution, 4(2), 184-194.
 
