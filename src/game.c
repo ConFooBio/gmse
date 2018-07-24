@@ -174,11 +174,11 @@ void mutation(double ***population, double *paras, int agentID){
             for(col = start_col; col < COLS; col++){
                 do_mutation = runif(0,1);
                 if( do_mutation < half_pr){
-                    mu_magnitude                 = get_rand_int(1, 4);
+                    mu_magnitude                 = get_rand_int(1, 10);
                     population[row][col][agent] -= mu_magnitude;
                 }
                 if( do_mutation > (1 - half_pr) ){
-                    mu_magnitude                 = get_rand_int(1, 4);
+                    mu_magnitude                 = get_rand_int(1, 10);
                     population[row][col][agent] += mu_magnitude;
                 }
                 if( population[row][col][agent] < 0 ){
