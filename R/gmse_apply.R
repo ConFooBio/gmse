@@ -1874,6 +1874,7 @@ prep_man <- function(arg_list, man_mod){
     if( identical(man_mod, manager) == TRUE ){
         arg_list <- add_man_defaults(arg_list);
         arg_list <- get_old_actions(arg_list);
+        arg_list <- get_old_costs(arg_list);
     }
     man_args <- list();
     arg_name <- names(arg_list);
@@ -1886,6 +1887,19 @@ prep_man <- function(arg_list, man_mod){
     }
     names(man_args) <- man_name;
     return(man_args);
+}
+
+get_old_costs <- function(arg_list){
+    cols_cost   <- dim(arg_list$COST)[2];
+    lays_cost   <- dim(arg_list$COST)[3];
+    user_places <- which(arg_list$AGENTS[,2] > 0);
+    old_costs   <- sum(arg_list$COST[,8:cols_cost,user_places]);
+    if( is.null(arg_list$basic_output) == FALSE ){
+        cost_vector  <- as.vector(arg_list$basic_output$manager_results[1,2:6]);
+        cost_vector[is.na(cost_vector)] <- 100001;
+        arg_list$COST[1,8:12,2:lays_cost] <- cost_vector;
+    }
+    return(arg_list);
 }
 
 get_old_actions <- function(arg_list){

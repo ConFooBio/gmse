@@ -481,7 +481,7 @@ int new_action(double old_cost, double new_cost, double old_act){
  * ========================================================================== */
 void policy_to_counts(double ***population, double **merged_acts, int agent,
                       double **merged_costs, double **act_change, 
-                      int action_row, int manager_row, double *paras){
+                      int action_row, int manager_row, double *paras, int gen){
     
     int col, COLS;
     double old_cost, new_cost, old_act, new_act;
@@ -503,6 +503,11 @@ void policy_to_counts(double ***population, double **merged_acts, int agent,
         new_act  = new_action(old_cost, new_cost, old_act);
         
         act_change[action_row][col] = new_act;
+        /*
+        if(col == 8 && action_row == 0){
+            printf("%d\t%f\t%f\t%f\t%f\t%f\n", gen, old_cost, new_cost, old_act, new_act, act_change[0][8]);       
+        }
+         */
     }
 }
 
@@ -520,7 +525,7 @@ void policy_to_counts(double ***population, double **merged_acts, int agent,
  * ========================================================================== */
 void manager_fitness(double *fitnesses, double ***population, double **jaco,
                      double **agent_array, int **interact_table, int agentID, 
-                     double ***COST, double ***ACTION, double *paras){
+                     double ***COST, double ***ACTION, double *paras, int gen){
     
     int agent, i, j, m_lyr, action_row, manager_row, type1, type2, type3;
     int pop_size, int_num, ROWS, COLS;
@@ -559,12 +564,22 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
     for(i = 0; i < ROWS; i++){ /* Actions > 0 to respond to possible change */
         for(j = 7; j < COLS; j++){
             merged_acts[i][j] += paras[95];
+            /* printf("%f\t",merged_costs[i][j]);*/
         }
+        /* printf("\n"); */
     }
-    
+/*
+    printf("\n");
+  */      
     max_dev = 0;
     for(agent = 0; agent < pop_size; agent++){
         for(action_row = 0; action_row < int_num; action_row++){
+            
+            
+            
+            
+            
+            
             count_change[action_row] = 0; 
             utils[action_row]        = 0; 
             manager_row              = 0;
@@ -579,7 +594,7 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
                 manager_row++;
             }
             policy_to_counts(population, merged_acts, agent, merged_costs, 
-                             act_change, action_row, manager_row, paras);
+                             act_change, action_row, manager_row, paras, gen);
             foc_effect  = 0.0;
             foc_effect  += (paras[74] * paras[88] * act_change[action_row][7]);
             foc_effect  += (paras[75] * paras[89] * act_change[action_row][8]);
@@ -590,6 +605,17 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
                 count_change[i] += foc_effect * jaco[action_row][i];
             }
             utils[action_row] = ACTION[manager_row][4][m_lyr];
+        
+        
+        /*
+            if(action_row == 0){
+                printf("%d\t%d\t%f\t%f\t%f\t%f\t%f\t", gen, agent, utils[0],
+                       act_change[0][8], foc_effect,
+                       count_change[0], jaco[0][0]);
+            }
+          */  
+            
+            
         }
         change_dev = 0;
         for(i = 0; i < int_num; i++){
@@ -599,6 +625,8 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
             max_dev = change_dev;
         }
         dev_from_util[agent] = change_dev;
+        
+        
     }
     for(agent = 0; agent < pop_size; agent++){
         fitnesses[agent] = max_dev - dev_from_util[agent];
@@ -834,7 +862,8 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         if(managing == 1){
             apply_min_costs(POPULATION, paras, agentID);
             manager_fitness(fitnesses, POPULATION, JACOBIAN, AGENT, lookup, 
-                            agentID, COST, ACTION, paras); 
+                            agentID, COST, ACTION, paras, gen);
+            /*      printf("%d\t%f\t%f\n", gen, POPULATION[2][4][0], POPULATION[2][8][0]);   */
         }else{
             strategy_fitness(AGENT, POPULATION, paras, fitnesses, JACOBIAN, 
                              lookup); 
@@ -853,7 +882,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
 
         gen++;
     }
-    
+ 
     for(row = 0; row < xdim; row++){
         for(col = 0; col < ydim; col++){
             ACTION[row][col][agent] = POPULATION[row][col][most_fit];  
