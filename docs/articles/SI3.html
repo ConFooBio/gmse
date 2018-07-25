@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.0.3</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.0.6</span>
       </span>
     </div>
 
@@ -118,14 +118,198 @@
 <h1 class="hasAnchor">
 <a href="#an-example-of-management-conflict-using-gmse" class="anchor"></a>An example of management conflict using GMSE</h1>
 <p>Agents in GMSE (managers and users) are goal-oriented, and their behaviour is therefore driven to maximise a particular utility of interest such as a target density of resources. For managers and users, this could include animals or trees of conservation interest. For users, it could additionally include a landscape harvest size such as bag size or timber. This model feature allows GMSE to evaluate the actions of agents in the context of their individual objectives, and to therefore quantify the degree to which those objectives are or are not achieved. When the actions of one party clashes with the objectives of another party, the objectives of one might be expressed at the expense of the other, causing conservation conflict <span class="citation">(S. M. Redpath et al. <a href="#ref-Redpath2013">2013</a>)</span>. Currently, there is no standard way to measure conservation conflict in a social-ecological system where both the natural resource (e.g., animals, plants, or non-biological resources) and the people (e.g., stakeholders, managers, etc.) are modelled in a single system, and previous modelling approaches have not meaningfully separated agent objectives from agent actions. We suggest that a starting point to developing a useful metric of conservation conflict is to quantify the deviation of an individual’s actions from their objectives (i.e., of actual actions from desired actions), the former of which is restricted by the actions of other individuals. Here we show how GMSE can be used to evaluate the amount of conflict in a simulated social-ecological system under different management options.</p>
-<p>To demonstrate how GMSE can be used to understand conflict in social-ecological systems, we build upon the <a href="GMSE.html">example of resource management</a> in the main text. We consider a protected population of waterfowl that exploits and damages agricultural land and is therefore a source of conservation conflict between those that seek the conservation of waterfowl and those that are concerned with the loss of agriculture <span class="citation">(e.g., Fox and Madsen <a href="#ref-Fox2017a">2017</a>; T. H. Mason et al. <a href="#ref-Mason2017">2017</a>; A. I. T. Tulloch, Nicol, and Bunnefeld <a href="#ref-Tulloch2017">2017</a>; Cusack et al. <a href="#ref-Cusack2018">2018</a>)</span>. As in the main text example, the objective of the manager is to keep waterfowl at a target abundance that minimises extinction risks, while the objective of farmers is to maximise agricultural production on their landscape. Here we consider a more complex simulation, with a level of detail that more accurately reflects a scenario that might occur in a real social-ecological system where the manager sets policies that incentivise the user to act in a way that ensures the persistence of the resource. The policies are backed up by a manager budget that can be allocated to set costs of actions and thus incentivise users to perform the desired actions. The user also has a budget to carry out actions, and the cost of the user actions is affected by the manager policies and budget. Our objective is not to model the dynamics of a specific system, but to show how GMSE could be parameterised using demographic estimates from empirical studies. We therefore consider an example population in which such estimates are well-reported and readily available.</p>
+<p>To demonstrate how GMSE can be used to understand conflict in social-ecological systems, we build upon the <a href="https://www.biorxiv.org/content/biorxiv/early/2017/11/17/221432.full.pdf#page=5">example of resource management</a> in the main text. We consider a protected population of waterfowl that exploits and damages agricultural land and is therefore a source of conservation conflict between those that seek the conservation of waterfowl and those that are concerned with the loss of agriculture <span class="citation">(e.g., Fox and Madsen <a href="#ref-Fox2017a">2017</a>; T. H. Mason et al. <a href="#ref-Mason2017">2017</a>; A. I. T. Tulloch, Nicol, and Bunnefeld <a href="#ref-Tulloch2017">2017</a>; Cusack et al. <a href="#ref-Cusack2018">2018</a>)</span>. As in the main text example, the objective of the manager is to keep waterfowl at a target abundance that minimises extinction risks, while the objective of farmers is to maximise agricultural production on their landscape. Here we consider a more complex simulation, with a level of detail that more accurately reflects a scenario that might occur in a real social-ecological system where the manager sets policies that incentivise the user to act in a way that ensures the persistence of the resource. The policies are backed up by a manager budget that can be allocated to set costs of actions and thus incentivise users to perform the desired actions. The user also has a budget to carry out actions, and the cost of the user actions is affected by the manager policies and budget. Our objective is not to model the dynamics of a specific system, but to show how GMSE could be parameterised using demographic estimates from empirical studies. We therefore consider an example population in which such estimates are well-reported and readily available.</p>
 <p>We parameterise our model using demographic information from the Taiga Bean Goose (<em>Anser fabalis fabalis</em>), a managed population that is hunted for recreation in Fennoscandinavia <span class="citation">(Johnson et al. <a href="#ref-Johnson2018">2018</a>)</span>. Taiga Bean Geese can cause agricultural damage <span class="citation">(Johnson et al. <a href="#ref-Johnson2018">2018</a>)</span>, which could potentially lead to conflict between farming and management or conservation objectives.</p>
 <div id="using-demographic-parameters-in-simulations" class="section level2">
 <h2 class="hasAnchor">
 <a href="#using-demographic-parameters-in-simulations" class="anchor"></a>Using demographic parameters in simulations</h2>
-<p>Our goal is not to provide a detailed case study of the Taiga Bean Geese, but rather to demonstrate how such a case study would be possible in GMSE. For simplicity, here we assess conflict using only the <code>gmse</code> function to show how parameter values can be set to provide useful results. Novice R users may prefer to run all of the simulations below using the browser-based GMSE GUI by calling <code><a href="../reference/gmse_gui.html">gmse_gui()</a></code> from the R command line. Alternatively, experienced R users may prefer to simulate by <a href="SI2.html">looping time steps</a> through <code>gmse_apply</code>, which allows more flexibility for incorporating custom sub-models and dynamically adjusting parameter values. Where available, we use estimated demographic parameter values from <span class="citation">Johnson et al. (<a href="#ref-Johnson2018">2018</a>)</span> and <span class="citation">AEWA (<a href="#ref-AEWA2016">2016</a>)</span>. Where GMSE parameter values are not available, we use reasonable values or GMSE defaults. To make model inferences for real case studies, we strongly recommend <a href="SI6.html">replicating simulations</a> and simulating across a range of parameter values when empirical estimates are unavailable, as social-ecological dynamics might be sensitive to these unknown values.</p>
+<p>Our goal is not to provide a detailed case study of the Taiga Bean Geese, but rather to demonstrate how such a case study would be possible in GMSE. For simplicity, here we assess conflict using only the <code>gmse</code> function to show how parameter values can be set to provide useful results. Novice R users may prefer to run all of the simulations below using the browser-based GMSE GUI by calling <code><a href="../reference/gmse_gui.html">gmse_gui()</a></code> from the R command line. Alternatively, experienced R users may prefer to simulate by <a href="SI2.pdf#page=5">looping time steps</a> through <code>gmse_apply</code>, which allows more flexibility for incorporating custom sub-models and dynamically adjusting parameter values.</p>
+<p>Simulations using the default GMSE sub-models described above are run using the <code>gmse</code> function, which offers a range of options for setting parameter values (see Table 1 for some select examples). Output of <code>gmse</code> is an exhaustive list that includes all resources and observations, all stakeholder decisions and actions, and all landscape properties in each time step of the simulation. Results are most easily interpreted visually, so a summary of simulation dynamics is plotted by default (the plot can also be called using the <code>plot_gmse_results</code> function, and summaries of results can be obtained using <code>gmse_summary</code> and <code>gmse_table</code>). An example below shows how simulations are set and interpreted.</p>
+<p></p>
+<table class="table">
+<colgroup>
+<col width="14%">
+<col width="7%">
+<col width="77%">
+</colgroup>
+<thead><tr class="header">
+<th>Argument</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>time_max</td>
+<td>100</td>
+<td>Maximum time steps in simulation</td>
+</tr>
+<tr class="even">
+<td>land_dim_1</td>
+<td>100</td>
+<td>Width of the landscape (horizontal cells)</td>
+</tr>
+<tr class="odd">
+<td>land_dim_2</td>
+<td>100</td>
+<td>Height of the landscape (vertical cells)</td>
+</tr>
+<tr class="even">
+<td>res_movement</td>
+<td>20</td>
+<td>Distance (cells) a resource can move in any direction (for movement rules, see res_move_type)</td>
+</tr>
+<tr class="odd">
+<td>remove_pr</td>
+<td>0</td>
+<td>Density-independent probability of resource mortality during a time step</td>
+</tr>
+<tr class="even">
+<td>lambda</td>
+<td>0.3</td>
+<td>Poisson rate parameter for resource offspring number produced during a time step</td>
+</tr>
+<tr class="odd">
+<td>agent_view</td>
+<td>10</td>
+<td>How far managers can see on the landscape for resource counting when observe_type = 0</td>
+</tr>
+<tr class="even">
+<td>res_birth_K</td>
+<td>100000</td>
+<td>Carrying capacity applied to the number of resources added during a time step</td>
+</tr>
+<tr class="odd">
+<td>res_death_K</td>
+<td>2000</td>
+<td>Carrying capacity applied to the number of resources removed during a time step</td>
+</tr>
+<tr class="even">
+<td>res_move_type</td>
+<td>1</td>
+<td>Type of resource movement (default is up to res_movement cells in any direction)</td>
+</tr>
+<tr class="odd">
+<td>observe_type</td>
+<td>0</td>
+<td>Type of resource observation (default is density-based; i.e, counting a subset on the landscape)</td>
+</tr>
+<tr class="even">
+<td>fixed_mark</td>
+<td>50</td>
+<td>For mark-recapture observation (observe_type = 1), number of marked resources</td>
+</tr>
+<tr class="odd">
+<td>fixed_recapt</td>
+<td>150</td>
+<td>For mark-recapture observation (observe_type = 1), number of recaptured resources</td>
+</tr>
+<tr class="even">
+<td>times_observe</td>
+<td>1</td>
+<td>For density-based observation (observe_type = 0), landscape subsets viewed during observation</td>
+</tr>
+<tr class="odd">
+<td>res_consume</td>
+<td>0.5</td>
+<td>Pr. of a landscape cell’s value reduced by the presence of a resource in a time step</td>
+</tr>
+<tr class="even">
+<td>max_ages</td>
+<td>5</td>
+<td>The maximum number of time steps a resource can persist before it is removed</td>
+</tr>
+<tr class="odd">
+<td>minimum_cost</td>
+<td>10</td>
+<td>The minimum cost of a user performing any action</td>
+</tr>
+<tr class="even">
+<td>user_budget</td>
+<td>1000</td>
+<td>A user’s budget per time step for performing any number of actions</td>
+</tr>
+<tr class="odd">
+<td>manager_budget</td>
+<td>1000</td>
+<td>A manager’s budget per time step for setting policy</td>
+</tr>
+<tr class="even">
+<td>manage_target</td>
+<td>1000</td>
+<td>The manager’s target resource abundance</td>
+</tr>
+<tr class="odd">
+<td>RESOURCE_ini</td>
+<td>1000</td>
+<td>The initial abundance of resources</td>
+</tr>
+<tr class="even">
+<td>scaring</td>
+<td>FALSE</td>
+<td>Resource scaring (moves a resource to a random landscape cell) is a policy option</td>
+</tr>
+<tr class="odd">
+<td>culling</td>
+<td>TRUE</td>
+<td>Resource culling (removes a resource entirely) is a policy option</td>
+</tr>
+<tr class="even">
+<td>castration</td>
+<td>FALSE</td>
+<td>Resource castration (sets a resource’s lambda to zero) is a policy option</td>
+</tr>
+<tr class="odd">
+<td>feeding</td>
+<td>FALSE</td>
+<td>Resource feeding (increases a resource’s lambda) is a policy option</td>
+</tr>
+<tr class="even">
+<td>help_offspring</td>
+<td>FALSE</td>
+<td>Resource helping (increases a resource’s offspring number) is a policy option</td>
+</tr>
+<tr class="odd">
+<td>tend_crops</td>
+<td>FALSE</td>
+<td>Users can increase landscape cell values</td>
+</tr>
+<tr class="even">
+<td>tend_crop_yld</td>
+<td>0.2</td>
+<td>Proportional increase per landscape cell from tend_crops action</td>
+</tr>
+<tr class="odd">
+<td>kill_crops</td>
+<td>FALSE</td>
+<td>Users can decrease landscape cell values to zero</td>
+</tr>
+<tr class="even">
+<td>stakeholders</td>
+<td>4</td>
+<td>Number of users in the simulation</td>
+</tr>
+<tr class="odd">
+<td>land_ownership</td>
+<td>FALSE</td>
+<td>Users own land and increase utility indirectly from landscape instead of resource use</td>
+</tr>
+<tr class="even">
+<td>manage_freq</td>
+<td>1</td>
+<td>Frequency (in time steps) with which managers revise and enact policy</td>
+</tr>
+<tr class="odd">
+<td>public_land</td>
+<td>0</td>
+<td>Proportion of land that is public (un-owned by users) if land_ownership = TRUE</td>
+</tr>
+</tbody>
+</table>
+<p></p>
+<p>Table 1: Select parameter values for initialising generalised management strategy evaluation simulations</p>
+<p>Where available, we use estimated demographic parameter values from <span class="citation">Johnson et al. (<a href="#ref-Johnson2018">2018</a>)</span> and <span class="citation">AEWA (<a href="#ref-AEWA2016">2016</a>)</span>. Where GMSE parameter values are not available, we use reasonable values or GMSE defaults. To make model inferences for real case studies, we strongly recommend <a href="SI6.pdf">replicating simulations</a> and simulating across a range of parameter values when empirical estimates are unavailable, as social-ecological dynamics might be sensitive to these unknown values.</p>
 <p><span class="citation">Johnson et al. (<a href="#ref-Johnson2018">2018</a>)</span> recently estimated key demographic parameters of the Taiga Bean Geese from the Central Management Unit, which includes geese that breed in “Northern most Sweden, Northern Norway, Northern and Central Finland, and adjacent North-western parts of Russia, wintering mostly in Southern Sweden and South-east Denmark” <span class="citation">(AEWA <a href="#ref-AEWA2016">2016</a>)</span>. They estimated goose survival under ideal conditions to be ca 0.878; this can be interpreted in our model by setting mortality to <code>remove_pr = 1 - 0.878</code>. Similarly, <span class="citation">Johnson et al. (<a href="#ref-Johnson2018">2018</a>)</span> estimated mean reproductive rate and carrying capacity to be 0.55 and 93870, respectively, so we set <code>lambda = 0.275</code> (for simplicity, we simply use half the mean reproductive rate; GMSE does not currently distinguish female and male individuals) and <code>res_death_K = 93870</code>. The global abundance of Taiga Bean Geese in 2009 was ca 63000 <span class="citation">(Fox et al. <a href="#ref-Fox2010">2010</a>)</span>, with ca 35000 in the Central Management Unit <span class="citation">(AEWA <a href="#ref-AEWA2016">2016</a>)</span>, which we can take as a starting abundance for our simulations (<code>RESOURCE_ini = 35000</code>). The International Single Species Action Plan has a target population size of ca 70000 in the Central Management Unit <span class="citation">(AEWA <a href="#ref-AEWA2016">2016</a>)</span>, which we can use as a management target (<code>manage_target = 70000</code>). We simulate social-ecological dynamics over 30 time steps, which could be interpreted as years.</p>
-<p>The code below calls <code>gmse</code> using the empirically derived parameters for Taiga Bean Geese described above. We also set <code>manager_budget = 10000</code> and <code>user_budget = 10000</code>. Further, we consider the case of a region in which farmland makes up 60% of all land, with 40% of land being ‘public’ (<code>public_land = 0.4</code>; which might be interpreted as any land in which stakeholders are not, or cannot be, invested in goose presence), and divide the farmland amongst 80 individual farmers (<code>stakeholders = 80</code>; <code>land_ownership = TRUE</code>). Landscape size is set to default 100 by 100 cells, so each farmer effectively owns 75 cells, which might be interpreted as hectares of land (for instructions on how to more precisely control landscape ownership, see the <a href="SI4.html">advanced GMSE options</a> using <code>gmse_apply</code>). Because we need both density-dependent (<code>res_death_K = 93870</code>) and density-independent (<code>remove_pr = 0.122</code>) sources of mortality, we set <code>res_death_type = 3</code>. We assume that a single goose decreases agricultural production on a cell by 2% per time step (<code>res_consume = 0.02</code>). We further assume that the population is very well-monitored, with observers counting goose numbers on each cell of the landscape in every timestep (<code>observe_type = 3</code>) with the ability to observe one landscape cell in every direction (<code>agent_view = 1</code>). All other parameter values are set to GMSE defaults.</p>
+<p>The code below calls <code>gmse</code> using the empirically derived parameters for Taiga Bean Geese described above. We also set <code>manager_budget = 10000</code> and <code>user_budget = 10000</code>. Further, we consider the case of a region in which farmland makes up 60% of all land, with 40% of land being ‘public’ (<code>public_land = 0.4</code>; which might be interpreted as any land in which stakeholders are not, or cannot be, invested in goose presence), and divide the farmland amongst 80 individual farmers (<code>stakeholders = 80</code>; <code>land_ownership = TRUE</code>). Landscape size is set to default 100 by 100 cells, so each farmer effectively owns 75 cells, which might be interpreted as hectares of land (for instructions on how to more precisely control landscape ownership, see the <a href="SI4.pdf">advanced GMSE options</a> using <code>gmse_apply</code>). Because we need both density-dependent (<code>res_death_K = 93870</code>) and density-independent (<code>remove_pr = 0.122</code>) sources of mortality, we set <code>res_death_type = 3</code>. We assume that a single goose decreases agricultural production on a cell by 2% per time step (<code>res_consume = 0.02</code>). We further assume that the population is very well-monitored, with observers counting goose numbers on each cell of the landscape in every timestep (<code>observe_type = 3</code>) with the ability to observe one landscape cell in every direction (<code>agent_view = 1</code>). All other parameter values are set to GMSE defaults.</p>
 </div>
 <div id="simulating-goose-management" class="section level2">
 <h2 class="hasAnchor">
@@ -187,12 +371,8 @@ Permissiveness that each manager exhibits for each farmer action (black lines) a
 <div id="conclusions-and-future-development" class="section level2">
 <h2 class="hasAnchor">
 <a href="#conclusions-and-future-development" class="anchor"></a>Conclusions and future development</h2>
-<p>The GMSE function <code>gmse</code> and its graphical user interface counterpart <code>gmse_gui</code> offer wide a suite of options for parameterising simulations to fit empirical case studies of conservation interest using default GMSE natural resource, observation, manager, and user sub-models. Future development of these sub-models might usefully incorporate additional details relevant to specific case studies, such population structure, multiple natural resource and user types, or different manager policy and user action possibilities. <a href="https://github.com/bradduthie/gmse/issues">Requests for new features</a> and contributions to GMSE can be made through <a href="https://github.com/bradduthie/gmse">GitHub</a>. Additionally, where entirely different types of sub-models are required, the <code>gmse_apply</code> function <a href="https://bradduthie.github.io/gmse_SI2.html">can be used</a> to more flexibly simulate social-ecological systems. In <a href="SI4.html">SI4</a>, we show an example of this using the same Taiga Bean Geese case study that we did here.</p>
-</div>
-</div>
-<div id="references" class="section level1 unnumbered">
-<h1 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h1>
+<p>The GMSE function <code>gmse</code> and its graphical user interface counterpart <code>gmse_gui</code> offer wide a suite of options for parameterising simulations to fit empirical case studies of conservation interest using default GMSE natural resource, observation, manager, and user sub-models. Future development of these sub-models might usefully incorporate additional details relevant to specific case studies, such population structure, multiple natural resource and user types, or different manager policy and user action possibilities. <a href="https://github.com/bradduthie/gmse/issues">Requests for new features</a> and contributions to GMSE can be made through <a href="https://github.com/bradduthie/gmse">GitHub</a>. Additionally, where entirely different types of sub-models are required, the <code>gmse_apply</code> function <a href="https://bradduthie.github.io/gmse_SI2.pdf">can be used</a> to more flexibly simulate social-ecological systems. In <a href="SI4.pdf">SI4</a>, we show an example of this using the same Taiga Bean Geese case study that we did here.</p>
+<p></p>
 <div id="refs" class="references">
 <div id="ref-AEWA2016">
 <p>AEWA. 2016. “International single species action plan for the conservation of the Taiga Bean Goose (Anser fabalis fabalis).” <a href="http://www.unep-aewa.org/sites/default/files/document/aewa%7B%5C_%7Degmp%7B%5C_%7Dinf%7B%5C_%7D2%7B%5C_%7Dissap%7B%5C_%7Dtbg.pdf" class="uri">http://www.unep-aewa.org/sites/default/files/document/aewa{\_}egmp{\_}inf{\_}2{\_}issap{\_}tbg.pdf</a>.</p>
@@ -220,6 +400,7 @@ Permissiveness that each manager exhibits for each farmer action (black lines) a
 </div>
 </div>
 </div>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -234,7 +415,6 @@ Permissiveness that each manager exhibits for each farmer action (black lines) a
       <li><a href="#conclusions-and-future-development">Conclusions and future development</a></li>
       </ul>
 </li>
-      <li><a href="#references">References</a></li>
       </ul>
 </div>
       </div>

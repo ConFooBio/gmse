@@ -184,6 +184,5 @@ gmse_table <- function(gmse_sim, hide_unused_options = TRUE, all_time = TRUE){
         results   <- results[last_step,];
     }
     
-    
     return(results);
 }

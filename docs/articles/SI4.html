@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.0.3</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.0.6</span>
       </span>
     </div>
 
@@ -118,7 +118,7 @@
 <h1 class="hasAnchor">
 <a href="#fine-tuning-simulation-conditions-using-gmse_apply" class="anchor"></a>Fine-tuning simulation conditions using <code>gmse_apply</code>
 </h1>
-<p>Here we demonstrate how simulations in GMSE can be more fine-tuned to specific empirical situations through the use of <code>gmse_apply</code>. To do this, we use the same scenario described in <a href="SI3.html">SI3</a>; we first recreate the basic scenario run in <code>gmse</code> using <code>gmse_apply</code>, and then build in additional modelling details including (1) <a href="#land">custom placement of user land</a>, (2) <a href="#budgets">parameterisation of individual user budgets</a>, and (3) <a href="#movement">density-dependent movement of resources</a>. We emphasise that these simulations are provided only to demonstrate the use of GMSE, and specifically to show the flexibility of the <code>gmse_apply</code> function, not to accurately recreate the dynamics of a specific system or make management recommendations.</p>
+<p>Here we demonstrate how simulations in GMSE can be more fine-tuned to specific empirical situations through the use of <code>gmse_apply</code>. To do this, we use the same scenario described in <a href="SI3.pdf">SI3</a>; we first recreate the basic scenario run in <code>gmse</code> using <code>gmse_apply</code>, and then build in additional modelling details including (1) <a href="#land">custom placement of user land</a>, (2) <a href="#budgets">parameterisation of individual user budgets</a>, and (3) <a href="#movement">density-dependent movement of resources</a>. We emphasise that these simulations are provided only to demonstrate the use of GMSE, and specifically to show the flexibility of the <code>gmse_apply</code> function, not to accurately recreate the dynamics of a specific system or make management recommendations.</p>
 <p>We reconsider the case of a protected waterfowl population that exploits agricultural land <span class="citation">(e.g., Fox and Madsen <a href="#ref-Fox2017a">2017</a>; T. H. Mason et al. <a href="#ref-Mason2017">2017</a>; A. I. T. Tulloch, Nicol, and Bunnefeld <a href="#ref-Tulloch2017">2017</a>; Cusack et al. <a href="#ref-Cusack2018">2018</a>)</span>. The manager attempts to keep the watefowl at a target abundance, while users (farmers) attempt to maximise agricultural yield on the land that they own. We again parameterise our model using demographic information from the Taiga Bean Goose (<em>Anser fabalis fabalis</em>), as reported by <span class="citation">Johnson et al. (<a href="#ref-Johnson2018">2018</a>)</span> and <span class="citation">AEWA (<a href="#ref-AEWA2016">2016</a>)</span>. Relevant parameter values are listed in the table below.</p>
 <table class="table">
 <caption>GMSE simulation parameter values inspired by <span class="citation">Johnson et al. (<a href="#ref-Johnson2018">2018</a>)</span> and <span class="citation">AEWA (<a href="#ref-AEWA2016">2016</a>)</span>
@@ -218,7 +218,7 @@
 <h1 class="hasAnchor">
 <a href="#re-creating-gmse-simulations-using-gmse_apply" class="anchor"></a>Re-creating <code>gmse</code> simulations using <code>gmse_apply</code>
 </h1>
-<p>We now recreate the simulations in <a href="SI3.html">SI3</a>, which were run using the <code>gmse</code> function, in <code>gmse_apply</code>. Doing so requires us to first initialise simulations using one call of <code>gmse_apply</code>, then loop through multiple time steps that again call <code>gmse_apply</code>; results of interest are recorded in a data frame (<code>sim_sum_1</code>). Following the protocol introduced in <a href="SI2.html">SI2</a>, we can call the initialising simulation <code>sim_old</code>, and use the code below to read in the relevant parameter values.</p>
+<p>We now recreate the simulations in <a href="SI3.pdf">SI3</a>, which were run using the <code>gmse</code> function, in <code>gmse_apply</code>. Doing so requires us to first initialise simulations using one call of <code>gmse_apply</code>, then loop through multiple time steps that again call <code>gmse_apply</code>; results of interest are recorded in a data frame (<code>sim_sum_1</code>). Following the protocol introduced in <a href="SI2.pdf">SI2</a>, we can call the initialising simulation <code>sim_old</code>, and use the code below to read in the relevant parameter values.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sim_old  &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="dt">get_res =</span> <span class="st">"Full"</span>, <span class="dt">remove_pr =</span> <span class="fl">0.122</span>, <span class="dt">lambda =</span> <span class="fl">0.275</span>,
                        <span class="dt">res_death_K =</span> <span class="dv">93870</span>, <span class="dt">RESOURCE_ini =</span> <span class="dv">35000</span>, 
                        <span class="dt">manage_target =</span> <span class="dv">70000</span>, <span class="dt">res_death_type =</span> <span class="dv">3</span>,
@@ -229,26 +229,26 @@
                        <span class="dt">ga_mingen =</span> <span class="dv">200</span>);</code></pre></div>
 <p>Note that the argument <code>get_res = "Full"</code> causes <code>sim_old</code> to retain all of the relevant data structures for simulating a new time step and recording simulation results. This includes the key simulation output, which is located in <code>sim_old$basic_output</code>, which is printed below.</p>
 <pre><code>## $resource_results
-## [1] 34173
+## [1] 34162
 ## 
 ## $observation_results
-## [1] 34173
+## [1] 34162
 ## 
 ## $manager_results
 ##          resource_type scaring culling castration feeding help_offspring
-## policy_1             1      NA     516         NA      NA             NA
+## policy_1             1      NA     502         NA      NA             NA
 ## 
 ## $user_results
 ##         resource_type scaring culling castration feeding help_offspring
 ## Manager             1      NA       0         NA      NA             NA
-## user_1              1      NA     188         NA      NA             NA
-## user_2              1      NA     187         NA      NA             NA
-## user_3              1      NA     188         NA      NA             NA
-## user_4              1      NA     188         NA      NA             NA
-## user_5              1      NA     188         NA      NA             NA
-## user_6              1      NA     189         NA      NA             NA
-## user_7              1      NA     188         NA      NA             NA
-## user_8              1      NA     188         NA      NA             NA
+## user_1              1      NA     199         NA      NA             NA
+## user_2              1      NA     199         NA      NA             NA
+## user_3              1      NA     199         NA      NA             NA
+## user_4              1      NA     199         NA      NA             NA
+## user_5              1      NA     199         NA      NA             NA
+## user_6              1      NA     199         NA      NA             NA
+## user_7              1      NA     199         NA      NA             NA
+## user_8              1      NA     199         NA      NA             NA
 ##         tend_crops kill_crops
 ## Manager         NA         NA
 ## user_1          NA         NA
@@ -259,7 +259,7 @@
 ## user_6          NA         NA
 ## user_7          NA         NA
 ## user_8          NA         NA</code></pre>
-<p>We can then loop over 30 time steps to recreate the simulations from <a href="SI3.html">SI3</a>. In these simulations, we are specifically interested in the resource and observation outputs, as well as the manager policy and user actions for culling, which we record below in the data frame <code>sim_sum_1</code>. The inclusion of the argument <code>old_list</code> tells <code>gmse_apply</code> to use parameters and values from the list <code>sim_old</code> in the new time step.</p>
+<p>We can then loop over 30 time steps to recreate the simulations from <a href="SI3.pdf">SI3</a>. In these simulations, we are specifically interested in the resource and observation outputs, as well as the manager policy and user actions for culling, which we record below in the data frame <code>sim_sum_1</code>. The inclusion of the argument <code>old_list</code> tells <code>gmse_apply</code> to use parameters and values from the list <code>sim_old</code> in the new time step.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sim_sum_1 &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dt">data =</span> <span class="ot">NA</span>, <span class="dt">nrow =</span> <span class="dv">30</span>, <span class="dt">ncol =</span> <span class="dv">5</span>);
 for(time_step in <span class="dv">1</span>:<span class="dv">30</span>){
     sim_new                 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="dt">get_res =</span> <span class="st">"Full"</span>, <span class="dt">old_list =</span> sim_old);
@@ -274,56 +274,57 @@ for(time_step in <span class="dv">1</span>:<span class="dv">30</span>){
                          <span class="st">"Cull_count"</span>);
 <span class="kw">print</span>(sim_sum_1);</code></pre></div>
 <pre><code>##       Time Pop_size Pop_est Cull_cost Cull_count
-##  [1,]    1    32419   32419       828        946
-##  [2,]    2    31810   31810       966        810
-##  [3,]    3    32136   32136      1009        778
-##  [4,]    4    32940   32940      1010        778
-##  [5,]    5    37224   37224       988        794
-##  [6,]    6    38157   38157      1010        778
-##  [7,]    7    39689   39689       986        796
-##  [8,]    8    41424   41424      1007        781
-##  [9,]    9    43364   43364       996        789
-## [10,]   10    45565   45565       998        786
-## [11,]   11    48072   48072      1007        778
-## [12,]   12    50470   50470      1007        778
-## [13,]   13    53015   53015       986        795
-## [14,]   14    55902   55902      1004        785
-## [15,]   15    58841   58841       994        792
-## [16,]   16    62030   62030       998        786
-## [17,]   17    65187   65187      1000        786
-## [18,]   18    69220   69220       996        787
-## [19,]   19    73187   73187        10      29180
-## [20,]   20    47114   47114      1010        778
-## [21,]   21    49924   49924       995        790
-## [22,]   22    52507   52507      1007        778
-## [23,]   23    55284   55284      1007        778
-## [24,]   24    58301   58301       993        793
-## [25,]   25    61547   61547      1008        778
-## [26,]   26    64963   64963      1002        785
-## [27,]   27    68243   68243      1005        784
-## [28,]   28    72100   72100        10      29245
-## [29,]   29    45799   45799      1010        778
-## [30,]   30    48019   48019       992        793</code></pre>
-<p>The above output from <code>sim_sum_1</code> shows the data frame that holds the information we were interested in pulling out of our simulation results. All of this information was available under the list element <code>sim_new$basic_output</code>, but other list elements of <code>sim_new</code> might also be useful to record. It is important to remember that this example of <code>gmse_apply</code> is using the default resource, observation, manager, and user sub-models. Custom sub-models could produce different outputs in <code>sim_new</code> (see <a href="SI2.html">SI2</a> for examples). For default sub-models, there are some list elements that might be especially useful. These elements can potentially be edited <em>within the above loop</em> to dynamically adjust simulations. For more explanation of built-in GMSE data arrays, see <a href="SI7.html">SI7</a>.</p>
+##  [1,]    1    32243   32243      1010        792
+##  [2,]    2    31819   31819      1010        792
+##  [3,]    3    32026   32026      1010        790
+##  [4,]    4    32798   32798      1010        791
+##  [5,]    5    36863   36863      1010        791
+##  [6,]    6    37996   37996      1010        792
+##  [7,]    7    39262   39262      1010        792
+##  [8,]    8    41084   41084      1010        792
+##  [9,]    9    43019   43019      1010        790
+## [10,]   10    45463   45463      1010        792
+## [11,]   11    47801   47801      1010        790
+## [12,]   12    50207   50207      1010        792
+## [13,]   13    53099   53099      1010        792
+## [14,]   14    55839   55839      1010        792
+## [15,]   15    58843   58843      1009        792
+## [16,]   16    61915   61915      1010        791
+## [17,]   17    65176   65176      1010        791
+## [18,]   18    68524   68524      1010        792
+## [19,]   19    72422   72422        34      18812
+## [20,]   20    57408   57408      1010        792
+## [21,]   21    60513   60513      1010        792
+## [22,]   22    64097   64097      1010        792
+## [23,]   23    67762   67762      1009        790
+## [24,]   24    71929   71929        41      16643
+## [25,]   25    59038   59038      1010        792
+## [26,]   26    62298   62298      1010        792
+## [27,]   27    65849   65849      1010        792
+## [28,]   28    69396   69396      1010        792
+## [29,]   29    73665   73665        22      24192
+## [30,]   30    52888   52888      1010        792</code></pre>
+<p>The above output from <code>sim_sum_1</code> shows the data frame that holds the information we were interested in pulling out of our simulation results. All of this information was available under the list element <code>sim_new$basic_output</code>, but other list elements of <code>sim_new</code> might also be useful to record. It is important to remember that this example of <code>gmse_apply</code> is using the default resource, observation, manager, and user sub-models. Custom sub-models could produce different outputs in <code>sim_new</code> (see <a href="SI2.pdf">SI2</a> for examples). For default sub-models, there are some list elements that might be especially useful. These elements can potentially be edited <em>within the above loop</em> to dynamically adjust simulations. For more explanation of built-in GMSE data arrays, see <a href="SI7.pdf">SI7</a>.</p>
 <ul>
 <li>
-<a href="SI7.html#resources"><code>sim_new$resource_array</code></a>: A table holding all information on resources. Rows correspond to discrete resources, and columns correspond to resource properties: (1) ID, (2-4) types (not currently in use), (5) x-location, (6) y-location, (7) movement parameter, (8) time, (9) density independent mortality parameter (<code>remove_pr</code>), (10) reproduction parameter (<code>lambda</code>), (11) offspring number, (12) age, (13-14) observation columns, (15) consumption rate (<code>res_consume</code>), and (16-20) recorded experiences of user actions (e.g., was the resource culled or scared?).</li>
+<a href="SI7.pdf#resources"><code>sim_new$resource_array</code></a>: A table holding all information on resources. Rows correspond to discrete resources, and columns correspond to resource properties: (1) ID, (2-4) types (not currently in use), (5) x-location, (6) y-location, (7) movement parameter, (8) time, (9) density independent mortality parameter (<code>remove_pr</code>), (10) reproduction parameter (<code>lambda</code>), (11) offspring number, (12) age, (13-14) observation columns, (15) consumption rate (<code>res_consume</code>), and (16-20) recorded experiences of user actions (e.g., was the resource culled or scared?).</li>
 <li>
-<a href="SI7.html#agents"><code>sim_new$AGENTS</code></a>: A table holding basic information on agents (manager and users). Rows correspond to a unique agent, and columns correspond to agent properties: (1) ID, (2) type (0 for the manager, 1 for users), (3-4) additional type options not currently in use, (5-6), x and y locations (usually ignored), (7) movement parameter (usually ignored), (8) time, (9) agent’s viewing ability in cells (<code>agent_view</code>), (10) error parameter, (11-12) values for holding marks and tallies of resources, (13-15) values for holding observations, (16) yield from landscape cells, (17) budget (<code>manager_budget</code> and <code>user_budget</code>).</li>
+<a href="SI7.pdf#agents"><code>sim_new$AGENTS</code></a>: A table holding basic information on agents (manager and users). Rows correspond to a unique agent, and columns correspond to agent properties: (1) ID, (2) type (0 for the manager, 1 for users), (3-4) additional type options not currently in use, (5-6), x and y locations (usually ignored), (7) movement parameter (usually ignored), (8) time, (9) agent’s viewing ability in cells (<code>agent_view</code>), (10) error parameter, (11-12) values for holding marks and tallies of resources, (13-15) values for holding observations, (16) yield from landscape cells, (17) budget (<code>manager_budget</code> and <code>user_budget</code>).</li>
 <li>
-<code>sim_new$observation_vector</code>: Estimate of total resource number from the observation model (<a href="SI7.html#observation"><code>observation_array</code></a> also holds this information in a different way depending on <code>observe_type</code>)</li>
+<code>sim_new$observation_vector</code>: Estimate of total resource number from the observation model (<a href="SI7.pdf#observation"><code>observation_array</code></a> also holds this information in a different way depending on <code>observe_type</code>)</li>
 <li>
-<a href="SI7.html#land"><code>sim_new$LAND</code></a>: The landscape on which interactions occur, which is stored as a 3D array with <code>land_dim_1</code> rows, <code>land_dim_2</code> columns, and 3 layers. Layer 1 (<code>sim_new$LAND[,,1]</code>) is not currently used in default sub-models, but could be used to store values that affect resources and agents. Layer 2 (<code>sim_new$LAND[,,2]</code>) stores crop yield from a cell, and layer 3 (<code>sim_new$LAND[,,3]</code>) stores the owner of the cell (value corresponds to the agent’s ID).</li>
+<a href="SI7.pdf#land"><code>sim_new$LAND</code></a>: The landscape on which interactions occur, which is stored as a 3D array with <code>land_dim_1</code> rows, <code>land_dim_2</code> columns, and 3 layers. Layer 1 (<code>sim_new$LAND[,,1]</code>) is not currently used in default sub-models, but could be used to store values that affect resources and agents. Layer 2 (<code>sim_new$LAND[,,2]</code>) stores crop yield from a cell, and layer 3 (<code>sim_new$LAND[,,3]</code>) stores the owner of the cell (value corresponds to the agent’s ID).</li>
 <li>
-<code>sim_new$manage_vector</code>: The cost of each action as set by the manager. For even more fine-tuning, individual costs for the actions of each agent can be set for each user in <a href="SI7.html#cost"><code>sim_new$manager_array</code></a>.</li>
+<code>sim_new$manage_vector</code>: The cost of each action as set by the manager. For even more fine-tuning, individual costs for the actions of each agent can be set for each user in <a href="SI7.pdf#cost"><code>sim_new$manager_array</code></a>.</li>
 <li>
-<code>sim_new$user_vector</code>: The total number of actions performed by each user. A more detailed breakdown of actions by individual users is held in <a href="SI7.html#action"><code>sim_new$user_array</code></a>.</li>
+<code>sim_new$user_vector</code>: The total number of actions performed by each user. A more detailed breakdown of actions by individual users is held in <a href="SI7.pdf#action"><code>sim_new$user_array</code></a>.</li>
 </ul>
 <p>Next, we show how to adjust the landscape to manually set land ownership in <code>gmse_apply</code>.</p>
 </div>
-<div id="land" class="section level1">
+<div id="custom-placement-of-user-land" class="section level1">
 <h1 class="hasAnchor">
-<a href="#land" class="anchor"></a>Custom placement of user land</h1>
+<a href="#custom-placement-of-user-land" class="anchor"></a>1. <a name="land">Custom placement of user land</a>
+</h1>
 <p>By default, all farmers in GMSE are allocated the same number of landscape cells, which are simply placed in order of the farmer’s ID. Public land is produced by placing landscape cells that are technically owned by the manager, and therefore have landscape cell values of 1. The image below shows this landscape for the eight farmers from <code>sim_old</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">image</span>(<span class="dt">x =</span> sim_old$LAND[,,<span class="dv">3</span>], <span class="dt">col =</span> <span class="kw">topo.colors</span>(<span class="dv">9</span>), <span class="dt">xaxt =</span> <span class="st">"n"</span>, <span class="dt">yaxt =</span> <span class="st">"n"</span>);</code></pre></div>
 <div class="figure">
@@ -358,9 +359,10 @@ Land ownership by farmers as customised in gmse_apply.
 </div>
 <p>The above image shows the modified landscape stored in <code>sim_old</code>, which can now be incorporated into simulations using <code>gmse_apply</code>. We can think of all the plots on the left side of the landscape as farms of various sizes, while the blue area of the landscape on the right is public land.</p>
 </div>
-<div id="budgets" class="section level1">
+<div id="parameterisation-of-individual-user-budgets" class="section level1">
 <h1 class="hasAnchor">
-<a href="#budgets" class="anchor"></a>Parameterisation of individual user budgets</h1>
+<a href="#parameterisation-of-individual-user-budgets" class="anchor"></a>2. <a name="budgets">Parameterisation of individual user budgets</a>
+</h1>
 <p>Perhaps we want to assume that farmers have different budgets, which are correlated in some way to the number of landscape cells that they own. Custom user budgets can be set by manipulating <code>sim_old$AGENTS</code>, the last column of which (column 17) holds the budget for each user. Agent IDs (as stored on the landscape above) correspond to rows of <code>sim_old$AGENTS</code>, so individual budgets can be directly input as desired. We can do this manually (e.g., <code>sim_old$AGENTS[2, 17] &lt;- 4000</code>), or, alternatively, if farmer budget positively correlates to landscape owned, we can use a loop to input values as below.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">for(ID in <span class="dv">2</span>:<span class="dv">9</span>){
     cells_owned            &lt;-<span class="st"> </span><span class="kw">sum</span>(sim_old$LAND[,,<span class="dv">3</span>] ==<span class="st"> </span>ID);
@@ -409,10 +411,12 @@ Land ownership by farmers as customised in gmse_apply.
 </table>
 <p>As with <code>sim_old$LAND</code> values, changes to <code>sim_old$AGENTS</code> will be retained in simulations looped through <code>gmse_apply</code>.</p>
 </div>
-<div id="movement" class="section level1">
+<div id="density-dependent-movement-of-resources" class="section level1">
 <h1 class="hasAnchor">
-<a href="#movement" class="anchor"></a>Density-dependent movement of resources</h1>
+<a href="#density-dependent-movement-of-resources" class="anchor"></a>3. <a name="movement">Density-dependent movement of resources</a>
+</h1>
 <p>Lastly, we consider a more nuanced change to simulations, in which the rules for movement of resources are modified to account for density-dependence. Assume that geese tend to avoid aggregating, such that if a goose is located on the same cell as too many other geese, then it will move at the start of a time step. Programming this movement rule can be accomplished by creating a new function to apply to the resource data array <code>sim_old$resource_array</code>. Below, a custom function is defined that causes a goose to move up to 5 cells in any direction if it finds itself on a cell with more than 10 other geese. As with default GMSE simulations, movement is based on a torus landscape (where no landscape edge exists, so that if resources move off of one side of the landscape they appear on the opposite side).</p>
+<p></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">avoid_aggregation &lt;-<span class="st"> </span>function(goose_table, <span class="dt">land_dim_1 =</span> <span class="dv">100</span>, <span class="dt">land_dim_2 =</span> <span class="dv">100</span>){
     goose_number &lt;-<span class="st"> </span><span class="kw">dim</span>(goose_table)[<span class="dv">1</span>]    <span class="co"># How many geese are there?</span>
     for(goose in <span class="dv">1</span>:goose_number){          <span class="co"># Loop through all rows of geese</span>
@@ -489,45 +493,41 @@ for(time_step in <span class="dv">1</span>:<span class="dv">30</span>){
                          <span class="st">"Cull_count"</span>);
 <span class="kw">print</span>(sim_sum_2);</code></pre></div>
 <pre><code>##       Time Pop_size Pop_est Cull_cost Cull_count
-##  [1,]    1    33732   33732       766         74
-##  [2,]    2    34010   34010       878         64
-##  [3,]    3    35058   35058       941         61
-##  [4,]    4    36556   36556       983         60
-##  [5,]    5    41961   41961       996         57
-##  [6,]    6    43998   43998       985         60
-##  [7,]    7    46651   46651       979         60
-##  [8,]    8    49553   49553       992         59
-##  [9,]    9    52804   52804       984         60
-## [10,]   10    56386   56386       970         60
-## [11,]   11    60384   60384       972         60
-## [12,]   12    64225   64225       992         59
-## [13,]   13    68225   68225       986         60
-## [14,]   14    72692   72692       469        123
-## [15,]   15    77401   77401       390        150
-## [16,]   16    82358   82358       354        166
-## [17,]   17    87770   87770       389        149
-## [18,]   18    93886   93886       432        135
-## [19,]   19   100593  100593       420        138
-## [20,]   20   102182  102182       417        138
-## [21,]   21   102653  102653       434        134
-## [22,]   22   103079  103079       428        137
-## [23,]   23   103685  103685       422        137
-## [24,]   24   103716  103716       429        137
-## [25,]   25   103933  103933       432        136
-## [26,]   26   103672  103672       428        137
-## [27,]   27   103512  103512       409        140
-## [28,]   28   103544  103544       431        136
-## [29,]   29   103428  103428       423        137
-## [30,]   30   103529  103529       417        138</code></pre>
+##  [1,]    1    34041   34041      1004         52
+##  [2,]    2    34603   34603      1010         52
+##  [3,]    3    35827   35827       997         60
+##  [4,]    4    37809   37809      1000         60
+##  [5,]    5    43611   43611      1010         52
+##  [6,]    6    46023   46023      1008         52
+##  [7,]    7    48891   48891      1010         52
+##  [8,]    8    51874   51874      1004         52
+##  [9,]    9    55204   55204      1007         52
+## [10,]   10    59037   59037      1010         52
+## [11,]   11    63429   63429      1007         52
+## [12,]   12    67756   67756      1008         52
+## [13,]   13    72304   72304        10       5451
+## [14,]   14    71400   71400        10       5424
+## [15,]   15    70490   70490        11       5051
+## [16,]   16    70001   70001      1005         52
+## [17,]   17    74710   74710        10       5414
+## [18,]   18    74159   74159        10       5502
+## [19,]   19    73374   73374        10       5451
+## [20,]   20    72507   72507        10       5442
+## [21,]   21    71494   71494        10       5466
+## [22,]   22    70591   70591        10       5437
+## [23,]   23    69291   69291      1009         52
+## [24,]   24    73827   73827        10       5454
+## [25,]   25    74016   74016        10       5455
+## [26,]   26    74230   74230        10       5442
+## [27,]   27    75451   75451        10       5489
+## [28,]   28    76420   76420        10       5470
+## [29,]   29    78313   78313        10       5411
+## [30,]   30    79850   79850        10       5436</code></pre>
 </div>
 <div id="conclusions" class="section level1">
 <h1 class="hasAnchor">
 <a href="#conclusions" class="anchor"></a>Conclusions</h1>
-<p>In this example, we showed how the built-in resource, observation, manager, and user sub-models can be customised by manipulating the data within the data structures that they use. The goal was to show how software users can work with these existing sub-models and data structures to customise GMSE simulations. Readers seeking even greater flexibility (e.g., replacing an entire built-in sub-model with a custom sub-model) should refer to <a href="SI2.html">SI2</a> that introduces <code>gmse_apply</code> more generally. Future versions of GMSE are likely to expand on the built-in options available for simulation; requests for such expansions, or contributions, can be submitted to <a href="https://github.com/bradduthie/gmse/issues">GitHub</a>.</p>
-</div>
-<div id="references" class="section level1 unnumbered">
-<h1 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h1>
+<p>In this example, we showed how the built-in resource, observation, manager, and user sub-models can be customised by manipulating the data within the data structures that they use. The goal was to show how software users can work with these existing sub-models and data structures to customise GMSE simulations. Readers seeking even greater flexibility (e.g., replacing an entire built-in sub-model with a custom sub-model) should refer to <a href="SI2.pdf">SI2</a> that introduces <code>gmse_apply</code> more generally. Future versions of GMSE are likely to expand on the built-in options available for simulation; requests for such expansions, or contributions, can be submitted to <a href="https://github.com/bradduthie/gmse/issues">GitHub</a>.</p>
 <div id="refs" class="references">
 <div id="ref-AEWA2016">
 <p>AEWA. 2016. “International single species action plan for the conservation of the Taiga Bean Goose (Anser fabalis fabalis).” <a href="http://www.unep-aewa.org/sites/default/files/document/aewa%7B%5C_%7Degmp%7B%5C_%7Dinf%7B%5C_%7D2%7B%5C_%7Dissap%7B%5C_%7Dtbg.pdf" class="uri">http://www.unep-aewa.org/sites/default/files/document/aewa{\_}egmp{\_}inf{\_}2{\_}issap{\_}tbg.pdf</a>.</p>
@@ -558,12 +558,17 @@ for(time_step in <span class="dv">1</span>:<span class="dv">30</span>){
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#fine-tuning-simulation-conditions-using-gmse_apply">Fine-tuning simulation conditions using <code>gmse_apply</code></a></li>
       <li><a href="#re-creating-gmse-simulations-using-gmse_apply">Re-creating <code>gmse</code> simulations using <code>gmse_apply</code></a></li>
-      <li><a href="#land">Custom placement of user land</a></li>
-      <li><a href="#budgets">Parameterisation of individual user budgets</a></li>
-      <li><a href="#movement">Density-dependent movement of resources</a></li>
+      <li>
+<a href="#custom-placement-of-user-land">1. </a><a name="land" href="NA">Custom placement of user land</a>
+</li>
+      <li>
+<a href="#parameterisation-of-individual-user-budgets">2. </a><a name="budgets" href="NA">Parameterisation of individual user budgets</a>
+</li>
+      <li>
+<a href="#density-dependent-movement-of-resources">3. </a><a name="movement" href="NA">Density-dependent movement of resources</a>
+</li>
       <li><a href="#simulation-with-custom-farms-budgets-and-goose-movement">Simulation with custom farms, budgets, and goose movement</a></li>
       <li><a href="#conclusions">Conclusions</a></li>
-      <li><a href="#references">References</a></li>
       </ul>
 </div>
       </div>
