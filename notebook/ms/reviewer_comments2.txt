@@ -69,7 +69,7 @@ Reviewer 1 minor comment 1
 Author response to Reviewer 1 minor comment 1
 --------------------------------------------------------------------------------
 
-We now add a brief explanation of the default resource function, effects of culling, and resource movement in the main text (line XXX). In particular, we further emphasise the individual-based nature of the default resource function, which is a particularly flexible and novel modelling framework in management strategy evaluation -- this also provides a comparison to other MSE packages, as requested by Reviewer 2 (see below).
+We now add a brief explanation of the default resource function (line XXX), effects of culling (line XXX), and resource movement in the main text (line XXX). In particular, we further emphasise the individual-based nature of the default resource function, which is a particularly flexible and novel modelling framework in management strategy evaluation -- this also provides a comparison to other MSE packages, as requested by Reviewer 2 (see below). Further detail on default model options (e.g., details for options on resource movement) has been added in SI3 (see Author response to Reviewer 1 minor comment 4)
 
 Reviewer 1 minor comment 2
 --------------------------------------------------------------------------------
