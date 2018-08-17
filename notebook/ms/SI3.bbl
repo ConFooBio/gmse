@@ -14,6 +14,12 @@ Cusack, J.~J., Duthie, A.~B., Rakotonarivo, S., Pozo, R.~A., Mason, T. H.~E.,
   northern Europe}.
 \newblock {\em Conservation Letters}, page e12450.
 
+\bibitem[Duthie and Falcy, 2013]{Duthie2013}
+Duthie, A.~B. and Falcy, M.~R. (2013).
+\newblock {The influence of habitat autocorrelation on plants and their
+  seed-eating pollinators}.
+\newblock {\em Ecological Modelling}, 251:260--270.
+
 \bibitem[Fox et~al., 2010]{Fox2010}
 Fox, A.~D., Ebbinge, B.~S., Mitchell, C., Heinicke, T., Aarvak, T., Colhoun,
   K., Clausen, P., Dereliev, S., Farag{\"{o}}, S., Koffijberg, K., Kruckenberg,
@@ -54,5 +60,10 @@ Tulloch, A. I.~T., Nicol, S., and Bunnefeld, N. (2017).
 \newblock {Quantifying the expected value of uncertain management choices for
   over-abundant Greylag Geese}.
 \newblock {\em Biological Conservation}, 214:147--155.
+
+\bibitem[Wilson et~al., 2003]{Wilson2003}
+Wilson, W.~G., Morris, W.~F., and Bronstein, J.~L. (2003).
+\newblock {Coexistence of mutualists and exploiters on spatial landscapes}.
+\newblock {\em Ecological Monographs}, 73(3):397--413.
 
 \end{thebibliography}
