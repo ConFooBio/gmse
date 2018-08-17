@@ -79,7 +79,7 @@ Reviewer 1 minor comment 2
 Author response to Reviewer 1 minor comment 2
 --------------------------------------------------------------------------------
 
-We now refer to SI7 directly (line XX) and also copy Table 1 in SI3 (line XXX). We believe it is preferable to have this table in both SI3 and SI4 because we cannot assume readers will read the supporting information documents (i.e., software vignettes) in any particular order. 
+We now refer to SI7 directly in reference to key data structures (line XXX) and also present Table 1 in SI3 (line XXX), in which parameters are defined. We believe it is preferable to have a table in both SI3 and SI4 because we cannot assume readers will read the supporting information documents (i.e., software vignettes) in any particular order. 
 
 Reviewer 1 minor comment 3
 --------------------------------------------------------------------------------
