@@ -177,17 +177,19 @@ As with `sim_old$LAND` values, changes to `sim_old$AGENTS` will be retained in s
 3. <a name="movement">Density-dependent movement of resources</a>
 ================================================================================
 
-Lastly, we consider a more nuanced change to simulations, in which the rules for movement of resources are modified to account for density-dependence. Assume that geese tend to avoid aggregating, such that if a goose is located on the same cell as too many other geese, then it will move at the start of a time step. Programming this movement rule can be accomplished by creating a new function to apply to the resource data array `sim_old$resource_array`. Below, a custom function is defined that causes a goose to move up to 5 cells in any direction if it finds itself on a cell with more than 10 other geese. As with default GMSE simulations, movement is based on a torus landscape (where no landscape edge exists, so that if resources move off of one side of the landscape they appear on the opposite side).
+Lastly, we consider a more nuanced change to simulations, in which the rules for movement of resources are modified to account for density-dependence. Assume that geese tend to avoid aggregating, such that if a goose is located on the same cell as too many other geese, then it will move at the start of a time step. Programming this movement rule can be accomplished by creating a new function to apply to the resource data array `sim_old$resource_array`. Below, a custom function is defined that causes a goose to move up to 5 cells in any direction if it finds itself on a cell with more than 10 other geese. As with default GMSE simulations, movement is based on a torus landscape (where no landscape edge exists, so that if resources move off of one side of the landscape they appear on the opposite side). We will use this custom function to modify `sim_old$resource_array` prior to running `gmse_apply`, thereby modelling a custom-built process affecting resource distribution that is integrated into GMSE. 
 
 \clearpage
 
 ```{r}
-avoid_aggregation <- function(goose_table, land_dim_1 = 100, land_dim_2 = 100){
-    goose_number <- dim(goose_table)[1]    # How many geese are there?
-    for(goose in 1:goose_number){          # Loop through all rows of geese
-        x_loc  <- goose_table[goose, 5];
-        y_loc  <- goose_table[goose, 6];
-        shared <- sum(goose_table[,5] == x_loc & goose_table[,6] == y_loc);
+avoid_aggregation <- function(sim_resource_array, land_dim_1 = 100, 
+                              land_dim_2 = 100){
+    goose_number <- dim(sim_resource_array)[1]  # How many geese are there?
+    for(goose in 1:goose_number){               # Loop through all rows of geese
+        x_loc  <- sim_resource_array[goose, 5];
+        y_loc  <- sim_resource_array[goose, 6];
+        shared <- sum( sim_resource_array[,5] == x_loc & 
+                       sim_resource_array[,6] == y_loc);
         if(shared > 10){
             new_x <- x_loc + sample(x = -5:5, size = 1);
             new_y <- y_loc + sample(x = -5:5, size = 1);
@@ -203,11 +205,11 @@ avoid_aggregation <- function(goose_table, land_dim_1 = 100, land_dim_2 = 100){
             if(new_y >= land_dim_2){
                 new_y <- new_y - land_dim_2;
             }
-            goose_table[goose, 5] <- new_x;
-            goose_table[goose, 6] <- new_y;
+            sim_resource_array[goose, 5] <- new_x;
+            sim_resource_array[goose, 6] <- new_y;
         }
     }
-    return(goose_table);
+    return(sim_resource_array);
 }
 ```
 
@@ -248,7 +250,8 @@ for(ID in 2:9){
 sim_sum_2 <- matrix(data = NA, nrow = 30, ncol = 5);
 for(time_step in 1:30){
     # Apply the new movement rules at the beginning of the loop
-    sim_old$resource_array  <- avoid_aggregation(sim_old$resource_array);
+    sim_old$resource_array  <- avoid_aggregation(sim_resource_array = 
+                                                     sim_old$resource_array);
     # Next, move on to simulate (old_list remembers that res_move_type = 0)
     sim_new                 <- gmse_apply(get_res = "Full", old_list = sim_old);
     sim_sum_2[time_step, 1] <- time_step;
