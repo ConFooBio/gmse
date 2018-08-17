@@ -69,7 +69,7 @@ Reviewer 1 minor comment 1
 Author response to Reviewer 1 minor comment 1
 --------------------------------------------------------------------------------
 
-We now add a brief explanation of the default resource function (line XXX), effects of culling (line XXX), and resource movement in the main text (line XXX). In particular, we further emphasise the individual-based nature of the default resource function, which is a particularly flexible and novel modelling framework in management strategy evaluation -- this also provides a comparison to other MSE packages, as requested by Reviewer 2 (see below). Further detail on default model options (e.g., details for options on resource movement) has been added in SI3 (see Author response to Reviewer 1 minor comment 4)
+We now add a brief explanation of the default resource function (line XXX), effects of culling (line XXX), and resource movement in the main text (line XXX). In particular, we further emphasise the individual-based nature of the default resource function, which is a particularly flexible and novel modelling framework in management strategy evaluation -- this also provides a comparison to other MSE packages, as requested by Reviewer 2 (see below). Further detail on default model options (e.g., details for options on resource movement) has been added in SI3 (see Author response to Reviewer 1 minor comment 4), and is also available in the GMSE R package documentation ( https://cran.r-project.org/web/packages/GMSE/GMSE.pdf )
 
 Reviewer 1 minor comment 2
 --------------------------------------------------------------------------------
@@ -91,7 +91,7 @@ Author response to Reviewer 1 minor comment 3
 
 We greatly appreciate Reviewer 1 working through the Supporting Information to independently verify the replicability of the code (as a potentially relevant aside, all manuscript and SI documents are created in Rmarkdown, meaning that the code is being run, and therefore tested, as it appears in the documents each time the PDF is produced).
 
-The code on page 6 is a simple loop to input agent budgets, and does not make use of `goose_table` at all; we therefore believe that Reviewer 1 is referring to the `avoid_aggregation` function at the top of page 7, which is where `goose_table` first appears before first being defined. The `avoid_aggregation` function is not a part of GMSE, but an example of a custom function that might be integrated by a GMSE user. The `goose_table` argument is used in the section immediately following (bottom of page 7) within the `avoid_aggregation` function to affect goose distributoins prior to running `gmse_apply`.
+The code on page 6 is a simple loop to input agent budgets, and does not make use of `goose_table` at all; we therefore infer that Reviewer 1 is referring to the `avoid_aggregation` function at the top of page 7, which is where `goose_table` first appears before first being defined. The `avoid_aggregation` function is not a part of GMSE, but an example of a custom function that might be integrated by a GMSE user. The `goose_table` argument is used in the section immediately following (bottom of page 7) within the `avoid_aggregation` function to affect goose distributoins prior to running `gmse_apply`.
 
 We now see why this `goose_table` definition was confusing; as formerly written, it wasn't obvious that this is simply output from the resource array produced by `gmse_apply`. We now state what this custom argument in `avoid_aggregation` is doing explicitly where it is first introduced (line XXX). Instead of calling it `goose_table`, we now also use an argument name that better reflects what the structure actually is, `sim_resource_array` (line XXX). The code can be replicated by copy-pasting the `avoid_aggregation` function, then `copy-pasting the code in the "Simulation with custom farms, budgets and goose movement" section (which uses the `avoid_aggregation` function).
 
@@ -103,7 +103,7 @@ Reviewer 1 minor comment 4
 Author response to Reviewer 1 minor comment 4
 --------------------------------------------------------------------------------
 
-Figure 1 in SI5 was produced using the standard FLR plot function in the FLCore R package. We were originally undecided about whether or not it would be appropriate for us to adjust this plot function ourselves before presenting its output. Following Reviewer 1's comment, we now have fixed the labels from being cut off (line XXX), but clarify in the SI that the FLCore plotting function has had "axes labels adjusted for display purposes" (line XXX).
+Figure 1 in SI5 was produced using the standard FLR plot function in the FLCore R package. Unfortunately, it does not appear possible to avoid this cut off in the FLRCore R package plotting function (we contacted the FLR package maintainers). Indeed, the same problem appears on the FLRCore official website: http://www.flr-project.org/FLCore/reference/plot.html -- we therefore must leave the cut off as is, but we emphasise that the plot is produced by FLR, not GMSE (line XXX).
 
 Reviewer 1 minor comment 5
 --------------------------------------------------------------------------------
@@ -114,7 +114,7 @@ Reviewer 1 minor comment 5
 Author response to Reviewer 1 minor comment 4
 --------------------------------------------------------------------------------
 
-There is no table in SI7; rather, SI7 outlines the main data structures in GMSE. We believe that Reviewer 1 is referring to Table 1 in SI3, which does indeed list `res_move_type` and `observe_type`, but with little discussion of non-default values. While the non-default GMSE argument options are discussed in the GMSE documentation ( https://cran.r-project.org/web/packages/GMSE/GMSE.pdf -- see also https://confoobio.github.io/gmse/reference/gmse.html ), we do agree that some mention of them would be useful in the Supporting Information.
+There is no table in SI7; rather, SI7 outlines the main data structures in GMSE. We infer that Reviewer 1 is referring to Table 1 in SI3, which does indeed list `res_move_type` and `observe_type`, but with little discussion of non-default values. While the non-default GMSE argument options are discussed in the GMSE documentation ( https://cran.r-project.org/web/packages/GMSE/GMSE.pdf -- see also https://confoobio.github.io/gmse/reference/gmse.html ), we do agree that some mention of them would be useful in the Supporting Information.
 
 We believe that the best place for an explanation of in-built non-default arguments for `gmse()` (and, by extension, `gmse_apply()`) is in SI3. We therefore include a new section in SI3 (line XXX) that discusses these other values and, where appropriate, how they might be used in other situations (with links to other areas in Supporting Information where non-defaults are used). A link to this section is made with Table 1 in SI3. 
 
