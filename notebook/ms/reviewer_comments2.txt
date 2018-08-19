@@ -103,7 +103,7 @@ Reviewer 1 minor comment 4
 Author response to Reviewer 1 minor comment 4
 --------------------------------------------------------------------------------
 
-Figure 1 in SI5 was produced using the standard FLR plot function in the FLCore R package. Unfortunately, it does not appear possible to avoid this cut off in the FLRCore R package plotting function (we contacted the FLR package maintainers). Indeed, the same problem appears on the FLRCore official website: http://www.flr-project.org/FLCore/reference/plot.html -- we therefore must leave the cut off as is, but we now emphasise more clearly that the plot is produced by FLR, not GMSE (line XXX).
+Figure labels are no longer cut off. We have resolved this issue by using the `ggplotFL` R package in the FLR library, which was recommended to us after contacting the `FLCore` package maintainer.
 
 Reviewer 1 minor comment 5
 --------------------------------------------------------------------------------

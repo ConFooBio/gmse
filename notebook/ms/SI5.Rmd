@@ -46,16 +46,18 @@ The FLR toolset includes [a series of packages](http://www.flr-project.org/#pack
 Modelling stock-recruitment for the population model
 ================================================================================
 
-Here we closely follow [a tutorial from the FLR project](http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html). To build the stock-recruitment model, the `FLCore` package is needed [@Kell2007].
+Here we closely follow [a tutorial from the FLR project](http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html). To build the stock-recruitment model, the `FLCore` package is needed [@Kell2007]. We also include the `ggplotFL` package for plotting.
 
 ```{r, eval = FALSE}
 install.packages("FLCore", repos="http://flr-project.org/R");
+install.packages("ggplotFL", repos="http://flr-project.org/R")
 ```
 
-To start, we need to read in the `FLCore` and GMSE libraries.
+To start, we need to read in the `FLCore`, `ggplotFL` and `GMSE` libraries.
 
 ```{r}
 library(FLCore);
+library(ggplotFL);
 library(GMSE);
 ```
 
@@ -106,7 +108,7 @@ newFL <- fmle(newFL);
 newFL <- fmle(newFL);
 ```
 
-Diagnostic plots, identical to those of the [modelling stock-recruitment tutorial](http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html) for the `nsher_ri` example, are shown below. We note that these plots are made using the `FLCore` package, and are not produced by, nor available in, the `GMSE` package.
+Diagnostic plots, identical to those of the [modelling stock-recruitment tutorial](http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html) for the `nsher_ri` example, are shown below in Figure 1. We note that these plots are made using the `FLCore` and `ggplotFL` packages, and are not produced by, nor available in, the `GMSE` package.
 
 ```{r, fig.height = 5.2, fig.cap = "Output of the FLR plot function for an example Ricker model of stock recruitment on North Sea Herring data."}
 plot(newFL, cex = 0.7);
