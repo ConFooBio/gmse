@@ -15,6 +15,8 @@ output:
     fig_caption: yes
     reference_docx: docx_template.docx
 header-includes:
+- \usepackage{lineno}
+- \linenumbers
 linestretch: 1
 bibliography: gmse.bib
 biblio-style: apalike
@@ -166,7 +168,7 @@ Once a new set of `ga_popsize` individuals is retained through tournament select
 Detailed explanation of manager and user fitness functions
 ================================================================================
 
-Here we explain how the fitnesses of candidate manager and user strategies in a `POPULATION` array (see above) are calculated. We emphasise that the fitness functions used in GMSE v0.4.0.7 are intended to be heuristic tools for identifying reasonable manager and user behaviours. In practice, our fitness functions identify behaviours that are well-aligned with manager and user interests for harvesting or crop yield, but they are not intended to identify *optimal* decisions. This practical, metaheuristic approach is consistent with the objectives of management strategy evaluation [@Bunnefeld2011], and is well-suited for the use of genetic algorithms [@Hamblin2013]. @Luke2013 describes the metaheuristic approach more generally (original emphasis retained):
+Here we explain how the fitnesses of candidate manager and user strategies in a `POPULATION` array (see above) are calculated. We emphasise that the fitness functions used in GMSE v0.4.0.7 are intended to be heuristic tools for identifying reasonable manager and user behaviours. In practice, our fitness functions identify behaviours that are well-aligned with manager and user interests for harvesting or crop yield, but they are not intended to identify *optimal* decisions. This practical, metaheuristic approach is consistent with the objectives of management strategy evaluation [@Bunnefeld2011], and is well-suited for the use of genetic algorithms [@Hamblin2013]. @Luke2009 describes the metaheuristic approach more generally (original emphasis retained):
 
 > Metaheuristics are applied to *I know it when I see it* problems. They’re algorithms used to find
 answers to problems when you have very little to help you: you don’t know beforehand what the
