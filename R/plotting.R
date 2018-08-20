@@ -525,13 +525,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
 #'
 #' Produce six panels on a plot showing resource distribution, owned land, resource dynamics and estimates, stake-holder yield, and action costs and actions made. 
 #' 
-#'@param res The resources array produced by the resource function within GMSE
-#'@param obs The array of resource observations from the observation model, used to estimate abundance of resources
-#'@param land The full list showing all layers of the landscape in each time step of GMSE
-#'@param agents The array of agents produced in the main gmse() function
-#'@param paras The array of parameters that hold global and dynamic parameter values used by GMSE
-#'@param ACTION A three dimensional array of agent (manager and stakeholder) actions
-#'@param COST A three dimensional array of cost values for agent (manager and stakeholder) actions
+#'@param sim_results Output from gmse to be plotted.
 #'@importFrom grDevices topo.colors
 #'@importFrom graphics abline axis image mtext par plot points polygon legend
 #'@importFrom graphics text
@@ -539,12 +533,18 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
 #'@return This function plots the dynamics of GMSE resource, observation, managemer, and user models in six separate sub-panels. (1) Upper left panel: Shows the locations of resources on the landscape (black dots); landscape terrain is also shown in brown, but at the moment, this is only cosmetic and does not reflect anything occurring in the model. (2) Upper right panel: Shows ownership of land by agents; land is divided proportional based on parameters set in gmse() and colours correspond with other subplots. If agent utilities and actions are restricted to land (`land_ownership` in the gmse() function), then this gives some idea of where actions are being performed and where resources are affecting the landscape. (3) Middle left panel: Shows the actual population abundance (black solid line) and the population abundance estimated by the manager (blue solid line; shading indicates 95 percent confidence intervals) over time. The dotted red line shows the resource carrying capacity (death-based) and the dotted blue line shows the target for resource abundance as set in the gmse() function; the orange line shows the total percent yield of the landscape (i.e., 100 percent means that resources have not decreased yield at all, 0 percent means that resources have completely destroyed all yield). (4) Middle right panel: Shows the raw landscape yield for each stakeholder (can be ignored if `land_ownership` is FALSE) over time; colours correspond to land ownership shown in the upper right panel. (5) Lower left panel: The cost of stakeholders performing actions over time, as set by the manager. (6) Lower right panel: The total number of actions performed by all stakeholders over time.
 #'@examples
 #'\dontrun{
-#'plot_gmse_results(res = sim$resource, obs = sim$observation, land = sim$land, 
-#'sim$agents, sim$paras, ACTION = sim$action, COST = sim$cost, 
-#'observe_type = 0);
+#'plot_gmse_results(sim_results = sim);
 #'}
 #'@export
-plot_gmse_results <- function(res, obs, land, agents, paras, ACTION, COST){
+plot_gmse_results <- function(sim_results){
+    
+    res    <- sim_results$resource;
+    obs    <- sim_results$observation;
+    land   <- sim_results$land;
+    agents <- sim_results$agents;
+    paras  <- sim_results$paras;
+    ACTION <- sim_results$action;
+    COST   <- sim_results$cost;
     
     para_vec <- paras[1,]
     
@@ -778,20 +778,22 @@ plot_gmse_results <- function(res, obs, land, agents, paras, ACTION, COST){
 #'
 #' Produce a five panel plot in which each panel compares the permissiveness of each action (scaring, culling, etc.) from the manager with the effort put into each action by individual users.
 #' 
-#'@param agents The array of agents produced in the main gmse() function
-#'@param paras The array of parameters that hold global and dynamic parameter values used by GMSE
-#'@param ACTION A three dimensional array of agent (manager and stakeholder) actions
-#'@param COST A three dimensional array of cost values for agent (manager and stakeholder) actions
+#'@param sim_results Output from gmse to be plotted.
 #'@importFrom grDevices topo.colors
 #'@importFrom graphics abline axis image mtext par plot points polygon legend
 #'@importFrom stats rnorm rpois
 #'@return This function plots the permissiveness that each manager exhibits for each user action (scaring, culling, etc.) and the effort that each individual user puts into each action over time. On the left axis, permissiveness is calculated as 100 minus the percent of the manager's budget put into increasing the cost of a particular action, so, e.g., if a manager puts all of their effort into increasing the cost of culling, then permissiveness of culling is 0; if they put none of their effort into increasing the cost of culling, then permissiveness of culling is 100. On the right axis, percentage of user action expended is the percent of a user's budget put into a particular action (note, these might not add up to 100 because users are not forced to use their entire budget). Coloured lines that are above black lines could potentially (cautiously) be interpreted as conflict between managers and users.
 #'@examples
 #'\dontrun{
-#'plot_gmse_effort(sim$agents, sim$paras, ACTION = sim$action, COST = sim$cost);
+#'plot_gmse_effort(sim_results = sim);
 #'}
 #'@export
-plot_gmse_effort <- function(agents, paras, ACTION, COST){
+plot_gmse_effort <- function(sim_results){
+    
+    agents <- sim_results$agents;
+    paras  <- sim_results$paras;
+    ACTION <- sim_results$action;
+    COST   <- sim_results$cost;
     
     cols      <- c("green", "firebrick1", "firebrick4", "deepskyblue1",
                    "deepskyblue2");

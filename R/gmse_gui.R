@@ -750,17 +750,13 @@ gmse_gui <- function(){
         output$plot1 <- renderPlot({
             set.seed(systime());
             sim <- run_gmse();
-            plot_gmse_results(res = sim$resource, obs = sim$observation, 
-                              land = sim$land, agents = sim$agents, 
-                              paras = sim$paras, ACTION = sim$action, 
-                              COST = sim$cost);
+            plot_gmse_results(sim_results = sim);
         })
         
         output$plot2 <- renderPlot({
             set.seed(systime());
             sim <- run_gmse();
-            plot_gmse_effort(agents = sim$agents, paras = sim$paras, 
-                             ACTION = sim$action,  COST = sim$cost);
+            plot_gmse_effort(sim_results = sim);
         })
         
         output$table1 <- renderTable({
