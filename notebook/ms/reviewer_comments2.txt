@@ -1,36 +1,14 @@
-07-Aug-2018
+Dear Dr. Vamosi,
 
-MEE-18-05-369 GMSE: an R package for generalised management strategy evaluation
+Thank you very much for your decision on our revised manuscript (MEE-18-05-369), ``GMSE: an R package for generalised management strategy evaluation'', which we hope you will further consider for publication as an Application in Methods and Ecology and Evolution. We are once again grateful for the positive feedback from the Associate Editor and two anonymous reviewers. To address the remaining minor concerns, we have updated our R package (GMSE v0.4.0.7) on CRAN and GitHub, and we have revised the manuscript and Supporting Information accordingly. 
 
-Dear Dr Brad Duthie,
+Effective population management remains a major challenge, and our GMSE R package provides a flexible tool for simulating social-ecological dynamics and thereby addressing important applied and theoretical questions in conservation biology. In the time during which this manuscript has been undergoing revision, GMSE has been used in a Scottish Natural Heritage commissioned report to improve population dynamic predictions in barnacle geese, and we are currently using GMSE to develop theory on the impact of stakeholder power asymmetries on population dynamics (Cusack et al., in prep). We hope GMSE will become a widely-used software package for population management, and believe that its flexibility, complex features, and growing developer and user base will make this possible.
 
-Thank you for submitting your manuscript to Methods in Ecology and Evolution. I have now received the reviewers' reports and a recommendation from the Associate Editor who handled the review process of your resubmission. Copies of their reports are included below. As you will see, the reviewers are positive about the value of the work but have also made a number of suggestions for improvement. I have considered your paper in light of the comments received and I would like to invite you to prepare a minor revision.
-
-In your revision, please make sure that you take full account of the comments made in the reports below. Please note that Methods in Ecology and Evolution does not automatically accept papers after revision, and an invitation to revise a manuscript does not represent commitment to eventual publication on our part. We will reject revised manuscripts if they are returned without satisfactory responses to the reviewers' comments. When returning the revised paper, please show point-by-point how you have dealt with the various comments in the appropriate section of the submission form.
-
-Please return your revision by 28-Aug-2018. If you need longer, please let us know so we can update our system accordingly.
-We look forward to hearing from you in due course.
+In revising to address referee comments, we have taken care to avoid increasing the word count as much as possible, and we have tightened the text and the code in several places. Our revision conforms to MEE word limitations, and our R code meets the new Policy on Publishing code. All persons entitled to authorship have been so named, and all authors have seen and agree with the contents of the manuscript. We certify that the submission is original work and is not under review at any other journal or book. 
 
 Sincerely,
 
-Dr Jana Vamosi
-Senior Editor, Methods in Ecology and Evolution
-
-Reply to:
-Mr Chris Grieves
-Methods in Ecology and Evolution Editorial Office
-coordinator@methodsinecologyandevolution.org
-
-================================================================================
-================================================================================
-================================================================================
-
-
-Dear Dr. Vamosi,
-
-
-
-
+Manuscript Author
 
 
 ================================================================================
@@ -69,7 +47,7 @@ Reviewer 1 minor comment 1
 Author response to Reviewer 1 minor comment 1
 --------------------------------------------------------------------------------
 
-We now add a brief explanation of the default resource function (line XXX), effects of culling (line XXX), and resource movement in the main text (line XXX). In particular, we further emphasise the individual-based nature of the default resource function, which is a particularly flexible and novel modelling framework in management strategy evaluation -- this also provides a comparison to other MSE packages, as requested by Reviewer 2 (see below). Further detail on default model options (e.g., details for options on resource movement) has been added in SI3 (see Author response to Reviewer 1 minor comment 4), and is also available in the GMSE R package documentation ( https://cran.r-project.org/web/packages/GMSE/GMSE.pdf )
+We now add a brief explanation of the default resource function (line 70), effects of culling (line 85), and resource movement in the main text (line 72). In particular, we further emphasise the individual-based nature of the default resource function (line 69, 71), which is a particularly flexible and novel modelling framework in management strategy evaluation -- this also provides a comparison to other MSE packages, as requested by Reviewer 2 (see below). Further detail on default model options (e.g., details for options on resource movement) has been added in SI3 (see Author response to Reviewer 1 minor comment 4), and is also available in the GMSE R package documentation ( https://cran.r-project.org/web/packages/GMSE/GMSE.pdf )
 
 Reviewer 1 minor comment 2
 --------------------------------------------------------------------------------
@@ -79,7 +57,7 @@ Reviewer 1 minor comment 2
 Author response to Reviewer 1 minor comment 2
 --------------------------------------------------------------------------------
 
-We now refer to SI7 directly in reference to key data structures (line 54) and also present Table 1 in SI3 (line 55), in which parameters are defined. We believe it is preferable to have a table in both SI3 and SI4 because we cannot assume readers will read the supporting information documents (i.e., software vignettes) in any particular order. 
+We now refer to SI7 directly in reference to key data structures (SI3 line 54) and also present Table 1 in SI3 (SI3 line 55), in which parameters are defined. We believe it is preferable to have a table in both SI3 and SI4 because we cannot assume readers will read the supporting information documents (i.e., software vignettes) in any particular order. 
 
 Reviewer 1 minor comment 3
 --------------------------------------------------------------------------------
@@ -93,7 +71,7 @@ We greatly appreciate Reviewer 1 working through the Supporting Information to i
 
 The code on page 6 is a simple loop to input agent budgets, and does not make use of `goose_table` at all; we therefore infer that Reviewer 1 is referring to the `avoid_aggregation` function at the top of page 7, which is where `goose_table` first appears before first being defined. The `avoid_aggregation` function is not a part of GMSE, but an example of a custom function that might be integrated by a GMSE user. The `goose_table` argument is used in the section immediately following (bottom of page 7) within the `avoid_aggregation` function to affect goose distributoins prior to running `gmse_apply`.
 
-We now see why this `goose_table` definition was confusing; as formerly written, it wasn't obvious that this is simply output from the resource array produced by `gmse_apply`. We now state what this custom argument in `avoid_aggregation` is doing explicitly where it is first introduced (line 166). Instead of calling it `goose_table`, we now also use an argument name that better reflects what the structure actually is, `sim_resource_array` (line 168). The code can be replicated by copy-pasting the `avoid_aggregation` function, then `copy-pasting the code in the "Simulation with custom farms, budgets and goose movement" section (which uses the `avoid_aggregation` function).
+We now see why this `goose_table` definition was confusing; as formerly written, it wasn't obvious that this is simply output from the resource array produced by `gmse_apply`. We now state what this custom argument in `avoid_aggregation` is doing explicitly where it is first introduced (SI4 line 166). Instead of calling it `goose_table`, we now also use an argument name that better reflects what the structure actually is, `sim_resource_array` (SI4 line 168). The code can be replicated by copy-pasting the `avoid_aggregation` function, then `copy-pasting the code in the "Simulation with custom farms, budgets and goose movement" section (which uses the `avoid_aggregation` function).
 
 Reviewer 1 minor comment 4
 --------------------------------------------------------------------------------
@@ -103,7 +81,7 @@ Reviewer 1 minor comment 4
 Author response to Reviewer 1 minor comment 4
 --------------------------------------------------------------------------------
 
-Figure labels are no longer cut off (line 90, page 4). We have resolved this issue by using the `ggplotFL` R package in the FLR library, which was recommended to us after contacting the `FLCore` package maintainer.
+Figure labels are no longer cut off (SI5 line 90, page 4). We have resolved this issue by using the `ggplotFL` R package in the FLR library, which was recommended to us after contacting the `FLCore` package maintainer.
 
 Reviewer 1 minor comment 5
 --------------------------------------------------------------------------------
@@ -116,7 +94,7 @@ Author response to Reviewer 1 minor comment 5
 
 There is no table in SI7; rather, SI7 outlines the main data structures in GMSE. We infer that Reviewer 1 is referring to Table 1 in SI3, which does indeed list `res_move_type` and `observe_type`, but with little discussion of non-default values. While the non-default GMSE argument options are discussed in the GMSE documentation ( https://cran.r-project.org/web/packages/GMSE/GMSE.pdf -- see also https://confoobio.github.io/gmse/reference/gmse.html ), we do agree that some mention of them would be useful in the Supporting Information.
 
-We believe that the best place for an explanation of in-built non-default arguments for `gmse()` (and, by extension, `gmse_apply()`) is in SI3. We therefore include a new section in SI3 (line 144) that discusses these other values and, where appropriate, how they might be used in other situations (with links to other areas in Supporting Information where non-defaults are used). A link to this section is made with Table 1 in SI3.
+We believe that the best place for an explanation of in-built non-default arguments for `gmse()` (and, by extension, `gmse_apply()`) is in SI3. We therefore include a new section in SI3 (SI3 line 144) that discusses these other values and, where appropriate, how they might be used in other situations (with links to other areas in Supporting Information where non-defaults are used). A link to this section is made with Table 1 in SI3.
 
 
 ================================================================================
@@ -131,9 +109,9 @@ On reviewing the resubmission, my opinion of the paper has not changed, and it h
 Author response to Reviewer 2 General comments
 --------------------------------------------------------------------------------
 
-We thank Reviewer 2 for their comments, and are pleased that they believe that our manuscript is of general interest to the readers of Methods in Ecology and Evolution, and that it has improved from its earlier version. We believe that our software and the modelling framework underlying it will have broad appeal to modelling resource management, particularly under situations of uncertainty and conflict; this is the key focus of this software application. While we appreciate that fisheries remains the focus of an especially high proportion of MSE modelling applications, and we acknowledge this in the main text of the manuscript (line XXX), non-fisheries applications also make up a large and growing proportion of MSE modelling (Bunnefeld 2011). Because the novelties made available in our software are general to both fishery and non-fishery systems, we don't believe that it would be the best use of the limited (3000 word) space in the main text to expand specifically on applications to fishery systems. 
+We thank Reviewer 2 for their comments, and are pleased that they believe that our manuscript is of general interest to the readers of Methods in Ecology and Evolution, and that it has improved from its earlier version. We believe that our software and the modelling framework underlying it will have broad appeal to modelling resource management, particularly under situations of uncertainty and conflict; this is the key focus of this software application. While we appreciate that fisheries remains the focus of an especially high proportion of MSE modelling applications, and we acknowledge this in the main text of the manuscript (line 40), non-fisheries applications also make up a large and growing proportion of MSE modelling (Bunnefeld 2011). Because the novelties made available in our software are general to both fishery and non-fishery systems, we don't believe that it would be the best use of the limited (3000 word) space in the main text to expand specifically on applications to fishery systems. 
 
-We are encouraged by Reviewer 2's interest in the potential for our software to be applied to fisheries systems, and we appreciate that they were disappointed that this was not a larger focus of the main text. Nevertheless, we also point out that SI5, as included in our previous revision, allowed for a much more complete treatment of potential applications of GMSE to fisheries than would have been possible in the main text alone. In SI5, we have provided a lengthy eight page Supporting Information document that focuses exclusively on the application of GMSE to fisheries, in which GMSE is compared to and integrated with the Fisheries Library in R (FLR), a major collection of R packages that Reviewer 2 explicitly suggested as an example for comparison. In addition to providing the requested verbal links to the fisheries literature, we believe that SI5 provides the kind of real cross-platform integration that Reviewer 2 was requesting, complete with a working example integrating FLR code with the `gmse_apply()` function in GMSE. We therefore believe that the link to fisheries is strong, and we now highlight the specific relevance of SI5 for fisheries more clearly in the main text (line XXX).
+We are encouraged by Reviewer 2's interest in the potential for our software to be applied to fisheries systems, and we appreciate that they were disappointed that this was not a larger focus of the main text. Nevertheless, we also point out that SI5, as included in our previous revision, allowed for a much more complete treatment of potential applications of GMSE to fisheries than would have been possible in the main text alone. In SI5, we have provided a lengthy eight page Supporting Information document that focuses exclusively on the application of GMSE to fisheries, in which GMSE is compared to and integrated with the Fisheries Library in R (FLR), a major collection of R packages that Reviewer 2 explicitly suggested as an example for comparison. In addition to providing the requested verbal links to the fisheries literature, we believe that SI5 provides the kind of real cross-platform integration that Reviewer 2 was requesting, complete with a working example integrating FLR code with the `gmse_apply()` function in GMSE. We therefore believe that the link to fisheries is strong, and we now highlight the specific relevance of SI5 for fisheries more clearly in the main text (line 174).
 
 
 Reviewer 2 minor comment 1
@@ -144,7 +122,7 @@ Reviewer 2 minor comment 1
 Author response to Reviewer 2 minor comment 1
 --------------------------------------------------------------------------------
 
-Fixed (line XXX).
+Fixed (line 13).
 
 Reviewer 2 minor comment 2
 --------------------------------------------------------------------------------
@@ -154,7 +132,7 @@ Reviewer 2 minor comment 2
 Author response to Reviewer 2 minor comment 1
 --------------------------------------------------------------------------------
 
-We now reword this to make it clear that the third observation method counts across a linear transect, and the fourth observation method counts across blocks of land (line XXX).
+We now reword this and shorten (line 75). Because `observe_type = 3` and `observe_type = 4` are really variants of the same general method (counting resources across the whole landscape one set of landscape cells at a time), we group them together in the main text, with more explanation of the specific `observe_type` argument options in the documentation and SI3 (see "Author response to Reviewer 1 minor comment 5")
 
 Reviewer 2 minor comment 3
 --------------------------------------------------------------------------------
@@ -164,7 +142,7 @@ Reviewer 2 minor comment 3
 Author response to Reviewer 2 minor comment 3
 --------------------------------------------------------------------------------
 
-We now clarify that adaptive strategies are effective, but not necessarily the best of all possible strategies for achieving a particular objective (line XXX).
+We now clarify what this means by describing how strategies are found to be consistent with stakeholder objectives, with links to SI1 for details on what constitutes an adaptive strategy and the heuristic method of finding one (line 91).
 
 Reviewer 2 minor comment 4
 --------------------------------------------------------------------------------
@@ -174,7 +152,7 @@ Reviewer 2 minor comment 4
 Author response to Reviewer 2 minor comment 4
 --------------------------------------------------------------------------------
 
-We now start the initial abundance at a much lower value (100) than the target (1000), for the purpose of demonstration (line XXX). Because the population is capable of being adaptively managed effectively in this demonstration of `gmse`, both low (100) and high (e.g., 2000) values would stabilise to the same long-term dynamics around the target abundance of 1000 (as can be confirmed by changing the `gmse` argument `RESOURCE_ini` in the example used in the text). Our objective is to demonstrate the use of the software and how its output should be interpreted, and we leave specific examples of management inference from simulation modelling to Supporting Information (e.g., SI3, SI6) and future manuscripts. 
+We now start the initial abundance at a much lower value (100) than the target (1000), for the purpose of demonstration (line 117 & 123). Because the population is capable of being adaptively managed effectively in this demonstration of `gmse`, both low (200) and high (e.g., 2000) values would stabilise to the same long-term dynamics around the target abundance of 1000 (as can be confirmed by changing the `gmse` argument `RESOURCE_ini` in the example used in the text). Our objective is to demonstrate the use of the software and how its output should be interpreted, and we leave specific examples of management inference from simulation modelling to Supporting Information (e.g., SI3, SI6) and future manuscripts. 
 
 Reviewer 2 minor comment 5
 --------------------------------------------------------------------------------
@@ -184,7 +162,7 @@ Reviewer 2 minor comment 5
 Author response to Reviewer 2 minor comment 5
 --------------------------------------------------------------------------------
 
-We show this comparison in Figure 2 (blue versus black line in the left middle panel). We now make this comparison more explicit by using the terminology that Reviewer 2 used above in parallel to that outlined in Figure 1 (line XXX). Comparison between the resource (operating) and observation (assessment) model outputs is also shown in SI2, SI4 & SI6 for `gmse_apply()` (line XXX), and in SI5 for an integration with the Fisheries Library in R (FLR; line XXX).
+We show this comparison in Figure 2 (blue versus black line in the left middle panel). We now make this comparison more explicit by using the terminology that Reviewer 2 used above in parallel to that outlined in Figure 1 (line 137, page 8). Comparison between the resource (operating) and observation (assessment) model outputs is also shown in SI2, SI4 & SI6 for all `gmse_apply()` output, and in SI5 for an integration with the Fisheries Library in R (FLR; SI5 line 111).
 
 Reviewer 2 minor comment 6
 --------------------------------------------------------------------------------
@@ -194,7 +172,7 @@ Reviewer 2 minor comment 6
 Author response to Reviewer 2 minor comment 6
 --------------------------------------------------------------------------------
 
-We believe that having a simple replicable example of three of the key GMSE functions (`gmse`, `plot_gmse_results`, and `gmse_apply`) will be helpful for the readers to start using GMSE for their own modelling. After downloading GMSE in R, the line here can be copied and pasted directly into the R console to reproduce the example shown in Figure 2 (with slight differences caused by model stochasticity).
+We believe that having a simple replicable example of three of the key GMSE functions (`gmse`, `plot_gmse_results`, and `gmse_apply`) will be helpful for the readers to start using GMSE for their own modelling. After downloading GMSE in R, the line here can be copied and pasted directly into the R console to reproduce the example shown in Figure 2 (with slight differences caused by model stochasticity). To decrease the space taken up by the code a bit, and to improve the package, we have changed the function `plot_gmse_results` so that it only requires one argument of simulation output (line 130).
 
 Reviewer 2 minor comment 7
 --------------------------------------------------------------------------------
@@ -205,19 +183,19 @@ Reviewer 2 minor comment 7
 Author response to Reviewer 2 minor comment 7
 --------------------------------------------------------------------------------
 
-See "Author response to Reviewer 2 minor comment 4". Long-term fluctuation around the target size occurs even given much lower (100) or higher (2000) initial abundances. The objective here is not to present surprising results, but to demonstrate the use of the software most effectively. Our original choice of setting the initial abundance to the target was simply to avoid any potential distraction from this objective, but we now use a starting `RESOURCE_ini = 100` to avoid any confusion.
+See "Author response to Reviewer 2 minor comment 4". Long-term fluctuation around the target size occurs even given much lower (200) or higher (2000) initial abundances. The objective here is not to present surprising results, but to demonstrate the use of the software most effectively. Our original choice of setting the initial abundance to the target was simply to avoid any potential distraction from this objective, but we now use a starting `RESOURCE_ini = 200` to avoid any confusion (line 123).
 
 
 Reviewer 2 minor comment 8
 --------------------------------------------------------------------------------
 
-Fig 1. Ensure for clarity that labels in the figure correspond to their description in the text.
+Fig 1. Ensure for clarity that labels in the figure correspond to their description in the text. We have additionally 
 
 
 Author response to Reviewer 2 minor comment 8
 --------------------------------------------------------------------------------
 
-We have double-checked that the labels in the figure correspond to the text descriptions.
+We have double-checked that the labels in the figure correspond to the text descriptions, including linking natural resource and observation models to simulation output (see Fig 2 legend, line 137).
 
 
 Reviewer 2 minor comment 9
@@ -229,7 +207,7 @@ Fig. 2 Why does there appear to be an upper cap in the cost of actions (bottom l
 Author response to Reviewer 2 minor comment 9
 --------------------------------------------------------------------------------
 
-The upper limit on cost of actions is capped by the manager's ability to set policy (`manager_budget`). We now make this more explicit (line XXX).
+The upper limit on cost of actions is capped by the manager's ability to set policy (`manager_budget`). We now make this more explicit (see Fig 2 legend, line 137).
 
 Reviewer 2 minor comment 10
 --------------------------------------------------------------------------------
@@ -239,42 +217,14 @@ Conclusion – application to fisheries? Other MSE packages?
 Author response to Reviewer 2 minor comment 10
 --------------------------------------------------------------------------------
 
-These applications and comparisons to fisheries are the focus of SI5, which we now make clearer in the conclusion by mentioning fisheries by name (line XXX).
+These applications and comparisons to fisheries are the focus of SI5, which we now make clearer in the conclusion by mentioning fisheries by name (line 174).
 
 
 ================================================================================
 Author References
 ================================================================================
 
-Bunnefeld, Nils, Eriko Hoshino, and Eleanor J Milner-Gulland. 2011. “Management strategy evaluation: A powerful tool for conservation?” Trends in Ecology and Evolution 26 (9): 441–47. doi:10.1016/j.tree.2011.05.003.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Bunnefeld, Nils, Eriko Hoshino, and Eleanor J Milner-Gulland. 2011. "Management strategy evaluation: A powerful tool for conservation?" Trends in Ecology and Evolution 26 (9): 441–47. doi:10.1016/j.tree.2011.05.003.
 
 
 
