@@ -111,12 +111,12 @@ Reviewer 1 minor comment 5
 [5] Table 1 in SI7: Add explanations on res_move_type and observe_type other than default values. Otherwise it is not clear that how the models are applied to other situations.
 
 
-Author response to Reviewer 1 minor comment 4
+Author response to Reviewer 1 minor comment 5
 --------------------------------------------------------------------------------
 
 There is no table in SI7; rather, SI7 outlines the main data structures in GMSE. We infer that Reviewer 1 is referring to Table 1 in SI3, which does indeed list `res_move_type` and `observe_type`, but with little discussion of non-default values. While the non-default GMSE argument options are discussed in the GMSE documentation ( https://cran.r-project.org/web/packages/GMSE/GMSE.pdf -- see also https://confoobio.github.io/gmse/reference/gmse.html ), we do agree that some mention of them would be useful in the Supporting Information.
 
-We believe that the best place for an explanation of in-built non-default arguments for `gmse()` (and, by extension, `gmse_apply()`) is in SI3. We therefore include a new section in SI3 (line XXX) that discusses these other values and, where appropriate, how they might be used in other situations (with links to other areas in Supporting Information where non-defaults are used). A link to this section is made with Table 1 in SI3. 
+We believe that the best place for an explanation of in-built non-default arguments for `gmse()` (and, by extension, `gmse_apply()`) is in SI3. We therefore include a new section in SI3 (line XXX) that discusses these other values and, where appropriate, how they might be used in other situations (with links to other areas in Supporting Information where non-defaults are used). A link to this section is made with Table 1 in SI3.
 
 
 ================================================================================
