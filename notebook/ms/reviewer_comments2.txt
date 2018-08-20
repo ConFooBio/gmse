@@ -79,7 +79,7 @@ Reviewer 1 minor comment 2
 Author response to Reviewer 1 minor comment 2
 --------------------------------------------------------------------------------
 
-We now refer to SI7 directly in reference to key data structures (line XXX) and also present Table 1 in SI3 (line XXX), in which parameters are defined. We believe it is preferable to have a table in both SI3 and SI4 because we cannot assume readers will read the supporting information documents (i.e., software vignettes) in any particular order. 
+We now refer to SI7 directly in reference to key data structures (line 54) and also present Table 1 in SI3 (line 55), in which parameters are defined. We believe it is preferable to have a table in both SI3 and SI4 because we cannot assume readers will read the supporting information documents (i.e., software vignettes) in any particular order. 
 
 Reviewer 1 minor comment 3
 --------------------------------------------------------------------------------
@@ -93,7 +93,7 @@ We greatly appreciate Reviewer 1 working through the Supporting Information to i
 
 The code on page 6 is a simple loop to input agent budgets, and does not make use of `goose_table` at all; we therefore infer that Reviewer 1 is referring to the `avoid_aggregation` function at the top of page 7, which is where `goose_table` first appears before first being defined. The `avoid_aggregation` function is not a part of GMSE, but an example of a custom function that might be integrated by a GMSE user. The `goose_table` argument is used in the section immediately following (bottom of page 7) within the `avoid_aggregation` function to affect goose distributoins prior to running `gmse_apply`.
 
-We now see why this `goose_table` definition was confusing; as formerly written, it wasn't obvious that this is simply output from the resource array produced by `gmse_apply`. We now state what this custom argument in `avoid_aggregation` is doing explicitly where it is first introduced (line XXX). Instead of calling it `goose_table`, we now also use an argument name that better reflects what the structure actually is, `sim_resource_array` (line XXX). The code can be replicated by copy-pasting the `avoid_aggregation` function, then `copy-pasting the code in the "Simulation with custom farms, budgets and goose movement" section (which uses the `avoid_aggregation` function).
+We now see why this `goose_table` definition was confusing; as formerly written, it wasn't obvious that this is simply output from the resource array produced by `gmse_apply`. We now state what this custom argument in `avoid_aggregation` is doing explicitly where it is first introduced (line 166). Instead of calling it `goose_table`, we now also use an argument name that better reflects what the structure actually is, `sim_resource_array` (line 168). The code can be replicated by copy-pasting the `avoid_aggregation` function, then `copy-pasting the code in the "Simulation with custom farms, budgets and goose movement" section (which uses the `avoid_aggregation` function).
 
 Reviewer 1 minor comment 4
 --------------------------------------------------------------------------------
@@ -103,7 +103,7 @@ Reviewer 1 minor comment 4
 Author response to Reviewer 1 minor comment 4
 --------------------------------------------------------------------------------
 
-Figure labels are no longer cut off (line XXX). We have resolved this issue by using the `ggplotFL` R package in the FLR library, which was recommended to us after contacting the `FLCore` package maintainer.
+Figure labels are no longer cut off (line 90, page 4). We have resolved this issue by using the `ggplotFL` R package in the FLR library, which was recommended to us after contacting the `FLCore` package maintainer.
 
 Reviewer 1 minor comment 5
 --------------------------------------------------------------------------------
@@ -116,7 +116,7 @@ Author response to Reviewer 1 minor comment 5
 
 There is no table in SI7; rather, SI7 outlines the main data structures in GMSE. We infer that Reviewer 1 is referring to Table 1 in SI3, which does indeed list `res_move_type` and `observe_type`, but with little discussion of non-default values. While the non-default GMSE argument options are discussed in the GMSE documentation ( https://cran.r-project.org/web/packages/GMSE/GMSE.pdf -- see also https://confoobio.github.io/gmse/reference/gmse.html ), we do agree that some mention of them would be useful in the Supporting Information.
 
-We believe that the best place for an explanation of in-built non-default arguments for `gmse()` (and, by extension, `gmse_apply()`) is in SI3. We therefore include a new section in SI3 (line XXX) that discusses these other values and, where appropriate, how they might be used in other situations (with links to other areas in Supporting Information where non-defaults are used). A link to this section is made with Table 1 in SI3.
+We believe that the best place for an explanation of in-built non-default arguments for `gmse()` (and, by extension, `gmse_apply()`) is in SI3. We therefore include a new section in SI3 (line 144) that discusses these other values and, where appropriate, how they might be used in other situations (with links to other areas in Supporting Information where non-defaults are used). A link to this section is made with Table 1 in SI3.
 
 
 ================================================================================

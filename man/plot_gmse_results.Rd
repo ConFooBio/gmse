@@ -4,22 +4,10 @@
 \alias{plot_gmse_results}
 \title{Plot the results of a gmse simulation}
 \usage{
-plot_gmse_results(res, obs, land, agents, paras, ACTION, COST)
+plot_gmse_results(sim_results)
 }
 \arguments{
-\item{res}{The resources array produced by the resource function within GMSE}
-
-\item{obs}{The array of resource observations from the observation model, used to estimate abundance of resources}
-
-\item{land}{The full list showing all layers of the landscape in each time step of GMSE}
-
-\item{agents}{The array of agents produced in the main gmse() function}
-
-\item{paras}{The array of parameters that hold global and dynamic parameter values used by GMSE}
-
-\item{ACTION}{A three dimensional array of agent (manager and stakeholder) actions}
-
-\item{COST}{A three dimensional array of cost values for agent (manager and stakeholder) actions}
+\item{sim_results}{Output from gmse to be plotted.}
 }
 \value{
 This function plots the dynamics of GMSE resource, observation, managemer, and user models in six separate sub-panels. (1) Upper left panel: Shows the locations of resources on the landscape (black dots); landscape terrain is also shown in brown, but at the moment, this is only cosmetic and does not reflect anything occurring in the model. (2) Upper right panel: Shows ownership of land by agents; land is divided proportional based on parameters set in gmse() and colours correspond with other subplots. If agent utilities and actions are restricted to land (`land_ownership` in the gmse() function), then this gives some idea of where actions are being performed and where resources are affecting the landscape. (3) Middle left panel: Shows the actual population abundance (black solid line) and the population abundance estimated by the manager (blue solid line; shading indicates 95 percent confidence intervals) over time. The dotted red line shows the resource carrying capacity (death-based) and the dotted blue line shows the target for resource abundance as set in the gmse() function; the orange line shows the total percent yield of the landscape (i.e., 100 percent means that resources have not decreased yield at all, 0 percent means that resources have completely destroyed all yield). (4) Middle right panel: Shows the raw landscape yield for each stakeholder (can be ignored if `land_ownership` is FALSE) over time; colours correspond to land ownership shown in the upper right panel. (5) Lower left panel: The cost of stakeholders performing actions over time, as set by the manager. (6) Lower right panel: The total number of actions performed by all stakeholders over time.
@@ -29,8 +17,6 @@ Produce six panels on a plot showing resource distribution, owned land, resource
 }
 \examples{
 \dontrun{
-plot_gmse_results(res = sim$resource, obs = sim$observation, land = sim$land, 
-sim$agents, sim$paras, ACTION = sim$action, COST = sim$cost, 
-observe_type = 0);
+plot_gmse_results(sim_results = sim);
 }
 }
