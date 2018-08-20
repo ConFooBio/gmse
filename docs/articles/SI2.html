@@ -8,8 +8,8 @@
 <title>Use of the gmse_apply function • GMSE</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><meta property="og:title" content="Use of the gmse_apply function">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Use of the gmse_apply function">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.0.6</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.0.7</span>
       </span>
     </div>
 
@@ -123,14 +123,14 @@
 <p>For <code>sim_1</code>, the default ‘basic’ results are returned as below, which summarise key values for all sub-models.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(sim_1);</code></pre></div>
 <pre><code>## $resource_results
-## [1] 1119
+## [1] 1048
 ## 
 ## $observation_results
-## [1] 1156.463
+## [1] 1269.841
 ## 
 ## $manager_results
 ##          resource_type scaring culling castration feeding help_offspring
-## policy_1             1      NA      55         NA      NA             NA
+## policy_1             1      NA      54         NA      NA             NA
 ## 
 ## $user_results
 ##         resource_type scaring culling castration feeding help_offspring
@@ -158,19 +158,19 @@
 ## [1] 128
 ## 
 ## $observation_results
-## [1] 90.70295
+## [1] 113.3787
 ## 
 ## $manager_results
 ##          resource_type scaring culling castration feeding help_offspring
-## policy_1             1      NA      53         NA      NA             NA
+## policy_1             1      NA      51         NA      NA             NA
 ## 
 ## $user_results
 ##         resource_type scaring culling castration feeding help_offspring
 ## Manager             1      NA       0         NA      NA             NA
-## user_1              1      NA      18         NA      NA             NA
-## user_2              1      NA      18         NA      NA             NA
-## user_3              1      NA      18         NA      NA             NA
-## user_4              1      NA      18         NA      NA             NA
+## user_1              1      NA      19         NA      NA             NA
+## user_2              1      NA      19         NA      NA             NA
+## user_3              1      NA      19         NA      NA             NA
+## user_4              1      NA      19         NA      NA             NA
 ##         tend_crops kill_crops
 ## Manager         NA         NA
 ## user_1          NA         NA
@@ -222,14 +222,14 @@ alt_usr &lt;-<span class="st"> </span>function(manager_vector){
 ## [1] 1500
 ## 
 ## $observation_results
-## [1] 1519.274
+## [1] 1496.599
 ## 
 ## $manager_results
-## [1] 519.2744
+## [1] 496.5986
 ## 
 ## $user_results
-## [1] 571.2018</code></pre>
-<p>It is possible to, e.g., specify a simple resource and observation model, but then take advantage of the genetic algorithm to predict policy decisions and user actions (see <a href="SI5.pdf">SI5</a> for a fisheries example). This can be done by using the default GMSE manager and user functions (written below explicitly, though this is not necessary).</p>
+## [1] 546.2585</code></pre>
+<p>It is possible to, e.g., specify a simple resource and observation model, but then take advantage of the genetic algorithm to predict policy decisions and user actions (see <a href="SI5.html">SI5</a> for a fisheries example). This can be done by using the default GMSE manager and user functions (written below explicitly, though this is not necessary).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="dt">res_mod =</span> alt_res, <span class="dt">obs_mod =</span> alt_obs, 
            <span class="dt">man_mod =</span> manager, <span class="dt">use_mod =</span> user, <span class="dt">X =</span> <span class="dv">1000</span>);</code></pre></div>
 <pre><code>## $resource_results
@@ -240,15 +240,15 @@ alt_usr &lt;-<span class="st"> </span>function(manager_vector){
 ## 
 ## $manager_results
 ##          resource_type scaring culling castration feeding help_offspring
-## policy_1             1      NA      58         NA      NA             NA
+## policy_1             1      NA      59         NA      NA             NA
 ## 
 ## $user_results
 ##         resource_type scaring culling castration feeding help_offspring
 ## Manager             1      NA       0         NA      NA             NA
-## user_1              1      NA      17         NA      NA             NA
-## user_2              1      NA      17         NA      NA             NA
-## user_3              1      NA      17         NA      NA             NA
-## user_4              1      NA      17         NA      NA             NA
+## user_1              1      NA      16         NA      NA             NA
+## user_2              1      NA      16         NA      NA             NA
+## user_3              1      NA      16         NA      NA             NA
+## user_4              1      NA      16         NA      NA             NA
 ##         tend_crops kill_crops
 ## Manager         NA         NA
 ## user_1          NA         NA
@@ -280,26 +280,26 @@ for(time_step in <span class="dv">1</span>:<span class="dv">20</span>){
                          <span class="st">"Cull_cost"</span>, <span class="st">"Scare_count"</span>, <span class="st">"Cull_count"</span>);
 <span class="kw">print</span>(sim_sum_1);</code></pre></div>
 <pre><code>##       Time Pop_size   Pop_est Scare_cost Cull_cost Scare_count Cull_count
-##  [1,]    1     1187 1269.8413         NA        10          NA        600
-##  [2,]    2      675  589.5692         NA       110          NA         54
-##  [3,]    3      674  861.6780         NA       110          NA         54
-##  [4,]    4      712  702.9478         NA       110          NA         54
-##  [5,]    5      844  884.3537         NA       110          NA         54
-##  [6,]    6      926 1020.4082         NA        30          NA        198
-##  [7,]    7      855  748.2993         NA       110          NA         54
-##  [8,]    8      950  589.5692         NA       110          NA         54
-##  [9,]    9     1130  725.6236         NA       110          NA         54
-## [10,]   10     1305  975.0567         NA       110          NA         54
-## [11,]   11     1489 1383.2200         NA        10          NA        600
-## [12,]   12     1048  929.7052         NA       110          NA         54
-## [13,]   13     1184 1133.7868         NA        10          NA        600
-## [14,]   14      709  634.9206         NA       110          NA         54
-## [15,]   15      745  748.2993         NA       110          NA         54
-## [16,]   16      855  566.8934         NA       110          NA         54
-## [17,]   17      960  997.7324         NA       110          NA         54
-## [18,]   18     1106  861.6780         NA       110          NA         54
-## [19,]   19     1305 1247.1655         NA        10          NA        600
-## [20,]   20      831  816.3265         NA       110          NA         54</code></pre>
+##  [1,]    1     1164  952.3810         NA       110          NA         54
+##  [2,]    2     1221 1201.8141         NA        10          NA        600
+##  [3,]    3      728  589.5692         NA       110          NA         54
+##  [4,]    4      789  657.5964         NA       110          NA         54
+##  [5,]    5      932  839.0023         NA       110          NA         54
+##  [6,]    6     1066 1020.4082         NA        30          NA        198
+##  [7,]    7     1035  816.3265         NA       110          NA         54
+##  [8,]    8     1185 1065.7596         NA        10          NA        600
+##  [9,]    9      727  566.8934         NA       110          NA         54
+## [10,]   10      813  770.9751         NA       110          NA         54
+## [11,]   11      924  793.6508         NA       110          NA         54
+## [12,]   12     1058 1020.4082         NA        30          NA        198
+## [13,]   13     1015 1383.2200         NA        10          NA        600
+## [14,]   14      487  634.9206         NA       110          NA         54
+## [15,]   15      523  566.8934         NA       110          NA         54
+## [16,]   16      570  476.1905         NA       110          NA         54
+## [17,]   17      621  748.2993         NA       110          NA         54
+## [18,]   18      680  839.0023         NA       110          NA         54
+## [19,]   19      727  680.2721         NA       110          NA         54
+## [20,]   20      829 1088.4354         NA        10          NA        600</code></pre>
 <p>Note that one element of the full list <code>gmse_apply</code> output is the ‘basic_output’ itself, which is produced by default when <code>get_res = "basic"</code>. This is what is being used to store the output of <code>sim_new</code> into <code>sim_sum_1</code>. Next, we show how the flexibility of <code>gmse_apply</code> can be used to dynamically redefine simulation conditions.</p>
 </div>
 </div>
@@ -330,26 +330,26 @@ for(time_step in <span class="dv">1</span>:<span class="dv">20</span>){
                          <span class="st">"Cull_cost"</span>, <span class="st">"Scare_count"</span>, <span class="st">"Cull_count"</span>);
 <span class="kw">print</span>(sim_sum_2);</code></pre></div>
 <pre><code>##       Time Pop_size   Pop_est Scare_cost Cull_cost Scare_count Cull_count
-##  [1,]    1     1111 1020.4082         NA        28          NA        210
-##  [2,]    2     1013  861.6780         NA       110          NA         54
-##  [3,]    3     1113  929.7052         NA       110          NA         54
-##  [4,]    4     1208  907.0295         NA       110          NA         54
-##  [5,]    5     1491 1065.7596         NA        10          NA        600
-##  [6,]    6     1066 1360.5442         NA        10          NA        600
-##  [7,]    7      559  566.8934         NA       110          NA         54
-##  [8,]    8      609  453.5147         NA       110          NA         54
-##  [9,]    9      674  612.2449         NA       110          NA         54
-## [10,]   10      743  884.3537         NA       110          NA         54
-## [11,]   11      840  816.3265         10       110         600          0
-## [12,]   12      997  748.2993         10       110         600          0
-## [13,]   13     1213 1133.7868         68        10           0        600
-## [14,]   14      751  816.3265         10       110         600          0
-## [15,]   15      894  884.3537         10       110         600          0
-## [16,]   16     1060 1133.7868         62        10           0        600
-## [17,]   17      544  498.8662         10       110         600          0
-## [18,]   18      669  861.6780         10       110         600          0
-## [19,]   19      792 1020.4082         49        10           0        600
-## [20,]   20      225  249.4331         10       110         600          0</code></pre>
+##  [1,]    1     1129 1247.1655         NA        10          NA        600
+##  [2,]    2      583  839.0023         NA       110          NA         54
+##  [3,]    3      607  544.2177         NA       110          NA         54
+##  [4,]    4      640  657.5964         NA       110          NA         54
+##  [5,]    5      756  793.6508         NA       110          NA         54
+##  [6,]    6      799  839.0023         NA       110          NA         54
+##  [7,]    7      874  929.7052         NA       110          NA         54
+##  [8,]    8      982  997.7324         NA       110          NA         54
+##  [9,]    9     1086 1360.5442         NA        10          NA        600
+## [10,]   10      578  816.3265         NA       110          NA         54
+## [11,]   11      604  929.7052         10       110         600          0
+## [12,]   12      728  861.6780         10       110         600          0
+## [13,]   13      882  816.3265         10       110         600          0
+## [14,]   14     1034  975.0567         10       110         600          0
+## [15,]   15     1263 1065.7596         65        10           0        600
+## [16,]   16      795  884.3537         10       110         600          0
+## [17,]   17      944 1247.1655         62        10           0        600
+## [18,]   18      437  521.5420         10       110         600          0
+## [19,]   19      543  544.2177         10       110         600          0
+## [20,]   20      653  725.6236         10       110         600          0</code></pre>
 <p>Hence, in addition to the previously explained benefits of the flexible <code>gmse_apply</code> function, one particularly useful feature is that we can use it to study change in policy availability – in the above case, what happens when scaring is suddenly introduced as a possible policy option. Similar things can be done, for example, to see how manager or user power changes over time. In the example below, users’ budgets increase by 100 every time step, with the manager’s budget remaining the same. The consequence of this increasing user budget is higher rates of culling and decreased population size.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ub          &lt;-<span class="st"> </span><span class="dv">500</span>;
 sim_old     &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="dt">get_res =</span> <span class="st">"Full"</span>, <span class="dt">stakeholders =</span> <span class="dv">6</span>, <span class="dt">user_budget =</span> ub);
@@ -370,26 +370,26 @@ for(time_step in <span class="dv">1</span>:<span class="dv">20</span>){
                          <span class="st">"User_budget"</span>);
 <span class="kw">print</span>(sim_sum_3);</code></pre></div>
 <pre><code>##       Time Pop_size   Pop_est Cull_cost Cull_count User_budget
-##  [1,]    1     1129  997.7324       110         24         500
-##  [2,]    2     1221 1020.4082        13        276         600
-##  [3,]    3     1079  952.3810       110         36         700
-##  [4,]    4     1218 1065.7596        10        480         800
-##  [5,]    5      937 1043.0839        11        486         900
-##  [6,]    6      524  430.8390       110         54        1000
-##  [7,]    7      551  725.6236       110         60        1100
-##  [8,]    8      593  725.6236       110         60        1200
-##  [9,]    9      641  702.9478       110         66        1300
-## [10,]   10      699  521.5420       110         72        1400
-## [11,]   11      749  498.8662       110         78        1500
-## [12,]   12      804  793.6508       110         84        1600
-## [13,]   13      875  929.7052       110         90        1700
-## [14,]   14      911  907.0295       110         96        1800
-## [15,]   15      980  861.6780       110        102        1900
-## [16,]   16     1054  770.9751       110        108        2000
-## [17,]   17     1151 1088.4354        14        900        2100
-## [18,]   18      289  317.4603       110        120        2200
-## [19,]   19      189  204.0816       110        120        2300
-## [20,]   20       85  204.0816       110        126        2400</code></pre>
+##  [1,]    1     1206 1383.2200        10        300         500
+##  [2,]    2     1043 1473.9229        10        360         600
+##  [3,]    3      797  770.9751       110         36         700
+##  [4,]    4      871 1133.7868        10        480         800
+##  [5,]    5      502  544.2177       110         48         900
+##  [6,]    6      545  680.2721       110         54        1000
+##  [7,]    7      587  498.8662       110         60        1100
+##  [8,]    8      637  634.9206       110         60        1200
+##  [9,]    9      678  634.9206       110         66        1300
+## [10,]   10      766 1020.4082        36        228        1400
+## [11,]   11      660  884.3537       110         78        1500
+## [12,]   12      671  680.2721       110         84        1600
+## [13,]   13      727  657.5964       110         90        1700
+## [14,]   14      763  929.7052       110         96        1800
+## [15,]   15      828  634.9206       110        102        1900
+## [16,]   16      880  907.0295       110        108        2000
+## [17,]   17      914  770.9751       110        114        2100
+## [18,]   18      988  839.0023       110        120        2200
+## [19,]   19     1037  839.0023       110        120        2300
+## [20,]   20     1097 1201.8141        10       1420        2400</code></pre>
 <p>There is an important note to make about changing arguments to <code>gmse_apply</code> when <code>old_list</code> is being used: The function <code>gmse_apply</code> is trying to avoid a crash, so <code>gmse_apply</code> will accomodate parameter changes by rebuilding data structures if necessary. For example, if the number of stakeholders is changed (and by including an argument such as <code>stakeholders</code> to <code>gmse_apply</code>, it is assumed that stakeholders are changing even they are not), then a new array of agents will need to be built. If landscape dimensions are changed (or just include the argument <code>land_dim_1</code> or <code>land_dim_2</code>), then a new landscape willl be built. For most simulation purposes, this will not introduce any undesirable effect on simulation results, but it should be noted and understood when developing models.</p>
 </div>
   </div>

@@ -32,7 +32,7 @@ library(GMSE);
 The individual-based approach of default GMSE sub-models
 ================================================================================
 
-The default sub-models of GMSE (`resource`, `observation`, `manager`, `user`) are individual-based (also called 'agent-based'), meaning that they model discrete individuals (resources or agents), which in GMSE are represented by individual table rows (as in `RESOURCES`, `AGENTS`, and `OBSERVATION`) or layers of three-dimensional arrays (as in `COST` and `ACTION`). Individual-based models (IBMs) have been a useful approach in ecology for decades [@Uchmanski1996; @Grimm1999], providing both a pragmatic tool for the mechanistic modelling of complex populations and a powerful technique for theoretical investigation. A key advantage of the individual-based modelling approach is the discrete nature of individuals, which allows for detailed trait variation and complex interactions among individuals. In GMSE, some of the most important traits for resources include types, ages, demographic parameter values, locations, etc., and for agents (manager and users), traits include different types, utilities, budgets, etc. The traits that resources and managers have can potentially affect their interactions, and default GMSE sub-models take advantage of this by simulating interactions explicitly on a landscape (see [SI7](SI7.pdf) for an introduction to GMSE default data structures).
+The default sub-models of GMSE (`resource`, `observation`, `manager`, `user`) are individual-based (also called 'agent-based'), meaning that they model discrete individuals (resources or agents), which in GMSE are represented by individual table rows (as in `RESOURCES`, `AGENTS`, and `OBSERVATION`) or layers of three-dimensional arrays (as in `COST` and `ACTION`). Individual-based models (IBMs) have been a useful approach in ecology for decades [@Uchmanski1996; @Grimm1999], providing both a pragmatic tool for the mechanistic modelling of complex populations and a powerful technique for theoretical investigation. A key advantage of the individual-based modelling approach is the discrete nature of individuals, which allows for detailed trait variation and complex interactions among individuals. In GMSE, some of the most important traits for resources include types, ages, demographic parameter values, locations, etc., and for agents (manager and users), traits include different types, utilities, budgets, etc. The traits that resources and managers have can potentially affect their interactions, and default GMSE sub-models take advantage of this by simulating interactions explicitly on a landscape (see [SI7](SI7.html) for an introduction to GMSE default data structures).
 
 Replicate simulations as a tool for model inference
 ================================================================================
@@ -112,7 +112,7 @@ Note that while extinction still does not occur in these simulations, when popul
 
 ```{r, echo = FALSE, messages = FALSE, cache = FALSE, comment = FALSE, results = "hide"}
 gmse_reps3 <- gmse_replicates(replicates = 10, time_max = 20, plotting = FALSE,
-                             manage_freq = 3);
+                             manage_freq = 3, lambda = 0.28);
 print(gmse_reps3);
 ```
 
@@ -178,4 +178,7 @@ plot(x = x_var, y = y_var, type = "b", pch = 20, lwd = 2, cex = 1.5,
 ```
 
 The above plot and the simulations from which it was derived illustrates a greatly simplified example of how GMSE might be used to assess the risk of extinction in a managed population. A comprehensive analysis would need more than 10 replicate simulations to accurately infer extinction risk, and would require careful pararmeterisation of all sub-models and a sensitivity analysis where such parameters are unknown. A benefit of this approach is that it allows for the simulation of multiple different scenarios under conditions of uncertainty and stochasticity, modelling the range of outcomes that might occur within and among scenarios and facilitating the development of social-ecological theory. Future expansion on the complexity of individual-based default sub-models of GMSE will further increase the realism of targeted case studies.
+
+References
+================================================================================
 

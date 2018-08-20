@@ -8,8 +8,8 @@
 <title>Fisheries example integrating FLR • GMSE</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><meta property="og:title" content="Fisheries example integrating FLR">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Fisheries example integrating FLR">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.0.6</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.0.7</span>
       </span>
     </div>
 
@@ -118,23 +118,33 @@
 <h1 class="hasAnchor">
 <a href="#integration-and-simulation-with-fisheries" class="anchor"></a>Integration and simulation with fisheries</h1>
 <p>Early development of management strategy evaluation (MSE) models originated in fisheries <span class="citation">(Polacheck et al. <a href="#ref-Polacheck1999">1999</a>; Smith, Sainsbury, and Stevens <a href="#ref-Smith1999">1999</a>; Sainsbury, Punt, and Smith <a href="#ref-Sainsbury2000">2000</a>)</span>. Consequently, fisheries-focused software for MSE has been extensively developed, including R libraries that focus on the management of species of exceptional interest, such as the Atlantic Bluefin Tuna (<em>Thunnus thynnus</em>) <span class="citation">(<a href="https://github.com/ICCAT/abft-mse/tree/master/R_package/ABTMSE">ABFTMSE</a>; Carruthers and Butterworth <a href="#ref-Carruthers2018a">2018</a><a href="#ref-Carruthers2018a">a</a>; Carruthers and Butterworth <a href="#ref-Carruthers2018">2018</a><a href="#ref-Carruthers2018">b</a>)</span>, and Indian Ocean Bigeye (<em>T. obesus</em>) and Yellowfin (<em>T. albacares</em>) Tuna <span class="citation">(<a href="https://github.com/pjumppanen/MSE-IO-BET-YFT">MSE-IO-BET-YFT</a>; Kolody and Jumppanen <a href="#ref-Kolody2016">2016</a>)</span>. The largest of all such libraries is the Fisheries Library in R (<a href="http://www.flr-project.org/">FLR</a>), which includes an extensive collection of tools targeted for fisheries science. The FLR library has been used in over a hundred <a href="http://www.flr-project.org/#publications">publications</a> <span class="citation">(recent publications include Jardim et al. <a href="#ref-Jardim2018">2018</a>; Mackinson et al. <a href="#ref-Mackinson2018">2018</a>; Utizi et al. <a href="#ref-Utizi2018">2018</a>)</span>, and includes <a href="http://www.flr-project.org/doc/An_introduction_to_MSE_using_FLR.html">an MSE framework</a> for evaluating different harvest control rules.</p>
-<p>As part of the <a href="https://sti-cs.org/confoobio/">ConFooBio</a> project, a central focus of GMSE is on simulating the management of animal populations of conservation interest, with a particular emphasis on understanding conservation conflict; further development of GMSE is expected to continue with this as a priority, further building upon the decision-making algorithms of managers and users to better understand how conflict arises and can be managed and mitigated. Hence, GMSE is not intended as a substitute for packages such as <a href="http://www.flr-project.org/">FLR</a>, but the integration of these packages with GMSE could make use of GSME’s current and future simulation capabilities, and particularly the <a href="SI1.pdf">genetic algorithm</a>. Such integration might be possible using the <code>gmse_apply</code> function, which allows for <a href="SI2.pdf">custom defined sub-models</a> to be used within the GMSE framework, and with default GMSE sub-models. Hence, GMSE might be especially useful for modelling the management of fisheries under conditions of increasing competing stakeholder demands and conflicts. We do not attempt such an ambitious project here, but instead show how such a project could be developed through integration of <a href="http://www.flr-project.org/">FLR</a> and <code>gmse_apply</code>.</p>
+<p>As part of the <a href="https://sti-cs.org/confoobio/">ConFooBio</a> project, a central focus of GMSE is on simulating the management of animal populations of conservation interest, with a particular emphasis on understanding conservation conflict; further development of GMSE is expected to continue with this as a priority, further building upon the decision-making algorithms of managers and users to better understand how conflict arises and can be managed and mitigated. Hence, GMSE is not intended as a substitute for packages such as <a href="http://www.flr-project.org/">FLR</a>, but the integration of these packages with GMSE could make use of GSME’s current and future simulation capabilities, and particularly the <a href="SI1.html">genetic algorithm</a>. Such integration might be possible using the <code>gmse_apply</code> function, which allows for <a href="SI2.html">custom defined sub-models</a> to be used within the GMSE framework, and with default GMSE sub-models. Hence, GMSE might be especially useful for modelling the management of fisheries under conditions of increasing competing stakeholder demands and conflicts. We do not attempt such an ambitious project here, but instead show how such a project could be developed through integration of <a href="http://www.flr-project.org/">FLR</a> and <code>gmse_apply</code>.</p>
 <p>Here we follow a <a href="http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html">Modelling Stock-Recruitment with FLSR</a> example, then integrate this example with <code>gmse_apply</code> to explore the behaviour of a number of simulated fishers who are goal-driven to maximise their own harvest and a manager that aims to keep the fish stocks at a predefined target level. The core concept in GMSE is that manager can only incentivise fishers to harvest less or more by varying the cost of fishing (through e.g. taxes) given a set manager budget; please note that the manager cannot force the fisher to follow any policy. Based on the cost of fishing, the fisher can then given their own budget decide whether to invest in fishing or keep the budget. This concepts represents a nartural resource managmeent and conservation conflict, where one party aims to maximise their livelihood (fisher) and the other aims to keep a population at a sustainable level and prevent it from going extinct. Importantly, the manager does not have full control over fishers but can set policies to incentivise sustainable behaviour. We emphasise that this example is provided only as demonstration of how GMSE can potentially be integrated with already developed fisheries models, and is not intended to make recommendations for management in any population.</p>
 </div>
 <div id="integrating-with-the-fisheries-library-in-r-flr" class="section level1">
 <h1 class="hasAnchor">
 <a href="#integrating-with-the-fisheries-library-in-r-flr" class="anchor"></a>Integrating with the Fisheries Library in R (<a href="http://www.flr-project.org/">FLR</a>)</h1>
-<p>The FLR toolset includes <a href="http://www.flr-project.org/#packages">a series of packages</a>, with several <a href="http://www.flr-project.org/doc/index.html">tutorials</a> for using them. For simplicity, we focus on <a href="http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html">a model of stock recruitment</a> to be used as the population model in <code>gmse_apply</code>. This population model will use sample data and one of the many available stock-recruitment models available in FLR, and a custom function will be written to return a single value for stock recruitment. Currently, <code>gmse_apply</code> requires that sub-models return subfunction results either as scalar values or data frames that are structured <a href="SI7.pdf">in the same way</a> as GMSE sub-models. But interpretation of scalar values is left up to the user (e.g., population model results could be interpreted as abundance or biomass; manager policy could be interpreted as cost of harvesting or as total allowable catch). For simplicity, the observation (i.e., estimation) model will be the stock reported from the population model with error. The manager and user models, however, will employ the full power of the default GMSE functions to simulate management and user actions. We first show how a custom function can be made that applies the FLR toolset to a population model.</p>
+<p>The FLR toolset includes <a href="http://www.flr-project.org/#packages">a series of packages</a>, with several <a href="http://www.flr-project.org/doc/index.html">tutorials</a> for using them. For simplicity, we focus on <a href="http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html">a model of stock recruitment</a> to be used as the population model in <code>gmse_apply</code>. This population model will use sample data and one of the many available stock-recruitment models available in FLR, and a custom function will be written to return a single value for stock recruitment. Currently, <code>gmse_apply</code> requires that sub-models return subfunction results either as scalar values or data frames that are structured <a href="SI7.html">in the same way</a> as GMSE sub-models. But interpretation of scalar values is left up to the user (e.g., population model results could be interpreted as abundance or biomass; manager policy could be interpreted as cost of harvesting or as total allowable catch). For simplicity, the observation (i.e., estimation) model will be the stock reported from the population model with error. The manager and user models, however, will employ the full power of the default GMSE functions to simulate management and user actions. We first show how a custom function can be made that applies the FLR toolset to a population model.</p>
 </div>
 <div id="modelling-stock-recruitment-for-the-population-model" class="section level1">
 <h1 class="hasAnchor">
 <a href="#modelling-stock-recruitment-for-the-population-model" class="anchor"></a>Modelling stock-recruitment for the population model</h1>
-<p>Here we closely follow <a href="http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html">a tutorial from the FLR project</a>. To build the stock-recruitment model, the <code>FLCore</code> package is needed <span class="citation">(Kell et al. <a href="#ref-Kell2007">2007</a>)</span>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">"FLCore"</span>, <span class="dt">repos=</span><span class="st">"http://flr-project.org/R"</span>);</code></pre></div>
-<p>To start, we need to read in the <code>FLCore</code> and GMSE libraries.</p>
+<p>Here we closely follow <a href="http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html">a tutorial from the FLR project</a>. To build the stock-recruitment model, the <code>FLCore</code> package is needed <span class="citation">(Kell et al. <a href="#ref-Kell2007">2007</a>)</span>. We also include the <code>ggplotFL</code> package for plotting.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">"FLCore"</span>, <span class="dt">repos=</span><span class="st">"http://flr-project.org/R"</span>);
+<span class="kw">install.packages</span>(<span class="st">"ggplotFL"</span>, <span class="dt">repos=</span><span class="st">"http://flr-project.org/R"</span>)</code></pre></div>
+<p>To start, we need to read in the <code>FLCore</code>, <code>ggplotFL</code> and <code>GMSE</code> libraries.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(FLCore);</code></pre></div>
 <pre><code>## Loading required package: lattice</code></pre>
 <pre><code>## FLCore (Version 2.6.7, packaged: 2018-04-17 09:12:42 UTC)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ggplotFL);</code></pre></div>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## 
+## Attaching package: 'ggplot2'</code></pre>
+<pre><code>## The following object is masked from 'package:FLCore':
+## 
+##     %+%</code></pre>
+<pre><code>## Warning: replacing previous import 'ggplot2::%+%' by 'FLCore::%+%' when
+## loading 'ggplotFL'</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(GMSE);</code></pre></div>
 <p>For a simplified example in GMSE, we will simulate the process of stock recruitment over multiple time steps using an example stock-recruitment model. The stock-recruitment model describes the relationship between stock-recruitment and spawning stock biomass. The sample that we will work from is a recreation of the North Sea Herring (<code>nsher</code>) dataset available in the <code>FLCore</code> package <span class="citation">(Kell et al. <a href="#ref-Kell2007">2007</a>)</span>. This data set includes recruitment and spawning stock biomass data between 1960 and 2004. First, we initialise an empty <code>FLSR</code> object and read in the recreated herring data files from GMSE, which contains recruitment (<code>rec.n</code>) and spawning stock biomass (<code>ssb.n</code>)</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">newFL   &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/FLCore/topics/FLSR">FLSR</a></span>(); <span class="co"># Initialises the empty FLSR object</span>
@@ -155,8 +165,8 @@ Fssb.m@units &lt;-<span class="st"> "t*10^3"</span>;</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="http://www.rdocumentation.org/packages/FLCore/topics/accessors">model</a></span>(newFL) &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/FLCore/topics/SRModels">ricker</a></span>();</code></pre></div>
 <p>Parameters for the Ricker stock-recruitment model can be estimated with maximum likelihood.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">newFL &lt;-<span class="st"> </span><span class="kw">fmle</span>(newFL);</code></pre></div>
-<p>Diagnostic plots, identical to those of the <a href="http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html">modelling stock-recruitment tutorial</a> for the <code>nsher_ri</code> example, are shown below.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="http://www.rdocumentation.org/packages/FLCore/topics/plot">plot</a></span>(newFL);</code></pre></div>
+<p>Diagnostic plots, identical to those of the <a href="http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html">modelling stock-recruitment tutorial</a> for the <code>nsher_ri</code> example, are shown below in Figure 1. We note that these plots are made using the <code>FLCore</code> and <code>ggplotFL</code> packages, and are not produced by, nor available in, the <code>GMSE</code> package.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="http://www.rdocumentation.org/packages/FLCore/topics/plot">plot</a></span>(newFL, <span class="dt">cex =</span> <span class="fl">0.7</span>);</code></pre></div>
 <div class="figure">
 <img src="SI5_files/figure-html/unnamed-chunk-11-1.png" alt="Output of the FLR plot function for an example Ricker model of stock recruitment on North Sea Herring data." width="700"><p class="caption">
 Output of the FLR plot function for an example Ricker model of stock recruitment on North Sea Herring data.
@@ -201,7 +211,7 @@ Output of the FLR plot function for an example Ricker model of stock recruitment
 new_rec &lt;-<span class="st"> </span><span class="kw">predict_recruitment</span>(<span class="dt">rec_m =</span> rec.m, <span class="dt">ssb_m =</span> ssb.m, <span class="dt">years =</span> <span class="dv">1960</span>:<span class="dv">2004</span>,
                                <span class="dt">new_ssb =</span> ssb_ini);
 obs_rec &lt;-<span class="st"> </span><span class="kw">obs_ssb</span>(new_rec);</code></pre></div>
-<p>An initial run of these models gives values of 3835.21 for <code>new_rec</code> and 4005.25 for <code>obs_rec</code>. We are now ready to use the built-in manager and user sub-models in <code>gmse_apply</code>. We will assume that managers attempt to keep a recruitment of 5000, and that there are 10 independent fishers who attempt to maximise their catch. We assign a user budget of <code>manager_budget = 10000</code>, and all other values are set to GMSE defaults. In the built-in GMSE functions, the manager will use the estimate of recruitment based on <code>obs_rec</code> and use it to set the cost of harvesting (<code>culling</code> in GMSE).</p>
+<p>An initial run of these models gives values of 3835.21 for <code>new_rec</code> and 3867.32 for <code>obs_rec</code>. We are now ready to use the built-in manager and user sub-models in <code>gmse_apply</code>. We will assume that managers attempt to keep a recruitment of 5000, and that there are 10 independent fishers who attempt to maximise their catch. We assign a user budget of <code>manager_budget = 10000</code>, and all other values are set to GMSE defaults. In the built-in GMSE functions, the manager will use the estimate of recruitment based on <code>obs_rec</code> and use it to set the cost of harvesting (<code>culling</code> in GMSE).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">yrspan       &lt;-<span class="st"> </span><span class="dv">1960</span>:<span class="dv">2004</span>;
 rec.m        &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(rec.n);
 ssb.m        &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(ssb.n);
@@ -215,11 +225,11 @@ sim &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_ap
 ## [1] 3835
 ## 
 ## $observation_results
-## [1] 3786.006
+## [1] 4024.098
 ## 
 ## $manager_results
 ##          resource_type scaring culling castration feeding help_offspring
-## policy_1             1      NA     451         NA      NA             NA
+## policy_1             1      NA     459         NA      NA             NA
 ## 
 ## $user_results
 ##         resource_type scaring culling castration feeding help_offspring
@@ -291,26 +301,26 @@ for(time_step in <span class="dv">1</span>:<span class="dv">20</span>){
                          <span class="st">"Harvested"</span>, <span class="st">"SSB"</span>);
 <span class="kw">print</span>(sim_sum);</code></pre></div>
 <pre><code>##       Year Recruitment Recruit_estim Harvest_cost Harvested      SSB
-##  [1,] 2005        3747     3836.2917          219        20  50.6639
-##  [2,] 2006        3339     3284.8034          695        40  41.3340
-##  [3,] 2007        4208     4074.7835          223        10 160.1926
-##  [4,] 2008        2739     2721.5187          681        40  30.6639
-##  [5,] 2009        4339     4238.2185          239        10  71.3340
-##  [6,] 2010        1427     1323.0842          707        40  13.5966
-##  [7,] 2011        2994     3049.7367          890        10  34.8673
-##  [8,] 2012        4387     4398.9411          222        10 145.9025
-##  [9,] 2013        1146     1127.9553          677        40  10.6133
-## [10,] 2014        4387     4290.0107          248        10 145.9025
-## [11,] 2015        4547     4572.7221          233        40  85.2627
-## [12,] 2016         633      718.4861          699        40   5.5913
-## [13,] 2017        3988     4017.3335          247        10 175.5799
-## [14,] 2018        1146      999.7101          696        40  10.6133
-## [15,] 2019        4339     4324.8141          225        10  71.3340
-## [16,] 2020         633      748.0605          713        40   5.5913
-## [17,] 2021        3447     3475.5788          886        10  43.5966
-## [18,] 2022        4339     4387.0962          241        10  71.3340
-## [19,] 2023        3310     3554.8077          219        40  40.7603
-## [20,] 2024        2739     2752.7507          698        40  30.6639</code></pre>
+##  [1,] 2005        4336      4429.152          216        20 150.1926
+##  [2,] 2006        2739      2735.703          693        40  30.6639
+##  [3,] 2007        3988      4007.225          224        10 175.5799
+##  [4,] 2008        4547      4526.534          218        40  85.2627
+##  [5,] 2009        1146      1316.404          703        40  10.6133
+##  [6,] 2010        4629      4687.793          232        10 115.2627
+##  [7,] 2011        4547      4586.854          210        40  85.2627
+##  [8,] 2012         554       711.313          685        40   4.8673
+##  [9,] 2013        4328      4445.765          227        10  70.7603
+## [10,] 2014        4547      4490.398          221        40  85.2627
+## [11,] 2015        2739      2726.885          681        40  30.6639
+## [12,] 2016        2994      3055.574          883        10  34.8673
+## [13,] 2017        3035      3015.657          988        10  35.5913
+## [14,] 2018        4339      4503.809          224        10  71.3340
+## [15,] 2019        4390      4399.770          224        40 145.5799
+## [16,] 2020        4547      4641.073          223        40  85.2627
+## [17,] 2021        1427      1453.385          708        40  13.5966
+## [18,] 2022        4208      4262.688          213        10 160.1926
+## [19,] 2023        2739      2805.939          683        40  30.6639
+## [20,] 2024        3988      4155.590          227        10 175.5799</code></pre>
 <p>The above output from <code>sim_sum</code> reports the recruitment (resource or operational model), recruitment estimate (observation error model), management set harvest cost (harvest control model), user harvested numbers (implementation model) and spawning stock biomass (SSB) simulation results. This example simulation demonstrates the ability of GMSE to integrate with fisheries libraries such as <a href="http://www.flr-project.org/">FLR</a> through <code>gmse_apply</code>. In addition to being a useful wrapping function for MSE sub-models, <code>gmse_apply</code> can therefore be used to take advantage of the genetic algorithm in the GMSE default manager and user models. This flexibility will be retained in future versions of <code>gmse_apply</code>, allowing custom resource and observation models that are built for specific systems to be integrated with an increasingly complex genetic algorithm simulating various aspects of human decision-making.</p>
 </div>
 <div id="conclusions" class="section level1">
@@ -318,6 +328,10 @@ for(time_step in <span class="dv">1</span>:<span class="dv">20</span>){
 <a href="#conclusions" class="anchor"></a>Conclusions</h1>
 <p>GMSE is a general, flexible, tool for simulating the management of resources under situations of uncertainty and conflict. Management Strategy Evaluation <span class="citation">(Bunnefeld, Hoshino, and Milner-Gulland <a href="#ref-Bunnefeld2011">2011</a>; Punt et al. <a href="#ref-Punt2016">2016</a>)</span>, the framework upon which GMSE is based, had its origin in fisheries management <span class="citation">(Polacheck et al. <a href="#ref-Polacheck1999">1999</a>; Smith, Sainsbury, and Stevens <a href="#ref-Smith1999">1999</a>; Sainsbury, Punt, and Smith <a href="#ref-Sainsbury2000">2000</a>)</span>, and here we showed one example of how GMSE could be integrated with the core package of the <a href="http://www.flr-project.org/">Fisheries Library in R</a>.</p>
 <p>Future versions of GMSE will continue to be open-source and developed to avoid unecessary dependencies (GMSE v.0.4.0.3 requires only base R). Key goals including (1) providing highly general and useful default <code>resource</code>, <code>observation</code>, <code>manager</code>, and <code>user</code> sub-models for a variety of MSE modelling tasks, (2) keeping these sub-models highly modular so that they can be developed in isolation given standardised data structures, and (3) allowing these modular sub-models to be integrated with custom defined sub-models as flexibly as possible using <code>gmse_apply</code>. Contributions in line with these goals, and suggestions for new features, can be made on <a href="https://github.com/bradduthie/gmse">GitHub</a>.</p>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1 class="hasAnchor">
+<a href="#references" class="anchor"></a>References</h1>
 <div id="refs" class="references">
 <div id="ref-Bunnefeld2011">
 <p>Bunnefeld, Nils, Eriko Hoshino, and Eleanor J Milner-Gulland. 2011. “Management strategy evaluation: A powerful tool for conservation?” <em>Trends in Ecology and Evolution</em> 26 (9): 441–47. doi:<a href="https://doi.org/10.1016/j.tree.2011.05.003">10.1016/j.tree.2011.05.003</a>.</p>
@@ -374,6 +388,7 @@ for(time_step in <span class="dv">1</span>:<span class="dv">20</span>){
       <li><a href="#integrating-predict_recruitment-with-gmse_apply">Integrating <code>predict_recruitment</code> with <code>gmse_apply</code></a></li>
       <li><a href="#simulation-with-gmse_apply-over-multiple-time-steps">Simulation with <code>gmse_apply</code> over multiple time steps</a></li>
       <li><a href="#conclusions">Conclusions</a></li>
+      <li><a href="#references">References</a></li>
       </ul>
 </div>
       </div>
