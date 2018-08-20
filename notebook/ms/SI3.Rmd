@@ -26,7 +26,12 @@ biblio-style: apalike
 
 ```{r, echo = FALSE}
 library(GMSE);
-plot_gmse_effort <- function(agents, paras, ACTION, COST){
+plot_gmse_effort <- function(sim_results){
+    
+    agents <- sim_results$agents;
+    paras  <- sim_results$paras;
+    ACTION <- sim_results$action;
+    COST   <- sim_results$cost;
     
     cols      <- c("green", "indianred1", "indianred3", "deepskyblue1",
                    "deepskyblue2");
@@ -331,16 +336,13 @@ sim_1 <- sim_cull;
 The results of the above simulation are plotted in Figure 1 below. 
 
 ```{r, eval = TRUE, fig.height = 7, fig.cap = "Results of a GMSE simulation using parameters estimated for Taiga Been Geese Central Management Unit. This example includes 80 farmers whose objective is to maximise their agricultural output, and one manager whose objective is to keep geese at a target abundance, over 30 simulated time steps. Goose locations at the end of the simulation are shown in the upper left panel, while the upper right panel shows the same landscape broken down among the 80 farmers (upper 60% of the landscape in multiple colours), along with non-agricultural land (lower 40% of the landscape in blue). Actual goose abundance is shown in the middle left panel (black solid line), along with its estimate by the manager (blue solid line, hidden underneath the black line). The horizontal red and blue dotted lines show goose carrying capacity and the manager's target for goose abundance, respectively. The orange line shows the total percent of landscape cell (including non-farmed cells) yield, as decreased by geese. The middle right panel shows this yield for each farmer, and for the public land (lower line in blue). The lower left panel shows the cost of culling for farmers, as set by the manager, and the lower right panel shows the total number of culls attempted by farmers over time."}
-plot_gmse_results(res = sim_1$resource, obs = sim_1$observation, 
-                  land = sim_1$land, agents = sim_1$agents, paras = sim_1$paras, 
-                  ACTION = sim_1$action, COST = sim_1$cost);
+plot_gmse_results(sim_results = sim_1);
 ```
 
 Figure 1 shows the dynamics of goose abundance and agricultural yield, along with how managers react to change in abundance and farmers react to manager policy. In the case of the simulation above, managers quickly set a policy of high cost for culling, which leads to a rise in the goose population and a decrease in crop yield for farmers. After roughly 20 time steps, the goose population rises above the manager target, at which point the manager becomes more permissive of culling and the cost of culling for users therefore declines. In response, users begin to cull geese on their land, and the goose population begins to stabilise around the target of 7000 total geese. We can investigate the conflict between management policy and farmers more directly using the `plot_gmse_effort` function (Figure 2).
 
 ```{r, eval = TRUE, echo = TRUE, fig.height = 7, fig.width = 6, fig.cap = "Permissiveness that each manager exhibits for each farmer action (black lines) and the effort that each individual farmer puts into each action over time (coloured lines). Each panel row reports a different action (in decreasing order: scaring, culling, castration, feeding, and helping). The left axis shows the permissiveness that a manager has for the focal action (black line), which is calculated as 100 minus the percent of the manager's budget that is put into increasing the cost of the focal action. For example, if the manager puts all of their effort (total budget) into increasing the cost of culling, then permissiveness of culling is 0; if the manager puts no effort into increasing culling cost, then permissiveness of culling is 100. The right axis shows effort that farmers put into an action (coloured lines), which defined as the percentage of a farmer's budget put into a particular action (note, values might not add up to 100 because farmers are not forced to use their entire budget)."}
-plot_gmse_effort(sim_1$agents, sim_1$paras, ACTION = sim_1$action, 
-                 COST = sim_1$cost);
+plot_gmse_effort(sim_results = sim_1);
 ```
 
 Black lines in Figure 2 indicate how permissive a manager is toward a particular action on a scale of 0 to 100, while coloured lines indicate how much effort farmers expend on a given action. When black lines are far below coloured lines, we can (cautiously) interpret this as a conflict between management of the goose population and farmer's interest in agricultural production. These time periods represent instances in which the manager is not permissive of a particular action (in this case culling), but farmers continue to expend effort to do the action anyway. In the case of the above simulation of potential conflict between farmers and goose conservation, conflict is highest before time step 20, where the manager is not permissive of culling because the population is below the manager's target. Once the goose population has increased above the manager's target, conflict decreases because the desired culling is permitted by managers to keep the population at a target abundance. It is worth noting that, despite conflict as we define it decreasing, agricultural damage is still relatively high after the target goose population size is achieved (Figure 1). Hence, on a broader scale, conflict might persist around the appropriate target population size rather than what actions are permitted for farmers; currently, this potential aspect of conflict is not modelled, but future versions of GMSE may attempt to incorporate such additional complexity in conflict scenarios.
@@ -366,9 +368,7 @@ sim_2 <- sim_scare;
 The results are plotted in Figure 3. 
 
 ```{r, eval = TRUE, fig.height = 8, fig.cap = "Results of a GMSE simulation using parameters estimated for Taiga Been Geese Central Management Unit in which scaring is permitted. Simulation output is interpreted as in Figure 1."}
-plot_gmse_results(res = sim_2$resource, obs = sim_2$observation, 
-                  land = sim_2$land, agents = sim_2$agents, paras = sim_2$paras,
-                  ACTION = sim_2$action, COST = sim_2$cost);
+plot_gmse_results(sim_results = sim_2);
 ```
 
 When scaring is introduced to an otherwise identical simulation (compare Figure 3 to Figure 1), the goose population increases as before, but it achieves the manager's target population size and stabilises 2-3 time steps earlier. The reason for this earlier stabilisation is due to the change in farmer's actions as a consequence of the introduced scaring policy. At the start of the simulation, managers adjust policy by quickly increasing the cost of culling and decreasing the cost of scaring. In response, farmers turn to scaring rather than culling to remove geese from their land cells (Figure 3). This is in contrast to the simulation in which scaring was not an option, and farmers simply culled as much as possible despite the high costs (Figure 1). After the population has risen to slightly above the manager's target, the cost of culling again decreases, with the manager balancing the incentivisation of culling and scaring. The consequence of scaring as an available policy also reveals some potentially unexpected outcomes, such as increased variance in among-farmer agricultural production, which arises as geese are scared from one area of the landscape to another.
@@ -376,8 +376,7 @@ When scaring is introduced to an otherwise identical simulation (compare Figure 
 We can use the `plot_gmse_effort` function as before to investigate how the inclusion of scaring as a policy option might affect conservation conflict. Conflict results when scaring is included are plotted in Figure 4.
 
 ```{r, eval = TRUE, fig.height = 7, fig.width = 7, fig.cap = "Permissiveness that each manager exhibits for each farmer action (black lines) and the effort that each individual farmer puts into each action over time (coloured lines) given scaring as a possible policy option. Simulation output is intepreted as in Figure 2."}
-plot_gmse_effort(sim_2$agents, sim_2$paras, ACTION = sim_2$action, 
-                 COST = sim_2$cost);
+plot_gmse_effort(sim_results = sim_2);
 ```
 
 Unlike the case in which culling was the only policy option (compare Figure 4 to Figure 2), the effort that farmers expended on a given action did not rise as highly above the manager's permissiveness of the action. Hence, under the conditions of this model, the inclusion of scaring as a policy option has reduced conservation conflict in the social-ecological system. We again emphasise that the simulations presented here only serve as an example for how GMSE could be used as a tool for simulating social-ecological systems and understanding the potential for conflict; it is not intended to inform policy in Taiga Bean Geese or any other specific system.
