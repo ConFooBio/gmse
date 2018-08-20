@@ -4,8 +4,8 @@
 \alias{gmse_replicates}
 \title{gmse replicate simulations}
 \usage{
-gmse_replicates(replicates, all_time = FALSE, hide_unused_options = TRUE,
-  ...)
+gmse_replicates(replicates, all_time = FALSE,
+  hide_unused_options = TRUE, ...)
 }
 \arguments{
 \item{replicates}{The number of replicate simulations to be run}

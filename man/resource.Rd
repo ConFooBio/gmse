@@ -4,7 +4,8 @@
 \alias{resource}
 \title{Resource model}
 \usage{
-resource(RESOURCES = NULL, LAND = NULL, PARAS = NULL, model = "IBM")
+resource(RESOURCES = NULL, LAND = NULL, PARAS = NULL,
+  model = "IBM")
 }
 \arguments{
 \item{RESOURCES}{The resources array produced by the resource function within GMSE}
