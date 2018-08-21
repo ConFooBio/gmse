@@ -80,10 +80,10 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://bradduthie.github.io/gmse/notebook/gmse_notes.html">Lab notebook</a>
+  <a href="https://confoobio.github.io/gmse/notebook/gmse_notes.html">Lab notebook</a>
 </li>
 <li>
-  <a href="https://github.com/bradduthie/GMSE">
+  <a href="https://github.com/confoobio/GMSE">
     <span class="fa fa-github"></span>
      
   </a>
@@ -126,12 +126,12 @@
 <p>The focal data structure used for tracking manager and user decisions is a three dimensional array, which we will call <code>ACTION</code> (also returned as <code>user_array</code> by <code>gmse_apply</code>; see <a href="SI7.html">SI7</a>). Rows of <code>ACTION</code> correspond to the entities affected by actions (resources, landscape properties, or potentially other agents), and columns correspond either to properties of the affected entities, or to the actions potentially allocated to them. Each layer of <code>ACTION</code> corresponds to a unique agent, the first of which is the manager; additional layers correspond to users. Below shows an <code>ACTION</code> array for a GMSE model with one manager and two users.</p>
 <pre><code>## , , Manager_Actions
 ## 
-##           Act Type_1 Type_2 Type_3     Util. U_land U_loc. Scare Cull
-## Resource   -2      1      0      0 1000.0000      0      0     0    0
-## Landscape  -1      1      0      0    0.0000      0      0     0    0
-## Res_cost    1      1      0      0 -337.8685      0      0    10   64
-## U1_cost     2      1      0      0    0.0000      0      0     0    0
-## U2_cost     3      1      0      0    0.0000      0      0     0    0
+##           Act Type_1 Type_2 Type_3      Util. U_land U_loc. Scare Cull
+## Resource   -2      1      0      0 1000.00000      0      0     0    0
+## Landscape  -1      1      0      0    0.00000      0      0     0    0
+## Res_cost    1      1      0      0  -88.43537      0      0    10   64
+## U1_cost     2      1      0      0    0.00000      0      0     0    0
+## U2_cost     3      1      0      0    0.00000      0      0     0    0
 ##           Castrate Feed Help_off None
 ## Resource         0    0        0    0
 ## Landscape        0    0        0    0
@@ -148,7 +148,7 @@
 ## U1_cost     2      1      0      0     0      0      0     0    0        0
 ## U2_cost     3      1      0      0     0      0      0     0    0        0
 ##           Feed Help_off None
-## Resource     0        0    2
+## Resource     0        0    4
 ## Landscape    0        0    0
 ## Res_cost     0        0    0
 ## U1_cost      0        0    0
@@ -164,12 +164,12 @@
 ## U2_cost     3      1      0      0     0      0      0     0    0        0
 ##           Feed Help_off None
 ## Resource     0        0    1
-## Landscape    0        0    1
+## Landscape    0        0    0
 ## Res_cost     0        0    0
 ## U1_cost      0        0    0
 ## U2_cost      0        0    0</code></pre>
 <p>The above array holds all of the information on manager and user actions. The first seven columns contain information about which entities are affected, and how they are affected. The first column <code>Act</code> identifies the type of action being performed; a value of -2 defines a direct action to a resource (e.g., culling of the resource), and a value of -1 defines direct action to a landscape (e.g., increasing yield). Positive values are currently only meaningful for <code>Manager_Actions</code>, where a value of 1 defines an action setting a uniform cost of users’ direct actions on resources (i.e., costs where <code>Act = -2</code> for <code>User_1_Actions</code> and <code>User_2_Actions</code>). All other values for <code>Act</code> are meaningless in GMSE 0.4.0.3, but might be expanded upon in future versions to allow for modification of specific user costs enacted by managers (i.e., managers having different policies for different users) or other users (e.g., users increasing the costs of other users’ actions due to conflict or cooperation). We will therefore focus only on rows 1-3 of <code>ACTION</code>.</p>
-<p>Columns 2-4 refer to resource or landscape types, but only <code>Type_1 = 1</code>, <code>Type_2 = 0</code>, and <code>Type_3 = 0</code> are allowed in predefined GMSE v0.4.0.7 manager and user sub-models (i.e., only one type of resource is permitted). Future versions might allow for different resource types (e.g., <code>Type_1</code> might be used to designate species, and <code>Type_2</code> and <code>Type_3</code> could designate stage or sex). Column 5 <code>Util.</code> of <code>ACTION</code> defines the utility associated with the resource (where <code>Act = -2</code>) or landscape (where <code>Act = -1</code>). For managers, the target resource abundance set with the GMSE argument <code>manage_target</code> is found in row 1 (1000 in <code>ACTION</code> above); for users, the value in row 1 identifies whether resources are preferred to increase (if positive) or decrease (if negative). Values of column 5 in row 2 similarly identify whether landscape cell output is preferred by users to increase or decrease (managers do not currently have preferences for landscape output). Of special note is row 3 for <code>Manager_Actions</code>, which defines the <em>current</em> manager’s utility for resources; that is, the adjustment to resource abundance that the manager will attempt to make based on the <code>manage_target</code> and the most recent estimate of resource abundance produced by the observation model (in the case of the above, resource abundance is estimated at ca 1337.87, so the manager will set policy in attempt to change the population size by ca -337.87 resources). Column 6 <code>U_land</code> defines whether or not the utility attached to the resource or landscape output depends on it being on a landscape cell that is owned by the acting user. Related, column 7 <code>U_loc.</code> defines whether or not actions can be performed only on a landscape cell that is owned by the acting user. Hence values of columns 6 and 7 are binary, and affected by the <code>land_ownership</code> argument in <code>gmse</code> and <code>gmse_apply</code>. Finally, columns 8-13 correspond to specific actions, either direct (where <code>Act &lt; 0</code>) or indirect by setting policy (for row 3 of <code>Manager_Actions</code> where <code>Act = 1</code>). The last column 13 <code>None</code> corresponds with no actions. See <a href="https://cran.r-project.org/web/packages/GMSE/GMSE.pdf">GMSE documentation</a> for details about the effects of each action.</p>
+<p>Columns 2-4 refer to resource or landscape types, but only <code>Type_1 = 1</code>, <code>Type_2 = 0</code>, and <code>Type_3 = 0</code> are allowed in predefined GMSE v0.4.0.7 manager and user sub-models (i.e., only one type of resource is permitted). Future versions might allow for different resource types (e.g., <code>Type_1</code> might be used to designate species, and <code>Type_2</code> and <code>Type_3</code> could designate stage or sex). Column 5 <code>Util.</code> of <code>ACTION</code> defines the utility associated with the resource (where <code>Act = -2</code>) or landscape (where <code>Act = -1</code>). For managers, the target resource abundance set with the GMSE argument <code>manage_target</code> is found in row 1 (1000 in <code>ACTION</code> above); for users, the value in row 1 identifies whether resources are preferred to increase (if positive) or decrease (if negative). Values of column 5 in row 2 similarly identify whether landscape cell output is preferred by users to increase or decrease (managers do not currently have preferences for landscape output). Of special note is row 3 for <code>Manager_Actions</code>, which defines the <em>current</em> manager’s utility for resources; that is, the adjustment to resource abundance that the manager will attempt to make based on the <code>manage_target</code> and the most recent estimate of resource abundance produced by the observation model (in the case of the above, resource abundance is estimated at ca 1088.44, so the manager will set policy in attempt to change the population size by ca -88.44 resources). Column 6 <code>U_land</code> defines whether or not the utility attached to the resource or landscape output depends on it being on a landscape cell that is owned by the acting user. Related, column 7 <code>U_loc.</code> defines whether or not actions can be performed only on a landscape cell that is owned by the acting user. Hence values of columns 6 and 7 are binary, and affected by the <code>land_ownership</code> argument in <code>gmse</code> and <code>gmse_apply</code>. Finally, columns 8-13 correspond to specific actions, either direct (where <code>Act &lt; 0</code>) or indirect by setting policy (for row 3 of <code>Manager_Actions</code> where <code>Act = 1</code>). The last column 13 <code>None</code> corresponds with no actions. See <a href="https://cran.r-project.org/web/packages/GMSE/GMSE.pdf">GMSE documentation</a> for details about the effects of each action.</p>
 <p>Constraints on the values that elements in the <code>ACTION</code> array can take are defined by a <code>COST</code> array (also returned as <code>manager_array</code> by <code>gmse_apply</code>; see <a href="SI7.html">SI7</a>) of dimensions identical to <code>ACTION</code>. Elements of <code>COST</code> define how many units from the <code>manager_budget</code> or <code>user_budget</code> are needed to perform a single action; a <code>minimum_cost</code> for actions is defined as an argument in GMSE (10 by default). All values in <code>COST</code> columns 1-7 are set to 100001, one higher than the highest possible <code>manager_budget</code> or <code>user_budget</code>, so neither managers nor users can affect resource types or utilities. Columns 8-13 are also set to 10001, except where actions are allowed. Maximum values of 100000 are independent of any other parameter value specified in GMSE (e.g., landscape dimensions). Below shows the <code>COST</code> array that corresponds to the above <code>ACTION</code> array.</p>
 <pre><code>## , , Manager_Costs
 ## 

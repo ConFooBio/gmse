@@ -15,8 +15,6 @@ output:
     fig_caption: yes
     reference_docx: docx_template.docx
 header-includes:
-- \usepackage{lineno}
-- \linenumbers
 linestretch: 1
 ---
 

@@ -19,6 +19,6 @@ reference:
 navbar:
   right:
     - text: "Lab notebook"
-      href: https://bradduthie.github.io/gmse/notebook/gmse_notes.html
+      href: https://confoobio.github.io/gmse/notebook/gmse_notes.html
     - icon: fa-github
-      href: https://github.com/bradduthie/GMSE
+      href: https://github.com/confoobio/GMSE

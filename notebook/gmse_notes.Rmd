@@ -51,6 +51,7 @@ library(rhandsontable)
 
  - **2018**
 
+     - **AUG** [21](#u-21-AUG-2018)
      - **MAY** [16](#u-16-MAY-2018), [14](#u-14-MAY-2018)
      - **APR** [13](#u-13-APR-2018)
 
@@ -97,6 +98,10 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-21-AUG-2018">Update: 21 AUG 2018</a>
+
+GMSE v0.4.0.7 is now [available on GitHub](https://github.com/ConFooBio/gmse), and the official GMSE repository is now transferred to the [ConFooBio](https://github.com/ConFooBio) organisation. I am currently in the process of fixing some website issues, but most of the important stuff has transferred to the [new website location](https://confoobio.github.io/gmse/).
 
 > <a name="u-16-MAY-2018">Update: 16 MAY 2018</a>
 

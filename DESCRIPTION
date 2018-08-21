@@ -35,8 +35,8 @@ Description: Integrates game theory and ecological theory to construct
     managers and stakeholders under conditions of change, uncertainty, and 
     conflict. Simulations can be run using gmse(), gmse_apply(), and
     gmse_gui() functions.
-URL: https://bradduthie.github.io/gmse/
-BugReports: https://github.com/bradduthie/gmse/issues
+URL: https://confoobio.github.io/gmse/
+BugReports: https://github.com/confoobio/gmse/issues
 Depends: R (>= 3.4.0)
 License: GPL (>=2)
 LazyData: TRUE
