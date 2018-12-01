@@ -446,6 +446,7 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     int protected_n;         /* Number of protected R objects */
     int vec_pos;             /* Vector position for making arrays */
     int group_think;         /* Should one user do the thinking for all */
+    int len_PARAMETERS;      /* Length of the parameters vector */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
@@ -456,7 +457,9 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     int **lookup;            /* Lookup table for resource & land interactions */
     double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
+    double *paras_ptr;       /* Pointer to PARAMETERS (interface R and C) */
     double *paras;           /* Pointer to PARAMETER (interface R and C) */
+    double *paras_ptr_new;   /* Pointer to new paras (interface R and C) */
     double *agent_ptr;       /* Pointer to AGENT (interface R and C) */
     double *cost_ptr;        /* Pointer to COST (interface R and C) */
     double *action_ptr;      /* Pointer to ACTION (interface R and C) */
@@ -509,8 +512,9 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     
     PROTECT( PARAMETERS = AS_NUMERIC(PARAMETERS) );
     protected_n++;
-    paras = REAL(PARAMETERS);
+    paras_ptr = REAL(PARAMETERS);
     
+    len_PARAMETERS = GET_LENGTH(PARAMETERS);
     dim_RESOURCE   = INTEGER( GET_DIM(RESOURCE)  );
     dim_LANDSCAPE  = INTEGER( GET_DIM(LANDSCAPE) );
     dim_AGENT      = INTEGER( GET_DIM(AGENT) );
@@ -646,6 +650,14 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
         }
     }
     
+    /* Code below copies the paras vector into C */
+    paras   = malloc(len_PARAMETERS * sizeof(double *));
+    vec_pos   = 0;
+    for(xloc = 0; xloc < len_PARAMETERS; xloc++){
+        paras[xloc] = paras_ptr[vec_pos];
+        vec_pos++;
+    } /* The parameters vector is now copied into C */
+    
     /* Do the biology here now */
     /* ====================================================================== */
     
@@ -749,6 +761,18 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
         }
     }
     
+    SEXP PARAMETERS_NEW;
+    PROTECT( PARAMETERS_NEW = allocVector(REALSXP, len_PARAMETERS) );
+    protected_n++;
+    
+    paras_ptr_new = REAL(PARAMETERS_NEW);
+    
+    vec_pos = 0;
+    for(xloc = 0; xloc < len_PARAMETERS; xloc++){
+        paras_ptr_new[vec_pos] = paras[xloc];
+        vec_pos++;
+    }    
+    
     SEXP EVERYTHING;
     EVERYTHING = PROTECT( allocVector(VECSXP, 6) );
     protected_n++;
@@ -757,10 +781,11 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     SET_VECTOR_ELT(EVERYTHING, 2, NEW_LANDSCAPE);
     SET_VECTOR_ELT(EVERYTHING, 3, NEW_ACTIONS);
     SET_VECTOR_ELT(EVERYTHING, 4, NEW_COSTS);
-    SET_VECTOR_ELT(EVERYTHING, 5, PARAMETERS);
+    SET_VECTOR_ELT(EVERYTHING, 5, PARAMETERS_NEW);
     
     UNPROTECT(protected_n);
 
+    free(paras);
     /* Free all of the allocated memory used in the interaction table */
     for(row = 0; row < int_d0; row++){
         free(lookup[row]);

@@ -405,6 +405,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
         }
     }  /* LANDSCAPE is now stored as land */    
     
+    /* Code below copies the paras vector into C */
     paras   = malloc(len_PARAMETERS * sizeof(double *));
     vec_pos   = 0;
     for(xloc = 0; xloc < len_PARAMETERS; xloc++){
