@@ -541,6 +541,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     int working_agents;      /* How many agents are helping out? */
     int transect_len;        /* The length of a transect sampled */
     int transect_eff;        /* Transect efficiency: How many observers help */
+    int len_PARAMETERS;      /* Length of the parameters vector */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
@@ -549,7 +550,9 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
     double *intr_ptr;        /* Pointer to INTERACT (interface R and C) */
+    double *paras_ptr;       /* Pointer to PARAMETERS (interface R and C) */
     double *paras;           /* Pointer to PARAMETER (interface R and C) */
+    double *paras_ptr_new;   /* Pointer to new paras (interface R and C) */
     double *agent_ptr;       /* Pointer to AGENT (interface R and C) */
     double *new_agent_ptr;   /* Pointer to new agents that are returned */
     double *data_ptr;        /* Pointer to DATA (interface R and C) */
@@ -581,8 +584,9 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     
     PROTECT( PARAMETERS = AS_NUMERIC(PARAMETERS) );
     protected_n++;
-    paras = REAL(PARAMETERS);
+    paras_ptr = REAL(PARAMETERS);
     
+    len_PARAMETERS = GET_LENGTH(PARAMETERS);
     dim_RESOURCE   = INTEGER( GET_DIM(RESOURCE)  );
     dim_LANDSCAPE  = INTEGER( GET_DIM(LANDSCAPE) );
     dim_AGENT      = INTEGER( GET_DIM(AGENT) );
@@ -591,6 +595,14 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     /* The C code for the model itself falls under here */
     /* ====================================================================== */
 
+    /* Code below copies the paras vector into C */
+    paras   = malloc(len_PARAMETERS * sizeof(double *));
+    vec_pos = 0;
+    for(xloc = 0; xloc < len_PARAMETERS; xloc++){
+        paras[xloc] = paras_ptr[vec_pos];
+        vec_pos++;
+    } /* The parameters vector is now copied into C */
+    
     method    = (int) paras[8];  /* Specifies method of estimation used      */
     times_obs = (int) paras[11]; /* Number of times observation conducted    */
     
@@ -842,16 +854,29 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
         }
     }
     
+    SEXP PARAMETERS_NEW;
+    PROTECT( PARAMETERS_NEW = allocVector(REALSXP, len_PARAMETERS) );
+    protected_n++;
+    
+    paras_ptr_new = REAL(PARAMETERS_NEW);
+    
+    vec_pos = 0;
+    for(xloc = 0; xloc < len_PARAMETERS; xloc++){
+        paras_ptr_new[vec_pos] = paras[xloc];
+        vec_pos++;
+    } 
+    
     SEXP EVERYTHING;
     EVERYTHING = PROTECT( allocVector(VECSXP, 3) );
     protected_n++;
     SET_VECTOR_ELT(EVERYTHING, 0, NEW_OBSERVATIONS);
     SET_VECTOR_ELT(EVERYTHING, 1, NEW_AGENTS);
-    SET_VECTOR_ELT(EVERYTHING, 2, PARAMETERS);  
+    SET_VECTOR_ELT(EVERYTHING, 2, PARAMETERS_NEW);  
     
     UNPROTECT(protected_n);
     
     /* Free all of the allocated memory used in arrays */
+    free(paras);
     for(row = 0; row < int_d0; row++){
         free(lookup[row]);
     }

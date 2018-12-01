@@ -329,7 +329,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     int vec_pos;             /* Vector position for making arrays */
     int off_col;             /* The column where the offspring are held */
     int rm_col;              /* Column where removal is indiciated */
-    int len_PARAMETERS;     /* Length of the parameters vector */
+    int len_PARAMETERS;      /* Length of the parameters vector */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
