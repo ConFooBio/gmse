@@ -329,13 +329,16 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     int vec_pos;             /* Vector position for making arrays */
     int off_col;             /* The column where the offspring are held */
     int rm_col;              /* Column where removal is indiciated */
+    int len_PARAMETERS;     /* Length of the parameters vector */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
     double *R_ptr_new;       /* Pointer to RESOURCE_NEW (interface R and C) */
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
     double *land_ptr_new;    /* Pointer to LAND_NEW (interface R and C) */
+    double *paras_ptr;       /* Pointer to PARAMETERS (interface R and C) */
     double *paras;           /* Pointer to PARAMETER (interface R and C) */
+    double *paras_ptr_new;   /* Pointer to new paras (interface R and C) */
     double **res_old;        /* Array to store the old RESOURCE in C */
     double **res_make;       /* Array of newly made resources */
     double **res_new;        /* Array to store the new RESOURCE in C */
@@ -356,8 +359,9 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     
     PROTECT( PARAMETERS = AS_NUMERIC(PARAMETERS) );
     protected_n++;
-    paras = REAL(PARAMETERS);
+    paras_ptr = REAL(PARAMETERS);
     
+    len_PARAMETERS = GET_LENGTH(PARAMETERS);
     dim_RESOURCE   = INTEGER( GET_DIM(RESOURCE)  );
     dim_LANDSCAPE  = INTEGER( GET_DIM(LANDSCAPE) );
 
@@ -400,6 +404,13 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
             }
         }
     }  /* LANDSCAPE is now stored as land */    
+    
+    paras   = malloc(len_PARAMETERS * sizeof(double *));
+    vec_pos   = 0;
+    for(xloc = 0; xloc < len_PARAMETERS; xloc++){
+        paras[xloc] = paras_ptr[vec_pos];
+        vec_pos++;
+    } /* The parameters vector is now copied into C */
     
     /* Do the biology here now */
     /* ====================================================================== */
@@ -507,16 +518,29 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
         }
     }
     
+    SEXP PARAMETERS_NEW;
+    PROTECT( PARAMETERS_NEW = allocVector(REALSXP, len_PARAMETERS) );
+    protected_n++;
+    
+    paras_ptr_new = REAL(PARAMETERS_NEW);
+
+    vec_pos = 0;
+    for(xloc = 0; xloc < len_PARAMETERS; xloc++){
+        paras_ptr_new[vec_pos] = paras[xloc];
+        vec_pos++;
+    }    
+    
     SEXP EVERYTHING;
     EVERYTHING = PROTECT( allocVector(VECSXP, 3) );
     protected_n++;
     SET_VECTOR_ELT(EVERYTHING, 0, RESOURCE_NEW);
     SET_VECTOR_ELT(EVERYTHING, 1, LAND_NEW);
-    SET_VECTOR_ELT(EVERYTHING, 2, PARAMETERS);   
+    SET_VECTOR_ELT(EVERYTHING, 2, PARAMETERS_NEW);   
     
     UNPROTECT(protected_n);
     
     /* Free all of the allocated memory used in arrays */
+    free(paras);
     for(resource = 0; resource < res_num_total; resource++){
         free(res_new[resource]);
     }
