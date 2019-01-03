@@ -13,6 +13,62 @@ output:
 runtime: shiny
 ---
 
+
+<style type="text/css">
+body p {
+  color: #000000;
+}
+ul {
+  color: black;
+}
+ol {
+  color: black;
+}
+a {
+    color: darkblue;
+    text-decoration: none
+}
+.fifty {
+   font-size: 50%;
+   }
+.seventy {
+   font-size: 70%;
+   }
+slides > slide.backdrop {
+  background: none !important;
+  background-color: white !important;
+}
+slides > slide.title-slide hgroup h1 {
+  color: black;
+}
+slides > slide.title-slide p {
+  color: black;
+}
+slides > slide.light > hgroup h2 {
+  color: black;
+}
+slides > slide.light > hgroup h1 {
+  color: black;
+}
+ul {
+  color: black;
+}
+ol {
+  color: black;
+}
+p {
+  color: black
+}
+h1, h2, h3, h4, h5, h6, h7, h8, p {
+    color: black;
+}
+.checkbox-inline, .radio-inline {
+    margin-right: 90px;
+}
+.forceBreak { -webkit-column-break-after: always; break-after: column; }
+</style>
+
+
 ```{r, echo=FALSE}
 library(gamesGA);
 library(GMSE);
@@ -21,8 +77,6 @@ library(knitr);
 
 <!---
 1. Know what to say about the Welikia project
-
-
 ---> 
 
 
@@ -30,7 +84,6 @@ library(knitr);
 https://welikia.org/
 http://ngm.nationalgeographic.com/2009/09/manhattan/miller-text
 https://welikia.org/explore/mannahatta-map/
-
 --->
 
 # Biodiversity and food security
@@ -377,11 +430,9 @@ kable(noquote(history));
 
 </center>
 
-# Genetic algorithms, and an example using Prisoner's dilemma
+<!---
 
-<!--- 
-    START OF THE GENETIC ALGORITHM SET OF SLIDES  ------------------------------
---->
+# Genetic algorithms, and an example using Prisoner's dilemma
 
 ## Structure of a genetic algorithm
 
@@ -816,9 +867,10 @@ kable(cbind(agents,fit), format="html");
 
 </div>
 
-<!--- 
-    END OF THE GENETIC ALGORITHM SET OF SLIDES  --------------------------------
+
 --->
+
+<!---
 
 ## Iterated Prisoner's dilemma rules {.smaller}
 
@@ -918,6 +970,8 @@ renderTable({
      
 }, include.rownames=TRUE)
 ```
+
+--->
 
 # Genetic algorithms in Management Strategy Evaluation
 
