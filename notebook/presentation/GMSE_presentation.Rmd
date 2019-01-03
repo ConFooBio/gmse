@@ -281,12 +281,85 @@ Modelling population dynamics<footnote>Cusack, JJ, et al. *Conserv. Lett.* (In p
 
 </center>
 
+## Game theory: conflict and cooperation
+
+<div class="columns-2">
+
+- Formalisation and study of conflict and cooperation between rational decision-makers
+- Compatibile with agent-based modelling<footnote>[Adami et al. (2016) *Phys. Life. Rev.* **19**:1-26](http://dx.doi.org/10.1016/j.plrev.2016.08.015)</footnote>
+- Can suggest management strategies<footnote>[Tilman et al. 2016 *Theor. Ecol.*](http://link.springer.com/article/10.1007%2Fs12080-016-0318-8)</footnote> and be used to understand stake-holder actions<footnote>[Kark et al. 2015 *Curr. Opin. Environ. Sustainability* **12**:12-24]()</footnote>
+- Conceptual unification
+
+<p class="forceBreak"></p>
+
+![](payoff_matrix_sm.png)
+<center>
+*Prisoner's dilemma*
+</center>
+
+</div>
 
 
+## {.smaller}
+
+<div class="columns-2">
+
+![Public license<footnote>test</footnote>](US_USSR_nukes_sm.png).
+
+![Wilkinson 1990](Wilkinson1990_sm.png).
+
+![Isaacdm](penalty_sm.png).
+
+![Dennig](brexit_sm.png).
+
+</div>
+
+<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Images:** (1) [Public license](https://commons.wikimedia.org/wiki/File:US_and_USSR_nuclear_stockpiles.svg), (2) [Wilkinson 1990](https://projects.ncsu.edu/project/evoresources/Evolutionary%20medicine/Unitsofselection%20DM%20copy/wilkinson-foodsharing.pdf), (3) [Isaacdm](https://commons.wikimedia.org/wiki/File:PhysicsofPenalty.JPG?uselang=en-gb), (4) [Public license](http://www.publicdomainpictures.net/view-image.php?image=180560&picture=brexit-referendum-uk)
 
 
+## Game theory for wicked problems
+
+<div class="columns-2">
+
+<u>**Large strategy space:**</u>
+
+ - **Asymmetric payoffs** (payoffs affected by stake-holder identity)
+ - **Multiple choices**
+ - **Multiple players**
+ - **Iterated interactions** (strategies affected by interaction history)
+
+<p class="forceBreak"></p>
+
+![](payoff_matrix_sm.png)
 
 
+## Game theory for wicked problems
+
+<div class="columns-2">
+
+<u>**Large strategy space:**</u>
+
+ - **Asymmetric payoffs** (payoffs affected by stake-holder identity)
+ - **Multiple choices**
+ - **Multiple players**
+ - **Iterated interactions** (strategies affected by interaction history)
+
+<p class="forceBreak"></p>
+
+![](magnus.jpg)
+<center>
+*Magnus Carlsen*<footnote>[Andreas Kontokanis](https://commons.wikimedia.org/wiki/File:Carlsen_Magnus_(30238051906).jpg)</footnote>
+</center>
+
+##
+
+<center>
+
+![](gmse_overview_sm.png)
+
+</center>
 
 
 
