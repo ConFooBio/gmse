@@ -1,8 +1,8 @@
 ---
-title: "GMSE: a general tool for management strategy evaluation"
+title: "Generalised Management Strategy Evaluation: modelling biodiversity and food security"
 subtitle: "https://bradduthie.shinyapps.io/GMSE_presentation/#1"
-author: "Brad Duthie (@bradduthie)"
-date: "19 September 2017"
+author: "Brad Duthie (@bradduthie), Jeremy Cusack, Sarobidy Rakotonarivo, and Nils Bunnefeld"
+date: "8 January 2018"
 output: 
   ioslides_presentation:
     logo: Confoobio-stacked-logo.png
@@ -65,9 +65,42 @@ h1, h2, h3, h4, h5, h6, h7, h8, p {
 .checkbox-inline, .radio-inline {
     margin-right: 90px;
 }
+footer:after {
+  content: attr(label);
+  font-size: 12pt;
+  position: absolute;
+  bottom: 20px;
+  left: 60px;
+  line-height: 1.9;
+}
+div.footnotes {
+  position: absolute;
+  bottom: 0;
+  margin-bottom: 10px;
+  width: 80%;
+  font-size: 0.6em;
+  margin-left: 50px
+}
 .forceBreak { -webkit-column-break-after: always; break-after: column; }
 </style>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+  $('slide:not(.backdrop):not(.title-slide)').append('<div class=\"footnotes\">');
+
+  $('footnote').each(function(index) {
+    var text  = $(this).html();
+    var fnNum = (index+1).toString();
+    $(this).html(fnNum.sup());
+
+    var footnote   = fnNum + '. ' + text + '<br/>';
+    var oldContent = $(this).parents('slide').children('div.footnotes').html();
+    var newContent = oldContent + footnote;
+    $(this).parents('slide').children('div.footnotes').html(newContent);
+  });
+});
+</script>
 
 ```{r, echo=FALSE}
 library(gamesGA);
@@ -102,12 +135,9 @@ https://welikia.org/explore/mannahatta-map/
 
 ![](mannahatta.png)
 
+Beyond Mannahatta<footnote>[Markley Boyer](https://www.facebook.com/markley.boyer), [Robert Clark](http://www.nationalgeographic.com/contributors/c/photographer-robert-clark/), [National Geographic](http://ngm.nationalgeographic.com/2009/09/manhattan/miller-text), [The Welikia Project](https://welikia.org/)</footnote>
+
 </center>
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Computer Image: [Markley Boyer](https://www.facebook.com/markley.boyer), Photo Image: [Robert Clark](http://www.nationalgeographic.com/contributors/c/photographer-robert-clark/)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [National Geographic](http://ngm.nationalgeographic.com/2009/09/manhattan/miller-text), [The Welikia Project](https://welikia.org/)
-
-
 
 ## {.smaller}
 
@@ -115,11 +145,9 @@ https://welikia.org/explore/mannahatta-map/
 
 ![](potato_fields_Janet_Tench.jpg)
 
-<br><br>
+Norfolk potato field<footnote>[Janet Tench](https://commons.wikimedia.org/wiki/File:Norfolk_potato_field_-_geograph.org.uk_-_180521.jpg)</footnote>
 
 </center>
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Image: [Janet Tench](https://commons.wikimedia.org/wiki/File:Norfolk_potato_field_-_geograph.org.uk_-_180521.jpg)
 
 ## {.smaller}
 
@@ -127,11 +155,9 @@ https://welikia.org/explore/mannahatta-map/
 
 ![](KehoeFig1.png)
 
+Potential biodiversity loss due to increased agricultural development<footnote>[Kehoe et al. (2017) *Nat. Ecol. Evol.* **1**:1129–1135](https://www.nature.com/articles/s41559-017-0234-3)</footnote>
+
 </center>
-
-<br><br><br>
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Kehoe et al. (2017) *Nat. Ecol. Evol.* **1**:1129–1135](https://www.nature.com/articles/s41559-017-0234-3) 
 
 ##
 
@@ -141,7 +167,7 @@ https://welikia.org/explore/mannahatta-map/
 
 ![](wicked_modelling.png)
 
-# Uncertainty and conservation conflict
+# Modelling biodiversity dynamics and human decision-making
 
 ##
 
@@ -157,13 +183,9 @@ https://welikia.org/explore/mannahatta-map/
 
 ![](mse_overview_sm_pt.png)
 
+**Management Strategy Evaluation**
+
 </center>
-
-<br>
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Bunnefeld et al. (2011) *Trends. Ecol. Evol.* **26**:441-447](https://doi.org/10.1016/j.tree.2011.05.003)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Chadès et al. (2017) *Theor. Ecol.* **10**:1-10](https://doi.org/10.1007/s12080-016-0313-0)
-
 
 ## {.smaller}
 
@@ -171,12 +193,156 @@ https://welikia.org/explore/mannahatta-map/
 
 ![](mse_overview_sm_un.png)
 
+**Management Strategy Evaluation**<footnote>[Bunnefeld et al. (2011) *Trends. Ecol. Evol.* **26**:441-447](https://doi.org/10.1016/j.tree.2011.05.003)</footnote><sup>,</sup><footnote>[Chadès et al. (2017) *Theor. Ecol.* **10**:1-10](https://doi.org/10.1007/s12080-016-0313-0)</footnote>
+
 </center>
 
-<br>
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Bunnefeld et al. (2011) *Trends. Ecol. Evol.* **26**:441-447](https://doi.org/10.1016/j.tree.2011.05.003)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Chadès et al. (2017) *Theor. Ecol.* **10**:1-10](https://doi.org/10.1007/s12080-016-0313-0)
+## The ConFooBio Project
+
+**Resolving conflicts between food security and biodiversity conservation under uncertainty**
+
+<div class = "columns-2">
+
+![](confoobio_sans.png)
+
+![](group.png)
+
+</div>
+
+
+
+## Generalised Management Strategy Evaluation (GMSE) software
+
+<div class = "columns-2">
+
+- **Model biodiversity dynamics & realistic human decision-making**
+- **Predict resource & land-use changes in social-ecological systems**
+- **Integrate flexibly with existing ecological models**<footnote>Duthie AB, et al. (2018) Method. Ecol. Evol. [**9**:2396-2401](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/2041-210X.13091) </footnote>
+- **Open-source on [CRAN](https://cran.r-project.org/package=GMSE) and [GitHub](https://github.com/ConFooBio/gmse)**<footnote>[http://confoobio.github.io/gmse](http://confoobio.github.io/gmse)</footnote>
+
+<p class="forceBreak"></p>
+
+<center>
+
+![](GMSE_Logo_Goose_300.png)
+
+[![](http://www.r-pkg.org/badges/version/GMSE?color=yellowgreen)](https://cran.r-project.org/package=GMSE) [![](http://cranlogs.r-pkg.org/badges/grand-total/GMSE?color=yellowgreen)](http://cranlogs.r-pkg.org/badges/grand-total/GMSE)
+
+</center>
+
+</div>
+
+## GMSE: population modelling (defaults)
+
+<div class = "columns-2"><br><br>
+
+- **Default models individual-based (IBM)**
+- **Spatially explicit landscape**
+- **Individual birth, movement, death**
+- **Can be over-ridden with custom models**
+
+<p class="forceBreak"></p>
+<br><br>
+<center>
+
+![](GMSE_Logo_Goose_300.png)
+
+[![](http://www.r-pkg.org/badges/version/GMSE?color=yellowgreen)](https://cran.r-project.org/package=GMSE) [![](http://cranlogs.r-pkg.org/badges/grand-total/GMSE?color=yellowgreen)](http://cranlogs.r-pkg.org/badges/grand-total/GMSE)
+
+</center>
+
+</div>
+
+## {.smaller}
+
+<center>
+
+![](case_studies.png)
+
+Modelling population dynamics<footnote>Cusack, JJ, et al. *Conserv. Lett.* (In press). DOI: <a ref = "https://onlinelibrary.wiley.com/doi/full/10.1111/conl.12450">10.1111/conl.12450</a>.</footnote><sup>,</sup><footnote>Cusack, JJ, et al. *In revision*</footnote>
+
+</center>
+
+##
+
+<center>
+
+![](mse_overview_sm.png)
+
+</center>
+
+
+##
+
+<center>
+
+![](gmse_overview_sm.png)
+
+</center>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ## {.smaller}
@@ -244,19 +410,7 @@ https://welikia.org/explore/mannahatta-map/
 </center>
 
 
-## The ConFooBio Project
-
-**Resolving conflicts between food security and biodiversity conservation under uncertainty**
-
-<div class = "columns-2">
-
-![](confoobio_sans.png)
-
-![](group.png)
-
-</div>
-
-
+<!--- 
 
 ## The ConFooBio Project
 
@@ -273,6 +427,8 @@ https://welikia.org/explore/mannahatta-map/
 - Impact on sustainability of social-ecological systems?
 
 </div>
+
+--->
 
 # Game theory in conservation conflict
 
@@ -1235,6 +1391,16 @@ plot_gmse_effort(sim_results = sim);
 
 </center>
 
+## {.smaller}
+
+<br>
+<center>
+
+![](funding.png)
+
+</center>
+
+<!---
 
 ##
 
@@ -1255,3 +1421,5 @@ plot_gmse_effort(sim_results = sim);
 </center>
 
 </div>
+
+--->
