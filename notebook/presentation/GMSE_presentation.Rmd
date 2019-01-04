@@ -437,9 +437,13 @@ sim <- gmse(time_max = 30, land_dim_1 = 100, land_dim_2 = 100,
             res_consume = 1, RESOURCE_ini = 600);
 ```
 
+One function [shows](https://confoobio.github.io/gmse/reference/plot_gmse_results.html) the general results of simulation dynamics.
+
 ```{r, eval = FALSE}
 plot_gmse_results(sim);
 ```
+
+Another function [shows](https://confoobio.github.io/gmse/reference/plot_gmse_effort.html) manager permissiveness, and stakeholder effort, for each action.
 
 ```{r, eval = FALSE}
 plot_gmse_effort(sim);
@@ -702,16 +706,76 @@ renderPlot(height = 500, {
 })
 ```
 
+## {.smaller}
+
+```{r, echo = FALSE}
+renderDataTable(
+    if(is.null(sim$data) == FALSE){
+        dat <- gmse_table(sim$data)
+        dat[,1:6];
+    }
+)
+```
+
+## {.smaller}
+
+<center>
+
+![](gmse_overview_sm_ga2.png)
+
+</center>
 
 
+## Custom sub-models with gmse_apply {.smaller}
 
 
+Custom models can be integrated into GMSE with `gmse_apply`, which [takes the arguments](https://confoobio.github.io/gmse/reference/gmse_apply.html) `res_mod`, `obs_mod`, `man_mod`, and `use_mod`.
+
+Consider a logistic growth model:
+
+$$N_{t+1} = N_{t} + rN_{t+1}\left(1 - \frac{N_{t}}{K}\right)$$
+
+Written as a function in R to take in values from $N_{t}$ and return $N_{t+1}$.
+
+```{r}
+logistic_res_mod <- function(N_0, K = 2000, gr = 1){
+    N_1 <- N_0 + gr * N_0 * ( 1 - N_0/K );
+    return(N_1);
+}
+
+mod_result <- logistic_res_mod(N_0 = 200, gr = 0.3);
+```
+
+```{r, echo = FALSE}
+print(mod_result);
+```
+
+The above function *and all of its arguments* can be integrated into `gmse_apply`.
+
+## Custom sub-models with gmse_apply {.smaller}
+
+```{r, echo = FALSE}
+mod <- gmse_apply(res_mod = function(N_0 = 200, K = 2000, gr = 0.3) N_1 <- N_0 + gr * N_0 * ( 1 - N_0/K ), stakeholders = 5);
+```
+
+```{r, eval = FALSE}
+mod <- gmse_apply(res_mod = logistic_res_mod, # Custom model
+                  N_0 = 200, gr = 0.3,        # Custom arguments
+                  stakeholders = 5);          # GMSE arguments
+```
+
+```{r, echo = FALSE}
+print(mod);
+```
 
 
+## {.smaller}
 
+<center>
 
+![](gmse_overview_sm_ga2.png)
 
-
+</center>
 
 
 
