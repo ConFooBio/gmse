@@ -65,47 +65,16 @@ h1, h2, h3, h4, h5, h6, h7, h8, p {
 .checkbox-inline, .radio-inline {
     margin-right: 90px;
 }
-footer:after {
-  content: attr(label);
-  font-size: 12pt;
-  position: absolute;
-  bottom: 20px;
-  left: 60px;
-  line-height: 1.9;
-}
-div.footnotes {
-  position: absolute;
-  bottom: 0;
-  margin-bottom: 10px;
-  width: 80%;
-  font-size: 0.6em;
-  margin-left: 50px
-}
+
 .forceBreak { -webkit-column-break-after: always; break-after: column; }
 </style>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script>
-$(document).ready(function() {
-  $('slide:not(.backdrop):not(.title-slide)').append('<div class=\"footnotes\">');
 
-  $('footnote').each(function(index) {
-    var text  = $(this).html();
-    var fnNum = (index+1).toString();
-    $(this).html(fnNum.sup());
-
-    var footnote   = fnNum + '. ' + text + '<br/>';
-    var oldContent = $(this).parents('slide').children('div.footnotes').html();
-    var newContent = oldContent + footnote;
-    $(this).parents('slide').children('div.footnotes').html(newContent);
-  });
-});
-</script>
 
 ```{r, echo=FALSE}
-library(gamesGA);
 library(GMSE);
 library(knitr);
+library(shiny);
 ```
 
 <!---
@@ -135,7 +104,7 @@ https://welikia.org/explore/mannahatta-map/
 
 ![](mannahatta.png)
 
-Beyond Mannahatta<footnote>[Markley Boyer](https://www.facebook.com/markley.boyer), [Robert Clark](http://www.nationalgeographic.com/contributors/c/photographer-robert-clark/), [National Geographic](http://ngm.nationalgeographic.com/2009/09/manhattan/miller-text), [The Welikia Project](https://welikia.org/)</footnote>
+[Markley Boyer](https://www.facebook.com/markley.boyer), [Robert Clark](http://www.nationalgeographic.com/contributors/c/photographer-robert-clark/), [National Geographic](http://ngm.nationalgeographic.com/2009/09/manhattan/miller-text), [Welikia Project](https://welikia.org/)
 
 </center>
 
@@ -145,7 +114,7 @@ Beyond Mannahatta<footnote>[Markley Boyer](https://www.facebook.com/markley.boye
 
 ![](potato_fields_Janet_Tench.jpg)
 
-Norfolk potato field<footnote>[Janet Tench](https://commons.wikimedia.org/wiki/File:Norfolk_potato_field_-_geograph.org.uk_-_180521.jpg)</footnote>
+[Janet Tench](https://commons.wikimedia.org/wiki/File:Norfolk_potato_field_-_geograph.org.uk_-_180521.jpg)</footnote>
 
 </center>
 
@@ -155,7 +124,7 @@ Norfolk potato field<footnote>[Janet Tench](https://commons.wikimedia.org/wiki/F
 
 ![](KehoeFig1.png)
 
-Potential biodiversity loss due to increased agricultural development<footnote>[Kehoe et al. (2017) *Nat. Ecol. Evol.* **1**:1129–1135](https://www.nature.com/articles/s41559-017-0234-3)</footnote>
+[Kehoe et al. (2017) *Nat. Ecol. Evol.* **1**:1129–1135](https://www.nature.com/articles/s41559-017-0234-3)</footnote>
 
 </center>
 
@@ -193,9 +162,11 @@ Potential biodiversity loss due to increased agricultural development<footnote>[
 
 ![](mse_overview_sm_un.png)
 
-**Management Strategy Evaluation**<footnote>[Bunnefeld et al. (2011) *Trends. Ecol. Evol.* **26**:441-447](https://doi.org/10.1016/j.tree.2011.05.003)</footnote><sup>,</sup><footnote>[Chadès et al. (2017) *Theor. Ecol.* **10**:1-10](https://doi.org/10.1007/s12080-016-0313-0)</footnote>
-
 </center>
+<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Bunnefeld et al. (2011) *Trends. Ecol. Evol.* [**26**:441-447](https://doi.org/10.1016/j.tree.2011.05.003) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Chadès et al. (2017) *Theor. Ecol.* [**10**:1-10](https://doi.org/10.1007/s12080-016-0313-0)
 
 
 ## The ConFooBio Project
@@ -218,8 +189,8 @@ Potential biodiversity loss due to increased agricultural development<footnote>[
 
 - **Model biodiversity dynamics & realistic human decision-making**
 - **Predict resource & land-use changes in social-ecological systems**
-- **Integrate flexibly with existing ecological models**<footnote>Duthie AB, et al. (2018) Method. Ecol. Evol. [**9**:2396-2401](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/2041-210X.13091) </footnote>
-- **Open-source on [CRAN](https://cran.r-project.org/package=GMSE) and [GitHub](https://github.com/ConFooBio/gmse)**<footnote>[http://confoobio.github.io/gmse](http://confoobio.github.io/gmse)</footnote>
+- **Integrate flexibly with existing ecological models**
+- **Open-source on [CRAN](https://cran.r-project.org/package=GMSE) and [GitHub](https://github.com/ConFooBio/gmse)**
 
 <p class="forceBreak"></p>
 
@@ -232,6 +203,8 @@ Potential biodiversity loss due to increased agricultural development<footnote>[
 </center>
 
 </div>
+<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Duthie AB, et al. (2018) *Method. Ecol. Evol.* [**9**:2396-2401](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/2041-210X.13091)
 
 ## GMSE: population modelling (defaults)
 
@@ -260,7 +233,9 @@ Potential biodiversity loss due to increased agricultural development<footnote>[
 
 ![](case_studies.png)
 
-Modelling population dynamics<footnote>Cusack, JJ, et al. *Conserv. Lett.* (In press). DOI: <a ref = "https://onlinelibrary.wiley.com/doi/full/10.1111/conl.12450">10.1111/conl.12450</a>.</footnote><sup>,</sup><footnote>Cusack, JJ, et al. *In revision*</footnote>
+<br>
+
+Cusack, JJ, et al. *Conserv. Lett.* (*In press*). DOI: [10.1111/conl.12450](https://onlinelibrary.wiley.com/doi/full/10.1111/conl.12450)
 
 </center>
 
@@ -286,8 +261,8 @@ Modelling population dynamics<footnote>Cusack, JJ, et al. *Conserv. Lett.* (In p
 <div class="columns-2">
 
 - Formalisation and study of conflict and cooperation between rational decision-makers
-- Compatibile with agent-based modelling<footnote>[Adami et al. (2016) *Phys. Life. Rev.* **19**:1-26](http://dx.doi.org/10.1016/j.plrev.2016.08.015)</footnote>
-- Can suggest management strategies<footnote>[Tilman et al. 2016 *Theor. Ecol.*](http://link.springer.com/article/10.1007%2Fs12080-016-0318-8)</footnote> and be used to understand stake-holder actions<footnote>[Kark et al. 2015 *Curr. Opin. Environ. Sustainability* **12**:12-24]()</footnote>
+- Compatibile with agent-based modelling
+- Can suggest management strategiesand be used to understand stake-holder actions
 - Conceptual unification
 
 <p class="forceBreak"></p>
@@ -297,8 +272,10 @@ Modelling population dynamics<footnote>Cusack, JJ, et al. *Conserv. Lett.* (In p
 *Prisoner's dilemma*
 </center>
 
-</div>
+</div><br>
 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Adami et al. (2016) *Phys. Life. Rev.* [**19**:1-26](http://dx.doi.org/10.1016/j.plrev.2016.08.015) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Tilman et al. (2016) *Theor. Ecol.* [**10**:155-165](http://link.springer.com/article/10.1007%2Fs12080-016-0318-8)
 
 ## {.smaller}
 
@@ -350,7 +327,7 @@ Modelling population dynamics<footnote>Cusack, JJ, et al. *Conserv. Lett.* (In p
 
 ![](magnus.jpg)
 <center>
-*Magnus Carlsen*<footnote>[Andreas Kontokanis](https://commons.wikimedia.org/wiki/File:Carlsen_Magnus_(30238051906).jpg)</footnote>
+[Andreas Kontokanis](https://commons.wikimedia.org/wiki/File:Carlsen_Magnus_(30238051906).jpg)</footnote>
 </center>
 
 ##
@@ -360,296 +337,6 @@ Modelling population dynamics<footnote>Cusack, JJ, et al. *Conserv. Lett.* (In p
 ![](gmse_overview_sm.png)
 
 </center>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## {.smaller}
-
-<!--- Transition from global to local scale --->
-
-![](wildlife_conflict_sm.jpg)
-
-<center>
-**Image**: [Public domain](https://commons.wikimedia.org/wiki/File:Human-wildlife_conflict.jpg)
-</center>
-
-## {.smaller}
-
-<div class = "columns-2">
-
-<!--- ![](African_Bush_Elephant.jpg) --->
-
-![](grouse_shooting.jpg)
-
-
-**Conservation conflicts between biodiversity and food security result when the outcome of one stake-holder is affected by one or more other stake-holders** ([Colyvan et al. (2011) *Biol. Conserv.* **144**:1246-1253](http://www.sciencedirect.com/science/article/pii/S000632071000488X?via%3Dihub))
-
-<br>
-
-- People with strongly held views clash over objectives
-- Negative effect on sustainability, biodiversity, and human livelihood
-- MSE does not integrate the livelihood decisions of people
-
-</div>
-<br><br>
-<center>
-
-**Image:** [Public](https://commons.wikimedia.org/wiki/File:Hardy_Heywood_-_The_Grouse_Shoot_1898.jpg) [Domain](https://commons.wikimedia.org/wiki/File:Henharrier.jpg)
-<!--- **Image:** [Muhammad Mahdi Karim](https://en.wikipedia.org/wiki/User:Muhammad_Mahdi_Karim) --->
-
-</center>
-
-## {.smaller}
-
-<div class = "columns-2">
-
-<!--- ![](African_Bush_Elephant.jpg) --->
-
-![](grouse_shooting2.jpg)
-
-
-**Conservation conflicts between biodiversity and food security result when the outcome of one stake-holder is affected by one or more other stake-holders** ([Colyvan et al. (2011) *Biol. Conserv.* **144**:1246-1253](http://www.sciencedirect.com/science/article/pii/S000632071000488X?via%3Dihub))
-
-<br>
-
-- People with strongly held views clash over objectives
-- Negative effect on sustainability, biodiversity, and human livelihood
-- MSE does not integrate the livelihood decisions of people
-
-</div>
-
-<br><br>
-
-<center>
-
-**Image:** [Public](https://commons.wikimedia.org/wiki/File:Hardy_Heywood_-_The_Grouse_Shoot_1898.jpg) [Domain](https://commons.wikimedia.org/wiki/File:Henharrier.jpg)
-<!--- **Image:** [Muhammad Mahdi Karim](https://en.wikipedia.org/wiki/User:Muhammad_Mahdi_Karim) --->
-
-</center>
-
-
-<!--- 
-
-## The ConFooBio Project
-
-**Resolving conflicts between food security and biodiversity conservation under uncertainty**
-
-<div class = "columns-2">
-
-![](confoobio_sans.png)
-
-<br><br><br>
-
-- What leads to conservation conflict?
-- How to resolve conservation conflict?
-- Impact on sustainability of social-ecological systems?
-
-</div>
-
---->
-
-# Game theory in conservation conflict
-
-<!--- Get the ERC logo and EU flag in here? --->
-
-## Game theory: conflict and cooperation
-
-<div class="columns-2">
-
-- Formalisation and study of conflict and cooperation between rational decision-makers
-- Broadly encompasses combinatorial games (e.g., tic-tac-toe, chess) and evolutionary invasion analysis (adaptive dynamics)
-- Compatibile with agent-based modelling
-
-![](payoff_matrix_sm.png)
-
-</div>
-<hr>
-
-<br>
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Adami et al. (2016) *Phys. Life. Rev.* **19**:1-26](http://dx.doi.org/10.1016/j.plrev.2016.08.015)
-
-## {.smaller}
-
-<div class="columns-2">
-
-![Public license](US_USSR_nukes_sm.png).
-
-![Wilkinson 1990](Wilkinson1990_sm.png).
-
-![Isaacdm](penalty_sm.png).
-
-![Dennig](brexit_sm.png).
-
-</div>
-
-<br>
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Images:** (1) [Public license](https://commons.wikimedia.org/wiki/File:US_and_USSR_nuclear_stockpiles.svg), (2) [Wilkinson 1990](https://projects.ncsu.edu/project/evoresources/Evolutionary%20medicine/Unitsofselection%20DM%20copy/wilkinson-foodsharing.pdf), (3) [Isaacdm](https://commons.wikimedia.org/wiki/File:PhysicsofPenalty.JPG?uselang=en-gb), (4) [Public license](http://www.publicdomainpictures.net/view-image.php?image=180560&picture=brexit-referendum-uk)
-
-
-## Conflict in conservation
-
-Game theory provides a natural framework for addressing issues of cooperation and conflict in conservation.
-
-- Game theory can be used to understand stake-holder decision making ([Kark et al. 2015 *Curr. Opin. Environ. Sustainability* **12**:12-24]()).
-
-- Game-theoretic models can suggest novel management strategies ([Colvan et al. 2011 *Biol. Conserv.* **144**:1246-1253](http://dx.doi.org/10.1016/j.biocon.2010.10.028); [Tilman et al. 2016 *Theor. Ecol.*](http://link.springer.com/article/10.1007%2Fs12080-016-0318-8)).
-
-- Game theory can consider multiple management objectives simultaneously ([Lee 2012 *Chemosphere* **87**:608-613](http://dx.doi.org/10.1016/j.chemosphere.2012.01.014)).
-
-## Stake-holders are complex
-
-<div class="columns-2">
-
-**Simple models assume that stake-holders:**
-
-- Know what pay-offs will be
-- Have clearly defined choices
-- Behave rationally
-- Understand the games
-- Prioritise outcomes clearly
-
-![](payoff_matrix_sm.png)
-
-</div>
-
-## Conservation conflicts are complex {.smaller}
-
-<div class="columns-2">
-
- - **Asymmetric payoffs**: Payoffs of choices may depend instead on stake-holder identity.
-
-![](payoff_matrix_asym.png)
-
-</div>
-
-## But most games are more complex {.smaller}
-
-<div class="columns-2">
-
- - **Asymmetric payoffs**: Payoffs of choices may depend instead on stake-holder identity.
-  - **Multiple choices**: Players might have three or more choices.
-
-![](payoff_matrix_cho.png)
-
-</div>
-
-## But most games are more complex {.smaller}
-
-<div class="columns-2">
-
- - **Asymmetric payoffs**: Payoffs of choices may depend instead on stake-holder identity.
- - **Multiple choices**: Players might have three or more choices.
- - **Multiple players**: More than two stake-holders might interact at one time.
-
-![](payoff_matrix_3pl.png)
-
-</div>
-
-## But most games are more complex {.smaller}
-
-<div class="columns-2">
-
- - **Asymmetric payoffs**: Payoffs of choices may depend instead on stake-holder identity.
- - **Multiple choices**: Players might have three or more choices.
- - **Multiple players**: More than two stake-holders might interact at one time.
- - **Iterated interactions**: Strategies maybe affected by interaction history.
-
-```{r, echo=FALSE}
-rounds  <- as.character(1:9);
-players <- c("Player 1","Player 2");
-plays   <- sample(x=c(0,1), size=18, replace=TRUE);
-plays[plays == 0] <- "A";
-plays[plays == 1] <- "B";
-history <- matrix(data=plays, nrow=2);
-rownames(history) <- players;
-colnames(history) <- rounds;
-kable(noquote(history));
-```
-
-
-![](payoff_matrix_rd10_sm.png)
-
-
-</div>
-
-
-##{.smaller}
-
-<center>
-
-![](mse_overview_sm.png)
-
-</center>
-
-
-## {.smaller}
-
-<center>
-
-![](gmse_overview_sm_ga.png)
-
-</center>
-
-<br><br><br>
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Bunnefeld et al. (2011) *Trends. Ecol. Evol.* **26**:441-447](https://doi.org/10.1016/j.tree.2011.05.003)  
 
 ## {.smaller}
 
@@ -659,800 +346,374 @@ kable(noquote(history));
 
 </center>
 
-<!---
 
-# Genetic algorithms, and an example using Prisoner's dilemma
+## GMSE: modelling decision-making
 
-## Structure of a genetic algorithm
+<div class = "columns-2">
 
-<div class="columns-2">
+**Up to 5 possible actions**
 
-```{r, echo=FALSE}
-mbox <- function(x0, x1, y0, y1){
-    xx <- seq(from=x0, to=x1, length.out = 100);
-    yy <- seq(from=y0, to=y1, length.out = 100);
-    xd <- c(rep(x0, 100), xx, rep(x1,100), rev(xx));
-    yd <- c(yy, rep(y1,100), rev(yy), rep(y0, 100));
-    return(list(x=xd, y=yd));
-}
+- Culling (&darr; survival)
+- Castration (&darr; reproduction)
+- Scaring (displacement)
+- Feeding (&uarr; survival)
+- Helping (&uarr; reproduction)
 
-par(mar=c(0,0,0,0));
-# ===============================================================
-plot(x=0, y=0, type="n", xlim=c(0,200), ylim=c(0,100), xaxt="n", yaxt="n",
-     xlab="",ylab="", bty="n");
-abox <- mbox(x0 = 0, x1 = 45, y0 = 70, y1 = 90);
-polygon(x=abox$x, y=abox$y, lwd=3, border="red", col="rosybrown1");
-text(x=22, y=85, labels="Random", col="black");
-text(x=22, y=80, labels="seed of", col="black");
-text(x=22, y=75, labels="strategies", col="black");
-# --------------------------------------------------------------
-cbox <- mbox(x0 = 70, x1 = 140, y0 = 0, y1 = 90);
-polygon(x=cbox$x, y=cbox$y, lwd=3, border="goldenrod4", col="gold3");
-arrows(x0=46, x1=70, y0=82, y1=82, lwd=2, length=0.15);
-dbox <- mbox(x0 = 75, x1 = 135, y0 = 75, y1 = 88);
-polygon(x=dbox$x, y=dbox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=84, labels="Begin new", col="black");
-text(x=105, y=79, labels="generation", col="black");
-# ===============================================================
-```
+**Manager sets policy**
 
-<br>
+- Has a target population size
+- Has a budget to set costs
 
-**Table of strategies**
+<p class="forceBreak"></p>
+<br><br>
+<center>
 
-```{r, echo=FALSE}
-randvals <- sample(x=1:5, size=32, replace=TRUE);
-agents   <- matrix(data=randvals, nrow=8);
-rownames(agents) <- c("Strategy 1", "Strategy 2", "Strategy 3", "Strategy 4",
-                      "Strategy 5", "Strategy 6", "Strategy 7", "Strategy 8");
-colnames(agents) <- c("L1", "L2", "L3", "L4");
-kable(agents, format="html");
-```
+![](GMSE_Logo_Goose_300.png)
 
-</div>
+[![](http://www.r-pkg.org/badges/version/GMSE?color=yellowgreen)](https://cran.r-project.org/package=GMSE) [![](http://cranlogs.r-pkg.org/badges/grand-total/GMSE?color=yellowgreen)](http://cranlogs.r-pkg.org/badges/grand-total/GMSE)
 
-## Structure of a genetic algorithm
-
-<div class="columns-2">
-
-```{r, echo=FALSE}
-mbox <- function(x0, x1, y0, y1){
-    xx <- seq(from=x0, to=x1, length.out = 100);
-    yy <- seq(from=y0, to=y1, length.out = 100);
-    xd <- c(rep(x0, 100), xx, rep(x1,100), rev(xx));
-    yd <- c(yy, rep(y1,100), rev(yy), rep(y0, 100));
-    return(list(x=xd, y=yd));
-}
-
-par(mar=c(0,0,0,0));
-# ===============================================================
-plot(x=0, y=0, type="n", xlim=c(0,200), ylim=c(0,100), xaxt="n", yaxt="n",
-     xlab="",ylab="", bty="n");
-abox <- mbox(x0 = 0, x1 = 45, y0 = 70, y1 = 90);
-polygon(x=abox$x, y=abox$y, lwd=3, border="red", col="rosybrown1");
-text(x=22, y=85, labels="Random", col="black");
-text(x=22, y=80, labels="seed of", col="black");
-text(x=22, y=75, labels="strategies", col="black");
-# --------------------------------------------------------------
-cbox <- mbox(x0 = 70, x1 = 140, y0 = 0, y1 = 90);
-polygon(x=cbox$x, y=cbox$y, lwd=3, border="goldenrod4", col="gold3");
-arrows(x0=46, x1=70, y0=82, y1=82, lwd=2, length=0.15);
-dbox <- mbox(x0 = 75, x1 = 135, y0 = 75, y1 = 88);
-polygon(x=dbox$x, y=dbox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=84, labels="Begin new", col="black");
-text(x=105, y=79, labels="generation", col="black");
-# --------------------------------------------------------------
-ebox <- mbox(x0 = 75, x1 = 135, y0 = 63, y1 = 73);
-polygon(x=ebox$x, y=ebox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=68, labels="recombination", col="black");
-# ===============================================================
-```
-
-<br>
-
-**Table of strategies**
-
-```{r, echo=FALSE}
-for(i in 1:dim(agents)[1]){
-    for(j in 1:dim(agents)[2]){
-        check <- runif(n=1);
-        if(check < 0.2){
-            other            <- sample(x=1:dim(agents)[1], size=1);
-            temp             <- agents[i,j];
-            agents[i,j]      <- agents[other, j];
-            agents[other, j] <- temp;
-        }
-    }
-}
-kable(agents, format="html");
-```
-
-</div>
-
-## Structure of a genetic algorithm
-
-<div class="columns-2">
-
-```{r, echo=FALSE}
-mbox <- function(x0, x1, y0, y1){
-    xx <- seq(from=x0, to=x1, length.out = 100);
-    yy <- seq(from=y0, to=y1, length.out = 100);
-    xd <- c(rep(x0, 100), xx, rep(x1,100), rev(xx));
-    yd <- c(yy, rep(y1,100), rev(yy), rep(y0, 100));
-    return(list(x=xd, y=yd));
-}
-
-par(mar=c(0,0,0,0));
-# ===============================================================
-plot(x=0, y=0, type="n", xlim=c(0,200), ylim=c(0,100), xaxt="n", yaxt="n",
-     xlab="",ylab="", bty="n");
-abox <- mbox(x0 = 0, x1 = 45, y0 = 70, y1 = 90);
-polygon(x=abox$x, y=abox$y, lwd=3, border="red", col="rosybrown1");
-text(x=22, y=85, labels="Random", col="black");
-text(x=22, y=80, labels="seed of", col="black");
-text(x=22, y=75, labels="strategies", col="black");
-# --------------------------------------------------------------
-cbox <- mbox(x0 = 70, x1 = 140, y0 = 0, y1 = 90);
-polygon(x=cbox$x, y=cbox$y, lwd=3, border="goldenrod4", col="gold3");
-arrows(x0=46, x1=70, y0=82, y1=82, lwd=2, length=0.15);
-dbox <- mbox(x0 = 75, x1 = 135, y0 = 75, y1 = 88);
-polygon(x=dbox$x, y=dbox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=84, labels="Begin new", col="black");
-text(x=105, y=79, labels="generation", col="black");
-# --------------------------------------------------------------
-ebox <- mbox(x0 = 75, x1 = 135, y0 = 63, y1 = 73);
-polygon(x=ebox$x, y=ebox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=68, labels="recombination", col="black");
-# --------------------------------------------------------------
-fbox <- mbox(x0 = 75, x1 = 135, y0 = 51, y1 = 61);
-polygon(x=fbox$x, y=fbox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=56, labels="mutation", col="black");
-# ===============================================================
-```
-
-<br>
-
-**Table of strategies**
-
-```{r, echo=FALSE}
-for(i in 1:dim(agents)[1]){
-    for(j in 1:dim(agents)[2]){
-        check <- runif(n=1);
-        if(check < 0.2){
-            agents[i,j]  <- sample(x=1:5, size=1);
-        }
-    }
-}
-kable(agents, format="html");
-```
-
-</div>
-
-## Structure of a genetic algorithm
-
-<div class="columns-2">
-
-```{r, echo=FALSE}
-mbox <- function(x0, x1, y0, y1){
-    xx <- seq(from=x0, to=x1, length.out = 100);
-    yy <- seq(from=y0, to=y1, length.out = 100);
-    xd <- c(rep(x0, 100), xx, rep(x1,100), rev(xx));
-    yd <- c(yy, rep(y1,100), rev(yy), rep(y0, 100));
-    return(list(x=xd, y=yd));
-}
-
-par(mar=c(0,0,0,0));
-# ===============================================================
-plot(x=0, y=0, type="n", xlim=c(0,200), ylim=c(0,100), xaxt="n", yaxt="n",
-     xlab="",ylab="", bty="n");
-abox <- mbox(x0 = 0, x1 = 45, y0 = 70, y1 = 90);
-polygon(x=abox$x, y=abox$y, lwd=3, border="red", col="rosybrown1");
-text(x=22, y=85, labels="Random", col="black");
-text(x=22, y=80, labels="seed of", col="black");
-text(x=22, y=75, labels="strategies", col="black");
-# --------------------------------------------------------------
-cbox <- mbox(x0 = 70, x1 = 140, y0 = 0, y1 = 90);
-polygon(x=cbox$x, y=cbox$y, lwd=3, border="goldenrod4", col="gold3");
-arrows(x0=46, x1=70, y0=82, y1=82, lwd=2, length=0.15);
-dbox <- mbox(x0 = 75, x1 = 135, y0 = 75, y1 = 88);
-polygon(x=dbox$x, y=dbox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=84, labels="Begin new", col="black");
-text(x=105, y=79, labels="generation", col="black");
-# --------------------------------------------------------------
-ebox <- mbox(x0 = 75, x1 = 135, y0 = 63, y1 = 73);
-polygon(x=ebox$x, y=ebox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=68, labels="recombination", col="black");
-# --------------------------------------------------------------
-fbox <- mbox(x0 = 75, x1 = 135, y0 = 51, y1 = 61);
-polygon(x=fbox$x, y=fbox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=56, labels="mutation", col="black");
-# --------------------------------------------------------------
-gbox <- mbox(x0 = 75, x1 = 135, y0 = 39, y1 = 49);
-polygon(x=gbox$x, y=gbox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=44, labels="check fitness", col="black");
-# ===============================================================
-```
-
-<br>
-
-**Table of strategies**
-
-```{r, echo=FALSE}
-fit <- apply(agents,1,sum);
-kable(cbind(agents,fit), format="html");
-```
-
-</div>
-
-## Structure of a genetic algorithm
-
-<div class="columns-2">
-
-```{r, echo=FALSE}
-mbox <- function(x0, x1, y0, y1){
-    xx <- seq(from=x0, to=x1, length.out = 100);
-    yy <- seq(from=y0, to=y1, length.out = 100);
-    xd <- c(rep(x0, 100), xx, rep(x1,100), rev(xx));
-    yd <- c(yy, rep(y1,100), rev(yy), rep(y0, 100));
-    return(list(x=xd, y=yd));
-}
-
-par(mar=c(0,0,0,0));
-# ===============================================================
-plot(x=0, y=0, type="n", xlim=c(0,200), ylim=c(0,100), xaxt="n", yaxt="n",
-     xlab="",ylab="", bty="n");
-abox <- mbox(x0 = 0, x1 = 45, y0 = 70, y1 = 90);
-polygon(x=abox$x, y=abox$y, lwd=3, border="red", col="rosybrown1");
-text(x=22, y=85, labels="Random", col="black");
-text(x=22, y=80, labels="seed of", col="black");
-text(x=22, y=75, labels="strategies", col="black");
-# --------------------------------------------------------------
-cbox <- mbox(x0 = 70, x1 = 140, y0 = 0, y1 = 90);
-polygon(x=cbox$x, y=cbox$y, lwd=3, border="goldenrod4", col="gold3");
-arrows(x0=46, x1=70, y0=82, y1=82, lwd=2, length=0.15);
-dbox <- mbox(x0 = 75, x1 = 135, y0 = 75, y1 = 88);
-polygon(x=dbox$x, y=dbox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=84, labels="Begin new", col="black");
-text(x=105, y=79, labels="generation", col="black");
-# --------------------------------------------------------------
-ebox <- mbox(x0 = 75, x1 = 135, y0 = 63, y1 = 73);
-polygon(x=ebox$x, y=ebox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=68, labels="recombination", col="black");
-# --------------------------------------------------------------
-fbox <- mbox(x0 = 75, x1 = 135, y0 = 51, y1 = 61);
-polygon(x=fbox$x, y=fbox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=56, labels="mutation", col="black");
-# --------------------------------------------------------------
-gbox <- mbox(x0 = 75, x1 = 135, y0 = 39, y1 = 49);
-polygon(x=gbox$x, y=gbox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=44, labels="check fitness", col="black");
-# --------------------------------------------------------------
-hbox <- mbox(x0 = 75, x1 = 135, y0 = 27, y1 = 37);
-polygon(x=hbox$x, y=hbox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=32, labels="selection", col="black");
-# ===============================================================
-```
-
-<br>
-
-**Table of strategies**
-
-```{r, echo=FALSE}
-ord <- order(fit, decreasing=TRUE);
-agents <- agents[ord,];
-fit    <- fit[ord];
-kable(cbind(agents,fit), format="html");
-```
-
-</div>
-
-## Structure of a genetic algorithm
-
-<div class="columns-2">
-
-```{r, echo=FALSE}
-mbox <- function(x0, x1, y0, y1){
-    xx <- seq(from=x0, to=x1, length.out = 100);
-    yy <- seq(from=y0, to=y1, length.out = 100);
-    xd <- c(rep(x0, 100), xx, rep(x1,100), rev(xx));
-    yd <- c(yy, rep(y1,100), rev(yy), rep(y0, 100));
-    return(list(x=xd, y=yd));
-}
-
-par(mar=c(0,0,0,0));
-# ===============================================================
-plot(x=0, y=0, type="n", xlim=c(0,200), ylim=c(0,100), xaxt="n", yaxt="n",
-     xlab="",ylab="", bty="n");
-abox <- mbox(x0 = 0, x1 = 45, y0 = 70, y1 = 90);
-polygon(x=abox$x, y=abox$y, lwd=3, border="red", col="rosybrown1");
-text(x=22, y=85, labels="Random", col="black");
-text(x=22, y=80, labels="seed of", col="black");
-text(x=22, y=75, labels="strategies", col="black");
-# --------------------------------------------------------------
-cbox <- mbox(x0 = 70, x1 = 140, y0 = 0, y1 = 90);
-polygon(x=cbox$x, y=cbox$y, lwd=3, border="goldenrod4", col="gold3");
-arrows(x0=46, x1=70, y0=82, y1=82, lwd=2, length=0.15);
-dbox <- mbox(x0 = 75, x1 = 135, y0 = 75, y1 = 88);
-polygon(x=dbox$x, y=dbox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=84, labels="Begin new", col="black");
-text(x=105, y=79, labels="generation", col="black");
-# --------------------------------------------------------------
-ebox <- mbox(x0 = 75, x1 = 135, y0 = 63, y1 = 73);
-polygon(x=ebox$x, y=ebox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=68, labels="recombination", col="black");
-# --------------------------------------------------------------
-fbox <- mbox(x0 = 75, x1 = 135, y0 = 51, y1 = 61);
-polygon(x=fbox$x, y=fbox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=56, labels="mutation", col="black");
-# --------------------------------------------------------------
-gbox <- mbox(x0 = 75, x1 = 135, y0 = 39, y1 = 49);
-polygon(x=gbox$x, y=gbox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=44, labels="check fitness", col="black");
-# --------------------------------------------------------------
-hbox <- mbox(x0 = 75, x1 = 135, y0 = 27, y1 = 37);
-polygon(x=hbox$x, y=hbox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=32, labels="selection", col="black");
-# --------------------------------------------------------------
-ibox <- mbox(x0 = 75, x1 = 135, y0 = 15, y1 = 25);
-polygon(x=ibox$x, y=ibox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=20, labels="replacement", col="black");
-# ===============================================================
-```
-
-<br>
-
-**Table of strategies**
-
-```{r, echo=FALSE}
-agents <- rbind(agents[1,],
-                agents[1,],
-                agents[2,],
-                agents[2,],
-                agents[3,],
-                agents[3,],
-                agents[4,],
-                agents[4,]
-                );
-fit    <- c(fit[1], fit[1], fit[2], fit[2], fit[3], fit[3], fit[4], fit[4]);
-kable(cbind(agents,fit), format="html");
-```
-
-</div>
-
-## Structure of a genetic algorithm
-
-<div class="columns-2">
-
-```{r, echo=FALSE}
-mbox <- function(x0, x1, y0, y1){
-    xx <- seq(from=x0, to=x1, length.out = 100);
-    yy <- seq(from=y0, to=y1, length.out = 100);
-    xd <- c(rep(x0, 100), xx, rep(x1,100), rev(xx));
-    yd <- c(yy, rep(y1,100), rev(yy), rep(y0, 100));
-    return(list(x=xd, y=yd));
-}
-
-par(mar=c(0,0,0,0));
-# ===============================================================
-plot(x=0, y=0, type="n", xlim=c(0,200), ylim=c(0,100), xaxt="n", yaxt="n",
-     xlab="",ylab="", bty="n");
-abox <- mbox(x0 = 0, x1 = 45, y0 = 70, y1 = 90);
-polygon(x=abox$x, y=abox$y, lwd=3, border="red", col="rosybrown1");
-text(x=22, y=85, labels="Random", col="black");
-text(x=22, y=80, labels="seed of", col="black");
-text(x=22, y=75, labels="strategies", col="black");
-# --------------------------------------------------------------
-cbox <- mbox(x0 = 70, x1 = 140, y0 = 0, y1 = 90);
-polygon(x=cbox$x, y=cbox$y, lwd=3, border="goldenrod4", col="gold3");
-arrows(x0=46, x1=70, y0=82, y1=82, lwd=2, length=0.15);
-dbox <- mbox(x0 = 75, x1 = 135, y0 = 75, y1 = 88);
-polygon(x=dbox$x, y=dbox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=84, labels="Begin new", col="black");
-text(x=105, y=79, labels="generation", col="black");
-# --------------------------------------------------------------
-ebox <- mbox(x0 = 75, x1 = 135, y0 = 63, y1 = 73);
-polygon(x=ebox$x, y=ebox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=68, labels="recombination", col="black");
-# --------------------------------------------------------------
-fbox <- mbox(x0 = 75, x1 = 135, y0 = 51, y1 = 61);
-polygon(x=fbox$x, y=fbox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=56, labels="mutation", col="black");
-# --------------------------------------------------------------
-gbox <- mbox(x0 = 75, x1 = 135, y0 = 39, y1 = 49);
-polygon(x=gbox$x, y=gbox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=44, labels="check fitness", col="black");
-# --------------------------------------------------------------
-hbox <- mbox(x0 = 75, x1 = 135, y0 = 27, y1 = 37);
-polygon(x=hbox$x, y=hbox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=32, labels="selection", col="black");
-# --------------------------------------------------------------
-ibox <- mbox(x0 = 75, x1 = 135, y0 = 15, y1 = 25);
-polygon(x=ibox$x, y=ibox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=20, labels="replacement", col="black");
-# --------------------------------------------------------------
-jbox <- mbox(x0 = 75, x1 = 135, y0 = 3, y1 = 13);
-polygon(x=jbox$x, y=jbox$y, lwd=3, border="goldenrod4", col="white");
-text(x=105, y=8, labels="converge?", col="black");
-# --------------------------------------------------------------
-bbox <- mbox(x0 = 0, x1 = 45, y0 = 20, y1 = 40);
-polygon(x=bbox$x, y=bbox$y, lwd=3, border="blue", col="lightsteelblue1");
-arrows(x0=70, x1=22.5, y0=5, y1=5, lwd=2, length=0.0);
-arrows(x0=22, x1=22, y0=5, y1=20, lwd=2, length=0.15);
-arrows(x0=55, x1=55, y0=5, y1=82, lwd=2, length=0.15);
-text(x=15, y=10, labels="Yes", col="black", srt=90);
-text(x=50, y=10, labels="No", col="black", srt=90);
-text(x=22, y=33, labels="Adaptive", col="black");
-text(x=22, y=28, labels="strategies", col="black");
-# ===============================================================
-```
-
-<br>
-
-**Table of strategies**
-
-```{r, echo=FALSE}
-kable(cbind(agents,fit), format="html");
-```
+</center>
 
 </div>
 
 
---->
+## GMSE: modelling decision-making
 
-<!---
+<div class = "columns-2">
 
-## Iterated Prisoner's dilemma rules {.smaller}
+**Up to 5 possible actions**
 
-<div class="columns-2">
+- Culling (&darr; survival)
+- Castration (&darr; reproduction)
+- Scaring (displacement)
+- Feeding (&uarr; survival)
+- Helping (&uarr; reproduction)
 
-![](payoff_matrix_sm.png)
-**General structure of Prisoner's dilemma scenario**
+**Users respond to policy**
 
-![](pd_pays.png)
-**Specific payoffs satisfying a Prisoner's dilemma scenario**
+- Maximise land yield
+- Maximise resource use
 
-</div>
+<p class="forceBreak"></p>
 
-## Use of genetic algorithms {.smaller}
-
-**Each locus is an focal player's choice given an opponent's past three choices (plus one choice of first move)**
-
-<hr>
-
-
-|                  | **CCC** | **CCD** | **CDC** | **CDD** | **DCC** | **DCD** | **DDC** | **DDD** | **1st** |
-|------------------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
-| **Strategy 1**   | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  |
-| **Strategy 2**   | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  |
-| **...**          |   ...   |   ...   |   ...   |   ...   |   ...   |   ...   |   ...   |   ...   |   ...   |
-| **Strategy N-1** | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  |
-| **Strategy N**   | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  |
-
-<hr>
-
-**Total of 512 possible strategies**
-
-## Use of genetic algorithms {.smaller}
-
-```{r, echo=FALSE}
-inputPanel(
-    
-  numericInput("CC", label = "CC", 0, width="30%"),
-  numericInput("DC", label = "DC", 0, width="30%"),
-  numericInput("CD", label = "CD", 0, width="30%"),
-  numericInput("DD", label = "DD", 0, width="30%"),
-
-  style='width: 2000px; height: 60px'
-)
-```
-
-<br>
-
-```{r, echo=FALSE}
-gres <- reactive({ 
-     cc <- input$CC;
-     dc <- input$DC;
-     cd <- input$CD;
-     dd <- input$DD;
-     rd <- 100;
-     gn <- 100;
-     co <- 0.05;
-     mu <- 0.05;
- 
-     game_res <- games_ga(CC = cc, DC = dc, CD = cd, DD = dd, rounds = rd,
-                          generations = gn, cross_prob = co, 
-                          mutation_prob = mu, num_opponents = 100);     
-     all <- c(game_res$genos, "break_1",
-              rownames(game_res$genos), "break_2",
-              game_res$fitness);
-    })
-```
+<center>
 
 ```{r, echo = FALSE}
-renderPlot({
-    break2    <- which(gres()=="break_2")[1]+1;
-    end       <- length(gres());
-    fitnesses <- gres()[break2:end];
-    fitnesses <- as.numeric(fitnesses);
-    mean_fit  <- fitnesses / (100 * 100);
-    maxpt     <- max(c(input$CC, input$CD, input$DC, input$DD));
-    par(mar=c(5,5,1,1));
-    plot(x = 1:length(mean_fit), y=mean_fit, type="l", ylim=c(0,maxpt), lwd = 3,
-        xlab="Generation", ylab = "Mean strategy fitness per round",
-         cex.axis=1.5, cex.lab=1.5);
-})
+sim_old  <- gmse_apply(get_res = "Full", remove_pr = 0.122, lambda = 0.275,
+                       res_d4eath_K = 93870, RESOURCE_ini = 35000, 
+                       manage_target = 70000, res_death_type = 3,
+                       manager_budget = 10000, user_budget = 10000,
+                       public_land = 0.4, stakeholders = 8, res_consume = 0.02, 
+                       res_birth_K = 200000, land_ownership = TRUE,
+                       observe_type = 3, agent_view = 1, converge_crit = 0.01,
+                       ga_mingen = 200);
+sim_old$LAND[1:20,   1:20,  3] <- 2; 
+sim_old$LAND[1:20,  21:40,  3] <- 3;
+sim_old$LAND[1:20,  41:60,  3] <- 4;
+sim_old$LAND[1:20,  61:80,  3] <- 5;
+sim_old$LAND[1:20,  81:100, 3] <- 6;
+sim_old$LAND[21:40,  1:50,  3] <- 7;
+sim_old$LAND[21:40, 51:100, 3] <- 8;
+sim_old$LAND[41:60,  1:100, 3] <- 9;
+sim_old$LAND[61:100, 1:100, 3] <- 1; # Public land
+image(x = sim_old$LAND[,,3], col = topo.colors(9), xaxt = "n", yaxt = "n");
 ```
-
-## Adaptive strategies simulated {.smaller}
-
-```{r, echo=FALSE}
-renderTable({
-      break1   <- which(gres()=="break_1")[1] - 1;
-      break2   <- which(gres()=="break_2")[1] - 1;
-      geno_vec <- gres()[1:break1];
-      geno_row <- gres()[(break1+2):break2];
-      genos    <- matrix(data =  geno_vec, ncol = 10, byrow = FALSE);
-      rownames(genos) <- geno_row;
-      colnames(genos) <- c("CCC", "CCD", "CDC", "CDD", "DCC", "DCD", "DDC",
-                           "DDD", "1st", "Final %");
-      final_table <- genos[1:10,];
-     
-}, include.rownames=TRUE)
-```
-
---->
-
-# Genetic algorithms in Management Strategy Evaluation
-
-
-## Generalised MSE {.smaller}
-
-<div class = "columns-2">
-
-- Integrates game theory and ecological theory to construct social-ecological models for adaptive management
-- Simulates all aspects of management: population dynamics, manager observation of populations, manager decision making, and stake-holder responses to management decisions
-- Mimic the decision-making process of managers and stake-holders under conditions of change, uncertainty, and conflict
-- Provide a flexible modelling framework for future development of complex adaptive management models to be applied to conservation theory and specific case studies
-
-<br><br>
-
-<center>
-
-![](GMSE_Logo_Goose_375.png)
-
-</center>
-
-</div>
-
-## Generalised MSE ('GMSE' R package)
-
-<div class = "columns-2">
-
-- Individual-based
-- Spatially explicit
-- Written in R and C
-- Requires R (>= 3.3.3)
-- License GPL (>=2)
-- *v0.2.2.7* [available](https://cran.r-project.org/package=GMSE) on CRAN
-- Browser-based GUI [available](https://bradduthie.shinyapps.io/gmse_gui/) via shiny
-- Source code [available](https://github.com/bradduthie/gmse) on GitHub
-- Intended for a wide range of software users
-
-<br><br>
-
-<center>
-
-![](GMSE_Logo_Goose_375.png)
 
 </center>
 
 </div>
 
 
-##
+## GMSE: modelling decision-making {.smaller}
 
-<center>
+Default individual-based models can be run using `gmse` in R ([multiple options](https://confoobio.github.io/gmse/reference/gmse.html)).
 
-![](gmse_overview_sm.png)
+```{r, eval = FALSE}
+sim <- gmse(time_max = 30, land_dim_1 = 100, land_dim_2 = 100,
+            observe_type = 1, res_death_K = 4000, 
+            manager_budget = 2000, user_budget = 500, 
+            scaring = TRUE, land_ownership = TRUE,
+            tend_crops = TRUE, stakeholders = 7,
+            res_consume = 1, RESOURCE_ini = 600);
+```
 
-</center>
+```{r, eval = FALSE}
+plot_gmse_results(sim);
+```
 
-
-## GMSE: Natural resources 
-
-<div class = "columns-2">
-
-
-- Spatially explicit landscape
-- Discrete individual resources
-- Individual birth, movement, death
-
-<br>
-
-<center>
-
-![](sep_land.gif)
-
-</center>
-
-## GMSE: Resource observation {.smaller}
-
-<div class = "columns-2">
-
-
-- Four types of observation options
-    1. Counting on a subset of landscape
-    2. Mark and recapture
-    3. Linear transect sampling
-    4. Block transect sampling
-- Mechanistic sampling process
-- Generates simulated data frame used by the manager
-
-<br>
-
-<center>
-
-![](binos.png)
-
-</center>
-
-</div>
-
-<center>
-
-<br><br><br><br><br><br><br><br>
-
-**Image:** [Public Domain](https://commons.wikimedia.org/wiki/File:Fernglas(alt).JPG)
-
-</center>
-
-## GMSE: Management {.smaller}
-
-<div class = "columns-2">
-
-
-- One manager analyses observations and compares with a target abundance
-- Five possible policy options (scaring, culling, castration, feeding, helping)
-- Fixed budget and costs for setting policy
-- Genetic algorithm anticipates policy effects from previous actions to set costs of actions for stake-holders
-
-<br>
-
-<center>
-
-![](balance.png)
-
-</center>
-
-## GMSE: Stake-holder actions {.smaller}
-
-<div class = "columns-2">
-
-- Any number of stake-holders
-- Stake-holders want to maximise harvest of resources or minimise resource effects on their land
-- Seven possible actions (scaring, culling, castration, feeding, helping, tend crops, kill crops)
-- Fixed budget for performing actions of potentially differing costs
-- Genetic algorithm anticipates effects of actions on harvest or land yield
-
-<br>
-
-<center>
-
-![](harvesting.jpg)
-
-</center>
-
-
-</div>
-
-<center>
-
-<br>
-
-**Image:** [Public Domain](https://commons.wikimedia.org/wiki/File:Libiaz-zniwa1938.a.jpg)
-
-</center>
-
-
-
-
-# Example use of GMSE
-
-## Running the gmse() function {.smaller}
-
-```{r, echo = TRUE}
-sim <- gmse(land_ownership = TRUE, stakeholders = 10, RESOURCE_ini = 1000,
-            res_death_K = 2000, manage_target = 1000, res_consume = 1,
-            manager_budget = 5000, user_budget = 5000, plotting = FALSE,
-            scaring = TRUE, culling = TRUE, observe_type = 1, fixed_mark = 50, 
-            fixed_recapt = 300);
+```{r, eval = FALSE}
+plot_gmse_effort(sim);
 ```
 
 
-## Inferring GMSE from plots {.smaller}
-
-**General plot of simulation results.**
-
-
-```{r, echo = TRUE, eval = FALSE}
-plot_gmse_results(sim_results = sim);
-```
-
-<br>
-
-
-
-**Plot of conflict among stake-holders**
-
-```{r, echo = TRUE, eval = FALSE}
-plot_gmse_effort(sim_results = sim);
-```
-
-
-##
-
-<center>
-
-```{r, echo = FALSE, fig.height = 6, fig.width = 7}
-plot_gmse_results(sim_results = sim);
-```
-
-</center>
 
 ## {.smaller}
 
-<center>
-
-```{r, echo = FALSE, fig.height = 6.5, fig.width = 6}
-plot_gmse_effort(sim_results = sim);
+```{r, echo = FALSE}
+plot_gmse_effort <- function(sim){
+    
+    agents <- sim$agents;
+    paras  <- sim$paras;
+    ACTION <- sim$action;
+    COST   <- sim$cost;
+    
+    cols      <- c("green", "indianred1", "indianred3", "deepskyblue1",
+                   "deepskyblue2");
+    
+    users    <- dim(agents[[1]])[1];
+    max_time <- dim(paras)[1];
+    
+    para_vec <- paras[1,];
+    
+    allowed  <- sum(para_vec[89:93]);
+    scar_cst  <- matrix(data = 0, nrow = max_time, ncol = users);
+    cull_cst  <- matrix(data = 0, nrow = max_time, ncol = users);
+    cast_cst  <- matrix(data = 0, nrow = max_time, ncol = users);
+    feed_cst  <- matrix(data = 0, nrow = max_time, ncol = users);
+    help_cst  <- matrix(data = 0, nrow = max_time, ncol = users);
+    
+    scar_act  <- matrix(data = 0, nrow = max_time, ncol = users);
+    cull_act  <- matrix(data = 0, nrow = max_time, ncol = users);
+    cast_act  <- matrix(data = 0, nrow = max_time, ncol = users);
+    feed_act  <- matrix(data = 0, nrow = max_time, ncol = users);
+    help_act  <- matrix(data = 0, nrow = max_time, ncol = users);
+    scar_eff  <- matrix(data = 0, nrow = max_time, ncol = users);
+    cull_eff  <- matrix(data = 0, nrow = max_time, ncol = users);
+    cast_eff  <- matrix(data = 0, nrow = max_time, ncol = users);
+    feed_eff  <- matrix(data = 0, nrow = max_time, ncol = users);
+    help_eff  <- matrix(data = 0, nrow = max_time, ncol = users);    
+    act_costs  <- matrix(data = 0, nrow = max_time, ncol = 5);
+    pol_effort <- matrix(data = 0, nrow = max_time, ncol = 5);
+    min_cost   <- para_vec[97];
+    
+    for(time in 1:max_time){
+        #-- Scaring cost and actions
+        scar_cst[time, 1] <- COST[[time]][3, 8, 1];
+        for(user in 2:users){
+            scar_cst[time, user] <- COST[[time]][1, 8, user];
+        }
+        scar_act[time, 1] <- ACTION[[time]][3, 8, 1] - min_cost;
+        for(user in 2:users){
+            scar_act[time, user] <- ACTION[[time]][1, 8, user];
+        }
+        scar_eff[time,] <- scar_act[time,]*scar_cst[time,]/agents[[time]][,17];
+        #-- Culling cost and actions
+        cull_cst[time, 1] <- COST[[time]][3, 9, 1];
+        for(user in 2:users){
+            cull_cst[time, user] <- COST[[time]][1, 9, user];
+        }
+        cull_act[time, 1] <- ACTION[[time]][3, 9, 1] - min_cost;
+        for(user in 2:users){
+            cull_act[time, user] <- ACTION[[time]][1, 9, user];
+        }
+        cull_eff[time,] <- cull_act[time,]*cull_cst[time,]/agents[[time]][,17];
+        #-- Castration cost and actions
+        cast_cst[time, 1] <- COST[[time]][3, 10, 1];
+        for(user in 2:users){
+            cast_cst[time, user] <- COST[[time]][1, 10, user];
+        }
+        cast_act[time, 1] <- ACTION[[time]][3, 10, 1] - min_cost;
+        for(user in 2:users){
+            cast_act[time, user] <- ACTION[[time]][1, 10, user];
+        }
+        cast_eff[time,] <- cast_act[time,]*cast_cst[time,]/agents[[time]][,17];
+        #-- Feeding cost and actions
+        feed_cst[time, 1] <- COST[[time]][3, 11, 1];
+        for(user in 2:users){
+            feed_cst[time, user] <- COST[[time]][1, 11, user];
+        }
+        feed_act[time, 1] <- ACTION[[time]][3, 11, 1] - min_cost;
+        for(user in 2:users){
+            feed_act[time, user] <- ACTION[[time]][1, 11, user];
+        }
+        feed_eff[time,] <- feed_act[time,]*feed_cst[time,]/agents[[time]][,17];
+        #-- Helping cost and actions
+        help_cst[time, 1] <- COST[[time]][3, 12, 1];
+        for(user in 2:users){
+            help_cst[time, user] <- COST[[time]][1, 12, user];
+        }
+        help_act[time, 1] <- ACTION[[time]][3, 12, 1] - min_cost;
+        for(user in 2:users){
+            help_act[time, user] <- ACTION[[time]][1, 12, user];
+        }
+        help_eff[time,] <- help_act[time,]*help_cst[time,]/agents[[time]][,17];
+    }
+    # -- Turn these into percentages:
+    scar_eff <- scar_eff * 100;
+    cull_eff <- cull_eff * 100;
+    cast_eff <- cast_eff * 100;
+    feed_eff <- feed_eff * 100;
+    help_eff <- help_eff * 100;
+    
+    par(mfrow = c(5, 1), mar = c(0, 0, 0, 0), oma = c(6, 6, 0, 6));
+    #---- Scaring
+    if(para_vec[89] == 1){
+        y1 <- 100;
+        y2 <- y1 * 1.2
+        plot(x = 1:max_time, y = 100 - scar_eff[,1], type = "l", lwd = 2, 
+             cex.axis = 1.5, xaxt = "n", ylim = c(0, y2), yaxt = "n");
+        axis(side = 2, at = c(50, 100), labels = c(50, 100), cex.axis = 1.5);
+        par(new = TRUE);
+        plot(x = 1:max_time, y = scar_eff[,2], type = "n", lwd = 2, 
+             ylim = c(0, y2), xaxt="n", yaxt="n", 
+             cex.axis = 1.5);
+        for(stakeholder in 2:users){
+            points(x = 1:max_time, y = scar_eff[,stakeholder], type = "l", 
+                   lwd = 1, col = cols[1]);
+        }
+        axis(side = 4, at = c(50, 100),  labels = c(50, 100), cex.axis = 1.5);
+        legend(x = 1, y = y2 + y2*0.1, fill = cols[1:5], horiz = TRUE,
+               legend = c("scaring", "culling", "castration", "feeding", 
+                          "helping"), bty = "n", cex = 1);
+        abline(h = y1 + y1*0.1, lwd = 2);
+    }else{
+        plot(x = 1:max_time, y = scar_eff[,1], type = "n", xaxt= "n", 
+             yaxt = "n", ylim = c(0, 110));
+        text(x = 0, y = 90, cex = 2, labels = "No scaring allowed",
+             pos = 4);
+        abline(h = 100, lwd = 2);
+        legend(x = 1, y = 119, fill = cols[1:5], horiz = TRUE,
+               legend = c("scaring", "culling", "castration", "feeding", 
+                          "helping"), bty = "n", cex = 1);
+    }
+    #---- Culling
+    if(para_vec[90] == 1){
+        plot(x = 1:max_time, y = 100 - cull_eff[,1], type = "l", lwd = 2, 
+             cex.axis = 1.5, xaxt = "n", ylim = c(0, y1), yaxt = "n");
+        axis(side = 2, at = c(50, 100), labels = c(50, 100), cex.axis = 1.5);
+        par(new = TRUE);
+        plot(x = 1:max_time, y = cull_eff[,2], type = "n", lwd = 2, 
+             ylim = c(0, y1), xaxt="n", yaxt="n", cex.axis = 1.5);
+        for(stakeholder in 2:users){
+            points(x = 1:max_time, y = cull_eff[,stakeholder], type = "l", 
+                   lwd = 1, col = cols[2]);
+        }
+        axis(side = 4, at = c(50, 100), labels = c(50, 100), cex.axis = 1.5);
+    }else{
+        plot(x = 1:max_time, y = cull_act[,1], type = "n", xaxt= "n", 
+             yaxt = "n", ylim = c(0, 100));
+        text(x = 0, y = 90, cex = 2, labels = "No culling allowed",
+             pos = 4);
+    }
+    #---- Castrating
+    if(para_vec[91] == 1){
+        plot(x = 1:max_time, y = 100 - cast_eff[,1], type = "l", lwd = 2, 
+             cex.axis = 1.5, xaxt = "n", ylim = c(0, y1), yaxt = "n");
+        axis(side = 2, at = c(50, 100), labels = c(50, 100), cex.axis = 1.5);
+        par(new = TRUE);
+        plot(x = 1:max_time, y = cast_eff[,2], type = "n", lwd = 2, 
+             ylim = c(0, y1), xaxt="n", yaxt="n", cex.axis = 1.5);
+        for(stakeholder in 2:users){
+            points(x = 1:max_time, y = cast_eff[,stakeholder], type = "l", 
+                   lwd = 1, col = cols[3]);
+        }
+        axis(side = 4, at = c(50, 100), labels = c(50, 100), cex.axis = 1.5);
+    }else{
+        plot(x = 1:max_time, y = cast_act[,1], type = "n", xaxt= "n", 
+             yaxt = "n", ylim = c(0, 100));
+        text(x = 0, y = 90, cex = 2, labels = "No castration allowed",
+             pos = 4);
+    }
+    #---- Axes labels
+    mtext("Manager's permissiveness of user action", 
+          side = 2, line = 3.5, cex = 1.5, col = "black");
+    mtext("Percentage of user action effort expended", 
+          side = 4, line = 3.5, cex = 1.5, col = "black");
+    #---- Feeding
+    if(para_vec[92] == 1){
+        plot(x = 1:max_time, y = 100 - feed_eff[,1], type = "l", lwd = 2, 
+             cex.axis = 1.5, xaxt = "n", ylim = c(0, y1), yaxt = "n");
+        axis(side = 2, at = c(50, 100), labels = c(50, 100), cex.axis = 1.5);
+        par(new = TRUE);
+        plot(x = 1:max_time, y = feed_eff[,2], type = "n", lwd = 2, 
+             ylim = c(0, y1), xaxt="n", yaxt="n", cex.axis = 1.5);
+        for(stakeholder in 2:users){
+            points(x = 1:max_time, y = feed_eff[,stakeholder], type = "l", 
+                   lwd = 1, col = cols[4]);
+        }
+        axis(side = 4, at = c(50, 100), labels = c(50, 100), cex.axis = 1.5);
+    }else{
+        plot(x = 1:max_time, y = feed_act[,1], type = "n", xaxt= "n", 
+             yaxt = "n", ylim = c(0, 100));
+        text(x = 0, y = 90, cex = 2, labels = "No feeding allowed",
+             pos = 4);
+    }
+    #---- Helping
+    if(para_vec[93] == 1){
+        plot(x = 1:max_time, y = 100 - help_eff[,1], type = "l", lwd = 2, 
+             cex.axis = 1.5, xaxt = "n", ylim = c(0, y1), yaxt = "n");
+        axis(side = 2, at = c(50, 100), labels = c(50, 100), cex.axis = 1.5);
+        par(new = TRUE);
+        plot(x = 1:max_time, y = help_eff[,2], type = "n", lwd = 2, 
+             ylim = c(0, y1), xaxt="n", yaxt="n", cex.axis = 1.5);
+        for(stakeholder in 2:users){
+            points(x = 1:max_time, y = help_eff[,stakeholder], type = "l", 
+                   lwd = 1, col = cols[5]);
+        }
+        axis(side = 4, at = c(50, 100), labels = c(50, 100), cex.axis = 1.5);
+    }else{
+        plot(x = 1:max_time, y = help_act[,1], type = "n", cex.axis = 1.5,
+             yaxt = "n", ylim = c(0, 100));
+        text(x = 0, y = 90, cex = 2, labels = "No helping offspring allowed",
+             pos = 4);
+    }    
+    mtext("Time step", side = 1, line = 3.5, cex = 1.5, col = "black");
+}
 ```
 
-</center>
+
+```{r, echo = FALSE}
+inputPanel(
+  actionButton("run", "Run Simulation"),
+    actionButton("res", "Reset"),
+  radioButtons("typ", "",
+               c("General" = 1,
+                 "Effort"  = 2),
+               inline = TRUE, width = '800px')
+)
+
+sim      <- reactiveValues();
+okay     <- reactiveValues();
+sim$data <- NULL;
+okay$go  <- 0;
+
+sim_run <- observeEvent(input$run, {
+              sim$data <- gmse(time_max = 30, land_dim_1 = 100, land_dim_2 = 100, 
+                            observe_type = 1, res_death_K = 4000, plotting = FALSE,
+                            manager_budget = 2000, user_budget = 500, 
+                            scaring = TRUE, land_ownership = TRUE,
+                            tend_crops = TRUE, stakeholders = 7,
+                            res_consume = 1, RESOURCE_ini = 600)
+              showNotification("Simulation has finished")
+})
+
+observeEvent(input$res, {
+    sim$data <- NULL;
+})
+
+renderPlot(height = 500, {
+    if(is.null(sim$data) == FALSE){
+        if(input$typ == 1){
+            plot_gmse_results(sim$data)
+        }else{
+            plot_gmse_effort(sim$data)
+        }
+    }
+})
+```
 
 
-# [GMSE GUI](https://bradduthie.shinyapps.io/gmse_gui/)
 
-## Use of GMSE: Model case studies
 
-<div class = "columns-2">
 
-<center>
 
-![](African_Bush_Elephant.jpg)  
-**Image:** [M. M. Karim](https://en.wikipedia.org/wiki/User:Muhammad_Mahdi_Karim)
 
-![](barnacle_goose.JPG)  
-**Image:** [Raju Kasambe](https://commons.wikimedia.org/wiki/File:Barnacle_Geese_Branta_leucopsis_London_UK_(4).JPG)
 
-</center>
 
-</div>
 
-## Use of GMSE: Theoretical questions
 
-<center>
 
-![](man_freq.png) 
 
-</center>
-
-## Future software development
-
-<div class = "columns-2">
-
-- Modular `gmse_apply()` function allowing user-supplied natural resource, observation, manager, and user models
-- Stuctured populations (e.g., sex, stage)
-- Multiple populations of interacting species
-- Improved strategy prediction for managers and users
-- Interactive decision-making with software users
-
-<center>
-
-![](GMSE_Logo_Goose_375.png)
-
-</center>
-
-</div>
 
 
 ## {.smaller}
@@ -1472,27 +733,3 @@ plot_gmse_effort(sim_results = sim);
 ![](funding.png)
 
 </center>
-
-<!---
-
-##
-
-<br><br><br>
-
-<div class = "columns-2">
-
-<center>
-
-
-
-![](confoobio_sans.png)
-
-
-![](GMSE_Logo_Goose_340.png)  
-
-
-</center>
-
-</div>
-
---->
