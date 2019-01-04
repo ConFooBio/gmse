@@ -755,13 +755,13 @@ The above function *and all of its arguments* can be integrated into `gmse_apply
 ## Custom sub-models with gmse_apply {.smaller}
 
 ```{r, echo = FALSE}
-mod <- gmse_apply(res_mod = function(N_0 = 200, K = 2000, gr = 0.3) N_1 <- N_0 + gr * N_0 * ( 1 - N_0/K ), stakeholders = 5);
+mod <- gmse_apply(res_mod = function(N_0 = 200, K = 2000, gr = 0.3) N_1 <- N_0 + gr * N_0 * ( 1 - N_0/K ), stakeholders = 2);
 ```
 
 ```{r, eval = FALSE}
 mod <- gmse_apply(res_mod = logistic_res_mod, # Custom model
                   N_0 = 200, gr = 0.3,        # Custom arguments
-                  stakeholders = 5);          # GMSE arguments
+                  stakeholders = 2);          # GMSE arguments
 ```
 
 ```{r, echo = FALSE}
@@ -778,7 +778,65 @@ print(mod);
 </center>
 
 
+## Social conflict & management
 
+<div class = "columns-2">
+
+**General idea**
+
+- Detail 1
+- Detail 2
+- Detail 3
+
+<p class="forceBreak"></p>
+
+![](cusack.png)
+
+</div>
+
+## 
+
+![](gmse_power.png)
+
+## Social conflict & management
+
+Results
+
+
+## {.smaller}
+
+<center>
+
+![](gmse_overview_sm.png)
+
+</center>
+
+
+## Future work PhD
+
+<div class = "columns-2">
+
+![](bach.jpeg)
+
+<p class="forceBreak"></p>
+
+**General idea of the paper**
+
+- Detail 1
+- Detail 2
+- Detail 3
+
+</div>
+
+## Future work ML
+
+Saro pictures
+
+## Future work ML
+
+Where next version will go
+
+## Summary and links
 
 ## {.smaller}
 
