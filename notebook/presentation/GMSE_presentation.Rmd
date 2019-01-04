@@ -687,7 +687,8 @@ sim_run <- observeEvent(input$run, {
                             manager_budget = 2000, user_budget = 500, 
                             scaring = TRUE, land_ownership = TRUE,
                             tend_crops = TRUE, stakeholders = 7,
-                            res_consume = 1, RESOURCE_ini = 600)
+                            res_consume = 1, RESOURCE_ini = 600,
+                            fixed_mark = 100, fixed_recapt = 200)
               showNotification("Simulation has finished")
 })
 
@@ -725,6 +726,23 @@ renderDataTable(
 
 </center>
 
+
+## Custom sub-models with gmse_apply {.smaller}
+
+
+Custom models can be integrated into GMSE with `gmse_apply`, which [takes the arguments](https://confoobio.github.io/gmse/reference/gmse_apply.html) `res_mod`, `obs_mod`, `man_mod`, and `use_mod`.
+
+```{r, eval = FALSE}
+new_sim <- gmse_apply(res_mod      = custom_resource_model,
+                      obs_mod      = custom_observation_model,
+                      man_mod      = manager, # GMSE default
+                      use_mod      = user,    # GMSE default
+                      stakeholders = 5,       # GMSE option
+                      custom_arg   = 200      # For custom function
+                      );
+```
+
+The `gmse_apply` function [needs to be looped](https://confoobio.github.io/gmse/articles/SI2.html#running-gmse-simulations-by-looping-gmse_apply) for modelling more than one time step (e.g., using the `old_list` argument).
 
 ## Custom sub-models with gmse_apply {.smaller}
 
@@ -778,19 +796,33 @@ print(mod);
 </center>
 
 
-## Social conflict & management
+## Social conflict and management {.smaller}
 
 <div class = "columns-2">
 
-**General idea**
+**Investigate how disagreement over target population size affects natural resource management**
 
-- Detail 1
-- Detail 2
-- Detail 3
+<center>
+
+<br><br>
+
+![](cusack.png)
+
+</center>
+
+<br>
 
 <p class="forceBreak"></p>
 
-![](cusack.png)
+**General idea**
+
+- Model divergent goals expressed by conservationists and resource users (two stake-holders)
+- Modified `gmse_apply` to allow for policy lobbying and illegal harvesting
+- Varied manager 'impartiality' (susceptability to lobbying pressure) 
+- Compared population dynamics given conservationist and resource user disagreement over population target
+    - Manager ($N_{m}$)
+    - Conservationist ($N_{c}$)
+    - Resource user ($N_{u}$)
 
 </div>
 
@@ -798,7 +830,7 @@ print(mod);
 
 ![](gmse_power.png)
 
-## Social conflict & management
+## Social conflict and management
 
 Results
 
@@ -828,9 +860,17 @@ Results
 
 </div>
 
-## Future work ML
+## Behavioural games in conservation
 
-Saro pictures
+![](gabon3.jpg)
+
+## Behavioural games in conservation
+
+![](madagascar.jpg)
+
+## Behavioural games in conservation
+
+![](goosebump.png)
 
 ## Future work ML
 
