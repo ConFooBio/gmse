@@ -391,8 +391,8 @@ Cusack, JJ, et al. *Conserv. Lett.* (*In press*). DOI: [10.1111/conl.12450](http
 
 **Users respond to policy**
 
-- Maximise land yield
 - Maximise resource use
+- Maximise land yield
 
 <p class="forceBreak"></p>
 
@@ -830,10 +830,13 @@ print(mod);
 
 ![](gmse_power.png)
 
-## Social conflict and management
+## 
 
-Results
+<center>
 
+![](gmse_power4.png)
+
+</center>
 
 ## {.smaller}
 
@@ -844,19 +847,21 @@ Results
 </center>
 
 
-## Future work PhD
+## Using AI in population management
 
 <div class = "columns-2">
 
 ![](bach.jpeg)
 
+![](IAPETUS.png)
+
 <p class="forceBreak"></p>
 
-**General idea of the paper**
+**Using artificial intelligence to improve decision-making in conservation conflict**
 
-- Detail 1
-- Detail 2
-- Detail 3
+- Develop a framework for modelling AI for stake-holder decision-making
+- Develop AI software to simulate stake-holder interaction and negotiation
+- Apply agent-based decision-making to one or more case studies to predict long-term population dynamics
 
 </div>
 
@@ -872,11 +877,22 @@ Results
 
 ![](goosebump.png)
 
-## Future work ML
+## AI of stake-holder decision-making
 
-Where next version will go
+<center>
 
-## Summary and links
+![](game_to_AI.png)
+
+</center>
+
+
+## {.smaller}
+
+<center>
+
+![](gmse_overview_sm.png)
+
+</center>
 
 ## {.smaller}
 
@@ -895,3 +911,547 @@ Where next version will go
 ![](funding.png)
 
 </center>
+
+
+# Supporting Information: Genetic algorithm
+
+
+
+<!--- 
+    START OF THE GENETIC ALGORITHM SET OF SLIDES  ------------------------------
+--->
+
+## Structure of a genetic algorithm
+
+<div class="columns-2">
+
+```{r, echo=FALSE}
+library(gamesGA);
+mbox <- function(x0, x1, y0, y1){
+    xx <- seq(from=x0, to=x1, length.out = 100);
+    yy <- seq(from=y0, to=y1, length.out = 100);
+    xd <- c(rep(x0, 100), xx, rep(x1,100), rev(xx));
+    yd <- c(yy, rep(y1,100), rev(yy), rep(y0, 100));
+    return(list(x=xd, y=yd));
+}
+par(mar=c(0,0,0,0));
+# ===============================================================
+plot(x=0, y=0, type="n", xlim=c(0,200), ylim=c(0,100), xaxt="n", yaxt="n",
+     xlab="",ylab="", bty="n");
+abox <- mbox(x0 = 0, x1 = 45, y0 = 70, y1 = 90);
+polygon(x=abox$x, y=abox$y, lwd=3, border="red", col="rosybrown1");
+text(x=22, y=85, labels="Random", col="black");
+text(x=22, y=80, labels="seed of", col="black");
+text(x=22, y=75, labels="strategies", col="black");
+# --------------------------------------------------------------
+cbox <- mbox(x0 = 70, x1 = 140, y0 = 0, y1 = 90);
+polygon(x=cbox$x, y=cbox$y, lwd=3, border="goldenrod4", col="gold3");
+arrows(x0=46, x1=70, y0=82, y1=82, lwd=2, length=0.15);
+dbox <- mbox(x0 = 75, x1 = 135, y0 = 75, y1 = 88);
+polygon(x=dbox$x, y=dbox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=84, labels="Begin new", col="black");
+text(x=105, y=79, labels="generation", col="black");
+# ===============================================================
+```
+
+<br>
+
+**Table of strategies**
+
+```{r, echo=FALSE}
+randvals <- sample(x=1:5, size=32, replace=TRUE);
+agents   <- matrix(data=randvals, nrow=8);
+rownames(agents) <- c("Strategy 1", "Strategy 2", "Strategy 3", "Strategy 4",
+                      "Strategy 5", "Strategy 6", "Strategy 7", "Strategy 8");
+colnames(agents) <- c("L1", "L2", "L3", "L4");
+kable(agents, format="html");
+```
+
+</div>
+
+## Structure of a genetic algorithm
+
+<div class="columns-2">
+
+```{r, echo=FALSE}
+mbox <- function(x0, x1, y0, y1){
+    xx <- seq(from=x0, to=x1, length.out = 100);
+    yy <- seq(from=y0, to=y1, length.out = 100);
+    xd <- c(rep(x0, 100), xx, rep(x1,100), rev(xx));
+    yd <- c(yy, rep(y1,100), rev(yy), rep(y0, 100));
+    return(list(x=xd, y=yd));
+}
+par(mar=c(0,0,0,0));
+# ===============================================================
+plot(x=0, y=0, type="n", xlim=c(0,200), ylim=c(0,100), xaxt="n", yaxt="n",
+     xlab="",ylab="", bty="n");
+abox <- mbox(x0 = 0, x1 = 45, y0 = 70, y1 = 90);
+polygon(x=abox$x, y=abox$y, lwd=3, border="red", col="rosybrown1");
+text(x=22, y=85, labels="Random", col="black");
+text(x=22, y=80, labels="seed of", col="black");
+text(x=22, y=75, labels="strategies", col="black");
+# --------------------------------------------------------------
+cbox <- mbox(x0 = 70, x1 = 140, y0 = 0, y1 = 90);
+polygon(x=cbox$x, y=cbox$y, lwd=3, border="goldenrod4", col="gold3");
+arrows(x0=46, x1=70, y0=82, y1=82, lwd=2, length=0.15);
+dbox <- mbox(x0 = 75, x1 = 135, y0 = 75, y1 = 88);
+polygon(x=dbox$x, y=dbox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=84, labels="Begin new", col="black");
+text(x=105, y=79, labels="generation", col="black");
+# --------------------------------------------------------------
+ebox <- mbox(x0 = 75, x1 = 135, y0 = 63, y1 = 73);
+polygon(x=ebox$x, y=ebox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=68, labels="recombination", col="black");
+# ===============================================================
+```
+
+<br>
+
+**Table of strategies**
+
+```{r, echo=FALSE}
+for(i in 1:dim(agents)[1]){
+    for(j in 1:dim(agents)[2]){
+        check <- runif(n=1);
+        if(check < 0.2){
+            other            <- sample(x=1:dim(agents)[1], size=1);
+            temp             <- agents[i,j];
+            agents[i,j]      <- agents[other, j];
+            agents[other, j] <- temp;
+        }
+    }
+}
+kable(agents, format="html");
+```
+
+</div>
+
+## Structure of a genetic algorithm
+
+<div class="columns-2">
+
+```{r, echo=FALSE}
+mbox <- function(x0, x1, y0, y1){
+    xx <- seq(from=x0, to=x1, length.out = 100);
+    yy <- seq(from=y0, to=y1, length.out = 100);
+    xd <- c(rep(x0, 100), xx, rep(x1,100), rev(xx));
+    yd <- c(yy, rep(y1,100), rev(yy), rep(y0, 100));
+    return(list(x=xd, y=yd));
+}
+par(mar=c(0,0,0,0));
+# ===============================================================
+plot(x=0, y=0, type="n", xlim=c(0,200), ylim=c(0,100), xaxt="n", yaxt="n",
+     xlab="",ylab="", bty="n");
+abox <- mbox(x0 = 0, x1 = 45, y0 = 70, y1 = 90);
+polygon(x=abox$x, y=abox$y, lwd=3, border="red", col="rosybrown1");
+text(x=22, y=85, labels="Random", col="black");
+text(x=22, y=80, labels="seed of", col="black");
+text(x=22, y=75, labels="strategies", col="black");
+# --------------------------------------------------------------
+cbox <- mbox(x0 = 70, x1 = 140, y0 = 0, y1 = 90);
+polygon(x=cbox$x, y=cbox$y, lwd=3, border="goldenrod4", col="gold3");
+arrows(x0=46, x1=70, y0=82, y1=82, lwd=2, length=0.15);
+dbox <- mbox(x0 = 75, x1 = 135, y0 = 75, y1 = 88);
+polygon(x=dbox$x, y=dbox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=84, labels="Begin new", col="black");
+text(x=105, y=79, labels="generation", col="black");
+# --------------------------------------------------------------
+ebox <- mbox(x0 = 75, x1 = 135, y0 = 63, y1 = 73);
+polygon(x=ebox$x, y=ebox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=68, labels="recombination", col="black");
+# --------------------------------------------------------------
+fbox <- mbox(x0 = 75, x1 = 135, y0 = 51, y1 = 61);
+polygon(x=fbox$x, y=fbox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=56, labels="mutation", col="black");
+# ===============================================================
+```
+
+<br>
+
+**Table of strategies**
+
+```{r, echo=FALSE}
+for(i in 1:dim(agents)[1]){
+    for(j in 1:dim(agents)[2]){
+        check <- runif(n=1);
+        if(check < 0.2){
+            agents[i,j]  <- sample(x=1:5, size=1);
+        }
+    }
+}
+kable(agents, format="html");
+```
+
+</div>
+
+## Structure of a genetic algorithm
+
+<div class="columns-2">
+
+```{r, echo=FALSE}
+mbox <- function(x0, x1, y0, y1){
+    xx <- seq(from=x0, to=x1, length.out = 100);
+    yy <- seq(from=y0, to=y1, length.out = 100);
+    xd <- c(rep(x0, 100), xx, rep(x1,100), rev(xx));
+    yd <- c(yy, rep(y1,100), rev(yy), rep(y0, 100));
+    return(list(x=xd, y=yd));
+}
+par(mar=c(0,0,0,0));
+# ===============================================================
+plot(x=0, y=0, type="n", xlim=c(0,200), ylim=c(0,100), xaxt="n", yaxt="n",
+     xlab="",ylab="", bty="n");
+abox <- mbox(x0 = 0, x1 = 45, y0 = 70, y1 = 90);
+polygon(x=abox$x, y=abox$y, lwd=3, border="red", col="rosybrown1");
+text(x=22, y=85, labels="Random", col="black");
+text(x=22, y=80, labels="seed of", col="black");
+text(x=22, y=75, labels="strategies", col="black");
+# --------------------------------------------------------------
+cbox <- mbox(x0 = 70, x1 = 140, y0 = 0, y1 = 90);
+polygon(x=cbox$x, y=cbox$y, lwd=3, border="goldenrod4", col="gold3");
+arrows(x0=46, x1=70, y0=82, y1=82, lwd=2, length=0.15);
+dbox <- mbox(x0 = 75, x1 = 135, y0 = 75, y1 = 88);
+polygon(x=dbox$x, y=dbox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=84, labels="Begin new", col="black");
+text(x=105, y=79, labels="generation", col="black");
+# --------------------------------------------------------------
+ebox <- mbox(x0 = 75, x1 = 135, y0 = 63, y1 = 73);
+polygon(x=ebox$x, y=ebox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=68, labels="recombination", col="black");
+# --------------------------------------------------------------
+fbox <- mbox(x0 = 75, x1 = 135, y0 = 51, y1 = 61);
+polygon(x=fbox$x, y=fbox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=56, labels="mutation", col="black");
+# --------------------------------------------------------------
+gbox <- mbox(x0 = 75, x1 = 135, y0 = 39, y1 = 49);
+polygon(x=gbox$x, y=gbox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=44, labels="check fitness", col="black");
+# ===============================================================
+```
+
+<br>
+
+**Table of strategies**
+
+```{r, echo=FALSE}
+fit <- apply(agents,1,sum);
+kable(cbind(agents,fit), format="html");
+```
+
+</div>
+
+## Structure of a genetic algorithm
+
+<div class="columns-2">
+
+```{r, echo=FALSE}
+mbox <- function(x0, x1, y0, y1){
+    xx <- seq(from=x0, to=x1, length.out = 100);
+    yy <- seq(from=y0, to=y1, length.out = 100);
+    xd <- c(rep(x0, 100), xx, rep(x1,100), rev(xx));
+    yd <- c(yy, rep(y1,100), rev(yy), rep(y0, 100));
+    return(list(x=xd, y=yd));
+}
+par(mar=c(0,0,0,0));
+# ===============================================================
+plot(x=0, y=0, type="n", xlim=c(0,200), ylim=c(0,100), xaxt="n", yaxt="n",
+     xlab="",ylab="", bty="n");
+abox <- mbox(x0 = 0, x1 = 45, y0 = 70, y1 = 90);
+polygon(x=abox$x, y=abox$y, lwd=3, border="red", col="rosybrown1");
+text(x=22, y=85, labels="Random", col="black");
+text(x=22, y=80, labels="seed of", col="black");
+text(x=22, y=75, labels="strategies", col="black");
+# --------------------------------------------------------------
+cbox <- mbox(x0 = 70, x1 = 140, y0 = 0, y1 = 90);
+polygon(x=cbox$x, y=cbox$y, lwd=3, border="goldenrod4", col="gold3");
+arrows(x0=46, x1=70, y0=82, y1=82, lwd=2, length=0.15);
+dbox <- mbox(x0 = 75, x1 = 135, y0 = 75, y1 = 88);
+polygon(x=dbox$x, y=dbox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=84, labels="Begin new", col="black");
+text(x=105, y=79, labels="generation", col="black");
+# --------------------------------------------------------------
+ebox <- mbox(x0 = 75, x1 = 135, y0 = 63, y1 = 73);
+polygon(x=ebox$x, y=ebox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=68, labels="recombination", col="black");
+# --------------------------------------------------------------
+fbox <- mbox(x0 = 75, x1 = 135, y0 = 51, y1 = 61);
+polygon(x=fbox$x, y=fbox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=56, labels="mutation", col="black");
+# --------------------------------------------------------------
+gbox <- mbox(x0 = 75, x1 = 135, y0 = 39, y1 = 49);
+polygon(x=gbox$x, y=gbox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=44, labels="check fitness", col="black");
+# --------------------------------------------------------------
+hbox <- mbox(x0 = 75, x1 = 135, y0 = 27, y1 = 37);
+polygon(x=hbox$x, y=hbox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=32, labels="selection", col="black");
+# ===============================================================
+```
+
+<br>
+
+**Table of strategies**
+
+```{r, echo=FALSE}
+ord <- order(fit, decreasing=TRUE);
+agents <- agents[ord,];
+fit    <- fit[ord];
+kable(cbind(agents,fit), format="html");
+```
+
+</div>
+
+## Structure of a genetic algorithm
+
+<div class="columns-2">
+
+```{r, echo=FALSE}
+mbox <- function(x0, x1, y0, y1){
+    xx <- seq(from=x0, to=x1, length.out = 100);
+    yy <- seq(from=y0, to=y1, length.out = 100);
+    xd <- c(rep(x0, 100), xx, rep(x1,100), rev(xx));
+    yd <- c(yy, rep(y1,100), rev(yy), rep(y0, 100));
+    return(list(x=xd, y=yd));
+}
+par(mar=c(0,0,0,0));
+# ===============================================================
+plot(x=0, y=0, type="n", xlim=c(0,200), ylim=c(0,100), xaxt="n", yaxt="n",
+     xlab="",ylab="", bty="n");
+abox <- mbox(x0 = 0, x1 = 45, y0 = 70, y1 = 90);
+polygon(x=abox$x, y=abox$y, lwd=3, border="red", col="rosybrown1");
+text(x=22, y=85, labels="Random", col="black");
+text(x=22, y=80, labels="seed of", col="black");
+text(x=22, y=75, labels="strategies", col="black");
+# --------------------------------------------------------------
+cbox <- mbox(x0 = 70, x1 = 140, y0 = 0, y1 = 90);
+polygon(x=cbox$x, y=cbox$y, lwd=3, border="goldenrod4", col="gold3");
+arrows(x0=46, x1=70, y0=82, y1=82, lwd=2, length=0.15);
+dbox <- mbox(x0 = 75, x1 = 135, y0 = 75, y1 = 88);
+polygon(x=dbox$x, y=dbox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=84, labels="Begin new", col="black");
+text(x=105, y=79, labels="generation", col="black");
+# --------------------------------------------------------------
+ebox <- mbox(x0 = 75, x1 = 135, y0 = 63, y1 = 73);
+polygon(x=ebox$x, y=ebox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=68, labels="recombination", col="black");
+# --------------------------------------------------------------
+fbox <- mbox(x0 = 75, x1 = 135, y0 = 51, y1 = 61);
+polygon(x=fbox$x, y=fbox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=56, labels="mutation", col="black");
+# --------------------------------------------------------------
+gbox <- mbox(x0 = 75, x1 = 135, y0 = 39, y1 = 49);
+polygon(x=gbox$x, y=gbox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=44, labels="check fitness", col="black");
+# --------------------------------------------------------------
+hbox <- mbox(x0 = 75, x1 = 135, y0 = 27, y1 = 37);
+polygon(x=hbox$x, y=hbox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=32, labels="selection", col="black");
+# --------------------------------------------------------------
+ibox <- mbox(x0 = 75, x1 = 135, y0 = 15, y1 = 25);
+polygon(x=ibox$x, y=ibox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=20, labels="replacement", col="black");
+# ===============================================================
+```
+
+<br>
+
+**Table of strategies**
+
+```{r, echo=FALSE}
+agents <- rbind(agents[1,],
+                agents[1,],
+                agents[2,],
+                agents[2,],
+                agents[3,],
+                agents[3,],
+                agents[4,],
+                agents[4,]
+                );
+fit    <- c(fit[1], fit[1], fit[2], fit[2], fit[3], fit[3], fit[4], fit[4]);
+kable(cbind(agents,fit), format="html");
+```
+
+</div>
+
+## Structure of a genetic algorithm
+
+<div class="columns-2">
+
+```{r, echo=FALSE}
+mbox <- function(x0, x1, y0, y1){
+    xx <- seq(from=x0, to=x1, length.out = 100);
+    yy <- seq(from=y0, to=y1, length.out = 100);
+    xd <- c(rep(x0, 100), xx, rep(x1,100), rev(xx));
+    yd <- c(yy, rep(y1,100), rev(yy), rep(y0, 100));
+    return(list(x=xd, y=yd));
+}
+par(mar=c(0,0,0,0));
+# ===============================================================
+plot(x=0, y=0, type="n", xlim=c(0,200), ylim=c(0,100), xaxt="n", yaxt="n",
+     xlab="",ylab="", bty="n");
+abox <- mbox(x0 = 0, x1 = 45, y0 = 70, y1 = 90);
+polygon(x=abox$x, y=abox$y, lwd=3, border="red", col="rosybrown1");
+text(x=22, y=85, labels="Random", col="black");
+text(x=22, y=80, labels="seed of", col="black");
+text(x=22, y=75, labels="strategies", col="black");
+# --------------------------------------------------------------
+cbox <- mbox(x0 = 70, x1 = 140, y0 = 0, y1 = 90);
+polygon(x=cbox$x, y=cbox$y, lwd=3, border="goldenrod4", col="gold3");
+arrows(x0=46, x1=70, y0=82, y1=82, lwd=2, length=0.15);
+dbox <- mbox(x0 = 75, x1 = 135, y0 = 75, y1 = 88);
+polygon(x=dbox$x, y=dbox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=84, labels="Begin new", col="black");
+text(x=105, y=79, labels="generation", col="black");
+# --------------------------------------------------------------
+ebox <- mbox(x0 = 75, x1 = 135, y0 = 63, y1 = 73);
+polygon(x=ebox$x, y=ebox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=68, labels="recombination", col="black");
+# --------------------------------------------------------------
+fbox <- mbox(x0 = 75, x1 = 135, y0 = 51, y1 = 61);
+polygon(x=fbox$x, y=fbox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=56, labels="mutation", col="black");
+# --------------------------------------------------------------
+gbox <- mbox(x0 = 75, x1 = 135, y0 = 39, y1 = 49);
+polygon(x=gbox$x, y=gbox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=44, labels="check fitness", col="black");
+# --------------------------------------------------------------
+hbox <- mbox(x0 = 75, x1 = 135, y0 = 27, y1 = 37);
+polygon(x=hbox$x, y=hbox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=32, labels="selection", col="black");
+# --------------------------------------------------------------
+ibox <- mbox(x0 = 75, x1 = 135, y0 = 15, y1 = 25);
+polygon(x=ibox$x, y=ibox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=20, labels="replacement", col="black");
+# --------------------------------------------------------------
+jbox <- mbox(x0 = 75, x1 = 135, y0 = 3, y1 = 13);
+polygon(x=jbox$x, y=jbox$y, lwd=3, border="goldenrod4", col="white");
+text(x=105, y=8, labels="converge?", col="black");
+# --------------------------------------------------------------
+bbox <- mbox(x0 = 0, x1 = 45, y0 = 20, y1 = 40);
+polygon(x=bbox$x, y=bbox$y, lwd=3, border="blue", col="lightsteelblue1");
+arrows(x0=70, x1=22.5, y0=5, y1=5, lwd=2, length=0.0);
+arrows(x0=22, x1=22, y0=5, y1=20, lwd=2, length=0.15);
+arrows(x0=55, x1=55, y0=5, y1=82, lwd=2, length=0.15);
+text(x=15, y=10, labels="Yes", col="black", srt=90);
+text(x=50, y=10, labels="No", col="black", srt=90);
+text(x=22, y=33, labels="Adaptive", col="black");
+text(x=22, y=28, labels="strategies", col="black");
+# ===============================================================
+```
+
+<br>
+
+**Table of strategies**
+
+```{r, echo=FALSE}
+kable(cbind(agents,fit), format="html");
+```
+
+</div>
+
+<!--- 
+    END OF THE GENETIC ALGORITHM SET OF SLIDES  --------------------------------
+--->
+
+# Example of a genetic algorithm for Prisoner's dilemma
+
+
+## Iterated Prisoner's dilemma rules {.smaller}
+
+<div class="columns-2">
+
+![](payoff_matrix_sm.png)
+**General structure of Prisoner's dilemma scenario**
+
+![](pd_pays.png)
+**Specific payoffs satisfying a Prisoner's dilemma scenario**
+
+</div>
+
+## Use of genetic algorithms {.smaller}
+
+**Each locus is an focal player's choice given an opponent's past three choices (plus one choice of first move)**
+
+<hr>
+
+
+|                  | **CCC** | **CCD** | **CDC** | **CDD** | **DCC** | **DCD** | **DDC** | **DDD** | **1st** |
+|------------------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
+| **Strategy 1**   | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  |
+| **Strategy 2**   | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  |
+| **...**          |   ...   |   ...   |   ...   |   ...   |   ...   |   ...   |   ...   |   ...   |   ...   |
+| **Strategy N-1** | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  |
+| **Strategy N**   | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  | Choice  |
+
+<hr>
+
+**Total of 512 possible strategies**
+
+## Use of genetic algorithms {.smaller}
+
+```{r, echo=FALSE}
+inputPanel(
+    
+  numericInput("CC", label = "CC", 0, width="30%"),
+  numericInput("DC", label = "DC", 0, width="30%"),
+  numericInput("CD", label = "CD", 0, width="30%"),
+  numericInput("DD", label = "DD", 0, width="30%"),
+  style='width: 2000px; height: 60px'
+)
+```
+
+<br>
+
+```{r, echo=FALSE}
+gres <- reactive({ 
+     cc <- input$CC;
+     dc <- input$DC;
+     cd <- input$CD;
+     dd <- input$DD;
+     rd <- 100;
+     gn <- 100;
+     co <- 0.05;
+     mu <- 0.05;
+ 
+     game_res <- games_ga(CC = cc, DC = dc, CD = cd, DD = dd, rounds = rd,
+                          generations = gn, cross_prob = co, 
+                          mutation_prob = mu, num_opponents = 100);     
+     all <- c(game_res$genos, "break_1",
+              rownames(game_res$genos), "break_2",
+              game_res$fitness);
+    })
+```
+
+```{r, echo = FALSE}
+renderPlot({
+    break2    <- which(gres()=="break_2")[1]+1;
+    end       <- length(gres());
+    fitnesses <- gres()[break2:end];
+    fitnesses <- as.numeric(fitnesses);
+    mean_fit  <- fitnesses / (100 * 100);
+    maxpt     <- max(c(input$CC, input$CD, input$DC, input$DD));
+    par(mar=c(5,5,1,1));
+    plot(x = 1:length(mean_fit), y=mean_fit, type="l", ylim=c(0,maxpt), lwd = 3,
+        xlab="Generation", ylab = "Mean strategy fitness per round",
+         cex.axis=1.5, cex.lab=1.5);
+})
+```
+
+## Adaptive strategies simulated {.smaller}
+
+```{r, echo=FALSE}
+renderTable({
+      break1   <- which(gres()=="break_1")[1] - 1;
+      break2   <- which(gres()=="break_2")[1] - 1;
+      geno_vec <- gres()[1:break1];
+      geno_row <- gres()[(break1+2):break2];
+      genos    <- matrix(data =  geno_vec, ncol = 10, byrow = FALSE);
+      rownames(genos) <- geno_row;
+      colnames(genos) <- c("CCC", "CCD", "CDC", "CDD", "DCC", "DCD", "DDC",
+                           "DDD", "1st", "Final %");
+      final_table <- genos[1:10,];
+     
+}, include.rownames=TRUE)
+```
+
+
+
