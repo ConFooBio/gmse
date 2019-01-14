@@ -262,7 +262,7 @@ Cusack, JJ, et al. *Conserv. Lett.* (*In press*). DOI: [10.1111/conl.12450](http
 
 - Formalisation and study of conflict and cooperation between rational decision-makers
 - Compatibile with agent-based modelling
-- Can suggest management strategiesand be used to understand stake-holder actions
+- Can suggest management strategies and be used to understand stake-holder actions
 - Conceptual unification
 
 <p class="forceBreak"></p>
@@ -891,6 +891,16 @@ print(mod);
 <center>
 
 ![](gmse_overview_sm.png)
+
+</center>
+
+## {.smaller}
+
+<center>
+
+![](meadow.jpg)
+
+[Wing-Chi Poon](https://commons.wikimedia.org/wiki/File:Mist_Covering_a_Meadow_under_Forest_Encroachment.jpg)
 
 </center>
 

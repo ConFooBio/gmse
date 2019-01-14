@@ -1,10 +1,12 @@
 name: GMSE_presentation
 title: GMSE_presentation
+username:
 account: bradduthie
 server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
 appId: 215105
-bundleId: 987642
+bundleId: 1798060
 url: https://bradduthie.shinyapps.io/GMSE_presentation/
-when: 1505823734.08159
+when: 1546706175.37609
 asMultiple: FALSE
 asStatic: FALSE
