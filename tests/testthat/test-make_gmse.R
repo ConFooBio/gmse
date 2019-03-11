@@ -1,6 +1,7 @@
 library(GMSE);
 context("Main gmse function");
-
+suppressWarnings(RNGversion("3.5.0"));
+RNGversion("3.4.0");
 set.seed(1);
 sim <- gmse(time_max = 3, plotting = FALSE);
 

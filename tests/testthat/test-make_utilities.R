@@ -1,6 +1,7 @@
 library(GMSE);
 context("Action array initialisation");
-
+suppressWarnings(RNGversion("3.5.0"));
+RNGversion("3.4.0");
 set.seed(1);
 agents  <-  make_agents(model        = "IBM",
                         agent_number = 2,

@@ -1,6 +1,7 @@
 library(GMSE);
 context("Summary functions");
-
+suppressWarnings(RNGversion("3.5.0"));
+RNGversion("3.4.0");
 set.seed(1);
 gmse_sim <- gmse(time_max = 3, plotting = FALSE);
 gmse_sum <- gmse_summary(gmse_sim);

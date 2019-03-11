@@ -1,6 +1,7 @@
 library(GMSE);
 context("Observation model");
-
+suppressWarnings(RNGversion("3.5.0"));
+RNGversion("3.4.0");
 set.seed(1);
 res <- make_resource(model              = "IBM", 
                      resource_quantity  = 100, 
