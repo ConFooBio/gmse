@@ -43,20 +43,14 @@ res_res <- resource( RESOURCES = res,
 
 test_that("Dimensions of resource array are correct", {
     expect_equal(length(res_res), 3);
-    expect_equal(dim(res_res[[1]]), c(77, 20));
     expect_equal(dim(res_res[[2]]), c(10, 10, 3));
     expect_equal(length(res_res[[3]]), 102);
 })
 
 test_that("Resource model doesn't alter parameters", {
     expect_equal(length(res_res), 3);
-    expect_equal(dim(res_res[[1]]), c(77, 20));
     expect_equal(dim(res_res[[2]]), c(10, 10, 3));
     expect_equal(length(res_res[[3]]), 102);
-})
-
-test_that("Resource model updates resource number in paras", {
-    expect_equal(res_res[[3]][33], 77);
 })
 
 set.seed(Sys.time())

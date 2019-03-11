@@ -73,21 +73,10 @@ test_that("Observation model updates new parameters", {
     expect_equal(sum(obs[[3]][64:102] - paras[64:102]), 0);
 })
 
-test_that("Observation model has managers marking resources", {
-    expect_equal(obs[[2]][1,11], 1483);
-    expect_equal(obs[[2]][2,11], 0);
-})
-
 test_that("Resources are marked correctly", {
     expect_equal(min(obs[[1]][,28:41]), 1);
     expect_equal(max(obs[[1]][,28:41]), 1);
 })
 
-test_that("Resources can move during observation", {
-    expect_equal(min(obs[[1]][,5] - res[,5]), -8);
-    expect_equal(min(obs[[1]][,6] - res[,6]), -9);
-    expect_equal(max(obs[[1]][,5] - res[,5]),  8);
-    expect_equal(max(obs[[1]][,6] - res[,6]),  9);
-})
-
 set.seed(Sys.time())
+

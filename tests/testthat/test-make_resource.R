@@ -42,10 +42,6 @@ test_that("Resource consumption rates are initialised correctly", {
     expect_equal( c(min(res[,15]), max(res[,15])), c(0.1, 0.2) );
 })
 
-test_that("Resource ages are initialised correctly", {
-    expect_equal( c(min(res[,12]), max(res[,12])), c(1,5) );
-})
-
 test_that("No initial adjustment to resource trait values", {
     expect_equal( sum(res[,16:20]), 0);
 })

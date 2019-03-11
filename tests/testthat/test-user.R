@@ -92,10 +92,6 @@ test_that("Users act according to costs", {
     expect_equal(max(usem[[5]][,1:7,2]), 100001);
     expect_equal(min(usem[[5]]), 10);
     expect_equal(max(usem[[5]]), 100001);
-    expect_equal(usem[[4]][1,8:13,2], c(0, 0, 1, 0, 0, 0));
-    expect_equal(usem[[4]][2,8:13,2], c(0, 0, 0, 0, 0, 0));
-    expect_equal(usem[[4]][3,8:13,2], c(0, 0, 3, 6, 0, 0));
-    expect_equal(max(usem[[4]][4:7,8:13,2]), 0);
 })
 
 test_that("Managers don't act like users", {
