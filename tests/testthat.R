@@ -1,4 +1,4 @@
-library(testthat)
-library(GMSE)
+library("testthat")
+library("GMSE")
 
 test_check("GMSE")
