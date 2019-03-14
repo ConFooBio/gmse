@@ -1,8 +1,9 @@
 Package: GMSE
 Type: Package
 Title: Generalised Management Strategy Evaluation Simulator
-Version: 0.4.0.9
-Imports: grDevices, graphics, stats, shiny, shinydashboard, shinyjs
+Version: 0.4.0.10
+Imports: grDevices (>= 3.4.0), graphics (>= 3.4.0), stats(>= 3.4.0), 
+    shiny, shinydashboard, shinyjs
 Authors@R: c(person("A. Bradley", "Duthie", email = "brad.duthie@gmail.com",
                   role = c("aut", "cre"),
                   comment = c(ORCID = "0000-0001-8343-4995")),
@@ -40,9 +41,10 @@ BugReports: https://github.com/confoobio/gmse/issues
 Depends: R (>= 3.4.0)
 License: GPL (>=2)
 LazyData: TRUE
+Encoding: UTF-8
 VignetteBuilder: R.rsp
 Suggests: knitr,
     rmarkdown,
     testthat,
     R.rsp
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
