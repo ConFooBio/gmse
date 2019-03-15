@@ -193,6 +193,72 @@ print(sim_sum_3);
 There is an important note to make about changing arguments to `gmse_apply` when `old_list` is being used: The function `gmse_apply` is trying to avoid a crash, so `gmse_apply` will accomodate parameter changes by rebuilding data structures if necessary. For example, if the number of stakeholders is changed (and by including an argument such as `stakeholders` to `gmse_apply`, it is assumed that stakeholders are changing even they are not), then a new array of agents will need to be built. If landscape dimensions are changed (or just include the argument `land_dim_1` or `land_dim_2`), then a new landscape willl be built. For most simulation purposes, this will not introduce any undesirable effect on simulation results, but it should be noted and understood when developing models.
 
 
+Special considerations for looping with custom sub-models
+================================================================================
+
+There are some special considerations that need to be made when using custom sub-models and the `old_list` argument within a loop as above. These considerations boil down to two key points.
+
+1. Custom sub-models *always* need to read in explicitly as an argument in `gmse_apply` (i.e., they will not be remembered by `old_list`).
+2. Custom sub-model arguments also *always* need to be updated *outside* of `gmse_apply` before output is used as an argument in `old_list` (i.e., `gmse_apply` cannot know what custom function argument needs to be updated, so this needs to be done manually).
+
+An example below illustrates the above points more clearly. Assume that the custom resource sub-model defined above needs to be integrated with the default observation, manager, and user sub-models using `gmse_apply`.
+
+```{r, eval = TRUE}
+alt_res <- function(X, K = 2000, rate = 1){
+    X_1 <- X + rate*X*(1 - X/K);
+    return(X_1);
+}
+```
+
+The sub-model can be integrated once using `gmse_apply` as demonstrated above, but in the full `gmse_apply` output, the argument `X` will not change from its initial value (because sub-model functions can take any number of arbitrary arguments, `gmse_apply` has no way of knowing that `X` is meant to be the resource number and not some other parameter).
+
+```{r, eval = TRUE}
+sim_4 <- gmse_apply(res_mod = alt_res, X = 1000, get_res = "Full");
+print(sim_4$basic_output);
+```
+
+Note that in the above output, the resource abundance has increased and is now `sim_4$basic_output$resource_results`. But if we look at `sim_4$X`, the value is still `r sim_4$X`.
+
+```{r, eval = TRUE}
+print(sim_4$X);
+```
+
+To loop through multiple time steps with the custom function `alt_res`, it is therefore necessary to update `sim4$X` with the updated value from either `sim4$resource_vector` or `sim4$basic_output$resource_results` (the two values should be identical). The loop below shows a simple example. 
+
+```{r, eval = TRUE}
+init_abun   <- 1000;
+sim_old     <- gmse_apply(get_res = "Full", res_mod = alt_res, X = init_abun);
+for(time_step in 1:20){
+    sim_new               <- gmse_apply(res_mod = alt_res, get_res = "Full", 
+                                        old_list = sim_old);
+    sim_old               <- sim_new;
+    sim_old$X             <- sim_new$resource_vector;
+}
+```
+
+Note again that the custom sub-model is read into to `gmse_apply` as an argument within the loop (`res_mod = alt_res`), and the output of `sim_new` is used to update the custom argument `X` in `alt_res` (`sim_old$X <- sim_new$resource_vector`). The population quickly increases to near carrying capacity, which can be summarised by using the same table structure explained above.
+
+```{r, eval = TRUE}
+init_abun   <- 1000;
+sim_old     <- gmse_apply(get_res = "Full", res_mod = alt_res, X = init_abun);
+sim_sum_4   <- matrix(data = NA, nrow = 5, ncol = 5);
+for(time_step in 1:5){
+    sim_new                 <- gmse_apply(res_mod = alt_res, get_res = "Full", 
+                                          old_list = sim_old);
+    sim_sum_4[time_step, 1] <- time_step;
+    sim_sum_4[time_step, 2] <- sim_new$basic_output$resource_results[1];
+    sim_sum_4[time_step, 3] <- sim_new$basic_output$observation_results[1];
+    sim_sum_4[time_step, 4] <- sim_new$basic_output$manager_results[3];
+    sim_sum_4[time_step, 5] <- sum(sim_new$basic_output$user_results[,3]);
+    sim_old                 <- sim_new;
+    sim_old$X               <- sim_new$resource_vector;
+}
+colnames(sim_sum_4) <- c("Time", "Pop_size", "Pop_est", "Cull_cost", 
+                         "Cull_count");
+print(sim_sum_4);
+```
+
+This is the recommended way to loop custom functions in `gmse_apply`. Note that elements of `old_list` will over-ride custom arguments to `gmse_apply` so **specifying custom arguments that are already present in `old_list` will not work**. 
 
 
 
