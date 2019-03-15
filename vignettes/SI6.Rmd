@@ -1,0 +1,182 @@
+---
+title: "Management frequency and extinction risk"
+author: A. Bradley Duthie&#xb9;&#xb3;, Jeremy J. Cusack&#xb9;, Isabel L. Jones&#xb9;,
+  Jeroen Minderman&#xb9;, Erlend B. Nilsen&#xb2;, Roc&#0237;o A. Pozo&#xb9;, O. Sarobidy
+  Rakotonarivo&#xb9;, Bram Van Moorter&#xb2;, and Nils Bunnefeld&#xb9;
+date: '[1] Biological and Environmental Sciences, University of Stirling, Stirling,
+  UK [2] Norwegian Institute for Nature Research, Trondheim, Norway [3] alexander.duthie@stir.ac.uk'
+output:
+  pdf_document:
+    citation_package: natbib
+    fig_caption: yes
+  html_document: default
+  word_document:
+    fig_caption: yes
+    reference_docx: docx_template.docx
+header-includes:
+linestretch: 1
+link-citations: yes
+linkcolor: blue
+bibliography: gmse.bib
+subtitle: 'GMSE: an R package for generalised management strategy evaluation (Supporting
+  Information 6)'
+biblio-style: apalike
+---
+
+```{r, echo = FALSE}
+library(GMSE);
+```
+
+The individual-based approach of default GMSE sub-models
+================================================================================
+
+The default sub-models of GMSE (`resource`, `observation`, `manager`, `user`) are individual-based (also called 'agent-based'), meaning that they model discrete individuals (resources or agents), which in GMSE are represented by individual table rows (as in `RESOURCES`, `AGENTS`, and `OBSERVATION`) or layers of three-dimensional arrays (as in `COST` and `ACTION`). Individual-based models (IBMs) have been a useful approach in ecology for decades [@Uchmanski1996; @Grimm1999], providing both a pragmatic tool for the mechanistic modelling of complex populations and a powerful technique for theoretical investigation. A key advantage of the individual-based modelling approach is the discrete nature of individuals, which allows for detailed trait variation and complex interactions among individuals. In GMSE, some of the most important traits for resources include types, ages, demographic parameter values, locations, etc., and for agents (manager and users), traits include different types, utilities, budgets, etc. The traits that resources and managers have can potentially affect their interactions, and default GMSE sub-models take advantage of this by simulating interactions explicitly on a landscape (see [SI7](SI7.pdf) for an introduction to GMSE default data structures).
+
+Replicate simulations as a tool for model inference
+================================================================================
+
+Mechanistically modelling complex interactions among discrete individuals typically causes some degree of stochasticity in IBMs (in the code, this is caused by the sampling of random values, which determine probabilistically whether or not events such as birth or death occur for individuals), reflecting the uncertainty that is inherent to complex systems. We can see a simple example of this by calling `gmse_apply` under the same default conditions twice.
+
+```{r}
+rand_eg_1 <- gmse_apply();
+print(rand_eg_1);
+```
+
+Although a second call of `gmse_apply` has identical initial conditions, because resource demographics (e.g., birth and death) and agent decision making (e.g., policy generation and user actions) is not deterministic, a slightly different result is obtained below.
+
+```{r}
+rand_eg_2 <- gmse_apply();
+print(rand_eg_2);
+```
+
+To make meaningful model inferences, it is often necessary to replicate simulations under the same initial conditions to understand the range of predicted outcomes for a particular set of parameter values. This can be computationally intense, but it can also lead to a more robust understanding of the range of dynamics that might be expected within a system. Additionally, when parameter values are unknown but believed to be important, replicate simulations can be applied across a range of values to understand how a particular parameter might affect system dynamics. Below, we show how to use the `gmse_replicates` function to simulate a simple example of a managed population that is hunted by users. This function calls `gmse` multiple times and aggregates the results from replicate simulations into a single table.
+
+For a single simulation, the `gmse_table` function prints out key information from a `gmse` simulation result. The example provided in the [GMSE documentation](https://cran.r-project.org/package=GMSE) is below.
+
+```{r}
+gmse_sim  <- gmse(time_max = 10, plotting = FALSE);
+sim_table <- gmse_table(gmse_sim = gmse_sim);
+print(sim_table)
+```
+
+The above table can be saved as a CSV file using the `write.csv` function.
+
+```{r, eval = FALSE}
+write.csv(x= sim_table, file = "file_path/gmse_table_name.csv");
+```
+
+Instead of recording all time steps in the simulation, we can instead record only the last time step in `gmse_table` using the `all_time` argument. 
+
+```{r}
+sim_table_last <- gmse_table(gmse_sim = gmse_sim, all_time = FALSE);
+print(sim_table_last)
+```
+
+The `gmse_replicates` function replicates multiple simulations `replicates` times under the same initial conditions, then returns a table showing the values of all simulations. This can be useful, for example, for testing how frequently a population is expected to go to extinction or carrying capacity under a given set of parameter values. First, we demonstrate the `gmse_replicates` function for simulations of up to 20 time steps. The `gmse_replicates` function accepts all arguments used in `gmse`, and also all arguments of `gmse_table` (`all_time` and `hide_unused_options`) to summarise multiple `gmse` results. Here we use default `gmse` values in replicate simulations, except `plotting`, which we set to `FALSE` to avoid plotting each simulation result. We run 10 replicates below.
+
+```{r, echo = FALSE, messages = FALSE, cache = FALSE, comment = FALSE, results = "hide"}
+gmse_reps1 <- gmse_replicates(replicates = 10, time_max = 20, plotting = FALSE);
+print(gmse_reps1);
+```
+
+```{r, eval = FALSE}
+gmse_reps1 <- gmse_replicates(replicates = 10, time_max = 20, plotting = FALSE);
+print(gmse_reps1);
+```
+
+```{r, echo = FALSE}
+print(gmse_reps1);
+```
+
+Note from the results above that resources in all simulations persisted for 20 time steps, which means that extinction never occurred. We can also see that the population in all simulations never terminated at a density near the default carrying capacity of `res_death_K = 2000`, and was instead consistently near the target population size of `manage_target = 1000`. If we wish to define management success as having a population density near target levels after 20 time steps (perhaps interpreted as 20 years), then we might assess this population as successfully managed under the conditions of the simulation. We can then see what happens if managers only respond to changes in the social-ecological system with a change in policy once every two years, perhaps as a consequence of reduced funding for management or increasing demands for management attention elsewhere. This can be done by changing the default `manage_freq = 1` to `manage_freq = 2`.
+
+```{r, echo = FALSE, messages = FALSE, cache = FALSE, comment = FALSE, results = "hide"}
+gmse_reps2 <- gmse_replicates(replicates  = 10, time_max = 20, plotting = FALSE,
+                              manage_freq = 2);
+print(gmse_reps2);
+```
+
+```{r, eval = FALSE}
+gmse_reps2 <- gmse_replicates(replicates  = 10, time_max = 20, plotting = FALSE, 
+                              manage_freq = 2);
+print(gmse_reps2);
+```
+
+```{r, echo = FALSE}
+print(gmse_reps2);
+```
+
+Note that while extinction still does not occur in these simulations, when populations are managed less frequently, they tend to be less close to the target size of 1000 after 20 generations. The median population size of `gmse_reps1` (management in every time step) was `r median(gmse_reps1[,2])`, with a maximum of `r max(gmse_reps1[,2])` and minimum of `r min(gmse_reps1[,2])`. The median population size of the newly simulated `gmse_reps2` (management every two time steps) is `r median(gmse_reps2[,2])`, with a maximum of `r max(gmse_reps2[,2])` and minimum of `r min(gmse_reps2[,2])`. We can now see what happens when management occurs only once in every three time steps.
+
+```{r, echo = FALSE, messages = FALSE, cache = FALSE, comment = FALSE, results = "hide"}
+gmse_reps3 <- gmse_replicates(replicates = 10, time_max = 20, plotting = FALSE,
+                             manage_freq = 3);
+print(gmse_reps3);
+```
+
+```{r, eval = FALSE}
+gmse_reps3 <- gmse_replicates(replicates = 10, time_max = 20, plotting = FALSE, 
+                             manage_freq = 3);
+print(gmse_reps3);
+```
+
+```{r, echo = FALSE}
+print(gmse_reps3);
+```
+
+Given a management frequency of once every three time steps, the median population size of `gmse_reps3` (management in every time step) is `r median(gmse_reps3[,2])`, with a maximum of `r max(gmse_reps3[,2])` and minimum of `r min(gmse_reps3[,2])`. The number of extinctions observed in these replicate populations was `r sum(gmse_reps3[,1] < 20)`. Below we change the management frequency to once every four time steps.
+
+```{r, echo = FALSE, messages = FALSE, cache = FALSE, comment = FALSE, results = "hide"}
+gmse_reps4 <- gmse_replicates(replicates = 10, time_max = 20, plotting = FALSE,
+                             manage_freq = 4);
+print(gmse_reps4);
+```
+
+```{r, eval = FALSE}
+gmse_reps4 <- gmse_replicates(replicates = 10, time_max = 20, plotting = FALSE, 
+                             manage_freq = 4);
+print(gmse_reps4);
+```
+
+```{r, echo = FALSE}
+print(gmse_reps4);
+```
+
+Now note from the first column of `gmse_reps4` above that `r sum(gmse_reps4[,1] < 20)` populations did not persist to the 20th time step; i.e., `r sum(gmse_reps4[,2] < 20)` populations went to extinction (note that GMSE has a minimum resource population size of 5). This has occured because managers cannot respond quickly enough to changes in the population density, and therefore cannot increase the cost of culling to maintain target resource levels if population size starts to decrease. We can see the extinction risk increase even further if management only occurs once every 5 time steps.
+
+```{r, echo = FALSE, messages = FALSE, cache = FALSE, comment = FALSE, results = "hide"}
+gmse_reps5 <- gmse_replicates(replicates = 10, time_max = 20, plotting = FALSE,
+                             manage_freq = 5);
+print(gmse_reps5);
+```
+
+```{r, eval = FALSE}
+gmse_reps5 <- gmse_replicates(replicates = 10, time_max = 20, plotting = FALSE, 
+                             manage_freq = 5);
+print(gmse_reps5);
+```
+
+```{r, echo = FALSE}
+print(gmse_reps5);
+```
+
+When a manager can only make policy decisions once every five time steps, extinction occurs in `r sum(gmse_reps5[,2] < 20)` out of 10 simulated populations before year 20. If we wanted to summarise these results, we could plot how extinction risk changes with increasing `manage_freq`.
+
+```{r, fig.height = 5, fig.cap = "Extinction risk given an increasing number of time steps between updating policy decisions for culling costs in a simulated population. Higher values on the x-axis correspond to more time passing before a new policy is set. For each point, a total of 10 replicate simulations were run."}
+ext_risk1 <- sum(gmse_reps1[,2] < 20);
+ext_risk2 <- sum(gmse_reps2[,2] < 20);
+ext_risk3 <- sum(gmse_reps3[,2] < 20);
+ext_risk4 <- sum(gmse_reps4[,2] < 20);
+ext_risk5 <- sum(gmse_reps5[,2] < 20);
+y_var     <- c(ext_risk1, ext_risk2, ext_risk3, ext_risk4, ext_risk5);
+x_var     <- 1:5;
+plot(x = x_var, y = y_var, type = "b", pch = 20, lwd = 2, cex = 1.5,
+     xlab = "Management every N time steps (manage_freq)",
+     ylab = "Freq. of population extinction", cex.lab = 1.25)
+```
+
+The above plot and the simulations from which it was derived illustrates a greatly simplified example of how GMSE might be used to assess the risk of extinction in a managed population. A comprehensive analysis would need more than 10 replicate simulations to accurately infer extinction risk, and would require careful pararmeterisation of all sub-models and a sensitivity analysis where such parameters are unknown. A benefit of this approach is that it allows for the simulation of multiple different scenarios under conditions of uncertainty and stochasticity, modelling the range of outcomes that might occur within and among scenarios and facilitating the development of social-ecological theory. Future expansion on the complexity of individual-based default sub-models of GMSE will further increase the realism of targeted case studies.
+
+
+
+
