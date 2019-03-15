@@ -49,6 +49,10 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - **2019**
+ 
+     - **MAR** [15](#u-15-MAR-2019)
+
  - **2018**
 
      - **AUG** [21](#u-21-AUG-2018)
@@ -98,6 +102,16 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-15-MAR-2019">Update: 15 MAR 2019</a>
+
+GMSE v0.4.0.11 is now [available on GitHub](https://github.com/ConFooBio/gmse). Some minor changes and bug fixes are included in the update version.
+
+- [Issue #46](https://github.com/ConFooBio/gmse/issues/46) appears to be resolved. This was caused by some memory management problems, making it impossible to increase the `paras` vector in development. It also made repeated calls to [`gmse_apply`](https://confoobio.github.io/gmse/reference/gmse_apply.html) crash when the exact same arguments were specified but some values (e.g., resource abundance) changed.
+- [A new section](https://confoobio.github.io/gmse/articles/SI2.html#special-considerations-for-looping-with-custom-sub-models) on the website and in the corresponding vignette explains how to loop custom sub-models in [`gmse_apply`](https://confoobio.github.io/gmse/reference/gmse_apply.html), noting some special considerations that could potentially cause confusion.
+- As a consequence of the change in the way that base R generates random numbers, tests using the [testthat](https://github.com/r-lib/testthat) needed to be re-worked. This has been done, and GMSE v0.4.0.11 should be on its way to CRAN as of next week.
+
+I will update once more when GMSE v0.4.0.11 is successfully submitted to CRAN.
 
 > <a name="u-21-AUG-2018">Update: 21 AUG 2018</a>
 
