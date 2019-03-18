@@ -154,8 +154,10 @@ gmse_summary <- function(gmse_results){
 #'@param all_time Whether or not results from each time step from the simulation should be individually placed as a row in the resulting table (`TRUE` by default). If `FALSE`, then only the last row will be placed.
 #'@return A table with one or more rows of results, each of which indicates a unique `gmse` simulation for a given time step. Columns represent key simulation including resource densities, observation estimates, policy, and user actions.
 #'@examples
+#'\dontrun{
 #'sim       <- gmse(time_max = 10);
 #'sim_table <- gmse_table(gmse_sim = sim);
+#'}
 #'@export
 gmse_table <- function(gmse_sim, hide_unused_options = TRUE, all_time = TRUE){
     

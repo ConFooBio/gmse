@@ -147,5 +147,7 @@ models in each time step. Hence while individual models can be used on their
 own, gmse() is really all that is needed to run a simulation.
 }
 \examples{
-sim <- gmse(lambda = 0.4, land_ownership = TRUE, time_max = 5);
+\dontrun{
+sim <- gmse(lambda = 0.4, time_max = 5, plotting = FALSE);
+}
 }
