@@ -3,7 +3,7 @@ library("GMSE");
 context("gmse_apply tests");
 
 test_that("Default gmse_apply is returned with the right length and no error", {
-    context("gmse_apply tests");
+    skip_on_cran();
     gmap      <-  gmse_apply();
     gmap_full <-  gmse_apply(get_res = "full");
     expect_equal(length(gmap), 4);
@@ -14,7 +14,7 @@ test_that("Default gmse_apply is returned with the right length and no error", {
 })
 
 test_that("Simple models produce the exact output", {
-    context("gmse_apply tests");
+    skip_on_cran();
     alt_res <- function(X = 1000, K = 2000, r = 1){
         X_1 <- X + r*X*(1 - X/K);
         return(X_1);
@@ -47,7 +47,7 @@ test_that("Simple models produce the exact output", {
 })
 
 test_that("Combination model 1", {
-    context("gmse_apply tests");
+    skip_on_cran();
     alt_res <- function(X = 1000, K = 2000, r = 1){
         X_1 <- X + r*X*(1 - X/K);
         return(X_1);
@@ -81,7 +81,7 @@ test_that("Combination model 1", {
 
 
 test_that("Combination model 2", {
-    context("gmse_apply tests");
+    skip_on_cran();
     alt_res <- function(X = 1000, K = 2000, r = 1){
         X_1 <- X + r*X*(1 - X/K);
         return(X_1);
@@ -114,7 +114,7 @@ test_that("Combination model 2", {
 })
 
 test_that("Combination model 3", {
-    context("gmse_apply tests");
+    skip_on_cran();
     alt_res <- function(X = 1000, K = 2000, r = 1){
         X_1 <- X + r*X*(1 - X/K);
         return(X_1);
@@ -147,7 +147,7 @@ test_that("Combination model 3", {
 })
 
 test_that("Combination model 4", {
-    context("gmse_apply tests");
+    skip_on_cran();
     alt_res <- function(X = 1000, K = 2000, r = 1){
         X_1 <- X + r*X*(1 - X/K);
         return(X_1);
@@ -180,7 +180,7 @@ test_that("Combination model 4", {
 })
 
 test_that("Combination model 5", {
-    context("gmse_apply tests");
+    skip_on_cran();
     alt_res <- function(X = 1000, K = 2000, r = 1){
         X_1 <- X + r*X*(1 - X/K);
         return(X_1);
@@ -213,7 +213,7 @@ test_that("Combination model 5", {
 })
 
 test_that("Combination model 6", {
-    context("gmse_apply tests");
+    skip_on_cran();
     alt_res <- function(X = 1000, K = 2000, r = 1){
         X_1 <- X + r*X*(1 - X/K);
         return(X_1);
@@ -246,7 +246,7 @@ test_that("Combination model 6", {
 })
 
 test_that("Combination model 7", {
-    context("gmse_apply tests");
+    skip_on_cran();
     alt_res <- function(X = 1000, K = 2000, r = 1){
         X_1 <- X + r*X*(1 - X/K);
         return(X_1);
@@ -279,7 +279,7 @@ test_that("Combination model 7", {
 })
 
 test_that("Combination model 8", {
-    context("gmse_apply tests");
+    skip_on_cran();
     alt_res <- function(X = 1000, K = 2000, r = 1){
         X_1 <- X + r*X*(1 - X/K);
         return(X_1);
@@ -312,7 +312,7 @@ test_that("Combination model 8", {
 })
 
 test_that("Combination model 9", {
-    context("gmse_apply tests");
+    skip_on_cran();
     alt_res <- function(X = 1000, K = 2000, r = 1){
         X_1 <- X + r*X*(1 - X/K);
         return(X_1);
@@ -345,7 +345,7 @@ test_that("Combination model 9", {
 })
 
 test_that("Combination model 10", {
-    context("gmse_apply tests");
+    skip_on_cran();
     alt_res <- function(X = 1000, K = 2000, r = 1){
         X_1 <- X + r*X*(1 - X/K);
         return(X_1);
@@ -378,7 +378,7 @@ test_that("Combination model 10", {
 })
 
 test_that("Combination model 11", {
-    context("gmse_apply tests");
+    skip_on_cran();
     alt_res <- function(X = 1000, K = 2000, r = 1){
         X_1 <- X + r*X*(1 - X/K);
         return(X_1);
@@ -411,7 +411,7 @@ test_that("Combination model 11", {
 })
 
 test_that("Combination model 12", {
-    context("gmse_apply tests");
+    skip_on_cran();
     alt_res <- function(X = 1000, K = 2000, r = 1){
         X_1 <- X + r*X*(1 - X/K);
         return(X_1);
@@ -444,7 +444,7 @@ test_that("Combination model 12", {
 })
 
 test_that("Combination model 13", {
-    context("gmse_apply tests");
+    skip_on_cran();
     alt_res <- function(X = 1000, K = 2000, r = 1){
         X_1 <- X + r*X*(1 - X/K);
         return(X_1);
@@ -477,7 +477,7 @@ test_that("Combination model 13", {
 })
 
 test_that("Combination model 14", {
-    context("gmse_apply tests");
+    skip_on_cran();
     alt_res <- function(X = 1000, K = 2000, r = 1){
         X_1 <- X + r*X*(1 - X/K);
         return(X_1);
