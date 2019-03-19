@@ -50,9 +50,14 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - **2019**
+ 
+     - **MAR** [15](#u-15-MAR-2019)
+
  - **2018**
 
-     - **MAY** [14](#u-14-MAY-2018)
+     - **AUG** [21](#u-21-AUG-2018)
+     - **MAY** [16](#u-16-MAY-2018), [14](#u-14-MAY-2018)
      - **APR** [13](#u-13-APR-2018)
 
  - **2017**
@@ -98,6 +103,24 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-15-MAR-2019">Update: 15 MAR 2019</a>
+
+GMSE v0.4.0.11 is now [available on GitHub](https://github.com/ConFooBio/gmse). Some minor changes and bug fixes are included in the update version.
+
+- [Issue #46](https://github.com/ConFooBio/gmse/issues/46) appears to be resolved. This was caused by some memory management problems, making it impossible to increase the `paras` vector in development. It also made repeated calls to [`gmse_apply`](https://confoobio.github.io/gmse/reference/gmse_apply.html) crash when the exact same arguments were specified but some values (e.g., resource abundance) changed.
+- [A new section](https://confoobio.github.io/gmse/articles/SI2.html#special-considerations-for-looping-with-custom-sub-models) on the website and in the corresponding vignette explains how to loop custom sub-models in [`gmse_apply`](https://confoobio.github.io/gmse/reference/gmse_apply.html), noting some special considerations that could potentially cause confusion.
+- As a consequence of the change in the way that base R generates random numbers, tests using the [testthat](https://github.com/r-lib/testthat) needed to be re-worked. This has been done, and GMSE v0.4.0.11 should be on its way to CRAN as of next week.
+
+I will update once more when GMSE v0.4.0.11 is successfully submitted to CRAN.
+
+> <a name="u-21-AUG-2018">Update: 21 AUG 2018</a>
+
+GMSE v0.4.0.7 is now [available on GitHub](https://github.com/ConFooBio/gmse), and the official GMSE repository is now transferred to the [ConFooBio](https://github.com/ConFooBio) organisation. I am currently in the process of fixing some website issues, but most of the important stuff has transferred to the [new website location](https://confoobio.github.io/gmse/).
+
+> <a name="u-16-MAY-2018">Update: 16 MAY 2018</a>
+
+GMSE v0.4.0.3 is [now available on CRAN](https://cran.r-project.org/package=GMSE). A [new website for GMSE](https://bradduthie.github.io/gmse/) has also been launched. This website was built with the R package [pkgdown](https://github.com/r-lib/pkgdown), recently released [on CRAN](https://cran.r-project.org/package=pkgdown). The site contains all of the vignettes and documentation for GMSE, and also includes a link to this lab notebook. A submission of the accompanying manuscript will soon be uploaded on [bioRxiv](https://www.biorxiv.org/).
 
 > <a name="u-14-MAY-2018">Update: 14 MAY 2018</a>
 
