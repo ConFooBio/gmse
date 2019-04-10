@@ -63,11 +63,9 @@
 #'@param public_land The proportion of the landscape that will be public, and not owned by stakeholders. The remaining proportion of the landscape will be evenly divided among stakeholders. Note that this option is only available when land_ownership == TRUE.
 #'@param group_think If TRUE, all users will have identical actions; the genetic algorithm will find actions for one user and copy them for all users. This is a useful option if a lot of users are required but variation among user decisions can be ignored.
 #'
-#' Action threshold strategy test
-#'
-#'@param action_thres A value for the deviation of the estimated population from the manager target, above which manager will not update the policy
-#'@param budget_bonus A percentage of the initial budget manager will receive if policy was not updated last time step. Corresponds to the time, energy and money saved by waiting for a better time to update the policy
-#'@param pol_updated A boolean variable indicating if the policy was updated last time step or not
+#' Action threshold strategy testing
+#'@param action_thres A value for the deviation of the estimated population from the manager target, above which manager will not update the policy.
+#'@param budget_bonus A percentage of the initial budget manager will receive if policy was not updated last time step. Corresponds to the time, energy and money saved by waiting for a better time to update the policy.
 #'
 #'@return A large list is returned that includes detailed simulation histories for the resource, observation, management, and user models. This list includes eight elements, most of which are themselves complex lists of arrays: (1) A list of length `time_max` in which each element is an array of resources as they exist at the end of each time step. Resource arrays include all resources and their attributes (e.g., locations, growth rates, offspring, how they are affected by stakeholders, etc.). (2) A list of length `time_max` in which each element is an array of resource observations from the observation model. Observation arrays are similar to resource arrays, except that they can have a smaller number of rows if not all resources are observed, and they have additional columns that show the history of each resource being observed over the course of `times_observe` observations in the observation model. (3) A 2D array showing parameter values at each time step (unique rows); most of these values are static but some (e.g., resource number) change over time steps. (4) A list of length `time_max` in which each element is an array of the landscape that identifies proportion of crop production per cell. This allows for looking at where crop production is increased or decreased over time steps as a consequence of resource and stakeholder actions. (5) The total time the simulation took to run (not counting plotting time). (6) A 2D array of agents and their traits. (7) A list of length `time_max` in which each element is a 3D array of the costs of performing each action for managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in costs of particular actions can therefore be be examined over time. (8) A list of length `time_max` in which each element is a 3D array of the actions performed by managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in actions of agents can therefore be examined over time. Because the above lists cannot possibly be interpreted by eye all at once in the simulation output, it is highly recommended that the contents of a simulation be stored and interprted individually if need be; alternativley, simulations can more easily be interpreted through plots when `plotting = TRUE`.
 #'@examples
@@ -134,7 +132,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   converge_crit  = 0.1,   # Convergence criteria
                   manager_sense  = 0.9,   # Manager sensitivity
                   public_land    = 0,     # Proportion of landscape public
-                  group_think    = FALSE  # All users behave identically
+                  group_think    = FALSE, # All users behave identically
+                  action_thres   = 0,     # Managers' policy updating threshold
+                  budget_bonus   = 0      # Budget saved by not acting during a time step
 ){
     
     time_max <- time_max + 1; # Add to avoid confusion (see loop below)
@@ -229,6 +229,14 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     }
     
     AGENTS[,17]     <- user_budget;
+    # here goes the test for budget bonus
+    if (pol_update == FALSE) { # WhERE pol_update SHOULD BE?
+      new_manager_budget <- manager_budget*(1+budget_bonus);
+      # Check if not above the maximum budget just in case
+      if (new_manager_budget < 100001) {
+        manager_budget <- new_manager_budget;
+      }
+    }
     AGENTS[1,17]    <- manager_budget;
     
     time       <- time + 1;  # Ready for the initial time step.
@@ -280,6 +288,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     ldo <- land_ownership;
     pub <- public_land;
     gtk <- group_think;
+    a_t <- action_thres;
+    mat <- manage_target;
+    # b_b <- budget_bonus; Not sure it is needed in the C code
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -385,7 +396,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                gtk,     # 101. Group think behaviour specified?
                fxr,     # 102. The number of recaptures in RMR estimation
                ldo,     # 103. Is there land ownership among stakeholders
-               pub      # 104. How much public land is there (proportion)
+               pub,     # 104. How much public land is there (proportion)
+               a_t,     # 105. Deviation of estimated population from manager target that will trigger policy update
+               mat,     # 106. Managers target for resource
     );
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
@@ -400,7 +413,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                     scaring, culling, castration, feeding, help_offspring, 
                     tend_crops, tend_crop_yld, kill_crops, stakeholders, 
                     manage_caution, land_ownership, manage_freq, converge_crit, 
-                    manager_sense, public_land, group_think); 
+                    manager_sense, public_land, group_think, action_thres, budget_bonus); 
     
     paras_errors(input_list);
     

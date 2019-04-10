@@ -435,6 +435,9 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     double *abun_est;        /* Vector used to estimate abundances */
     double *temp_util;       /* Vector temporarily holding manager utils */
     double *marg_util;       /* Margin utilities for a manager's actions */
+    
+    /* action threshold test */
+    int dev;                 /* calculus of estimated population deviation from managers target */ 
 
     /* First take care of all the reading in of code from R to C */
     /* ====================================================================== */
@@ -649,8 +652,22 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
         update_marg_util(actions, abun_est, temp_util, marg_util, int_d0, a_x);
     }
     
-    ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
-       lookup, paras, 0, 1);
+    /* if statement here: update or not according to action threshold
+     * action threshold : paras[105]
+     * estimated population : paras[99]
+     * manager target : paras [106] ? */
+    
+    /* deviation calculus */
+    dev = 1 - (double) paras[99] / (double) paras[106]; 
+    
+    /* test for updating */
+    if (abs(dev) > (double) paras[105]) {
+      ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
+         lookup, paras, 0, 1);
+      pol_updated <- 1;
+    } else {
+      pol_updated <- 0;
+    }
     
     set_action_costs(actions, costs, paras, agent_array);
     
