@@ -467,7 +467,6 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         AGENTS <- AGENTS_NEW[[1]];
         
         # Should the budget be updated here or in anecdotal?
-        
         pol_update <- paras[106];
         
         # test for budget bonus
