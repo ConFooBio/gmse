@@ -390,7 +390,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                ldo,     # 103. Is there land ownership among stakeholders
                pub,     # 104. How much public land is there (proportion)
                a_t,     # 105. Deviation of estimated population from manager target that will trigger policy update
-               plu,     # 106. Was whether policy updated last time step?
+               plu,     # 106. Was the policy updated last time step?
                tsc      # 107. Time steps since last policy update
     );
     
@@ -475,7 +475,6 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
           new_manager_budget <- AGENTS[1,17] * (1 + budget_bonus);
           
           if (new_manager_budget < 100001) {  # Check if not above the maximum budget just in case
-            # manager_budget <- new_manager_budget;
             AGENTS[1,17] <- new_manager_budget;
           }
         }
