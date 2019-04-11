@@ -229,14 +229,6 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     }
     
     AGENTS[,17]     <- user_budget;
-    # here goes the test for budget bonus
-    if (pol_update == FALSE) { # WhERE pol_update SHOULD BE?
-      new_manager_budget <- manager_budget*(1+budget_bonus);
-      # Check if not above the maximum budget just in case
-      if (new_manager_budget < 100001) {
-        manager_budget <- new_manager_budget;
-      }
-    }
     AGENTS[1,17]    <- manager_budget;
     
     time       <- time + 1;  # Ready for the initial time step.
@@ -289,8 +281,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     pub <- public_land;
     gtk <- group_think;
     a_t <- action_thres;
-    mat <- manage_target;
-    # b_b <- budget_bonus; Not sure it is needed in the C code
+    plu <- 0;
+    tsc <- 0;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -398,7 +390,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                ldo,     # 103. Is there land ownership among stakeholders
                pub,     # 104. How much public land is there (proportion)
                a_t,     # 105. Deviation of estimated population from manager target that will trigger policy update
-               mat,     # 106. Managers target for resource
+               plu,     # 106. Was whether policy updated last time step?
+               tsc      # 107. Time steps since last policy update
     );
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
@@ -472,6 +465,20 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                        move_agents = mva
         );
         AGENTS <- AGENTS_NEW[[1]];
+        
+        # Should the budget be updated here or in anecdotal?
+        
+        pol_update <- paras[106];
+        
+        # test for budget bonus
+        if (pol_update == FALSE) {
+          new_manager_budget <- AGENTS[1,17] * (1 + budget_bonus);
+          
+          if (new_manager_budget < 100001) {  # Check if not above the maximum budget just in case
+            # manager_budget <- new_manager_budget;
+            AGENTS[1,17] <- new_manager_budget;
+          }
+        }
 
         if(time %% manage_freq == 0){
             MANAGER  <- manager(RESOURCES   = RESOURCES,
