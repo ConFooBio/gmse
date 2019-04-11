@@ -281,7 +281,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     pub <- public_land;
     gtk <- group_think;
     a_t <- action_thres;
-    plu <- 0;
+    plu <- 1;
     tsc <- 0;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
