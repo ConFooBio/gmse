@@ -665,7 +665,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     if (abs(dev) > thres) {     /* if deviation is above action threshold, call ga, update tracker and re-initiate number of ts spent without updating policy */
       ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, lookup, paras, 0, 1);
       paras[106] = 1;           /* policy updating tracker */
-      para[107] = 0;            /* time step since last update counter */
+      paras[107] = 0;            /* time step since last update counter */
     } else {                    /* if deviation is under action threshold, don't call ga, update tracker and number of ts spent without updating policy */
       paras[106] = 0;
       paras[107] += 1;
