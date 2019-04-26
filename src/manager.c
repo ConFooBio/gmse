@@ -657,16 +657,16 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     
     /* act or wait ? */
     thres = paras[105];
-    estim = abun_est[1];        /* will only work for the first resource type */
+    estim = paras[99];           /* will only work for the first resource type */
     targt = actions[0][4][0];
     
-    dev = 1 - (estim / targt); 
+    dev = (estim / (double) targt) - 1;
     
-    if (abs(dev) > thres) {     /* if deviation is above action threshold, call ga, update tracker and re-initiate number of ts spent without updating policy */
+    if (cabs(dev) >= thres) {     /* if deviation is above action threshold, call ga, update tracker and re-initiate number of ts spent without updating policy */
       ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, lookup, paras, 0, 1);
-      paras[106] = 1;           /* policy updating tracker */
+      paras[106] = 1;            /* policy updating tracker */
       paras[107] = 0;            /* time step since last update counter */
-    } else {                    /* if deviation is under action threshold, don't call ga, update tracker and number of ts spent without updating policy */
+    } else {                     /* if deviation is under action threshold, don't call ga, update tracker and number of ts spent without updating policy */
       paras[106] = 0;
       paras[107] += 1;
     }

@@ -470,10 +470,10 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         pol_update <- paras[106];
         
         # test for budget bonus
-        if (pol_update == FALSE) {
+        if (pol_update == 0) {
           new_manager_budget <- AGENTS[1,17] * (1 + budget_bonus);
           
-          if (new_manager_budget < 100001) {  # Check if not above the maximum budget just in case
+          if (new_manager_budget < 100000) {  # Check if not above the maximum budget just in case
             AGENTS[1,17] <- new_manager_budget;
           }
         }
