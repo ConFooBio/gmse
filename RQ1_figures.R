@@ -347,7 +347,7 @@ for (s in scar) {
         OYA_batch1_results[k,3,param_set] <- at[i]
         
         # BB value
-        OYA_batch1_results[k,4,param_set] <- bb[j]
+        OYA_batch1_results[k,4,param_set] <- 0
         
         # Has extinction occured? (yes = 1, no = 0)
         OYA_batch1_results[k,5,param_set] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
@@ -461,14 +461,9 @@ for (s in scar) {
           }
         } # end rep for loop
         
-        # keep track of the simulation
-        if (param_set % 20) {
-          print(paste("parameter set number", param_set, "out of", dim(OYA_batch1_results)[3], sep = " "))           
-        }
-        
         # keep track of the simulations
         if (param_set %/% 20 != 0) {
-          print(paste("parameter set number", 20, "out of", dim(OYA_batch1_results)[3], "at", Sys.time(), sep = " "))
+          print(paste("parameter set number", param_set, "out of", dim(OYA_batch1_results)[3], "at", Sys.time(), sep = " "))
         }
         
         # Increment parameter combo index
