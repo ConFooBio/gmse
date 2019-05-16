@@ -478,6 +478,21 @@ end <- Sys.time()
 
 print(paste("Batch started", start, "and ended", end, sep = " "))
 
+## save the 3D array of results?
+
+## if complicated, rbind the layers
+# hope there will be no problem with colomn names
+
+tab_OYA_batch1_results <- OYA_batch1_results[,,1]
+
+for (i in 2:dim(OYA_batch1_results)[3]) {
+  tab_OYA_batch1_results <- rbind(tab_OYA_batch1_results, OYA_batch1_results[,,i])
+}
+
+tab_OYA_batch1_results <- as.data.frame(tab_OYA_batch1_results)
+
+write.csv(tab_OYA_batch1_results, file = "tab_OYA_batch1_results.csv")
+
 ## Basic stats
 
 # for each parameter combo
