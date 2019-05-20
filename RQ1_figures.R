@@ -462,7 +462,7 @@ for (s in scar) {
         } # end rep for loop
         
         # keep track of the simulations
-        if (param_set %/% 20 != 0) {
+        if (param_set %% 10 != 0) {
           print(paste("parameter set number", param_set, "out of", dim(OYA_batch1_results)[3], "at", Sys.time(), sep = " "))
         }
         
