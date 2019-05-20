@@ -289,7 +289,7 @@ rep <- 100
 ## Create empty structures to gather simulation results
 
 # Array of column names (the measures of interest for the question)
-columns <- c("rep", "scar", "at", "bb", "extinct", "act_dev", "final yield", "max_diff_yield", "inac_ts")
+columns <- c("rep", "scar", "at", "bb", "extinct", "act_dev", "fin_yield", "max_diff_yield", "inac_ts")
 
 # Empty 3D array of correct size 
 # Dimensions(lines = replicates, columns = measures, layer = parameter combination)
@@ -364,7 +364,7 @@ for (s in scar) {
           OYA_batch1_results[k,7,param_set] <- sum(sim$agents[[final_ts-1]][,16])
           
           # Maximum difference between Users yield
-          OYA_batch1_results[k,8,param_set] <- round((max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16]),1)
+          OYA_batch1_results[k,8,param_set] <- round((max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16]),2)
           
           # Number of timesteps during which Manager chose not to update policy
           OYA_batch1_results[k,9,param_set] <- final_ts-sum(sim$paras[,107])
@@ -380,7 +380,7 @@ for (s in scar) {
           OYA_batch1_results[k,7,param_set] <- sum(sim$agents[[final_ts]][,16])
           
           # Maximum difference between Users yield
-          OYA_batch1_results[k,8,param_set] <- round((max(sim$agents[[final_ts]][,16]) - min(sim$agents[[final_ts]][-1,16]))/max(sim$agents[[final_ts]][,16]),1)
+          OYA_batch1_results[k,8,param_set] <- round((max(sim$agents[[final_ts]][,16]) - min(sim$agents[[final_ts]][-1,16]))/max(sim$agents[[final_ts]][,16]),2)
           
           # Number of timesteps during which Manager chose not to update policy
           OYA_batch1_results[k,9,param_set] <- length(sim$paras[,107])-sum(sim$paras[,107])
@@ -480,7 +480,10 @@ print(paste("Batch started", start, "and ended", end, sep = " "))
 
 ## save the 3D array of results?
 
-## if complicated, rbind the layers
+# get the results from the batch on Brad's computer
+OYA_batch1_results <- load("/data/OYA_batch1_results.rda")
+
+## option rbind the layers
 # hope there will be no problem with colomn names
 
 tab_OYA_batch1_results <- OYA_batch1_results[,,1]
@@ -492,6 +495,7 @@ for (i in 2:dim(OYA_batch1_results)[3]) {
 tab_OYA_batch1_results <- as.data.frame(tab_OYA_batch1_results)
 
 write.csv(tab_OYA_batch1_results, file = "tab_OYA_batch1_results.csv")
+
 
 ## Basic stats
 
@@ -507,7 +511,7 @@ for (i in 1:dim(OYA_batch1_results)[3]) {
   }
   
   # Extinction probability (number of extinctions / number of replicates)
-  stats_OYA_batch1_results[i,5] <- round(sum(OYA_batch1_results[,7,i])/dim(OYA_batch1_results)[1],2)
+  stats_OYA_batch1_results[i,5] <- round(sum(OYA_batch1_results[,5,i])/dim(OYA_batch1_results)[1],2)
   
   # Next are systematically mean, sd and 95CI of the meaures from batch_results
   zz <- 0
@@ -526,42 +530,53 @@ View(stats_OYA_batch1_results)
 write.csv(stats_OYA_batch1_results, file = "stats_batch1.csv", row.names = F)
 
 
-## Plot actual Resource population deviation from target and Users final yield according to AT and BB values
+#### Plot actual Resource population deviation from target and Users final yield according to AT and BB values ####
+
+## fig1 : keeping it simple and coarse, no scaring, effect of varying both at and bb on act_dev
 
 # Line for subset of results if needed
-fig_tab <- stats_OYA_batch1_results
+OYA_fig1_tab <- subset(tab_OYA_batch1_results, scar == 0)
 
-# Figure without labels and big text for inclusion in the poster
+# Actual Resource population deviation from target
+gg1 <- ggplot(OYA_fig1_tab, aes(x=as.factor(bb), y=act_dev)) +
+       geom_boxplot() +
+       facet_wrap(~at) +
+       geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+       geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+       geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
+       labs(x="BB") +
+       theme_gray() +
+       theme(strip.background=element_rect(fill="grey")) +
+       theme(strip.text=element_text(color="white", face="bold"))
+gg1
 
-# Plot actual Resource population deviation from target according to AT and BB values (both in %)
-p1 <- ggplot(as.data.frame(fig_tab), aes(x=as.factor(at), y=act_dev*100, group=as.factor(bb), fill = as.factor(bb))) +       # Define data set, colour according to BB values
-  geom_errorbar(aes(ymin=act_dev*100-act_dev_sd*100/2, ymax=act_dev*100+act_dev_sd*100/2, group = as.factor(bb)),          # Define error bars values, grouped by BB values 
-                position=position_dodge(0.6),                                                                              # Avoid superposition of the bars
-                colour = "grey40", width=0.4) +
-  geom_point(size = 6, alpha = 1, colour="black", stroke = 1, shape = 21,                                                  # Define representation of data
-             position = position_dodge(width = 0.6)) +                                                                     # Avoid superposition of the points
-  theme_gray(base_size = 50) +                                                                                             # Define theme and feature sizes
-  theme(axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(),                     # x axis features, here no tittle, no text, suppress tick for better superposition
-        axis.title.y = element_blank(),                                                                                    # y axis features, here no text
-        legend.position='none',                                                                                            # legend features, here none, done in poster ppt
-        axis.line.y = element_line(size = 1, colour = "grey50"))                                                           # big lines for style
+# Absolute actual Resource population deviation from target
+gg2 <- ggplot(OYA_fig1_tab, aes(x=as.factor(bb), y=abs(act_dev))) +
+       geom_boxplot() +
+       facet_wrap(~at) +
+       geom_hline(yintercept = 1, linetype = "dashed", color = "red") +      # show carrying capacity
+       labs(x="BB") +
+       theme_gray() +
+       theme(strip.background=element_rect(fill="grey")) +
+       theme(strip.text=element_text(color="white", face="bold"))
+gg2
 
-# Plot actual Users total final yield (in kilo-budget units) according to AT and BB values (in %)
-p2 <- ggplot(as.data.frame(fig_tab), aes(x=as.factor(at), y=fin_yield/100, group=as.factor(bb), fill = as.factor(bb))) +
-  geom_errorbar(aes(ymin=fin_yield/100-fin_yield_sd/100/2, ymax=fin_yield/100+fin_yield_sd/100/2, group = as.factor(bb)),  
-                position=position_dodge(0.6),
-                colour = "grey40", width=0.4) +
-  geom_point(size = 6, alpha = 1, colour="black", stroke = 1, shape = 21,
-             position = position_dodge(width = 0.6)) +
-  theme_gray(base_size = 50) +
-  theme(axis.title.x = element_blank(), axis.title.y = element_blank(),
-        legend.position='none',
-        axis.line = element_line(size = 1, colour = "grey50"))
+# Users final yield
+gg3 <- ggplot(OYA_fig1_tab, aes(x=as.factor(bb), y=final.yield/100)) +
+       geom_boxplot() +
+       facet_wrap(~at) +
+       labs(x="BB") +
+       theme_gray() +
+       theme(strip.background=element_rect(fill="grey")) +
+       theme(strip.text=element_text(color="white", face="bold"))
+gg3
 
 # New plot window
 grid.newpage()
 
 # Stack graphs
 grid.draw(rbind(ggplotGrob(p1), ggplotGrob(p2), size = "last"))
+
+# Figure without labels and big text for inclusion in the poster
 
 # Save the figure as pdf with explicit name
