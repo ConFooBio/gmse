@@ -485,7 +485,7 @@ OYA_batch1_results <- load("~/Desktop/Thèse/GitKraken/gmse_fork_RQ1/data/OYA_ba
 ## Add absolute value of actual Resource population deviation from Manager target
 new_OYA_batch1_results <- array(data=NA, dim = c(rep, length(columns)+1, length(at)*length(bb)*length(scar)-20), dimnames = list(NULL,c(columns, "abs_act_dev"),NULL))
 
-# for each parameter combo
+# for each parameter combo compute absolute value
 for (i in 1:dim(OYA_batch1_results)[3]) {
   for (j in 1:dim(OYA_batch1_results)[2]) {
     new_OYA_batch1_results[,j,i] <- OYA_batch1_results[,j,i]
@@ -504,11 +504,14 @@ for (i in 2:dim(OYA_batch1_results)[3]) {
 
 write.csv(tab_OYA_batch1_results, file = "tab_OYA_batch1_results.csv")
 
+# same with new tab
 new_tab_OYA_batch1_results <- new_OYA_batch1_results[,,1]
 
 for (i in 2:dim(new_OYA_batch1_results)[3]) {
   new_tab_OYA_batch1_results <- rbind(new_tab_OYA_batch1_results, new_OYA_batch1_results[,,i])
 }
+
+write.csv(new_tab_OYA_batch1_results, file = "tab_OYA_batch1_results_abs.csv")
 
 ## Basic stats
 
@@ -541,6 +544,7 @@ View(stats_OYA_batch1_results)
 
 # Save the table in a csv file
 write.csv(stats_OYA_batch1_results, file = "stats_batch1.csv", row.names = F)
+# write.csv(stats_OYA_batch1_results, file = "stats_batch1_extprob.csv", row.names = F)
 
 
 #### Plot actual Resource population deviation from target and Users final yield according to AT and BB values w and wo scaring ####
@@ -716,11 +720,18 @@ gg9 <- ggplot(as.data.frame(stats_OYA_batch1_results), aes(x=as.factor(bb), fill
       theme(strip.text=element_text(color="white", face="bold"))
 gg9
 
-# New plot window
-grid.newpage()
+#### extinction probability according to varying at and bb ####
 
-# Stack graphs
-grid.draw(rbind(ggplotGrob(p1), ggplotGrob(p2), size = "last"))
+gg9 <- ggplot(as.data.frame(stats_OYA_batch1_results), aes(x=as.factor(bb), fill = as.factor(scar), y=ext_prob)) +
+       facet_wrap(~at) +
+       geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+                  position = position_dodge(width = 1)) +
+       geom_hline(yintercept = 0.05, linetype = "dashed", color = "red") +      
+       labs(x="BB") +
+       theme_gray() +
+       theme(strip.background=element_rect(fill="grey")) +
+       theme(strip.text=element_text(color="white", face="bold"))
+gg9
 
 # Figure without labels and big text for inclusion in the poster
 
