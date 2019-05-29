@@ -260,7 +260,6 @@ grid.draw(rbind(ggplotGrob(p1), ggplotGrob(p2), size = "last"))
 ## interests
 # same figure as poster but spanning a larger scale of at and bb values
 # w/wo scaring + plotting equity measure
-# effect of growing number of stakeholders
 # 100 replicates
 
 #### fixed nb of stakeholders, varying at and bb ####
@@ -720,7 +719,7 @@ gg9 <- ggplot(as.data.frame(stats_OYA_batch1_results), aes(x=as.factor(bb), fill
       theme(strip.text=element_text(color="white", face="bold"))
 gg9
 
-#### extinction probability according to varying at and bb ####
+# extinction probability according to varying at and bb
 
 gg9 <- ggplot(as.data.frame(stats_OYA_batch1_results), aes(x=as.factor(bb), fill = as.factor(scar), y=ext_prob)) +
        facet_wrap(~at) +
@@ -735,4 +734,283 @@ gg9
 
 # Figure without labels and big text for inclusion in the poster
 
-# Save the figure as pdf with explicit name
+# Save the figure as pdf with clear name
+
+#### new batch : with scaring, varying less widely at, bb, and investigating the sensibility to initial budget ####
+
+## Set parameters
+
+# Array of Action Threshold values to explore
+at <- seq(0,1.2,0.4)
+
+# Array of Budget Bonus values to explore
+bb <- seq(0,1.5,0.5)
+
+# Array of initial budget
+budget <- c(100, 400, 800, 1200)
+
+# # Scaring allowed?
+# scar <- T
+
+# Number of simulation time steps
+ts <- 20
+
+# Number of replicates
+rep <- 100
+
+# number of stakeholder
+stkh <- 10
+
+# Other parameters to GMSE default
+
+
+## Create empty structures to gather simulation results
+
+# Array of column names (the measures of interest for the question)
+columns <- c("rep", "budget", "at", "bb", "extinct", "act_dev", "abs_act_dev", "fin_yield", "max_diff_yield", "inac_ts")
+
+# Empty 3D array of correct size 
+# Dimensions(lines = replicates, columns = measures, layer = parameter combination)
+OYA_batch2_results <- array(data=NA, dim = c(rep, length(columns), length(at)*length(bb)*length(budget)-12), dimnames = list(NULL,columns,NULL))                 # -8 not to waste computing time for different bb values for at = 0
+
+
+# Create an empty structure for basic stats on OYA_batch2_results
+
+# Array of column names
+stats_columns <- c("rep", "budget", "at", "bb", "ext_prob", "act_dev", "act_dev_sd", "act_dev_95ci", "abs_act_dev", "abs_act_dev_sd", "abs_act_dev_95ci", "fin_yield", "fin_yield_sd", "fin_yield_95ci", "max_diff_yield", "max_diff_yield_sd", "max_diff_yield_95ci", "inac_ts", "inac_ts_sd", "inac_ts_95ci")
+
+# Empty 2D array of correct size
+# Dimensions(lines = parameter combo index, columns = measures)
+stats_OYA_batch2_results <- matrix(data = NA, nrow = dim(OYA_batch2_results)[3], ncol = length(stats_columns), dimnames = list(NULL,stats_columns))
+
+
+## Simulations loop
+
+# Initialize an index of parameter combination
+param_set <- 1
+
+# Store start time
+start <- Sys.time()
+
+# For every budget values
+for (b in 1:length(budget)) {
+  
+  # For every AT values in 'at'
+  for (i in 1:length(at)) {
+    
+    # avoid simul for different bb values for at = 0
+    if (at[i] == 0) {
+      
+      # With 'rep' number of replicate per parameter combo
+      for (k in 1:rep) {
+        
+        # Run GMSE for the parameter combo
+        sim <- gmse(stakeholders = stkh, time_max = ts, land_ownership = TRUE,
+                    scaring = T,
+                    manager_budget = budget[b],
+                    action_thres = at[i], budget_bonus = 0,
+                    plotting = F)
+        
+        # Store the last time step number (for extinction-related bugs)
+        final_ts <- length(which(sim$paras[,1] != 0))
+        
+        # Pick up values for simulation results and store them in OYA_batch2_results
+        
+        # Replicate number
+        OYA_batch2_results[k,1,param_set] <- k
+        
+        # Manager initial budget
+        OYA_batch2_results[k,2,param_set] <- budget[b]
+        
+        # AT value
+        OYA_batch2_results[k,3,param_set] <- at[i]
+        
+        # BB value
+        OYA_batch2_results[k,4,param_set] <- 0
+        
+        # Has extinction occured? (yes = 1, no = 0)
+        OYA_batch2_results[k,5,param_set] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
+        
+        # Next measures involve calculus that can be disturbed if extinction occured
+        
+        # If exctinction occured
+        if (OYA_batch2_results[k,5,param_set] != 0) {
+          
+          # Resource actual pop deviation from target
+          OYA_batch2_results[k,6,param_set] <- dim(sim$resource[[final_ts-1]])[1]/sim$action[[1]][1,5,1] - 1
+          
+          # absolute value
+          OYA_batch2_results[k,7,param_set] <- abs(OYA_batch2_results[k,6,param_set])
+          
+          # Users total final yield
+          OYA_batch2_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
+          
+          # Maximum difference between Users yield
+          OYA_batch2_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
+          
+          # Number of timesteps during which Manager chose not to update policy
+          OYA_batch2_results[k,10,param_set] <- final_ts-sum(sim$paras[,107])
+        }
+        
+        # If extinction did not occured
+        else {
+          
+          # Resource actual pop deviation from target
+          OYA_batch2_results[k,6,param_set] <- dim(sim$resource[[final_ts]])[1]/sim$action[[1]][1,5,1] - 1
+          
+          # absolute value
+          OYA_batch2_results[k,7,param_set] <- abs(OYA_batch2_results[k,6,param_set])
+          
+          # Users total final yield
+          OYA_batch2_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
+          
+          # Maximum difference between Users yield
+          OYA_batch2_results[k,9,param_set] <- (max(sim$agents[[final_ts]][,16]) - min(sim$agents[[final_ts]][-1,16]))/max(sim$agents[[final_ts]][,16])
+          
+          # Number of timesteps during which Manager chose not to update policy
+          OYA_batch2_results[k,10,param_set] <- length(sim$paras[,107])-sum(sim$paras[,107])
+        }
+      } # end rep for loop
+      
+      # Increment parameter combo index
+      param_set <- param_set + 1
+    } # end at if loop
+    
+    # for every other at value
+    else {
+      
+      # For every BB values in 'bb'
+      for (j in 1:length(bb)) {
+        
+        # With 'rep' number of replicate per parameter combo
+        for (k in 1:rep) {
+          
+          # Run GMSE for the parameter combo
+          sim <- gmse(stakeholders = 10, time_max = ts, land_ownership = TRUE,
+                      scaring = T,
+                      manager_budget = budget[b],
+                      action_thres = at[i], budget_bonus = bb[j],
+                      plotting = F)
+          
+          # Store the last time step number (for extinction-related bugs)
+          final_ts <- length(which(sim$paras[,1] != 0))
+          
+          # Pick up values for simulation results and store them in OYA_batch2_results
+          
+          # Replicate number
+          OYA_batch2_results[k,1,param_set] <- k
+          
+          # Manager initial budget
+          OYA_batch2_results[k,2,param_set] <- budget[b]
+          
+          # AT value
+          OYA_batch2_results[k,3,param_set] <- at[i]
+          
+          # BB value
+          OYA_batch2_results[k,4,param_set] <- bb[j]
+          
+          # Has extinction occured? (yes = 1, no = 0)
+          OYA_batch2_results[k,5,param_set] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
+          
+          # Next measures involve calculus that can be disturbed if extinction occured
+          
+          # If exctinction occured
+          if (OYA_batch2_results[k,5,param_set] != 0) {
+            
+            # Resource actual pop deviation from target
+            OYA_batch2_results[k,6,param_set] <- dim(sim$resource[[final_ts-1]])[1]/sim$action[[1]][1,5,1] - 1
+            
+            # absolute value
+            OYA_batch2_results[k,7,param_set] <- abs(OYA_batch2_results[k,6,param_set])
+            
+            # Users total final yield
+            OYA_batch2_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
+            
+            # Maximum difference between Users yield
+            OYA_batch2_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
+            
+            # Number of timesteps during which Manager chose not to update policy
+            OYA_batch2_results[k,10,param_set] <- final_ts-sum(sim$paras[,107])
+          }
+          
+          # If extinction did not occured
+          else {
+            
+            # Resource actual pop deviation from target
+            OYA_batch2_results[k,6,param_set] <- dim(sim$resource[[final_ts]])[1]/sim$action[[1]][1,5,1] - 1
+            
+            # absolute value
+            OYA_batch2_results[k,7,param_set] <- abs(OYA_batch2_results[k,6,param_set])
+            
+            # Users total final yield
+            OYA_batch2_results[k,8,param_set] <- sum(sim$agents[[final_ts]][,16])
+            
+            # Maximum difference between Users yield
+            OYA_batch2_results[k,9,param_set] <- (max(sim$agents[[final_ts]][,16]) - min(sim$agents[[final_ts]][-1,16]))/max(sim$agents[[final_ts]][,16])
+            
+            # Number of timesteps during which Manager chose not to update policy
+            OYA_batch2_results[k,10,param_set] <- length(sim$paras[,107])-sum(sim$paras[,107])
+          }
+        } # end rep for loop
+        
+        # keep track of the simulations
+        if (param_set %% 10 == 0) {
+          print(paste("parameter set number", param_set, "out of", dim(OYA_batch2_results)[3], "at", Sys.time(), sep = " "))
+        }
+        
+        # Increment parameter combo index
+        param_set <- param_set + 1
+      } # end bb for loop
+    } # end at else loop
+  } # end at for loop
+} # end budget for loop
+
+# end of sim
+end <- Sys.time()
+
+print(paste("Batch started", start, "and ended", end, sep = " "))
+
+## save the 3D array of results?
+
+# rbind the layers
+
+tab_OYA_batch2_results <- OYA_batch2_results[,,1]
+
+for (i in 2:dim(OYA_batch2_results)[3]) {
+  tab_OYA_batch2_results <- rbind(tab_OYA_batch2_results, OYA_batch2_results[,,i])
+}
+
+write.csv(tab_OYA_batch2_results, file = "tab_OYA_batch2_results.csv")
+
+
+## Basic stats
+
+# for each parameter combo
+for (i in 1:dim(OYA_batch2_results)[3]) {
+  
+  # Store number of replicates for this combo
+  stats_OYA_batch2_results[i,1] <- dim(OYA_batch2_results)[1]
+  
+  # Next 3 columns just take values from batch_results
+  for (j in 2:4) {
+    stats_OYA_batch2_results[i,j] <- OYA_batch2_results[1,j,i]
+  }
+  
+  # Extinction probability (number of extinctions / number of replicates)
+  stats_OYA_batch2_results[i,5] <- round(sum(OYA_batch2_results[,5,i])/dim(OYA_batch2_results)[1],2)
+  
+  # Next are systematically mean, sd and 95CI of the meaures from batch_results
+  zz <- 0
+  for (k in 6:dim(OYA_batch2_results)[2]) {
+    stats_OYA_batch2_results[i,k+zz] <- mean(OYA_batch2_results[,k,i])
+    stats_OYA_batch2_results[i,k+zz+1] <- sd(OYA_batch2_results[,k,i])
+    stats_OYA_batch2_results[i,k+zz+2] <- 1.86*stats_OYA_batch2_results[i,k+zz+1]/sqrt(rep)
+    zz <- zz + 2
+  }
+}
+
+# Visualise the table to check for inconsistencies
+View(stats_OYA_batch2_results)
+
+# Save the table in a csv file
+write.csv(stats_OYA_batch2_results, file = "stats_batch2.csv", row.names = F)
