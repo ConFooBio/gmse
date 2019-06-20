@@ -1293,3 +1293,170 @@ View(stats_OYA_batch3_results)
 
 # Save the table in a csv file
 write.csv(stats_OYA_batch3_results, file = "stats_batch3.csv", row.names = F)
+
+#### Merge batch1 and 2, and plot results ####
+
+## Import results files
+tab_OYA_batch2_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/tab_OYA_batch2_results.csv")
+tab_OYA_batch3_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/tab_OYA_batch3_results.csv")
+
+## Create a column for Scaring parameter
+tab_OYA_batch2_results$scar <- rep(1, dim(tab_OYA_batch2_results)[1])
+tab_OYA_batch3_results$scar <- rep(0, dim(tab_OYA_batch3_results)[1])
+
+## Merge the tables
+tab_OYA_batch2 <- rbind(tab_OYA_batch3_results, tab_OYA_batch2_results)
+
+## Import stats results files
+stats_OYA_batch2 <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/stats_batch2.csv")
+stats_OYA_batch3 <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/stats_batch3.csv")
+
+## Create a column for Scaring parameter
+stats_OYA_batch2$scar <- rep(1, dim(stats_OYA_batch2)[1])
+stats_OYA_batch3$scar <- rep(0, dim(stats_OYA_batch3)[1])
+
+## Merge the tables
+stats_batch2 <- rbind(stats_OYA_batch2, stats_OYA_batch3)
+
+## Plots
+gg1 <- ggplot(tab_OYA_batch2, aes(x=as.factor(tab_OYA_batch2$budget), fill = as.factor(tab_OYA_batch2$scar), y=act_dev)) +
+  geom_boxplot(position=position_dodge()) +
+  facet_wrap(~at) +             # find a way to split by the at:bb combinaison of this data set
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
+  labs(x="BB") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey")) +
+  theme(strip.text=element_text(color="white", face="bold"))
+gg1
+
+# Absolute actual Resource population deviation from target
+gg2 <- ggplot(tab_OYA_batch2, aes(x=as.factor(bb), fill = as.factor(scar), y=abs(act_dev))) +
+  geom_boxplot(position=position_dodge(1)) +
+  facet_wrap(~at) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +      # show carrying capacity
+  labs(x="BB") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey")) +
+  theme(strip.text=element_text(color="white", face="bold"))
+gg2
+
+# Users final yield
+gg3 <- ggplot(tab_OYA_batch2, aes(x=as.factor(bb), fill = as.factor(scar), y=fin_yield/100)) +
+  geom_boxplot(position=position_dodge(1)) +
+  facet_wrap(~at) +
+  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
+  labs(x="BB") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey")) +
+  theme(strip.text=element_text(color="white", face="bold"))
+gg3
+
+## mean +- sd
+
+# act_dev
+gg4 <- ggplot(as.data.frame(stats_OYA_batch1_results), aes(x=as.factor(bb), fill = as.factor(scar), y=act_dev)) +
+  facet_wrap(~at) +
+  geom_errorbar(aes(ymin=act_dev-act_dev_sd/2, ymax=act_dev+act_dev_sd/2, group = as.factor(scar)),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +      
+  labs(x="BB") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey")) +
+  theme(strip.text=element_text(color="white", face="bold"))
+gg4
+
+gg5 <- ggplot(as.data.frame(stats_batch2), aes(x=as.factor(bb), fill = as.factor(scar), y=abs_act_dev)) +
+  facet_wrap(~at) +
+  geom_errorbar(aes(ymin=abs_act_dev-abs_act_dev_sd/2, ymax=abs_act_dev+abs_act_dev_sd/2, group = as.factor(scar)),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +    
+  labs(x="BB") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey")) +
+  theme(strip.text=element_text(color="white", face="bold"))
+gg5
+
+gg6 <- ggplot(as.data.frame(stats_OYA_batch1_results), aes(x=as.factor(bb), fill = as.factor(scar), y=fin_yield/100)) +
+  facet_wrap(~at) +
+  geom_errorbar(aes(ymin=fin_yield/100-fin_yield_sd/100/2, ymax=fin_yield/100+fin_yield_sd/100/2, group = as.factor(scar)),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
+  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
+  labs(x="BB") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey")) +
+  theme(strip.text=element_text(color="white", face="bold"))
+gg6
+
+# mean +- ic 95
+
+# act_dev
+gg7 <- ggplot(as.data.frame(stats_OYA_batch1_results), aes(x=as.factor(bb), fill = as.factor(scar), y=act_dev)) +
+  facet_wrap(~at) +
+  geom_errorbar(aes(ymin=act_dev-act_dev_95ci, ymax=act_dev+act_dev_95ci, group = as.factor(scar)),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +      
+  labs(x="BB") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey")) +
+  theme(strip.text=element_text(color="white", face="bold"))
+gg7
+
+# abs_act_dev
+gg8 <- ggplot(as.data.frame(stats_batch2), aes(x=as.factor(bb), fill = as.factor(scar), y=abs_act_dev)) +
+  facet_wrap(~at) +
+  geom_errorbar(aes(ymin=abs_act_dev-abs_act_dev_95ci, ymax=abs_act_dev+abs_act_dev_95ci, group = as.factor(scar)),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +    
+  labs(x="BB") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey")) +
+  theme(strip.text=element_text(color="white", face="bold"))
+gg8
+
+gg9 <- ggplot(as.data.frame(stats_OYA_batch1_results), aes(x=as.factor(bb), fill = as.factor(scar), y=fin_yield/100)) +
+  facet_wrap(~at) +
+  geom_errorbar(aes(ymin=fin_yield/100-fin_yield_95ci/100/2, ymax=fin_yield/100+fin_yield_95ci/100/2, group = as.factor(scar)),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
+  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
+  labs(x="BB") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey")) +
+  theme(strip.text=element_text(color="white", face="bold"))
+gg9
+
+# extinction probability according to varying at and bb
+
+gg9 <- ggplot(as.data.frame(stats_OYA_batch1_results), aes(x=as.factor(bb), fill = as.factor(scar), y=ext_prob)) +
+  facet_wrap(~at) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
+  geom_hline(yintercept = 0.05, linetype = "dashed", color = "red") +      
+  labs(x="BB") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey")) +
+  theme(strip.text=element_text(color="white", face="bold"))
+gg9
