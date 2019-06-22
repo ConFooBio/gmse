@@ -1319,92 +1319,182 @@ stats_OYA_batch3$scar <- rep(0, dim(stats_OYA_batch3)[1])
 stats_batch2 <- rbind(stats_OYA_batch2, stats_OYA_batch3)
 
 ## Plots
-gg1 <- ggplot(tab_OYA_batch2, aes(x=as.factor(tab_OYA_batch2$budget), fill = as.factor(tab_OYA_batch2$scar), y=act_dev)) +
+gg1 <- ggplot(subset(tab_OYA_batch2, at != 0), aes(x=as.factor(budget), fill = as.factor(scar), y=act_dev)) +
   geom_boxplot(position=position_dodge()) +
-  facet_wrap(~at) +             # find a way to split by the at:bb combinaison of this data set
+  facet_wrap(~at+bb, ncol = 4) +             # find a way to split by the at:bb combinaison of this data set
   geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
   geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
   geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
-  labs(x="BB") +
+  labs(x="Manager initial budget", y= "Resource density deviation from target") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey")) +
   theme(strip.text=element_text(color="white", face="bold"))
 gg1
 
+gg1control <- ggplot(subset(tab_OYA_batch2, at == 0), aes(x=as.factor(budget), fill = as.factor(scar), y=act_dev)) +
+  geom_boxplot(position=position_dodge()) +
+  #facet_wrap(~at+bb, ncol = 4) +             # find a way to split by the at:bb combinaison of this data set
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
+  labs(x="Manager initial budget", y= "Resource density deviation from target") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey")) +
+  theme(strip.text=element_text(color="white", face="bold"))
+gg1control
+
 # Absolute actual Resource population deviation from target
-gg2 <- ggplot(tab_OYA_batch2, aes(x=as.factor(bb), fill = as.factor(scar), y=abs(act_dev))) +
-  geom_boxplot(position=position_dodge(1)) +
-  facet_wrap(~at) +
+gg2 <- ggplot(subset(tab_OYA_batch2, at != 0), aes(x=as.factor(budget), fill = as.factor(scar), y=abs_act_dev)) +
+  geom_boxplot(position=position_dodge()) +
+  facet_wrap(~at+bb, ncol = 4) +
   geom_hline(yintercept = 1, linetype = "dashed", color = "red") +      # show carrying capacity
-  labs(x="BB") +
+  labs(x="Manager initial budget", y= "Resource density absolute deviation from target") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey")) +
   theme(strip.text=element_text(color="white", face="bold"))
 gg2
 
+gg2control <- ggplot(subset(tab_OYA_batch2, at == 0), aes(x=as.factor(budget), fill = as.factor(scar), y=abs_act_dev)) +
+  geom_boxplot(position=position_dodge()) +
+  #facet_wrap(~at+bb, ncol = 4) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +      # show carrying capacity
+  labs(x="Manager initial budget", y= "Resource density absolute deviation from target") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey")) +
+  theme(strip.text=element_text(color="white", face="bold"))
+gg2control
+
 # Users final yield
-gg3 <- ggplot(tab_OYA_batch2, aes(x=as.factor(bb), fill = as.factor(scar), y=fin_yield/100)) +
-  geom_boxplot(position=position_dodge(1)) +
-  facet_wrap(~at) +
+gg3 <- ggplot(subset(tab_OYA_batch2, at != 0), aes(x=as.factor(budget), fill = as.factor(scar), y=fin_yield/100)) +
+  geom_boxplot(position=position_dodge()) +
+  facet_wrap(~at+bb, ncol=4) +
   geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
-  labs(x="BB") +
+  labs(x="Manager initial budget", y= "Users final total yield") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey")) +
   theme(strip.text=element_text(color="white", face="bold"))
 gg3
 
+gg3control <- ggplot(subset(tab_OYA_batch2, at == 0), aes(x=as.factor(budget), fill = as.factor(scar), y=fin_yield/100)) +
+  geom_boxplot(position=position_dodge()) +
+  #facet_wrap(~at+bb, ncol=4) +
+  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
+  labs(x="Manager initial budget", y= "Users final total yield") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey")) +
+  theme(strip.text=element_text(color="white", face="bold"))
+gg3control
+
 ## mean +- sd
 
 # act_dev
-gg4 <- ggplot(as.data.frame(stats_OYA_batch1_results), aes(x=as.factor(bb), fill = as.factor(scar), y=act_dev)) +
-  facet_wrap(~at) +
+gg4 <- ggplot(subset(stats_batch2, at != 0), aes(x=as.factor(budget), fill = as.factor(scar), y=act_dev)) +
+  facet_wrap(~at+bb, ncol=4) +
   geom_errorbar(aes(ymin=act_dev-act_dev_sd/2, ymax=act_dev+act_dev_sd/2, group = as.factor(scar)),  
                 position=position_dodge(1),
                 colour = "grey40", width=0.5) +
   geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
-             position = position_dodge(width = 1)) +
+             position = position_dodge(1)) +
   geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
   geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +      
-  labs(x="BB") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
+  labs(x="Manager initial budget", y= "Resource density deviation from target\n(mean +/- sd)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey")) +
   theme(strip.text=element_text(color="white", face="bold"))
 gg4
 
-gg5 <- ggplot(as.data.frame(stats_batch2), aes(x=as.factor(bb), fill = as.factor(scar), y=abs_act_dev)) +
-  facet_wrap(~at) +
+gg4control <- ggplot(subset(stats_batch2, at== 0), aes(x=as.factor(budget), fill = as.factor(scar), y=act_dev)) +
+  #facet_wrap(~at+bb, ncol=4) +
+  geom_errorbar(aes(ymin=act_dev-act_dev_sd/2, ymax=act_dev+act_dev_sd/2, group = as.factor(scar)),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(1)) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
+  labs(x="Manager initial budget", y= "Resource density deviation from target\n(mean +/- sd)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey")) +
+  theme(strip.text=element_text(color="white", face="bold"))
+gg4control
+
+# abs_act_dev
+gg5 <- ggplot(subset(stats_batch2, at != 0), aes(x=as.factor(budget), fill = as.factor(scar), y=abs_act_dev)) +
+  facet_wrap(~at+bb, ncol=4) +
   geom_errorbar(aes(ymin=abs_act_dev-abs_act_dev_sd/2, ymax=abs_act_dev+abs_act_dev_sd/2, group = as.factor(scar)),  
                 position=position_dodge(1),
                 colour = "grey40", width=0.5) +
   geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
              position = position_dodge(width = 1)) +
   geom_hline(yintercept = 1, linetype = "dashed", color = "red") +    
-  labs(x="BB") +
+  labs(x="Manager initial budget", y= "Resource density absolute deviation from target\n(mean +/- sd)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey")) +
   theme(strip.text=element_text(color="white", face="bold"))
 gg5
 
-gg6 <- ggplot(as.data.frame(stats_OYA_batch1_results), aes(x=as.factor(bb), fill = as.factor(scar), y=fin_yield/100)) +
-  facet_wrap(~at) +
+gg5control <- ggplot(subset(stats_batch2, at == 0), aes(x=as.factor(budget), fill = as.factor(scar), y=abs_act_dev)) +
+  #facet_wrap(~at+bb, ncol=4) +
+  geom_errorbar(aes(ymin=abs_act_dev-abs_act_dev_sd/2, ymax=abs_act_dev+abs_act_dev_sd/2, group = as.factor(scar)),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +    
+  labs(x="Manager initial budget", y= "Resource density absolute deviation from target\n(mean +/- sd)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey")) +
+  theme(strip.text=element_text(color="white", face="bold"))
+gg5control
+
+# fin_yield
+gg6 <- ggplot(subset(stats_batch2, at != 0), aes(x=as.factor(budget), fill = as.factor(scar), y=fin_yield/100)) +
+  facet_wrap(~at+bb, ncol=4) +
   geom_errorbar(aes(ymin=fin_yield/100-fin_yield_sd/100/2, ymax=fin_yield/100+fin_yield_sd/100/2, group = as.factor(scar)),  
                 position=position_dodge(1),
                 colour = "grey40", width=0.5) +
   geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
              position = position_dodge(width = 1)) +
   geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
-  labs(x="BB") +
+  labs(x="Manager initial budget", y= "Users final total yield\n(mean +/- sd)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey")) +
   theme(strip.text=element_text(color="white", face="bold"))
 gg6
 
+gg6control <- ggplot(subset(stats_batch2, at == 0), aes(x=as.factor(budget), fill = as.factor(scar), y=fin_yield/100)) +
+  #facet_wrap(~at+bb, ncol=4) +
+  geom_errorbar(aes(ymin=fin_yield/100-fin_yield_sd/100/2, ymax=fin_yield/100+fin_yield_sd/100/2, group = as.factor(scar)),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
+  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
+  labs(x="Manager initial budget", y= "Users final total yield\n(mean +/- sd)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey")) +
+  theme(strip.text=element_text(color="white", face="bold"))
+gg6control
+
 # mean +- ic 95
 
 # act_dev
-gg7 <- ggplot(as.data.frame(stats_OYA_batch1_results), aes(x=as.factor(bb), fill = as.factor(scar), y=act_dev)) +
-  facet_wrap(~at) +
+gg7 <- ggplot(subset(stats_batch2, at != 0), aes(x=as.factor(budget), fill = as.factor(scar), y=act_dev)) +
+  facet_wrap(~at+bb, ncol=4) +
   geom_errorbar(aes(ymin=act_dev-act_dev_95ci, ymax=act_dev+act_dev_95ci, group = as.factor(scar)),  
                 position=position_dodge(1),
                 colour = "grey40", width=0.5) +
@@ -1412,51 +1502,116 @@ gg7 <- ggplot(as.data.frame(stats_OYA_batch1_results), aes(x=as.factor(bb), fill
              position = position_dodge(width = 1)) +
   geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
   geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +      
-  labs(x="BB") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +   
+  labs(x="Manager initial budget", y= "Resource density deviation from target\n(mean +/- 95CI)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey")) +
   theme(strip.text=element_text(color="white", face="bold"))
 gg7
 
+gg7control <- ggplot(subset(stats_batch2, at == 0), aes(x=as.factor(budget), fill = as.factor(scar), y=act_dev)) +
+  #facet_wrap(~at+bb, ncol=4) +
+  geom_errorbar(aes(ymin=act_dev-act_dev_95ci, ymax=act_dev+act_dev_95ci, group = as.factor(scar)),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +   
+  labs(x="Manager initial budget", y= "Resource density deviation from target\n(mean +/- 95CI)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey")) +
+  theme(strip.text=element_text(color="white", face="bold"))
+gg7control
+
 # abs_act_dev
-gg8 <- ggplot(as.data.frame(stats_batch2), aes(x=as.factor(bb), fill = as.factor(scar), y=abs_act_dev)) +
-  facet_wrap(~at) +
+gg8 <- ggplot(subset(stats_batch2, at != 0), aes(x=as.factor(budget), fill = as.factor(scar), y=abs_act_dev)) +
+  facet_wrap(~at+bb, ncol=5) +
   geom_errorbar(aes(ymin=abs_act_dev-abs_act_dev_95ci, ymax=abs_act_dev+abs_act_dev_95ci, group = as.factor(scar)),  
                 position=position_dodge(1),
                 colour = "grey40", width=0.5) +
   geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
              position = position_dodge(width = 1)) +
-  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +    
-  labs(x="BB") +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +  
+  labs(x="Manager initial budget", y= "Resource density absolute deviation from target\n(mean +/- 95CI)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey")) +
   theme(strip.text=element_text(color="white", face="bold"))
 gg8
 
-gg9 <- ggplot(as.data.frame(stats_OYA_batch1_results), aes(x=as.factor(bb), fill = as.factor(scar), y=fin_yield/100)) +
-  facet_wrap(~at) +
+gg8control <- ggplot(subset(stats_batch2, at == 0), aes(x=as.factor(budget), fill = as.factor(scar), y=abs_act_dev)) +
+  #facet_wrap(~at+bb, ncol=5) +
+  geom_errorbar(aes(ymin=abs_act_dev-abs_act_dev_95ci, ymax=abs_act_dev+abs_act_dev_95ci, group = as.factor(scar)),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +  
+  labs(x="Manager initial budget", y= "Resource density absolute deviation from target\n(mean +/- 95CI)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey")) +
+  theme(strip.text=element_text(color="white", face="bold"))
+gg8control
+
+# fin_yield
+
+gg9 <- ggplot(subset(stats_batch2, at != 0), aes(x=as.factor(budget), fill = as.factor(scar), y=fin_yield/100)) +
+  facet_wrap(~at+bb, ncol = 4) +
   geom_errorbar(aes(ymin=fin_yield/100-fin_yield_95ci/100/2, ymax=fin_yield/100+fin_yield_95ci/100/2, group = as.factor(scar)),  
                 position=position_dodge(1),
                 colour = "grey40", width=0.5) +
   geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
              position = position_dodge(width = 1)) +
   geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
-  labs(x="BB") +
+  labs(x="Manager initial budget", y= "Users final total yield\n(mean +/- 95CI)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey")) +
   theme(strip.text=element_text(color="white", face="bold"))
 gg9
+
+gg9control <- ggplot(subset(stats_batch2, at == 0), aes(x=as.factor(budget), fill = as.factor(scar), y=fin_yield/100)) +
+  #facet_wrap(~at+bb, ncol = 4) +
+  geom_errorbar(aes(ymin=fin_yield/100-fin_yield_95ci/100/2, ymax=fin_yield/100+fin_yield_95ci/100/2, group = as.factor(scar)),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
+  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
+  labs(x="Manager initial budget", y= "Users final total yield\n(mean +/- 95CI)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey")) +
+  theme(strip.text=element_text(color="white", face="bold"))
+gg9control
 
 # extinction probability according to varying at and bb
 
-gg9 <- ggplot(as.data.frame(stats_OYA_batch1_results), aes(x=as.factor(bb), fill = as.factor(scar), y=ext_prob)) +
-  facet_wrap(~at) +
+gg_extprob <- ggplot(subset(stats_batch2, at != 0), aes(x=as.factor(budget), fill = as.factor(scar), y=ext_prob)) +
+  facet_wrap(~at+bb, ncol = 4) +
   geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
              position = position_dodge(width = 1)) +
   geom_hline(yintercept = 0.05, linetype = "dashed", color = "red") +      
-  labs(x="BB") +
+  labs(x="Managers initial budget", y = "Extinction probability") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey")) +
   theme(strip.text=element_text(color="white", face="bold"))
-gg9
+gg_extprob
+
+gg_extprob_control <- ggplot(subset(stats_batch2, at == 0), aes(x=as.factor(budget), fill = as.factor(scar), y=ext_prob)) +
+  #facet_wrap(~at+bb, ncol = 4) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
+  geom_hline(yintercept = 0.05, linetype = "dashed", color = "red") +      
+  labs(x="Managers initial budget", y = "Extinction probability") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey")) +
+  theme(strip.text=element_text(color="white", face="bold"))
+gg_extprob_control
