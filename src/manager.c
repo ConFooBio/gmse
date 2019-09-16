@@ -656,19 +656,28 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     }
     
     /* act or wait ? */
-    thres = paras[105];
-    estim = paras[99];           /* will only work for the first resource type */
-    targt = actions[0][4][0];
+
+    /* act regardless at the first time step 
+     * the time is in paras[0] */
     
-    dev = (estim / (double) targt) - 1;
-    
-    if (cabs(dev) >= thres) {     /* if deviation is above action threshold, call ga, update tracker and re-initiate number of ts spent without updating policy */
+    if (paras[0] < 2) {
       ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, lookup, paras, 0, 1);
-      paras[106] = 1;            /* policy updating tracker */
-      paras[107] = 0;            /* time step since last update counter */
-    } else {                     /* if deviation is under action threshold, don't call ga, update tracker and number of ts spent without updating policy */
-      paras[106] = 0;
-      paras[107] += 1;
+    } else {
+      
+      //update threshold value = paras[105];
+      //estimation of the Resource population = paras[99];           /* will only work for the first resource type */
+      //manager target = actions[0][4][0];
+      
+      dev = (paras[99] / (double) actions[0][4][0]) - 1;
+    
+      if (cabs(dev) >= paras[105]) {     /* if deviation is above action threshold, call ga, update tracker and re-initiate number of ts spent without updating policy */
+        ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, lookup, paras, 0, 1);
+        paras[106] = 1;                  /* policy updating tracker */
+        paras[107] = 0;                  /* time step since last update counter */
+      } else {                           /* if deviation is under action threshold, don't call ga, update tracker and number of ts spent without updating policy */
+        paras[106] = 0;
+        paras[107] += 1;
+      }
     }
     
     set_action_costs(actions, costs, paras, agent_array);
