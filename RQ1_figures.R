@@ -38,7 +38,6 @@ library(dplyr)
 
 ######## IAPETUS Conference May 2019 - poster figure ########
 
-
 ## Set parameters
 
 # Array of Action Threshold values to explore
@@ -72,7 +71,7 @@ stkh <- 3              # Manager and 2 users for sake of computing time
 ## Create empty structures to gather simulation results
 
 # Array of column names (the measures of interest for the question)
-columns <- c("rep", "at", "bb", "init_budg", "init_res", "lambda", "extinct", "act_dev", "final yield", "max_diff_yield", "inac_ts")
+columns <- c("rep", "at", "bb", "init_budg", "init_res", "lambda", "extinct", "act_dev", "fin_yield", "max_diff_yield", "inac_ts")
 
 # Empty 3D array of correct size 
 # Dimensions(lines = replicates, columns = measures, layer = parameter combination)
@@ -261,7 +260,6 @@ grid.draw(rbind(ggplotGrob(p1), ggplotGrob(p2), size = "last"))
 ## interests
 # same figure as poster but spanning a larger scale of at and bb values
 # w/wo scaring + plotting equity measure
-# effect of growing number of stakeholders
 # 100 replicates
 
 #### fixed nb of stakeholders, varying at and bb ####
@@ -289,7 +287,7 @@ rep <- 100
 ## Create empty structures to gather simulation results
 
 # Array of column names (the measures of interest for the question)
-columns <- c("rep", "scar", "at", "bb", "extinct", "act_dev", "final yield", "max_diff_yield", "inac_ts")
+columns <- c("rep", "scar", "at", "bb", "extinct", "act_dev", "fin_yield", "max_diff_yield", "inac_ts")
 
 # Empty 3D array of correct size 
 # Dimensions(lines = replicates, columns = measures, layer = parameter combination)
@@ -364,7 +362,7 @@ for (s in scar) {
           OYA_batch1_results[k,7,param_set] <- sum(sim$agents[[final_ts-1]][,16])
           
           # Maximum difference between Users yield
-          OYA_batch1_results[k,8,param_set] <- round((max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16]),1)
+          OYA_batch1_results[k,8,param_set] <- round((max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16]),2)
           
           # Number of timesteps during which Manager chose not to update policy
           OYA_batch1_results[k,9,param_set] <- final_ts-sum(sim$paras[,107])
@@ -380,7 +378,7 @@ for (s in scar) {
           OYA_batch1_results[k,7,param_set] <- sum(sim$agents[[final_ts]][,16])
           
           # Maximum difference between Users yield
-          OYA_batch1_results[k,8,param_set] <- round((max(sim$agents[[final_ts]][,16]) - min(sim$agents[[final_ts]][-1,16]))/max(sim$agents[[final_ts]][,16]),1)
+          OYA_batch1_results[k,8,param_set] <- round((max(sim$agents[[final_ts]][,16]) - min(sim$agents[[final_ts]][-1,16]))/max(sim$agents[[final_ts]][,16]),2)
           
           # Number of timesteps during which Manager chose not to update policy
           OYA_batch1_results[k,9,param_set] <- length(sim$paras[,107])-sum(sim$paras[,107])
@@ -480,7 +478,21 @@ print(paste("Batch started", start, "and ended", end, sep = " "))
 
 ## save the 3D array of results?
 
-## if complicated, rbind the layers
+# get the results from the batch on Brad's computer
+OYA_batch1_results <- load("data/OYA_batch1_results.rda")
+
+## Add absolute value of actual Resource population deviation from Manager target
+new_OYA_batch1_results <- array(data=NA, dim = c(rep, length(columns)+1, length(at)*length(bb)*length(scar)-20), dimnames = list(NULL,c(columns, "abs_act_dev"),NULL))
+
+# for each parameter combo compute absolute value
+for (i in 1:dim(OYA_batch1_results)[3]) {
+  for (j in 1:dim(OYA_batch1_results)[2]) {
+    new_OYA_batch1_results[,j,i] <- OYA_batch1_results[,j,i]
+  }
+  new_OYA_batch1_results[,length(columns)+1,i] <- abs(OYA_batch1_results[,6,i])
+}
+
+## option rbind the layers
 # hope there will be no problem with colomn names
 
 tab_OYA_batch1_results <- OYA_batch1_results[,,1]
@@ -489,9 +501,16 @@ for (i in 2:dim(OYA_batch1_results)[3]) {
   tab_OYA_batch1_results <- rbind(tab_OYA_batch1_results, OYA_batch1_results[,,i])
 }
 
-tab_OYA_batch1_results <- as.data.frame(tab_OYA_batch1_results)
-
 write.csv(tab_OYA_batch1_results, file = "tab_OYA_batch1_results.csv")
+
+# same with new tab
+new_tab_OYA_batch1_results <- new_OYA_batch1_results[,,1]
+
+for (i in 2:dim(new_OYA_batch1_results)[3]) {
+  new_tab_OYA_batch1_results <- rbind(new_tab_OYA_batch1_results, new_OYA_batch1_results[,,i])
+}
+
+write.csv(new_tab_OYA_batch1_results, file = "tab_OYA_batch1_results_abs.csv")
 
 ## Basic stats
 
@@ -507,7 +526,7 @@ for (i in 1:dim(OYA_batch1_results)[3]) {
   }
   
   # Extinction probability (number of extinctions / number of replicates)
-  stats_OYA_batch1_results[i,5] <- round(sum(OYA_batch1_results[,7,i])/dim(OYA_batch1_results)[1],2)
+  stats_OYA_batch1_results[i,5] <- round(sum(OYA_batch1_results[,5,i])/dim(OYA_batch1_results)[1],2)
   
   # Next are systematically mean, sd and 95CI of the meaures from batch_results
   zz <- 0
@@ -524,44 +543,1223 @@ View(stats_OYA_batch1_results)
 
 # Save the table in a csv file
 write.csv(stats_OYA_batch1_results, file = "stats_batch1.csv", row.names = F)
+# write.csv(stats_OYA_batch1_results, file = "stats_batch1_extprob.csv", row.names = F)
 
 
-## Plot actual Resource population deviation from target and Users final yield according to AT and BB values
+#### Plot actual Resource population deviation from target and Users final yield according to AT and BB values w and wo scaring ####
 
 # Line for subset of results if needed
-fig_tab <- stats_OYA_batch1_results
+OYA_fig1_tab <- subset(tab_OYA_batch1_results, scar == 0)
+
+# Actual Resource population deviation from target
+gg1 <- ggplot(as.data.frame(tab_OYA_batch1_results), aes(x=as.factor(bb), fill = as.factor(scar), y=act_dev)) +
+       geom_boxplot(position=position_dodge(1)) +
+       facet_wrap(~at) +
+       geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+       geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+       geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
+    labs(x="Budget Bonus value", y= "Resource density deviation from target") +
+    scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+       theme_gray() +
+       theme(strip.background=element_rect(fill="grey"),
+             strip.text=element_text(color="white", face="bold"),
+             axis.title=element_text(size=18),
+             legend.text=element_text(size=15),
+             legend.title = element_text(size = 18))
+gg1
+
+# Absolute actual Resource population deviation from target
+gg2 <- ggplot(as.data.frame(tab_OYA_batch1_results), aes(x=as.factor(bb), fill = as.factor(scar), y=abs(act_dev))) +
+       geom_boxplot(position=position_dodge(1)) +
+       facet_wrap(~at) +
+       geom_hline(yintercept = 1, linetype = "dashed", color = "red") +      # show carrying capacity
+  labs(x="Budget Bonus value", y= "Resource density absolute deviation from target") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg2
+
+colnames(tab_OYA_batch1_results) <- columns
+
+# Users final yield
+gg3 <- ggplot(as.data.frame(tab_OYA_batch1_results), aes(x=as.factor(bb), fill = as.factor(scar), y=fin_yield/100)) +
+       geom_boxplot(position=position_dodge(1)) +
+       facet_wrap(~at) +
+       geom_hline(yintercept = 95, linetype = "dashed", color = "red") +  
+  labs(x="Budget Bonus value", y= "Users final total yield") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg3
+
+## mean +- sd
+
+# act_dev
+gg4 <- ggplot(as.data.frame(stats_OYA_batch1_results), aes(x=as.factor(bb), fill = as.factor(scar), y=act_dev)) +
+       facet_wrap(~at) +
+       geom_errorbar(aes(ymin=act_dev-act_dev_sd/2, ymax=act_dev+act_dev_sd/2, group = as.factor(scar)),  
+                     position=position_dodge(1),
+                     colour = "grey40", width=0.5) +
+       geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+                  position = position_dodge(width = 1)) +
+       geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+       geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+       geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +  
+  labs(x="Budget Bonus value", y= "Resource density deviation from target\n(mean +/- SD)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg4
+
+# abs_act_dev
+
+# stats
+# Array of column names
+new_stats_columns <- c("rep", "scar", "at", "bb", "ext_prob", "act_dev", "act_dev_sd", "act_dev_95ci", "fin_yield", "fin_yield_sd", "fin_yield_95ci", "max_diff_yield", "max_diff_yield_sd", "max_diff_yield_95ci", "inac_ts", "inac_ts_sd", "inac_ts_95ci", "abs_act_dev", "abs_act_dev_sd", "abs_act_dev_95ci")
+
+# Empty 2D array of correct size
+# Dimensions(lines = parameter combo index, columns = measures)
+new_stats_OYA_batch1_results <- matrix(data = NA, nrow = dim(OYA_batch1_results)[3], ncol = length(new_stats_columns), dimnames = list(NULL,new_stats_columns))
+
+# for each parameter combo
+for (i in 1:dim(new_OYA_batch1_results)[3]) {
+  
+  # Store number of replicates for this combo
+  new_stats_OYA_batch1_results[i,1] <- dim(new_OYA_batch1_results)[1]
+  
+  # Next 3 columns just take values from batch_results
+  for (j in 2:4) {
+    new_stats_OYA_batch1_results[i,j] <- new_OYA_batch1_results[1,j,i]
+  }
+  
+  # Extinction probability (number of extinctions / number of replicates)
+  new_stats_OYA_batch1_results[i,5] <- round(sum(new_OYA_batch1_results[,5,i])/dim(new_OYA_batch1_results)[1],2)
+  
+  # Next are systematically mean, sd and 95CI of the meaures from batch_results
+  zz <- 0
+  for (k in 6:dim(new_OYA_batch1_results)[2]) {
+    new_stats_OYA_batch1_results[i,k+zz] <- mean(new_OYA_batch1_results[,k,i])
+    new_stats_OYA_batch1_results[i,k+zz+1] <- sd(new_OYA_batch1_results[,k,i])
+    new_stats_OYA_batch1_results[i,k+zz+2] <- 1.86*new_stats_OYA_batch1_results[i,k+zz+1]/sqrt(rep)
+    zz <- zz + 2
+  }
+}
+
+View(new_stats_OYA_batch1_results)
+
+ gg5 <- ggplot(as.data.frame(new_stats_OYA_batch1_results), aes(x=as.factor(bb), fill = as.factor(scar), y=abs_act_dev)) +
+   facet_wrap(~at) +
+   geom_errorbar(aes(ymin=abs_act_dev-abs_act_dev_sd/2, ymax=abs_act_dev+abs_act_dev_sd/2, group = as.factor(scar)),  
+                 position=position_dodge(1),
+                 colour = "grey40", width=0.5) +
+   geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+              position = position_dodge(width = 1)) +
+   geom_hline(yintercept = 1, linetype = "dashed", color = "red") +         # show carrying capacity
+   labs(x="Budget Bonus value", y= "Resource density absolute deviation from target\n(mean +/- SD)") +
+   scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+   theme_gray() +
+   theme(strip.background=element_rect(fill="grey"),
+         strip.text=element_text(color="white", face="bold"),
+         axis.title=element_text(size=18),
+         legend.text=element_text(size=15),
+         legend.title = element_text(size = 18))
+gg5
+
+gg6 <- ggplot(as.data.frame(stats_OYA_batch1_results), aes(x=as.factor(bb), fill = as.factor(scar), y=fin_yield/100)) +
+      facet_wrap(~at) +
+      geom_errorbar(aes(ymin=fin_yield/100-fin_yield_sd/100/2, ymax=fin_yield/100+fin_yield_sd/100/2, group = as.factor(scar)),  
+                    position=position_dodge(1),
+                    colour = "grey40", width=0.5) +
+      geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+                 position = position_dodge(width = 1)) +
+      geom_hline(yintercept = 95, linetype = "dashed", color = "red") + 
+  labs(x="Budget Bonus value", y= "Users final total yield\n(mean +/- SD)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg6
+
+# mean +- ic 95
+
+# act_dev
+gg7 <- ggplot(as.data.frame(stats_OYA_batch1_results), aes(x=as.factor(bb), fill = as.factor(scar), y=act_dev)) +
+      facet_wrap(~at) +
+      geom_errorbar(aes(ymin=act_dev-act_dev_95ci, ymax=act_dev+act_dev_95ci, group = as.factor(scar)),  
+                    position=position_dodge(1),
+                    colour = "grey40", width=0.5) +
+      geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+                 position = position_dodge(width = 1)) +
+      geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+      geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+      geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +       
+  labs(x="Budget Bonus value", y= "Resource density deviation from target\n(mean +/- 95%CI)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg7
+
+# abs_act_dev
+gg8 <- ggplot(as.data.frame(new_stats_OYA_batch1_results), aes(x=as.factor(bb), fill = as.factor(scar), y=abs_act_dev)) +
+      facet_wrap(~at) +
+      geom_errorbar(aes(ymin=abs_act_dev-abs_act_dev_95ci, ymax=abs_act_dev+abs_act_dev_95ci, group = as.factor(scar)),  
+                    position=position_dodge(1),
+                    colour = "grey40", width=0.5) +
+      geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+                 position = position_dodge(width = 1)) +
+      geom_hline(yintercept = 1, linetype = "dashed", color = "red") +         # show carrying capacity
+  labs(x="Budget Bonus value", y= "Resource density absolute deviation from target\n(mean +/- 95CI)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg8
+
+gg9 <- ggplot(as.data.frame(stats_OYA_batch1_results), aes(x=as.factor(bb), fill = as.factor(scar), y=fin_yield/100)) +
+      facet_wrap(~at) +
+      geom_errorbar(aes(ymin=fin_yield/100-fin_yield_95ci/100, ymax=fin_yield/100+fin_yield_95ci/100, group = as.factor(scar)),  
+                    position=position_dodge(1),
+                    colour = "grey40", width=0.5) +
+      geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+                 position = position_dodge(width = 1)) +
+      geom_hline(yintercept = 95, linetype = "dashed", color = "red") +   
+  labs(x="Budget Bonus value", y= "Users final total yield\n(mean +/- 95%CI)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg9
+
+# extinction probability according to varying at and bb
+
+gg10 <- ggplot(as.data.frame(stats_OYA_batch1_results), aes(x=as.factor(bb), fill = as.factor(scar), y=ext_prob)) +
+       facet_wrap(~at) +
+       geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+                  position = position_dodge(width = 1)) +
+       geom_hline(yintercept = 0.05, linetype = "dashed", color = "red") +     
+  labs(x="Budget Bonus value", y= "Extinction probability") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg10
 
 # Figure without labels and big text for inclusion in the poster
 
-# Plot actual Resource population deviation from target according to AT and BB values (both in %)
-p1 <- ggplot(as.data.frame(fig_tab), aes(x=as.factor(at), y=act_dev*100, group=as.factor(bb), fill = as.factor(bb))) +       # Define data set, colour according to BB values
-  geom_errorbar(aes(ymin=act_dev*100-act_dev_sd*100/2, ymax=act_dev*100+act_dev_sd*100/2, group = as.factor(bb)),          # Define error bars values, grouped by BB values 
-                position=position_dodge(0.6),                                                                              # Avoid superposition of the bars
-                colour = "grey40", width=0.4) +
-  geom_point(size = 6, alpha = 1, colour="black", stroke = 1, shape = 21,                                                  # Define representation of data
-             position = position_dodge(width = 0.6)) +                                                                     # Avoid superposition of the points
-  theme_gray(base_size = 50) +                                                                                             # Define theme and feature sizes
-  theme(axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(),                     # x axis features, here no tittle, no text, suppress tick for better superposition
-        axis.title.y = element_blank(),                                                                                    # y axis features, here no text
-        legend.position='none',                                                                                            # legend features, here none, done in poster ppt
-        axis.line.y = element_line(size = 1, colour = "grey50"))                                                           # big lines for style
+# Save the figure as pdf with clear name
 
-# Plot actual Users total final yield (in kilo-budget units) according to AT and BB values (in %)
-p2 <- ggplot(as.data.frame(fig_tab), aes(x=as.factor(at), y=fin_yield/100, group=as.factor(bb), fill = as.factor(bb))) +
-  geom_errorbar(aes(ymin=fin_yield/100-fin_yield_sd/100/2, ymax=fin_yield/100+fin_yield_sd/100/2, group = as.factor(bb)),  
-                position=position_dodge(0.6),
-                colour = "grey40", width=0.4) +
-  geom_point(size = 6, alpha = 1, colour="black", stroke = 1, shape = 21,
-             position = position_dodge(width = 0.6)) +
-  theme_gray(base_size = 50) +
-  theme(axis.title.x = element_blank(), axis.title.y = element_blank(),
-        legend.position='none',
-        axis.line = element_line(size = 1, colour = "grey50"))
+######## new batch : with scaring, varying less widely at, bb, and investigating the sensibility to initial budget ########
 
-# New plot window
-grid.newpage()
+## Set parameters
 
-# Stack graphs
-grid.draw(rbind(ggplotGrob(p1), ggplotGrob(p2), size = "last"))
+# Array of Action Threshold values to explore
+at <- seq(0,1.2,0.4)
 
-# Save the figure as pdf with explicit name
+# Array of Budget Bonus values to explore
+bb <- seq(0,1.5,0.5)
+
+# Array of initial budget
+budget <- c(100, 400, 800, 1200)
+
+# # Scaring allowed?
+# scar <- T
+
+# Number of simulation time steps
+ts <- 20
+
+# Number of replicates
+rep <- 100
+
+# number of stakeholder
+stkh <- 10
+
+# Other parameters to GMSE default
+
+
+## Create empty structures to gather simulation results
+
+# Array of column names (the measures of interest for the question)
+columns <- c("rep", "budget", "at", "bb", "extinct", "act_dev", "abs_act_dev", "fin_yield", "max_diff_yield", "inac_ts")
+
+# Empty 3D array of correct size 
+# Dimensions(lines = replicates, columns = measures, layer = parameter combination)
+OYA_batch2_results <- array(data=NA, dim = c(rep, length(columns), length(at)*length(bb)*length(budget)-12), dimnames = list(NULL,columns,NULL))                 # -8 not to waste computing time for different bb values for at = 0
+
+
+# Create an empty structure for basic stats on OYA_batch2_results
+
+# Array of column names
+stats_columns <- c("rep", "budget", "at", "bb", "ext_prob", "act_dev", "act_dev_sd", "act_dev_95ci", "abs_act_dev", "abs_act_dev_sd", "abs_act_dev_95ci", "fin_yield", "fin_yield_sd", "fin_yield_95ci", "max_diff_yield", "max_diff_yield_sd", "max_diff_yield_95ci", "inac_ts", "inac_ts_sd", "inac_ts_95ci")
+
+# Empty 2D array of correct size
+# Dimensions(lines = parameter combo index, columns = measures)
+stats_OYA_batch2_results <- matrix(data = NA, nrow = dim(OYA_batch2_results)[3], ncol = length(stats_columns), dimnames = list(NULL,stats_columns))
+
+
+## Simulations loop
+
+# Initialize an index of parameter combination
+param_set <- 1
+
+# Store start time
+start <- Sys.time()
+
+# For every budget values
+for (b in 1:length(budget)) {
+  
+  # For every AT values in 'at'
+  for (i in 1:length(at)) {
+    
+    # avoid simul for different bb values for at = 0
+    if (at[i] == 0) {
+      
+      # With 'rep' number of replicate per parameter combo
+      for (k in 1:rep) {
+        
+        # Run GMSE for the parameter combo
+        sim <- gmse(stakeholders = stkh, time_max = ts, land_ownership = TRUE,
+                    scaring = T,
+                    manager_budget = budget[b],
+                    action_thres = at[i], budget_bonus = 0,
+                    plotting = F)
+        
+        # Store the last time step number (for extinction-related bugs)
+        final_ts <- length(which(sim$paras[,1] != 0))
+        
+        # Pick up values for simulation results and store them in OYA_batch2_results
+        
+        # Replicate number
+        OYA_batch2_results[k,1,param_set] <- k
+        
+        # Manager initial budget
+        OYA_batch2_results[k,2,param_set] <- budget[b]
+        
+        # AT value
+        OYA_batch2_results[k,3,param_set] <- at[i]
+        
+        # BB value
+        OYA_batch2_results[k,4,param_set] <- 0
+        
+        # Has extinction occured? (yes = 1, no = 0)
+        OYA_batch2_results[k,5,param_set] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
+        
+        # Next measures involve calculus that can be disturbed if extinction occured
+        
+        # If exctinction occured
+        if (OYA_batch2_results[k,5,param_set] != 0) {
+          
+          # Resource actual pop deviation from target
+          OYA_batch2_results[k,6,param_set] <- dim(sim$resource[[final_ts-1]])[1]/sim$action[[1]][1,5,1] - 1
+          
+          # absolute value
+          OYA_batch2_results[k,7,param_set] <- abs(OYA_batch2_results[k,6,param_set])
+          
+          # Users total final yield
+          OYA_batch2_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
+          
+          # Maximum difference between Users yield
+          OYA_batch2_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
+          
+          # Number of timesteps during which Manager chose not to update policy
+          OYA_batch2_results[k,10,param_set] <- final_ts-sum(sim$paras[,107])
+        }
+        
+        # If extinction did not occured
+        else {
+          
+          # Resource actual pop deviation from target
+          OYA_batch2_results[k,6,param_set] <- dim(sim$resource[[final_ts]])[1]/sim$action[[1]][1,5,1] - 1
+          
+          # absolute value
+          OYA_batch2_results[k,7,param_set] <- abs(OYA_batch2_results[k,6,param_set])
+          
+          # Users total final yield
+          OYA_batch2_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
+          
+          # Maximum difference between Users yield
+          OYA_batch2_results[k,9,param_set] <- (max(sim$agents[[final_ts]][,16]) - min(sim$agents[[final_ts]][-1,16]))/max(sim$agents[[final_ts]][,16])
+          
+          # Number of timesteps during which Manager chose not to update policy
+          OYA_batch2_results[k,10,param_set] <- length(sim$paras[,107])-sum(sim$paras[,107])
+        }
+      } # end rep for loop
+      
+      # Increment parameter combo index
+      param_set <- param_set + 1
+    } # end at if loop
+    
+    # for every other at value
+    else {
+      
+      # For every BB values in 'bb'
+      for (j in 1:length(bb)) {
+        
+        # With 'rep' number of replicate per parameter combo
+        for (k in 1:rep) {
+          
+          # Run GMSE for the parameter combo
+          sim <- gmse(stakeholders = 10, time_max = ts, land_ownership = TRUE,
+                      scaring = T,
+                      manager_budget = budget[b],
+                      action_thres = at[i], budget_bonus = bb[j],
+                      plotting = F)
+          
+          # Store the last time step number (for extinction-related bugs)
+          final_ts <- length(which(sim$paras[,1] != 0))
+          
+          # Pick up values for simulation results and store them in OYA_batch2_results
+          
+          # Replicate number
+          OYA_batch2_results[k,1,param_set] <- k
+          
+          # Manager initial budget
+          OYA_batch2_results[k,2,param_set] <- budget[b]
+          
+          # AT value
+          OYA_batch2_results[k,3,param_set] <- at[i]
+          
+          # BB value
+          OYA_batch2_results[k,4,param_set] <- bb[j]
+          
+          # Has extinction occured? (yes = 1, no = 0)
+          OYA_batch2_results[k,5,param_set] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
+          
+          # Next measures involve calculus that can be disturbed if extinction occured
+          
+          # If exctinction occured
+          if (OYA_batch2_results[k,5,param_set] != 0) {
+            
+            # Resource actual pop deviation from target
+            OYA_batch2_results[k,6,param_set] <- dim(sim$resource[[final_ts-1]])[1]/sim$action[[1]][1,5,1] - 1
+            
+            # absolute value
+            OYA_batch2_results[k,7,param_set] <- abs(OYA_batch2_results[k,6,param_set])
+            
+            # Users total final yield
+            OYA_batch2_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
+            
+            # Maximum difference between Users yield
+            OYA_batch2_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
+            
+            # Number of timesteps during which Manager chose not to update policy
+            OYA_batch2_results[k,10,param_set] <- final_ts-sum(sim$paras[,107])
+          }
+          
+          # If extinction did not occured
+          else {
+            
+            # Resource actual pop deviation from target
+            OYA_batch2_results[k,6,param_set] <- dim(sim$resource[[final_ts]])[1]/sim$action[[1]][1,5,1] - 1
+            
+            # absolute value
+            OYA_batch2_results[k,7,param_set] <- abs(OYA_batch2_results[k,6,param_set])
+            
+            # Users total final yield
+            OYA_batch2_results[k,8,param_set] <- sum(sim$agents[[final_ts]][,16])
+            
+            # Maximum difference between Users yield
+            OYA_batch2_results[k,9,param_set] <- (max(sim$agents[[final_ts]][,16]) - min(sim$agents[[final_ts]][-1,16]))/max(sim$agents[[final_ts]][,16])
+            
+            # Number of timesteps during which Manager chose not to update policy
+            OYA_batch2_results[k,10,param_set] <- length(sim$paras[,107])-sum(sim$paras[,107])
+          }
+        } # end rep for loop
+        
+        # keep track of the simulations
+        if (param_set %% 10 == 0) {
+          print(paste("parameter set number", param_set, "out of", dim(OYA_batch2_results)[3], "at", Sys.time(), sep = " "))
+        }
+        
+        # Increment parameter combo index
+        param_set <- param_set + 1
+      } # end bb for loop
+    } # end at else loop
+  } # end at for loop
+} # end budget for loop
+
+# end of sim
+end <- Sys.time()
+
+print(paste("Batch started", start, "and ended", end, sep = " "))
+
+## save the 3D array of results?
+
+# rbind the layers
+
+tab_OYA_batch2_results <- OYA_batch2_results[,,1]
+
+for (i in 2:dim(OYA_batch2_results)[3]) {
+  tab_OYA_batch2_results <- rbind(tab_OYA_batch2_results, OYA_batch2_results[,,i])
+}
+
+write.csv(tab_OYA_batch2_results, file = "tab_OYA_batch2_results.csv")
+
+
+## Basic stats
+
+# for each parameter combo
+for (i in 1:dim(OYA_batch2_results)[3]) {
+  
+  # Store number of replicates for this combo
+  stats_OYA_batch2_results[i,1] <- dim(OYA_batch2_results)[1]
+  
+  # Next 3 columns just take values from batch_results
+  for (j in 2:4) {
+    stats_OYA_batch2_results[i,j] <- OYA_batch2_results[1,j,i]
+  }
+  
+  # Extinction probability (number of extinctions / number of replicates)
+  stats_OYA_batch2_results[i,5] <- round(sum(OYA_batch2_results[,5,i])/dim(OYA_batch2_results)[1],2)
+  
+  # Next are systematically mean, sd and 95CI of the meaures from batch_results
+  zz <- 0
+  for (k in 6:dim(OYA_batch2_results)[2]) {
+    stats_OYA_batch2_results[i,k+zz] <- mean(OYA_batch2_results[,k,i])
+    stats_OYA_batch2_results[i,k+zz+1] <- sd(OYA_batch2_results[,k,i])
+    stats_OYA_batch2_results[i,k+zz+2] <- 1.86*stats_OYA_batch2_results[i,k+zz+1]/sqrt(rep)
+    zz <- zz + 2
+  }
+}
+
+# Visualise the table to check for inconsistencies
+View(stats_OYA_batch2_results)
+
+# Save the table in a csv file
+write.csv(stats_OYA_batch2_results, file = "stats_batch2.csv", row.names = F)
+
+######## new batch : without scaring, varying less widely at, bb, and investigating the sensibility to initial budget ########
+
+## Set parameters
+
+# Array of Action Threshold values to explore
+at <- seq(0,1.2,0.4)
+
+# Array of Budget Bonus values to explore
+bb <- seq(0,1.5,0.5)
+
+# Array of initial budget
+budget <- c(100, 400, 800, 1200)
+
+# # Scaring allowed?
+# scar <- T
+
+# Number of simulation time steps
+ts <- 20
+
+# Number of replicates
+rep <- 100
+
+# number of stakeholder
+stkh <- 10
+
+# Other parameters to GMSE default
+
+
+## Create empty structures to gather simulation results
+
+# Array of column names (the measures of interest for the question)
+columns <- c("rep", "budget", "at", "bb", "extinct", "act_dev", "abs_act_dev", "fin_yield", "max_diff_yield", "inac_ts")
+
+# Empty 3D array of correct size 
+# Dimensions(lines = replicates, columns = measures, layer = parameter combination)
+OYA_batch3_results <- array(data=NA, dim = c(rep, length(columns), length(at)*length(bb)*length(budget)-12), dimnames = list(NULL,columns,NULL))                 # -8 not to waste computing time for different bb values for at = 0
+
+
+# Create an empty structure for basic stats on OYA_batch3_results
+
+# Array of column names
+stats_columns <- c("rep", "budget", "at", "bb", "ext_prob", "act_dev", "act_dev_sd", "act_dev_95ci", "abs_act_dev", "abs_act_dev_sd", "abs_act_dev_95ci", "fin_yield", "fin_yield_sd", "fin_yield_95ci", "max_diff_yield", "max_diff_yield_sd", "max_diff_yield_95ci", "inac_ts", "inac_ts_sd", "inac_ts_95ci")
+
+# Empty 2D array of correct size
+# Dimensions(lines = parameter combo index, columns = measures)
+stats_OYA_batch3_results <- matrix(data = NA, nrow = dim(OYA_batch3_results)[3], ncol = length(stats_columns), dimnames = list(NULL,stats_columns))
+
+
+## Simulations loop
+
+# Initialize an index of parameter combination
+param_set <- 1
+
+# Store start time
+start <- Sys.time()
+
+# For every budget values
+for (b in 1:length(budget)) {
+  
+  # For every AT values in 'at'
+  for (i in 1:length(at)) {
+    
+    # avoid simul for different bb values for at = 0
+    if (at[i] == 0) {
+      
+      # With 'rep' number of replicate per parameter combo
+      for (k in 1:rep) {
+        
+        # Run GMSE for the parameter combo
+        sim <- gmse(stakeholders = stkh, time_max = ts, land_ownership = TRUE,
+                    scaring = F,
+                    manager_budget = budget[b],
+                    action_thres = at[i], budget_bonus = 0,
+                    plotting = F)
+        
+        # Store the last time step number (for extinction-related bugs)
+        final_ts <- length(which(sim$paras[,1] != 0))
+        
+        # Pick up values for simulation results and store them in OYA_batch3_results
+        
+        # Replicate number
+        OYA_batch3_results[k,1,param_set] <- k
+        
+        # Manager initial budget
+        OYA_batch3_results[k,2,param_set] <- budget[b]
+        
+        # AT value
+        OYA_batch3_results[k,3,param_set] <- at[i]
+        
+        # BB value
+        OYA_batch3_results[k,4,param_set] <- 0
+        
+        # Has extinction occured? (yes = 1, no = 0)
+        OYA_batch3_results[k,5,param_set] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
+        
+        # Next measures involve calculus that can be disturbed if extinction occured
+        
+        # If exctinction occured
+        if (OYA_batch3_results[k,5,param_set] != 0) {
+          
+          # Resource actual pop deviation from target
+          OYA_batch3_results[k,6,param_set] <- dim(sim$resource[[final_ts-1]])[1]/sim$action[[1]][1,5,1] - 1
+          
+          # absolute value
+          OYA_batch3_results[k,7,param_set] <- abs(OYA_batch3_results[k,6,param_set])
+          
+          # Users total final yield
+          OYA_batch3_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
+          
+          # Maximum difference between Users yield
+          OYA_batch3_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
+          
+          # Number of timesteps during which Manager chose not to update policy
+          OYA_batch3_results[k,10,param_set] <- final_ts-sum(sim$paras[,107])
+        }
+        
+        # If extinction did not occured
+        else {
+          
+          # Resource actual pop deviation from target
+          OYA_batch3_results[k,6,param_set] <- dim(sim$resource[[final_ts]])[1]/sim$action[[1]][1,5,1] - 1
+          
+          # absolute value
+          OYA_batch3_results[k,7,param_set] <- abs(OYA_batch3_results[k,6,param_set])
+          
+          # Users total final yield
+          OYA_batch3_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
+          
+          # Maximum difference between Users yield
+          OYA_batch3_results[k,9,param_set] <- (max(sim$agents[[final_ts]][,16]) - min(sim$agents[[final_ts]][-1,16]))/max(sim$agents[[final_ts]][,16])
+          
+          # Number of timesteps during which Manager chose not to update policy
+          OYA_batch3_results[k,10,param_set] <- length(sim$paras[,107])-sum(sim$paras[,107])
+        }
+      } # end rep for loop
+      
+      # Increment parameter combo index
+      param_set <- param_set + 1
+    } # end at if loop
+    
+    # for every other at value
+    else {
+      
+      # For every BB values in 'bb'
+      for (j in 1:length(bb)) {
+        
+        # With 'rep' number of replicate per parameter combo
+        for (k in 1:rep) {
+          
+          # Run GMSE for the parameter combo
+          sim <- gmse(stakeholders = 10, time_max = ts, land_ownership = TRUE,
+                      scaring = F,
+                      manager_budget = budget[b],
+                      action_thres = at[i], budget_bonus = bb[j],
+                      plotting = F)
+          
+          # Store the last time step number (for extinction-related bugs)
+          final_ts <- length(which(sim$paras[,1] != 0))
+          
+          # Pick up values for simulation results and store them in OYA_batch3_results
+          
+          # Replicate number
+          OYA_batch3_results[k,1,param_set] <- k
+          
+          # Manager initial budget
+          OYA_batch3_results[k,2,param_set] <- budget[b]
+          
+          # AT value
+          OYA_batch3_results[k,3,param_set] <- at[i]
+          
+          # BB value
+          OYA_batch3_results[k,4,param_set] <- bb[j]
+          
+          # Has extinction occured? (yes = 1, no = 0)
+          OYA_batch3_results[k,5,param_set] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
+          
+          # Next measures involve calculus that can be disturbed if extinction occured
+          
+          # If exctinction occured
+          if (OYA_batch3_results[k,5,param_set] != 0) {
+            
+            # Resource actual pop deviation from target
+            OYA_batch3_results[k,6,param_set] <- dim(sim$resource[[final_ts-1]])[1]/sim$action[[1]][1,5,1] - 1
+            
+            # absolute value
+            OYA_batch3_results[k,7,param_set] <- abs(OYA_batch3_results[k,6,param_set])
+            
+            # Users total final yield
+            OYA_batch3_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
+            
+            # Maximum difference between Users yield
+            OYA_batch3_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
+            
+            # Number of timesteps during which Manager chose not to update policy
+            OYA_batch3_results[k,10,param_set] <- final_ts-sum(sim$paras[,107])
+          }
+          
+          # If extinction did not occured
+          else {
+            
+            # Resource actual pop deviation from target
+            OYA_batch3_results[k,6,param_set] <- dim(sim$resource[[final_ts]])[1]/sim$action[[1]][1,5,1] - 1
+            
+            # absolute value
+            OYA_batch3_results[k,7,param_set] <- abs(OYA_batch3_results[k,6,param_set])
+            
+            # Users total final yield
+            OYA_batch3_results[k,8,param_set] <- sum(sim$agents[[final_ts]][,16])
+            
+            # Maximum difference between Users yield
+            OYA_batch3_results[k,9,param_set] <- (max(sim$agents[[final_ts]][,16]) - min(sim$agents[[final_ts]][-1,16]))/max(sim$agents[[final_ts]][,16])
+            
+            # Number of timesteps during which Manager chose not to update policy
+            OYA_batch3_results[k,10,param_set] <- length(sim$paras[,107])-sum(sim$paras[,107])
+          }
+        } # end rep for loop
+        
+        # keep track of the simulations
+        if (param_set %% 10 == 0) {
+          print(paste("parameter set number", param_set, "out of", dim(OYA_batch3_results)[3], "at", Sys.time(), sep = " "))
+        }
+        
+        # Increment parameter combo index
+        param_set <- param_set + 1
+      } # end bb for loop
+    } # end at else loop
+  } # end at for loop
+} # end budget for loop
+
+# end of sim
+end <- Sys.time()
+
+print(paste("Batch started", start, "and ended", end, sep = " "))
+
+## save the 3D array of results?
+
+# rbind the layers
+
+tab_OYA_batch3_results <- OYA_batch3_results[,,1]
+
+for (i in 2:dim(OYA_batch3_results)[3]) {
+  tab_OYA_batch3_results <- rbind(tab_OYA_batch3_results, OYA_batch3_results[,,i])
+}
+
+write.csv(tab_OYA_batch3_results, file = "tab_OYA_batch3_results.csv")
+
+
+## Basic stats
+
+# for each parameter combo
+for (i in 1:dim(OYA_batch3_results)[3]) {
+  
+  # Store number of replicates for this combo
+  stats_OYA_batch3_results[i,1] <- dim(OYA_batch3_results)[1]
+  
+  # Next 3 columns just take values from batch_results
+  for (j in 2:4) {
+    stats_OYA_batch3_results[i,j] <- OYA_batch3_results[1,j,i]
+  }
+  
+  # Extinction probability (number of extinctions / number of replicates)
+  stats_OYA_batch3_results[i,5] <- round(sum(OYA_batch3_results[,5,i])/dim(OYA_batch3_results)[1],2)
+  
+  # Next are systematically mean, sd and 95CI of the meaures from batch_results
+  zz <- 0
+  for (k in 6:dim(OYA_batch3_results)[2]) {
+    stats_OYA_batch3_results[i,k+zz] <- mean(OYA_batch3_results[,k,i])
+    stats_OYA_batch3_results[i,k+zz+1] <- sd(OYA_batch3_results[,k,i])
+    stats_OYA_batch3_results[i,k+zz+2] <- 1.86*stats_OYA_batch3_results[i,k+zz+1]/sqrt(rep)
+    zz <- zz + 2
+  }
+}
+
+# Visualise the table to check for inconsistencies
+View(stats_OYA_batch3_results)
+
+# Save the table in a csv file
+write.csv(stats_OYA_batch3_results, file = "stats_batch3.csv", row.names = F)
+
+#### Merge batch1 and 2, and plot results ####
+
+## Import results files
+tab_OYA_batch2_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/tab_OYA_batch2_results.csv")
+tab_OYA_batch3_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/tab_OYA_batch3_results.csv")
+
+## Create a column for Scaring parameter
+tab_OYA_batch2_results$scar <- rep(1, dim(tab_OYA_batch2_results)[1])
+tab_OYA_batch3_results$scar <- rep(0, dim(tab_OYA_batch3_results)[1])
+
+## Merge the tables
+tab_OYA_batch2 <- rbind(tab_OYA_batch3_results, tab_OYA_batch2_results)
+
+## Import stats results files
+stats_OYA_batch2 <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/stats_batch2.csv")
+stats_OYA_batch3 <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/stats_batch3.csv")
+
+## Create a column for Scaring parameter
+stats_OYA_batch2$scar <- rep(1, dim(stats_OYA_batch2)[1])
+stats_OYA_batch3$scar <- rep(0, dim(stats_OYA_batch3)[1])
+
+## Merge the tables
+stats_batch2 <- rbind(stats_OYA_batch2, stats_OYA_batch3)
+
+## Plots
+gg1 <- ggplot(subset(tab_OYA_batch2, at != 0), aes(x=as.factor(budget), fill = as.factor(scar), y=act_dev)) +
+  geom_boxplot(position=position_dodge()) +
+  facet_wrap(~at+bb, ncol = 4) +             # find a way to split by the at:bb combinaison of this data set
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
+  labs(x="Manager initial budget", y= "Resource population deviation from target") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg1
+
+gg1control <- ggplot(subset(tab_OYA_batch2, at == 0), aes(x=as.factor(budget), fill = as.factor(scar), y=act_dev)) +
+  geom_boxplot(position=position_dodge()) +
+  #facet_wrap(~at+bb, ncol = 4) +             # find a way to split by the at:bb combinaison of this data set
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
+  labs(x="Manager initial budget", y= "Resource population deviation from target") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg1control
+
+# Absolute actual Resource population deviation from target
+gg2 <- ggplot(subset(tab_OYA_batch2, at != 0), aes(x=as.factor(budget), fill = as.factor(scar), y=abs_act_dev)) +
+  geom_boxplot(position=position_dodge()) +
+  facet_wrap(~at+bb, ncol = 4) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +      # show carrying capacity
+  labs(x="Manager initial budget", y= "Resource population absolute deviation from target") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg2
+
+gg2control <- ggplot(subset(tab_OYA_batch2, at == 0), aes(x=as.factor(budget), fill = as.factor(scar), y=abs_act_dev)) +
+  geom_boxplot(position=position_dodge()) +
+  #facet_wrap(~at+bb, ncol = 4) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +      # show carrying capacity
+  labs(x="Manager initial budget", y= "Resource population absolute deviation from target") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg2control
+
+# Users final yield
+gg3 <- ggplot(subset(tab_OYA_batch2, at != 0), aes(x=as.factor(budget), fill = as.factor(scar), y=fin_yield/100)) +
+  geom_boxplot(position=position_dodge()) +
+  facet_wrap(~at+bb, ncol=4) +
+  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
+  labs(x="Manager initial budget", y= "Users final total yield") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg3
+
+gg3control <- ggplot(subset(tab_OYA_batch2, at == 0), aes(x=as.factor(budget), fill = as.factor(scar), y=fin_yield/100)) +
+  geom_boxplot(position=position_dodge()) +
+  #facet_wrap(~at+bb, ncol=4) +
+  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
+  labs(x="Manager initial budget", y= "Users final total yield") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg3control
+
+## mean +- sd
+
+# act_dev
+gg4 <- ggplot(subset(stats_batch2, at != 0), aes(x=as.factor(budget), fill = as.factor(scar), y=act_dev)) +
+  facet_wrap(~at+bb, ncol=4) +
+  geom_errorbar(aes(ymin=act_dev-act_dev_sd/2, ymax=act_dev+act_dev_sd/2, group = as.factor(scar)),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(1)) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
+  labs(x="Manager initial budget", y= "Resource population deviation from target\n(mean +/- sd)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg4
+
+gg4control <- ggplot(subset(stats_batch2, at== 0), aes(x=as.factor(budget), fill = as.factor(scar), y=act_dev)) +
+  #facet_wrap(~at+bb, ncol=4) +
+  geom_errorbar(aes(ymin=act_dev-act_dev_sd/2, ymax=act_dev+act_dev_sd/2, group = as.factor(scar)),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(1)) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
+  labs(x="Manager initial budget", y= "Resource population deviation from target\n(mean +/- sd)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg4control
+
+# abs_act_dev
+gg5 <- ggplot(subset(stats_batch2, at != 0), aes(x=as.factor(budget), fill = as.factor(scar), y=abs_act_dev)) +
+  facet_wrap(~at+bb, ncol=4) +
+  geom_errorbar(aes(ymin=abs_act_dev-abs_act_dev_sd/2, ymax=abs_act_dev+abs_act_dev_sd/2, group = as.factor(scar)),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +    
+  labs(x="Manager initial budget", y= "Resource population absolute deviation from target\n(mean +/- sd)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg5
+
+gg5control <- ggplot(subset(stats_batch2, at == 0), aes(x=as.factor(budget), fill = as.factor(scar), y=abs_act_dev)) +
+  #facet_wrap(~at+bb, ncol=4) +
+  geom_errorbar(aes(ymin=abs_act_dev-abs_act_dev_sd/2, ymax=abs_act_dev+abs_act_dev_sd/2, group = as.factor(scar)),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +    
+  labs(x="Manager initial budget", y= "Resource population absolute deviation from target\n(mean +/- sd)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg5control
+
+# fin_yield
+gg6 <- ggplot(subset(stats_batch2, at != 0), aes(x=as.factor(budget), fill = as.factor(scar), y=fin_yield/100)) +
+  facet_wrap(~at+bb, ncol=4) +
+  geom_errorbar(aes(ymin=fin_yield/100-fin_yield_sd/100/2, ymax=fin_yield/100+fin_yield_sd/100/2, group = as.factor(scar)),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
+  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
+  labs(x="Manager initial budget", y= "Users final total yield\n(mean +/- sd)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg6
+
+gg6control <- ggplot(subset(stats_batch2, at == 0), aes(x=as.factor(budget), fill = as.factor(scar), y=fin_yield/100)) +
+  #facet_wrap(~at+bb, ncol=4) +
+  geom_errorbar(aes(ymin=fin_yield/100-fin_yield_sd/100/2, ymax=fin_yield/100+fin_yield_sd/100/2, group = as.factor(scar)),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
+  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
+  labs(x="Manager initial budget", y= "Users final total yield\n(mean +/- sd)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg6control
+
+# mean +- ic 95
+
+# act_dev
+gg7 <- ggplot(subset(stats_batch2, at != 0), aes(x=as.factor(budget), fill = as.factor(scar), y=act_dev)) +
+  facet_wrap(~at+bb, ncol=4) +
+  geom_errorbar(aes(ymin=act_dev-act_dev_95ci, ymax=act_dev+act_dev_95ci, group = as.factor(scar)),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +   
+  labs(x="Manager initial budget", y= "Resource population deviation from target\n(in fraction, mean +/- 95CI)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        axis.text=element_text(size=12),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg7
+
+gg7control <- ggplot(subset(stats_batch2, at == 0), aes(x=as.factor(budget), fill = as.factor(scar), y=act_dev)) +
+  #facet_wrap(~at+bb, ncol=4) +
+  geom_errorbar(aes(ymin=act_dev-act_dev_95ci, ymax=act_dev+act_dev_95ci, group = as.factor(scar)),  
+                position=position_dodge(0.5),
+                colour = "grey40", width=0.25) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 0.5)) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +   
+  labs(x="Manager initial budget", y= "Resource population deviation from target\n(in fraction, mean +/- 95CI)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        axis.text=element_text(size=12),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg7control
+
+# abs_act_dev
+gg8 <- ggplot(subset(stats_batch2, at != 0), aes(x=as.factor(budget), fill = as.factor(scar), y=abs_act_dev)) +
+  facet_wrap(~at+bb, ncol=4) +
+  geom_errorbar(aes(ymin=abs_act_dev-abs_act_dev_95ci, ymax=abs_act_dev+abs_act_dev_95ci, group = as.factor(scar)),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +  
+  labs(x="Manager initial budget", y= "Resource population absolute deviation from target\n(in fraction, mean +/- 95CI)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        axis.text=element_text(size=12),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18)) #+
+  #ylim(0.2, 1.3)
+gg8
+
+gg8control <- ggplot(subset(stats_batch2, at == 0), aes(x=as.factor(budget), fill = as.factor(scar), y=abs_act_dev)) +
+  #facet_wrap(~at+bb, ncol=5) +
+  geom_errorbar(aes(ymin=abs_act_dev-abs_act_dev_95ci, ymax=abs_act_dev+abs_act_dev_95ci, group = as.factor(scar)),  
+                position=position_dodge(0.5),
+                colour = "grey40", width=0.25) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 0.5)) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +  
+  labs(x="Manager initial budget", y= "Resource population absolute deviation from target\n(in fraction, mean +/- 95CI)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        axis.text=element_text(size=12),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg8control
+
+# fin_yield
+
+gg9 <- ggplot(subset(stats_batch2, at != 0), aes(x=as.factor(budget), fill = as.factor(scar), y=fin_yield/100)) +
+  facet_wrap(~at+bb, ncol = 4) +
+  geom_errorbar(aes(ymin=fin_yield/100-fin_yield_95ci/100, ymax=fin_yield/100+fin_yield_95ci/100, group = as.factor(scar)),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
+  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
+  labs(x="Manager initial budget", y= "Users final total yield\n(k-money units, mean +/- 95CI)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        axis.text=element_text(size=12),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg9
+
+gg9control <- ggplot(subset(stats_batch2, at == 0), aes(x=as.factor(budget), fill = as.factor(scar), y=fin_yield/100)) +
+  #facet_wrap(~at+bb, ncol = 4) +
+  geom_errorbar(aes(ymin=fin_yield/100-fin_yield_95ci/100, ymax=fin_yield/100+fin_yield_95ci/100, group = as.factor(scar)),  
+                position=position_dodge(0.5),
+                colour = "grey40", width=0.25) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 0.5)) +
+  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
+  labs(x="Manager initial budget", y= "Users final total yield\n(k-money units, mean +/- 95CI)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        axis.text=element_text(size=12),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg9control
+
+# max diff between users yield
+gg10 <- ggplot(subset(stats_batch2, at != 0), aes(x=as.factor(budget), fill = as.factor(scar), y=max_diff_yield*100)) +
+  facet_wrap(~at+bb, ncol = 4) +
+  geom_errorbar(aes(ymin=max_diff_yield*100-max_diff_yield_95ci*100, ymax=max_diff_yield*100+max_diff_yield_95ci*100, group = as.factor(scar)),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
+  #geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
+  labs(x="Manager initial budget", y= "Maximum difference between Users yields\n(in % of the highest yield, mean +/- 95CI)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        axis.text=element_text(size=12),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg10
+
+gg10control <- ggplot(subset(stats_batch2, at == 0), aes(x=as.factor(budget), fill = as.factor(scar), y=max_diff_yield*100)) +
+  #facet_wrap(~at+bb, ncol = 4) +
+  geom_errorbar(aes(ymin=max_diff_yield*100-max_diff_yield_95ci*100, ymax=max_diff_yield*100+max_diff_yield_95ci*100, group = as.factor(scar)),  
+                position=position_dodge(0.5),
+                colour = "grey40", width=0.25) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 0.5)) +
+  #geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
+  labs(x="Manager initial budget", y= "Maximum difference between Users yields\n(in % of the highest yield, mean +/- 95CI)") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        axis.text=element_text(size=12),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg10control
+
+ # extinction probability according to varying at and bb
+
+gg_extprob <- ggplot(subset(stats_batch2, at != 0), aes(x=as.factor(budget), fill = as.factor(scar), y=ext_prob)) +
+  facet_wrap(~at+bb, ncol = 4) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
+  geom_hline(yintercept = 0.05, linetype = "dashed", color = "red") +      
+  labs(x="Managers initial budget", y = "Extinction probability") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        axis.text=element_text(size=12),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg_extprob
+
+gg_extprob_control <- ggplot(subset(stats_batch2, at == 0), aes(x=as.factor(budget), fill = as.factor(scar), y=ext_prob)) +
+  #facet_wrap(~at+bb, ncol = 4) +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 0.5)) +
+  geom_hline(yintercept = 0.05, linetype = "dashed", color = "red") +      
+  labs(x="Managers initial budget", y = "Extinction probability") +
+  scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        axis.text=element_text(size=12),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+gg_extprob_control
