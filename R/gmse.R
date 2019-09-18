@@ -283,6 +283,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     a_t <- action_thres;
     plu <- 1;
     tsc <- 0;
+    ovk <- 0;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -391,7 +392,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                pub,     # 104. How much public land is there (proportion)
                a_t,     # 105. Deviation of estimated population from manager target that will trigger policy update
                plu,     # 106. Was the policy updated last time step?
-               tsc      # 107. Time steps since last policy update
+               tsc,     # 107. Time steps since last policy update
+               ovk      # 108. Has the Resource population exceeded K?
     );
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,

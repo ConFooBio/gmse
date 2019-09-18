@@ -437,10 +437,10 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     double *marg_util;       /* Margin utilities for a manager's actions */
     
     /* action threshold test */
-    int targt;               /* manager target for resource */
+    //int targt;               /* manager target for resource */
     double dev;              /* estimated population deviation from managers target (fraction) */
-    double estim;            /* estimated population */
-    double thres;            /* deviation threshold */
+    //double estim;            /* estimated population */
+    //double thres;            /* deviation threshold */
 
     /* First take care of all the reading in of code from R to C */
     /* ====================================================================== */
@@ -673,7 +673,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
       if (cabs(dev) >= paras[105]) {     /* if deviation is above action threshold, call ga, update tracker and re-initiate number of ts spent without updating policy */
         ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, lookup, paras, 0, 1);
         paras[106] = 1;                  /* policy updating tracker */
-        paras[107] = 0;                  /* time step since last update counter */
+        paras[107] = 0;                  /* time steps since last update counter */
       } else {                           /* if deviation is under action threshold, don't call ga, update tracker and number of ts spent without updating policy */
         paras[106] = 0;
         paras[107] += 1;

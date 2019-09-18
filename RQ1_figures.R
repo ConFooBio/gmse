@@ -309,7 +309,9 @@ stats_OYA_batch1_results <- matrix(data = NA, nrow = dim(OYA_batch1_results)[3],
 # Initialize an index of parameter combination
 param_set <- 1
 
-# store start time
+# Loop
+# (Takes approx. 20min on my desk computer)
+
 start <- Sys.time()
 
 # without and with scaring
@@ -345,7 +347,7 @@ for (s in scar) {
         OYA_batch1_results[k,3,param_set] <- at[i]
         
         # BB value
-        OYA_batch1_results[k,4,param_set] <- 0
+        OYA_batch1_results[k,4,param_set] <- bb[j]
         
         # Has extinction occured? (yes = 1, no = 0)
         OYA_batch1_results[k,5,param_set] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
@@ -459,9 +461,9 @@ for (s in scar) {
           }
         } # end rep for loop
         
-        # keep track of the simulations
-        if (param_set %% 10 != 0) {
-          print(paste("parameter set number", param_set, "out of", dim(OYA_batch1_results)[3], "at", Sys.time(), sep = " "))
+        # keep track of the simulation
+        if (param_set % 20) {
+          print(paste("parameter set number", param_set, "out of", dim(OYA_batch1_results)[3], sep = " "))           
         }
         
         # Increment parameter combo index
@@ -471,46 +473,10 @@ for (s in scar) {
   } # end at for loop
 } # end scar for loop
 
-# end of sim
+# Simulation time
 end <- Sys.time()
 
-print(paste("Batch started", start, "and ended", end, sep = " "))
-
-## save the 3D array of results?
-
-# get the results from the batch on Brad's computer
-OYA_batch1_results <- load("data/OYA_batch1_results.rda")
-
-## Add absolute value of actual Resource population deviation from Manager target
-new_OYA_batch1_results <- array(data=NA, dim = c(rep, length(columns)+1, length(at)*length(bb)*length(scar)-20), dimnames = list(NULL,c(columns, "abs_act_dev"),NULL))
-
-# for each parameter combo compute absolute value
-for (i in 1:dim(OYA_batch1_results)[3]) {
-  for (j in 1:dim(OYA_batch1_results)[2]) {
-    new_OYA_batch1_results[,j,i] <- OYA_batch1_results[,j,i]
-  }
-  new_OYA_batch1_results[,length(columns)+1,i] <- abs(OYA_batch1_results[,6,i])
-}
-
-## option rbind the layers
-# hope there will be no problem with colomn names
-
-tab_OYA_batch1_results <- OYA_batch1_results[,,1]
-
-for (i in 2:dim(OYA_batch1_results)[3]) {
-  tab_OYA_batch1_results <- rbind(tab_OYA_batch1_results, OYA_batch1_results[,,i])
-}
-
-write.csv(tab_OYA_batch1_results, file = "tab_OYA_batch1_results.csv")
-
-# same with new tab
-new_tab_OYA_batch1_results <- new_OYA_batch1_results[,,1]
-
-for (i in 2:dim(new_OYA_batch1_results)[3]) {
-  new_tab_OYA_batch1_results <- rbind(new_tab_OYA_batch1_results, new_OYA_batch1_results[,,i])
-}
-
-write.csv(new_tab_OYA_batch1_results, file = "tab_OYA_batch1_results_abs.csv")
+print("sim started", start, "and ended", end, sep =" ")
 
 ## Basic stats
 
