@@ -1390,7 +1390,7 @@ gg2control
 gg3 <- ggplot(subset(tab_OYA_batch2, at != 0), aes(x=as.factor(budget), fill = as.factor(scar), y=fin_yield/100)) +
   geom_boxplot(position=position_dodge()) +
   facet_wrap(~at+bb, ncol=4) +
-  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
+  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +     
   labs(x="Manager initial budget", y= "Users final total yield") +
   scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
   theme_gray() +
@@ -1404,7 +1404,7 @@ gg3
 gg3control <- ggplot(subset(tab_OYA_batch2, at == 0), aes(x=as.factor(budget), fill = as.factor(scar), y=fin_yield/100)) +
   geom_boxplot(position=position_dodge()) +
   #facet_wrap(~at+bb, ncol=4) +
-  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
+  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +    
   labs(x="Manager initial budget", y= "Users final total yield") +
   scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
   theme_gray() +
@@ -1503,7 +1503,7 @@ gg6 <- ggplot(subset(stats_batch2, at != 0), aes(x=as.factor(budget), fill = as.
                 colour = "grey40", width=0.5) +
   geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
              position = position_dodge(width = 1)) +
-  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
+  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +  
   labs(x="Manager initial budget", y= "Users final total yield\n(mean +/- sd)") +
   scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
   theme_gray() +
@@ -1521,7 +1521,7 @@ gg6control <- ggplot(subset(stats_batch2, at == 0), aes(x=as.factor(budget), fil
                 colour = "grey40", width=0.5) +
   geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
              position = position_dodge(width = 1)) +
-  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
+  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +     
   labs(x="Manager initial budget", y= "Users final total yield\n(mean +/- sd)") +
   scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
   theme_gray() +
@@ -1626,7 +1626,7 @@ gg9 <- ggplot(subset(stats_batch2, at != 0), aes(x=as.factor(budget), fill = as.
                 colour = "grey40", width=0.5) +
   geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
              position = position_dodge(width = 1)) +
-  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
+  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      
   labs(x="Manager initial budget", y= "Users final total yield\n(k-money units, mean +/- 95CI)") +
   scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
   theme_gray() +
@@ -1645,7 +1645,7 @@ gg9control <- ggplot(subset(stats_batch2, at == 0), aes(x=as.factor(budget), fil
                 colour = "grey40", width=0.25) +
   geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
              position = position_dodge(width = 0.5)) +
-  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
+  geom_hline(yintercept = 95, linetype = "dashed", color = "red") +   
   labs(x="Manager initial budget", y= "Users final total yield\n(k-money units, mean +/- 95CI)") +
   scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
   theme_gray() +
@@ -1665,8 +1665,7 @@ gg10 <- ggplot(subset(stats_batch2, at != 0), aes(x=as.factor(budget), fill = as
                 colour = "grey40", width=0.5) +
   geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
              position = position_dodge(width = 1)) +
-  #geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
-  labs(x="Manager initial budget", y= "Maximum difference between Users yields\n(in % of the highest yield, mean +/- 95CI)") +
+  labs(x="Manager initial budget", y= "Maximum difference between Users yields"\n"(in % of the highest yield, mean +/- 95CI)") +
   scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey"),
@@ -1681,10 +1680,9 @@ gg10control <- ggplot(subset(stats_batch2, at == 0), aes(x=as.factor(budget), fi
   #facet_wrap(~at+bb, ncol = 4) +
   geom_errorbar(aes(ymin=max_diff_yield*100-max_diff_yield_95ci*100, ymax=max_diff_yield*100+max_diff_yield_95ci*100, group = as.factor(scar)),  
                 position=position_dodge(0.5),
-                colour = "grey40", width=0.25) +
-  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
-             position = position_dodge(width = 0.5)) +
-  #geom_hline(yintercept = 95, linetype = "dashed", color = "red") +      # 95% of maximum yield
+                width=0.25, colour = "grey40") +
+  geom_point(size = 2, alpha = 1, stroke = 1, shape = 21, colour="black",
+             position = position_dodge(width = 0.5)) 
   labs(x="Manager initial budget", y= "Maximum difference between Users yields\n(in % of the highest yield, mean +/- 95CI)") +
   scale_fill_discrete(name="Scaring Option", labels=c("Not allowed", "Allowed")) +
   theme_gray() +
@@ -1729,3 +1727,293 @@ gg_extprob_control <- ggplot(subset(stats_batch2, at == 0), aes(x=as.factor(budg
         legend.text=element_text(size=15),
         legend.title = element_text(size = 18))
 gg_extprob_control
+
+
+
+
+#### Simulations to isolate BB effect ####
+
+## Set parameters
+
+# Array of Action Threshold values to explore, here a value for which managers perform better than acting every time step
+at = 0.1;
+
+# Array of Budget Bonus values to explore
+bb <- seq(0,2,0.2);
+
+# Array of initial budget, here lower than the users
+budget <- 500
+
+# Scaring allowed? yes because favorable to a good management
+scar <- T
+
+# Number of simulation time steps
+ts <- 20;
+
+# Number of replicates
+rep <- 20;
+
+# number of stakeholders
+stkh <- 10;
+
+# Other parameters to GMSE default
+
+## Create empty structures to gather simulation results
+
+# Array of column names (the measures of interest for the question)
+columns <- c("rep", "budget", "at", "bb", "extinct", "act_dev", "abs_act_dev", "fin_yield", "max_diff_yield", "inac_ts", "overK_freq")
+
+# Empty 3D array of correct size 
+# Dimensions(lines = replicates, columns = measures, layer = parameter combination)
+batchBB1_results <- array(data=NA, dim = c(rep, length(columns), length(at)*length(bb)*length(budget)), dimnames = list(NULL,columns,NULL))                 
+
+# Create an empty structure for basic stats on batchBB1_results
+
+# Array of column names
+stats_columns <- c("rep", "budget", "at", "bb", "ext_prob", "act_dev", "act_dev_sd", "act_dev_95ci", "abs_act_dev", "abs_act_dev_sd", "abs_act_dev_95ci", "fin_yield", "fin_yield_sd", "fin_yield_95ci", "max_diff_yield", "max_diff_yield_sd", "max_diff_yield_95ci", "inac_ts", "inac_ts_sd", "inac_ts_95ci", "overK_tot", "overK_sd", "overK_95ci")
+
+# Empty 2D array of correct size
+# Dimensions(lines = parameter combo index, columns = measures)
+stats_batchBB1_results <- matrix(data = NA, nrow = dim(batchBB1_results)[3], ncol = length(stats_columns), dimnames = list(NULL,stats_columns))
+
+## Simulations loop
+
+# Initialize an index of parameter combination
+param_set <- 1
+
+# Store start time
+start <- Sys.time()
+
+# For every BB values in 'bb'
+for (j in 1:length(bb)) {
+  
+  # With 'rep' number of replicate per parameter combo
+  for (k in 1:rep) {
+    
+    # Run GMSE for the parameter combo
+    sim <- gmse(stakeholders = stkh, time_max = ts, land_ownership = TRUE,
+                RESOURCE_ini = 1500, res_death_K = 2000,
+                scaring = scar, manager_budget = budget, action_thres = at, budget_bonus = bb[j],
+                plotting = F)
+    
+    # Store the last time step number (for extinction-related bugs)
+    final_ts <- length(which(sim$paras[,1] != 0))
+    
+    # Pick up values for simulation results and store them in batchBB1_results
+    
+    # Replicate number
+    batchBB1_results[k,1,param_set] <- k
+    
+    # Manager initial budget
+    batchBB1_results[k,2,param_set] <- budget
+    
+    # AT value
+    batchBB1_results[k,3,param_set] <- at
+    
+    # BB value
+    batchBB1_results[k,4,param_set] <- bb[j]
+    
+    # Has extinction occured? (yes = 1, no = 0)
+    batchBB1_results[k,5,param_set] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
+    
+    # Next measures involve calculus that can be disturbed if extinction occured
+    
+    # If exctinction occured
+    if (batchBB1_results[k,5,param_set] != 0) {
+      
+      # Resource actual pop deviation from target
+      batchBB1_results[k,6,param_set] <- dim(sim$resource[[final_ts-1]])[1]/sim$action[[1]][1,5,1] - 1
+      
+      # absolute value
+      batchBB1_results[k,7,param_set] <- abs(batchBB1_results[k,6,param_set])
+      
+      # Users total final yield
+      batchBB1_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
+      
+      # Maximum difference between Users yield
+      batchBB1_results[k,9,param_set] <- round((max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16]),3)
+      
+      # Number of timesteps during which Manager chose not to update policy
+      batchBB1_results[k,10,param_set] <- final_ts-sum(sim$paras[,107])
+    }
+    
+    # If extinction did not occured
+    else {
+      
+      # Resource actual pop deviation from target
+      batchBB1_results[k,6,param_set] <- dim(sim$resource[[final_ts]])[1]/sim$action[[1]][1,5,1] - 1
+      
+      # absolute value
+      batchBB1_results[k,7,param_set] <- abs(batchBB1_results[k,6,param_set])
+      
+      # Users total final yield
+      batchBB1_results[k,8,param_set] <- sum(sim$agents[[final_ts]][,16])
+      
+      # Maximum difference between Users yield
+      batchBB1_results[k,9,param_set] <- round((max(sim$agents[[final_ts]][,16]) - min(sim$agents[[final_ts]][-1,16]))/max(sim$agents[[final_ts]][,16]),3)
+      
+      # Number of timesteps during which Manager chose not to update policy
+      batchBB1_results[k,10,param_set] <- length(sim$paras[,107])-sum(sim$paras[,107])
+    }
+  
+    # Number of K exceedings
+    batchBB1_results[k,11,param_set] <- sum(sim$paras[,109])
+  
+  } # end rep for loop
+  
+  # keep track of the simulations
+  if (param_set %% 5 == 0) {
+    print(paste("parameter set number", param_set, "out of", dim(batchBB1_results)[3], "at", Sys.time(), sep = " "))
+  }
+  
+  # Increment parameter combo index
+  param_set <- param_set + 1
+} # end bb for loop
+
+# end of sim
+end <- Sys.time()
+
+print(paste("Batch started", start, "and ended", end, sep = " "))
+
+## save the 3D array of results?
+
+# rbind the layers
+
+tab_batchBB1_results <- batchBB1_results[,,1]
+
+for (i in 2:dim(batchBB1_results)[3]) {
+  tab_batchBB1_results <- rbind(tab_batchBB1_results, batchBB1_results[,,i])
+}
+
+write.csv(tab_batchBB1_results, file = "tab_batchBB1_results.csv")
+
+
+## Basic stats
+
+# for each parameter combo
+for (i in 1:dim(batchBB1_results)[3]) {
+  
+  # Store number of replicates for this combo
+  stats_batchBB1_results[i,1] <- dim(batchBB1_results)[1]
+  
+  # Next 3 columns just take values from batch_results
+  for (j in 2:4) {
+    stats_batchBB1_results[i,j] <- batchBB1_results[1,j,i]
+  }
+  
+  # Extinction probability (number of extinctions / number of replicates)
+  stats_batchBB1_results[i,5] <- round(sum(batchBB1_results[,5,i])/dim(batchBB1_results)[1],2)
+  
+  # Next are systematically mean, sd and 95CI of the meaures from batch_results
+  zz <- 0
+  for (k in 6:dim(batchBB1_results)[2]) {
+    stats_batchBB1_results[i,k+zz] <- mean(batchBB1_results[,k,i])
+    stats_batchBB1_results[i,k+zz+1] <- sd(batchBB1_results[,k,i])
+    stats_batchBB1_results[i,k+zz+2] <- 1.86*stats_batchBB1_results[i,k+zz+1]/sqrt(rep)
+    zz <- zz + 2
+  }
+}
+
+## Plots
+
+# Resource population actual deviation from manager's target
+bb1.bp <- ggplot(data = as.data.frame(tab_batchBB1_results), aes(x=as.factor(bb), y=act_dev)) +
+  geom_boxplot(position=position_dodge()) +
+  # geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  # geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
+  labs(x="Budget bonus value (in fraction of initial budget)", y= "Resource population deviation from target") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+bb1.bp
+
+bb1.msd <- ggplot(data = as.data.frame(stats_batchBB1_results), aes(x=as.factor(bb), y=act_dev)) +
+  geom_errorbar(aes(ymin=act_dev-act_dev_sd, ymax=act_dev+act_dev_sd),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", fill = "white", stroke = 1, shape = 21,
+             position = position_dodge(1)) +
+  # geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  # geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
+  labs(x="Budget bonus value (in fraction of initial budget)", y= "Resource population deviation from target") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+bb1.msd
+
+bb1.ci <- ggplot(data = as.data.frame(stats_batchBB1_results), aes(x=as.factor(bb), y=act_dev)) +
+  geom_errorbar(aes(ymin=act_dev-act_dev_95ci, ymax=act_dev+act_dev_95ci),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", fill = "white", stroke = 1, shape = 21,
+             position = position_dodge(1)) +
+  # geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  # geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
+  labs(x="Budget bonus value (in fraction of initial budget)", y= "Resource population deviation from target") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+bb1.ci
+
+# Resource population absolute deviation from manager's target
+bb2.bp <- ggplot(data = as.data.frame(tab_batchBB1_results), aes(x=as.factor(bb), y=abs_act_dev)) +
+  geom_boxplot(position=position_dodge()) +
+  # geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  # geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
+  labs(x="Budget bonus value (in fraction of initial budget)", y= "Resource population deviation from target") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+bb2.bp
+
+bb2.msd <- ggplot(data = as.data.frame(stats_batchBB1_results), aes(x=as.factor(bb), y=abs_act_dev)) +
+  geom_errorbar(aes(ymin=abs_act_dev-abs_act_dev_sd, ymax=abs_act_dev+abs_act_dev_sd),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", fill = "white", stroke = 1, shape = 21,
+             position = position_dodge(1)) +
+  # geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  # geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
+  labs(x="Budget bonus value (in fraction of initial budget)", y= "Resource population deviation from target") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+bb2.msd
+
+bb2.ci <- ggplot(data = as.data.frame(stats_batchBB1_results), aes(x=as.factor(bb), y=abs_act_dev)) +
+  geom_errorbar(aes(ymin=abs_act_dev-abs_act_dev_95ci, ymax=abs_act_dev+abs_act_dev_95ci),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(size = 2, alpha = 1, colour="black", fill = "white", stroke = 1, shape = 21,
+             position = position_dodge(1)) +
+  # geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  # geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
+  labs(x="Budget bonus value (in fraction of initial budget)", y= "Resource population deviation from target") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+bb2.ci
