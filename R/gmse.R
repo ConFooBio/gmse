@@ -284,6 +284,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     plu <- 1;
     tsc <- 0;
     ovk <- 0;
+    bbs <- 0.
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
