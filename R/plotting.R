@@ -194,7 +194,7 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, COST,
         points(x=gens, y=est, pch=20, type="l", lwd=2, col="cyan4");
         abline(h=paras[7], col="red", lwd=0.8, lty="dashed");
         abline(h=ACTION[[1]][1,5,1], col=topo.colors(1), lwd=0.8, lty="dashed");
-        if (paras[106] != 0) {
+        if (paras[106] > 0) {
           abline(h=ACTION[[1]][1,5,1]*(1+paras[106]), col="darkgreen", lwd=0.8, lty="dashed");    # can be improved, from the arguments?
           abline(h=ACTION[[1]][1,5,1]*(1-paras[106]), col="darkgreen", lwd=0.8, lty="dashed");
           #polygon(y = rep(ACTION[[1]][1,5,1]*(1+paras[106]), max_time), x = rep(ACTION[[1]][1,5,1]*(1-paras[106]), max_time), col = "lightgreen", lwd=0.8, lty="dashed", border = "darkgreen");
@@ -421,7 +421,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
         points(x=gens, y=est, pch=20, type="l", lwd=2, col="cyan4");
         abline(h=paras[7], col="red", lwd=0.8, lty="dashed");
         abline(h=ACTION[[1]][1,5,1], col=topo.colors(1), lwd=0.8, lty="dashed");
-        if (paras[106] != 0) {
+        if (paras[106] > 0) {
           abline(h=ACTION[[1]][1,5,1]*(1+paras[106]), col="darkgreen", lwd=0.8, lty="dashed");    # can be improved, from the arguments?
           abline(h=ACTION[[1]][1,5,1]*(1-paras[106]), col="darkgreen", lwd=0.8, lty="dashed");
           #polygon(y = rep(ACTION[[1]][1,5,1]*(1+paras[106]), max_time), x = rep(ACTION[[1]][1,5,1]*(1-paras[106]), max_time), col = "lightgreen", lwd=0.8, lty="dashed", border = "darkgreen");
@@ -683,8 +683,8 @@ plot_gmse_results <- function(sim_results){
     abline(h = para_vec[7], col = "red", lwd = 0.8, lty = "dashed");
     abline(h = ACTION[[1]][1,5,1], col = topo.colors(1), lwd = 0.8, 
            lty = "dashed");
-    if (paras[106] != 0) {
-      abline(h=ACTION[[1]][1,5,1], col="darkgreen", lwd=0.8, lty="dashed");    # can be improved, from the arguments?
+    if (paras[106] > 0) {
+      abline(h=ACTION[[1]][1,5,1]*(1+paras[106]), col="darkgreen", lwd=0.8, lty="dashed");    # can be improved, from the arguments?
       abline(h=ACTION[[1]][1,5,1]*(1-paras[106]), col="darkgreen", lwd=0.8, lty="dashed");
       #polygon(rep(ACTION[[1]][1,5,1]*(1+paras[106]), max_time), rep(ACTION[[1]][1,5,1]*(1-paras[106]), max_time), col = "lightgreen", lwd=0.8, lty="dashed", border = "darkgreen");
     }
