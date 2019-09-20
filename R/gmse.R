@@ -409,7 +409,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                     scaring, culling, castration, feeding, help_offspring, 
                     tend_crops, tend_crop_yld, kill_crops, stakeholders, 
                     manage_caution, land_ownership, manage_freq, converge_crit, 
-                    manager_sense, public_land, group_think, action_thres, budget_bonus); 
+                    manager_sense, public_land, group_think, action_thres, 
+                    budget_bonus); 
     
     paras_errors(input_list);
     
@@ -473,14 +474,20 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         # pol_update is in paras[106];
         
         # test for budget bonus
-        if (paras[106] == 0) {
+        if (paras[107] == 0) {
           new_manager_budget <- AGENTS[1,17] * (1 + budget_bonus);
           
           if (new_manager_budget < 100000) {  # Check if not above the maximum budget just in case
             AGENTS[1,17] <- new_manager_budget;
           }
+        }else{
+            AGENTS[1,17] <- manager_budget;
         }
-
+        
+        #if(AGENTS[1, 17] > 1000){
+        #    print("It works");
+        #}
+        
         if(time %% manage_freq == 0){
             MANAGER  <- manager(RESOURCES   = RESOURCES,
                                 AGENTS      = AGENTS,
@@ -546,6 +553,10 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
             RESOURCES    <- HUNT_OUTCOME$RESOURCES;
             paras        <- HUNT_OUTCOME$PARAS;
         }
+        
+        #if(AGENTS[1, 17] > 1000){
+        #    print("It still works");
+        #}
     }
     
     res_columns <- c("Resource_ID",
