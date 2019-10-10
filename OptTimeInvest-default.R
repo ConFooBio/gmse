@@ -75,16 +75,16 @@ columns <- c("rep", "budget", "at", "bb", "extinct", "act_dev", "abs_act_dev", "
 
 # Empty 3D array of correct size 
 # Dimensions(lines = replicates, columns = measures, layer = parameter combination)
-batch4_results <- array(data=NA, dim = c(rep, length(columns), length(at)*length(bb)-(length(bb)-1)), dimnames = list(NULL,columns,NULL))                 
+OTI_default_results <- array(data=NA, dim = c(rep, length(columns), length(at)*length(bb)-(length(bb)-1)), dimnames = list(NULL,columns,NULL))                 
 
-# Create an empty structure for basic stats on batch4_results
+# Create an empty structure for basic stats on OTI_default_results
 
 # Array of column names
 stats_columns <- c("rep", "budget", "at", "bb", "ext_prob", "act_dev", "act_dev_sd", "act_dev_95ci", "abs_act_dev", "abs_act_dev_sd", "abs_act_dev_95ci", "fin_yield", "fin_yield_sd", "fin_yield_95ci", "max_diff_yield", "max_diff_yield_sd", "max_diff_yield_95ci", "inac_ts", "inac_ts_sd", "inac_ts_95ci", "overK_tot", "overK_sd", "overK_95ci")
 
 # Empty 2D array of correct size
 # Dimensions(lines = parameter combo index, columns = measures)
-stats_batch4_results <- matrix(data = NA, nrow = dim(batch4_results)[3], ncol = length(stats_columns), dimnames = list(NULL,stats_columns))
+stats_OTI_default_results <- matrix(data = NA, nrow = dim(OTI_default_results)[3], ncol = length(stats_columns), dimnames = list(NULL,stats_columns))
 
 
 ## Simulations loop
@@ -113,67 +113,67 @@ for (i in 1:length(at)) {
       # Store the last time step number (for extinction-related bugs)
       final_ts <- length(which(sim$paras[,1] != 0))
       
-      # Pick up values for simulation results and store them in batch4_results
+      # Pick up values for simulation results and store them in OTI_default_results
       
       # Replicate number
-      batch4_results[k,1,param_set] <- k
+      OTI_default_results[k,1,param_set] <- k
       
       # Budget
-      batch4_results[k,2,param_set] <- bdgt
+      OTI_default_results[k,2,param_set] <- bdgt
       
       # AT value
-      batch4_results[k,3,param_set] <- at[i]
+      OTI_default_results[k,3,param_set] <- at[i]
       
       # BB value
-      batch4_results[k,4,param_set] <- 0
+      OTI_default_results[k,4,param_set] <- 0
       
       # Has extinction occured? (yes = 1, no = 0)
-      batch4_results[k,5,param_set] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
+      OTI_default_results[k,5,param_set] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
       
       # Next measures involve calculus that can be disturbed if extinction occured
       
       # If exctinction occured
-      if (batch4_results[k,5,param_set] != 0) {
+      if (OTI_default_results[k,5,param_set] != 0) {
         
         # Resource actual pop deviation from target
-        batch4_results[k,6,param_set] <- dim(sim$resource[[final_ts-1]])[1]/sim$action[[1]][1,5,1] - 1
+        OTI_default_results[k,6,param_set] <- dim(sim$resource[[final_ts-1]])[1]/sim$action[[1]][1,5,1] - 1
         
         # Absolute value
-        batch4_results[k,7,param_set] <- abs(batch4_results[k,6,param_set])
+        OTI_default_results[k,7,param_set] <- abs(OTI_default_results[k,6,param_set])
         
         # Users total final yield
-        batch4_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
+        OTI_default_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
         
         # Maximum difference between Users yield
-        batch4_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
+        OTI_default_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
         
         # Number of timesteps during which Manager chose not to update policy
-        batch4_results[k,10,param_set] <- final_ts-sum(sim$paras[,107])
+        OTI_default_results[k,10,param_set] <- final_ts-sum(sim$paras[,107])
         
         # Number of K exceedings
-        batch4_results[k,11,param_set] <- sum(sim$paras[,109])
+        OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])
       }
       
       # If extinction did not occured
       else {
         
         # Resource actual pop deviation from target
-        batch4_results[k,6,param_set] <- dim(sim$resource[[final_ts]])[1]/sim$action[[1]][1,5,1] - 1
+        OTI_default_results[k,6,param_set] <- dim(sim$resource[[final_ts]])[1]/sim$action[[1]][1,5,1] - 1
         
         # Absolute value
-        batch4_results[k,7,param_set] <- abs(batch4_results[k,6,param_set])
+        OTI_default_results[k,7,param_set] <- abs(OTI_default_results[k,6,param_set])
         
         # Users total final yield
-        batch4_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
+        OTI_default_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
         
         # Maximum difference between Users yield
-        batch4_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
+        OTI_default_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
         
         # Number of timesteps during which Manager chose not to update policy
-        batch4_results[k,10,param_set] <- final_ts-sum(sim$paras[,107])
+        OTI_default_results[k,10,param_set] <- final_ts-sum(sim$paras[,107])
         
         # Number of K exceedings
-        batch4_results[k,11,param_set] <- sum(sim$paras[,109])
+        OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])
       }
     } # end rep for loop
     
@@ -199,73 +199,73 @@ for (i in 1:length(at)) {
         # Store the last time step number (for extinction-related bugs)
         final_ts <- length(which(sim$paras[,1] != 0))
         
-        # Pick up values for simulation results and store them in batch4_results
+        # Pick up values for simulation results and store them in OTI_default_results
         
         # Replicate number
-        batch4_results[k,1,param_set] <- k
+        OTI_default_results[k,1,param_set] <- k
         
         # Budget
-        batch4_results[k,2,param_set] <- bdgt
+        OTI_default_results[k,2,param_set] <- bdgt
         
         # AT value
-        batch4_results[k,3,param_set] <- sim$paras[1,106]
+        OTI_default_results[k,3,param_set] <- sim$paras[1,106]
         
         # BB value
-        batch4_results[k,4,param_set] <- bb[j]
+        OTI_default_results[k,4,param_set] <- bb[j]
         
         # Has extinction occured? (yes = 1, no = 0)
-        batch4_results[k,5,param_set] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
+        OTI_default_results[k,5,param_set] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
         
         # Next measures involve calculus that can be disturbed if extinction occured
         
         # If exctinction occured
-        if (batch4_results[k,5,param_set] != 0) {
+        if (OTI_default_results[k,5,param_set] != 0) {
           
           # Resource actual pop deviation from target
-          batch4_results[k,6,param_set] <- dim(sim$resource[[final_ts-1]])[1]/sim$action[[1]][1,5,1] - 1
+          OTI_default_results[k,6,param_set] <- dim(sim$resource[[final_ts-1]])[1]/sim$action[[1]][1,5,1] - 1
           
           # absolute value
-          batch4_results[k,7,param_set] <- abs(batch4_results[k,6,param_set])
+          OTI_default_results[k,7,param_set] <- abs(OTI_default_results[k,6,param_set])
           
           # Users total final yield
-          batch4_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
+          OTI_default_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
           
           # Maximum difference between Users yield (in percentage of the highest yield)
-          batch4_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
+          OTI_default_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
           
           # Number of timesteps during which Manager chose not to update policy
-          batch4_results[k,10,param_set] <- final_ts-sum(sim$paras[,107])
+          OTI_default_results[k,10,param_set] <- final_ts-sum(sim$paras[,107])
           
           # Number of K exceedings
-          batch4_results[k,11,param_set] <- sum(sim$paras[,109])
+          OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])
         }
         
         # If extinction did not occured
         else {
           
           # Resource actual pop deviation from target
-          batch4_results[k,6,param_set] <- dim(sim$resource[[final_ts]])[1]/sim$action[[1]][1,5,1] - 1
+          OTI_default_results[k,6,param_set] <- dim(sim$resource[[final_ts]])[1]/sim$action[[1]][1,5,1] - 1
           
           # absolute value
-          batch4_results[k,7,param_set] <- abs(batch4_results[k,6,param_set])
+          OTI_default_results[k,7,param_set] <- abs(OTI_default_results[k,6,param_set])
           
           # Users total final yield
-          batch4_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
+          OTI_default_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
           
           # Maximum difference between Users yield (in percentage of the highest yield)
-          batch4_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
+          OTI_default_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
           
           # Number of timesteps during which Manager chose not to update policy
-          batch4_results[k,10,param_set] <- final_ts-sum(sim$paras[,107])
+          OTI_default_results[k,10,param_set] <- final_ts-sum(sim$paras[,107])
           
           # Number of K exceedings
-          batch4_results[k,11,param_set] <- sum(sim$paras[,109])
+          OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])
         }
       } # end rep for loop
       
       # keep track of the simulations
       if (param_set %% 5 == 0) {
-        print(paste("parameter set number", param_set, "out of", dim(batch4_results)[3], "at", Sys.time(), sep = " "))
+        print(paste("parameter set number", param_set, "out of", dim(OTI_default_results)[3], "at", Sys.time(), sep = " "))
       }
       
       # Increment parameter combo index
@@ -282,51 +282,51 @@ print(paste("Batch started", start, "and ended", end, sep = " "))
 
 # rbind the layers
 
-tab_batch4_results <- batch4_results[,,1]
+tab_OTI_default_results <- OTI_default_results[,,1]
 
-for (i in 2:dim(batch4_results)[3]) {
-  tab_batch4_results <- rbind(tab_batch4_results, batch4_results[,,i])
+for (i in 2:dim(OTI_default_results)[3]) {
+  tab_OTI_default_results <- rbind(tab_OTI_default_results, OTI_default_results[,,i])
 }
 
-write.csv(tab_batch4_results, file = "tab_batch4_results.csv")
+write.csv(tab_OTI_default_results, file = "tab_OTI_default_results.csv")
 
 
 #### Results ####
 
 # for each parameter combo
-for (i in 1:dim(batch4_results)[3]) {
+for (i in 1:dim(OTI_default_results)[3]) {
   
   # Store number of replicates for this combo
-  stats_batch4_results[i,1] <- dim(batch4_results)[1]
+  stats_OTI_default_results[i,1] <- dim(OTI_default_results)[1]
   
   # Next 3 columns just take values from batch_results
   for (j in 2:4) {
-    stats_batch4_results[i,j] <- batch4_results[1,j,i]
+    stats_OTI_default_results[i,j] <- OTI_default_results[1,j,i]
   }
   
   # Extinction probability (number of extinctions / number of replicates)
-  stats_batch4_results[i,5] <- round(sum(batch4_results[,5,i])/dim(batch4_results)[1],3)
+  stats_OTI_default_results[i,5] <- round(sum(OTI_default_results[,5,i])/dim(OTI_default_results)[1],3)
   
   # Next are systematically mean, sd and 95CI of the meaures from batch_results
   zz <- 0
-  for (k in 6:dim(batch4_results)[2]) {
-    stats_batch4_results[i,k+zz] <- round(mean(batch4_results[,k,i]),3)
-    stats_batch4_results[i,k+zz+1] <- sd(batch4_results[,k,i])
-    stats_batch4_results[i,k+zz+2] <- 1.86*stats_batch4_results[i,k+zz+1]/sqrt(rep)
+  for (k in 6:dim(OTI_default_results)[2]) {
+    stats_OTI_default_results[i,k+zz] <- round(mean(OTI_default_results[,k,i]),3)
+    stats_OTI_default_results[i,k+zz+1] <- sd(OTI_default_results[,k,i])
+    stats_OTI_default_results[i,k+zz+2] <- 1.86*stats_OTI_default_results[i,k+zz+1]/sqrt(rep)
     zz <- zz + 2
   }
 }
 
 # Visualise the table to check for inconsistencies
-View(stats_batch4_results)
+View(stats_OTI_default_results)
 
 # Save the table in a csv file
-write.csv(stats_batch4_results, file = "stats_batch1.csv", row.names = F)
+write.csv(stats_OTI_default_results, file = "stats_batch1.csv", row.names = F)
 
 #### plotting ####
 
-brut <- as.data.frame(tab_batch4_results)
-stat <- as.data.frame(stats_batch4_results)
+brut <- as.data.frame(tab_OTI_default_results)
+stat <- as.data.frame(stats_OTI_default_results)
 
 ## Extinction probability
 
@@ -491,8 +491,6 @@ msd_absactdev <- ggplot(stat, aes(x=as.factor(bb), y=abs_act_dev)) +
                 position=position_dodge(1),
                 colour = "grey40", width=0.5) +
   geom_point(colour = "red") +
-  # geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
-  # geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
   geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
   labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Absolute deviation from target\n(fraction of MT, mean +/- sd)") +
   theme_gray() +
@@ -509,8 +507,6 @@ mci_absactdev <- ggplot(stat, aes(x=as.factor(bb), y=abs_act_dev)) +
                 position=position_dodge(1),
                 colour = "grey40", width=0.5) +
   geom_point(colour = "red") +
-  # geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
-  # geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
   geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
   labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Absolute deviation from target\n(fraction of MT, mean +/- 95ci)") +
   theme_gray() +
@@ -588,3 +584,36 @@ mci_maxdif <- ggplot(stat, aes(x=as.factor(bb), y=max_diff_yield*100)) +
         legend.text=element_text(size=15),
         legend.title = element_text(size = 18))
 mci_maxdif
+
+# overK 
+msd_overK <- ggplot(stat, aes(x=as.factor(bb), y=overK_tot)) +
+  facet_wrap(~at, ncol=4) +
+  geom_errorbar(aes(ymin=overK_tot-overK_sd, ymax=overK_tot+overK_sd),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(colour = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
+  labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Number of K-overshooting events (mean +/- sd)") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+msd_overK
+
+mci_overK <- ggplot(stat, aes(x=as.factor(bb), y=overK_tot)) +
+  facet_wrap(~at, ncol=4) +
+  geom_errorbar(aes(ymin=overK_tot-overK_95ci, ymax=overK_tot+overK_95ci),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(colour = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
+  labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Number of K-overshooting events (mean +/- sd)") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+mci_overK
