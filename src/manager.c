@@ -669,8 +669,9 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
       //manager target = actions[0][4][0];
       
       dev = (paras[99] / (double) actions[0][4][0]) - 1;
+      paras[109] = dev;
     
-      if (cabs(dev) >= paras[105]) {     /* if deviation is above action threshold, call ga, update tracker and re-initiate number of ts spent without updating policy */
+      if (fabs((double) dev) >= paras[105]) {     /* if deviation is above action threshold, call ga, update tracker and re-initiate number of ts spent without updating policy */
         ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, lookup, paras, 0, 1);
         paras[106] = 1;                  /* policy updating tracker */
         paras[107] = 0;                  /* time steps since last update counter */

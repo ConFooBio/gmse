@@ -7,27 +7,6 @@
 # Simulations + Results + Figures
 
 
-#### Initialization ####
-
-## Packages 
-
-# GMSE
-install.packages("GMSE")
-
-# ggplot
-install.packages("ggplot2")
-install.packages("dplyr")
-
-## Libraries
-
-# GMSE
-library("GMSE")
-
-# plotting
-library("ggplot2")
-library(grid)
-library(dplyr)
-
 #### Update GMSE with the new features ####
 
 # Make sure this script is opened within the gmse_forkRQ1.Rproj project
@@ -55,7 +34,7 @@ bdgt <- 1000
 
 ## Case parameters: a standard case, a pop is endangered by culling, put under conservation, managers want to maintain it close to their carrying capacity
 # initial Resource population
-popinit <- 500
+popinit <- 700
 
 # carrying capacity
 K <- 1500
@@ -264,7 +243,7 @@ for (i in 1:length(at)) {
       } # end rep for loop
       
       # keep track of the simulations
-      if (param_set %% 5 == 0) {
+      if (param_set %% 10 == 0) {
         print(paste("parameter set number", param_set, "out of", dim(OTI_default_results)[3], "at", Sys.time(), sep = " "))
       }
       
@@ -288,8 +267,7 @@ for (i in 2:dim(OTI_default_results)[3]) {
   tab_OTI_default_results <- rbind(tab_OTI_default_results, OTI_default_results[,,i])
 }
 
-write.csv(tab_OTI_default_results, file = "tab_OTI_default_results.csv")
-
+write.csv(tab_OTI_default_results, file = "tab_OTI_default_batch2.csv")
 
 #### Results ####
 
@@ -321,11 +299,15 @@ for (i in 1:dim(OTI_default_results)[3]) {
 View(stats_OTI_default_results)
 
 # Save the table in a csv file
-write.csv(stats_OTI_default_results, file = "stats_batch1.csv", row.names = F)
+write.csv(stats_OTI_default_results, file = "stats_OTI_default_batch2.csv", row.names = F)
 
 #### plotting ####
 
+# import data
+tab_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/tab_OTI_default_batch2.csv")
 brut <- as.data.frame(tab_OTI_default_results)
+
+stats_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/stats_OTI_default_batch2.csv")
 stat <- as.data.frame(stats_OTI_default_results)
 
 ## Extinction probability

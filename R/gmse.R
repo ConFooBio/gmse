@@ -284,7 +284,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     plu <- 1;
     tsc <- 0;
     ovk <- 0;
-    bbs <- 0.
+    bbs <- 0;
+    dev <-0;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -394,7 +395,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                a_t,     # 105. Deviation of estimated population from manager target that will trigger policy update
                plu,     # 106. Was the policy updated last time step?
                tsc,     # 107. Time steps since last policy update
-               ovk      # 108. Has the Resource population exceeded K?
+               ovk,     # 108. Has the Resource population exceeded K?
+               dev      # 109. Debug - deviation from target
     );
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
@@ -471,7 +473,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         AGENTS <- AGENTS_NEW[[1]];
         
         # Should the budget be updated here or in anecdotal?
-        # pol_update is in paras[106];
+        # pol_update is in paras[107];
         
         # test for budget bonus
         if (paras[107] == 0) {
