@@ -325,7 +325,7 @@ gg_extprob <- ggplot(stat, aes(x=as.factor(bb), y=ext_prob)) +
         axis.text=element_text(size=12),
         legend.text=element_text(size=15),
         legend.title = element_text(size = 18))
-gg_extprob
+#gg_extprob
 
 ## box plot
 
@@ -346,7 +346,7 @@ bp_actdev <- ggplot(brut, aes(x=as.factor(bb), y=act_dev*100)) +
         axis.title=element_text(size=18),
         legend.text=element_text(size=15),
         legend.title = element_text(size = 18))
-bp_actdev
+#bp_actdev
 
 # Absolute value of Resource population actual deviation from target
 # the closer to zero the better
@@ -363,7 +363,7 @@ bp_absactdev <- ggplot(brut, aes(x=as.factor(bb), y=abs_act_dev*100)) +
         axis.title=element_text(size=18),
         legend.text=element_text(size=15),
         legend.title = element_text(size = 18))
-bp_absactdev
+#bp_absactdev
 
 # Users final yield
 # Absolute value of Resource population actual deviation from target
@@ -379,7 +379,7 @@ bp_finyie <- ggplot(brut, aes(x=as.factor(bb), y=fin_yield/100)) +
         axis.title=element_text(size=18),
         legend.text=element_text(size=15),
         legend.title = element_text(size = 18))
-bp_finyie
+#bp_finyie
 
 # Equity between users final yields
 # the closer to zero the better
@@ -394,7 +394,7 @@ bp_maxdif <- ggplot(brut, aes(x=as.factor(bb), y=max_diff_yield)) +
         axis.title=element_text(size=18),
         legend.text=element_text(size=15),
         legend.title = element_text(size = 18))
-bp_maxdif
+#bp_maxdif
 
 # Number of time steps of non updating
 # (maximum value of time_max-1)
@@ -408,7 +408,7 @@ bp_inacts <- ggplot(brut, aes(x=as.factor(bb), y=inac_ts)) +
         axis.title=element_text(size=18),
         legend.text=element_text(size=15),
         legend.title = element_text(size = 18))
-bp_inacts
+#bp_inacts
 
 # Number of time steps when Resource population went over its K
 # the closer to zero the better
@@ -423,7 +423,7 @@ bp_overK <- ggplot(brut, aes(x=as.factor(bb), y=overK)) +
         axis.title=element_text(size=18),
         legend.text=element_text(size=15),
         legend.title = element_text(size = 18))
-bp_overK
+#bp_overK
 
 ## mean +- sd / mean +- 95ci
 
@@ -446,7 +446,7 @@ msd_actdev <- ggplot(stat, aes(x=as.factor(bb), y=act_dev)) +
         axis.title=element_text(size=18),
         legend.text=element_text(size=15),
         legend.title = element_text(size = 18))
-msd_actdev
+#msd_actdev
 
 mci_actdev <- ggplot(stat, aes(x=as.factor(bb), y=act_dev)) +
   facet_wrap(~at, ncol=4) +
@@ -464,7 +464,7 @@ mci_actdev <- ggplot(stat, aes(x=as.factor(bb), y=act_dev)) +
         axis.title=element_text(size=18),
         legend.text=element_text(size=15),
         legend.title = element_text(size = 18))
-mci_actdev
+#mci_actdev
 
 # abs_act_dev
 msd_absactdev <- ggplot(stat, aes(x=as.factor(bb), y=abs_act_dev)) +
@@ -481,7 +481,7 @@ msd_absactdev <- ggplot(stat, aes(x=as.factor(bb), y=abs_act_dev)) +
         axis.title=element_text(size=18),
         legend.text=element_text(size=15),
         legend.title = element_text(size = 18))
-msd_absactdev
+#msd_absactdev
 
 mci_absactdev <- ggplot(stat, aes(x=as.factor(bb), y=abs_act_dev)) +
   facet_wrap(~at, ncol=4) +
@@ -497,7 +497,7 @@ mci_absactdev <- ggplot(stat, aes(x=as.factor(bb), y=abs_act_dev)) +
         axis.title=element_text(size=18),
         legend.text=element_text(size=15),
         legend.title = element_text(size = 18))
-mci_absactdev
+#mci_absactdev
 
 # fin_yield
 msd_finyie <- ggplot(stat, aes(x=as.factor(bb), y=fin_yield/100)) +
@@ -514,7 +514,7 @@ msd_finyie <- ggplot(stat, aes(x=as.factor(bb), y=fin_yield/100)) +
         axis.title=element_text(size=18),
         legend.text=element_text(size=15),
         legend.title = element_text(size = 18))
-msd_finyie
+#msd_finyie
 
 mci_finyie <- ggplot(stat, aes(x=as.factor(bb), y=fin_yield/100)) +
   facet_wrap(~at, ncol=4) +
@@ -532,7 +532,7 @@ mci_finyie <- ggplot(stat, aes(x=as.factor(bb), y=fin_yield/100)) +
         axis.title=element_text(size=18),
         legend.text=element_text(size=15),
         legend.title = element_text(size = 18))
-mci_finyie
+#mci_finyie
 
 # max diff between users yield
 msd_maxdif <- ggplot(stat, aes(x=as.factor(bb), y=max_diff_yield*100)) +
@@ -549,7 +549,7 @@ msd_maxdif <- ggplot(stat, aes(x=as.factor(bb), y=max_diff_yield*100)) +
         axis.text=element_text(size=12),
         legend.text=element_text(size=15),
         legend.title = element_text(size = 18))
-msd_maxdif
+#msd_maxdif
 
 mci_maxdif <- ggplot(stat, aes(x=as.factor(bb), y=max_diff_yield*100)) +
   facet_wrap(~at, ncol = 4) +
@@ -565,7 +565,7 @@ mci_maxdif <- ggplot(stat, aes(x=as.factor(bb), y=max_diff_yield*100)) +
         axis.text=element_text(size=12),
         legend.text=element_text(size=15),
         legend.title = element_text(size = 18))
-mci_maxdif
+#mci_maxdif
 
 # overK 
 msd_overK <- ggplot(stat, aes(x=as.factor(bb), y=overK_tot)) +
@@ -582,7 +582,7 @@ msd_overK <- ggplot(stat, aes(x=as.factor(bb), y=overK_tot)) +
         axis.title=element_text(size=18),
         legend.text=element_text(size=15),
         legend.title = element_text(size = 18))
-msd_overK
+#msd_overK
 
 mci_overK <- ggplot(stat, aes(x=as.factor(bb), y=overK_tot)) +
   facet_wrap(~at, ncol=4) +
@@ -598,4 +598,26 @@ mci_overK <- ggplot(stat, aes(x=as.factor(bb), y=overK_tot)) +
         axis.title=element_text(size=18),
         legend.text=element_text(size=15),
         legend.title = element_text(size = 18))
+#mci_overK
+
+# all of them
+gg_extprob
+
+bp_actdev
+bp_absactdev
+bp_finyie
+bp_maxdif
+bp_inacts
+bp_overK
+
+msd_actdev
+msd_absactdev
+msd_finyie # sometime goes over 100 which is impossible
+msd_maxdif # sometime goes under 0 which is impossible
+msd_overK # sometime goes under 0 which is impossible
+
+mci_actdev
+mci_absactdev
+mci_finyie
+mci_maxdif
 mci_overK
