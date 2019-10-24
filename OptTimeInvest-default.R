@@ -127,7 +127,7 @@ for (i in 1:length(at)) {
         OTI_default_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
         
         # Number of timesteps during which Manager chose not to update policy
-        OTI_default_results[k,10,param_set] <- final_ts-sum(sim$paras[,107])
+        OTI_default_results[k,10,param_set] <- (final_ts-sum(sim$paras[,107]))/final_ts
         
         # Number of K exceedings
         OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])
@@ -149,7 +149,7 @@ for (i in 1:length(at)) {
         OTI_default_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
         
         # Number of timesteps during which Manager chose not to update policy
-        OTI_default_results[k,10,param_set] <- final_ts-sum(sim$paras[,107])
+        OTI_default_results[k,10,param_set] <- (final_ts-sum(sim$paras[,107]))/final_ts
         
         # Number of K exceedings
         OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])
@@ -213,10 +213,10 @@ for (i in 1:length(at)) {
           OTI_default_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
           
           # Number of timesteps during which Manager chose not to update policy
-          OTI_default_results[k,10,param_set] <- final_ts-sum(sim$paras[,107])
+          OTI_default_results[k,10,param_set] <- 1-sum(sim$paras[,107])/final_ts
           
           # Number of K exceedings
-          OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])
+          OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])/final_ts
         }
         
         # If extinction did not occured
@@ -235,10 +235,10 @@ for (i in 1:length(at)) {
           OTI_default_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
           
           # Number of timesteps during which Manager chose not to update policy
-          OTI_default_results[k,10,param_set] <- final_ts-sum(sim$paras[,107])
+          OTI_default_results[k,10,param_set] <- 1-sum(sim$paras[,107])/final_ts
           
           # Number of K exceedings
-          OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])
+          OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])/final_ts
         }
       } # end rep for loop
       
@@ -285,7 +285,7 @@ for (i in 1:dim(OTI_default_results)[3]) {
   # Extinction probability (number of extinctions / number of replicates)
   stats_OTI_default_results[i,5] <- round(sum(OTI_default_results[,5,i])/dim(OTI_default_results)[1],3)
   
-  # Next are systematically mean, sd and 95CI of the meaures from batch_results
+  # Next are systematically mean, sd and 95CI of the mesures from batch_results
   zz <- 0
   for (k in 6:dim(OTI_default_results)[2]) {
     stats_OTI_default_results[i,k+zz] <- round(mean(OTI_default_results[,k,i]),3)
@@ -293,6 +293,13 @@ for (i in 1:dim(OTI_default_results)[3]) {
     stats_OTI_default_results[i,k+zz+2] <- 1.86*stats_OTI_default_results[i,k+zz+1]/sqrt(rep)
     zz <- zz + 2
   }
+  
+  ## need to find a sd calculus more adapted to each measure
+  # uniform [-100;+inf] for actdev
+  # uniform [0; +inf] for absactdev
+  # uniform [0;100] for finyie
+  # uniform [0;+inf] for maxdiff 
+  # binomial for inacts and overK sd = sqrt(rep*mean(inacts)(1-rep))
 }
 
 # Visualise the table to check for inconsistencies
@@ -317,6 +324,7 @@ attach(stat)
 gg_extprob <- ggplot(stat, aes(x=as.factor(bb), y=ext_prob)) +
   facet_wrap(~at, ncol = 4) +
   geom_point(colour = "red") +     
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
   labs(x="Budget Bonus (in fraction of Initial Budget)", y = "Extinction probability") +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey"),
@@ -333,11 +341,10 @@ attach(brut)
 
 # Resource population actual deviation from Manager's target
 # the closer to zero the better
-bp_actdev <- ggplot(brut, aes(x=as.factor(bb), y=act_dev*100)) +
+bp_actdev <- ggplot(brut, aes(x=as.factor(bb), y=act_dev)) +
   geom_boxplot(position=position_dodge()) +
   facet_wrap(~at, ncol = 4) +            
-  # geom_hline(yintercept = 100, linetype = "dashed", color = "red") +
-  # geom_hline(yintercept = -100, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = -1, linetype = "dashed", color = "red") + 
   geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
   labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Resource population deviation from target \n (in % of Manager's target)") +
   theme_gray() +
@@ -436,8 +443,7 @@ msd_actdev <- ggplot(stat, aes(x=as.factor(bb), y=act_dev)) +
                 position=position_dodge(1),
                 colour = "grey40", width=0.5) +
   geom_point(colour = "red") +
-  # geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
-  # geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = -1, linetype = "dashed", color = "red") + 
   geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
   labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Resource population deviation from target\n(fraction of MT, mean +/- sd)") +
   theme_gray() +
@@ -454,8 +460,7 @@ mci_actdev <- ggplot(stat, aes(x=as.factor(bb), y=act_dev)) +
                 position=position_dodge(1),
                 colour = "grey40", width=0.5) +
   geom_point(colour = "red") +
-  # geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
-  # geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = -1, linetype = "dashed", color = "red") + 
   geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
   labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Resource population deviation from target\n(fraction of MT, mean +/- 95ci)") +
   theme_gray() +
