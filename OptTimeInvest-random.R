@@ -6,28 +6,6 @@
 # Optimizing managers policy update timing
 # Simulations + Results + Figures
 
-
-#### Initialization ####
-
-## Packages 
-
-# GMSE
-install.packages("GMSE")
-
-# ggplot
-install.packages("ggplot2")
-install.packages("dplyr")
-
-## Libraries
-
-# GMSE
-library("GMSE")
-
-# plotting
-library("ggplot2")
-library(grid)
-library(dplyr)
-
 #### Update GMSE with the new features ####
 
 # Make sure this script is opened within the gmse_forkRQ1.Rproj project

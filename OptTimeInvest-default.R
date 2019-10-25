@@ -66,6 +66,14 @@ stats_columns <- c("rep", "budget", "at", "bb", "ext_prob", "act_dev", "act_dev_
 stats_OTI_default_results <- matrix(data = NA, nrow = dim(OTI_default_results)[3], ncol = length(stats_columns), dimnames = list(NULL,stats_columns))
 
 
+## Create 3 structures to follow up on the costs, the actions, and the population along the simulations
+flw_cos <- NULL
+flw_act <- NULL
+flw_pop <- NULL
+
+# how often do we want to save them? Every 10 replicates?
+freq <- 10
+
 ## Simulations loop
 
 # Initialize an index of parameter combination
@@ -108,6 +116,26 @@ for (i in 1:length(at)) {
       
       # Has extinction occured? (yes = 1, no = 0)
       OTI_default_results[k,5,param_set] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
+      
+      ## save costs, actions and population in flw structures
+      if (k %% freq == 0) {
+        print("Saving costs, actions and pop")
+        para <- OTI_default_results[k,2:5, param_set]
+        
+        pop <- rep(0, ts)
+        cos <- rep(0, ts)
+        act <- rep(0, ts)
+        
+        for (t in 1:final_ts) {
+          pop[t] <- dim(sim$resource[[t]])[1]
+          cos[t] <- sim$cost[[t]][1,9,2]
+          act[t] <- mean(sim$action[[t]][1,9,2:stkh])
+        }
+        
+        flw_pop <- rbind(flw_pop, c(para, pop))
+        flw_cos <- rbind(flw_cos, c(para, cos))
+        flw_act <- rbind(flw_act, c(para, act))
+      }
       
       # Next measures involve calculus that can be disturbed if extinction occured
       
@@ -195,6 +223,26 @@ for (i in 1:length(at)) {
         # Has extinction occured? (yes = 1, no = 0)
         OTI_default_results[k,5,param_set] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
         
+        ## save costs, actions and population in flw structures
+        if (k %% freq == 0) {
+          print("Saving costs, actions and pop")
+          para <- OTI_default_results[k,2:5, param_set]
+          
+          pop <- rep(0, ts)
+          cos <- rep(0, ts)
+          act <- rep(0, ts)
+          
+          for (t in 1:final_ts) {
+            pop[t] <- dim(sim$resource[[t]])[1]
+            cos[t] <- sim$cost[[t]][1,9,2]
+            act[t] <- mean(sim$action[[t]][1,9,2:stkh])
+          }
+          
+          flw_pop <- rbind(flw_pop, c(para, pop))
+          flw_cos <- rbind(flw_cos, c(para, cos))
+          flw_act <- rbind(flw_act, c(para, act))
+        }
+        
         # Next measures involve calculus that can be disturbed if extinction occured
         
         # If exctinction occured
@@ -267,7 +315,10 @@ for (i in 2:dim(OTI_default_results)[3]) {
   tab_OTI_default_results <- rbind(tab_OTI_default_results, OTI_default_results[,,i])
 }
 
-write.csv(tab_OTI_default_results, file = "tab_OTI_default_batch2.csv")
+write.csv(tab_OTI_default_results, file = "tab_OTI_default_batch3.csv")
+write.csv(flw_pop, file = "flw_pop_batch3.csv")
+write.csv(flw_cos, file = "flw_cos_batch3.csv")
+write.csv(flw_act, file = "flw_act_batch3.csv")
 
 #### Results ####
 
@@ -306,15 +357,15 @@ for (i in 1:dim(OTI_default_results)[3]) {
 View(stats_OTI_default_results)
 
 # Save the table in a csv file
-write.csv(stats_OTI_default_results, file = "stats_OTI_default_batch2.csv", row.names = F)
+write.csv(stats_OTI_default_results, file = "stats_OTI_default_batch3.csv", row.names = F)
 
 #### plotting ####
 
 # import data
-tab_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/tab_OTI_default_batch2.csv")
+tab_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/tab_OTI_default_batch3.csv")
 brut <- as.data.frame(tab_OTI_default_results)
 
-stats_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/stats_OTI_default_batch2.csv")
+stats_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/stats_OTI_default_batch3.csv")
 stat <- as.data.frame(stats_OTI_default_results)
 
 ## Extinction probability
