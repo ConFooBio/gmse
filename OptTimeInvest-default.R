@@ -362,10 +362,10 @@ write.csv(stats_OTI_default_results, file = "stats_OTI_default_batch3.csv", row.
 #### plotting ####
 
 # import data
-tab_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/tab_OTI_default_batch3.csv")
+tab_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/tab_OTI_default_batch2.csv")
 brut <- as.data.frame(tab_OTI_default_results)
 
-stats_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/stats_OTI_default_batch3.csv")
+stats_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/stats_OTI_default_batch2.csv")
 stat <- as.data.frame(stats_OTI_default_results)
 
 ## Extinction probability
