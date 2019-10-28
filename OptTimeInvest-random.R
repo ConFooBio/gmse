@@ -22,16 +22,16 @@
 bb <- 0.5
 
 # Number of simulation time steps
-ts <- 10
+ts <- 20
 
 # Number of different cases
-rep <- 10
+rep <- 100
 
 # Budget
 bdgt <- 1000
 
-# number of updating threshold values
-ut_nb <- 5
+# # number of updating threshold values
+# ut_nb <- 5
 
 # Other parameters to GMSE default
 
@@ -40,11 +40,14 @@ ut_nb <- 5
 
 columns <- c("case_nb", "popinit", "K", "MT", "nb_stkh", "at", "bb", "extinct", "act_dev", "abs_act_dev", "fin_yield", "max_diff_yield", "inac_ts", "overK")
 
-# Empty 2D array of correct size 
-# Dimensions(lines = simulations, columns = measures)
-OTI_random_results <- array(data=NA, dim = c(rep*ut_nb, length(columns)), dimnames = list(NULL,columns))                 
+# # Empty 2D array of correct size 
+# # Dimensions(lines = simulations, columns = measures)
+# OTI_random_results <- array(data=NA, dim = c(rep*ut_nb, length(columns)), dimnames = list(NULL,columns))                 
+OTI_random_results <- NULL
 
 ## Create 3 structures to follow up on the costs, the actions, and the population along the simulations
+flw_names <- c(columns[1:8], as.character(c(1:ts)))
+
 flw_cos <- NULL
 flw_act <- NULL
 flw_pop <- NULL
@@ -55,7 +58,7 @@ flw_pop <- NULL
 ## Simulations loop
 
 # Loop
-start <- Sys.time()
+(start <- Sys.time())
 
 # For every different case
 for (k in 1:rep) {
@@ -70,21 +73,28 @@ for (k in 1:rep) {
   # Make sure it is not negative
   K <- ifelse(K<0, -K, K)
   
-  # Manager target: which will probably be close to but under K 
-  MT <- signif(rnorm(n = 1, mean = 0.75, sd = 0.1)*K, digits = 2)
+  # Manager target: which will probably be close to but under K
+  # MT <- signif(rnorm(n = 1, mean = 0.75, sd = 0.1)*K, digits = 2)
+  MT <- floor(rnorm(n = 1, mean = 0.75, sd = 0.1)*K)
   
   # Make sure it is under K
-  MT <- ifelse(MT > K, signif(MT-2*(MT-K), digits = 2), MT)
+  # MT <- ifelse(MT > K, signif(MT-2*(MT-K), digits = 2), MT)
+  MT <- ifelse(MT > K, floor(MT-2*(MT-K)), MT)
   
   # Number of stakeholders : draw a number of stakeholders between 2 and 50
   nbstk <- floor(runif(n = 1, min = 2, max = 50))
   
   # Array of Action Threshold values to explore
   # Make sure AT values includes 0 (updating only if extinction is suspected by monitoring data) and K (updating only when pop overshoots carrying capacity)
-  at <- sort(c(0, 0.1, abs(K/MT-1), 0.5, 0.7, 1))
+  # at <- sort(c(0, 0.1, abs(K/MT-1), 0.5, 0.7, 1))
+  at <- sort(c(0, 0.1, abs(K/MT-1), 0.7, 1))
   
-  # for each ut value
+  # For each ut value
   for (i in 1:length(at)) {
+    
+    # initiate para and line
+    para <- NULL
+    line <- NULL
     
     # Run GMSE for the parameter combo
     sim <- gmse(time_max = ts,
@@ -95,36 +105,40 @@ for (k in 1:rep) {
     # Store the last time step number (for extinction-related bugs)
     final_ts <- length(which(sim$paras[,1] != 0))
     
-    # Pick up values for simulation results and store them in OTI_random_results
+    ## Pick up values for simulation results and store them in OTI_random_results
     
-    # case number
-    OTI_random_results[k,1] <- k
+    # fill in line and para
+    para <- c(k, popini, K, MT, nbstk, at[i], bb)
+    line <- c(para, ifelse(final_ts < dim(sim$paras)[1], 1, 0))
     
-    # Initial Resource population
-    OTI_random_results[k,2] <- popini
-    
-    # Carrying capacity
-    OTI_random_results[k,3] <- K
-    
-    # Manager target
-    OTI_random_results[k,4] <- MT
-    
-    # Number of stakeholders
-    OTI_random_results[k,5] <- nbstk
-    
-    # Updating threshold value
-    OTI_random_results[k,6] <- at[i]
-    
-    # Budget bonus value
-    OTI_random_results[k,7] <- bb
-    
-    # Has extinction occured? (yes = 1, no = 0)
-    OTI_random_results[k,8] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
+    # # Case number
+    # OTI_random_results[k,1] <- k
+    # 
+    # # Initial Resource population
+    # OTI_random_results[k,2] <- popini
+    # 
+    # # Carrying capacity
+    # OTI_random_results[k,3] <- K
+    # 
+    # # Manager target
+    # OTI_random_results[k,4] <- MT
+    # 
+    # # Number of stakeholders
+    # OTI_random_results[k,5] <- nbstk
+    # 
+    # # Updating threshold value
+    # OTI_random_results[k,6] <- at[i]
+    # 
+    # # Budget bonus value
+    # OTI_random_results[k,7] <- bb
+    # 
+    # # Has extinction occured? (yes = 1, no = 0)
+    # OTI_random_results[k,8] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
     
     ## save costs, actions and population in flw structures
     # if (k %% freq == 0) {
     # print("Saving costs, actions and pop")
-    para <- OTI_random_results[k,2:8]
+    # para <- OTI_random_results[k,2:8]
     
     pop <- rep(0, ts)
     cos <- rep(0, ts)
@@ -136,70 +150,103 @@ for (k in 1:rep) {
       act[t] <- mean(sim$action[[t]][1,9,2:nbstk])
     }
     
-    flw_pop <- rbind(flw_pop, c(para, pop))
-    flw_cos <- rbind(flw_cos, c(para, cos))
-    flw_act <- rbind(flw_act, c(para, act))
+    flw_pop <- rbind(flw_pop, c(line, pop))
+    flw_cos <- rbind(flw_cos, c(line, cos))
+    flw_act <- rbind(flw_act, c(line, act))
     # }
     
     # Next measures involve calculus that can be disturbed if extinction occured
     
     # If exctinction occured
-    if (OTI_random_results[k,8] != 0) {
+    # if (OTI_random_results[k+zz,8] != 0) {
+    if (para[7] != 0) {
       
-      # Resource actual pop deviation from target
-      OTI_random_results[k,9] <- dim(sim$resource[[final_ts-1]])[1]/sim$action[[1]][1,5,1] - 1
+      line <- c(line, 
+                dim(sim$resource[[final_ts-1]])[1]/sim$action[[1]][1,5,1] - 1, 
+                abs(dim(sim$resource[[final_ts-1]])[1]/sim$action[[1]][1,5,1] - 1), 
+                sum(sim$agents[[final_ts-1]][,16]),
+                (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16]),
+                1-sum(sim$paras[,107])/final_ts,
+                sum(sim$paras[,109])/final_ts)
       
-      # absolute value
-      OTI_random_results[k,10] <- abs(OTI_random_results[k,6])
+      # # Resource actual pop deviation from target
+      # OTI_random_results[k+zz,9] <- dim(sim$resource[[final_ts-1]])[1]/sim$action[[1]][1,5,1] - 1
+      # 
+      # # absolute value
+      # OTI_random_results[k+zz,10] <- abs(OTI_random_results[k,6])
+      # 
+      # # Users total final yield
+      # OTI_random_results[k+zz,11] <- sum(sim$agents[[final_ts-1]][,16])
+      # 
+      # # Maximum difference between Users yield (in percentage of the highest yield)
+      # OTI_random_results[k+zz,12] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
+      # 
+      # # Number of timesteps during which Manager chose not to update policy
+      # OTI_random_results[k+zz,13] <- 1-sum(sim$paras[,107])/final_ts
+      # 
+      # # Number of K exceedings
+      # OTI_random_results[k+zz,14] <- sum(sim$paras[,109])/final_ts
       
-      # Users total final yield
-      OTI_random_results[k,11] <- sum(sim$agents[[final_ts-1]][,16])
-      
-      # Maximum difference between Users yield (in percentage of the highest yield)
-      OTI_random_results[k,12] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
-      
-      # Number of timesteps during which Manager chose not to update policy
-      OTI_random_results[k,13] <- 1-sum(sim$paras[,107])/final_ts
-      
-      # Number of K exceedings
-      OTI_random_results[k,14] <- sum(sim$paras[,109])/final_ts
+      OTI_random_results <- rbind(OTI_random_results, line)
     }
     
     # If extinction did not occured
     else {
       
-      # Resource actual pop deviation from target
-      OTI_random_results[k,9] <- dim(sim$resource[[final_ts]])[1]/sim$action[[1]][1,5,1] - 1
+      line <- c(line, 
+                dim(sim$resource[[final_ts]])[1]/sim$action[[1]][1,5,1] - 1, 
+                abs(dim(sim$resource[[final_ts]])[1]/sim$action[[1]][1,5,1] - 1), 
+                sum(sim$agents[[final_ts]][,16]),
+                (max(sim$agents[[final_ts]][,16]) - min(sim$agents[[final_ts]][-1,16]))/max(sim$agents[[final_ts]][,16]),
+                1-sum(sim$paras[,107])/final_ts,
+                sum(sim$paras[,109])/final_ts)
       
-      # absolute value
-      OTI_random_results[k,10] <- abs(OTI_random_results[k,6])
+      # # Resource actual pop deviation from target
+      # OTI_random_results[k+zz,9] <- dim(sim$resource[[final_ts]])[1]/sim$action[[1]][1,5,1] - 1
+      # 
+      # # absolute value
+      # OTI_random_results[k+zz,10] <- abs(OTI_random_results[k,6])
+      # 
+      # # Users total final yield
+      # OTI_random_results[k+zz,11] <- sum(sim$agents[[final_ts-1]][,16])
+      # 
+      # # Maximum difference between Users yield (in percentage of the highest yield)
+      # OTI_random_results[k+zz,12] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
+      # 
+      # # Number of timesteps during which Manager chose not to update policy
+      # OTI_random_results[k+zz,13] <- 1-sum(sim$paras[,107])/final_ts
+      # 
+      # # Number of K exceedings
+      # OTI_random_results[k+zz,14] <- sum(sim$paras[,109])/final_ts
       
-      # Users total final yield
-      OTI_random_results[k,11] <- sum(sim$agents[[final_ts-1]][,16])
-      
-      # Maximum difference between Users yield (in percentage of the highest yield)
-      OTI_random_results[k,12] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
-      
-      # Number of timesteps during which Manager chose not to update policy
-      OTI_random_results[k,13] <- 1-sum(sim$paras[,107])/final_ts
-      
-      # Number of K exceedings
-      OTI_random_results[k,14] <- sum(sim$paras[,109])/final_ts
-    }    
-  } # end at for loop      
+      OTI_random_results <- rbind(OTI_random_results, line)
+    }
+    
+  } # end at for loop   
   
   # keep track of the simulations
-  if (k %% 5 == 0) {
+  if (k %% 10 == 0) {
     print(paste("parameter set number", k, "out of", rep, "at", Sys.time(), sep = " "))
   }
   
 } # end rep for loop
 
 # Simulation time
-end <- Sys.time()
+(end <- Sys.time())
 print(paste("Batch started", start, "and ended", end, sep = " "))
 
-write.csv(OTI_random_results, file = "OTI_random_batch3.csv")
-write.csv(flw_pop, file = "flw_pop_batch3.csv")
-write.csv(flw_cos, file = "flw_cos_batch3.csv")
-write.csv(flw_act, file = "flw_act_batch3.csv")
+# set results as a data frame
+OTI_random_results <- as.data.frame(OTI_random_results, row.names = c(1:(rep*length(at))))
+colnames(OTI_random_results) <- columns
+
+flw_act <- as.data.frame(flw_act)
+colnames(flw_act) <- flw_names
+flw_cos <- as.data.frame(flw_cos)
+colnames(flw_cos) <- flw_names
+flw_pop <- as.data.frame(flw_pop)
+colnames(flw_pop) <- flw_names
+
+write.csv(OTI_random_results, file = "OTI_random_batch1.csv")
+write.csv(flw_pop, file = "flw_pop_batch1.csv")
+write.csv(flw_cos, file = "flw_cos_batch1.csv")
+write.csv(flw_act, file = "flw_act_batch1.csv")
