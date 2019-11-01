@@ -3,7 +3,7 @@
 # University of Stirling
 
 # Reserch Question 1
-# Optimizing managers policy updating timing with a fictional default case 
+# Optimizing managers policy updating timing with a fictional default case varying the budget
 # Simulations + Results + Figures
 
 
@@ -14,6 +14,8 @@
 
 
 #### Simulations ####
+## meme chose mais pour un petit nombre de different budgets
+## une couleur par budget au debut
 
 ## Set parameters
 
@@ -29,8 +31,11 @@ ts <- 20
 # Number of replicates
 rep <- 100
 
-# Budget
+# Users budget
 bdgt <- 1000
+
+# Budget inequity
+ineq <- seq(0.4,2,0.4)
 
 ## Case parameters: a standard case, a pop is endangered by culling, put under conservation, managers want to maintain it close to their carrying capacity
 # initial Resource population
@@ -50,21 +55,13 @@ stkh <- 10
 
 ## Create empty structures to gather simulation results
 
-columns <- c("rep", "budget", "at", "bb", "extinct", "act_dev", "abs_act_dev", "fin_yield", "max_diff_yield", "inac_ts", "overK")
+columns <- c("rep", "bdgt_ratio", "at", "bb", "extinct", "act_dev", "abs_act_dev", "fin_yield", "max_diff_yield", "inac_ts", "overK")
 
 # Empty 3D array of correct size 
 # Dimensions(lines = replicates, columns = measures, layer = parameter combination)
-OTI_default_results <- array(data=NA, dim = c(rep, length(columns), length(at)*length(bb)-(length(bb)-1)), dimnames = list(NULL,columns,NULL))                 
+OTI_default_results <- array(data=NA, dim = c(rep, length(columns), length(at)*length(bb)*length(ineq)-(length(bb)-1)*length(ineq)), dimnames = list(NULL,columns,NULL))                 
 
 # Create an empty structure for basic stats on OTI_default_results
-
-# Array of column names
-stats_columns <- c("rep", "budget", "at", "bb", "ext_prob", "act_dev", "act_dev_sd", "act_dev_95ci", "abs_act_dev", "abs_act_dev_sd", "abs_act_dev_95ci", "fin_yield", "fin_yield_sd", "fin_yield_95ci", "max_diff_yield", "max_diff_yield_sd", "max_diff_yield_95ci", "inac_ts", "inac_ts_sd", "inac_ts_95ci", "overK_tot", "overK_sd", "overK_95ci")
-
-# Empty 2D array of correct size
-# Dimensions(lines = parameter combo index, columns = measures)
-stats_OTI_default_results <- matrix(data = NA, nrow = dim(OTI_default_results)[3], ncol = length(stats_columns), dimnames = list(NULL,stats_columns))
-
 
 ## Create 3 structures to follow up on the costs, the actions, and the population along the simulations
 flw_cos <- NULL
@@ -85,114 +82,11 @@ start <- Sys.time()
 # For every AT values in 'at'
 for (i in 1:length(at)) {
   
-  # avoid simul for different bb values for at = 0
-  if (at[i] == 0) {
-    
-    # With 'rep' number of replicate per parameter combo
-    for (k in 1:rep) {
-      
-      # Run GMSE for the parameter combo
-      sim <- gmse(stakeholders = stkh, time_max = ts, land_ownership = TRUE,
-                  RESOURCE_ini = popinit, res_death_K = K,
-                  action_thres = 0, budget_bonus = 0, manage_target = trgt,
-                  plotting = F)
-      
-      # Store the last time step number (for extinction-related bugs)
-      final_ts <- length(which(sim$paras[,1] != 0))
-      
-      # Pick up values for simulation results and store them in OTI_default_results
-      
-      # Replicate number
-      OTI_default_results[k,1,param_set] <- k
-      
-      # Budget
-      OTI_default_results[k,2,param_set] <- bdgt
-      
-      # AT value
-      OTI_default_results[k,3,param_set] <- at[i]
-      
-      # BB value
-      OTI_default_results[k,4,param_set] <- 0
-      
-      # Has extinction occured? (yes = 1, no = 0)
-      OTI_default_results[k,5,param_set] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
-      
-      ## save costs, actions and population in flw structures
-      if (k %% freq == 0) {
-        print("Saving costs, actions and pop")
-        para <- OTI_default_results[k,2:5, param_set]
-        
-        pop <- rep(0, ts)
-        cos <- rep(0, ts)
-        act <- rep(0, ts)
-        
-        for (t in 1:final_ts) {
-          pop[t] <- dim(sim$resource[[t]])[1]
-          cos[t] <- sim$cost[[t]][1,9,2]
-          act[t] <- mean(sim$action[[t]][1,9,2:stkh])
-        }
-        
-        flw_pop <- rbind(flw_pop, c(para, pop))
-        flw_cos <- rbind(flw_cos, c(para, cos))
-        flw_act <- rbind(flw_act, c(para, act))
-      }
-      
-      # Next measures involve calculus that can be disturbed if extinction occured
-      
-      # If exctinction occured
-      if (OTI_default_results[k,5,param_set] != 0) {
-        
-        # Resource actual pop deviation from target
-        OTI_default_results[k,6,param_set] <- dim(sim$resource[[final_ts-1]])[1]/sim$action[[1]][1,5,1] - 1
-        
-        # Absolute value
-        OTI_default_results[k,7,param_set] <- abs(OTI_default_results[k,6,param_set])
-        
-        # Users total final yield
-        OTI_default_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
-        
-        # Maximum difference between Users yield
-        OTI_default_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
-        
-        # Number of timesteps during which Manager chose not to update policy
-        OTI_default_results[k,10,param_set] <- (final_ts-sum(sim$paras[,107]))/final_ts
-        
-        # Number of K exceedings
-        OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])
-      }
-      
-      # If extinction did not occured
-      else {
-        
-        # Resource actual pop deviation from target
-        OTI_default_results[k,6,param_set] <- dim(sim$resource[[final_ts]])[1]/sim$action[[1]][1,5,1] - 1
-        
-        # Absolute value
-        OTI_default_results[k,7,param_set] <- abs(OTI_default_results[k,6,param_set])
-        
-        # Users total final yield
-        OTI_default_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
-        
-        # Maximum difference between Users yield
-        OTI_default_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
-        
-        # Number of timesteps during which Manager chose not to update policy
-        OTI_default_results[k,10,param_set] <- (final_ts-sum(sim$paras[,107]))/final_ts
-        
-        # Number of K exceedings
-        OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])
-      }
-    } # end rep for loop
-    
-    # Increment parameter combo index
-    param_set <- param_set + 1
-  } # end at if loop
+  # For every budget ratio
+  for (rr in 1:length(ineq)) {
   
-  # for every other at value
-  else {
-    
-    # For every BB values in 'bb'
-    for (j in 1:length(bb)) {
+    # Avoid simul for different bb values for at = 0
+    if (at[i] == 0) {
       
       # With 'rep' number of replicate per parameter combo
       for (k in 1:rep) {
@@ -200,7 +94,7 @@ for (i in 1:length(at)) {
         # Run GMSE for the parameter combo
         sim <- gmse(stakeholders = stkh, time_max = ts, land_ownership = TRUE,
                     RESOURCE_ini = popinit, res_death_K = K,
-                    action_thres = at[i], budget_bonus = bb[j], manage_target = trgt,
+                    action_thres = 0, budget_bonus = 0, manager_budget = ineq[rr]*bdgt, manage_target = trgt,
                     plotting = F)
         
         # Store the last time step number (for extinction-related bugs)
@@ -212,13 +106,13 @@ for (i in 1:length(at)) {
         OTI_default_results[k,1,param_set] <- k
         
         # Budget
-        OTI_default_results[k,2,param_set] <- bdgt
+        OTI_default_results[k,2,param_set] <- ineq[rr]
         
         # AT value
-        OTI_default_results[k,3,param_set] <- sim$paras[1,106]
+        OTI_default_results[k,3,param_set] <- at[i]
         
         # BB value
-        OTI_default_results[k,4,param_set] <- bb[j]
+        OTI_default_results[k,4,param_set] <- 0
         
         # Has extinction occured? (yes = 1, no = 0)
         OTI_default_results[k,5,param_set] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
@@ -251,20 +145,20 @@ for (i in 1:length(at)) {
           # Resource actual pop deviation from target
           OTI_default_results[k,6,param_set] <- dim(sim$resource[[final_ts-1]])[1]/sim$action[[1]][1,5,1] - 1
           
-          # absolute value
+          # Absolute value
           OTI_default_results[k,7,param_set] <- abs(OTI_default_results[k,6,param_set])
           
           # Users total final yield
           OTI_default_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
           
-          # Maximum difference between Users yield (in percentage of the highest yield)
+          # Maximum difference between Users yield
           OTI_default_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
           
           # Number of timesteps during which Manager chose not to update policy
-          OTI_default_results[k,10,param_set] <- 1-sum(sim$paras[,107])/final_ts
+          OTI_default_results[k,10,param_set] <- (final_ts-sum(sim$paras[,107]))/final_ts
           
           # Number of K exceedings
-          OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])/final_ts
+          OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])
         }
         
         # If extinction did not occured
@@ -273,32 +167,139 @@ for (i in 1:length(at)) {
           # Resource actual pop deviation from target
           OTI_default_results[k,6,param_set] <- dim(sim$resource[[final_ts]])[1]/sim$action[[1]][1,5,1] - 1
           
-          # absolute value
+          # Absolute value
           OTI_default_results[k,7,param_set] <- abs(OTI_default_results[k,6,param_set])
           
           # Users total final yield
           OTI_default_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
           
-          # Maximum difference between Users yield (in percentage of the highest yield)
+          # Maximum difference between Users yield
           OTI_default_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
           
           # Number of timesteps during which Manager chose not to update policy
-          OTI_default_results[k,10,param_set] <- 1-sum(sim$paras[,107])/final_ts
+          OTI_default_results[k,10,param_set] <- (final_ts-sum(sim$paras[,107]))/final_ts
           
           # Number of K exceedings
-          OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])/final_ts
+          OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])
         }
       } # end rep for loop
       
-      # keep track of the simulations
-      if (param_set %% 10 == 0) {
-        print(paste("parameter set number", param_set, "out of", dim(OTI_default_results)[3], "at", Sys.time(), sep = " "))
-      }
-      
       # Increment parameter combo index
       param_set <- param_set + 1
-    } # end bb for loop
-  } # end at else loop
+    } # end at if loop
+    
+    # for every other at value
+    else {
+      
+      # For every BB values in 'bb'
+      for (j in 1:length(bb)) {
+        
+        # With 'rep' number of replicate per parameter combo
+        for (k in 1:rep) {
+          
+          # Run GMSE for the parameter combo
+          sim <- gmse(stakeholders = stkh, time_max = ts, land_ownership = TRUE,
+                      RESOURCE_ini = popinit, res_death_K = K,
+                      action_thres = at[i], budget_bonus = bb[j], manager_budget = ineq[rr]*bdgt, manage_target = trgt,
+                      plotting = F)
+          
+          # Store the last time step number (for extinction-related bugs)
+          final_ts <- length(which(sim$paras[,1] != 0))
+          
+          # Pick up values for simulation results and store them in OTI_default_results
+          
+          # Replicate number
+          OTI_default_results[k,1,param_set] <- k
+          
+          # Budget
+          OTI_default_results[k,2,param_set] <- ineq[rr]
+          
+          # AT value
+          OTI_default_results[k,3,param_set] <- sim$paras[1,106]
+          
+          # BB value
+          OTI_default_results[k,4,param_set] <- bb[j]
+          
+          # Has extinction occured? (yes = 1, no = 0)
+          OTI_default_results[k,5,param_set] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
+          
+          ## save costs, actions and population in flw structures
+          if (k %% freq == 0) {
+            print("Saving costs, actions and pop")
+            para <- OTI_default_results[k,2:5, param_set]
+            
+            pop <- rep(0, ts)
+            cos <- rep(0, ts)
+            act <- rep(0, ts)
+            
+            for (t in 1:final_ts) {
+              pop[t] <- dim(sim$resource[[t]])[1]
+              cos[t] <- sim$cost[[t]][1,9,2]
+              act[t] <- mean(sim$action[[t]][1,9,2:stkh])
+            }
+            
+            flw_pop <- rbind(flw_pop, c(para, pop))
+            flw_cos <- rbind(flw_cos, c(para, cos))
+            flw_act <- rbind(flw_act, c(para, act))
+          }
+          
+          # Next measures involve calculus that can be disturbed if extinction occured
+          
+          # If exctinction occured
+          if (OTI_default_results[k,5,param_set] != 0) {
+            
+            # Resource actual pop deviation from target
+            OTI_default_results[k,6,param_set] <- dim(sim$resource[[final_ts-1]])[1]/sim$action[[1]][1,5,1] - 1
+            
+            # absolute value
+            OTI_default_results[k,7,param_set] <- abs(OTI_default_results[k,6,param_set])
+            
+            # Users total final yield
+            OTI_default_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
+            
+            # Maximum difference between Users yield (in percentage of the highest yield)
+            OTI_default_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
+            
+            # Number of timesteps during which Manager chose not to update policy
+            OTI_default_results[k,10,param_set] <- 1-sum(sim$paras[,107])/final_ts
+            
+            # Number of K exceedings
+            OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])/final_ts
+          }
+          
+          # If extinction did not occured
+          else {
+            
+            # Resource actual pop deviation from target
+            OTI_default_results[k,6,param_set] <- dim(sim$resource[[final_ts]])[1]/sim$action[[1]][1,5,1] - 1
+            
+            # absolute value
+            OTI_default_results[k,7,param_set] <- abs(OTI_default_results[k,6,param_set])
+            
+            # Users total final yield
+            OTI_default_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
+            
+            # Maximum difference between Users yield (in percentage of the highest yield)
+            OTI_default_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
+            
+            # Number of timesteps during which Manager chose not to update policy
+            OTI_default_results[k,10,param_set] <- 1-sum(sim$paras[,107])/final_ts
+            
+            # Number of K exceedings
+            OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])/final_ts
+          }
+        } # end rep for loop
+        
+        # keep track of the simulations
+        if (param_set %% 20 == 0) {
+          print(paste("parameter set number", param_set, "out of", dim(OTI_default_results)[3], "at", Sys.time(), sep = " "))
+        }
+        
+        # Increment parameter combo index
+        param_set <- param_set + 1
+      } # end bb for loop
+    } # end at else loop
+  } # end ineq for loop
 } # end at for loop
 
 # Simulation time
@@ -315,12 +316,19 @@ for (i in 2:dim(OTI_default_results)[3]) {
   tab_OTI_default_results <- rbind(tab_OTI_default_results, OTI_default_results[,,i])
 }
 
-write.csv(tab_OTI_default_results, file = "tab_OTI_default_batch3.csv")
-write.csv(flw_pop, file = "flw_pop_batch3.csv")
-write.csv(flw_cos, file = "flw_cos_batch3.csv")
-write.csv(flw_act, file = "flw_act_batch3.csv")
+write.csv(tab_OTI_default_results, file = "tab_OTI_budget_batchtest.csv")
+write.csv(flw_pop, file = "bdgt_pop_batchtest.csv")
+write.csv(flw_cos, file = "bdgt_cos_batchtest.csv")
+write.csv(flw_act, file = "bdgt_act_batchtest.csv")
 
 #### Results ####
+
+# Array of column names
+stats_columns <- c("rep", "bdgt_ratio", "at", "bb", "ext_prob", "act_dev", "act_dev_sd", "act_dev_95ci", "abs_act_dev", "abs_act_dev_sd", "abs_act_dev_95ci", "fin_yield", "fin_yield_sd", "fin_yield_95ci", "max_diff_yield", "max_diff_yield_sd", "max_diff_yield_95ci", "inac_ts", "inac_ts_sd", "inac_ts_95ci", "overK_tot", "overK_sd", "overK_95ci")
+
+# Empty 2D array of correct size
+# Dimensions(lines = parameter combo index, columns = measures)
+stats_OTI_default_results <- matrix(data = NA, nrow = dim(OTI_default_results)[3], ncol = length(stats_columns), dimnames = list(NULL,stats_columns))
 
 # for each parameter combo
 for (i in 1:dim(OTI_default_results)[3]) {
@@ -357,7 +365,7 @@ for (i in 1:dim(OTI_default_results)[3]) {
 View(stats_OTI_default_results)
 
 # Save the table in a csv file
-write.csv(stats_OTI_default_results, file = "stats_OTI_default_batch3.csv", row.names = F)
+write.csv(stats_OTI_default_results, file = "stats_OTI_budget_batchtest.csv", row.names = F)
 
 #### plotting ####
 
@@ -372,11 +380,13 @@ stat <- as.data.frame(stats_OTI_default_results)
 
 attach(stat)
 
-gg_extprob <- ggplot(stat, aes(x=as.factor(bb), y=ext_prob)) +
-  facet_wrap(~at, ncol = 4) +
-  geom_point(colour = "red") +     
+gg_extprob <- ggplot(stat, aes(x=as.factor(bb), y=ext_prob, fill = as.factor(bdgt_ratio))) +
+  facet_wrap(~at, ncol = 4) +   
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
   labs(x="Budget Bonus (in fraction of Initial Budget)", y = "Extinction probability") +
+  scale_fill_discrete(name="Budget inequity") +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey"),
         strip.text=element_text(color="white", face="bold"),
@@ -392,12 +402,13 @@ attach(brut)
 
 # Resource population actual deviation from Manager's target
 # the closer to zero the better
-bp_actdev <- ggplot(brut, aes(x=as.factor(bb), y=act_dev)) +
+bp_actdev <- ggplot(brut, aes(x=as.factor(bb), y=act_dev, fill = as.factor(bdgt_ratio))) +
   geom_boxplot(position=position_dodge()) +
   facet_wrap(~at, ncol = 4) +            
   geom_hline(yintercept = -1, linetype = "dashed", color = "red") + 
   geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
   labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Resource population deviation from target \n (in % of Manager's target)") +
+  scale_fill_discrete(name="Budget inequity") +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey"),
         strip.text=element_text(color="white", face="bold"),
@@ -408,13 +419,14 @@ bp_actdev <- ggplot(brut, aes(x=as.factor(bb), y=act_dev)) +
 
 # Absolute value of Resource population actual deviation from target
 # the closer to zero the better
-bp_absactdev <- ggplot(brut, aes(x=as.factor(bb), y=abs_act_dev*100)) +
+bp_absactdev <- ggplot(brut, aes(x=as.factor(bb), y=abs_act_dev*100, fill = as.factor(bdgt_ratio))) +
   geom_boxplot(position=position_dodge()) +
   facet_wrap(~at, ncol = 4) +            
   # geom_hline(yintercept = 100, linetype = "dashed", color = "red") +
   # geom_hline(yintercept = -100, linetype = "dashed", color = "red") +
   geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
   labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Absolute value of deviation from target \n (in % of Manager's target)") +
+  scale_fill_discrete(name="Budget inequity") +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey"),
         strip.text=element_text(color="white", face="bold"),
@@ -426,11 +438,12 @@ bp_absactdev <- ggplot(brut, aes(x=as.factor(bb), y=abs_act_dev*100)) +
 # Users final yield
 # Absolute value of Resource population actual deviation from target
 # the closer to 100 the better
-bp_finyie <- ggplot(brut, aes(x=as.factor(bb), y=fin_yield/100)) +
+bp_finyie <- ggplot(brut, aes(x=as.factor(bb), y=fin_yield/100, fill = as.factor(bdgt_ratio))) +
   geom_boxplot(position=position_dodge()) +
   facet_wrap(~at, ncol = 4) +            
   geom_hline(yintercept = 100, linetype = "dashed", color = "blue") +
   labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Users final yield (in k-budget units)") +
+  scale_fill_discrete(name="Budget inequity") +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey"),
         strip.text=element_text(color="white", face="bold"),
@@ -441,11 +454,12 @@ bp_finyie <- ggplot(brut, aes(x=as.factor(bb), y=fin_yield/100)) +
 
 # Equity between users final yields
 # the closer to zero the better
-bp_maxdif <- ggplot(brut, aes(x=as.factor(bb), y=max_diff_yield)) +
+bp_maxdif <- ggplot(brut, aes(x=as.factor(bb), y=max_diff_yield, fill = as.factor(bdgt_ratio))) +
   geom_boxplot(position=position_dodge()) +
   facet_wrap(~at, ncol = 4) +            
   geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
   labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Maximum difference between Users personal yields \n (in budget units)") +
+  scale_fill_discrete(name="Budget inequity") +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey"),
         strip.text=element_text(color="white", face="bold"),
@@ -456,10 +470,11 @@ bp_maxdif <- ggplot(brut, aes(x=as.factor(bb), y=max_diff_yield)) +
 
 # Number of time steps of non updating
 # (maximum value of time_max-1)
-bp_inacts <- ggplot(brut, aes(x=as.factor(bb), y=inac_ts)) +
+bp_inacts <- ggplot(brut, aes(x=as.factor(bb), y=inac_ts, fill = as.factor(bdgt_ratio))) +
   geom_boxplot(position=position_dodge()) +
   facet_wrap(~at, ncol = 4) +            
   labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Mean number of non-updating policy events") +
+  scale_fill_discrete(name="Budget inequity") +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey"),
         strip.text=element_text(color="white", face="bold"),
@@ -470,11 +485,12 @@ bp_inacts <- ggplot(brut, aes(x=as.factor(bb), y=inac_ts)) +
 
 # Number of time steps when Resource population went over its K
 # the closer to zero the better
-bp_overK <- ggplot(brut, aes(x=as.factor(bb), y=overK)) +
+bp_overK <- ggplot(brut, aes(x=as.factor(bb), y=overK, fill = as.factor(bdgt_ratio))) +
   geom_boxplot(position=position_dodge()) +
   facet_wrap(~at, ncol = 4) +            
   geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
   labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Number of Resource K-overshooting events") +
+  scale_fill_discrete(name="Budget inequity") +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey"),
         strip.text=element_text(color="white", face="bold"),
@@ -488,15 +504,17 @@ bp_overK <- ggplot(brut, aes(x=as.factor(bb), y=overK)) +
 attach(stat)
 
 # act_dev
-msd_actdev <- ggplot(stat, aes(x=as.factor(bb), y=act_dev)) +
+msd_actdev <- ggplot(stat, aes(x=as.factor(bb), y=act_dev, fill = as.factor(bdgt_ratio))) +
   facet_wrap(~at, ncol=4) +
   geom_errorbar(aes(ymin=act_dev-act_dev_sd, ymax=act_dev+act_dev_sd),  
                 position=position_dodge(1),
                 colour = "grey40", width=0.5) +
-  geom_point(colour = "red") +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
   geom_hline(yintercept = -1, linetype = "dashed", color = "red") + 
   geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
   labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Resource population deviation from target\n(fraction of MT, mean +/- sd)") +
+  scale_fill_discrete(name="Budget inequity") +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey"),
         strip.text=element_text(color="white", face="bold"),
@@ -505,15 +523,17 @@ msd_actdev <- ggplot(stat, aes(x=as.factor(bb), y=act_dev)) +
         legend.title = element_text(size = 18))
 #msd_actdev
 
-mci_actdev <- ggplot(stat, aes(x=as.factor(bb), y=act_dev)) +
+mci_actdev <- ggplot(stat, aes(x=as.factor(bb), y=act_dev, fill = as.factor(bdgt_ratio))) +
   facet_wrap(~at, ncol=4) +
   geom_errorbar(aes(ymin=act_dev-act_dev_95ci, ymax=act_dev+act_dev_95ci),  
                 position=position_dodge(1),
                 colour = "grey40", width=0.5) +
-  geom_point(colour = "red") +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
   geom_hline(yintercept = -1, linetype = "dashed", color = "red") + 
   geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
   labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Resource population deviation from target\n(fraction of MT, mean +/- 95ci)") +
+  scale_fill_discrete(name="Budget inequity") +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey"),
         strip.text=element_text(color="white", face="bold"),
@@ -523,14 +543,16 @@ mci_actdev <- ggplot(stat, aes(x=as.factor(bb), y=act_dev)) +
 #mci_actdev
 
 # abs_act_dev
-msd_absactdev <- ggplot(stat, aes(x=as.factor(bb), y=abs_act_dev)) +
+msd_absactdev <- ggplot(stat, aes(x=as.factor(bb), y=abs_act_dev, fill = as.factor(bdgt_ratio))) +
   facet_wrap(~at, ncol=4) +
   geom_errorbar(aes(ymin=abs_act_dev-abs_act_dev_sd, ymax=abs_act_dev+abs_act_dev_sd),  
                 position=position_dodge(1),
                 colour = "grey40", width=0.5) +
-  geom_point(colour = "red") +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
   labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Absolute deviation from target\n(fraction of MT, mean +/- sd)") +
+  scale_fill_discrete(name="Budget inequity") +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey"),
         strip.text=element_text(color="white", face="bold"),
@@ -539,14 +561,16 @@ msd_absactdev <- ggplot(stat, aes(x=as.factor(bb), y=abs_act_dev)) +
         legend.title = element_text(size = 18))
 #msd_absactdev
 
-mci_absactdev <- ggplot(stat, aes(x=as.factor(bb), y=abs_act_dev)) +
+mci_absactdev <- ggplot(stat, aes(x=as.factor(bb), y=abs_act_dev, fill = as.factor(bdgt_ratio))) +
   facet_wrap(~at, ncol=4) +
   geom_errorbar(aes(ymin=abs_act_dev-abs_act_dev_95ci, ymax=abs_act_dev+abs_act_dev_95ci),  
                 position=position_dodge(1),
                 colour = "grey40", width=0.5) +
-  geom_point(colour = "red") +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
   labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Absolute deviation from target\n(fraction of MT, mean +/- 95ci)") +
+  scale_fill_discrete(name="Budget inequity") +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey"),
         strip.text=element_text(color="white", face="bold"),
@@ -556,14 +580,16 @@ mci_absactdev <- ggplot(stat, aes(x=as.factor(bb), y=abs_act_dev)) +
 #mci_absactdev
 
 # fin_yield
-msd_finyie <- ggplot(stat, aes(x=as.factor(bb), y=fin_yield/100)) +
+msd_finyie <- ggplot(stat, aes(x=as.factor(bb), y=fin_yield/100, fill = as.factor(bdgt_ratio))) +
   facet_wrap(~at, ncol=4) +
   geom_errorbar(aes(ymin=(fin_yield-fin_yield_sd)/100, ymax=(fin_yield+fin_yield_sd)/100),  
                 position=position_dodge(1),
                 colour = "grey40", width=0.5) +
-  geom_point(colour = "red") +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
   geom_hline(yintercept = 100, linetype = "dashed", color = "blue") + 
   labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Users final yield\n(in k-budget units, mean +/- sd)") +
+  scale_fill_discrete(name="Budget inequity") +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey"),
         strip.text=element_text(color="white", face="bold"),
@@ -572,16 +598,18 @@ msd_finyie <- ggplot(stat, aes(x=as.factor(bb), y=fin_yield/100)) +
         legend.title = element_text(size = 18))
 #msd_finyie
 
-mci_finyie <- ggplot(stat, aes(x=as.factor(bb), y=fin_yield/100)) +
+mci_finyie <- ggplot(stat, aes(x=as.factor(bb), y=fin_yield/100, fill = as.factor(bdgt_ratio))) +
   facet_wrap(~at, ncol=4) +
   geom_errorbar(aes(ymin=(fin_yield-fin_yield_95ci)/100, ymax=(fin_yield+fin_yield_95ci)/100),  
                 position=position_dodge(1),
                 colour = "grey40", width=0.5) +
-  geom_point(colour = "red") +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
   # geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
   # geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
   geom_hline(yintercept = 100, linetype = "dashed", color = "blue") + 
   labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Users final yield\n(in k-budget units, mean +/- 95ci)") +
+  scale_fill_discrete(name="Budget inequity") +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey"),
         strip.text=element_text(color="white", face="bold"),
@@ -591,13 +619,15 @@ mci_finyie <- ggplot(stat, aes(x=as.factor(bb), y=fin_yield/100)) +
 #mci_finyie
 
 # max diff between users yield
-msd_maxdif <- ggplot(stat, aes(x=as.factor(bb), y=max_diff_yield*100)) +
+msd_maxdif <- ggplot(stat, aes(x=as.factor(bb), y=max_diff_yield*100, fill = as.factor(bdgt_ratio))) +
   facet_wrap(~at, ncol = 4) +
   geom_errorbar(aes(ymin=(max_diff_yield-max_diff_yield_sd)*100, ymax=(max_diff_yield+max_diff_yield_sd)*100), 
                 position=position_dodge(1),
                 colour = "grey40", width=0.5) +
-  geom_point(colour="red") +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
   labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Maximum difference between Users yields\n(in percentage of the highest yield, mean +/- sd)") +
+  scale_fill_discrete(name="Budget inequity") +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey"),
         strip.text=element_text(color="white", face="bold"),
@@ -607,13 +637,15 @@ msd_maxdif <- ggplot(stat, aes(x=as.factor(bb), y=max_diff_yield*100)) +
         legend.title = element_text(size = 18))
 #msd_maxdif
 
-mci_maxdif <- ggplot(stat, aes(x=as.factor(bb), y=max_diff_yield*100)) +
+mci_maxdif <- ggplot(stat, aes(x=as.factor(bb), y=max_diff_yield*100, fill = as.factor(bdgt_ratio))) +
   facet_wrap(~at, ncol = 4) +
   geom_errorbar(aes(ymin=(max_diff_yield-max_diff_yield_95ci)*100, ymax=(max_diff_yield+max_diff_yield_95ci)*100), 
                 position=position_dodge(1),
                 colour = "grey40", width=0.5) +
-  geom_point(colour="red") +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
   labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Maximum difference between Users yields\n(in percentage of the highest yield, mean +/- 95CI)") +
+  scale_fill_discrete(name="Budget inequity") +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey"),
         strip.text=element_text(color="white", face="bold"),
@@ -624,14 +656,16 @@ mci_maxdif <- ggplot(stat, aes(x=as.factor(bb), y=max_diff_yield*100)) +
 #mci_maxdif
 
 # overK 
-msd_overK <- ggplot(stat, aes(x=as.factor(bb), y=overK_tot)) +
+msd_overK <- ggplot(stat, aes(x=as.factor(bb), y=overK_tot, fill = as.factor(bdgt_ratio))) +
   facet_wrap(~at, ncol=4) +
   geom_errorbar(aes(ymin=overK_tot-overK_sd, ymax=overK_tot+overK_sd),  
                 position=position_dodge(1),
                 colour = "grey40", width=0.5) +
-  geom_point(colour = "red") +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
   labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Number of K-overshooting events (mean +/- sd)") +
+  scale_fill_discrete(name="Budget inequity") +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey"),
         strip.text=element_text(color="white", face="bold"),
@@ -640,14 +674,16 @@ msd_overK <- ggplot(stat, aes(x=as.factor(bb), y=overK_tot)) +
         legend.title = element_text(size = 18))
 #msd_overK
 
-mci_overK <- ggplot(stat, aes(x=as.factor(bb), y=overK_tot)) +
+mci_overK <- ggplot(stat, aes(x=as.factor(bb), y=overK_tot, fill = as.factor(bdgt_ratio))) +
   facet_wrap(~at, ncol=4) +
   geom_errorbar(aes(ymin=overK_tot-overK_95ci, ymax=overK_tot+overK_95ci),  
                 position=position_dodge(1),
                 colour = "grey40", width=0.5) +
-  geom_point(colour = "red") +
+  geom_point(size = 2, alpha = 1, colour="black", stroke = 1, shape = 21,
+             position = position_dodge(width = 1)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
   labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Number of K-overshooting events (mean +/- sd)") +
+  scale_fill_discrete(name="Budget inequity") +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey"),
         strip.text=element_text(color="white", face="bold"),
