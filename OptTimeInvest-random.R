@@ -79,7 +79,7 @@ for (k in 1:rep) {
   
   # Make sure it is under K
   # MT <- ifelse(MT > K, signif(MT-2*(MT-K), digits = 2), MT)
-  MT <- ifelse(MT > K, floor(MT-2*(MT-K)), MT)
+  MT <- ifelse(MT > K, floor(K-(MT-K)), MT)
   
   # Number of stakeholders : draw a number of stakeholders between 2 and 50
   nbstk <- floor(runif(n = 1, min = 2, max = 50))
