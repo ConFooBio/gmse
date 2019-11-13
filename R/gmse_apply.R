@@ -117,26 +117,26 @@ gmse_apply <- function(res_mod  = resource,
 swap_old_gmse   <- function(ol){
     names_old <- names(ol);
     if("resource_array" %in% names_old == TRUE){
-        if(identical(ol$resource_array, ol$RESOURCES) == FALSE){
-            ol$RESOURCES <- ol$resource_array;
+        if(identical(ol[["resource_array"]], ol[["RESOURCES"]]) == FALSE){
+            ol[["RESOURCES"]] <- ol[["resource_array"]];
         }
-        if(identical(ol$resource_array, ol$RESOURCE) == FALSE){
-            ol$RESOURCE <- ol$resource_array;
+        if(identical(ol[["resource_array"]], ol[["RESOURCE"]]) == FALSE){
+            ol[["RESOURCE"]] <- ol[["resource_array"]];
         }
     }
     if("observation_array" %in% names_old == TRUE){
-        if(identical(ol$observation_array, ol$OBSERVATION) == FALSE){
-            ol$OBSERVATION <- ol$observation_array;
+        if(identical(ol[["observation_array"]], ol[["OBSERVATION"]]) == FALSE){
+            ol[["OBSERVATION"]] <- ol[["observation_array"]];
         }
     }
     if("manager_array" %in% names_old == TRUE){
-        if(identical(ol$manager_array, ol$COST) == FALSE){
-            ol$COST <- ol$manager_array;
+        if(identical(ol[["manager_array"]], ol[["COST"]]) == FALSE){
+            ol[["COST"]] <- ol[["manager_array"]];
         }
     }
     if("user_array" %in% names_old == TRUE){
-        if(identical(ol$user_array, ol$ACTION) == FALSE){
-            ol$ACTION <- ol$user_array;
+        if(identical(ol[["user_array"]], ol[["ACTION"]]) == FALSE){
+            ol[["ACTION"]] <- ol[["user_array"]];
         }
     }
     return(ol);
