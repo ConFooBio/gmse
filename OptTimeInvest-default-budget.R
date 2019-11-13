@@ -316,10 +316,10 @@ for (i in 2:dim(OTI_default_results)[3]) {
   tab_OTI_default_results <- rbind(tab_OTI_default_results, OTI_default_results[,,i])
 }
 
-write.csv(tab_OTI_default_results, file = "tab_OTI_budget_batchtest.csv")
-write.csv(flw_pop, file = "bdgt_pop_batchtest.csv")
-write.csv(flw_cos, file = "bdgt_cos_batchtest.csv")
-write.csv(flw_act, file = "bdgt_act_batchtest.csv")
+write.csv(tab_OTI_default_results, file = "tab_OTI_budget_batch2.csv")
+write.csv(flw_pop, file = "bdgt_pop_batch2.csv")
+write.csv(flw_cos, file = "bdgt_cos_batch2.csv")
+write.csv(flw_act, file = "bdgt_act_batch2.csv")
 
 #### Results ####
 
@@ -365,7 +365,7 @@ for (i in 1:dim(OTI_default_results)[3]) {
 View(stats_OTI_default_results)
 
 # Save the table in a csv file
-write.csv(stats_OTI_default_results, file = "stats_OTI_budget_batchtest.csv", row.names = F)
+write.csv(stats_OTI_default_results, file = "stats_OTI_budget_batch2.csv", row.names = F)
 
 #### plotting ####
 
