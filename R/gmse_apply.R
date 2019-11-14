@@ -1143,10 +1143,44 @@ place_args <- function(all_names, placing_vals, arg_list){
     if(empty == TRUE){
         return(arg_list);
     }
+    browser()
     for(i in 1:length(placing_vals)){
         place_name <- placing_names[i];
         if(place_name %in% all_names){
             place_pos <- which(all_names == place_name);
+            
+            ### Excecution throws an error at i = 2 in the wrapped function execution.
+            ### 
+            ### In the "unwrapped" function execution, the statement below returns "Full" (i.e. get_res = "Full"),
+            ### as desired. However, in the wrapped function execution, the statement below instead returns "get_res",
+            ### i.e. the _name_ of the desired list element instead of its _value_. 
+            ### I am not sure why this is yet.
+            ### 
+            ### Also note that in the unwrapped function ex, 'placing_vals' is a "List of 6":
+            ###
+            ### $             : symbol gmse_apply
+            ### $ get_res     : language gmse_paras$get_res
+            ### $ observe_type: language gmse_paras$observe_type
+            ### $ PARAS       : num [1:105] 1 1 1 2 2 10000 2000 0 2 1 ...
+            ### $ ilist       : num [1:56] 1e+02 1e+02 1e+02 2e+01 0e+00 3e-01 1e+01 5e+01 1e+04 2e+03 ...
+            ### $ GMSE        :Dotted pair list of 56
+            ### 
+            ### Here, placing_vals[[i]] == "gmse_paras$get_res". Note how this refers to the name of the list that was
+            ### passed to gmse_apply (elements of which are the input paras). While the value evaluates OK, I would 
+            ### have thought the local scope of gmse_apply wouldn't "know" gmse_paras??
+            ### 
+            ### Instead, in the wrapped function ex, 'placing_vals' looks like this:
+            ### 
+            ### $             : symbol gmse_apply
+            ### $ get_res     : symbol get_res
+            ### $ observe_type: symbol observe_type
+            ### $ PARAS       : num [1:105] 1 1 1 2 2 10000 2000 0 2 1 ...
+            ### $ ilist       : num [1:56] 1e+02 1e+02 1e+02 2e+01 0e+00 3e-01 1e+01 5e+01 1e+04 2e+03 ...
+            ### $ GMSE        :Dotted pair list of 56
+            ### 
+            ### Note the difference in the $ get_res element.
+            ### Here, placing_vals[[i]]  == "get_res"
+            ### 
             arg_eval  <- eval(placing_vals[[i]]);
             if(is.null(arg_eval) == FALSE){
                 arg_list[[place_pos]] <- eval(placing_vals[[i]]);
