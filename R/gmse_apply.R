@@ -1128,6 +1128,7 @@ argument_list <- function(res_mod, obs_mod, man_mod, use_mod, oth_vals){
     ### returns "Full", as expected.
     ### 
     ### However, this value is NA when in the wrapped function???
+    ### 
     
     return(arg_out);        
 }
