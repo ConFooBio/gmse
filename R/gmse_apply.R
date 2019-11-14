@@ -1096,6 +1096,7 @@ paras_errors <- function(input_list){
 }
 
 argument_list <- function(res_mod, obs_mod, man_mod, use_mod, oth_vals){
+    browser()
     oth_names   <- names(oth_vals);
     res_mod     <- check_arg_formals(res_mod);
     obs_mod     <- check_arg_formals(obs_mod);
@@ -1121,6 +1122,12 @@ argument_list <- function(res_mod, obs_mod, man_mod, use_mod, oth_vals){
     arg_list    <- place_args(all_names, formals(use_mod), arg_list);
     arg_list    <- place_args(all_names, oth_vals, arg_list);
     arg_out     <- list(all_arg_values = arg_list, all_arg_names = all_names);
+    
+    ### At this point in an "unwrapped" execution, this
+    ###   arg_out$all_arg_values[[which(arg_out$all_arg_names=="get_res")]]  
+    ### returns "Full", as expected.
+    ### 
+    ### However, this value is NA when in the wrapped function???
     
     return(arg_out);        
 }
