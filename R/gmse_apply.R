@@ -1096,7 +1096,6 @@ paras_errors <- function(input_list){
 }
 
 argument_list <- function(res_mod, obs_mod, man_mod, use_mod, oth_vals){
-    browser()
     oth_names   <- names(oth_vals);
     res_mod     <- check_arg_formals(res_mod);
     obs_mod     <- check_arg_formals(obs_mod);
@@ -1120,6 +1119,7 @@ argument_list <- function(res_mod, obs_mod, man_mod, use_mod, oth_vals){
     arg_list    <- place_args(all_names, formals(obs_mod), arg_list);
     arg_list    <- place_args(all_names, formals(man_mod), arg_list);
     arg_list    <- place_args(all_names, formals(use_mod), arg_list);
+    
     arg_list    <- place_args(all_names, oth_vals, arg_list);
     arg_out     <- list(all_arg_values = arg_list, all_arg_names = all_names);
     
@@ -1151,7 +1151,6 @@ place_args <- function(all_names, placing_vals, arg_list){
     if(empty == TRUE){
         return(arg_list);
     }
-    browser()
     for(i in 1:length(placing_vals)){
         place_name <- placing_names[i];
         if(place_name %in% all_names){
@@ -1189,9 +1188,14 @@ place_args <- function(all_names, placing_vals, arg_list){
             ### Note the difference in the $ get_res element.
             ### Here, placing_vals[[i]]  == "get_res"
             ### 
-            arg_eval  <- eval(placing_vals[[i]]);
+            #browser()
+            #arg_eval  <- eval(placing_vals[[i]]);
+
+            arg_eval  <- placing_vals[[grep(place_name, names(placing_vals))]]
+
             if(is.null(arg_eval) == FALSE){
-                arg_list[[place_pos]] <- eval(placing_vals[[i]]);
+                #arg_list[[place_pos]] <- eval(placing_vals[[i]]);
+                arg_list[[place_pos]] <- arg_eval;
             }
         }
     }
