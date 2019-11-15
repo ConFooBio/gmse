@@ -38,7 +38,7 @@ gmse_apply <- function(res_mod  = resource,
     if(is.null(old_list) == FALSE){
         old_list <- swap_old_gmse(old_list);
     }
-    
+
     std_paras      <- pass_paras(old_list, ...);
     all_args       <- as.list(sys.call());
     all_args$PARAS <- std_paras$gmse_para_vect;
@@ -69,6 +69,7 @@ gmse_apply <- function(res_mod  = resource,
     check_extinction(arg_vals);
  
     # ------ OBSERVATION MODEL -------------------------------------------------
+    # The statement below produces a warning, and observe_type in the returned list is a reference to sim_paras.
     obs_args <- prep_obs(arg_list = arg_vals, obs_mod = obs_mod);
     check_args(arg_list = obs_args, the_fun = obs_mod);
     obs_results <- do.call(what = obs_mod, args = obs_args);
@@ -1188,7 +1189,7 @@ place_args <- function(all_names, placing_vals, arg_list){
             ### Note the difference in the $ get_res element.
             ### Here, placing_vals[[i]]  == "get_res"
             ### 
-            #browser()
+            
             #arg_eval  <- eval(placing_vals[[i]]);
 
             arg_eval  <- placing_vals[[grep(place_name, names(placing_vals))]]
