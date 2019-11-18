@@ -67,6 +67,7 @@ stats_OTI_default_results <- matrix(data = NA, nrow = dim(OTI_default_results)[3
 
 
 ## Create 3 structures to follow up on the costs, the actions, and the population along the simulations
+flw_bgt <- NULL
 flw_cos <- NULL
 flw_act <- NULL
 flw_pop <- NULL
@@ -119,19 +120,22 @@ for (i in 1:length(at)) {
       
       ## save costs, actions and population in flw structures
       if (k %% freq == 0) {
-        print("Saving costs, actions and pop")
+        print("Saving budget, costs, actions and pop")
         para <- OTI_default_results[k,2:5, param_set]
         
+        bdg <- rep(0, ts)
         pop <- rep(0, ts)
         cos <- rep(0, ts)
         act <- rep(0, ts)
         
         for (t in 1:final_ts) {
+          bdg[t] <- sim$agents[[1]][1,17]
           pop[t] <- dim(sim$resource[[t]])[1]
           cos[t] <- sim$cost[[t]][1,9,2]
           act[t] <- mean(sim$action[[t]][1,9,2:stkh])
         }
         
+        flw_bgt <- rbind(flw_bgt, c(para, bdg))
         flw_pop <- rbind(flw_pop, c(para, pop))
         flw_cos <- rbind(flw_cos, c(para, cos))
         flw_act <- rbind(flw_act, c(para, act))
@@ -228,16 +232,19 @@ for (i in 1:length(at)) {
           print("Saving costs, actions and pop")
           para <- OTI_default_results[k,2:5, param_set]
           
+          bdg <- rep(0, ts)
           pop <- rep(0, ts)
           cos <- rep(0, ts)
           act <- rep(0, ts)
           
           for (t in 1:final_ts) {
+            bdg[t] <- sim$agents[[1]][1,17]
             pop[t] <- dim(sim$resource[[t]])[1]
             cos[t] <- sim$cost[[t]][1,9,2]
             act[t] <- mean(sim$action[[t]][1,9,2:stkh])
           }
           
+          flw_bgt <- rbind(flw_bgt, c(para, bdg))
           flw_pop <- rbind(flw_pop, c(para, pop))
           flw_cos <- rbind(flw_cos, c(para, cos))
           flw_act <- rbind(flw_act, c(para, act))
@@ -316,6 +323,7 @@ for (i in 2:dim(OTI_default_results)[3]) {
 }
 
 write.csv(tab_OTI_default_results, file = "tab_OTI_default_batch3.csv")
+write.csv(flw_bgt, file = "flw_bgt_batch3")
 write.csv(flw_pop, file = "flw_pop_batch3.csv")
 write.csv(flw_cos, file = "flw_cos_batch3.csv")
 write.csv(flw_act, file = "flw_act_batch3.csv")
@@ -361,11 +369,14 @@ write.csv(stats_OTI_default_results, file = "stats_OTI_default_batch3.csv", row.
 
 #### plotting ####
 
+# detail for later
+bud_bon <- bb
+
 # import data
-tab_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/tab_OTI_default_batch3.csv")
+tab_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/Default-case/tab_OTI_default_batch3.csv")
 brut <- as.data.frame(tab_OTI_default_results)
 
-stats_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/stats_OTI_default_batch3.csv")
+stats_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/Default-case/stats_OTI_default_batch3.csv")
 stat <- as.data.frame(stats_OTI_default_results)
 
 ## Extinction probability
@@ -677,3 +688,493 @@ mci_absactdev
 mci_finyie
 mci_maxdif
 mci_overK
+
+## a figure for extinction probability ~ UT : BB
+
+stat$at <- stat$at*100
+stat$bb <- stat$bb*100
+bud_bon <- bud_bon*100
+
+# points
+plot(1, type="n", xlab="Update threshold \n (in % of Manager's target)", ylab="Extinction frequency", xlim=c(0, 135), ylim=c(0, 1))
+
+# a dotted line to show the null, K, and extinction UT
+abline(v=c(0,50,100), lty = 2, lwd = 1.5, col = c("black","blue","red"))
+# to how the extinction probability of 1
+abline(h=1, lty = 2, lwd = 1.5, col = "red")
+
+cl <- rainbow(length(bud_bon))
+bud_bon <- as.character(bud_bon)
+
+for (i in 2:length(bud_bon)) {
+  # # debug
+  # print(i)
+  # print(subset(stat, bb == bud_bon[i])[,4])
+  dd <- subset(stat, bb == bud_bon[i])
+  points(dd$ext_prob ~ dd$at, col = cl[i-1], type = "b", pch = 16)
+}
+
+points(data = subset(stat, bb == 0),
+       ext_prob ~ at, col = "black", 
+       type = "b", pch = 16)
+
+legend(105, 1.01,
+       legend=bud_bon, col=c("black", cl),
+       pch = 16, pt.cex = 1, cex=0.6, #horiz = T,
+       title = "Budget bonus\n(in % of\ninitial budget)")
+
+#### plots by isolating replicates without extinction ####
+
+wo_ext <- subset(brut, extinct == 0)
+which(wo_ext$extinct == 1)
+
+## new script for stats
+ddd <- as.data.frame(wo_ext)
+
+# levels of OTI parameters
+upd_thr <- levels(as.factor(ddd$at))
+bud_bon <- levels(as.factor(ddd$bb))
+
+# empty tab
+res_tab <- NULL
+
+# Special subset for UT = 0, for which there was only one BB
+# initiate a string
+{res_str <- NULL
+
+# subset
+sub <- subset(ddd, at == upd_thr[1] & bb == bud_bon[1])
+
+# number of replicates
+nbrep <- dim(sub)[1]
+
+# start filling the string in
+res_str <- c(nbrep,mean(sub$budget),upd_thr[1],bud_bon[1])
+
+## mean, sd and 95ci for each proxy
+# Actual Resource population deviation from Manager's target
+res_sd <- sd(sub$act_dev)
+
+res_str <- c(res_str, mean(sub$act_dev), res_sd, 1.86*res_sd/sqrt(nbrep))
+
+# Absolute value of the Actual Resource population deviation from Manager's target
+res_sd <- sd(sub$abs_act_dev)
+
+res_str <- c(res_str, mean(sub$abs_act_dev), res_sd, 1.86*res_sd/sqrt(nbrep))
+
+# Users' total final yield
+res_sd <- sd(sub$fin_yield)
+
+res_str <- c(res_str, mean(sub$fin_yield), res_sd, 1.86*res_sd/sqrt(nbrep))
+
+# Difference between the highest and the lowest yield
+res_sd <- sd(sub$max_diff_yield)
+
+res_str <- c(res_str, mean(sub$max_diff_yield), res_sd, 1.86*res_sd/sqrt(nbrep))
+
+# Percentage of time steps of non-updating
+res_sd <- sd(sub$inac_ts)
+
+res_str <- c(res_str, mean(sub$inac_ts), res_sd, 1.86*res_sd/sqrt(nbrep))
+
+# Percentage of time steps of K overshooting
+res_sd <- sd(sub$overK)
+
+res_str <- c(res_str, mean(sub$overK), res_sd, 1.86*res_sd/sqrt(nbrep))
+
+# binding the string to the tab
+res_tab <- rbind(res_tab, as.numeric(res_str))}
+
+# loop over the other OTI parameters
+# for each at value
+for (i in 2:length(upd_thr)) {
+  
+  # for each bb value
+  for (j in 1:length(bud_bon)) {
+    
+    # initiate a string
+    res_str <- NULL
+    
+    # subset
+    sub <- subset(ddd, at == upd_thr[i] & bb == bud_bon[j])
+    
+    # number of replicates
+    nbrep <- dim(sub)[1]
+      
+      # start filling the string in
+      res_str <- c(nbrep,mean(sub$budget),upd_thr[i],bud_bon[j])
+    
+    if (nbrep >= 2) {
+      
+      ## mean, sd and 95ci for each proxy
+      # Actual Resource population deviation from Manager's target
+      res_sd <- sd(sub$act_dev)
+      
+      res_str <- c(res_str, mean(sub$act_dev), res_sd, 1.86*res_sd/sqrt(nbrep))
+      
+      # Absolute value of the Actual Resource population deviation from Manager's target
+      res_sd <- sd(sub$abs_act_dev)
+      
+      res_str <- c(res_str, mean(sub$abs_act_dev), res_sd, 1.86*res_sd/sqrt(nbrep))
+      
+      # Users' total final yield
+      res_sd <- sd(sub$fin_yield)
+      
+      res_str <- c(res_str, mean(sub$fin_yield), res_sd, 1.86*res_sd/sqrt(nbrep))
+      
+      # Difference between the highest and the lowest yield
+      res_sd <- sd(sub$max_diff_yield)
+      
+      res_str <- c(res_str, mean(sub$max_diff_yield), res_sd, 1.86*res_sd/sqrt(nbrep))
+      
+      # Percentage of time steps of non-updating
+      res_sd <- sd(sub$inac_ts)
+      
+      res_str <- c(res_str, mean(sub$inac_ts), res_sd, 1.86*res_sd/sqrt(nbrep))
+      
+      # Percentage of time steps of K overshooting
+      res_sd <- sd(sub$overK)
+      
+      res_str <- c(res_str, mean(sub$overK), res_sd, 1.86*res_sd/sqrt(nbrep))
+      
+    } else{
+      
+      ## just the only value
+      # Actual Resource population deviation from Manager's target
+      res_str <- c(res_str, sub$act_dev, 0, 0)
+      
+      # Absolute value of the Actual Resource population deviation from Manager's target
+      res_str <- c(res_str, sub$abs_act_dev, 0, 0)
+      
+      # Users' total final yield
+      res_str <- c(res_str, sub$fin_yield, 0, 0)
+      
+      # Difference between the highest and the lowest yield
+      res_str <- c(res_str, sub$max_diff_yield, 0, 0)
+      
+      # Percentage of time steps of non-updating
+      res_str <- c(res_str, sub$inac_ts, 0, 0)
+      
+      # Percentage of time steps of K overshooting
+      res_str <- c(res_str, sub$overK, 0, 0)
+    } 
+    
+    # binding the string to the tab
+    res_tab <- rbind(res_tab, as.numeric(res_str))
+  }
+}
+
+colnames(res_tab) <- stats_columns[-5]
+
+stats_wo_ext <- as.data.frame(res_tab)
+
+## box plot
+
+attach(wo_ext)
+
+# Resource population actual deviation from Manager's target
+# the closer to zero the better
+WE_bp_actdev <- ggplot(wo_ext, aes(x=as.factor(bb), y=act_dev)) +
+  geom_boxplot(position=position_dodge()) +
+  facet_wrap(~at, ncol = 4) +            
+  geom_hline(yintercept = -1, linetype = "dashed", color = "red") + 
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
+  labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Resource population deviation from target \n (in % of Manager's target)") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+
+# Absolute value of Resource population actual deviation from target
+# the closer to zero the better
+WE_bp_absactdev <- ggplot(wo_ext, aes(x=as.factor(bb), y=abs_act_dev*100)) +
+  geom_boxplot(position=position_dodge()) +
+  facet_wrap(~at, ncol = 4) +            
+  # geom_hline(yintercept = 100, linetype = "dashed", color = "red") +
+  # geom_hline(yintercept = -100, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
+  labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Absolute value of deviation from target \n (in % of Manager's target)") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+
+# Users final yield
+# Absolute value of Resource population actual deviation from target
+# the closer to 100 the better
+WE_bp_finyie <- ggplot(wo_ext, aes(x=as.factor(bb), y=fin_yield/100)) +
+  geom_boxplot(position=position_dodge()) +
+  facet_wrap(~at, ncol = 4) +            
+  geom_hline(yintercept = 100, linetype = "dashed", color = "blue") +
+  labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Users final yield (in k-budget units)") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+
+# Equity between users final yields
+# the closer to zero the better
+WE_bp_maxdif <- ggplot(wo_ext, aes(x=as.factor(bb), y=max_diff_yield)) +
+  geom_boxplot(position=position_dodge()) +
+  facet_wrap(~at, ncol = 4) +            
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
+  labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Maximum difference between Users personal yields \n (in budget units)") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+
+# Number of time steps of non updating
+# (maximum value of time_max-1)
+WE_bp_inacts <- ggplot(wo_ext, aes(x=as.factor(bb), y=inac_ts)) +
+  geom_boxplot(position=position_dodge()) +
+  facet_wrap(~at, ncol = 4) +            
+  labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Mean number of non-updating policy events") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+
+# Number of time steps when Resource population went over its K
+# the closer to zero the better
+WE_bp_overK <- ggplot(wo_ext, aes(x=as.factor(bb), y=overK)) +
+  geom_boxplot(position=position_dodge()) +
+  facet_wrap(~at, ncol = 4) +            
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
+  labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Number of Resource K-overshooting events") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+
+## mean +- sd / mean +- 95ci
+
+attach(stats_wo_ext)
+
+# act_dev
+WE_msd_actdev <- ggplot(stats_wo_ext, aes(x=as.factor(bb), y=act_dev)) +
+  facet_wrap(~at, ncol=4) +
+  geom_errorbar(aes(ymin=act_dev-act_dev_sd, ymax=act_dev+act_dev_sd),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(colour = "red") +
+  geom_hline(yintercept = -1, linetype = "dashed", color = "red") + 
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
+  labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Resource population deviation from target\n(fraction of MT, mean +/- sd)") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+
+WE_mci_actdev <- ggplot(stats_wo_ext, aes(x=as.factor(bb), y=act_dev)) +
+  facet_wrap(~at, ncol=4) +
+  geom_errorbar(aes(ymin=act_dev-act_dev_95ci, ymax=act_dev+act_dev_95ci),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(colour = "red") +
+  geom_hline(yintercept = -1, linetype = "dashed", color = "red") + 
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
+  labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Resource population deviation from target\n(fraction of MT, mean +/- 95ci)") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+
+# abs_act_dev
+WE_msd_absactdev <- ggplot(stats_wo_ext, aes(x=as.factor(bb), y=abs_act_dev)) +
+  facet_wrap(~at, ncol=4) +
+  geom_errorbar(aes(ymin=abs_act_dev-abs_act_dev_sd, ymax=abs_act_dev+abs_act_dev_sd),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(colour = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
+  labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Absolute deviation from target\n(fraction of MT, mean +/- sd)") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+
+WE_mci_absactdev <- ggplot(stats_wo_ext, aes(x=as.factor(bb), y=abs_act_dev)) +
+  facet_wrap(~at, ncol=4) +
+  geom_errorbar(aes(ymin=abs_act_dev-abs_act_dev_95ci, ymax=abs_act_dev+abs_act_dev_95ci),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(colour = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
+  labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Absolute deviation from target\n(fraction of MT, mean +/- 95ci)") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+
+# fin_yield
+WE_msd_finyie <- ggplot(stats_wo_ext, aes(x=as.factor(bb), y=fin_yield/100)) +
+  facet_wrap(~at, ncol=4) +
+  geom_errorbar(aes(ymin=(fin_yield-fin_yield_sd)/100, ymax=(fin_yield+fin_yield_sd)/100),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(colour = "red") +
+  geom_hline(yintercept = 100, linetype = "dashed", color = "blue") + 
+  labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Users final yield\n(in k-budget units, mean +/- sd)") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+
+WE_mci_finyie <- ggplot(stats_wo_ext, aes(x=as.factor(bb), y=fin_yield/100)) +
+  facet_wrap(~at, ncol=4) +
+  geom_errorbar(aes(ymin=(fin_yield-fin_yield_95ci)/100, ymax=(fin_yield+fin_yield_95ci)/100),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(colour = "red") +
+  # geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  # geom_hline(yintercept = -1, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = 100, linetype = "dashed", color = "blue") + 
+  labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Users final yield\n(in k-budget units, mean +/- 95ci)") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+
+# max diff between users yield
+WE_msd_maxdif <- ggplot(stats_wo_ext, aes(x=as.factor(bb), y=max_diff_yield*100)) +
+  facet_wrap(~at, ncol = 4) +
+  geom_errorbar(aes(ymin=(max_diff_yield-max_diff_yield_sd)*100, ymax=(max_diff_yield+max_diff_yield_sd)*100), 
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(colour="red") +
+  labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Maximum difference between Users yields\n(in percentage of the highest yield, mean +/- sd)") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        axis.text=element_text(size=12),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+
+WE_mci_maxdif <- ggplot(stats_wo_ext, aes(x=as.factor(bb), y=max_diff_yield*100)) +
+  facet_wrap(~at, ncol = 4) +
+  geom_errorbar(aes(ymin=(max_diff_yield-max_diff_yield_95ci)*100, ymax=(max_diff_yield+max_diff_yield_95ci)*100), 
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(colour="red") +
+  labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Maximum difference between Users yields\n(in percentage of the highest yield, mean +/- 95CI)") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        axis.text=element_text(size=12),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+
+# inact ts 
+WE_msd_inacts <- ggplot(stats_wo_ext, aes(x=as.factor(bb), y=inac_ts)) +
+  facet_wrap(~at, ncol=4) +
+  geom_errorbar(aes(ymin=inac_ts-inac_ts_sd, ymax=inac_ts+inac_ts_sd),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(colour = "red") +
+  #geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
+  labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Frequency of non-updating events (in %, mean +/- sd)") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+
+WE_mci_inac_ts <- ggplot(stats_wo_ext, aes(x=as.factor(bb), y=inac_ts)) +
+  facet_wrap(~at, ncol=4) +
+  geom_errorbar(aes(ymin=inac_ts-inac_ts_95ci, ymax=inac_ts+inac_ts_95ci),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(colour = "red") +
+  #geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
+  labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Frequency of non-updating events (in %, mean +/- sd)") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+
+# overK 
+WE_msd_overK <- ggplot(stats_wo_ext, aes(x=as.factor(bb), y=overK_tot)) +
+  facet_wrap(~at, ncol=4) +
+  geom_errorbar(aes(ymin=overK_tot-overK_sd, ymax=overK_tot+overK_sd),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(colour = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
+  labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Number of K-overshooting events (mean +/- sd)") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+
+WE_mci_overK <- ggplot(stats_wo_ext, aes(x=as.factor(bb), y=overK_tot)) +
+  facet_wrap(~at, ncol=4) +
+  geom_errorbar(aes(ymin=overK_tot-overK_95ci, ymax=overK_tot+overK_95ci),  
+                position=position_dodge(1),
+                colour = "grey40", width=0.5) +
+  geom_point(colour = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
+  labs(x="Budget Bonus (in fraction of Initial Budget)", y= "Number of K-overshooting events (mean +/- sd)") +
+  theme_gray() +
+  theme(strip.background=element_rect(fill="grey"),
+        strip.text=element_text(color="white", face="bold"),
+        axis.title=element_text(size=18),
+        legend.text=element_text(size=15),
+        legend.title = element_text(size = 18))
+
+# all of them
+WE_bp_actdev
+WE_bp_absactdev
+WE_bp_finyie
+WE_bp_maxdif
+WE_bp_inacts
+WE_bp_overK
+
+WE_msd_actdev
+WE_msd_absactdev
+WE_msd_finyie # sometime goes over 100 which is impossible
+WE_msd_maxdif # sometime goes under 0 which is impossible
+WE_msd_overK # sometime goes under 0 which is impossible
+
+WE_mci_actdev
+WE_mci_absactdev
+WE_mci_finyie
+WE_mci_maxdif
+WE_mci_overK
+
+## Plot what happens at UT=0.1
+costs <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/Default-case/flw_cos_batch3.csv")
+
+cosUT0.1 <- subset(costs, at == 0.1)
+plot(x = seq(1,20,1), y = cosUT0.1[1,6:dim(cosUT0.1)[2]], type = "b")
