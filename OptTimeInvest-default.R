@@ -122,6 +122,7 @@ for (i in 1:length(at)) {
       if (k %% freq == 0) {
         print("Saving budget, costs, actions and pop")
         para <- OTI_default_results[k,2:5, param_set]
+        para <- c(para, K, trgt)
         
         bdg <- rep(0, ts)
         pop <- rep(0, ts)
@@ -231,6 +232,7 @@ for (i in 1:length(at)) {
         if (k %% freq == 0) {
           print("Saving costs, actions and pop")
           para <- OTI_default_results[k,2:5, param_set]
+          para <- c(para, K, trgt)
           
           bdg <- rep(0, ts)
           pop <- rep(0, ts)
@@ -1175,6 +1177,135 @@ WE_mci_overK
 
 ## Plot what happens at UT=0.1
 costs <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/Default-case/flw_cos_batch3.csv")
+popul <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/Default-case/flw_pop_batch3.csv")
+actio <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/Default-case/flw_act_batch3.csv")
 
-cosUT0.1 <- subset(costs, at == 0.1)
-plot(x = seq(1,20,1), y = cosUT0.1[1,6:dim(cosUT0.1)[2]], type = "b")
+# only without extinction
+we_costs <- subset(costs, extinct == 0)
+we_popul <- subset(popul, extinct == 0)
+we_actio <- subset(actio, extinct == 0)
+
+# function returning ymax, ymin and ymean and plot
+maxminmean <- function(df, acth, bubo, tmax, color, yaxis) {
+  # subsetting
+  dd <- subset(df, at == acth & bb == bubo)  
+  
+  # max
+  ymax <- max(dd[,6])
+  # ymax <- max(dd[,8])
+  for (k in 7:dim(dd)[2]) {
+  # for (k in 9:dim(dd)[2]) {
+    ymax <- c(ymax,max(dd[,k]))
+  }
+  
+  # min
+  ymin <- min(dd[,6])
+  # ymax <- max(dd[,8])
+  for (k in 7:dim(dd)[2]) {
+    # for (k in 9:dim(dd)[2]) 
+    ymin <- c(ymin,min(dd[,k]))
+  }
+  
+  # mean
+  ymean <- mean(dd[,6])
+  # ymax <- max(dd[,8])
+  for (k in 7:dim(dd)[2]) {
+    # for (k in 9:dim(dd)[2]) 
+    ymean <- c(ymean,mean(dd[,k]))
+  }
+  
+  # plot
+  xrange <- seq(1,tmax,1)
+  # lightcol <- paste("light",color,sep = "")
+  lightcol <- lighten(color, amount = 0.4)
+  trans <- adjustcolor(lightcol,alpha.f=0.5)
+  plot(1, type = "n", xlab = "time", ylab = yaxis, ylim = c(0,max(ymax)), xlim = c(0,20), main = paste("UT = ", acth, " BB = ",bubo))
+  polygon(c(xrange,rev(xrange)),c(ymax,rev(ymin)),col=trans, border = lightcol)
+  
+  # max cost with FLI strategy
+  if (str_detect(yaxis, "Cost")){
+    abline(h = (dd[1,2]/10)+10, lty = 2, pch = 2, col = "black")
+  }
+  
+  # initial budget
+  if (str_detect(yaxis, "budget")){
+    abline(h = dd[1,2], lty = 2, pch = 2, col = "black")
+  }
+  
+  # maximum culling capacity
+  if (str_detect(yaxis, "action")){
+    abline(h = dd[1,2]/10, lty = 2, pch = 2, col = "black")
+  }
+  
+  # # K and manager target
+  # if (str_detect(yaxis, "population")){
+  #   abline(h = dd[1,5], lty = 2, pch = 2, col = "red")
+  #   abline(h = dd[1,6], lty = 2, pch = 2, col = "blue")
+  # }
+  
+  lines(x = xrange, y = ymean, type = "b", pch = 20, col = color)
+}
+
+# max min and all the different trajectories
+maxminmulti <- function(df, acth, bubo, tmax, color, yaxis) {
+  # subsetting
+  dd <- subset(df, at == acth & bb == bubo)  
+  
+  # max
+  ymax <- max(dd[,6])
+  # ymax <- max(dd[,8])
+  for (k in 7:dim(dd)[2]) {
+    # for (k in 9:dim(dd)[2]) {
+    ymax <- c(ymax,max(dd[,k]))
+  }
+  
+  # min
+  ymin <- min(dd[,6])
+  # ymax <- max(dd[,8])
+  for (k in 7:dim(dd)[2]) {
+    # for (k in 9:dim(dd)[2]) 
+    ymin <- c(ymin,min(dd[,k]))
+  }
+  
+  # mean
+  ymean <- mean(dd[,6])
+  # ymax <- max(dd[,8])
+  for (k in 7:dim(dd)[2]) {
+    # for (k in 9:dim(dd)[2]) 
+    ymean <- c(ymean,mean(dd[,k]))
+  }
+  
+  # plot
+  xrange <- seq(1,tmax,1)
+  # lightcol <- paste("light",color,sep = "")
+  lightcol <- lighten(color, amount = 0.4)
+  trans <- adjustcolor(lightcol,alpha.f=0.5)
+  plot(1, type = "n", xlab = "time", ylab = yaxis, ylim = c(0,max(ymax)), xlim = c(0,20), main = paste("UT = ", acth, " BB = ",bubo))
+  polygon(c(xrange,rev(xrange)),c(ymax,rev(ymin)),col=trans, border = lightcol)
+  
+  # max cost with FLI strategy
+  if (str_detect(yaxis, "Cost")){
+    abline(h = (dd[1,2]/10)+10, lty = 2, pch = 2, col = "black")
+  }
+  
+  # initial budget
+  if (str_detect(yaxis, "budget")){
+    abline(h = dd[1,2], lty = 2, pch = 2, col = "black")
+  }
+  
+  # maximum culling capacity
+  if (str_detect(yaxis, "action")){
+    abline(h = dd[1,2]/10, lty = 2, pch = 2, col = "black")
+  }
+  
+  # # K and manager target
+  # if (str_detect(yaxis, "population")){
+  #   abline(h = dd[1,5], lty = 2, pch = 2, col = "red")
+  #   abline(h = dd[1,6], lty = 2, pch = 2, col = "blue")
+  # }
+  
+  # all the trajectories
+  for (i in 1:(dim(dd)[1])) {
+    points(x = xrange, y = dd[i,6:dim(dd)[2]], type = "b", pch = i, col = color)
+  }
+}
