@@ -679,7 +679,7 @@ bp_maxdif
 bp_inacts
 bp_overK
 
-msd_actdev
+msd_actdev # sometimes goes under -1 which is impossible
 msd_absactdev
 msd_finyie # sometime goes over 100 which is impossible
 msd_maxdif # sometime goes under 0 which is impossible
@@ -1307,5 +1307,177 @@ maxminmulti <- function(df, acth, bubo, tmax, color, yaxis) {
   # all the trajectories
   for (i in 1:(dim(dd)[1])) {
     points(x = xrange, y = dd[i,6:dim(dd)[2]], type = "b", pch = i, col = color)
+  }
+}
+
+#for (i in seq(0,1,0.1)) {maxminmean(we_costs, 0.1, i, 20, "blue", "Cost of culling")}
+
+#### confronting at = 0 and at = 0.1 ####
+
+plot(1, type = "n", ylim = c(-100,100), xlim = c(0,100), xlab = "Budget bonus\n(in % of initial budget)", ylab = "Resource population deviation from MT\n(in % of MT)", main = "UT = 0 VS UT = 0.1")
+
+polygon(c(seq(-10,110,10),rev(seq(-10,110,10))),c(rep((stats_wo_ext$act_dev[1]+stats_wo_ext$act_dev_sd[1])*100,13),rep((stats_wo_ext$act_dev[1]-stats_wo_ext$act_dev_sd[1])*100,13)),col="grey", border = "grey")
+abline(h = stats_wo_ext$act_dev[1]*100, lwd = 2)
+abline(h = 0, lty = 2, lwd = 1.5, col = "darkgreen")
+abline(h = -100, lty = 2, lwd = 1.2, col = "red")
+
+# subsetting
+dd <- subset(stats_wo_ext, at == 0.1) 
+points(y = dd$act_dev*100, x = dd$bb*100, pch = 20, col = "blue")
+x = dd$bb*100
+avg = dd$act_dev*100
+sdev = dd$act_dev_sd*100
+arrows(x, avg-sdev, x, avg+sdev, length=0.05, angle=90, code=3, col = "blue")
+
+OTI_vs_FLI_plot <- function(df, upth, goal, variance) {
+  
+  # subsetting
+  fli <- subset(df, at == 0)
+  oti <- subset(df, at == upth)
+  
+  if (goal == 1) {
+  
+    # compute means, sd, and 95ci and plot
+    fli_avg <- fli$act_dev*100
+    oti_avg <- oti$act_dev*100
+    
+    if (variance == "sd") {
+      
+      # FLI strat
+      fli_sd <- fli$act_dev_sd*100
+      # prevent the sd range to go over the borders
+      fli_sd_neg <- ifelse(test = fli_avg-fli_sd < -100, fli_sd-(fli_avg+fli_sd-100), fli_sd)
+      
+      # OTI strat
+      oti_sd <- oti$act_dev_sd*100
+      # prevent the sd range to go over the borders
+      oti_sd_neg <- ifelse(test = oti_avg-oti_sd < -100, oti_sd-(oti_avg+oti_sd-100), oti_sd)
+      
+      # plotting
+      xrange <- seq(0,100,10)
+      xtendrange <- seq(-10,110)
+      flimax <- rep(fli_avg+fli_sd, length(xtendrange))
+      flimin <- rep(fli_avg-fli_sd_neg, length(xtendrange))
+      trans <- adjustcolor("lightgrey",alpha.f=0.7)
+      xoti <- oti$bb*100
+      
+      # plot base
+      plot(1, type = "n", xlab = "Budget bonus\n(in % of initial budget)", ylab = "Resource population deviation from MT\n(in %, mean +/- SD)",
+           ylim = c(-100,max(max(fli_avg+fli_sd),max(oti_avg+oti_sd))+10), xlim = c(0,100),
+           main = paste("UT = ", upth*100,"%"))
+      polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "lightgrey")
+      abline(h = fli_avg, lwd = 2)
+      abline(h = 0, lty = 2, lwd = 1.5, col = "darkgreen")
+      abline(h = -100, lty = 2, lwd = 1.2, col = "red")
+      
+      points(y = oti_avg, x = xoti, pch = 16, col = "darkblue")
+      arrows(xoti, oti_avg-oti_sd_neg, xoti, oti_avg+oti_sd, length=0.05, angle=90, code=3, col = "darkblue")
+    }
+    
+    if (variance == "ci") {
+      
+      # FLI strat
+      fli_95ci <- fli$act_dev_95ci*100
+      # prevent the 95ci range to go over the borders
+      fli_95ci_neg <- ifelse(test = fli_avg-fli_95ci < -100, fli_95ci-(fli_avg+fli_95ci-100), fli_95ci)
+      
+      # OTI strat
+      oti_95ci <- oti$act_dev_95ci*100
+      # prevent the 95ci range to go over the borders
+      oti_95ci_neg <- ifelse(test = oti_avg-oti_95ci < -100, oti_95ci-(oti_avg+oti_95ci-100), oti_95ci)
+      
+      # plotting
+      xrange <- seq(0,100,10)
+      xtendrange <- seq(-10,110)
+      flimax <- rep(fli_avg+fli_95ci, length(xtendrange))
+      flimin <- rep(fli_avg-fli_95ci_neg, length(xtendrange))
+      trans <- adjustcolor("lightgrey",alpha.f=0.7)
+      xoti <- oti$bb*100
+      
+      # plot base
+      plot(1, type = "n", xlab = "Budget bonus\n(in % of initial budget)", ylab = "Resource population deviation from MT\n(in %, mean +/- 95ci)",
+           ylim = c(-100,max(max(fli_avg+fli_95ci),max(oti_avg+oti_95ci))+10), xlim = c(0,100),
+           main = paste("UT = ", upth*100,"%"))
+      polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "lightgrey")
+      abline(h = fli_avg, lwd = 2)
+      abline(h = 0, lty = 2, lwd = 1.5, col = "darkgreen")
+      abline(h = -100, lty = 2, lwd = 1.2, col = "red")
+      
+      points(y = oti_avg, x = xoti, pch = 16, col = "darkblue")
+      arrows(xoti, oti_avg-oti_95ci_neg, xoti, oti_avg+oti_95ci, length=0.05, angle=90, code=3, col = "darkblue")
+    }
+  }
+  
+  if (goal == 2) {
+    
+    # compute means, sd, and 95ci and plot
+    fli_avg <- fli$fin_yield/100
+    oti_avg <- oti$fin_yield/100
+    
+    if (variance == "sd") {
+      
+      # FLI strat
+      fli_sd <- fli$fin_yield_sd/100
+      # prevent the sd range to go over the borders
+      fli_sd_neg <- ifelse(test = fli_avg-fli_sd < 0, fli_sd-(fli_avg-fli_sd), fli_sd)
+      fli_sd_pos <- ifelse(test = fli_avg-fli_sd > 100, fli_sd-(fli_avg+fli_sd-100), fli_sd)
+      
+      # OTI strat
+      oti_sd <- oti$fin_yield_sd/100
+      # prevent the sd range to go over the borders
+      oti_sd_neg <- ifelse(test = oti_avg-oti_sd < 0, oti_sd-(oti_avg-oti_sd), oti_sd)
+      oti_sd_pos <- ifelse(test = oti_avg-oti_sd > 100, oti_sd-(oti_avg+oti_sd-100), oti_sd)
+      
+      # plotting
+      xrange <- seq(0,100,10)
+      xtendrange <- seq(-10,110)
+      flimax <- rep(fli_avg+fli_sd_pos, length(xtendrange))
+      flimin <- rep(fli_avg-fli_sd_neg, length(xtendrange))
+      trans <- adjustcolor("lightgrey",alpha.f=0.7)
+      xoti <- oti$bb*100
+      
+      # plot base
+      plot(1, type = "n", xlab = "Budget bonus\n(in % of initial budget)", ylab = "Sum of Users final budgets\n(in k-a.b.u, mean +/- SD)", ylim = c(min(min(fli_avg+fli_sd),min(oti_avg+oti_sd))-10,100), xlim = c(0,100), main = paste("UT = ", upth*100,"%"))
+      polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "lightgrey")
+      abline(h = fli_avg, lwd = 2)
+      abline(h = 100, lty = 2, lwd = 1.5, col = "darkgreen")
+      
+      points(y = oti_avg, x = xoti, pch = 16, col = "darkblue")
+      arrows(xoti, oti_avg-oti_sd_neg, xoti, oti_avg+oti_sd_pos, length=0.05, angle=90, code=3, col = "darkblue")
+    }
+    
+    if (variance == "ci") {
+      
+      # FLI strat
+      fli_95ci <- fli$fin_yield_95ci/100
+      # prevent the 95ci range to go over the borders
+      fli_95ci_neg <- ifelse(test = fli_avg-fli_95ci < 0, fli_95ci-(fli_avg-fli_95ci), fli_95ci)
+      fli_95ci_pos <- ifelse(test = fli_avg-fli_95ci > 100, fli_95ci-(fli_avg+fli_95ci-100), fli_95ci)
+      
+      # OTI strat
+      oti_95ci <- oti$fin_yield_95ci/100
+      # prevent the 95ci range to go over the borders
+      oti_95ci_neg <- ifelse(test = oti_avg-oti_95ci < 0, oti_95ci-(oti_avg-oti_95ci), oti_95ci)
+      oti_95ci_pos <- ifelse(test = oti_avg-oti_95ci > 100, oti_95ci-(oti_avg+oti_95ci-100), oti_95ci)
+      
+      # plotting
+      xrange <- seq(0,100,10)
+      xtendrange <- seq(-10,110)
+      flimax <- rep(fli_avg+fli_95ci_pos, length(xtendrange))
+      flimin <- rep(fli_avg-fli_95ci_neg, length(xtendrange))
+      trans <- adjustcolor("lightgrey",alpha.f=0.7)
+      xoti <- oti$bb*100
+      
+      # plot base
+      plot(1, type = "n", xlab = "Budget bonus\n(in % of initial budget)", ylab = "Sum of Users final budgets\n(in k-a.b.u, mean +/- 95CI)",
+           ylim = c(min(min(fli_avg+fli_95ci),min(oti_avg+oti_95ci))-10,100), xlim = c(0,100),
+           main = paste("UT = ", upth*100,"%"))
+      polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "lightgrey")
+      abline(h = fli_avg, lwd = 2)
+      abline(h = 100, lty = 2, lwd = 1.5, col = "darkgreen")
+      
+      points(y = oti_avg, x = xoti, pch = 16, col = "darkblue")
+      arrows(xoti, oti_avg-oti_95ci_neg, xoti, oti_avg+oti_95ci_pos, length=0.05, angle=90, code=3, col = "darkblue")
+    }
   }
 }
