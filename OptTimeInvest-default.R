@@ -1395,7 +1395,7 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci"), nb
     # legend("topright", legend = c("0%",paste(upth*100,"%")), fill = c("black","blue"), title = "UT", cex = 0.7, bty = "n")
     
     diag = barplot(oti_avg, col = "lightblue", space = 1, width = 4, names.arg = xoti,
-                   xlab = "Budget bonus\n(in % of initial budget)", ylab = "Extinction frequency (N = 100)", ylim = c(0, max(fli$ext_prob, max(oti_avg))+0.1)) 
+                   xlab = "Budget bonus\n(in % of initial budget)", ylab = paste("Extinction frequency (N =", nb_replicates,")"), ylim = c(0, max(fli$ext_prob, max(oti_avg))+0.1)) 
                    # ylim = c(0,1), xlim = c(0,100)) # ,
     # main = paste("UT = ", upth*100,"%"))
     abline(h = fli$ext_prob, lty = 1, lwd = 2, col = "black")
