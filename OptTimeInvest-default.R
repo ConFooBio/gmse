@@ -561,7 +561,7 @@ tab_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/
 brut <- as.data.frame(tab_OTI_default_results)
 
 stats_OTI_default_results <- OTI_stats(df = brut, omit.extinction = F) 
-we_stats_OTI_default_results <- OTI_stats(df = brut, omit.extinction = T)
+woe_stats_OTI_default_results <- OTI_stats(df = brut, omit.extinction = T)
 
 # Save the table in a csv file
 write.csv(stats_OTI_default_results, file = "stats_OTI_default_batch4.csv", row.names = F)
@@ -1368,7 +1368,7 @@ maxminmulti <- function(df, acth, bubo, tmax, color, yaxis) {
 
 #### confronting at = 0 and at = 0.1 ####
 
-OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci")) {
+OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci"), nb_replicates) {
   
   # subsetting
   fli <- subset(df, at == 0)
@@ -1384,16 +1384,55 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci")) {
     xoti <- oti$bb*100
     
     # barplot
-    moyennes = c(fli_avg,oti_avg) 
-    moyennes = matrix(moyennes,nc=11, nr=2, byrow=T) # nc : nombre de tests - nr : nombre de barres accolées (ici par paire) 
-    colnames(moyennes) = xoti 
-    barplot(moyennes,beside=T, col = c("black","blue"),
-            xlab = "Budget bonus\n(in % of initial budget)", ylab = "Extinction frequency (N = 100)",
-            legend.text = T)
-            # main = paste("UT = ", upth*100,"%")) #; box()
+    # moyennes = c(fli_avg,oti_avg) 
+    # moyennes = matrix(moyennes,nc=11, nr=2, byrow=T) # nc : nombre de tests - nr : nombre de barres accolées (ici par paire) 
+    # colnames(moyennes) = xoti 
+    # barplot(moyennes,beside=T, col = c("black","lightblue"),
+    #         xlab = "Budget bonus\n(in % of initial budget)", ylab = "Extinction frequency (N = 100)",
+    #         legend.text = T)
+    #         # main = paste("UT = ", upth*100,"%")) #; box()
     
     # legend("topright", legend = c("0%",paste(upth*100,"%")), fill = c("black","blue"), title = "UT", cex = 0.7, bty = "n")
-           
+    
+    diag = barplot(oti_avg, col = "lightblue", space = 1, width = 4, names.arg = xoti,
+                   xlab = "Budget bonus\n(in % of initial budget)", ylab = "Extinction frequency (N = 100)", ylim = c(0, max(fli$ext_prob, max(oti_avg))+0.1)) 
+                   # ylim = c(0,1), xlim = c(0,100)) # ,
+    # main = paste("UT = ", upth*100,"%"))
+    abline(h = fli$ext_prob, lty = 1, lwd = 2, col = "black")
+    
+    ## macnemar test for comparison of the frequencies for paired samples, for each BB value to the FLI
+    
+    # initiate vector for pvalues
+    pv <- NULL
+    for (i in 1:length(oti_avg)) {
+      # table of contingency
+      tc <- matrix(c(fli$ext_prob+oti_avg[i], (1-fli$ext_prob)+oti_avg[i], fli$ext_prob+(1-oti_avg[i]), (1-fli$ext_prob)+(1-oti_avg[i]))*nb_replicates, nrow = 2, ncol = 2)
+      if (tc[1,1]>10 & tc[1,2]>10 & tc[2,1]>10 & tc[2,2]>10) {
+        pv <- c(pv, mcnemar.test(tc, correct = F)$p.value)
+      } else {
+        pv <- c(pv, mcnemar.test(tc, correct = T)$p.value)
+      }      
+    }
+    
+    # convert p-values in stars
+    # initiate a vector for the stars
+    st <- rep(NA, length(pv))
+    for (i in 1:length(pv)) {
+      st[i] <- ""
+      if(pv[i] < 0.05 & pv[i] >= 0.01) {
+        st[i] <- "*"
+      }
+      if (pv[i] < 0.01 & pv[i] >= 0.001) {
+        st[i] <- "**"
+      }
+      if (pv[i] < 0.001) {
+        st[i] <- "***"
+      }
+    }
+    
+    # add the stars above the bars
+    text(diag,oti_avg+0.05,as.character(st),cex=1)
+    
   }
   
   if (goal == 1) {
@@ -1481,13 +1520,13 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci")) {
       fli_sd <- fli$fin_yield_sd/100
       # prevent the sd range to go over the borders
       fli_sd_neg <- ifelse(test = fli_avg-fli_sd < 0, fli_sd+(fli_avg-fli_sd), fli_sd)
-      fli_sd_pos <- ifelse(test = fli_avg-fli_sd > 100, fli_sd-(fli_avg+fli_sd-100), fli_sd)
+      fli_sd_pos <- ifelse(test = fli_avg+fli_sd > 100, fli_sd-(fli_avg+fli_sd-100), fli_sd)
       
       # OTI strat
       oti_sd <- oti$fin_yield_sd/100
       # prevent the sd range to go over the borders
       oti_sd_neg <- ifelse(test = oti_avg-oti_sd < 0, oti_sd+(oti_avg-oti_sd+100), oti_sd)
-      oti_sd_pos <- ifelse(test = oti_avg-oti_sd > 100, oti_sd-(oti_avg+oti_sd-100), oti_sd)
+      oti_sd_pos <- ifelse(test = oti_avg+oti_sd > 100, oti_sd-(oti_avg+oti_sd-100), oti_sd)
       
       # plotting
       xrange <- seq(0,100,10)
@@ -1515,13 +1554,13 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci")) {
       fli_95ci <- fli$fin_yield_95ci/100
       # prevent the 95ci range to go over the borders
       fli_95ci_neg <- ifelse(test = fli_avg-fli_95ci < 0, fli_95ci+(fli_avg-fli_95ci), fli_95ci)
-      fli_95ci_pos <- ifelse(test = fli_avg-fli_95ci > 100, fli_95ci-(fli_avg+fli_95ci-100), fli_95ci)
+      fli_95ci_pos <- ifelse(test = fli_avg+fli_95ci > 100, fli_95ci-(fli_avg+fli_95ci-100), fli_95ci)
       
       # OTI strat
       oti_95ci <- oti$fin_yield_95ci/100
       # prevent the 95ci range to go over the borders
       oti_95ci_neg <- ifelse(test = oti_avg-oti_95ci < 0, oti_95ci+(oti_avg-oti_95ci), oti_95ci)
-      oti_95ci_pos <- ifelse(test = oti_avg-oti_95ci > 100, oti_95ci-(oti_avg+oti_95ci-100), oti_95ci)
+      oti_95ci_pos <- ifelse(test = oti_avg+oti_95ci > 100, oti_95ci-(oti_avg+oti_95ci-100), oti_95ci)
       
       # plotting
       xrange <- seq(0,100,10)
@@ -1556,13 +1595,13 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci")) {
       fli_sd <- fli$max_diff_yield_sd*100
       # prevent the sd range to go over the borders
       fli_sd_neg <- ifelse(test = fli_avg-fli_sd < 0, fli_sd+(fli_avg-fli_sd), fli_sd)
-      fli_sd_pos <- ifelse(test = fli_avg-fli_sd > 100, fli_sd-(fli_avg+fli_sd-100), fli_sd)
+      fli_sd_pos <- ifelse(test = fli_avg+fli_sd > 100, fli_sd-(fli_avg+fli_sd-100), fli_sd)
       
       # OTI strat
       oti_sd <- oti$max_diff_yield_sd*100
       # prevent the sd range to go over the borders
       oti_sd_neg <- ifelse(test = oti_avg-oti_sd < 0, oti_sd+(oti_avg-oti_sd), oti_sd)
-      oti_sd_pos <- ifelse(test = oti_avg-oti_sd > 100, oti_sd-(oti_avg+oti_sd-100), oti_sd)
+      oti_sd_pos <- ifelse(test = oti_avg+oti_sd > 100, oti_sd-(oti_avg+oti_sd-100), oti_sd)
       
       # plotting
       xrange <- seq(0,100,10)
@@ -1590,13 +1629,13 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci")) {
       fli_95ci <- fli$max_diff_yield_95ci*100
       # prevent the 95ci range to go over the borders
       fli_95ci_neg <- ifelse(test = fli_avg-fli_95ci < 0, fli_95ci+(fli_avg-fli_95ci), fli_95ci)
-      fli_95ci_pos <- ifelse(test = fli_avg-fli_95ci > 100, fli_95ci-(fli_avg+fli_95ci-100), fli_95ci)
+      fli_95ci_pos <- ifelse(test = fli_avg+fli_95ci > 100, fli_95ci-(fli_avg+fli_95ci-100), fli_95ci)
       
       # OTI strat
       oti_95ci <- oti$max_diff_yield_95ci*100
       # prevent the 95ci range to go over the borders
       oti_95ci_neg <- ifelse(test = oti_avg-oti_95ci < 0, oti_95ci+(oti_avg-oti_95ci), oti_95ci)
-      oti_95ci_pos <- ifelse(test = oti_avg-oti_95ci > 100, oti_95ci-(oti_avg+oti_95ci-100), oti_95ci)
+      oti_95ci_pos <- ifelse(test = oti_avg+oti_95ci > 100, oti_95ci-(oti_avg+oti_95ci-100), oti_95ci)
       
       # plotting
       xrange <- seq(0,100,10)
@@ -1630,15 +1669,15 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci")) {
       oti_sd <- oti$inac_ts_sd*100
       # prevent the sd range to go over the borders
       oti_sd_neg <- ifelse(test = oti_avg-oti_sd < 0, oti_sd+(oti_avg-oti_sd), oti_sd)
-      oti_sd_pos <- ifelse(test = oti_avg-oti_sd > 100, oti_sd-(oti_avg+oti_sd-100), oti_sd)
+      oti_sd_pos <- ifelse(test = oti_avg+oti_sd > 100, oti_sd-(oti_avg+oti_sd-100), oti_sd)
       
       # plotting
       xoti <- oti$bb*100
       
       # barplot
       diag = barplot(oti_avg, col = "lightblue", space = 1, width = 4, names.arg = xoti,
-                     xlab = "Budget bonus\n(in % of initial budget)", ylab = "Time steps without updating\n(in %, mean +/- SD)",
-                     ylim = c(0,100), xlim = c(0,100)) # ,
+                     xlab = "Budget bonus\n(in % of initial budget)", ylab = "Time steps without updating\n(in %, mean +/- SD)", ylim = c(0,max(oti_avg+oti_sd_pos))) # ,
+                     # ylim = c(0,100), xlim = c(0,100)) # ,
                      # main = paste("UT = ", upth*100,"%"))
       arrows(diag, oti_avg-oti_sd_neg, diag, oti_avg+oti_sd_pos, length=0.03, angle=90, code=3, col = "black")
     }
@@ -1649,33 +1688,44 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci")) {
       oti_95ci <- oti$inac_ts_95ci*100
       # prevent the 95ci range to go over the borders
       oti_95ci_neg <- ifelse(test = oti_avg-oti_95ci < 0, oti_95ci+(oti_avg-oti_95ci), oti_95ci)
-      oti_95ci_pos <- ifelse(test = oti_avg-oti_95ci > 100, oti_95ci-(oti_avg+oti_95ci-100), oti_95ci)
+      oti_95ci_pos <- ifelse(test = oti_avg+oti_95ci > 100, oti_95ci-(oti_avg+oti_95ci-100), oti_95ci)
       
       # plotting
       xoti <- oti$bb*100
       
       # barplot
       diag = barplot(oti_avg, col = "lightblue", space = 1, width = 4, names.arg = xoti,
-                     xlab = "Budget bonus\n(in % of initial budget)", ylab = "Time steps without updating\n(in %, mean +/- 95CI)",
-                     ylim = c(0,100), xlim = c(0,100)) # ,
+                     xlab = "Budget bonus\n(in % of initial budget)", ylab = "Time steps without updating\n(in %, mean +/- 95CI)", ylim = c(0,max(oti_avg+oti_95ci_pos))) 
+                     # , xlim = c(0,100)) # ,
                      # main = paste("UT = ", upth*100,"%"))
       arrows(diag, oti_avg-oti_95ci_neg, diag, oti_avg+oti_95ci_pos, length=0.03, angle=90, code=3, col = "black")
     }
   }
 }
 
-layout(matrix(c(1,2,3,4), nrow = 2), widths = c(3,3))
+OTI_diagnostic <- function(df, upth, variance = c("sd", "ci"), nb_replicates) {
+  # divide into four boxes
+  layout(matrix(c(1,2,3,4), nrow = 2), widths = c(3,3))
+  
+  # set space for a title
+  par(oma = c(0, 0, 3, 0))
+  #layout.show(n = 4)
+  
+  # upper left: extinction frequency (goal 0)
+  OTI_vs_FLI_plot(df, upth, goal = 0, variance, nb_replicates)
+  # lower left: time steps without intervention
+  OTI_vs_FLI_plot(df, upth, goal = 4, variance, nb_replicates)
+  # upper right: Resource population deviation from MT (goal 1)
+  OTI_vs_FLI_plot(df, upth, goal = 1, variance, nb_replicates)
+  # lower right: sum of Users final yield
+  OTI_vs_FLI_plot(df, upth, goal = 2, variance, nb_replicates)
+  
+  # Global title
+  mtext(paste("UT =", upth*100, "%"), outer = TRUE, cex = 1, line = 1)
+  # mtext(paste("UT =", upth*100, "% (", ifelse(cond,"including", "excluding"), "extinctions)"), outer = TRUE, cex = 1, line = 1.5)
+  
+}
 
-# Pour créer un espace pour le titre global
-par(oma = c(0, 0, 3, 0))
-layout.show(n = 4)
 
-OTI_vs_FLI_plot(df = we_stats_OTI_default_results, upth = 0.1, goal = 0, variance = "sd")
-OTI_vs_FLI_plot(df = we_stats_OTI_default_results, upth = 0.1, goal = 4, variance = "sd")
-OTI_vs_FLI_plot(df = we_stats_OTI_default_results, upth = 0.1, goal = 1, variance = "sd")
-OTI_vs_FLI_plot(df = we_stats_OTI_default_results, upth = 0.1, goal = 2, variance = "sd")
-
-# Ajout du titre global
-mtext("UT = 10%",
-      outer = TRUE, cex = 1.2, line = 1.5)
-
+## TROUVER UN MOYEN D'ENLEVER LES LEGENDES DES AXES ET L'ACTIVER AVEC UN XLABEL = F EN ARGUMENT
+# ET METTRE LE SUJET DE CHAQUE GRAPHIQUE EN MAIN
