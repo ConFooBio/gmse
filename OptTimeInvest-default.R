@@ -926,6 +926,7 @@ legend(105, 1.01,
 
 ## box plot
 
+wo_ext <- subset(brut, extinct == 0)
 attach(wo_ext)
 
 # Resource population actual deviation from Manager's target
