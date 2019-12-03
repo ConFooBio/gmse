@@ -347,7 +347,7 @@ write.csv(flw_act, file = "flw_act_batch3.csv")
 #   for (k in 6:dim(OTI_default_results)[2]) {
 #     stats_OTI_default_results[i,k+zz] <- round(mean(OTI_default_results[,k,i]),3)
 #     stats_OTI_default_results[i,k+zz+1] <- sd(OTI_default_results[,k,i])
-#     stats_OTI_default_results[i,k+zz+2] <- 1.86*stats_OTI_default_results[i,k+zz+1]/sqrt(rep)
+#     stats_OTI_default_results[i,k+zz+2] <- 1.96*stats_OTI_default_results[i,k+zz+1]/sqrt(rep)
 #     zz <- zz + 2
 #   }
 #   
@@ -365,7 +365,47 @@ write.csv(flw_act, file = "flw_act_batch3.csv")
 # # Save the table in a csv file
 # write.csv(stats_OTI_default_results, file = "stats_OTI_default_batch3.csv", row.names = F)
 
-OTI_stats <- function(df, omit.extinction = FALSE) {
+## Function to estimate standard deviation by bootstrapping
+boot_st_ci <- function(x, itr) {
+  
+  # init iterations and sample
+  i <- 0
+  bt_avg <- NULL
+  
+  # loop over iterations
+  while (i < itr) {
+    # sample randomly from x
+    spl <- sample(x, length(x), replace = T)
+    
+    # store mean
+    bt_avg <- c(bt_avg, mean(spl))
+    
+    # increment i
+    i <- i+1
+  }
+  
+  # mean over the bootstrapped samples
+  bt_est <- sum(bt_avg)/itr
+  
+  # compute standard deviation
+  bt_sd <- sqrt((1/(length(x)-1)) * sum((bt_avg-bt_est)^2))
+  
+  # compute confidence interval
+  # sorting bt_avg numerically
+  st_avg <- sort(bt_avg)
+  
+  # get the first value after the 2.5 first centiles
+  bt_95ci_inf <- st_avg[floor(0.025*itr)+1]
+  
+  # get the last value before the 2.5 last centiles
+  bt_95ci_sup <- st_avg[floor(0.975*itr)-1]
+  
+  res <- c(bt_sd, bt_95ci_inf, bt_95ci_sup)
+  return(res) 
+    
+}
+
+OTI_stats <- function(df, ts, omit.extinction = FALSE) {
   
   df <- as.data.frame(df)
   
@@ -422,40 +462,31 @@ OTI_stats <- function(df, omit.extinction = FALSE) {
   res_str <- c(nbrep,mean(sub$budget),upd_thr[1],bud_bon[1], ext)
   
   ## mean, sd and 95ci for each proxy
-  # Actual Resource population deviation from Manager's target
-  res_sd <- sd(sub$act_dev)
+  # number of samples for bootstrap 
+  nbs <- 1000
   
-  res_str <- c(res_str, mean(sub$act_dev), res_sd, 1.86*res_sd/sqrt(nbrep))
+  # Actual Resource population deviation from Manager's target
+  res_str <- c(res_str, mean(sub$act_dev), boot_st_ci(sub$act_dev,nbs)[1], boot_st_ci(sub$act_dev,nbs)[2], boot_st_ci(sub$act_dev,nbs)[3])
   
   # Absolute value of the Actual Resource population deviation from Manager's target
-  res_sd <- sd(sub$abs_act_dev)
-  
-  res_str <- c(res_str, mean(sub$abs_act_dev), res_sd, 1.86*res_sd/sqrt(nbrep))
+  res_str <- c(res_str, mean(sub$abs_act_dev), boot_st_ci(sub$abs_act_dev,nbs)[1], boot_st_ci(sub$abs_act_dev,nbs)[2], boot_st_ci(sub$abs_act_dev,nbs)[3])
   
   # Users' total final yield
-  res_sd <- sd(sub$fin_yield)
-  
-  res_str <- c(res_str, mean(sub$fin_yield), res_sd, 1.86*res_sd/sqrt(nbrep))
+  res_str <- c(res_str, mean(sub$fin_yield), boot_st_ci(sub$fin_yield,nbs)[1], boot_st_ci(sub$fin_yield,nbs)[2], boot_st_ci(sub$fin_yield,nbs)[3])
   
   # Difference between the highest and the lowest yield
-  res_sd <- sd(sub$max_diff_yield)
-  
-  res_str <- c(res_str, mean(sub$max_diff_yield), res_sd, 1.86*res_sd/sqrt(nbrep))
+  res_str <- c(res_str, mean(sub$max_diff_yield), boot_st_ci(sub$max_diff_yield,nbs)[1], boot_st_ci(sub$max_diff_yield,nbs)[2], boot_st_ci(sub$max_diff_yield,nbs)[3])
   
   # Percentage of time steps of non-updating
-  res_sd <- sd(sub$inac_ts)
-  
-  res_str <- c(res_str, mean(sub$inac_ts), res_sd, 1.86*res_sd/sqrt(nbrep))
+  res_str <- c(res_str, mean(sub$inac_ts), boot_st_ci(sub$inac_ts,nbs)[1], boot_st_ci(sub$inac_ts,nbs)[2], boot_st_ci(sub$inac_ts,nbs)[3])
   
   # Percentage of time steps of K overshooting
-  res_sd <- sd(sub$overK)
-  
-  res_str <- c(res_str, mean(sub$overK), res_sd, 1.86*res_sd/sqrt(nbrep))
+  res_str <- c(res_str, mean(sub$overK), boot_st_ci(sub$overK,nbs)[1], boot_st_ci(sub$overK,nbs)[2], boot_st_ci(sub$overK,nbs)[3])
   
   # binding the string to the tab
   res_tab <- rbind(res_tab, as.numeric(res_str))
   
-  # loop over the other OTI parameters
+  ## loop over the other OTI parameters
   # for each at value
   for (i in 2:length(upd_thr)) {
     
@@ -490,55 +521,46 @@ OTI_stats <- function(df, omit.extinction = FALSE) {
       if (nbrep >= 2) {
         
         ## mean, sd and 95ci for each proxy
-        # Actual Resource population deviation from Manager's target
-        res_sd <- sd(sub$act_dev)
         
-        res_str <- c(res_str, mean(sub$act_dev), res_sd, 1.86*res_sd/sqrt(nbrep))
+        # Actual Resource population deviation from Manager's target
+        res_str <- c(res_str, mean(sub$act_dev), boot_st_ci(sub$act_dev,nbs)[1], boot_st_ci(sub$act_dev,nbs)[2], boot_st_ci(sub$act_dev,nbs)[3])
         
         # Absolute value of the Actual Resource population deviation from Manager's target
-        res_sd <- sd(sub$abs_act_dev)
-        
-        res_str <- c(res_str, mean(sub$abs_act_dev), res_sd, 1.86*res_sd/sqrt(nbrep))
+        res_str <- c(res_str, mean(sub$abs_act_dev), boot_st_ci(sub$abs_act_dev,nbs)[1], boot_st_ci(sub$abs_act_dev,nbs)[2], boot_st_ci(sub$abs_act_dev,nbs)[3])
         
         # Users' total final yield
-        res_sd <- sd(sub$fin_yield)
-        
-        res_str <- c(res_str, mean(sub$fin_yield), res_sd, 1.86*res_sd/sqrt(nbrep))
+        res_str <- c(res_str, mean(sub$fin_yield), boot_st_ci(sub$fin_yield,nbs)[1], boot_st_ci(sub$fin_yield,nbs)[2], boot_st_ci(sub$fin_yield,nbs)[3])
         
         # Difference between the highest and the lowest yield
-        res_sd <- sd(sub$max_diff_yield)
-        
-        res_str <- c(res_str, mean(sub$max_diff_yield), res_sd, 1.86*res_sd/sqrt(nbrep))
+        res_str <- c(res_str, mean(sub$max_diff_yield), boot_st_ci(sub$max_diff_yield,nbs)[1], boot_st_ci(sub$max_diff_yield,nbs)[2], boot_st_ci(sub$max_diff_yield,nbs)[3])
         
         # Percentage of time steps of non-updating
-        res_sd <- sd(sub$inac_ts)
-        
-        res_str <- c(res_str, mean(sub$inac_ts), res_sd, 1.86*res_sd/sqrt(nbrep))
+        res_str <- c(res_str, mean(sub$inac_ts), boot_st_ci(sub$inac_ts,nbs)[1], boot_st_ci(sub$inac_ts,nbs)[2], boot_st_ci(sub$inac_ts,nbs)[3])
         
         # Percentage of time steps of K overshooting
-        res_sd <- sd(sub$overK)
-        
-        res_str <- c(res_str, mean(sub$overK), res_sd, 1.86*res_sd/sqrt(nbrep))
+        res_str <- c(res_str, mean(sub$overK), boot_st_ci(sub$overK,nbs)[1], boot_st_ci(sub$overK,nbs)[2], boot_st_ci(sub$overK,nbs)[3])
         
       } else {
         
+        print(paste("parameter set with UT = ", upd_thr[i]*100, "% and BB = ", bud_bon[j]*100, "% has less than 2 replicates"))
+        
         # Actual Resource population deviation from Manager's target
-        res_str <- c(res_str, sub$act_dev, 0, 0)
+        res_str <- c(res_str, sub$act_dev, 0, 0, 0)
         
         # Absolute value of the Actual Resource population deviation from Manager's target
-        res_str <- c(res_str, sub$abs_act_dev, 0, 0)
+        res_str <- c(res_str, sub$abs_act_dev, 0, 0, 0)
         
         # Users' total final yield
-        res_str <- c(res_str, sub$fin_yield, 0, 0)
+        res_str <- c(res_str, sub$fin_yield, 0, 0, 0)
         
         # Difference between the highest and the lowest yield
-        res_str <- c(res_str, sub$max_diff_yield, 0, 0)
+        res_str <- c(res_str, sub$max_diff_yield, 0, 0, 0)
         
         # Percentage of time steps of non-updating
-        res_str <- c(res_str, sub$inac_ts, 0, 0)
+        res_str <- c(res_str, sub$inac_ts, 0, 0, 0)
         
         # Percentage of time steps of K overshooting
-        res_str <- c(res_str, sub$overK, 0, 0)
+        res_str <- c(res_str, sub$overK, 0, 0, 0)
       } # end else loop on nbrep
       
       # binding the string to the tab
@@ -548,7 +570,7 @@ OTI_stats <- function(df, omit.extinction = FALSE) {
   } # end for loop on update threshold
   
   # Array of column names
-  colnames(res_tab) <- c("rep", "budget", "at", "bb", "ext_prob", "act_dev", "act_dev_sd", "act_dev_95ci", "abs_act_dev", "abs_act_dev_sd", "abs_act_dev_95ci", "fin_yield", "fin_yield_sd", "fin_yield_95ci", "max_diff_yield", "max_diff_yield_sd", "max_diff_yield_95ci", "inac_ts", "inac_ts_sd", "inac_ts_95ci", "overK_tot", "overK_sd", "overK_95ci")
+  colnames(res_tab) <- c("rep", "budget", "at", "bb", "ext_prob", "act_dev", "act_dev_sd", "act_dev_95ci_inf", "act_dev_95ci_sup", "abs_act_dev", "abs_act_dev_sd", "abs_act_dev_95ci_inf", "abs_act_dev_95ci_sup", "fin_yield", "fin_yield_sd", "fin_yield_95ci_inf", "fin_yield_95ci_sup", "max_diff_yield", "max_diff_yield_sd", "max_diff_yield_95ci_inf", "max_diff_yield_95ci_sup", "inac_ts", "inac_ts_sd", "inac_ts_95ci_inf", "inac_ts_95ci_sup", "overK_tot", "overK_sd", "overK_95ci_inf", "overK_95ci_sup")
   
   res_tab <- as.data.frame(res_tab)
   
@@ -1446,25 +1468,26 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci"), nb
       
       # FLI strat
       fli_sd <- fli$act_dev_sd*100
-      # prevent the sd range to go over the borders
-      fli_sd_neg <- ifelse(test = fli_avg-fli_sd < -100, fli_sd+(fli_avg-fli_sd+100), fli_sd)
+      # # prevent the sd range to go over the borders
+      # fli_sd_neg <- ifelse(test = fli_avg-fli_sd < -100, fli_sd+(fli_avg-fli_sd+100), fli_sd)
       
       # OTI strat
       oti_sd <- oti$act_dev_sd*100
-      # prevent the sd range to go over the borders
-      oti_sd_neg <- ifelse(test = oti_avg-oti_sd < -100, oti_sd+(oti_avg-oti_sd+100), oti_sd)
+      # # prevent the sd range to go over the borders
+      # oti_sd_neg <- ifelse(test = oti_avg-oti_sd < -100, oti_sd+(oti_avg-oti_sd+100), oti_sd)
       
       # plotting
       xrange <- seq(0,100,10)
       xtendrange <- seq(-10,110)
       flimax <- rep(fli_avg+fli_sd, length(xtendrange))
-      flimin <- rep(fli_avg-fli_sd_neg, length(xtendrange))
+      # flimin <- rep(fli_avg-fli_sd_neg, length(xtendrange))
+      flimin <- rep(fli_avg-fli_sd, length(xtendrange))
       trans <- adjustcolor("lightgrey",alpha.f=0.7)
       xoti <- oti$bb*100
       
       # plot base
       plot(1, type = "n", xlab = "Budget bonus\n(in % of initial budget)", ylab = "Resource population deviation from MT\n(in %, mean +/- SD)",
-           ylim = c(-100,max(max(fli_avg+fli_sd),max(oti_avg+oti_sd))+10), xlim = c(0,100)) # ,
+           ylim = c(-100,ifelse(max(max(fli_avg+fli_sd)+10,max(oti_avg+oti_sd)+10)<0, 0, max(max(fli_avg+fli_sd)+10,max(oti_avg+oti_sd)+10))), xlim = c(0,100)) # ,
            # main = paste("UT = ", upth*100,"%"))
       polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "lightgrey")
       abline(h = fli_avg, lwd = 2)
@@ -1472,32 +1495,38 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci"), nb
       abline(h = -100, lty = 2, lwd = 1.2, col = "red")
       
       points(y = oti_avg, x = xoti, pch = 16, col = "blue")
-      arrows(xoti, oti_avg-oti_sd_neg, xoti, oti_avg+oti_sd, length=0.05, angle=90, code=3, col = "blue")
+      # arrows(xoti, oti_avg-oti_sd_neg, xoti, oti_avg+oti_sd, length=0.05, angle=90, code=3, col = "blue")
+      arrows(xoti, oti_avg-oti_sd, xoti, oti_avg+oti_sd, length=0.05, angle=90, code=3, col = "blue")
+      
     }
     
     if (variance == "ci") {
       
       # FLI strat
-      fli_95ci <- fli$act_dev_95ci*100
-      # prevent the 95ci range to go over the borders
-      fli_95ci_neg <- ifelse(test = fli_avg-fli_95ci < -100, fli_95ci+(fli_avg-fli_95ci+100), fli_95ci)
+      # fli_95ci <- fli$act_dev_95ci*100
+      # # prevent the 95ci range to go over the borders
+      # fli_95ci_neg <- ifelse(test = fli_avg-fli_95ci < -100, fli_95ci+(fli_avg-fli_95ci+100), fli_95ci)
+      fli_95ci_inf <- fli$act_dev_95ci_inf*100
+      fli_95ci_sup <- fli$act_dev_95ci_sup*100
       
       # OTI strat
-      oti_95ci <- oti$act_dev_95ci*100
-      # prevent the 95ci range to go over the borders
-      oti_95ci_neg <- ifelse(test = oti_avg-oti_95ci < -100, oti_95ci+(oti_avg-oti_95ci+100), oti_95ci)
+      # oti_95ci <- oti$act_dev_95ci*100
+      # # prevent the 95ci range to go over the borders
+      # oti_95ci_neg <- ifelse(test = oti_avg-oti_95ci < -100, oti_95ci+(oti_avg-oti_95ci+100), oti_95ci)
+      oti_95ci_inf <- oti$act_dev_95ci_inf*100
+      oti_95ci_sup <- oti$act_dev_95ci_sup*100
       
       # plotting
       xrange <- seq(0,100,10)
       xtendrange <- seq(-10,110)
-      flimax <- rep(fli_avg+fli_95ci, length(xtendrange))
-      flimin <- rep(fli_avg-fli_95ci_neg, length(xtendrange))
+      flimax <- rep(fli_95ci_sup, length(xtendrange))
+      flimin <- rep(fli_95ci_inf, length(xtendrange))
       trans <- adjustcolor("lightgrey",alpha.f=0.7)
       xoti <- oti$bb*100
       
       # plot base
       plot(1, type = "n", xlab = "Budget bonus\n(in % of initial budget)", ylab = "Resource population deviation from MT\n(in %, mean +/- 95CI)",
-           ylim = c(-100,max(max(fli_avg+fli_95ci),max(oti_avg+oti_95ci))+5), xlim = c(0,100)) # ,
+           ylim = c(-100,ifelse(max(max(fli_95ci_sup)+5,max(oti_95ci_sup)+5)<0, 0, max(max(fli_95ci_sup)+5,max(oti_95ci_sup)+5))), xlim = c(0,100)) # ,
            # main = paste("UT = ", upth*100,"%"))
       polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "lightgrey")
       abline(h = fli_avg, lwd = 2)
@@ -1505,7 +1534,7 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci"), nb
       abline(h = -100, lty = 2, lwd = 1.2, col = "red")
       
       points(y = oti_avg, x = xoti, pch = 16, col = "blue")
-      arrows(xoti, oti_avg-oti_95ci_neg, xoti, oti_avg+oti_95ci, length=0.05, angle=90, code=3, col = "blue")
+      arrows(xoti, oti_95ci_inf, xoti, oti_95ci_sup, length=0.05, angle=90, code=3, col = "blue")
     }
   }
   
@@ -1519,68 +1548,75 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci"), nb
       
       # FLI strat
       fli_sd <- fli$fin_yield_sd/100
-      # prevent the sd range to go over the borders
-      fli_sd_neg <- ifelse(test = fli_avg-fli_sd < 0, fli_sd+(fli_avg-fli_sd), fli_sd)
-      fli_sd_pos <- ifelse(test = fli_avg+fli_sd > 100, fli_sd-(fli_avg+fli_sd-100), fli_sd)
+      # # prevent the sd range to go over the borders
+      # fli_sd_neg <- ifelse(test = fli_avg-fli_sd < 0, fli_sd+(fli_avg-fli_sd), fli_sd)
+      # fli_sd_pos <- ifelse(test = fli_avg+fli_sd > 100, fli_sd-(fli_avg+fli_sd-100), fli_sd)
       
       # OTI strat
       oti_sd <- oti$fin_yield_sd/100
-      # prevent the sd range to go over the borders
-      oti_sd_neg <- ifelse(test = oti_avg-oti_sd < 0, oti_sd+(oti_avg-oti_sd+100), oti_sd)
-      oti_sd_pos <- ifelse(test = oti_avg+oti_sd > 100, oti_sd-(oti_avg+oti_sd-100), oti_sd)
+      # # prevent the sd range to go over the borders
+      # oti_sd_neg <- ifelse(test = oti_avg-oti_sd < 0, oti_sd+(oti_avg-oti_sd+100), oti_sd)
+      # oti_sd_pos <- ifelse(test = oti_avg+oti_sd > 100, oti_sd-(oti_avg+oti_sd-100), oti_sd)
       
       # plotting
       xrange <- seq(0,100,10)
       xtendrange <- seq(-10,110)
-      flimax <- rep(fli_avg+fli_sd_pos, length(xtendrange))
-      flimin <- rep(fli_avg-fli_sd_neg, length(xtendrange))
+      # flimax <- rep(fli_avg+fli_sd_pos, length(xtendrange))
+      # flimin <- rep(fli_avg-fli_sd_neg, length(xtendrange))
+      flimax <- rep(fli_avg+fli_sd, length(xtendrange))
+      flimin <- rep(fli_avg-fli_sd, length(xtendrange))
       trans <- adjustcolor("lightgrey",alpha.f=0.7)
       xoti <- oti$bb*100
       
       # plot base
       plot(1, type = "n", xlab = "Budget bonus\n(in % of initial budget)", ylab = "Sum of Users final budgets\n(in k-a.b.u, mean +/- SD)",
-           ylim = c(min(min(fli_avg+fli_sd),min(oti_avg+oti_sd))-5,100), xlim = c(0,100)) # ,
+           ylim = c(min(min(fli_avg+fli_sd)-5,min(oti_avg+oti_sd))-5,100), xlim = c(0,100)) # ,
            # main = paste("UT = ", upth*100,"%"))
       polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "lightgrey")
       abline(h = fli_avg, lwd = 2)
       abline(h = 100, lty = 2, lwd = 1.5, col = "darkgreen")
       
       points(y = oti_avg, x = xoti, pch = 16, col = "blue")
-      arrows(xoti, oti_avg-oti_sd_neg, xoti, oti_avg+oti_sd_pos, length=0.05, angle=90, code=3, col = "blue")
+      # arrows(xoti, oti_avg-oti_sd_neg, xoti, oti_avg+oti_sd_pos, length=0.05, angle=90, code=3, col = "blue")
+      arrows(xoti, oti_avg-oti_sd, xoti, oti_avg+oti_sd, length=0.05, angle=90, code=3, col = "blue")
     }
     
     if (variance == "ci") {
       
       # FLI strat
-      fli_95ci <- fli$fin_yield_95ci/100
-      # prevent the 95ci range to go over the borders
-      fli_95ci_neg <- ifelse(test = fli_avg-fli_95ci < 0, fli_95ci+(fli_avg-fli_95ci), fli_95ci)
-      fli_95ci_pos <- ifelse(test = fli_avg+fli_95ci > 100, fli_95ci-(fli_avg+fli_95ci-100), fli_95ci)
+      # fli_95ci <- fli$fin_yield_95ci/100
+      # # prevent the 95ci range to go over the borders
+      # fli_95ci_neg <- ifelse(test = fli_avg-fli_95ci < 0, fli_95ci+(fli_avg-fli_95ci), fli_95ci)
+      # fli_95ci_pos <- ifelse(test = fli_avg+fli_95ci > 100, fli_95ci-(fli_avg+fli_95ci-100), fli_95ci)
+      fli_95ci_inf <- fli$fin_yield_95ci_inf/100
+      fli_95ci_sup <- fli$fin_yield_95ci_sup/100
       
       # OTI strat
-      oti_95ci <- oti$fin_yield_95ci/100
-      # prevent the 95ci range to go over the borders
-      oti_95ci_neg <- ifelse(test = oti_avg-oti_95ci < 0, oti_95ci+(oti_avg-oti_95ci), oti_95ci)
-      oti_95ci_pos <- ifelse(test = oti_avg+oti_95ci > 100, oti_95ci-(oti_avg+oti_95ci-100), oti_95ci)
+      # oti_95ci <- oti$fin_yield_95ci/100
+      # # prevent the 95ci range to go over the borders
+      # oti_95ci_neg <- ifelse(test = oti_avg-oti_95ci < 0, oti_95ci+(oti_avg-oti_95ci), oti_95ci)
+      # oti_95ci_pos <- ifelse(test = oti_avg+oti_95ci > 100, oti_95ci-(oti_avg+oti_95ci-100), oti_95ci)
+      oti_95ci_inf <- oti$fin_yield_95ci_inf/100
+      oti_95ci_sup <- oti$fin_yield_95ci_sup/100
       
       # plotting
       xrange <- seq(0,100,10)
       xtendrange <- seq(-10,110)
-      flimax <- rep(fli_avg+fli_95ci_pos, length(xtendrange))
-      flimin <- rep(fli_avg-fli_95ci_neg, length(xtendrange))
+      flimax <- rep(fli_95ci_sup, length(xtendrange))
+      flimin <- rep(fli_95ci_inf, length(xtendrange))
       trans <- adjustcolor("lightgrey",alpha.f=0.7)
       xoti <- oti$bb*100
       
       # plot base
       plot(1, type = "n", xlab = "Budget bonus\n(in % of initial budget)", ylab = "Sum of Users final budgets\n(in k-a.b.u, mean +/- 95CI)",
-           ylim = c(min(min(fli_avg+fli_95ci),min(oti_avg+oti_95ci))-2,100), xlim = c(0,100)) # , 
+           ylim = c(min(min(fli_95ci_inf)-2,min(oti_95ci_inf))-2,100), xlim = c(0,100)) # , 
            # main = paste("UT = ", upth*100,"%"))
       polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "lightgrey")
       abline(h = fli_avg, lwd = 2)
       abline(h = 100, lty = 2, lwd = 1.5, col = "darkgreen")
       
       points(y = oti_avg, x = xoti, pch = 16, col = "blue")
-      arrows(xoti, oti_avg-oti_95ci_neg, xoti, oti_avg+oti_95ci_pos, length=0.05, angle=90, code=3, col = "blue")
+      arrows(xoti, oti_95ci_inf, xoti, oti_95ci_sup, length=0.05, angle=90, code=3, col = "blue")
     }
   }
   
@@ -1594,21 +1630,23 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci"), nb
       
       # FLI strat
       fli_sd <- fli$max_diff_yield_sd*100
-      # prevent the sd range to go over the borders
-      fli_sd_neg <- ifelse(test = fli_avg-fli_sd < 0, fli_sd+(fli_avg-fli_sd), fli_sd)
-      fli_sd_pos <- ifelse(test = fli_avg+fli_sd > 100, fli_sd-(fli_avg+fli_sd-100), fli_sd)
+      # # prevent the sd range to go over the borders
+      # fli_sd_neg <- ifelse(test = fli_avg-fli_sd < 0, fli_sd+(fli_avg-fli_sd), fli_sd)
+      # fli_sd_pos <- ifelse(test = fli_avg+fli_sd > 100, fli_sd-(fli_avg+fli_sd-100), fli_sd)
       
       # OTI strat
       oti_sd <- oti$max_diff_yield_sd*100
-      # prevent the sd range to go over the borders
-      oti_sd_neg <- ifelse(test = oti_avg-oti_sd < 0, oti_sd+(oti_avg-oti_sd), oti_sd)
-      oti_sd_pos <- ifelse(test = oti_avg+oti_sd > 100, oti_sd-(oti_avg+oti_sd-100), oti_sd)
+      # # prevent the sd range to go over the borders
+      # oti_sd_neg <- ifelse(test = oti_avg-oti_sd < 0, oti_sd+(oti_avg-oti_sd), oti_sd)
+      # oti_sd_pos <- ifelse(test = oti_avg+oti_sd > 100, oti_sd-(oti_avg+oti_sd-100), oti_sd)
       
       # plotting
       xrange <- seq(0,100,10)
-      xtendrange <- seq(-10,110)
-      flimax <- rep(fli_avg+fli_sd_pos, length(xtendrange))
-      flimin <- rep(fli_avg-fli_sd_neg, length(xtendrange))
+      # xtendrange <- seq(-10,110)
+      # flimax <- rep(fli_avg+fli_sd_pos, length(xtendrange))
+      # flimin <- rep(fli_avg-fli_sd_neg, length(xtendrange))
+      flimax <- rep(fli_avg+fli_sd, length(xtendrange))
+      flimin <- rep(fli_avg-fli_sd, length(xtendrange))
       trans <- adjustcolor("lightgrey",alpha.f=0.7)
       xoti <- oti$bb*100
       
@@ -1620,42 +1658,51 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci"), nb
       abline(h = fli_avg, lwd = 2)
       abline(h = 0, lty = 2, lwd = 1.5, col = "darkgreen")
       
-      points(y = oti_avg, x = xoti, pch = 16, col = "blue")
-      arrows(xoti, oti_avg-oti_sd_neg, xoti, oti_avg+oti_sd_pos, length=0.05, angle=90, code=3, col = "blue")
+      # points(y = oti_avg, x = xoti, pch = 16, col = "blue")
+      # arrows(xoti, oti_avg-oti_sd_neg, xoti, oti_avg+oti_sd_pos, length=0.05, angle=90, code=3, col = "blue")
+      arrows(xoti, oti_avg-oti_sd, xoti, oti_avg+oti_sd, length=0.05, angle=90, code=3, col = "blue")
     }
     
     if (variance == "ci") {
       
       # FLI strat
-      fli_95ci <- fli$max_diff_yield_95ci*100
-      # prevent the 95ci range to go over the borders
-      fli_95ci_neg <- ifelse(test = fli_avg-fli_95ci < 0, fli_95ci+(fli_avg-fli_95ci), fli_95ci)
-      fli_95ci_pos <- ifelse(test = fli_avg+fli_95ci > 100, fli_95ci-(fli_avg+fli_95ci-100), fli_95ci)
+      # fli_95ci <- fli$max_diff_yield_95ci*100
+      # # prevent the 95ci range to go over the borders
+      # fli_95ci_neg <- ifelse(test = fli_avg-fli_95ci < 0, fli_95ci+(fli_avg-fli_95ci), fli_95ci)
+      # fli_95ci_pos <- ifelse(test = fli_avg+fli_95ci > 100, fli_95ci-(fli_avg+fli_95ci-100), fli_95ci)
+      fli_95ci_inf <- fli$max_diff_yield_95ci_inf*100
+      fli_95ci_sup <- fli$max_diff_yield_95ci_sup*100
       
       # OTI strat
-      oti_95ci <- oti$max_diff_yield_95ci*100
-      # prevent the 95ci range to go over the borders
-      oti_95ci_neg <- ifelse(test = oti_avg-oti_95ci < 0, oti_95ci+(oti_avg-oti_95ci), oti_95ci)
-      oti_95ci_pos <- ifelse(test = oti_avg+oti_95ci > 100, oti_95ci-(oti_avg+oti_95ci-100), oti_95ci)
+      # oti_95ci <- oti$max_diff_yield_95ci*100
+      # # prevent the 95ci range to go over the borders
+      # oti_95ci_neg <- ifelse(test = oti_avg-oti_95ci < 0, oti_95ci+(oti_avg-oti_95ci), oti_95ci)
+      # oti_95ci_pos <- ifelse(test = oti_avg+oti_95ci > 100, oti_95ci-(oti_avg+oti_95ci-100), oti_95ci)
+      oti_95ci_inf <- oti$max_diff_yield_95ci_inf*100
+      oti_95ci_sup <- oti$max_diff_yield_95ci_sup*100
       
       # plotting
       xrange <- seq(0,100,10)
       xtendrange <- seq(-10,110)
-      flimax <- rep(fli_avg+fli_95ci_pos, length(xtendrange))
-      flimin <- rep(fli_avg-fli_95ci_neg, length(xtendrange))
+      # flimax <- rep(fli_avg+fli_95ci_pos, length(xtendrange))
+      # flimin <- rep(fli_avg-fli_95ci_neg, length(xtendrange))
+      flimax <- rep(fli_95ci_sup, length(xtendrange))
+      flimin <- rep(fli_95ci_inf, length(xtendrange))
       trans <- adjustcolor("lightgrey",alpha.f=0.7)
       xoti <- oti$bb*100
       
       # plot base
       plot(1, type = "n", xlab = "Budget bonus\n(in % of initial budget)", ylab = "Maximum difference between Users yields\n(in % of the highest yield, mean +/- 95CI)",
-           ylim = c(0,max(max(fli_avg+fli_sd),max(oti_avg+oti_sd))+5), xlim = c(0,100)) # ,
+           # ylim = c(0,max(max(fli_avg+fli_sd),max(oti_avg+oti_sd))+5), xlim = c(0,100)) # ,
+           ylim = c(0,max(max(fli_95ci_sup)+1,max(oti_95ci_sup))+1), xlim = c(0,100)) # ,
            # main = paste("UT = ", upth*100,"%"))
       polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "lightgrey")
       abline(h = fli_avg, lwd = 2)
-      abline(h = 100, lty = 2, lwd = 1.5, col = "darkgreen")
+      abline(h = 0, lty = 2, lwd = 1.5, col = "darkgreen")
       
       points(y = oti_avg, x = xoti, pch = 16, col = "blue")
-      arrows(xoti, oti_avg-oti_95ci_neg, xoti, oti_avg+oti_95ci_pos, length=0.05, angle=90, code=3, col = "blue")
+      # arrows(xoti, oti_avg-oti_95ci_neg, xoti, oti_avg+oti_95ci_pos, length=0.05, angle=90, code=3, col = "blue")
+      arrows(xoti, oti_95ci_inf, xoti, oti_95ci_sup, length=0.05, angle=90, code=3, col = "blue")
     }
   }
   
@@ -1668,43 +1715,51 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci"), nb
       
       # OTI strat
       oti_sd <- oti$inac_ts_sd*100
-      # prevent the sd range to go over the borders
-      oti_sd_neg <- ifelse(test = oti_avg-oti_sd < 0, oti_sd+(oti_avg-oti_sd), oti_sd)
-      oti_sd_pos <- ifelse(test = oti_avg+oti_sd > 100, oti_sd-(oti_avg+oti_sd-100), oti_sd)
+      # # prevent the sd range to go over the borders
+      # oti_sd_neg <- ifelse(test = oti_avg-oti_sd < 0, oti_sd+(oti_avg-oti_sd), oti_sd)
+      # oti_sd_pos <- ifelse(test = oti_avg+oti_sd > 100, oti_sd-(oti_avg+oti_sd-100), oti_sd)
       
       # plotting
       xoti <- oti$bb*100
       
       # barplot
       diag = barplot(oti_avg, col = "lightblue", space = 1, width = 4, names.arg = xoti,
-                     xlab = "Budget bonus\n(in % of initial budget)", ylab = "Time steps without updating\n(in %, mean +/- SD)", ylim = c(0,max(oti_avg+oti_sd_pos))) # ,
+                     xlab = "Budget bonus\n(in % of initial budget)", ylab = "Time steps without updating\n(in %, mean +/- SD)",
+                     ylim = c(0,max(oti_avg+oti_sd))) # ,
+                     # ylim = c(0,max(oti_avg+oti_sd_pos))) # ,
                      # ylim = c(0,100), xlim = c(0,100)) # ,
                      # main = paste("UT = ", upth*100,"%"))
-      arrows(diag, oti_avg-oti_sd_neg, diag, oti_avg+oti_sd_pos, length=0.03, angle=90, code=3, col = "black")
+      # arrows(diag, oti_avg-oti_sd_neg, diag, oti_avg+oti_sd_pos, length=0.03, angle=90, code=3, col = "black")
+      arrows(diag, oti_avg-oti_sd, diag, oti_avg+oti_sd, length=0.03, angle=90, code=3, col = "black")
     }
     
     if (variance == "ci") {
       
       # OTI strat
-      oti_95ci <- oti$inac_ts_95ci*100
-      # prevent the 95ci range to go over the borders
-      oti_95ci_neg <- ifelse(test = oti_avg-oti_95ci < 0, oti_95ci+(oti_avg-oti_95ci), oti_95ci)
-      oti_95ci_pos <- ifelse(test = oti_avg+oti_95ci > 100, oti_95ci-(oti_avg+oti_95ci-100), oti_95ci)
+      # oti_95ci <- oti$inac_ts_95ci*100
+      # # prevent the 95ci range to go over the borders
+      # oti_95ci_neg <- ifelse(test = oti_avg-oti_95ci < 0, oti_95ci+(oti_avg-oti_95ci), oti_95ci)
+      # oti_95ci_pos <- ifelse(test = oti_avg+oti_95ci > 100, oti_95ci-(oti_avg+oti_95ci-100), oti_95ci)
+      oti_95ci_inf <- oti$inac_ts_95ci_inf*100
+      oti_95ci_sup <- oti$inac_ts_95ci_sup*100
       
       # plotting
       xoti <- oti$bb*100
       
       # barplot
       diag = barplot(oti_avg, col = "lightblue", space = 1, width = 4, names.arg = xoti,
-                     xlab = "Budget bonus\n(in % of initial budget)", ylab = "Time steps without updating\n(in %, mean +/- 95CI)", ylim = c(0,max(oti_avg+oti_95ci_pos))) 
+                     xlab = "Budget bonus\n(in % of initial budget)", ylab = "Time steps without updating\n(in %, mean +/- 95CI)",
+                     ylim = c(0,max(oti_95ci_sup)))
+                     # ylim = c(0,max(oti_avg+oti_95ci_pos))) 
                      # , xlim = c(0,100)) # ,
                      # main = paste("UT = ", upth*100,"%"))
-      arrows(diag, oti_avg-oti_95ci_neg, diag, oti_avg+oti_95ci_pos, length=0.03, angle=90, code=3, col = "black")
+      arrows(diag, oti_95ci_inf, diag, oti_95ci_sup, length=0.03, angle=90, code=3, col = "black")
+      # arrows(diag, oti_avg-oti_95ci_neg, diag, oti_avg+oti_95ci_pos, length=0.03, angle=90, code=3, col = "black")
     }
   }
 }
 
-OTI_diagnostic <- function(df, upth, variance = c("sd", "ci"), nb_replicates) {
+OTI_diagnostic <- function(df, upth, variance = c("sd", "ci"), nb_replicates, omit.extinction = FALSE) {
   # divide into four boxes
   layout(matrix(c(1,2,3,4), nrow = 2), widths = c(3,3))
   
@@ -1722,11 +1777,13 @@ OTI_diagnostic <- function(df, upth, variance = c("sd", "ci"), nb_replicates) {
   OTI_vs_FLI_plot(df, upth, goal = 2, variance, nb_replicates)
   
   # Global title
-  mtext(paste("UT =", upth*100, "%"), outer = TRUE, cex = 1, line = 1)
-  # mtext(paste("UT =", upth*100, "% (", ifelse(cond,"including", "excluding"), "extinctions)"), outer = TRUE, cex = 1, line = 1.5)
+  # mtext(paste("UT =", upth*100, "%"), outer = TRUE, cex = 1, line = 1)
+  mtext(paste("UT =", upth*100, "% -", ifelse(omit.extinction == F,"including", "excluding"), "extinctions"), outer = TRUE, cex = 1, line = 1.5)
   
 }
 
+# example
+OTI_diagnostic(df = stats_OTI_default_results, upth = 0.3, variance = "ci", nb_replicates = 100, omit.extinction = F)
 
 ## TROUVER UN MOYEN D'ENLEVER LES LEGENDES DES AXES ET L'ACTIVER AVEC UN XLABEL = F EN ARGUMENT
 # ET METTRE LE SUJET DE CHAQUE GRAPHIQUE EN MAIN
