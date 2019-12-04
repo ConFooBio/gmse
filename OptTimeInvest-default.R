@@ -366,22 +366,22 @@ write.csv(flw_act, file = "flw_act_batch3.csv")
 # write.csv(stats_OTI_default_results, file = "stats_OTI_default_batch3.csv", row.names = F)
 
 ## Function to estimate standard deviation by bootstrapping
-boot_st_ci <- function(x, itr) {
+boot_sd_ci <- function(x, confidence = 95, itr = 1000) {
   
   # init iterations and sample
-  i <- 0
+  i <- itr
   bt_avg <- NULL
   
   # loop over iterations
-  while (i < itr) {
+  while (i > 0) {
     # sample randomly from x
-    spl <- sample(x, length(x), replace = T)
+    spl <- sample(x, length(x), replace = TRUE)
     
     # store mean
     bt_avg <- c(bt_avg, mean(spl))
     
-    # increment i
-    i <- i+1
+    # decrement i
+    i <- i-1
   }
   
   # mean over the bootstrapped samples
@@ -395,10 +395,10 @@ boot_st_ci <- function(x, itr) {
   st_avg <- sort(bt_avg)
   
   # get the first value after the 2.5 first centiles
-  bt_95ci_inf <- st_avg[floor(0.025*itr)+1]
+  bt_95ci_inf <- st_avg[floor(0.5*(1-0.01*confidence)*itr)+1]
   
   # get the last value before the 2.5 last centiles
-  bt_95ci_sup <- st_avg[floor(0.975*itr)-1]
+  bt_95ci_sup <- st_avg[floor(0.01*confidence+0.5*(1-0.01*confidence))-1]
   
   res <- c(bt_sd, bt_95ci_inf, bt_95ci_sup)
   return(res) 
@@ -466,22 +466,22 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
   nbs <- 1000
   
   # Actual Resource population deviation from Manager's target
-  res_str <- c(res_str, mean(sub$act_dev), boot_st_ci(sub$act_dev,nbs)[1], boot_st_ci(sub$act_dev,nbs)[2], boot_st_ci(sub$act_dev,nbs)[3])
+  res_str <- c(res_str, mean(sub$act_dev), boot_sd_ci(sub$act_dev,nbs)[1], boot_sd_ci(sub$act_dev,nbs)[2], boot_sd_ci(sub$act_dev,nbs)[3])
   
   # Absolute value of the Actual Resource population deviation from Manager's target
-  res_str <- c(res_str, mean(sub$abs_act_dev), boot_st_ci(sub$abs_act_dev,nbs)[1], boot_st_ci(sub$abs_act_dev,nbs)[2], boot_st_ci(sub$abs_act_dev,nbs)[3])
+  res_str <- c(res_str, mean(sub$abs_act_dev), boot_sd_ci(sub$abs_act_dev,nbs)[1], boot_sd_ci(sub$abs_act_dev,nbs)[2], boot_sd_ci(sub$abs_act_dev,nbs)[3])
   
   # Users' total final yield
-  res_str <- c(res_str, mean(sub$fin_yield), boot_st_ci(sub$fin_yield,nbs)[1], boot_st_ci(sub$fin_yield,nbs)[2], boot_st_ci(sub$fin_yield,nbs)[3])
+  res_str <- c(res_str, mean(sub$fin_yield), boot_sd_ci(sub$fin_yield,nbs)[1], boot_sd_ci(sub$fin_yield,nbs)[2], boot_sd_ci(sub$fin_yield,nbs)[3])
   
   # Difference between the highest and the lowest yield
-  res_str <- c(res_str, mean(sub$max_diff_yield), boot_st_ci(sub$max_diff_yield,nbs)[1], boot_st_ci(sub$max_diff_yield,nbs)[2], boot_st_ci(sub$max_diff_yield,nbs)[3])
+  res_str <- c(res_str, mean(sub$max_diff_yield), boot_sd_ci(sub$max_diff_yield,nbs)[1], boot_sd_ci(sub$max_diff_yield,nbs)[2], boot_sd_ci(sub$max_diff_yield,nbs)[3])
   
   # Percentage of time steps of non-updating
-  res_str <- c(res_str, mean(sub$inac_ts), boot_st_ci(sub$inac_ts,nbs)[1], boot_st_ci(sub$inac_ts,nbs)[2], boot_st_ci(sub$inac_ts,nbs)[3])
+  res_str <- c(res_str, mean(sub$inac_ts), boot_sd_ci(sub$inac_ts,nbs)[1], boot_sd_ci(sub$inac_ts,nbs)[2], boot_sd_ci(sub$inac_ts,nbs)[3])
   
   # Percentage of time steps of K overshooting
-  res_str <- c(res_str, mean(sub$overK), boot_st_ci(sub$overK,nbs)[1], boot_st_ci(sub$overK,nbs)[2], boot_st_ci(sub$overK,nbs)[3])
+  res_str <- c(res_str, mean(sub$overK), boot_sd_ci(sub$overK,nbs)[1], boot_sd_ci(sub$overK,nbs)[2], boot_sd_ci(sub$overK,nbs)[3])
   
   # binding the string to the tab
   res_tab <- rbind(res_tab, as.numeric(res_str))
@@ -523,22 +523,22 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
         ## mean, sd and 95ci for each proxy
         
         # Actual Resource population deviation from Manager's target
-        res_str <- c(res_str, mean(sub$act_dev), boot_st_ci(sub$act_dev,nbs)[1], boot_st_ci(sub$act_dev,nbs)[2], boot_st_ci(sub$act_dev,nbs)[3])
+        res_str <- c(res_str, mean(sub$act_dev), boot_sd_ci(sub$act_dev,nbs)[1], boot_sd_ci(sub$act_dev,nbs)[2], boot_sd_ci(sub$act_dev,nbs)[3])
         
         # Absolute value of the Actual Resource population deviation from Manager's target
-        res_str <- c(res_str, mean(sub$abs_act_dev), boot_st_ci(sub$abs_act_dev,nbs)[1], boot_st_ci(sub$abs_act_dev,nbs)[2], boot_st_ci(sub$abs_act_dev,nbs)[3])
+        res_str <- c(res_str, mean(sub$abs_act_dev), boot_sd_ci(sub$abs_act_dev,nbs)[1], boot_sd_ci(sub$abs_act_dev,nbs)[2], boot_sd_ci(sub$abs_act_dev,nbs)[3])
         
         # Users' total final yield
-        res_str <- c(res_str, mean(sub$fin_yield), boot_st_ci(sub$fin_yield,nbs)[1], boot_st_ci(sub$fin_yield,nbs)[2], boot_st_ci(sub$fin_yield,nbs)[3])
+        res_str <- c(res_str, mean(sub$fin_yield), boot_sd_ci(sub$fin_yield,nbs)[1], boot_sd_ci(sub$fin_yield,nbs)[2], boot_sd_ci(sub$fin_yield,nbs)[3])
         
         # Difference between the highest and the lowest yield
-        res_str <- c(res_str, mean(sub$max_diff_yield), boot_st_ci(sub$max_diff_yield,nbs)[1], boot_st_ci(sub$max_diff_yield,nbs)[2], boot_st_ci(sub$max_diff_yield,nbs)[3])
+        res_str <- c(res_str, mean(sub$max_diff_yield), boot_sd_ci(sub$max_diff_yield,nbs)[1], boot_sd_ci(sub$max_diff_yield,nbs)[2], boot_sd_ci(sub$max_diff_yield,nbs)[3])
         
         # Percentage of time steps of non-updating
-        res_str <- c(res_str, mean(sub$inac_ts), boot_st_ci(sub$inac_ts,nbs)[1], boot_st_ci(sub$inac_ts,nbs)[2], boot_st_ci(sub$inac_ts,nbs)[3])
+        res_str <- c(res_str, mean(sub$inac_ts), boot_sd_ci(sub$inac_ts,nbs)[1], boot_sd_ci(sub$inac_ts,nbs)[2], boot_sd_ci(sub$inac_ts,nbs)[3])
         
         # Percentage of time steps of K overshooting
-        res_str <- c(res_str, mean(sub$overK), boot_st_ci(sub$overK,nbs)[1], boot_st_ci(sub$overK,nbs)[2], boot_st_ci(sub$overK,nbs)[3])
+        res_str <- c(res_str, mean(sub$overK), boot_sd_ci(sub$overK,nbs)[1], boot_sd_ci(sub$overK,nbs)[2], boot_sd_ci(sub$overK,nbs)[3])
         
       } else {
         
