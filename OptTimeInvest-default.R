@@ -583,8 +583,8 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
 tab_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/Default-case/tab_OTI_default_batch3.csv")
 brut <- as.data.frame(tab_OTI_default_results)
 
-stats_OTI_default_results <- OTI_stats(df = brut, omit.extinction = F) 
-woe_stats_OTI_default_results <- OTI_stats(df = brut, omit.extinction = T)
+stat <- OTI_stats(df = brut, ts = 20, omit.extinction = F) 
+woe_stat <- OTI_stats(df = brut, ts = 20, omit.extinction = T)
 
 # Save the table in a csv file
 write.csv(stats_OTI_default_results, file = "stats_OTI_default_batch4.csv", row.names = F)
@@ -881,7 +881,7 @@ stats_resplot <- function(df, proxy = c("dev", "abs.dev", "fin.yie", "yie.equ", 
     yci_inf <- inac_ts_95ci_inf*100
     yci_sup <- inac_ts_95ci_sup*100
   } else if (proxy == "ovr.K") {
-    yvar <- overK*100
+    yvar <- overK_tot*100
     ysd <- overK_sd*100
     yci_inf <- overK_95ci_inf*100
     yci_sup <- overK_95ci_sup*100 }
@@ -981,9 +981,9 @@ stats_resplot <- function(df, proxy = c("dev", "abs.dev", "fin.yie", "yie.equ", 
   return(p)
 }
 
-# Example
-stats_resplot(df = stats_OTI_default_results, proxy = "non.int", variance = "sd", omit.extinction = F)
-stats_resplot(df = woe_stats_OTI_default_results, proxy = "abs.dev", variance = "ci", omit.extinction = T)
+## Examples
+stats_resplot(df = stat, proxy = "ovr.K", variance = "sd", omit.extinction = F)
+stats_resplot(df = woe_stat, proxy = "abs.dev", variance = "ci", omit.extinction = T)
 
 # attach(stat)
 # 
@@ -1605,8 +1605,8 @@ maxminmulti <- function(df, upth, bubo, tmax, color, yaxis) {
 
 # Example
 maxminmean(we_costs, upth = 0.2, bubo = 0.4, tmax = 20, color = "blue", yaxis = "Costs of actions (in a.b.u.)")
-maxminmean(we_actio, upth = 0.5, bubo = 0.7, tmax = 20, color = "blue", yaxis = "Number of individuals culled per time step")
-maxminmulti(we_popul, upth = 0.4, bubo = 0.1, tmax = 20, color = "green", yaxis = "Population density on the map")
+maxminmulti(we_actio, upth = 0.5, bubo = 0.7, tmax = 20, color = "blue", yaxis = "Number of individuals culled per time step")
+maxminmean(we_popul, upth = 0, bubo = 0, tmax = 20, color = "green", yaxis = "Population density on the map")
 
 #### confronting at = 0 and at = 0.1 ####
 
@@ -2002,8 +2002,8 @@ OTI_diagnostic <- function(df, upth, variance = c("sd", "ci"), nb_replicates, om
 }
 
 # Examples
-OTI_diagnostic(df = stats_OTI_default_results, upth = 0.3, variance = "ci", nb_replicates = 100, omit.extinction = F)
-OTI_diagnostic(df = woe_stats_OTI_default_results, upth = 0.2, variance = "sd", nb_replicates = 100, omit.extinction = T)
+OTI_diagnostic(df = stat, upth = 0.3, variance = "ci", nb_replicates = 100, omit.extinction = F)
+OTI_diagnostic(df = woe_stat, upth = 0.2, variance = "sd", nb_replicates = 100, omit.extinction = T)
 
 ## TROUVER UN MOYEN D'ENLEVER LES LEGENDES DES AXES ET L'ACTIVER AVEC UN XLABEL = F EN ARGUMENT
 # ET METTRE LE SUJET DE CHAQUE GRAPHIQUE EN MAIN
