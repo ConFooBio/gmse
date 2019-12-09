@@ -619,10 +619,10 @@ gg_extprob <- ggplot(stat, aes(x=as.factor(bb), y=ext_prob)) +
         legend.title = element_text(size = 18))
 gg_extprob
 
-# With R base plot
+## With R base plot
 { par(mfrow = c(1,1))
   
-  plot(1, type="n", xlab="Update threshold \n (in % of Manager's target)", ylab="Extinction frequency", xlim=c(0, 135), ylim=c(0, 1))
+plot(1, type="n", xlab="Update threshold \n (in % of Manager's target)", ylab="Extinction frequency", xlim=c(0, 135), ylim=c(0, 1))
 
 # a dotted line to show the null, K, and extinction UT
 abline(v=c(0,50,100), lty = 2, lwd = 1.5, col = c("black","blue","red"))
@@ -657,6 +657,77 @@ legend(105, 1.01,
 
 detach(stat)
 
+## alternative representation
+{d <- stat
+
+d$at <- d$at*100
+
+fli <- subset(d, at == 0)
+oti.bb0 <- subset(d, at != 0 & bb == 0)
+oti <- subset(d, at != 0 & bb != 0)
+
+# get max, min and average of each UT
+upth <- levels(as.factor(oti$at))
+bubo <- levels(as.factor(oti$bb))
+
+ymax <- NULL
+ymin <- NULL
+yavg <- NULL
+pres <- NULL
+
+for (i in 1:length(upth)) {
+  sub <- subset(oti, at == upth[i])
+  ymax <- c(ymax, max(sub$ext_prob))
+  ymin <- c(ymin, min(sub$ext_prob))
+  yavg <- c(yavg, mean(sub$ext_prob))
+  
+  ## macnemar test for comparison of the frequencies for paired samples, for each BB value to the FLI
+    
+  # initiate vector for pvalues
+  pv <- NULL
+
+  for (j in 1:length(bubo)) {  
+    
+    # table of contingency
+    tc <- matrix(c(fli$ext_prob+sub$ext_prob[j], (1-fli$ext_prob)+sub$ext_prob[j], fli$ext_prob+(1-sub$ext_prob[j]), (1-fli$ext_prob)+(1-sub$ext_prob[j]))*sub$rep[j], nrow = 2, ncol = 2)
+    if (tc[1,1]>10 & tc[1,2]>10 & tc[2,1]>10 & tc[2,2]>10) {
+      pv <- c(pv, mcnemar.test(tc, correct = F)$p.value)
+    } else {
+      pv <- c(pv, mcnemar.test(tc, correct = T)$p.value)
+    } 
+  }    
+  
+  pres <- c(pres, min(pv))
+}
+
+# convert p-values in stars
+# initiate a vector for the stars
+st <- rep(NA, length(pres))
+for (k in 1:length(pres)) {
+  st[k] <- "."
+  if(pres[k] < 0.05 & pres[k] >= 0.01) {
+    st[k] <- "*"
+  }
+  if (pres[k] < 0.01 & pres[k] >= 0.001) {
+    st[k] <- "**"
+  }
+  if (pres[k] < 0.001) {
+    st[k] <- "***"
+  }
+}
+
+p <- plot(1, type="n", xlab="Update threshold \n (in % of Manager's target)", ylab="Extinction frequency", xlim=c(0, 100), ylim=c(0, 1.1)) +
+    points(y = fli$ext_prob, x = fli$at, pch = 15, cex = 1.2, col = "black") +
+    polygon(c(as.numeric(upth),rev(as.numeric(upth))),c(ymax,rev(ymin)),col="lightblue", border = "blue") +
+    points(y = yavg, x = upth, pch = 4, col = "blue") +
+    points(oti.bb0$ext_prob ~ oti.bb0$at, type = "b", pch = 16, col = "darkred")
+
+# add the stars above the bars
+for (n in 1:length(upth)) {
+  subsub <- subset(oti, at == upth[n])
+  text(x = upth[n], y = max(oti.bb0$ext_prob[n], max(subsub$ext_prob))+0.1,as.character(st[n]),cex=1)
+}
+}
 #### box plots ####
 
 bp_resplot <- function(df, proxy = c("dev", "abs.dev", "fin.yie", "yie.equ", "non.int", "ovr.K"), omit.extinction = FALSE) {
