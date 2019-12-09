@@ -717,7 +717,7 @@ for (k in 1:length(pres)) {
 }
 
 p <- plot(1, type="n", xlab="Update threshold \n (in % of Manager's target)", ylab="Extinction frequency", xlim=c(0, 100), ylim=c(0, 1.1)) +
-    points(y = fli$ext_prob, x = fli$at, pch = 15, cex = 1.2, col = "black") +
+    points(y = fli$ext_prob, x = fli$at, pch = 15, col = "black") +
     polygon(c(as.numeric(upth),rev(as.numeric(upth))),c(ymax,rev(ymin)),col="lightblue", border = "blue") +
     points(y = yavg, x = upth, pch = 4, col = "blue") +
     points(oti.bb0$ext_prob ~ oti.bb0$at, type = "b", pch = 16, col = "darkred")
@@ -1620,43 +1620,41 @@ maxminmean <- function(df, upth, bubo, tmax, color, yaxis) {
 }
 
 # max min and all the different trajectories
-maxminmulti <- function(df, upth, bubo, tmax, color, yaxis) {
+maxminmulti <- function(df, upth, bubo, tmax, yaxis) {
   # subsetting
   dd <- subset(df, at == upth & bb == bubo)  
   
-  # max
-  ymax <- max(dd[,6])
-  # ymax <- max(dd[,8])
-  for (k in 7:dim(dd)[2]) {
-    # for (k in 9:dim(dd)[2]) {
-    ymax <- c(ymax,max(dd[,k]))
-  }
-  
-  # min
-  ymin <- min(dd[,6])
-  # ymax <- max(dd[,8])
-  for (k in 7:dim(dd)[2]) {
-    # for (k in 9:dim(dd)[2]) 
-    ymin <- c(ymin,min(dd[,k]))
-  }
-  
-  # mean
-  ymean <- mean(dd[,6])
-  # ymax <- max(dd[,8])
-  for (k in 7:dim(dd)[2]) {
-    # for (k in 9:dim(dd)[2]) 
-    ymean <- c(ymean,mean(dd[,k]))
-  }
+  # # max
+  # ymax <- max(dd[,6])
+  # # ymax <- max(dd[,8])
+  # for (k in 7:dim(dd)[2]) {
+  #   # for (k in 9:dim(dd)[2]) {
+  #   ymax <- c(ymax,max(dd[,k]))
+  # }
+  # 
+  # # min
+  # ymin <- min(dd[,6])
+  # # ymax <- max(dd[,8])
+  # for (k in 7:dim(dd)[2]) {
+  #   # for (k in 9:dim(dd)[2]) 
+  #   ymin <- c(ymin,min(dd[,k]))
+  # }
+  # 
+  # # mean
+  # ymean <- mean(dd[,6])
+  # # ymax <- max(dd[,8])
+  # for (k in 7:dim(dd)[2]) {
+  #   # for (k in 9:dim(dd)[2]) 
+  #   ymean <- c(ymean,mean(dd[,k]))
+  # }
   
   # plot
-  xrange <- seq(1,tmax,1)
-  # lightcol <- paste("light",color,sep = "")
-  lightcol <- lighten(color, amount = 0.4)
-  trans <- adjustcolor(lightcol,alpha.f=0.5)
-  plot(1, type = "n", xlab = "time", ylab = yaxis, ylim = c(0,max(ymax)), xlim = c(0,20), main = paste("UT = ", upth, " BB = ",bubo))
-  polygon(c(xrange,rev(xrange)),c(ymax,rev(ymin)),col=trans, border = lightcol)
+  xrange <- seq(1, tmax, 1)
+  # # lightcol <- paste("light",color,sep = "")
+  # lightcol <- lighten(color, amount = 0.4)
+  plot(1, type = "n", xlab = "time", ylab = yaxis, ylim = c(0,max(dd[6:dim(dd)[2]])), xlim = c(0,20)) # , main = paste("UT = ", upth, " BB = ",bubo)
   
-  # max cost with FLI strategy
+  # max with FLI strategy
   if (str_detect(yaxis, "Cost")){
     abline(h = (dd[1,2]/10)+10, lty = 2, pch = 2, col = "black")
   } else if (str_detect(yaxis, "budget")){
@@ -1664,20 +1662,37 @@ maxminmulti <- function(df, upth, bubo, tmax, color, yaxis) {
   } else if (str_detect(yaxis, "action")){
     abline(h = dd[1,2]/10, lty = 2, pch = 2, col = "black")
   } else if (str_detect(yaxis, "population")){
-    abline(h = dd[1,5], lty = 2, pch = 2, col = "red")
-    abline(h = dd[1,6], lty = 2, pch = 2, col = "blue")
+    xtendrange <- seq(-1,tmax+1,1)
+    trans <- adjustcolor("lightgreen",alpha.f=0.5)
+    upperUT <- rep((1+upth)*1000, length(xtendrange))
+    lowerUT <- rep((1-upth)*1000, length(xtendrange))
+    
+    polygon(c(xtendrange,rev(xtendrange)),c(upperUT,rev(lowerUT)),col=trans, border = "green")
+    abline(h = c(1000, 1500), col = c("darkgreen", "darkred"), lty = 2)
   }
   
   # all the trajectories
   for (i in 1:(dim(dd)[1])) {
-    points(x = xrange, y = dd[i,6:dim(dd)[2]], type = "b", pch = i, col = color)
+    points(x = xrange, y = dd[i,6:dim(dd)[2]], type = "b", pch = i, col = "black")
   }
 }
 
 # Example
 maxminmean(we_costs, upth = 0.2, bubo = 0.4, tmax = 20, color = "blue", yaxis = "Costs of actions (in a.b.u.)")
-maxminmulti(we_actio, upth = 0.5, bubo = 0.7, tmax = 20, color = "blue", yaxis = "Number of individuals culled per time step")
+maxminmulti(we_actio, upth = 0.5, bubo = 0.7, tmax = 20, yaxis = "Number of individuals culled per time step")
 maxminmean(we_popul, upth = 0, bubo = 0, tmax = 20, color = "green", yaxis = "Population density on the map")
+
+# For another fucnctuin
+layout(matrix(c(1,2), nrow = 2), widths = c(4,4))
+# layout.show(n = 3)
+# set space for a title
+# par(oma = c(0, 0, 3, 0))
+
+maxminmulti(we_popul, upth = 0.3, bubo = 0.5, tmax = 20, yaxis = "population")
+maxminmulti(we_costs, upth = 0.3, bubo = 0.5, tmax = 20, yaxis = "Costs")
+# maxminmulti(we_actio, upth = 0.3, bubo = 0.5, tmax = 20, yaxis = "actions")
+
+mtext(paste("UT =", 30, "% - BB =", 50, "%"), outer = TRUE, cex = 1, line = 1.5)
 
 #### confronting at = 0 and at = 0.1 ####
 
