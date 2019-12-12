@@ -226,6 +226,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     agent_budgets   <- runif(n = 1 + stakeholders, 
                              min = user_budget - usr_budget_rng,
                              max = user_budget + usr_budget_rng);
+    agent_budgets   <- round(agent_budgets);
     agent_budgets[agent_budgets < 1] <- 1;
     
     AGENTS[,17]     <- agent_budgets;
