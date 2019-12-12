@@ -153,7 +153,7 @@ for (i in 1:length(at)) {
         OTI_default_results[k,10,param_set] <- (final_ts-sum(sim$paras[,107]))/final_ts
         
         # Number of K exceedings
-        OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])
+        OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])/final_ts
       }
       
       # If extinction did not occured
@@ -175,7 +175,7 @@ for (i in 1:length(at)) {
         OTI_default_results[k,10,param_set] <- (final_ts-sum(sim$paras[,107]))/final_ts
         
         # Number of K exceedings
-        OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])
+        OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])/final_ts
       }
     } # end rep for loop
     
@@ -719,8 +719,18 @@ for (k in 1:length(pres)) {
 p <- plot(1, type="n", xlab="Update threshold \n (in % of Manager's target)", ylab="Extinction frequency", xlim=c(0, 100), ylim=c(0, 1.1)) +
     points(y = fli$ext_prob, x = fli$at, pch = 15, col = "black") +
     polygon(c(as.numeric(upth),rev(as.numeric(upth))),c(ymax,rev(ymin)),col="lightblue", border = "blue") +
+    abline(h = fli$ext_prob, col = "black", lwd = 1, lty = 2) +
     points(y = yavg, x = upth, pch = 4, col = "blue") +
     points(oti.bb0$ext_prob ~ oti.bb0$at, type = "b", pch = 16, col = "darkred")
+
+# Without management?
+no.mgmt <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/WithoutManagement.csv")
+
+no.mgmt.extfreq <- length(which(no.mgmt$time_step < 20))/100
+
+# add it on the plot as reference ?
+p <- p + points(y = no.mgmt.extfreq, x = 0, pch = 17, col = "black") +
+         abline(h = no.mgmt.extfreq, lty = 2, lwd = 1, col = "black")
 
 # add the stars above the bars
 for (n in 1:length(upth)) {
@@ -728,6 +738,7 @@ for (n in 1:length(upth)) {
   text(x = upth[n], y = max(oti.bb0$ext_prob[n], max(subsub$ext_prob))+0.1,as.character(st[n]),cex=1)
 }
 }
+
 #### box plots ####
 
 bp_resplot <- function(df, proxy = c("dev", "abs.dev", "fin.yie", "yie.equ", "non.int", "ovr.K"), omit.extinction = FALSE) {
