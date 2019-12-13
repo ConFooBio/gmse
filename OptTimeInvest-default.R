@@ -378,7 +378,7 @@ boot_sd_ci <- function(x, confidence = 95, itr = 1000) {
     spl <- sample(x, length(x), replace = TRUE)
     
     # store mean
-    bt_avg <- c(bt_avg, mean(spl))
+    bt_avg <- c(bt_avg, sum(spl)/length(spl))
     
     # decrement i
     i <- i-1
@@ -413,16 +413,26 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
   upd_thr <- levels(as.factor(df$at))
   bud_bon <- levels(as.factor(df$bb))
   
+  # number of samples for bootstrap 
+  nbs <- 1000
+  
   if (omit.extinction == "TRUE") { 
     
     # a loop to calculate extinction freq
     sub <- subset(df, at == 0 & bb == 0)
-    ext_freq <- sum(sub$extinct)/dim(sub)[1]
+    
+    # NULL tab
+    ext_freq <- NULL
+    sd_ci <- boot_sd_ci(sub$extinct, itr = nbs)
+    res <- c(sum(sub$extinct)/dim(sub)[1], sd_ci[1], sd_ci[2],sd_ci[3])
+    ext_freq <- rbind(ext_freq, res)
     
     for (i in 2:length(upd_thr)) {
       for (j in 1:length(bud_bon)) {
         sub <- subset(df, at == upd_thr[i] & bb == bud_bon[j])
-        ext_freq <- c(ext_freq, sum(sub$extinct)/dim(sub)[1])
+        sd_ci <- boot_sd_ci(sub$extinct, itr = nbs)
+        res <- c(sum(sub$extinct)/dim(sub)[1], sd_ci[1], sd_ci[2],sd_ci[3])
+        ext_freq <- rbind(ext_freq, res)
       }
     }
     
@@ -441,7 +451,7 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
   # create empty tab
   res_tab <- NULL
   
-  ## Special subset for UT = 0, for which there was only one BB
+  ## Special subset for UT = 0, for which there was only BB = 0
   # initiate a string
   res_str <- NULL
   
@@ -453,35 +463,40 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
   
   # extinction frequency
   if (omit.extinction == TRUE) {
-    ext <- ext_freq[zz]
+    ext <- ext_freq[zz,]
   } else {
-    ext <- sum(sub$extinct)/dim(sub)[1]
+    sd_ci <- boot_sd_ci(sub$extinct, itr = nbs)
+    ext <- c(sum(sub$extinct)/dim(sub)[1], sd_ci[1], sd_ci[2], sd_ci[3])
   }
   
   # start filling the string in
   res_str <- c(nbrep,mean(sub$budget),upd_thr[1],bud_bon[1], ext)
   
   ## mean, sd and 95ci for each proxy
-  # number of samples for bootstrap 
-  nbs <- 1000
   
   # Actual Resource population deviation from Manager's target
-  res_str <- c(res_str, mean(sub$act_dev), boot_sd_ci(sub$act_dev,itr = nbs)[1], boot_sd_ci(sub$act_dev,itr = nbs)[2], boot_sd_ci(sub$act_dev,itr = nbs)[3])
+  sd_ci <- boot_sd_ci(sub$act_dev, itr = nbs)
+  res_str <- c(res_str, mean(sub$act_dev), sd_ci[1], sd_ci[2], sd_ci[3])
   
   # Absolute value of the Actual Resource population deviation from Manager's target
-  res_str <- c(res_str, mean(sub$abs_act_dev), boot_sd_ci(sub$abs_act_dev,itr = nbs)[1], boot_sd_ci(sub$abs_act_dev,itr = nbs)[2], boot_sd_ci(sub$abs_act_dev,itr = nbs)[3])
+  sd_ci <- boot_sd_ci(sub$abs_act_dev, itr = nbs)
+  res_str <- c(res_str, mean(sub$abs_act_dev), sd_ci[1], sd_ci[2], sd_ci[3])
   
   # Users' total final yield
-  res_str <- c(res_str, mean(sub$fin_yield), boot_sd_ci(sub$fin_yield,itr = nbs)[1], boot_sd_ci(sub$fin_yield,itr = nbs)[2], boot_sd_ci(sub$fin_yield,itr = nbs)[3])
+  sd_ci <- boot_sd_ci(sub$fin_yield, itr = nbs)
+  res_str <- c(res_str, mean(sub$fin_yield), sd_ci[1], sd_ci[2], sd_ci[3])
   
   # Difference between the highest and the lowest yield
-  res_str <- c(res_str, mean(sub$max_diff_yield), boot_sd_ci(sub$max_diff_yield,itr = nbs)[1], boot_sd_ci(sub$max_diff_yield,itr = nbs)[2], boot_sd_ci(sub$max_diff_yield,itr = nbs)[3])
+  sd_ci <- boot_sd_ci(sub$max_diff_yield, itr = nbs)
+  res_str <- c(res_str, mean(sub$max_diff_yield), sd_ci[1], sd_ci[2], sd_ci[3])
   
   # Percentage of time steps of non-updating
-  res_str <- c(res_str, mean(sub$inac_ts), boot_sd_ci(sub$inac_ts,itr = nbs)[1], boot_sd_ci(sub$inac_ts,itr = nbs)[2], boot_sd_ci(sub$inac_ts,itr = nbs)[3])
+  sd_ci <- boot_sd_ci(sub$inac_ts, itr = nbs)
+  res_str <- c(res_str, mean(sub$inac_ts), sd_ci[1], sd_ci[2], sd_ci[3])
   
   # Percentage of time steps of K overshooting
-  res_str <- c(res_str, mean(sub$overK), boot_sd_ci(sub$overK,itr = nbs)[1], boot_sd_ci(sub$overK,itr = nbs)[2], boot_sd_ci(sub$overK,itr = nbs)[3])
+  sd_ci <- boot_sd_ci(sub$overK, itr = nbs)
+  res_str <- c(res_str, mean(sub$overK), sd_ci[1], sd_ci[2], sd_ci[3])
   
   # binding the string to the tab
   res_tab <- rbind(res_tab, as.numeric(res_str))
@@ -509,9 +524,10 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
       
       # extinction frequency
       if (omit.extinction == TRUE) {
-        ext <- ext_freq[zz]
+        ext <- ext_freq[zz,]
       } else {
-        ext <- sum(sub$extinct)/dim(sub)[1]
+        sd_ci <- boot_sd_ci(sub$extinct, itr = nbs)
+        ext <- c(sum(sub$extinct)/dim(sub)[1], sd_ci[1], sd_ci[2], sd_ci[3])
       }
       
       # start filling the string in
@@ -523,44 +539,50 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
         ## mean, sd and 95ci for each proxy
         
         # Actual Resource population deviation from Manager's target
-        res_str <- c(res_str, mean(sub$act_dev), boot_sd_ci(sub$act_dev,itr = nbs)[1], boot_sd_ci(sub$act_dev,itr = nbs)[2], boot_sd_ci(sub$act_dev,itr = nbs)[3])
+        sd_ci <- boot_sd_ci(sub$act_dev, itr = nbs)
+        res_str <- c(res_str, mean(sub$act_dev), sd_ci[1], sd_ci[2], sd_ci[3])
         
         # Absolute value of the Actual Resource population deviation from Manager's target
-        res_str <- c(res_str, mean(sub$abs_act_dev), boot_sd_ci(sub$abs_act_dev,itr = nbs)[1], boot_sd_ci(sub$abs_act_dev,itr = nbs)[2], boot_sd_ci(sub$abs_act_dev,itr = nbs)[3])
+        sd_ci <- boot_sd_ci(sub$abs_act_dev, itr = nbs)
+        res_str <- c(res_str, mean(sub$abs_act_dev), sd_ci[1], sd_ci[2], sd_ci[3])
         
         # Users' total final yield
-        res_str <- c(res_str, mean(sub$fin_yield), boot_sd_ci(sub$fin_yield,itr = nbs)[1], boot_sd_ci(sub$fin_yield,itr = nbs)[2], boot_sd_ci(sub$fin_yield,itr = nbs)[3])
+        sd_ci <- boot_sd_ci(sub$fin_yield, itr = nbs)
+        res_str <- c(res_str, mean(sub$fin_yield), sd_ci[1], sd_ci[2], sd_ci[3])
         
         # Difference between the highest and the lowest yield
-        res_str <- c(res_str, mean(sub$max_diff_yield), boot_sd_ci(sub$max_diff_yield, itr = nbs)[1], boot_sd_ci(sub$max_diff_yield, itr = nbs)[2], boot_sd_ci(sub$max_diff_yield, itr = nbs)[3])
+        sd_ci <- boot_sd_ci(sub$max_diff_yield, itr = nbs)
+        res_str <- c(res_str, mean(sub$max_diff_yield), sd_ci[1], sd_ci[2], sd_ci[3])
         
         # Percentage of time steps of non-updating
-        res_str <- c(res_str, mean(sub$inac_ts), boot_sd_ci(sub$inac_ts, itr = nbs)[1], boot_sd_ci(sub$inac_ts, itr = nbs)[2], boot_sd_ci(sub$inac_ts, itr = nbs)[3])
+        sd_ci <- boot_sd_ci(sub$inac_ts, itr = nbs)
+        res_str <- c(res_str, mean(sub$inac_ts), sd_ci[1], sd_ci[2], sd_ci[3])
         
         # Percentage of time steps of K overshooting
-        res_str <- c(res_str, mean(sub$overK), boot_sd_ci(sub$overK, itr = nbs)[1], boot_sd_ci(sub$overK, itr = nbs)[2], boot_sd_ci(sub$overK, itr = nbs)[3])
+        sd_ci <- boot_sd_ci(sub$overK, itr = nbs)
+        res_str <- c(res_str, mean(sub$overK), sd_ci[1], sd_ci[2], sd_ci[3])
         
       } else {
         
         print(paste("parameter set with UT = ", as.numeric(upd_thr[i])*100, "% and BB = ", as.numeric(bud_bon[j])*100, "% has less than 2 replicates"))
         
         # Actual Resource population deviation from Manager's target
-        res_str <- c(res_str, sub$act_dev, 0, 0, 0)
+        res_str <- c(res_str, sub$act_dev, 0, sub$act_dev, sub$act_dev)
         
         # Absolute value of the Actual Resource population deviation from Manager's target
-        res_str <- c(res_str, sub$abs_act_dev, 0, 0, 0)
+        res_str <- c(res_str, sub$abs_act_dev, 0, sub$abs_act_dev, sub$abs_act_dev)
         
         # Users' total final yield
-        res_str <- c(res_str, sub$fin_yield, 0, 0, 0)
+        res_str <- c(res_str, sub$fin_yield, 0, sub$fin_yield, sub$fin_yield)
         
         # Difference between the highest and the lowest yield
-        res_str <- c(res_str, sub$max_diff_yield, 0, 0, 0)
+        res_str <- c(res_str, sub$max_diff_yield, 0, sub$max_diff_yield, sub$max_diff_yield)
         
         # Percentage of time steps of non-updating
-        res_str <- c(res_str, sub$inac_ts, 0, 0, 0)
+        res_str <- c(res_str, sub$inac_ts, 0, sub$inac_ts, sub$inac_ts)
         
         # Percentage of time steps of K overshooting
-        res_str <- c(res_str, sub$overK, 0, 0, 0)
+        res_str <- c(res_str, sub$overK, 0, sub$overK, sub$overK)
       } # end else loop on nbrep
       
       # binding the string to the tab
@@ -570,7 +592,7 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
   } # end for loop on update threshold
   
   # Array of column names
-  colnames(res_tab) <- c("rep", "budget", "at", "bb", "ext_prob", "act_dev", "act_dev_sd", "act_dev_95ci_inf", "act_dev_95ci_sup", "abs_act_dev", "abs_act_dev_sd", "abs_act_dev_95ci_inf", "abs_act_dev_95ci_sup", "fin_yield", "fin_yield_sd", "fin_yield_95ci_inf", "fin_yield_95ci_sup", "max_diff_yield", "max_diff_yield_sd", "max_diff_yield_95ci_inf", "max_diff_yield_95ci_sup", "inac_ts", "inac_ts_sd", "inac_ts_95ci_inf", "inac_ts_95ci_sup", "overK_tot", "overK_sd", "overK_95ci_inf", "overK_95ci_sup")
+  colnames(res_tab) <- c("rep", "budget", "at", "bb", "ext_prob", "ext_prob_sd", "ext_prob_95ci_inf", "ext_prob_95ci_sup", "act_dev", "act_dev_sd", "act_dev_95ci_inf", "act_dev_95ci_sup", "abs_act_dev", "abs_act_dev_sd", "abs_act_dev_95ci_inf", "abs_act_dev_95ci_sup", "fin_yield", "fin_yield_sd", "fin_yield_95ci_inf", "fin_yield_95ci_sup", "max_diff_yield", "max_diff_yield_sd", "max_diff_yield_95ci_inf", "max_diff_yield_95ci_sup", "inac_ts", "inac_ts_sd", "inac_ts_95ci_inf", "inac_ts_95ci_sup", "overK_tot", "overK_sd", "overK_95ci_inf", "overK_95ci_sup")
   
   res_tab <- as.data.frame(res_tab)
   
@@ -602,13 +624,14 @@ write.csv(stats_OTI_default_results, file = "stats_OTI_default_batch4.csv", row.
 
 ## with ggplot facets
 
-stat <- stats_OTI_default_results
 attach(stat)
 
 gg_extprob <- ggplot(stat, aes(x=as.factor(bb), y=ext_prob)) +
   facet_wrap(~at, ncol = 4) +
+  geom_hline(yintercept = ext_prob[1], color = "black") +
+  geom_errorbar(aes(ymin=ext_prob_95ci_inf, ymax=ext_prob_95ci_sup), position=position_dodge(1), colour = "darkred", width=0.5) +
   geom_point(colour = "red") +     
-  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
+  # geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + 
   labs(x="Budget Bonus (in fraction of Initial Budget)", y = "Extinction probability") +
   theme_gray() +
   theme(strip.background=element_rect(fill="grey"),
@@ -737,6 +760,57 @@ for (n in 1:length(upth)) {
   subsub <- subset(oti, at == upth[n])
   text(x = upth[n], y = max(oti.bb0$ext_prob[n], max(subsub$ext_prob))+0.1,as.character(st[n]),cex=1)
 }
+}
+
+### another alternative
+{d <- stat
+
+d$at <- d$at*100
+
+# get max, min and average of each UT
+upth <- levels(as.factor(d$at))
+bubo <- levels(as.factor(d$bb))
+
+sub <- as.data.frame(subset(d, at == upth[1]))
+ext <- c(sub$ext_prob, rep(NA,length(upth)-1))
+sd <- c(sub$ext_prob_sd, rep(NA,length(upth)-1))
+ci_inf <- c(sub$ext_prob_95ci_inf, rep(NA,length(upth)-1))
+ci_sup <- c(sub$ext_prob_95ci_sup, rep(NA,length(upth)-1))
+
+for (i in 2:length(upth)) {
+  sub <- as.data.frame(subset(d, at == upth[i]))
+  ext <- rbind(ext, sub$ext_prob)
+  sd <- rbind(sd, sub$ext_prob_sd)
+  ci_inf <- rbind(ci_inf, sub$ext_prob_95ci_inf)
+  ci_sup <- rbind(ci_sup, sub$ext_prob_95ci_sup)
+}
+
+
+xadj1 <- as.numeric(upth[-1]) - 1;
+xadj2 <- as.numeric(upth[-1]) + 1;
+xtendrange <- seq(-10,110,1)
+
+par(mar = c(5, 5, 1, 1))
+plot(1, xlab = "Update threshold", type = "n", pch = 20,
+     ylab = "Extinction frequency", cex.lab = 1.5, cex.axis = 1.5, cex = 1.5,
+     ylim = c(0, 1), xlim = c(0, 100), lwd = 2, col = "blue")
+polygon(c(xtendrange,rev(xtendrange)),c(rep(ci_sup[1,1], length(xtendrange)),rev(rep(ci_inf[1,1], length(xtendrange)))),col="lightgrey", border = "grey") 
+
+# Put the other budget bonuses in a faint grey to show but de-emphasise
+for (i in 3:(dim(ext)[2]-1)) {
+  points(x = as.numeric(upth[-1]), y = ext[-1,i], type = "b", cex = 0.6, lwd = 0.8, lty = "solid",
+         col = "grey", pch = 20);
+}
+
+arrows(0, ci_inf[1,1], 0, ci_sup[1,1], length=0.05, angle=90, code=3, col = "black")
+arrows(xadj1, ci_inf[-1,2], xadj1, ci_sup[-1,2], length=0.05, angle=90, code=3, col = "darkblue")
+arrows(xadj2, ci_inf[-1,11], xadj2, ci_sup[-1,11], length=0.05, angle=90, code=3, col = "darkblue")
+points(x = xadj1, y = ext[-1,2], xlab = "Update threshold", type = "b", pch = 20,
+     ylab = "Extinction frequency", cex.lab = 1.5, cex.axis = 1.5, cex = 1.5,
+     ylim = c(0, 1), xlim = c(0, 100), lwd = 2, col = "blue");
+points(x = xadj2, y = ext[-1,11], type = "b", cex = 1, lwd = 2, lty = "dashed", col = "blue")
+points(x = 0, y = ext[1,1], pch = 15)
+abline(h=ext[1,1], lty = 1, col = "black")
 }
 
 #### box plots ####
@@ -1707,71 +1781,130 @@ mtext(paste("UT =", 30, "% - BB =", 50, "%"), outer = TRUE, cex = 1, line = 1.5)
 
 #### confronting at = 0 and at = 0.1 ####
 
-OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci"), nb_replicates) {
+OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci"), nb_replicates, nemar = FALSE) {
   
   # subsetting
   fli <- subset(df, at == 0)
   oti <- subset(df, at == upth)
   
+  trans <- adjustcolor("lightgrey",alpha.f=0.7)
+  
   if (goal == 0) {
     
-    # get means, sd, and 95ci and plot
-    fli_avg <- rep(fli$ext_prob, dim(oti)[1])
+    # get values
+    fli_avg <- fli$ext_prob
     oti_avg <- oti$ext_prob
-  
-    # plotting
-    xoti <- oti$bb*100
-    
-    # barplot
-    # moyennes = c(fli_avg,oti_avg) 
-    # moyennes = matrix(moyennes,nc=11, nr=2, byrow=T) # nc : nombre de tests - nr : nombre de barres accolées (ici par paire) 
-    # colnames(moyennes) = xoti 
-    # barplot(moyennes,beside=T, col = c("black","lightblue"),
-    #         xlab = "Budget bonus\n(in % of initial budget)", ylab = "Extinction frequency (N = 100)",
-    #         legend.text = T)
-    #         # main = paste("UT = ", upth*100,"%")) #; box()
-    
-    # legend("topright", legend = c("0%",paste(upth*100,"%")), fill = c("black","blue"), title = "UT", cex = 0.7, bty = "n")
-    
-    diag = barplot(oti_avg, col = "lightblue", space = 1, width = 4, names.arg = xoti,
-                   xlab = "Budget bonus\n(in % of initial budget)", ylab = paste("Extinction frequency (N =", nb_replicates,")"), ylim = c(0, max(fli$ext_prob, max(oti_avg))+0.1)) 
-                   # ylim = c(0,1), xlim = c(0,100)) # ,
-    # main = paste("UT = ", upth*100,"%"))
-    abline(h = fli$ext_prob, lty = 1, lwd = 2, col = "black")
     
     ## macnemar test for comparison of the frequencies for paired samples, for each BB value to the FLI
-    
-    # initiate vector for pvalues
-    pv <- NULL
-    for (i in 1:length(oti_avg)) {
-      # table of contingency
-      tc <- matrix(c(fli$ext_prob+oti_avg[i], (1-fli$ext_prob)+oti_avg[i], fli$ext_prob+(1-oti_avg[i]), (1-fli$ext_prob)+(1-oti_avg[i]))*nb_replicates, nrow = 2, ncol = 2)
-      if (tc[1,1]>10 & tc[1,2]>10 & tc[2,1]>10 & tc[2,2]>10) {
-        pv <- c(pv, mcnemar.test(tc, correct = F)$p.value)
-      } else {
-        pv <- c(pv, mcnemar.test(tc, correct = T)$p.value)
-      }      
+    if (nemar == TRUE) {
+      
+      # initiate vector for pvalues
+      pv <- NULL
+      for (i in 1:length(oti_avg)) {
+        # table of contingency
+        tc <- matrix(c(fli$ext_prob+oti_avg[i], (1-fli$ext_prob)+oti_avg[i], fli$ext_prob+(1-oti_avg[i]), (1-fli$ext_prob)+(1-oti_avg[i]))*nb_replicates, nrow = 2, ncol = 2)
+        if (tc[1,1]>10 & tc[1,2]>10 & tc[2,1]>10 & tc[2,2]>10) {
+          pv <- c(pv, mcnemar.test(tc, correct = F)$p.value)
+        } else {
+          pv <- c(pv, mcnemar.test(tc, correct = T)$p.value)
+        }      
+      }
+      
+      # convert p-values in stars
+      # initiate a vector for the stars
+      st <- rep(NA, length(pv))
+      for (i in 1:length(pv)) {
+        st[i] <- ""
+        if(pv[i] < 0.05 & pv[i] >= 0.01) {
+          st[i] <- "*"
+        }
+        if (pv[i] < 0.01 & pv[i] >= 0.001) {
+          st[i] <- "**"
+        }
+        if (pv[i] < 0.001) {
+          st[i] <- "***"
+        }
+      }
     }
     
-    # convert p-values in stars
-    # initiate a vector for the stars
-    st <- rep(NA, length(pv))
-    for (i in 1:length(pv)) {
-      st[i] <- ""
-      if(pv[i] < 0.05 & pv[i] >= 0.01) {
-        st[i] <- "*"
-      }
-      if (pv[i] < 0.01 & pv[i] >= 0.001) {
-        st[i] <- "**"
-      }
-      if (pv[i] < 0.001) {
-        st[i] <- "***"
-      }
-    }
+    if (variance == "sd") {
+      
+      # FLI strat
+      fli_sd <- fli$ext_prob_sd
+      
+      # OTI strat
+      oti_sd <- oti$ext_prob_sd
     
-    # add the stars above the bars
-    text(diag,oti_avg+0.05,as.character(st),cex=1)
+      # plotting
+      xrange <- seq(0,100,10)
+      xtendrange <- seq(-10,110,1)
+      flimax <- rep(fli_avg+fli_sd, length(xtendrange))
+      flimin <- rep(fli_avg-fli_sd, length(xtendrange))
+      xoti <- oti$bb*100
+      
+      # diag <- barplot(oti_avg, col = "lightblue", space = 1, width = 4, names.arg = xoti,
+      #                 xlab = "Budget bonus\n(in % of initial budget)", ylab = paste("Extinction frequency (N =", nb_replicates,")"), ylim = c(0, max(fli$ext_prob, max(oti_avg))+0.1)) 
+      #                 # ylim = c(0,1), xlim = c(0,100)) # ,
+      #                 # main = paste("UT = ", upth*100,"%"))
+      # abline(h = fli$ext_prob, lty = 1, lwd = 2, col = "black")
+      
+      # plot base
+      plot(1, type = "n", xlab = "Budget bonus\n(in % of initial budget)", ylab = "Extinction frequency (+/- SD)",
+           ylim = c(0,1), xlim = c(0,100)) # , max(max(fli_avg+fli_sd),max(oti_avg+oti_sd))
+      # main = paste("UT = ", upth*100,"%"))
+      polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "grey")
+      abline(h=fli_avg, lwd=2)
+      
+      points(y = oti_avg, x = xoti, pch = 16, col = "blue")
+      # arrows(xoti, oti_avg-oti_sd_neg, xoti, oti_avg+oti_sd, length=0.05, angle=90, code=3, col = "blue")
+      arrows(xoti, oti_avg-oti_sd, xoti, oti_avg+oti_sd, length=0.05, angle=90, code=3, col = "darkblue")
+      
+      if (nemar == TRUE) {
+        # add the stars above the bars
+        text(diag,oti_avg+oti_sd+0.05,as.character(st),cex=1)
+      }
+    }  
     
+    if (variance == "ci") {
+      
+      # FLI strat
+      fli_ci_inf <- fli$ext_prob_95ci_inf
+      fli_ci_sup <- fli$ext_prob_95ci_sup
+      
+      # OTI strat
+      oti_ci_inf <- oti$ext_prob_95ci_inf
+      oti_ci_sup <- oti$ext_prob_95ci_sup
+      
+      # plotting
+      xrange <- seq(0,100,10)
+      xtendrange <- seq(-10,110)
+      flimax <- rep(fli_ci_sup, length(xtendrange))
+      flimin <- rep(fli_ci_inf, length(xtendrange))
+      trans <- adjustcolor("lightgrey",alpha.f=0.7)
+      xoti <- oti$bb*100
+      
+      # diag <- barplot(oti_avg, col = "lightblue", space = 1, width = 4, names.arg = xoti,
+      #                 xlab = "Budget bonus\n(in % of initial budget)", ylab = paste("Extinction frequency (N =", nb_replicates,")"), ylim = c(0, max(fli$ext_prob, max(oti_avg))+0.1)) 
+      #                 # ylim = c(0,1), xlim = c(0,100)) # ,
+      #                 # main = paste("UT = ", upth*100,"%"))
+      # abline(h = fli$ext_prob, lty = 1, lwd = 2, col = "black")
+      
+      # plot base
+      plot(1, type = "n", xlab = "Budget bonus\n(in % of initial budget)", ylab = "Extinction frequency (+/- 95CI)",
+          ylim = c(0, 1), xlim = c(0,100)) # ,max(fli_ci_sup,max(oti_ci_sup)
+      # main = paste("UT = ", upth*100,"%"))
+      polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "grey")
+      abline(h=fli_avg, lwd=2)
+      
+      points(y = oti_avg, x = xoti, pch = 16, col = "blue")
+      # arrows(xoti, oti_avg-oti_sd_neg, xoti, oti_avg+oti_sd, length=0.05, angle=90, code=3, col = "blue")
+      arrows(xoti, oti_ci_inf, xoti, oti_ci_sup, length=0.05, angle=90, code=3, col = "darkblue")
+      
+      if (nemar == TRUE) {
+        # add the stars above the bars
+        text(diag,oti_avg+oti_sd+0.05,as.character(st),cex=1)
+      }
+    }  
   }
   
   if (goal == 1) {
@@ -1805,14 +1938,14 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci"), nb
       plot(1, type = "n", xlab = "Budget bonus\n(in % of initial budget)", ylab = "Resource population deviation from MT\n(in %, mean +/- SD)",
            ylim = c(-100,ifelse(max(max(fli_avg+fli_sd)+10,max(oti_avg+oti_sd)+10)<0, 0, max(max(fli_avg+fli_sd)+10,max(oti_avg+oti_sd)+10))), xlim = c(0,100)) # ,
            # main = paste("UT = ", upth*100,"%"))
-      polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "lightgrey")
+      polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "grey")
       abline(h = fli_avg, lwd = 2)
       abline(h = 0, lty = 2, lwd = 1.5, col = "darkgreen")
       abline(h = -100, lty = 2, lwd = 1.2, col = "red")
       
       points(y = oti_avg, x = xoti, pch = 16, col = "blue")
       # arrows(xoti, oti_avg-oti_sd_neg, xoti, oti_avg+oti_sd, length=0.05, angle=90, code=3, col = "blue")
-      arrows(xoti, oti_avg-oti_sd, xoti, oti_avg+oti_sd, length=0.05, angle=90, code=3, col = "blue")
+      arrows(xoti, oti_avg-oti_sd, xoti, oti_avg+oti_sd, length=0.05, angle=90, code=3, col = "darkblue")
       
     }
     
@@ -1844,13 +1977,13 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci"), nb
       plot(1, type = "n", xlab = "Budget bonus\n(in % of initial budget)", ylab = "Resource population deviation from MT\n(in %, mean +/- 95CI)",
            ylim = c(-100,ifelse(max(max(fli_95ci_sup)+5,max(oti_95ci_sup)+5)<0, 0, max(max(fli_95ci_sup)+5,max(oti_95ci_sup)+5))), xlim = c(0,100)) # ,
            # main = paste("UT = ", upth*100,"%"))
-      polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "lightgrey")
+      polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "grey")
       abline(h = fli_avg, lwd = 2)
       abline(h = 0, lty = 2, lwd = 1.5, col = "darkgreen")
       abline(h = -100, lty = 2, lwd = 1.2, col = "red")
       
       points(y = oti_avg, x = xoti, pch = 16, col = "blue")
-      arrows(xoti, oti_95ci_inf, xoti, oti_95ci_sup, length=0.05, angle=90, code=3, col = "blue")
+      arrows(xoti, oti_95ci_inf, xoti, oti_95ci_sup, length=0.05, angle=90, code=3, col = "darkblue")
     }
   }
   
@@ -1888,13 +2021,13 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci"), nb
       plot(1, type = "n", xlab = "Budget bonus\n(in % of initial budget)", ylab = "Sum of Users final budgets\n(in k-a.b.u, mean +/- SD)",
            ylim = c(min(min(fli_avg+fli_sd)-5,min(oti_avg+oti_sd))-5,100), xlim = c(0,100)) # ,
            # main = paste("UT = ", upth*100,"%"))
-      polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "lightgrey")
+      polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "grey")
       abline(h = fli_avg, lwd = 2)
       abline(h = 100, lty = 2, lwd = 1.5, col = "darkgreen")
       
       points(y = oti_avg, x = xoti, pch = 16, col = "blue")
       # arrows(xoti, oti_avg-oti_sd_neg, xoti, oti_avg+oti_sd_pos, length=0.05, angle=90, code=3, col = "blue")
-      arrows(xoti, oti_avg-oti_sd, xoti, oti_avg+oti_sd, length=0.05, angle=90, code=3, col = "blue")
+      arrows(xoti, oti_avg-oti_sd, xoti, oti_avg+oti_sd, length=0.05, angle=90, code=3, col = "darkblue")
     }
     
     if (variance == "ci") {
@@ -1927,12 +2060,12 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci"), nb
       plot(1, type = "n", xlab = "Budget bonus\n(in % of initial budget)", ylab = "Sum of Users final budgets\n(in k-a.b.u, mean +/- 95CI)",
            ylim = c(min(min(fli_95ci_inf)-2,min(oti_95ci_inf))-2,100), xlim = c(0,100)) # , 
            # main = paste("UT = ", upth*100,"%"))
-      polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "lightgrey")
+      polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "grey")
       abline(h = fli_avg, lwd = 2)
       abline(h = 100, lty = 2, lwd = 1.5, col = "darkgreen")
       
       points(y = oti_avg, x = xoti, pch = 16, col = "blue")
-      arrows(xoti, oti_95ci_inf, xoti, oti_95ci_sup, length=0.05, angle=90, code=3, col = "blue")
+      arrows(xoti, oti_95ci_inf, xoti, oti_95ci_sup, length=0.05, angle=90, code=3, col = "darkblue")
     }
   }
   
@@ -1970,13 +2103,13 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci"), nb
       plot(1, type = "n", xlab = "Budget bonus\n(in % of initial budget)", ylab = "Maximum difference between Users yields\n(in % of the highest yield, mean +/- SD)",
            ylim = c(0,max(max(fli_avg+fli_sd),max(oti_avg+oti_sd))+5), xlim = c(0,100)) #,
            # main = paste("UT = ", upth*100,"%"))
-      polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "lightgrey")
+      polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "grey")
       abline(h = fli_avg, lwd = 2)
       abline(h = 0, lty = 2, lwd = 1.5, col = "darkgreen")
       
       # points(y = oti_avg, x = xoti, pch = 16, col = "blue")
       # arrows(xoti, oti_avg-oti_sd_neg, xoti, oti_avg+oti_sd_pos, length=0.05, angle=90, code=3, col = "blue")
-      arrows(xoti, oti_avg-oti_sd, xoti, oti_avg+oti_sd, length=0.05, angle=90, code=3, col = "blue")
+      arrows(xoti, oti_avg-oti_sd, xoti, oti_avg+oti_sd, length=0.05, angle=90, code=3, col = "darkblue")
     }
     
     if (variance == "ci") {
@@ -2012,13 +2145,13 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci"), nb
            # ylim = c(0,max(max(fli_avg+fli_sd),max(oti_avg+oti_sd))+5), xlim = c(0,100)) # ,
            ylim = c(0,max(max(fli_95ci_sup)+1,max(oti_95ci_sup))+1), xlim = c(0,100)) # ,
            # main = paste("UT = ", upth*100,"%"))
-      polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "lightgrey")
+      polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "grey")
       abline(h = fli_avg, lwd = 2)
       abline(h = 0, lty = 2, lwd = 1.5, col = "darkgreen")
       
       points(y = oti_avg, x = xoti, pch = 16, col = "blue")
       # arrows(xoti, oti_avg-oti_95ci_neg, xoti, oti_avg+oti_95ci_pos, length=0.05, angle=90, code=3, col = "blue")
-      arrows(xoti, oti_95ci_inf, xoti, oti_95ci_sup, length=0.05, angle=90, code=3, col = "blue")
+      arrows(xoti, oti_95ci_inf, xoti, oti_95ci_sup, length=0.05, angle=90, code=3, col = "darkblue")
     }
   }
   
