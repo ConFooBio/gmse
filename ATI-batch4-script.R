@@ -87,7 +87,7 @@ ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 2
         if (k %% freq == 0) {
           print("Saving budget, costs, actions, actual and observed pop")
           para <- OTI_default_results[k,2:5, param_set]
-          para <- c(para, K, trgt)
+          para <- c(para, K, trgt, popinit)
           
           bdg <- rep(0, ts)
           pop <- rep(0, ts)
@@ -201,7 +201,7 @@ ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 2
           if (k %% freq == 0) {
             print("Saving budget, costs, actions, actual and observed pop")
             para <- OTI_default_results[k,2:5, param_set]
-            para <- c(para, K, trgt)
+            para <- c(para, K, trgt, popinit)
             
             bdg <- rep(0, ts)
             pop <- rep(0, ts)
