@@ -17,177 +17,72 @@
 
 ## Set parameters
 
-# Array of Action Threshold values to explore
-at <- seq(0,1,0.1)
-
-# Array of Budget Bonus values to explore
-bb <- seq(0,1,0.1)
-
-# Number of simulation time steps
-ts <- 20
-
-# Number of replicates
-rep <- 100
-
-# Budget
-bdgt <- 1000
-
-## Case parameters: a standard case, a pop is endangered by culling, put under conservation, managers want to maintain it close to their carrying capacity
-# initial Resource population
-popinit <- 700
-
-# carrying capacity
-K <- 1500
-
-# Manager target
-trgt <- 1000
-
-# number of stakeholders
-stkh <- 10
-
-# Other parameters to GMSE default
-
-
-## Create empty structures to gather simulation results
-
-columns <- c("rep", "budget", "at", "bb", "extinct", "act_dev", "abs_act_dev", "fin_yield", "max_diff_yield", "inac_ts", "overK")
-
-# Empty 3D array of correct size 
-# Dimensions(lines = replicates, columns = measures, layer = parameter combination)
-OTI_default_results <- array(data=NA, dim = c(rep, length(columns), length(at)*length(bb)-(length(bb)-1)), dimnames = list(NULL,columns,NULL))                 
-
-## Create 3 structures to follow up on the costs, the actions, and the population along the simulations
-flw_bgt <- NULL
-flw_cos <- NULL
-flw_act <- NULL
-flw_pop <- NULL
-
-# how often do we want to save them? Every 10 replicates?
-freq <- 10
-
-## Simulations loop
-
-# Initialize an index of parameter combination
-param_set <- 1
-
-# Loop
-start <- Sys.time()
-
-# For every AT values in 'at'
-for (i in 1:length(at)) {
+ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 20, rep = 100, bdgt = 1000, popinit = 700, K = 1500, trgt = 1000, stkh = 10, freq = 10, obstype = 0) {
+    
+  # Array of Action Threshold values to explore
+  # at <- seq(0,1,0.1)
+  at <- UTrange
   
-  # avoid simul for different bb values for at = 0
-  if (at[i] == 0) {
-    
-    # With 'rep' number of replicate per parameter combo
-    for (k in 1:rep) {
-      
-      # Run GMSE for the parameter combo
-      sim <- gmse(stakeholders = stkh, time_max = ts, land_ownership = TRUE,
-                  RESOURCE_ini = popinit, res_death_K = K,
-                  action_thres = 0, budget_bonus = 0, manage_target = trgt,
-                  plotting = F)
-      
-      # Store the last time step number (for extinction-related bugs)
-      final_ts <- length(which(sim$paras[,1] != 0))
-      
-      # Pick up values for simulation results and store them in OTI_default_results
-      
-      # Replicate number
-      OTI_default_results[k,1,param_set] <- k
-      
-      # Budget
-      OTI_default_results[k,2,param_set] <- bdgt
-      
-      # AT value
-      OTI_default_results[k,3,param_set] <- at[i]
-      
-      # BB value
-      OTI_default_results[k,4,param_set] <- 0
-      
-      # Has extinction occured? (yes = 1, no = 0)
-      OTI_default_results[k,5,param_set] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
-      
-      ## save costs, actions and population in flw structures
-      if (k %% freq == 0) {
-        print("Saving budget, costs, actions and pop")
-        para <- OTI_default_results[k,2:5, param_set]
-        para <- c(para, K, trgt)
-        
-        bdg <- rep(0, ts)
-        pop <- rep(0, ts)
-        cos <- rep(0, ts)
-        act <- rep(0, ts)
-        
-        for (t in 1:final_ts) {
-          bdg[t] <- sim$agents[[1]][1,17]
-          pop[t] <- dim(sim$resource[[t]])[1]
-          cos[t] <- sim$cost[[t]][1,9,2]
-          act[t] <- mean(sim$action[[t]][1,9,2:stkh])
-        }
-        
-        flw_bgt <- rbind(flw_bgt, c(para, bdg))
-        flw_pop <- rbind(flw_pop, c(para, pop))
-        flw_cos <- rbind(flw_cos, c(para, cos))
-        flw_act <- rbind(flw_act, c(para, act))
-      }
-      
-      # Next measures involve calculus that can be disturbed if extinction occured
-      
-      # If exctinction occured
-      if (OTI_default_results[k,5,param_set] != 0) {
-        
-        # Resource actual pop deviation from target
-        OTI_default_results[k,6,param_set] <- dim(sim$resource[[final_ts-1]])[1]/sim$action[[1]][1,5,1] - 1
-        
-        # Absolute value
-        OTI_default_results[k,7,param_set] <- abs(OTI_default_results[k,6,param_set])
-        
-        # Users total final yield
-        OTI_default_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
-        
-        # Maximum difference between Users yield
-        OTI_default_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
-        
-        # Number of timesteps during which Manager chose not to update policy
-        OTI_default_results[k,10,param_set] <- (final_ts-sum(sim$paras[,107]))/final_ts
-        
-        # Number of K exceedings
-        OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])/final_ts
-      }
-      
-      # If extinction did not occured
-      else {
-        
-        # Resource actual pop deviation from target
-        OTI_default_results[k,6,param_set] <- dim(sim$resource[[final_ts]])[1]/sim$action[[1]][1,5,1] - 1
-        
-        # Absolute value
-        OTI_default_results[k,7,param_set] <- abs(OTI_default_results[k,6,param_set])
-        
-        # Users total final yield
-        OTI_default_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
-        
-        # Maximum difference between Users yield
-        OTI_default_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
-        
-        # Number of timesteps during which Manager chose not to update policy
-        OTI_default_results[k,10,param_set] <- (final_ts-sum(sim$paras[,107]))/final_ts
-        
-        # Number of K exceedings
-        OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])/final_ts
-      }
-    } # end rep for loop
-    
-    # Increment parameter combo index
-    param_set <- param_set + 1
-  } # end at if loop
+  # Array of Budget Bonus values to explore
+  # bb <- seq(0,1,0.1)
+  bb <- BBrange
   
-  # for every other at value
-  else {
+  # # Number of simulation time steps
+  # ts <- 20
+  # 
+  # # Number of replicates
+  # rep <- 100
+  # 
+  # # Budget
+  # bdgt <- 1000
+  # 
+  # ## Case parameters: a standard case, a pop is endangered by culling, put under conservation, managers want to maintain it close to their carrying capacity
+  # # initial Resource population
+  # popinit <- 700
+  # 
+  # # carrying capacity
+  # K <- 1500
+  # 
+  # # Manager target
+  # trgt <- 1000
+  # 
+  # # number of stakeholders
+  # stkh <- 10
+  
+  # Other parameters to GMSE default
+  
+  
+  ## Create empty structures to gather simulation results
+  
+  columns <- c("rep", "budget", "at", "bb", "extinct", "act_dev", "abs_act_dev", "fin_yield", "max_diff_yield", "inac_ts", "overK")
+  
+  # Empty 3D array of correct size 
+  # Dimensions(lines = replicates, columns = measures, layer = parameter combination)
+  OTI_default_results <- array(data=NA, dim = c(rep, length(columns), length(at)*length(bb)-(length(bb)-1)), dimnames = list(NULL,columns,NULL))                 
+  
+  ## Create 3 structures to follow up on the costs, the actions, and the population along the simulations
+  flw_bgt <- NULL
+  flw_cos <- NULL
+  flw_act <- NULL
+  flw_pop <- NULL
+  flw_obs <- NULL
+  
+  # # how often do we want to save them? Every 10 replicates?
+  # freq <- 10
+  
+  ## Simulations loop
+  
+  # Initialize an index of parameter combination
+  param_set <- 1
+  
+  # Loop
+  start <- Sys.time()
+  
+  # For every AT values in 'at'
+  for (i in 1:length(at)) {
     
-    # For every BB values in 'bb'
-    for (j in 1:length(bb)) {
+    # avoid simul for different bb values for at = 0
+    if (at[i] == 0) {
       
       # With 'rep' number of replicate per parameter combo
       for (k in 1:rep) {
@@ -195,7 +90,8 @@ for (i in 1:length(at)) {
         # Run GMSE for the parameter combo
         sim <- gmse(stakeholders = stkh, time_max = ts, land_ownership = TRUE,
                     RESOURCE_ini = popinit, res_death_K = K,
-                    action_thres = at[i], budget_bonus = bb[j], manage_target = trgt,
+                    action_thres = 0, budget_bonus = 0, manage_target = trgt,
+                    observe_type = obstype,
                     plotting = F)
         
         # Store the last time step number (for extinction-related bugs)
@@ -210,17 +106,17 @@ for (i in 1:length(at)) {
         OTI_default_results[k,2,param_set] <- bdgt
         
         # AT value
-        OTI_default_results[k,3,param_set] <- sim$paras[1,106]
+        OTI_default_results[k,3,param_set] <- at[i]
         
         # BB value
-        OTI_default_results[k,4,param_set] <- bb[j]
+        OTI_default_results[k,4,param_set] <- 0
         
         # Has extinction occured? (yes = 1, no = 0)
         OTI_default_results[k,5,param_set] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
         
         ## save costs, actions and population in flw structures
         if (k %% freq == 0) {
-          print("Saving costs, actions and pop")
+          print("Saving budget, costs, actions, actual and observed pop")
           para <- OTI_default_results[k,2:5, param_set]
           para <- c(para, K, trgt)
           
@@ -228,18 +124,21 @@ for (i in 1:length(at)) {
           pop <- rep(0, ts)
           cos <- rep(0, ts)
           act <- rep(0, ts)
+          obs <- rep(0, ts)
           
           for (t in 1:final_ts) {
             bdg[t] <- sim$agents[[1]][1,17]
             pop[t] <- dim(sim$resource[[t]])[1]
             cos[t] <- sim$cost[[t]][1,9,2]
             act[t] <- mean(sim$action[[t]][1,9,2:stkh])
+            obs[t] <- dim(sim$observation[[t]])[1]
           }
           
           flw_bgt <- rbind(flw_bgt, c(para, bdg))
           flw_pop <- rbind(flw_pop, c(para, pop))
           flw_cos <- rbind(flw_cos, c(para, cos))
           flw_act <- rbind(flw_act, c(para, act))
+          flw_obs <- rbind(flw_obs, c(para, obs))
         }
         
         # Next measures involve calculus that can be disturbed if extinction occured
@@ -250,17 +149,17 @@ for (i in 1:length(at)) {
           # Resource actual pop deviation from target
           OTI_default_results[k,6,param_set] <- dim(sim$resource[[final_ts-1]])[1]/sim$action[[1]][1,5,1] - 1
           
-          # absolute value
+          # Absolute value
           OTI_default_results[k,7,param_set] <- abs(OTI_default_results[k,6,param_set])
           
           # Users total final yield
           OTI_default_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
           
-          # Maximum difference between Users yield (in percentage of the highest yield)
+          # Maximum difference between Users yield
           OTI_default_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
           
           # Number of timesteps during which Manager chose not to update policy
-          OTI_default_results[k,10,param_set] <- 1-sum(sim$paras[,107])/final_ts
+          OTI_default_results[k,10,param_set] <- (final_ts-sum(sim$paras[,107]))/final_ts
           
           # Number of K exceedings
           OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])/final_ts
@@ -272,53 +171,186 @@ for (i in 1:length(at)) {
           # Resource actual pop deviation from target
           OTI_default_results[k,6,param_set] <- dim(sim$resource[[final_ts]])[1]/sim$action[[1]][1,5,1] - 1
           
-          # absolute value
+          # Absolute value
           OTI_default_results[k,7,param_set] <- abs(OTI_default_results[k,6,param_set])
           
           # Users total final yield
           OTI_default_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
           
-          # Maximum difference between Users yield (in percentage of the highest yield)
+          # Maximum difference between Users yield
           OTI_default_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
           
           # Number of timesteps during which Manager chose not to update policy
-          OTI_default_results[k,10,param_set] <- 1-sum(sim$paras[,107])/final_ts
+          OTI_default_results[k,10,param_set] <- (final_ts-sum(sim$paras[,107]))/final_ts
           
           # Number of K exceedings
           OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])/final_ts
         }
       } # end rep for loop
       
-      # keep track of the simulations
-      if (param_set %% 10 == 0) {
-        print(paste("parameter set number", param_set, "out of", dim(OTI_default_results)[3], "at", Sys.time(), sep = " "))
-      }
-      
       # Increment parameter combo index
       param_set <- param_set + 1
-    } # end bb for loop
-  } # end at else loop
-} # end at for loop
+    } # end at if loop
+    
+    # for every other at value
+    else {
+      
+      # For every BB values in 'bb'
+      for (j in 1:length(bb)) {
+        
+        # With 'rep' number of replicate per parameter combo
+        for (k in 1:rep) {
+          
+          # Run GMSE for the parameter combo
+          sim <- gmse(stakeholders = stkh, time_max = ts, land_ownership = TRUE,
+                      RESOURCE_ini = popinit, res_death_K = K,
+                      action_thres = at[i], budget_bonus = bb[j], manage_target = trgt,
+                      observe_type = obstype,
+                      plotting = F)
+          
+          # Store the last time step number (for extinction-related bugs)
+          final_ts <- length(which(sim$paras[,1] != 0))
+          
+          # Pick up values for simulation results and store them in OTI_default_results
+          
+          # Replicate number
+          OTI_default_results[k,1,param_set] <- k
+          
+          # Budget
+          OTI_default_results[k,2,param_set] <- bdgt
+          
+          # AT value
+          OTI_default_results[k,3,param_set] <- sim$paras[1,106]
+          
+          # BB value
+          OTI_default_results[k,4,param_set] <- bb[j]
+          
+          # Has extinction occured? (yes = 1, no = 0)
+          OTI_default_results[k,5,param_set] <- ifelse(final_ts < dim(sim$paras)[1], 1, 0)
+          
+          ## save costs, actions and population in flw structures
+          if (k %% freq == 0) {
+            print("Saving budget, costs, actions, actual and observed pop")
+            para <- OTI_default_results[k,2:5, param_set]
+            para <- c(para, K, trgt)
+            
+            bdg <- rep(0, ts)
+            pop <- rep(0, ts)
+            cos <- rep(0, ts)
+            act <- rep(0, ts)
+            obs <- rep(0, ts)
+            
+            for (t in 1:final_ts) {
+              bdg[t] <- sim$agents[[1]][1,17]
+              pop[t] <- dim(sim$resource[[t]])[1]
+              cos[t] <- sim$cost[[t]][1,9,2]
+              act[t] <- mean(sim$action[[t]][1,9,2:stkh])
+              obs[t] <- dim(sim$observation[[t]])[1]
+            }
+            
+            flw_bgt <- rbind(flw_bgt, c(para, bdg))
+            flw_pop <- rbind(flw_pop, c(para, pop))
+            flw_cos <- rbind(flw_cos, c(para, cos))
+            flw_act <- rbind(flw_act, c(para, act))
+            flw_obs <- rbind(flw_obs, c(para, obs))
+          }
+          
+          # Next measures involve calculus that can be disturbed if extinction occured
+          
+          # If exctinction occured
+          if (OTI_default_results[k,5,param_set] != 0) {
+            
+            # Resource actual pop deviation from target
+            OTI_default_results[k,6,param_set] <- dim(sim$resource[[final_ts-1]])[1]/sim$action[[1]][1,5,1] - 1
+            
+            # absolute value
+            OTI_default_results[k,7,param_set] <- abs(OTI_default_results[k,6,param_set])
+            
+            # Users total final yield
+            OTI_default_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
+            
+            # Maximum difference between Users yield (in percentage of the highest yield)
+            OTI_default_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
+            
+            # Number of timesteps during which Manager chose not to update policy
+            OTI_default_results[k,10,param_set] <- 1-sum(sim$paras[,107])/final_ts
+            
+            # Number of K exceedings
+            OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])/final_ts
+          }
+          
+          # If extinction did not occured
+          else {
+            
+            # Resource actual pop deviation from target
+            OTI_default_results[k,6,param_set] <- dim(sim$resource[[final_ts]])[1]/sim$action[[1]][1,5,1] - 1
+            
+            # absolute value
+            OTI_default_results[k,7,param_set] <- abs(OTI_default_results[k,6,param_set])
+            
+            # Users total final yield
+            OTI_default_results[k,8,param_set] <- sum(sim$agents[[final_ts-1]][,16])
+            
+            # Maximum difference between Users yield (in percentage of the highest yield)
+            OTI_default_results[k,9,param_set] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
+            
+            # Number of timesteps during which Manager chose not to update policy
+            OTI_default_results[k,10,param_set] <- 1-sum(sim$paras[,107])/final_ts
+            
+            # Number of K exceedings
+            OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])/final_ts
+          }
+        } # end rep for loop
+        
+        # keep track of the simulations
+        if (param_set %% 10 == 0) {
+          print(paste("parameter set number", param_set, "out of", dim(OTI_default_results)[3], "at", Sys.time(), sep = " "))
+        }
+        
+        # Increment parameter combo index
+        param_set <- param_set + 1
+      } # end bb for loop
+    } # end at else loop
+  } # end at for loop
+  
+  # Simulation time
+  end <- Sys.time()
+  print(paste("Batch started", start, "and ended", end, sep = " "))
+  
+  ## save the 3D array of results?
+  
+  # rbind the layers
+  
+  if (param_set > 2) {
+  
+    tab_OTI_default_results <- OTI_default_results[,,1]
+  
+    for (i in 2:dim(OTI_default_results)[3]) {
+      tab_OTI_default_results <- rbind(tab_OTI_default_results, OTI_default_results[,,i])
+    }
+  } else {tab_OTI_default_results <- OTI_default_results}
+  
+  return(list(tab_OTI_default_results, flw_pop, flw_cos, flw_bgt, flw_act, flw_obs))
+  
+} # end function
 
-# Simulation time
-end <- Sys.time()
-print(paste("Batch started", start, "and ended", end, sep = " "))
+# # example
+simtest <- ATI_replicate(UTrange = 0.1, BBrange = 0.2, ts = 20,rep = 10,obstype = 3, freq = 1)
 
-## save the 3D array of results?
+# write.csv(tab_OTI_default_results, file = "tab_OTI_default_batch3.csv")
+# write.csv(flw_bgt, file = "flw_bgt_batch3.csv")
+# write.csv(flw_pop, file = "flw_pop_batch3.csv")
+# write.csv(flw_cos, file = "flw_cos_batch3.csv")
+# write.csv(flw_act, file = "flw_act_batch3.csv")
 
-# rbind the layers
+batch4 <- ATI_replicate(obstype = 3, rep = 2)
 
-tab_OTI_default_results <- OTI_default_results[,,1]
-
-for (i in 2:dim(OTI_default_results)[3]) {
-  tab_OTI_default_results <- rbind(tab_OTI_default_results, OTI_default_results[,,i])
-}
-
-write.csv(tab_OTI_default_results, file = "tab_OTI_default_batch3.csv")
-write.csv(flw_bgt, file = "flw_bgt_batch3")
-write.csv(flw_pop, file = "flw_pop_batch3.csv")
-write.csv(flw_cos, file = "flw_cos_batch3.csv")
-write.csv(flw_act, file = "flw_act_batch3.csv")
+write.csv(batch4[[1]], file = "tab_ATI_case_batch4.csv")
+write.csv(batch4[[2]], file = "case_pop_batch4.csv")
+write.csv(batch4[[3]], file = "case_cos_batch4.csv")
+write.csv(batch4[[4]], file = "case_bgt_batch4.csv")
+write.csv(batch4[[5]], file = "case_act_batch4.csv")
+write.csv(batch4[[6]], file = "case_obs_batch4.csv")
 
 #### Results ####
 # # Array of column names
@@ -609,7 +641,8 @@ stat <- OTI_stats(df = brut, ts = 20, omit.extinction = F)
 woe_stat <- OTI_stats(df = brut, ts = 20, omit.extinction = T)
 
 # Save the table in a csv file
-write.csv(stats_OTI_default_results, file = "stats_OTI_default_batch4.csv", row.names = F)
+write.csv(stat, file = "stats_ATI_case_batch4_woEctinctions.csv", row.names = F)
+write.csv(stat, file = "stats_ATI_case_batch4_woEctinctions.csv", row.names = F)
 
 ######## Plotting ########
 
@@ -811,6 +844,13 @@ points(x = xadj1, y = ext[-1,2], xlab = "Update threshold", type = "b", pch = 20
 points(x = xadj2, y = ext[-1,11], type = "b", cex = 1, lwd = 2, lty = "dashed", col = "blue")
 points(x = 0, y = ext[1,1], pch = 15)
 abline(h=ext[1,1], lty = 1, col = "black")
+
+# Without management?
+no.mgmt <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/WithoutManagement.csv")
+
+no.mgmt.extfreq <- length(which(no.mgmt$time_step < 20))/100
+points(y = no.mgmt.extfreq, x = 0, pch = 17, col = "black")
+abline(h = no.mgmt.extfreq, lty = 2, lwd = 1, col = "black")
 }
 
 #### box plots ####
@@ -1768,16 +1808,19 @@ maxminmulti(we_actio, upth = 0.5, bubo = 0.7, tmax = 20, yaxis = "Number of indi
 maxminmean(we_popul, upth = 0, bubo = 0, tmax = 20, color = "green", yaxis = "Population density on the map")
 
 # For another fucnctuin
-layout(matrix(c(1,2), nrow = 2), widths = c(4,4))
+layout(matrix(c(1,2,3,4,5,6), nrow = 3), widths = c(4,4))
 # layout.show(n = 3)
 # set space for a title
 # par(oma = c(0, 0, 3, 0))
 
-maxminmulti(we_popul, upth = 0.3, bubo = 0.5, tmax = 20, yaxis = "population")
-maxminmulti(we_costs, upth = 0.3, bubo = 0.5, tmax = 20, yaxis = "Costs")
-# maxminmulti(we_actio, upth = 0.3, bubo = 0.5, tmax = 20, yaxis = "actions")
+maxminmulti(we_popul, upth = 0, bubo = 0, tmax = 20, yaxis = "population")
+maxminmulti(we_costs, upth = 0, bubo = 0, tmax = 20, yaxis = "Costs")
+maxminmulti(we_actio, upth = 0, bubo = 0, tmax = 20, yaxis = "actions")
+maxminmulti(we_popul, upth = 0.1, bubo = 0.2, tmax = 20, yaxis = "population")
+maxminmulti(we_costs, upth = 0.1, bubo = 0.2, tmax = 20, yaxis = "Costs")
+maxminmulti(we_actio, upth = 0.1, bubo = 0.2, tmax = 20, yaxis = "actions")
 
-mtext(paste("UT =", 30, "% - BB =", 50, "%"), outer = TRUE, cex = 1, line = 1.5)
+mtext(paste("FLI VS UT =", 10, "% - BB =", 20, "%"), outer = TRUE, cex = 1, line = 1.5)
 
 #### confronting at = 0 and at = 0.1 ####
 
@@ -2234,6 +2277,14 @@ OTI_diagnostic <- function(df, upth, variance = c("sd", "ci"), nb_replicates, om
 # Examples
 OTI_diagnostic(df = stat, upth = 0.3, variance = "ci", nb_replicates = 100, omit.extinction = F)
 OTI_diagnostic(df = woe_stat, upth = 0.2, variance = "sd", nb_replicates = 100, omit.extinction = T)
+
+## 0.1
+OTI_diagnostic(df = woe_stat, upth = 0.1, variance = "ci", nb_replicates = 100, omit.extinction = T)
+OTI_diagnostic(df = stat, upth = 0.1, variance = "ci", nb_replicates = 100, omit.extinction = F)
+
+## 0.2
+OTI_diagnostic(df = woe_stat, upth = 0.2, variance = "ci", nb_replicates = 100, omit.extinction = T)
+OTI_diagnostic(df = stat, upth = 0.2, variance = "ci", nb_replicates = 100, omit.extinction = F)
 
 ## TROUVER UN MOYEN D'ENLEVER LES LEGENDES DES AXES ET L'ACTIVER AVEC UN XLABEL = F EN ARGUMENT
 # ET METTRE LE SUJET DE CHAQUE GRAPHIQUE EN MAIN
