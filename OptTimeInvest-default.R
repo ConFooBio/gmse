@@ -1744,8 +1744,8 @@ maxminmean <- function(df, upth, bubo, tmax, color, yaxis) {
   lines(x = xrange, y = ymean, type = "b", pch = 20, col = color)
 }
 
-# max min and all the different trajectories
-maxminmulti <- function(df, upth, bubo, tmax, yaxis) {
+# all the different trajectories
+multi <- function(df, upth, bubo, tmax, yaxis) {
   # subsetting
   dd <- subset(df, at == upth & bb == bubo)  
   
@@ -1804,23 +1804,29 @@ maxminmulti <- function(df, upth, bubo, tmax, yaxis) {
 
 # Example
 maxminmean(we_costs, upth = 0.2, bubo = 0.4, tmax = 20, color = "blue", yaxis = "Costs of actions (in a.b.u.)")
-maxminmulti(we_actio, upth = 0.5, bubo = 0.7, tmax = 20, yaxis = "Number of individuals culled per time step")
+multi(we_actio, upth = 0.5, bubo = 0.7, tmax = 20, yaxis = "Number of individuals culled per time step")
 maxminmean(we_popul, upth = 0, bubo = 0, tmax = 20, color = "green", yaxis = "Population density on the map")
 
-# For another fucnctuin
-layout(matrix(c(1,2,3,4,5,6), nrow = 3), widths = c(4,4))
-# layout.show(n = 3)
-# set space for a title
-# par(oma = c(0, 0, 3, 0))
+# a function to compare the trajectories between FLI and ATI results
+plot_ATI_diag <- function(upd_thr, bud_bon) {
+  
+  layout(matrix(c(1,2,3,4,5,6), nrow = 3), widths = c(4,4))
+  # layout.show(n = 3)
+  # set space for a title
+  # par(oma = c(0, 0, 3, 0))
+  
+  multi(we_popul, upth = 0, bubo = 0, tmax = 20, yaxis = "population")
+  multi(we_costs, upth = 0, bubo = 0, tmax = 20, yaxis = "Costs")
+  multi(we_actio, upth = 0, bubo = 0, tmax = 20, yaxis = "actions")
+  multi(we_popul, upth = upd_thr, bubo = bud_bon, tmax = 20, yaxis = "population")
+  multi(we_costs, upth = upd_thr, bubo = bud_bon, tmax = 20, yaxis = "Costs")
+  multi(we_actio, upth = upd_thr, bubo = bud_bon, tmax = 20, yaxis = "actions")
+  
+  mtext(paste("FLI VS UT =", upd_thr*100, "% - BB =", bud_bon*100, "%"), outer = TRUE, cex = 1, line = 1.5)
+}
 
-maxminmulti(we_popul, upth = 0, bubo = 0, tmax = 20, yaxis = "population")
-maxminmulti(we_costs, upth = 0, bubo = 0, tmax = 20, yaxis = "Costs")
-maxminmulti(we_actio, upth = 0, bubo = 0, tmax = 20, yaxis = "actions")
-maxminmulti(we_popul, upth = 0.1, bubo = 0.2, tmax = 20, yaxis = "population")
-maxminmulti(we_costs, upth = 0.1, bubo = 0.2, tmax = 20, yaxis = "Costs")
-maxminmulti(we_actio, upth = 0.1, bubo = 0.2, tmax = 20, yaxis = "actions")
-
-mtext(paste("FLI VS UT =", 10, "% - BB =", 20, "%"), outer = TRUE, cex = 1, line = 1.5)
+# example
+plot_ATI_diag(upd_thr = 0.1, bud_bon = 0.5)
 
 #### confronting at = 0 and at = 0.1 ####
 
