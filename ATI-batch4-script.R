@@ -303,7 +303,7 @@ ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 2
 } # end function
 
 # Run the simulations
-batch4 <- ATI_replicate(obstype = 3, rep = 2)
+batch4 <- ATI_replicate(obstype = 3)
 
 # Save the results on GitHub
 write.csv(batch4[[1]], file = "tab_ATI_case_batch4.csv")
