@@ -634,15 +634,18 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
 
 ## Example
 # import data
-tab_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/Default-case/tab_OTI_default_batch3.csv")
+tab_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/tab_ATI_case_batch4.csv")
 brut <- as.data.frame(tab_OTI_default_results)
 
 stat <- OTI_stats(df = brut, ts = 20, omit.extinction = F) 
 woe_stat <- OTI_stats(df = brut, ts = 20, omit.extinction = T)
 
+# 100% d'extinction pour 100 - 100
+woe_stat <- woe_stat[-dim(woe_stat)[1],]
+
 # Save the table in a csv file
-write.csv(stat, file = "stats_ATI_case_batch4_woEctinctions.csv", row.names = F)
-write.csv(stat, file = "stats_ATI_case_batch4_woEctinctions.csv", row.names = F)
+write.csv(stat, file = "stats_ATI_case_batch4.csv", row.names = F)
+write.csv(woe_stat, file = "stats_ATI_case_batch4_woEctinctions.csv", row.names = F)
 
 ######## Plotting ########
 
@@ -1687,10 +1690,18 @@ costs <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/Default-case/flw_c
 popul <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/Default-case/flw_pop_batch3.csv")
 actio <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/Default-case/flw_act_batch3.csv")
 
+costs <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/case_cos_batch4.csv")
+popul <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/case_pop_batch4.csv")
+actio <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/case_act_batch4.csv")
+budge <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/case_bgt_batch4.csv")
+obser <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/case_obs_batch4.csv")
+
 # only without extinction
 we_costs <- subset(costs, extinct == 0)
 we_popul <- subset(popul, extinct == 0)
 we_actio <- subset(actio, extinct == 0)
+we_budge <- subset(budge, extinct == 0)
+we_obser <- subset(obser, extinct == 0)
 
 # function returning ymax, ymin and ymean and plot
 maxminmean <- function(df, upth, bubo, tmax, color, yaxis) {
@@ -1777,7 +1788,7 @@ multi <- function(df, upth, bubo, tmax, yaxis) {
   xrange <- seq(1, tmax, 1)
   # # lightcol <- paste("light",color,sep = "")
   # lightcol <- lighten(color, amount = 0.4)
-  plot(1, type = "n", xlab = "time", ylab = yaxis, ylim = c(0,max(dd[6:dim(dd)[2]])), xlim = c(0,20)) # , main = paste("UT = ", upth, " BB = ",bubo)
+  plot(1, type = "n", xlab = "time", ylab = yaxis, ylim = c(0,max(dd[9:dim(dd)[2]])), xlim = c(0,20)) # , main = paste("UT = ", upth, " BB = ",bubo)
   
   # max with FLI strategy
   if (str_detect(yaxis, "Cost")){
@@ -1798,7 +1809,7 @@ multi <- function(df, upth, bubo, tmax, yaxis) {
   
   # all the trajectories
   for (i in 1:(dim(dd)[1])) {
-    points(x = xrange, y = dd[i,6:dim(dd)[2]], type = "b", pch = i, col = "black")
+    points(x = xrange, y = dd[i,9:dim(dd)[2]], type = "b", pch = i, col = "black")
   }
 }
 
@@ -1827,6 +1838,7 @@ plot_ATI_diag <- function(upd_thr, bud_bon) {
 
 # example
 plot_ATI_diag(upd_thr = 0.1, bud_bon = 0.5)
+plot_ATI_diag(upd_thr = 0.1, bud_bon = 0.3)
 
 #### confronting at = 0 and at = 0.1 ####
 
@@ -2291,6 +2303,10 @@ OTI_diagnostic(df = stat, upth = 0.1, variance = "ci", nb_replicates = 100, omit
 ## 0.2
 OTI_diagnostic(df = woe_stat, upth = 0.2, variance = "ci", nb_replicates = 100, omit.extinction = T)
 OTI_diagnostic(df = stat, upth = 0.2, variance = "ci", nb_replicates = 100, omit.extinction = F)
+
+## 0.3
+OTI_diagnostic(df = woe_stat, upth = 0.3, variance = "ci", nb_replicates = 100, omit.extinction = T)
+OTI_diagnostic(df = stat, upth = 0.3, variance = "ci", nb_replicates = 100, omit.extinction = F)
 
 ## TROUVER UN MOYEN D'ENLEVER LES LEGENDES DES AXES ET L'ACTIVER AVEC UN XLABEL = F EN ARGUMENT
 # ET METTRE LE SUJET DE CHAQUE GRAPHIQUE EN MAIN
