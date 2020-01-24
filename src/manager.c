@@ -435,6 +435,12 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     double *abun_est;        /* Vector used to estimate abundances */
     double *temp_util;       /* Vector temporarily holding manager utils */
     double *marg_util;       /* Margin utilities for a manager's actions */
+    
+    /* action threshold test */
+    //int targt;               /* manager target for resource */
+    double dev;              /* estimated population deviation from managers target (fraction) */
+    //double estim;            /* estimated population */
+    //double thres;            /* deviation threshold */
 
     /* First take care of all the reading in of code from R to C */
     /* ====================================================================== */
@@ -649,8 +655,31 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
         update_marg_util(actions, abun_est, temp_util, marg_util, int_d0, a_x);
     }
     
-    ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
-       lookup, paras, 0, 1);
+    /* act or wait ? */
+
+    /* act regardless at the first time step 
+     * the time is in paras[0] */
+    
+    if (paras[0] < 2) {
+      ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, lookup, paras, 0, 1);
+    } else {
+      
+      //update threshold value = paras[105];
+      //estimation of the Resource population = paras[99];           /* will only work for the first resource type */
+      //manager target = actions[0][4][0];
+      
+      dev = (paras[99] / (double) actions[0][4][0]) - 1;
+      paras[109] = dev;
+    
+      if (fabs((double) dev) >= paras[105]) {     /* if deviation is above action threshold, call ga, update tracker and re-initiate number of ts spent without updating policy */
+        ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, lookup, paras, 0, 1);
+        paras[106] = 1;                  /* policy updating tracker */
+        paras[107] = 0;                  /* time steps since last update counter */
+      } else {                           /* if deviation is under action threshold, don't call ga, update tracker and number of ts spent without updating policy */
+        paras[106] = 0;
+        paras[107] += 1;
+      }
+    }
     
     set_action_costs(actions, costs, paras, agent_array);
     
