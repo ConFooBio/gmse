@@ -49,6 +49,10 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - **2020**
+ 
+     - **FEB** [4](#u-4-FEB-2019)
+
  - **2019**
  
      - **MAR** [15](#u-15-MAR-2019)
@@ -102,6 +106,10 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-4-FEB-2020">Update: 4 FEB 2020</a>
+
+Yesterday, I received an email noting a problem with the GMSE documentation. Specifically, a warning arose because `...` was in the documentation but is no longer allowed as an argument in the default R functions. Notice the issue on [this line of the manager.R file](https://github.com/ConFooBio/gmse/blob/80f211646755ece387b8d1b9dd15390db621cc31/R/manager.R#L16), which is contradicted later by the function itself. This has now been resolved.
 
 > <a name="u-15-MAR-2019">Update: 15 MAR 2019</a>
 
