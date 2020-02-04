@@ -61,7 +61,7 @@ Simulations can also be run from a browser-based graphical user interface by run
 gmse_gui();
 ```
 
-This function is also available as a [standalone application](https://bradduthie.shinyapps.io/gmse_gui/) in shiny.
+This function is also available as a [standalone application](https://bradduthie.shinyapps.io/gmse_gui) in shiny.
 
 Finally, simulations can be run using `gmse_apply()`, a function for modellers that allows the integration of custom resource, observation, manager, and user subfunctions into the GMSE framework. The `gmse_apply()` function simulates a single time step and can incorporate both custom and standard `gmse()` arguments.
 
