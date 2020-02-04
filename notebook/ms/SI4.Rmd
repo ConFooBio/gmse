@@ -125,7 +125,7 @@ We can change the ownership of cells by manipulating `sim_old$LAND[,,3]`. First 
 
 ```{r, echo = TRUE, eval = TRUE}
 sim_old  <- gmse_apply(get_res = "Full", remove_pr = 0.122, lambda = 0.275,
-                       res_d4eath_K = 93870, RESOURCE_ini = 35000, 
+                       res_death_K = 93870, RESOURCE_ini = 35000, 
                        manage_target = 70000, res_death_type = 3,
                        manager_budget = 10000, user_budget = 10000,
                        public_land = 0.4, stakeholders = 8, res_consume = 0.02, 
