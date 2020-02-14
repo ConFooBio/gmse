@@ -30,12 +30,13 @@ void add_time(double **res_adding, double *paras){
  * ========================================================================== */
 void res_add(double **res_adding, double *paras){
     
-    int resource_number, add, realised, type, K_add, gadj, oadj, cadj;
-    int resource, sampled, added, loops, castrated, killed, klld;
+    int resource_number, add, realised, type, K_add, gadj, oadj, cadj, ind_age;
+    int resource, sampled, added, loops, castrated, killed, klld, arp, age;
     double rand_pois, base_lambda, add_lambda, lambda;
     
     type            = (int) paras[3];  /* Type of growth (e.g., poisson) */
     K_add           = (int) paras[5];  /* Carrying capacity applied  */
+    age             = (int) paras[31]; /* Age column for the individual */
     resource_number = (int) paras[32];
     add             = (int) paras[37];
     realised        = (int) paras[38];
@@ -43,6 +44,7 @@ void res_add(double **res_adding, double *paras){
     oadj            = (int) paras[40]; /* Adjustment to offspring number col */
     klld            = (int) paras[42]; /* Adjustment to kill */
     cadj            = (int) paras[73]; /* Adjust to castrate */
+    arp             = (int) paras[105]; /* Minimum age of reproduction */
 
     added = 0; 
     switch(type){
@@ -55,7 +57,8 @@ void res_add(double **res_adding, double *paras){
                 res_adding[resource][realised] = 0;
                 castrated = res_adding[resource][cadj];
                 killed    = res_adding[resource][klld];
-                if(castrated >= 1 || killed >= 1){
+                ind_age   = res_adding[resource][age];
+                if(castrated >= 1 || killed >= 1 || ind_age < arp){
                     rand_pois = 0;
                 }else{
                     base_lambda = res_adding[resource][add];
@@ -76,7 +79,8 @@ void res_add(double **res_adding, double *paras){
                 res_adding[resource][realised] = 0;
                 castrated = res_adding[resource][cadj];
                 killed    = res_adding[resource][klld];
-                if(castrated >= 1 || killed >= 1){
+                ind_age   = res_adding[resource][age];
+                if(castrated >= 1 || killed >= 1 || ind_age < arp){
                     rand_pois = 0;
                 }else{
                     base_lambda = res_adding[resource][add];
