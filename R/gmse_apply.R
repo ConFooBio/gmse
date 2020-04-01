@@ -576,7 +576,7 @@ update_old_gmse <- function(arg_vals, ol, list_add){
 
 apply_old_gmse <- function(arg_vals, old_list,  ...){
     
-    input_list <- arg_vals$ilist; 
+    input_list <- arg_vals[["ilist"]]; 
     paras_errors(input_list);
     
     list_add   <- as.list(match.call())[-1];
@@ -606,8 +606,8 @@ apply_old_gmse <- function(arg_vals, old_list,  ...){
         }
     }
 
-    old_list$arg_vals <- NULL;
-    old_list$old_list <- NULL;
+    old_list[["arg_vals"]] <- NULL;
+    old_list[["old_list"]] <- NULL;
     return(old_list);
 }
 
@@ -747,7 +747,7 @@ old_list_errors <- function(old_list = NULL, RESOURCES = NULL, ACTION = NULL,
 
 land_errors <- function(input_list, LAND = NULL, PARAS = NULL, ...){
     arguments <- as.list(match.call());          
-    in_list   <- eval(arguments$input_list);
+    in_list   <- eval(arguments[["input_list"]]);
     arg_names <- names(arguments);          
     ld1_u     <- in_list[2];
     ld2_u     <- in_list[3];    
@@ -811,7 +811,7 @@ agent_errors <- function(input_list, ldims, ...){
     land_dim_2 <- ldims[2];
     arguments  <- as.list(match.call()); 
     arg_names  <- names(arguments);
-    in_list    <- eval(arguments$input_list);
+    in_list    <- eval(arguments[["input_list"]]);
     il_names   <- names(in_list);
     as_stake   <- NA;                                                           
     stakes     <- in_list[49];                                                        
@@ -853,7 +853,7 @@ action_errors <- function(input_list, stakes, ...){
     res_types  <- NA;
     arguments  <- as.list(match.call());
     arg_names  <- names(arguments);
-    in_list    <- eval(arguments$input_list);
+    in_list    <- eval(arguments[["input_list"]]);
     il_names   <- names(in_list);
     if("RESOURCES" %in% arg_names){
         res_pos <- which(arg_names == "RESOURCES")[1];
@@ -1193,7 +1193,7 @@ check_args <- function(arg_list, the_fun){
 }
 
 check_manager_res_types <- function(arg_list){    
-    res_types <- unique(arg_list$OBSERVATION[,2]);
+    res_types <- unique(arg_list[["OBSERVATION"]][,2]);
     if(length(res_types) > 2){
         stop("The GMSE manager function cannot yet handle more than two
               resource types. Email the package creator and tell them that you
@@ -1248,7 +1248,7 @@ collect_res_ini <- function(arg_list){
     def_forms     <- formals(gmse);
     def_names     <- names(def_forms);
     make_res_list[[1]] <- "IBM";
-    make_res_list[[2]] <- arg_list$GMSE$RESOURCE_ini;
+    make_res_list[[2]] <- arg_list[["GMSE"]][["RESOURCE_ini"]];
     if("RESOURCE_ini" %in% arg_names){
         apos               <- which(arg_names == "RESOURCE_ini");
         make_res_list[[2]] <- arg_list[[apos]];
@@ -1258,39 +1258,39 @@ collect_res_ini <- function(arg_list){
         apos               <- which(arg_names == "res_types_ini");
         make_res_list[[3]] <- arg_list[[apos]];
     }
-    make_res_list[[4]] <- arg_list$GMSE$land_dim_1;
+    make_res_list[[4]] <- arg_list[["GMSE"]][["land_dim_1"]];
     if("land_dim_1" %in% arg_names){
         apos               <- which(arg_names == "land_dim_1");
         make_res_list[[4]] <- arg_list[[apos]];
     }
-    make_res_list[[5]] <- arg_list$GMSE$land_dim_2;
+    make_res_list[[5]] <- arg_list[["GMSE"]][["land_dim_2"]];
     if("land_dim_2" %in% arg_names){
         apos               <- which(arg_names == "land_dim_2");
         make_res_list[[5]] <- arg_list[[apos]];
     }
-    make_res_list[[6]] <- arg_list$GMSE$res_movement;
+    make_res_list[[6]] <- arg_list[["GMSE"]][["res_movement"]];
     if("movement" %in% arg_names){
         apos               <- which(arg_names == "movement");
         make_res_list[[6]] <- arg_list[[apos]];
     }
-    make_res_list[[7]] <- arg_list$GMSE$remove_pr;
+    make_res_list[[7]] <- arg_list[["GMSE"]][["remove_pr"]];
     if("remove_pr" %in% arg_names){
         apos               <- which(arg_names == "remove_pr");
         make_res_list[[7]] <- arg_list[[apos]];
     }
-    make_res_list[[8]] <- arg_list$GMSE$lambda;
+    make_res_list[[8]] <- arg_list[["GMSE"]][["lambda"]];
     if("lambda" %in% arg_names){
         apos               <- which(arg_names == "lambda");
         make_res_list[[8]] <- arg_list[[apos]];
     }
-    make_res_list[[9]] <- arg_list$GMSE$res_consume;
+    make_res_list[[9]] <- arg_list[["GMSE"]][["res_consume"]];
     if("res_consume" %in% arg_names){
         apos               <- which(arg_names == "res_consume");
         make_res_list[[9]] <- arg_list[[apos]];
     }
-    make_res_list[[10]] <- arg_list$GMSE$max_ages;
+    make_res_list[[10]] <- arg_list[["GMSE"]][["max_ages"]];
     if("max_ages" %in% arg_names){
-        apos               <- which(arg_names == "max_ages");
+        apos                <- which(arg_names == "max_ages");
         make_res_list[[10]] <- arg_list[[apos]];
     }
     return(make_res_list);
