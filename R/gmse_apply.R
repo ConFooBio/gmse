@@ -402,7 +402,7 @@ update_old_gmse <- function(arg_vals, ol, list_add){
             use <- ol[["AGENTS"]][,2] == 1;
             ol[["AGENTS"]][use, 17] <- list_add[["user_budget"]];
         }
-        if(is.null(ol$AGENT) == FALSE & is.na(ol$AGENT)[1] == FALSE){
+        if(is.null(ol[["AGENT"]]) == FALSE & is.na(ol[["AGENT"]])[1] == FALSE){
             use <- ol[["AGENT"]][,2] == 1;
             ol[["AGENTS"]][use, 17] <- list_add[["user_budget"]];
         }
@@ -1445,7 +1445,7 @@ translate_results <- function(arg_list, output){
             obs_arr     <- make_resource(resource_quantity = 10 * res_tys);
             res_idd     <- rep(x = 1:res_tys, each = 10);
             obs_arr[,2] <- res_idd;
-            arg_list$observation_array <- obs_arr;
+            arg_list[["observation_array"]] <- obs_arr;
             if("PARAS" %in% arg_names == FALSE){
                 stop("I can't find PARAS, and I need it");
             }
@@ -1474,7 +1474,7 @@ translate_results <- function(arg_list, output){
             arg_list <- gmse_apply_build_cost(arg_list);
         }
         if(out_names[[i]] == "manager_vector"){
-            thevec <- arg_list$manager_vector;
+            thevec <- arg_list[["manager_vector"]];
             if("ACTION" %in% arg_names){
                 use2    <- arg_list[["ACTION"]][, 1, 1] == 1;
                 arg_list[["ACTION"]][use2, 9, 1] <- thevec;
@@ -1683,7 +1683,7 @@ collect_itb_ini <- function(arg_list){
     def_names     <- names(def_forms);
     make_itb_list[[1]] <- NA;
     if("resource_array" %in% arg_names == TRUE){
-        make_itb_list[[1]] <- arg_list$resource_array;
+        make_itb_list[[1]] <- arg_list[["resource_array"]];
     }
     if(is.na(make_itb_list[[1]][1]) == TRUE){
         dresarg            <- collect_res_ini(arg_list);
@@ -1691,7 +1691,7 @@ collect_itb_ini <- function(arg_list){
     }
     make_itb_list[[2]] <- NA;
     if("LAND" %in% arg_names == TRUE){
-        make_itb_list[[2]] <- arg_list$LAND;
+        make_itb_list[[2]] <- arg_list[["LAND"]];
     }
     if(is.na(make_itb_list[[2]][1]) == TRUE){
         dlndarg            <- collect_land_ini(arg_list);
@@ -1740,15 +1740,15 @@ add_obs_defaults <- function(arg_list){
     }
     fm_pos <- which(arg_names == "fixed_mark");
     if(is.na(arg_list[[fm_pos]][1]) == TRUE){
-        arg_list[[fm_pos]][1] <- arg_list$GMSE$fixed_mark;
+        arg_list[[fm_pos]][1] <- arg_list[["GMSE"]][["fixed_mark"]];
     }
     tm_pos <- which(arg_names == "times_observe");
     if(is.na(arg_list[[tm_pos]][1]) == TRUE){
-        arg_list[[tm_pos]][1] <- arg_list$GMSE$times_observe;
+        arg_list[[tm_pos]][1] <- arg_list[["GMSE"]][["times_observe"]];
     }
     sm_pos <- which(arg_names == "res_min_age");
     if(is.na(arg_list[[sm_pos]][1]) == TRUE){
-        arg_list[[sm_pos]][1] <- arg_list$GMSE$res_min_age;
+        arg_list[[sm_pos]][1] <- arg_list[["GMSE"]][["res_min_age"]];
     }
     aty_pos <- which(arg_names == "agent_type");
     if(is.na(arg_list[[aty_pos]][1]) == TRUE){
@@ -1760,11 +1760,11 @@ add_obs_defaults <- function(arg_list){
     }
     ot_pos <- which(arg_names == "observe_type");
     if(is.na(arg_list[[ot_pos]][1]) == TRUE){
-        arg_list[[ot_pos]][1] <- arg_list$GMSE$observe_type;
+        arg_list[[ot_pos]][1] <- arg_list[["GMSE"]][["observe_type"]];
     }
     rmo_pos <- which(arg_names == "res_move_obs");
     if(is.na(arg_list[[rmo_pos]][1]) == TRUE){
-        arg_list[[rmo_pos]][1] <- arg_list$GMSE$res_move_obs;
+        arg_list[[rmo_pos]][1] <- arg_list[["GMSE"]][["res_move_obs"]];
     }
     mod_pos <- which(arg_names == "model");
     if(is.na(arg_list[[mod_pos]][1]) == TRUE){
@@ -1777,18 +1777,18 @@ add_obs_defaults <- function(arg_list){
 
 add_agent_budget <- function(AGENTS, arg_list){
     arg_name <- names(arg_list);
-    manage_budget <- arg_list$GMSE$manager_budget;
+    manage_budget <- arg_list[["GMSE"]][["manager_budget"]];
     if("manager_budget" %in% arg_name){
         mbpos         <- which(arg_name == "manager_budget");
         manage_budget <- arg_list[[mbpos]];
     }
-    user_budget <- arg_list$GMSE$user_budget;
+    user_budget <- arg_list[["GMSE"]][["user_budget"]];
     if("user_budget" %in% arg_name){
         ubpos         <- which(arg_name == "user_budget");
         user_budget   <- arg_list[[ubpos]];
     }
-    AGENTS[AGENTS[,2]==0, 17] <- manage_budget;
-    AGENTS[AGENTS[,2]==1, 17] <- user_budget;
+    AGENTS[AGENTS[, 2] == 0, 17] <- manage_budget;
+    AGENTS[AGENTS[, 2] == 1, 17] <- user_budget;
     return(AGENTS);
 }
 
@@ -1826,8 +1826,8 @@ prep_obs <- function(arg_list, obs_mod){
 update_para_vec <- function(arg_list){
     arg_name <- names(arg_list);
     if("PARAS" %in% arg_name == TRUE){
-        arg_list$PARAS[33]  <- floor(sum(arg_list$resource_vector));
-        arg_list$PARAS[100] <- arg_list$observation_vector[1];
+        arg_list[["PARAS"]][33]  <- floor(sum(arg_list[["resource_vector"]]));
+        arg_list[["PARAS"]][100] <- arg_list[["observation_vector"]][1];
     }
     return(arg_list);
 }
@@ -1835,15 +1835,15 @@ update_para_vec <- function(arg_list){
 set_action_array <- function(arg_list){
     arg_name <- names(arg_list);
     if("AGENTS" %in% arg_name == FALSE){
-        arg_list$AGENTS <- NA;
-        arg_name        <- names(arg_list);
+        arg_list[["AGENTS"]] <- NA;
+        arg_name             <- names(arg_list);
     }
-    if(is.na(arg_list$AGENTS[1]) == TRUE){
-        dagearg         <- collect_agent_ini(arg_list);
-        ini_age         <- do.call(what = make_agents, args = dagearg);
-        ini_age         <- add_agent_budget(ini_age, arg_list);
-        arg_list$AGENTS <- ini_age;
-        arg_name        <- names(arg_list);
+    if(is.na(arg_list[["AGENTS"]][1]) == TRUE){
+        dagearg              <- collect_agent_ini(arg_list);
+        ini_age              <- do.call(what = make_agents, args = dagearg);
+        ini_age              <- add_agent_budget(ini_age, arg_list);
+        arg_list[["AGENTS"]] <- ini_age;
+        arg_name             <- names(arg_list);
     }
     agent_pos <- which(arg_name == "AGENTS");
     res_pos   <- which(arg_name == "resource_array");
@@ -1854,22 +1854,22 @@ set_action_array <- function(arg_list){
     }
     ACTION <- make_utilities(arg_list[[agent_pos]], arg_list[[res_pos]]);
     
-    manage_target <- arg_list$GMSE$manage_target;
+    manage_target <- arg_list[["GMSE"]][["manage_target"]];
     if("manage_target" %in% arg_name){
         mtpos         <- which(arg_name == "manage_target");
         manage_target <- arg_list[[mtpos]];
     }
-    land_ownership <- arg_list$GMSE$land_ownership;
+    land_ownership <- arg_list[["GMSE"]][["land_ownership"]];
     if("land_ownership" %in% arg_name){
         lopos          <- which(arg_name == "land_ownership");
         land_ownership <- arg_list[[lopos]];
     }
-    user_budget <- arg_list$GMSE$user_budget;
+    user_budget <- arg_list[["GMSE"]][["user_budget"]];
     if("user_budget" %in% arg_name){
         ubpos          <- which(arg_name == "user_budget");
         user_budget    <- arg_list[[ubpos]];
     }
-    manager_budget <- arg_list$GMSE$manager_budget;
+    manager_budget <- arg_list[["GMSE"]][["manager_budget"]];
     if("manager_budget" %in% arg_name){
         mbpos          <- which(arg_name == "manager_budget");
         manager_budget <- arg_list[[mbpos]];
@@ -1889,7 +1889,7 @@ set_action_array <- function(arg_list){
     }
     arg_list[[agent_pos]][,17]     <- user_budget;
     arg_list[[agent_pos]][1,17]    <- manager_budget;
-    arg_list$ACTION                <- ACTION;
+    arg_list[["ACTION"]]           <- ACTION;
     
     return(arg_list);
 }
@@ -1914,31 +1914,34 @@ prep_man <- function(arg_list, man_mod){
 }
 
 get_old_costs <- function(arg_list){
-    cols_cost   <- dim(arg_list$COST)[2];
-    lays_cost   <- dim(arg_list$COST)[3];
-    user_places <- which(arg_list$AGENTS[,2] > 0);
-    old_costs   <- sum(arg_list$COST[,8:cols_cost,user_places]);
-    if( is.null(arg_list$basic_output) == FALSE ){
-        cost_vector  <- as.vector(arg_list$basic_output$manager_results[1,2:6]);
+    cols_cost   <- dim(arg_list[["COST"]])[2];
+    lays_cost   <- dim(arg_list[["COST"]])[3];
+    user_places <- which(arg_list[["AGENTS"]][, 2] > 0);
+    old_costs   <- sum(arg_list[["COST"]][, 8:cols_cost, user_places]);
+    if( is.null(arg_list[["basic_output"]]) == FALSE ){
+        al_bo_mr     <- arg_list[["basic_output"]][["manager_results"]][1, 2:6];
+        cost_vector  <- as.vector(al_bo_mr);
         cost_vector[is.na(cost_vector)] <- 100001;
-        arg_list$COST[1,8:12,2:lays_cost] <- cost_vector;
+        arg_list[["COST"]][1, 8:12, 2:lays_cost] <- cost_vector;
     }
     return(arg_list);
 }
 
 get_old_actions <- function(arg_list){
-    cols_action <- dim(arg_list$ACTION)[2];
-    user_places <- which(arg_list$AGENTS[,2] > 0);
-    old_actions <- sum(arg_list$ACTION[,8:cols_action,user_places]);
-    if( old_actions <= 0 & is.null(arg_list$basic_output) == FALSE ){
-        tot_actions <- apply(X = arg_list$basic_output$user_results, MARGIN = 2, 
-                             FUN = sum);
+    cols_action <- dim(arg_list[["ACTION"]])[2];
+    user_places <- which(arg_list[["AGENTS"]][, 2] > 0);
+    old_actions <- sum(arg_list[["ACTION"]][, 8:cols_action, user_places]);
+    if( old_actions <= 0 & is.null(arg_list[["basic_output"]]) == FALSE ){
+        tot_actions <- apply(X = arg_list[["basic_output"]][["user_results"]], 
+                             MARGIN = 2, FUN = sum);
         act_vector  <- as.vector(tot_actions[2:6]);
         act_vector[is.na(act_vector)] <- 0;
-        arg_list$ACTION[1,8:12,2] <- act_vector;
-        man_vector <- as.vector(arg_list$basic_output$manager_results[1,2:6]);
-        man_vector[is.na(man_vector)] <- arg_list$GMSE$minimum_cost;
-        arg_list$ACTION[3,8:13,1] <- c(man_vector, arg_list$GMSE$minimum_cost);
+        arg_list[["ACTION"]][1,8:12,2] <- act_vector;
+        al_bo_mr   <- arg_list[["basic_output"]][["manager_results"]][1, 2:6];
+        man_vector <- as.vector(al_bo_mr);
+        man_vector[is.na(man_vector)]  <- arg_list[["GMSE"]][["minimum_cost"]];
+        arg_list[["ACTION"]][3,8:13,1] <- c(man_vector, 
+                                          arg_list[["GMSE"]][["minimum_cost"]]);
     }
     return(arg_list);
 }
@@ -1997,7 +2000,7 @@ add_man_defaults <- function(arg_list){
         arg_list <- copy_args(arg_list = arg_list, from = "observation_array",
                               to       = "OBSERVATION");
     }
-    if(is.na(arg_list$OBSERVATION[1]) == TRUE){
+    if(is.na(arg_list[["OBSERVATION"]][1]) == TRUE){
         stop("I can't find observations for the manager model. The manager
               might have failed to observe resources. This might be because
               resources are low, or because the manager is off-landscape");
@@ -2017,9 +2020,9 @@ set_interaction_array <- function(arg_list){
         ini_itb <- do.call(what = make_interaction_array, args = ditbarg);
         arg_list[[interact_pos]] <- ini_itb;
     }
-    res_consume <- arg_list$GMSE$res_consume;
+    res_consume <- arg_list[["GMSE"]][["res_consume"]];
     if("res_consume" %in% arg_names == TRUE){
-        res_consume <- arg_list$res_consume;
+        res_consume <- arg_list[["res_consume"]];
     }
     arg_list[[interact_pos]][1,2] <- -1 * res_consume;
     return(arg_list);
@@ -2107,11 +2110,11 @@ gmse_apply_out <- function(arg_list, out, res_mod, obs_mod, man_mod, usr_mod,
                            u_res, u_obs, u_man, u_usr){
 
     if(out == "custom"){
-        c_list                     <- list();
-        c_list$resource_results    <- u_res;
-        c_list$observation_results <- u_obs;
-        c_list$manager_results     <- u_man;
-        c_list$user_results        <- u_usr;
+        c_list                          <- list();
+        c_list[["resource_results"]]    <- u_res;
+        c_list[["observation_results"]] <- u_obs;
+        c_list[["manager_results"]]     <- u_man;
+        c_list[["user_results"]]        <- u_usr;
         
         return(c_list);
     }
@@ -2122,77 +2125,77 @@ gmse_apply_out <- function(arg_list, out, res_mod, obs_mod, man_mod, usr_mod,
     man_nme <- names(formals(man_mod));
     usr_nme <- names(formals(usr_mod));
     
-    res_out <- arg_list$resource_vector;
-    obs_out <- arg_list$observation_vector;
-    man_out <- arg_list$manager_vector;
+    res_out <- arg_list[["resource_vector"]];
+    obs_out <- arg_list[["observation_vector"]];
+    man_out <- arg_list[["manager_vector"]];
     if("manager_array" %in% usr_nme | "COST" %in% usr_nme){
         man_out <- get_manager_sum(arg_list);
     }
-    usr_out <- arg_list$user_vector;
+    usr_out <- arg_list[["user_vector"]];
     if("manager_array" %in% usr_nme | "COST" %in% usr_nme){
         usr_out <- get_user_sum(arg_list);
     }
-    b_list$resource_results    <- res_out;
-    b_list$observation_results <- obs_out;
-    b_list$manager_results     <- man_out;
-    b_list$user_results        <- usr_out;
+    b_list[["resource_results"]]    <- res_out;
+    b_list[["observation_results"]] <- obs_out;
+    b_list[["manager_results"]]     <- man_out;
+    b_list[["user_results"]]        <- usr_out;
     
     if(out == "basic"){
         return(b_list);
     }    
 
-    arg_list$basic_output <- b_list;
+    arg_list[["basic_output"]] <- b_list;
     
     return(arg_list);
 }
 
 get_manager_sum <- function(arg_list){
-    acts           <- arg_list$user_array;
-    costs          <- arg_list$manager_array;
-    res_types      <- length(arg_list$resource_vector);
+    acts           <- arg_list[["user_array"]];
+    costs          <- arg_list[["manager_array"]];
+    res_types      <- length(arg_list[["resource_vector"]]);
     scaring        <- rep(x = NA, times = res_types);
     culling        <- rep(x = NA, times = res_types);
     castrating     <- rep(x = NA, times = res_types);
     feeding        <- rep(x = NA, times = res_types);
     help_offspring <- rep(x = NA, times = res_types);
-    u_scaring      <- arg_list$scaring;
+    u_scaring      <- arg_list[["scaring"]];
     if(is.null(u_scaring)){
-        u_scaring <- arg_list$GMSE$scaring;
+        u_scaring <- arg_list[["GMSE"]][["scaring"]];
     }
     if(u_scaring == TRUE){
-        rows    <- which(acts[,1,1] == -2);
+        rows    <- which(acts[, 1, 1] == -2);
         scaring <- costs[rows, 8, 2];
     }
-    u_culling      <- arg_list$culling;
+    u_culling      <- arg_list[["culling"]];
     if(is.null(u_culling)){
-        u_culling <- arg_list$GMSE$culling;
+        u_culling <- arg_list[["GMSE"]][["culling"]];
     }
     if(u_culling == TRUE){
         rows    <- which(acts[,1,1] == -2);
         culling <- costs[rows, 9, 2];
     }
-    u_castrating      <- arg_list$castration;
+    u_castrating      <- arg_list[["castration"]];
     if(is.null(u_castrating)){
-        u_castrating  <- arg_list$GMSE$castration;
+        u_castrating  <- arg_list[["GMSE"]][["castration"]];
     }
     if(u_castrating == TRUE){
         rows       <- which(acts[,1,1] == -2);
         castrating <- costs[rows, 10, 2];
     }
-    u_feeding      <- arg_list$feeding;
+    u_feeding      <- arg_list[["feeding"]];
     if(is.null(u_feeding)){
-        u_feeding  <- arg_list$GMSE$feeding;
+        u_feeding  <- arg_list[["GMSE"]][["feeding"]];
     }
     if(u_feeding == TRUE){
         rows       <- which(acts[,1,1] == -2);
         feeding    <- costs[rows, 10, 2];
     }
-    u_help_offspring      <- arg_list$help_offspring;
+    u_help_offspring      <- arg_list[["help_offspring"]];
     if(is.null(u_help_offspring)){
-        u_help_offspring  <- arg_list$GMSE$help_offspring;
+        u_help_offspring  <- arg_list[["GMSE"]][["help_offspring"]];
     }
     if(u_help_offspring == TRUE){
-        rows           <- which(acts[,1,1] == -2);
+        rows           <- which(acts[, 1, 1] == -2);
         help_offspring <- costs[rows, 10, 2];
     }
     all_costs <- c(scaring, culling, castrating, feeding, help_offspring);
@@ -2209,63 +2212,63 @@ get_manager_sum <- function(arg_list){
 }
 
 get_user_sum <- function(arg_list){
-    acts           <- arg_list$user_array;
+    acts           <- arg_list[["user_array"]];
     scaring        <- NA;
     culling        <- NA;
     castrating     <- NA;
     feeding        <- NA;
     help_offspring <- NA;
     rows           <- which(acts[,1,1] == -2);
-    types          <- c(acts[rows,2,]);
+    types          <- c(acts[rows, 2,]);
     act_mat        <- matrix(data = NA, nrow = length(types), ncol = 8);
     act_mat[,1]    <- types;
-    u_scaring      <- arg_list$scaring;
+    u_scaring      <- arg_list[["scaring"]];
     if(is.null(u_scaring)){
-        u_scaring <- arg_list$GMSE$scaring;
+        u_scaring <- arg_list[["GMSE"]][["scaring"]];
     }
     if(u_scaring == TRUE){
         act_mat[,2] <- acts[rows, 8, ];
     }
-    u_culling      <- arg_list$culling;
+    u_culling      <- arg_list[["culling"]];
     if(is.null(u_culling)){
-        u_culling <- arg_list$GMSE$culling;
+        u_culling <- arg_list[["GMSE"]][["culling"]];
     }
     if(u_culling == TRUE){
         act_mat[,3] <- acts[rows, 9, ];
     }
-    u_castrating      <- arg_list$castration;
+    u_castrating      <- arg_list[["castration"]];
     if(is.null(u_castrating)){
-        u_castrating  <- arg_list$GMSE$castration;
+        u_castrating  <- arg_list[["GMSE"]][["castration"]];
     }
     if(u_castrating == TRUE){
         act_mat[,4] <- acts[rows, 10, ];
     }
-    u_feeding      <- arg_list$feeding;
+    u_feeding      <- arg_list[["feeding"]];
     if(is.null(u_feeding)){
-        u_feeding  <- arg_list$GMSE$feeding;
+        u_feeding  <- arg_list[["GMSE"]][["feeding"]];
     }
     if(u_feeding == TRUE){
         act_mat[,5]    <- acts[rows, 11, ];
     }
-    u_help_offspring      <- arg_list$help_offspring;
+    u_help_offspring      <- arg_list[["help_offspring"]];
     if(is.null(u_help_offspring)){
-        u_help_offspring  <- arg_list$GMSE$help_offspring;
+        u_help_offspring  <- arg_list[["GMSE"]][["help_offspring"]];
     }
     if(u_help_offspring == TRUE){
         act_mat[,6] <- acts[rows, 12, ];
     }
     
-    u_tend_crops      <- arg_list$tend_crops;
+    u_tend_crops      <- arg_list[["tend_crops"]];
     if(is.null(u_tend_crops)){
-        u_tend_crops  <- arg_list$GMSE$tend_crops;
+        u_tend_crops  <- arg_list[["GMSE"]][["tend_crops"]];
     }
     if(u_tend_crops == TRUE){
         lrows       <- which(acts[,1,1] == -1);
         act_mat[act_mat[,1] == 1, 7] <- acts[lrows, 10, ];
     }
-    u_kill_crops      <- arg_list$kill_crops;
+    u_kill_crops      <- arg_list[["kill_crops"]];
     if(is.null(u_kill_crops)){
-        u_kill_crops  <- arg_list$GMSE$kill_crops;
+        u_kill_crops  <- arg_list[["GMSE"]][["kill_crops"]];
     }
     if(u_kill_crops == TRUE){
         lrows                        <- which(acts[,1,1] == -1);
