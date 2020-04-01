@@ -51,8 +51,9 @@ library(rhandsontable)
 [Project updates](#updates)
 
  - **2020**
- 
-     - **FEB** [4](#u-4-FEB-2019)
+
+     - **APR** [1](#u-1-APR-2020) 
+     - **FEB** [4](#u-4-FEB-2020)
 
  - **2019**
  
@@ -107,6 +108,20 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-1-APR-2020">Update: 1 APR 2020</a>
+
+I am now beginning a moderate update to GMSE, which I hope to have complete and up on CRAN by the end of the month. There are three specific goals of this update:
+
+1. Resolve Issue [#53](https://github.com/ConFooBio/gmse/issues/53): Just to head off any potential issues in `gmse_apply`, several places in the code use the format `sim_list$element_name` rather than `sim_list[["element_name"]]. The latter is more robust because it prohibits partial matching. Hence in [gmse_apply.R](https://github.com/ConFooBio/gmse/blob/master/R/gmse_apply.R), this should be changed.
+
+2. Resolve Issue [#59](https://github.com/ConFooBio/gmse/issues/59): The code from AdrianBach needs to be incorporated into the master branch of GMSE. Doing this will mainly consist of resolving a merge conflict and a bit of refactoring, and I plan to do this early on in developing what I hope to be a new version of GMSE by the end of APR 2020.
+
+3. Resolve Issue [#56](https://github.com/ConFooBio/gmse/issues/56): This is the major one. I want to add options in GMSE to allow resource dynamics to be dependent up on landscape properties. Specifically, for resources to consume the landscape cell contents, and for options to exist that allow resource birth, death, and (potentially) movement to be dependent on consumption. This will mainly involve updates to the resource model, with updates to the `gmse` and `gmse_apply` function as needed.
+
+4. In addressing 1-3, I will need to check to make sure that `gmse_apply` is handling all of the new options correctly, and new tests will need to be written as necessary.
+
+I will continue to update as need be and make sure that any updates from other team members (e.g., Issue [#58](https://github.com/ConFooBio/gmse/issues/58)) are merged appropriately before the new GMSE version.
 
 > <a name="u-4-FEB-2020">Update: 4 FEB 2020</a>
 
