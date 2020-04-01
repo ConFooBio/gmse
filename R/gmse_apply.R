@@ -39,15 +39,15 @@ gmse_apply <- function(res_mod  = resource,
         old_list <- swap_old_gmse(old_list);
     }
     
-    std_paras      <- pass_paras(old_list, ...);
-    all_args       <- as.list(sys.call());
-    all_args$PARAS <- std_paras$gmse_para_vect;
-    all_args$ilist <- std_paras$gmse_user_input; 
-    all_args$GMSE  <- formals(gmse);
+    std_paras           <- pass_paras(old_list, ...);
+    all_args            <- as.list(sys.call());
+    all_args[["PARAS"]] <- std_paras[["gmse_para_vect"]];
+    all_args[["ilist"]] <- std_paras[["gmse_user_input"]]; 
+    all_args[["GMSE"]]  <- formals(gmse);
     
     needed_args <- argument_list(res_mod, obs_mod, man_mod, use_mod, all_args);
-    arg_vals    <- needed_args$all_arg_values; 
-    arg_name    <- needed_args$all_arg_names;
+    arg_vals    <- needed_args[["all_arg_values"]]; 
+    arg_name    <- needed_args[["all_arg_names"]];
 
     names(arg_vals) <- arg_name;
 
@@ -117,26 +117,26 @@ gmse_apply <- function(res_mod  = resource,
 swap_old_gmse   <- function(ol){
     names_old <- names(ol);
     if("resource_array" %in% names_old == TRUE){
-        if(identical(ol$resource_array, ol$RESOURCES) == FALSE){
-            ol$RESOURCES <- ol$resource_array;
+        if(identical(ol[["resource_array"]], ol[["RESOURCES"]]) == FALSE){
+            ol[["RESOURCES"]] <- ol[["resource_array"]];
         }
-        if(identical(ol$resource_array, ol$RESOURCE) == FALSE){
-            ol$RESOURCE <- ol$resource_array;
+        if(identical(ol[["resource_array"]], ol[["RESOURCE"]]) == FALSE){
+            ol[["RESOURCE"]] <- ol[["resource_array"]];
         }
     }
     if("observation_array" %in% names_old == TRUE){
-        if(identical(ol$observation_array, ol$OBSERVATION) == FALSE){
-            ol$OBSERVATION <- ol$observation_array;
+        if(identical(ol[["observation_array"]], ol[["OBSERVATION"]]) == FALSE){
+            ol[["OBSERVATION"]] <- ol[["observation_array"]];
         }
     }
     if("manager_array" %in% names_old == TRUE){
-        if(identical(ol$manager_array, ol$COST) == FALSE){
-            ol$COST <- ol$manager_array;
+        if(identical(ol[["manager_array"]], ol[["COST"]]) == FALSE){
+            ol[["COST"]] <- ol[["manager_array"]];
         }
     }
     if("user_array" %in% names_old == TRUE){
-        if(identical(ol$user_array, ol$ACTION) == FALSE){
-            ol$ACTION <- ol$user_array;
+        if(identical(ol[["user_array"]], ol[["ACTION"]]) == FALSE){
+            ol[["ACTION"]] <- ol[["user_array"]];
         }
     }
     return(ol);
@@ -147,251 +147,258 @@ update_old_gmse <- function(arg_vals, ol, list_add){
     names_arg  <- names(arg_vals);
     names_add  <- names(list_add);
     if("manager_sense" %in% names_add){
-        ol$manager_sense     <- list_add$manager_sense;
+        ol[["manager_sense"]]   <- list_add[["manager_sense"]];
     }
     if("time_max" %in% names_add){
         stop("ERROR: time_max cannot be changed when old_list is included");
     }
     if("land_dim_1" %in% names_add){
-        ol$LAND       <- NA;
-        ol$land_dim_1 <- list_add$land_dim_1;
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[13] <- list_add$land_dim_1;
+        ol[["LAND"]]       <- NA;
+        ol[["land_dim_1"]] <- list_add[["land_dim_1"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][13] <- list_add[["land_dim_1"]];
         }
     }
     if("land_dim_2" %in% names_add){
-        ol$LAND       <- NA;
-        ol$land_dim_2 <- list_add$land_dim_2;
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[14] <- list_add$land_dim_2;
+        ol[["LAND"]]       <- NA;
+        ol[["land_dim_2"]] <- list_add[["land_dim_2"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][14] <- list_add[["land_dim_2"]];
         }
     }
     if("res_movement" %in% names_add){
-        if(is.null(ol$RESOURCES) == FALSE & is.na(ol$RESOURCES)[1] == FALSE){
-            ol$RESOURCES[,7] <- list_add$res_movement;
+        if(is.null(ol[["RESOURCES"]]) == FALSE & 
+                   is.na(ol[["RESOURCES"]])[1] == FALSE){
+            ol[["RESOURCES"]][,7] <- list_add[["res_movement"]];
         }
-        if(is.null(ol$resource_array)  == FALSE & 
-           is.na(ol$resource_array)[1] == FALSE){
-            ol$resource_array[,7] <- list_add$res_movement;
+        if(is.null(ol[["resource_array"]])  == FALSE & 
+           is.na(ol[["resource_array"]])[1] == FALSE){
+            ol[["resource_array"]][,7] <- list_add[["res_movement"]];
         }
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[3] <- list_add$res_movement;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][3] <- list_add[["res_movement"]];
         }
-        ol$res_movement <- list_add$res_movement;
+        ol[["res_movement"]] <- list_add[["res_movement"]];
     }
     if("remove_pr" %in% names_add){
-        if(is.null(ol$RESOURCES) == FALSE & is.na(ol$RESOURCES)[1] == FALSE){
-            ol$RESOURCES[,9] <- list_add$remove_pr;
+        if(is.null(ol[["RESOURCES"]]) == FALSE & 
+           is.na(ol[["RESOURCES"]])[1] == FALSE){
+            ol[["RESOURCES"]][,9] <- list_add[["remove_pr"]];
         }
-        if(is.null(ol$resource_array)  == FALSE & 
-           is.na(ol$resource_array)[1] == FALSE){
-            ol$resource_array[,9] <- list_add$remove_pr;
+        if(is.null(ol[["resource_array"]])  == FALSE & 
+           is.na(ol[["resource_array"]])[1] == FALSE){
+            ol[["resource_array"]][,9] <- list_add[["remove_pr"]];
         }
-        ol$remove_pr <- list_add$remove_pr;
+        ol[["remove_pr"]] <- list_add[["remove_pr"]];
     }
     if("lambda" %in% names_add){
-        if(is.null(ol$RESOURCES) == FALSE & is.na(ol$RESOURCES)[1] == FALSE){
-            ol$RESOURCES[,10] <- list_add$lambda;
+        if(is.null(ol[["RESOURCES"]]) == FALSE & 
+           is.na(ol[["RESOURCES"]])[1] == FALSE){
+            ol[["RESOURCES"]][,10] <- list_add[["lambda"]];
         }
-        if(is.null(ol$resource_array)  == FALSE & 
-           is.na(ol$resource_array)[1] == FALSE){
-            ol$resource_array[,10] <- list_add$lambda;
+        if(is.null(ol[["resource_array"]])  == FALSE & 
+           is.na(ol[["resource_array"]])[1] == FALSE){
+            ol[["resource_array"]][,10] <- list_add[["lambda"]];
         }
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            mas <- ol$GMSE$manager_sense
-            if(is.null(ol$manager_sense) == FALSE){
-                if(is.na(ol$manager_sense) == FALSE){
-                    mas <- ol$manager_sense;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            mas <- ol[["GMSE"]][["manager_sense"]];
+            if(is.null(ol[["manager_sense"]]) == FALSE){
+                if(is.na(ol[["manager_sense"]]) == FALSE){
+                    mas <- ol[["manager_sense"]];
                 }
             }
-            ol$PARAS[76]  <- -1*mas*(1+lambda);
-            ol$PARAS[77]  <- -1*mas*lambda;
-            ol$PARAS[78]  <-  1*lambda;
-            ol$PARAS[101] <- lambda;
+            ol[["PARAS"]][76]  <- -1*mas*(1+lambda);
+            ol[["PARAS"]][77]  <- -1*mas*lambda;
+            ol[["PARAS"]][78]  <-  1*lambda;
+            ol[["PARAS"]][101] <- lambda;
         }
-        ol$lambda <- list_add$lambda;
+        ol[["lambda"]] <- list_add[["lambda"]];
     }
     if("agent_view" %in% names_add){
-        if(is.null(ol$AGENTS) == FALSE & is.na(ol$AGENTS)[1] == FALSE){
-            ol$AGENTS[,9] <- list_add$agent_view;
+        if(is.null(ol[["AGENTS"]]) == FALSE & 
+           is.na(ol[["AGENTS"]])[1] == FALSE){
+            ol[["AGENTS"]][,9] <- list_add[["agent_view"]];
         }
-        ol$agent_view <- list_add$agent_view;
+        ol[["agent_view"]] <- list_add[["agent_view"]];
     }
     if("agent_move" %in% names_add){
-        if(is.null(ol$AGENTS) == FALSE & is.na(ol$AGENTS)[1] == FALSE){
-            ol$AGENTS[,7] <- list_add$agent_move;
+        if(is.null(ol[["AGENTS"]]) == FALSE & 
+           is.na(ol[["AGENTS"]])[1] == FALSE){
+            ol[["AGENTS"]][,7] <- list_add[["agent_move"]];
         }
-        ol$agent_view <- list_add$agent_move;
+        ol[["agent_view"]] <- list_add[["agent_move"]];
     }
     if("res_birth_K" %in% names_add){
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[6] <- list_add$res_birth_K;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][6] <- list_add[["res_birth_K"]];
         }
-        ol$res_birth_K <- list_add$res_birth_K;
+        ol[["res_birth_K"]] <- list_add[["res_birth_K"]];
     }
     if("res_death_K" %in% names_add){
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[7] <- list_add$res_death_K;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][7] <- list_add[["res_death_K"]];
         }
-        ol$res_death_K <- list_add$res_death_K;
+        ol[["res_death_K"]] <- list_add[["res_death_K"]];
     }
     if("edge_effect" %in% names_add){
         stop("ERROR: Cannot change edge_effect (must be torus)");
     }
     if("res_move_type" %in% names_add){
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[3] <- list_add$res_move_type;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][3] <- list_add[["res_move_type"]];
         }
-        ol$res_move_type <- list_add$res_move_type;
+        ol[["res_move_type"]] <- list_add[["res_move_type"]];
     }
     if("res_birth_type" %in% names_add){
         stop("ERROR: Only res_birth_type = 2 is allowed by GMSE");
     }
     if("res_death_type" %in% names_add){
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[5] <- list_add$res_death_type;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][5] <- list_add[["res_death_type"]];
         }
-        ol$res_death_type <- list_add$res_death_type;
+        ol[["res_death_type"]] <- list_add[["res_death_type"]];
     }
     if("observe_type" %in% names_add){
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[9] <- list_add$observe_type;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][9] <- list_add[["observe_type"]];
         }
-        ol$observe_type <- list_add$observe_type;
+        ol[["observe_type"]] <- list_add[["observe_type"]];
     }
     if("fixed_mark" %in% names_add){
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[11] <- list_add$fixed_mark;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][11] <- list_add[["fixed_mark"]];
         }
-        ol$fixed_mark <- list_add$fixed_mark;
+        ol[["fixed_mark"]] <- list_add[["fixed_mark"]];
     }
     if("fixed_recapt" %in% names_add){
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[103] <- list_add$fixed_recapt;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][103] <- list_add[["fixed_recapt"]];
         }
-        ol$fixed_recapt <- list_add$fixed_recapt;
+        ol[["fixed_recapt"]] <- list_add[["fixed_recapt"]];
     }
     if("times_observe" %in% names_add){
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[12] <- list_add$times_observe;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][12] <- list_add[["times_observe"]];
         }
-        ol$times_observe <- list_add$times_observe;
+        ol[["times_observe"]] <- list_add[["times_observe"]];
     }
     if("obs_move_type" %in% names_add){
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[15] <- list_add$obs_move_type;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][15] <- list_add[["obs_move_type"]];
         }
-        ol$obs_move_type <- list_add$obs_move_type;
+        ol[["obs_move_type"]] <- list_add[["obs_move_type"]];
     }
     if("res_min_age" %in% names_add){
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[17] <- list_add$res_min_age;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][17] <- list_add[["res_min_age"]];
         }
-        ol$res_min_age <- list_add$res_min_age;
+        ol[["res_min_age"]] <- list_add[["res_min_age"]];
     }
     if("res_move_obs" %in% names_add){
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[20] <- list_add$res_move_obs;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][20] <- list_add[["res_move_obs"]];
         }
-        ol$res_move_obs  <- list_add$res_move_obs;
+        ol[["res_move_obs"]]  <- list_add[["res_move_obs"]];
     }
     if("Euclidean_dist" %in% names_add){
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[21] <- list_add$Euclidean_dist;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][21] <- list_add[["Euclidean_dist"]];
         }
-        ol$Euclidean_dist <- list_add$Euclidean_dist;
+        ol[["Euclidean_dist"]] <- list_add[["Euclidean_dist"]];
     }
     if("res_consume" %in% names_add){
-        if(is.null(ol$RESOURCES) == FALSE & is.na(ol$RESOURCES)[1] == FALSE){
-            ol$RESOURCES[,15] <- list_add$res_consume;
+        if(is.null(ol[["RESOURCES"]]) == FALSE & 
+           is.na(ol[["RESOURCES"]])[1] == FALSE){
+            ol[["RESOURCES"]][,15] <- list_add[["res_consume"]];
         }
-        if(is.null(ol$resource_array)  == FALSE & 
-           is.na(ol$resource_array)[1] == FALSE){
-            ol$resource_array[,15] <- list_add$res_consume;
+        if(is.null(ol[["resource_array"]])  == FALSE & 
+           is.na(ol[["resource_array"]])[1] == FALSE){
+            ol[["resource_array"]][,15] <- list_add[["res_consume"]];
         }
-        ol$res_consume <- list_add$res_consume;
+        ol[["res_consume"]] <- list_add[["res_consume"]];
     }
     if("ga_popsize" %in% names_add){
-        if(list_add$ga_popsize < 2){
+        if(list_add[["ga_popsize"]] < 2){
             stop("ERROR: ga_popsize must be an integer > 2");
         }
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[22] <- list_add$ga_popsize;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][22] <- list_add[["ga_popsize"]];
         }
-        ol$ga_popsize <- list_add$ga_popsize;
+        ol[["ga_popsize"]] <- list_add[["ga_popsize"]];
     }
     if("ga_mingen" %in% names_add){
-        if(list_add$ga_mingen < 2){
+        if(list_add[["ga_mingen"]] < 2){
             stop("ERROR: ga_mingen must be an integer > 2");
         }
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[23] <- list_add$ga_mingen;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][23] <- list_add[["ga_mingen"]];
         }
-        ol$ga_mingen <- list_add$ga_mingen;
+        ol[["ga_mingen"]] <- list_add[["ga_mingen"]];
     }
     if("ga_seedrep" %in% names_add){
-        if(list_add$ga_seedrep < 0){
+        if(list_add[["ga_seedrep"]] < 0){
             stop("ERROR: ga_mingen must be a non-negative integer");
         }
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[24] <- list_add$ga_seedrep;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][24] <- list_add[["ga_seedrep"]];
         }
-        ol$ga_seedrep <- list_add$ga_seedrep;
+        ol[["ga_seedrep"]] <- list_add[["ga_seedrep"]];
     }
     if("ga_sampleK" %in% names_add){
-        if(list_add$ga_sampleK < 0){
+        if(list_add[["ga_sampleK"]] < 0){
             stop("ERROR: ga_sampleK must be a non-negative integer");
         }
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[25] <- list_add$ga_sampleK;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][25] <- list_add[["ga_sampleK"]];
         }
-        ol$ga_sampleK <- list_add$ga_sampleK;
+        ol[["ga_sampleK"]] <- list_add[["ga_sampleK"]];
     }
     if("ga_chooseK" %in% names_add){
-        if(list_add$ga_chooseK < 0){
+        if(list_add[["ga_chooseK"]] < 0){
             stop("ERROR: ga_chooseK must be a non-negative integer");
         }
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[26] <- list_add$ga_chooseK;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][26] <- list_add[["ga_chooseK"]];
         }
-        ol$ga_chooseK <- list_add$ga_chooseK;
+        ol[["ga_chooseK"]] <- list_add[["ga_chooseK"]];
     }
     if("ga_mutation" %in% names_add){
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[27] <- list_add$ga_mutation;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][27] <- list_add[["ga_mutation"]];
         }
-        ol$ga_mutation <- list_add$ga_mutation;
+        ol[["ga_mutation"]] <- list_add[["ga_mutation"]];
     }
     if("ga_crossover" %in% names_add){
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[28] <- list_add$ga_crossover;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][28] <- list_add[["ga_crossover"]];
         }
-        ol$ga_crossover <- list_add$ga_crossover;
+        ol[["ga_crossover"]] <- list_add[["ga_crossover"]];
     }
     if("move_agents" %in% names_add){
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[29] <- list_add$move_agents;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][29] <- list_add[["move_agents"]];
         }
-        ol$move_agents <- list_add$move_agents;
+        ol[["move_agents"]] <- list_add[["move_agents"]];
     }
     if("max_ages" %in% names_add){
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[30] <- list_add$max_ages;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][30] <- list_add[["max_ages"]];
         }
-        ol$max_ages <- list_add$max_ages;
+        ol[["max_ages"]] <- list_add[["max_ages"]];
     }
     if("minimum_cost" %in% names_add){
-        ol$COST          <- NA;
-        ol$manager_array <- NA;
-        ol$ACTION        <- NA;
-        ol$user_array    <- NA;
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[97] <- list_add$minimum_cost;
+        ol[["COST"]]          <- NA;
+        ol[["manager_array"]] <- NA;
+        ol[["ACTION"]]        <- NA;
+        ol[["user_array"]]    <- NA;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][97] <- list_add[["minimum_cost"]];
         }
-        ol$minimum_cost <- list_add$minimum_cost;
+        ol[["minimum_cost"]] <- list_add[["minimum_cost"]];
     }
     if("user_budget" %in% names_add){
-        if(is.null(ol$AGENTS) == FALSE & is.na(ol$AGENTS)[1] == FALSE){
+        if(is.null(ol[["AGENTS"]]) == FALSE & 
+           is.na(ol[["AGENTS"]])[1] == FALSE){
             ol$AGENTS[ol$AGENTS[,2]==1, 17] <-list_add$user_budget;
         }
         if(is.null(ol$AGENT) == FALSE & is.na(ol$AGENT)[1] == FALSE){
