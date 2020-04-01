@@ -399,170 +399,175 @@ update_old_gmse <- function(arg_vals, ol, list_add){
     if("user_budget" %in% names_add){
         if(is.null(ol[["AGENTS"]]) == FALSE & 
            is.na(ol[["AGENTS"]])[1] == FALSE){
-            ol$AGENTS[ol$AGENTS[,2]==1, 17] <-list_add$user_budget;
+            use <- ol[["AGENTS"]][,2] == 1;
+            ol[["AGENTS"]][use, 17] <- list_add[["user_budget"]];
         }
         if(is.null(ol$AGENT) == FALSE & is.na(ol$AGENT)[1] == FALSE){
-            ol$AGENTS[ol$AGENT[,2]==1, 17] <- list_add$user_budget;
+            use <- ol[["AGENT"]][,2] == 1;
+            ol[["AGENTS"]][use, 17] <- list_add[["user_budget"]];
         }
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[98] <- list_add$user_budget;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][98] <- list_add[["user_budget"]];
         }
-        ol$user_budget <- list_add$user_budget;
+        ol[["user_budget"]] <- list_add[["user_budget"]];
     }
     if("manager_budget" %in% names_add){
-        if(is.null(ol$AGENTS) == FALSE & is.na(ol$AGENTS)[1] == FALSE){
-            ol$AGENTS[ol$AGENTS[,2]==0, 17] <- list_add$manager_budget;
+        if(is.null(ol[["AGENTS"]]) == FALSE & 
+           is.na(ol[["AGENTS"]])[1] == FALSE){
+            use <- ol[["AGENTS"]][,2] == 0;
+            ol[["AGENTS"]][use, 17] <- list_add[["manager_budget"]];
         }
-        if(is.null(ol$AGENT) == FALSE & is.na(ol$AGENT)[1] == FALSE){
-            ol$AGENTS[ol$AGENT[,2]==0, 17] <- list_add$manager_budget;
+        if(is.null(ol[["AGENT"]]) == FALSE & is.na(ol[["AGENT"]])[1] == FALSE){
+            use <- ol[["AGENT"]][,2] == 0;
+            ol[["AGENTS"]][use, 17] <- list_add[["manager_budget"]];
         }
-        ol$manager_budget <- list_add$manager_budget;
+        ol[["manager_budget"]] <- list_add[["manager_budget"]];
     }
     if("manage_target" %in% names_add){
-        ol$COST          <- NA;
-        ol$manager_array <- NA;
-        ol$ACTION        <- NA;
-        ol$user_array    <- NA;
-        ol$manage_target <- list_add$manage_target;
+        ol[["COST"]]          <- NA;
+        ol[["manager_array"]] <- NA;
+        ol[["ACTION"]]        <- NA;
+        ol[["user_array"]]    <- NA;
+        ol[["manage_target"]] <- list_add[["manage_target"]];
     }
     if("RESOURCE_ini" %in% names_add){
         stop("ERROR: Should not be initialising resources if using old_list");
     }
     if("scaring" %in% names_add){
-        ol$COST          <- NA;
-        ol$manager_array <- NA;
-        ol$ACTION        <- NA;
-        ol$user_array    <- NA;
-        ol$scaring       <- list_add$scaring;
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[89] <- list_add$scaring;
+        ol[["COST"]]          <- NA;
+        ol[["manager_array"]] <- NA;
+        ol[["ACTION"]]        <- NA;
+        ol[["user_array"]]    <- NA;
+        ol[["scaring"]]       <- list_add[["scaring"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][89] <- list_add[["scaring"]];
         }
     }
     if("culling" %in% names_add){
-        ol$COST          <- NA;
-        ol$manager_array <- NA;
-        ol$ACTION        <- NA;
-        ol$user_array    <- NA;
-        ol$culling       <- list_add$culling;
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[90] <- list_add$culling;
+        ol[["COST"]]          <- NA;
+        ol[["manager_array"]] <- NA;
+        ol[["ACTION"]]        <- NA;
+        ol[["user_array"]]    <- NA;
+        ol[["culling"]]       <- list_add[["culling"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][90] <- list_add[["culling"]];
         }
     }
     if("castration" %in% names_add){
-        ol$COST          <- NA;
-        ol$manager_array <- NA;
-        ol$ACTION        <- NA;
-        ol$user_array    <- NA;
-        ol$castration    <- list_add$castration;
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[91] <- list_add$castration;
+        ol[["COST"]]          <- NA;
+        ol[["manager_array"]] <- NA;
+        ol[["ACTION"]]        <- NA;
+        ol[["user_array"]]    <- NA;
+        ol[["castration"]]    <- list_add[["castration"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][91] <- list_add[["castration"]];
         }
     }
     if("feeding" %in% names_add){
-        ol$COST          <- NA;
-        ol$manager_array <- NA;
-        ol$ACTION        <- NA;
-        ol$user_array    <- NA;
-        ol$feeding       <- list_add$feeding;
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[92] <- list_add$feeding;
+        ol[["COST"]]          <- NA;
+        ol[["manager_array"]] <- NA;
+        ol[["ACTION"]]        <- NA;
+        ol[["user_array"]]    <- NA;
+        ol[["feeding"]]       <- list_add[["feeding"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][92] <- list_add[["feeding"]];
         }
     }
     if("help_offspring" %in% names_add){
-        ol$COST           <- NA;
-        ol$manager_array  <- NA;
-        ol$ACTION         <- NA;
-        ol$user_array     <- NA;
-        ol$help_offspring <- list_add$help_offspring;
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[93] <- list_add$help_offspring;
+        ol[["COST"]]           <- NA;
+        ol[["manager_array"]]  <- NA;
+        ol[["ACTION"]]         <- NA;
+        ol[["user_array"]]     <- NA;
+        ol[["help_offspring"]] <- list_add[["help_offspring"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][93] <- list_add[["help_offspring"]];
         }
     }
     if("kill_crops" %in% names_add){
-        ol$COST           <- NA;
-        ol$manager_array  <- NA;
-        ol$ACTION         <- NA;
-        ol$user_array     <- NA;
-        ol$kill_crops     <- list_add$kill_crops;
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[94] <- list_add$kill_crops;
+        ol[["COST"]]           <- NA;
+        ol[["manager_array"]]  <- NA;
+        ol[["ACTION"]]         <- NA;
+        ol[["user_array"]]     <- NA;
+        ol[["kill_crops"]]     <- list_add[["kill_crops"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][94] <- list_add[["kill_crops"]];
         }
     }
     if("tend_crops" %in% names_add){
-        ol$COST           <- NA;
-        ol$manager_array  <- NA;
-        ol$ACTION         <- NA;
-        ol$user_array     <- NA;
-        ol$tend_crops     <- list_add$tend_crops;
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[95] <- list_add$tend_crops;
+        ol[["COST"]]           <- NA;
+        ol[["manager_array"]]  <- NA;
+        ol[["ACTION"]]         <- NA;
+        ol[["user_array"]]     <- NA;
+        ol[["tend_crops"]]     <- list_add[["tend_crops"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][95] <- list_add[["tend_crops"]];
         }
     }
     if("tend_crop_yld" %in% names_add){
-        ol$COST              <- NA;
-        ol$manager_array     <- NA;
-        ol$ACTION            <- NA;
-        ol$user_array        <- NA;
-        ol$tend_crop_yld     <- list_add$tend_crop_yld;
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[80] <- list_add$tend_crop_yld;
+        ol[["COST"]]              <- NA;
+        ol[["manager_array"]]     <- NA;
+        ol[["ACTION"]]            <- NA;
+        ol[["user_array"]]        <- NA;
+        ol[["tend_crop_yld"]]     <- list_add[["tend_crop_yld"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][80] <- list_add[["tend_crop_yld"]];
         }
     }
     if("stakeholders" %in% names_add){
-        ol$AGENTS         <- NA;
-        ol$AGENT          <- NA;
-        ol$COST           <- NA;
-        ol$manager_array  <- NA;
-        ol$ACTION         <- NA;
-        ol$user_array     <- NA;
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[55] <- list_add$stakeholders + 1;
-            ol$PARAS[66] <- list_add$stakeholders + 1;
-            ol$PARAS[69] <- list_add$stakeholders + 3;
+        ol[["AGENTS"]]         <- NA;
+        ol[["AGENT"]]          <- NA;
+        ol[["COST"]]           <- NA;
+        ol[["manager_array"]]  <- NA;
+        ol[["ACTION"]]         <- NA;
+        ol[["user_array"]]     <- NA;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][55] <- list_add[["stakeholders"]] + 1;
+            ol[["PARAS"]][66] <- list_add[["stakeholders"]] + 1;
+            ol[["PARAS"]][69] <- list_add[["stakeholders"]] + 3;
         }
-        ol$stakeholders     <- list_add$stakeholders;
+        ol[["stakeholders"]]     <- list_add[["stakeholders"]];
     }
     if("manage_caution" %in% names_add){
-        ol$manage_caution     <- list_add$manage_caution;
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[96] <- list_add$manage_caution;
+        ol[["manage_caution"]]     <- list_add[["manage_caution"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][96] <- list_add[["manage_caution"]];
         }
     }
     if("land_ownership" %in% names_add){
-        ol$LAND           <- NA;
-        ol$COST           <- NA;
-        ol$manager_array  <- NA;
-        ol$ACTION         <- NA;
-        ol$user_array     <- NA;
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[104] <- list_add$land_ownership;
+        ol[["LAND"]]           <- NA;
+        ol[["COST"]]           <- NA;
+        ol[["manager_array"]]  <- NA;
+        ol[["ACTION"]]         <- NA;
+        ol[["user_array"]]     <- NA;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][104] <- list_add[["land_ownership"]];
         }
-        ol$land_ownership     <- list_add$land_ownership;
+        ol[["land_ownership"]]     <- list_add[["land_ownership"]];
     }
     if("manage_freq" %in% names_add){
         stop("ERROR: manage_freq cannot be changed when old_list is included");
     }
     if("converge_crit" %in% names_add){
-        ol$converge_crit     <- list_add$converge_crit;
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[99] <- list_add$converge_crit;
+        ol[["converge_crit"]]     <- list_add[["converge_crit"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][99] <- list_add[["converge_crit"]];
         }
     }
     if("public_land" %in% names_add){
-        ol$LAND           <- NA;
-        ol$COST           <- NA;
-        ol$manager_array  <- NA;
-        ol$ACTION         <- NA;
-        ol$user_array     <- NA;
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[105] <- list_add$public_land;
+        ol[["LAND"]]           <- NA;
+        ol[["COST"]]           <- NA;
+        ol[["manager_array"]]  <- NA;
+        ol[["ACTION"]]         <- NA;
+        ol[["user_array"]]     <- NA;
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][105] <- list_add[["public_land"]];
         }
-        ol$public_land     <- list_add$public_land;
+        ol[["public_land"]]     <- list_add[["public_land"]];
     }
     if("group_think" %in% names_add){
-        ol$group_think     <- list_add$group_think;
-        if(is.null(ol$PARAS) == FALSE & is.na(ol$PARAS)[1] == FALSE){
-            ol$PARAS[102] <- list_add$group_think;
+        ol[["group_think"]]     <- list_add[["group_think"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][102] <- list_add[["group_think"]];
         }
     }
     return(ol);
