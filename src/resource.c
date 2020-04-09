@@ -301,6 +301,25 @@ void res_landscape_interaction(double **resource_array, double ***landscape,
 }
 
 /* =============================================================================
+ * This function checks to see if a resource population size exceeds its 
+ * carrying capacity as applied to death
+ * Inputs include:
+ *     res_num_total: The total number of resources in the population
+ *     paras: Global parameters needed
+ * ========================================================================== */
+void resource_over_death_K(int res_num_total, double *paras){
+    
+    int death_K;
+    
+    death_K = (int) paras[6];
+    
+    paras[108] = 0;
+    if(res_num_total > death_K){
+        paras[108] = 1;
+    }
+}
+
+/* =============================================================================
  * MAIN RESOURCE FUNCTION:
  * ===========================================================================*/
 
@@ -489,15 +508,9 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     /* Resources affect the landscape (note the **ORDER** of this -- change? */
     res_landscape_interaction(res_new, land, paras, res_num_total);
     
-    /***************************************************************************************/
-    /* Did the resource exceeded its carrying capacity ? */
-    if (res_num_total > paras[6]) { /* XXX <----------------------- NEEDS TO GO TO MANAGER */
-      paras[108] = 1;
-    } else {
-      paras[108] = 0;
-    }
-    /***************************************************************************************/
-        
+    /* Check to see if the population is over carrying capacity */
+    resource_over_death_K(res_num_total, paras);
+
     /* This code switches from C back to R */
     /* ====================================================================== */        
     
