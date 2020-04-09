@@ -288,6 +288,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     pub <- public_land;
     gtk <- group_think;
     a_t <- action_thres;
+    bb  <- budget_bonus;
     arp <- age_repr;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
@@ -400,7 +401,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                0,       # 107. Time steps since last policy update
                0,       # 108. Has the Resource population exceeded K?
                0,       # 109. Deviation from target
-               arp      # 110. Age at which individuals can first reproduce
+               bb,      # 110. Budget bonus
+               arp      # 111. Age at which individuals can first reproduce
     );
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
