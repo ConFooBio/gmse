@@ -300,6 +300,8 @@ void update_marg_util(double ***actions, double *abun_est, double *temp_util,
  * This function uses the observation array to estimate resource abundances
  *      COST:        An array of the cost of actions for each agent
  *      ACTION:      An array of the action of agents
+ *      paras:       A vector of parameters needed 
+ *      agent_array: Agent array, including managers (agent type 0)
  * ========================================================================== */
 void set_action_costs(double ***ACTION, double ***COST, double *paras, 
                       double **agent_array){
@@ -352,6 +354,39 @@ void set_action_costs(double ***ACTION, double ***COST, double *paras,
     }
 }
 
+/* =============================================================================
+ * This determines whether action threshold conditions are met (Adrian Bach)
+ *      ACTION:      An array of the action of agents
+ *      paras:       A vector of parameters needed 
+ * ========================================================================== */
+void check_action_threshold(double ***ACTION, double *paras){
+    
+    int m_lyr, act_row, targ_row, over_threshold, a_t, t_s;
+    double res_abund, target, dev;
+    
+    m_lyr     = 0; /* Layer of the manager */ 
+    act_row   = 0; /* Row where the actions are */
+    targ_row  = 4; /* column where the target is located */
+    res_abund = paras[99]; /* Est. of res type 1 from the observation model */
+    a_t       = (int) paras[105]; /* Dev est pop from manager target trigger */
+    t_s       = (int) paras[0]; /* What is the current time step? */
+    
+    target = ACTION[act_row][targ_row][m_lyr]; /* Manager's target */
+
+    dev    = (res_abund / target) - 1; /* Deviation from manager's target */
+    if(dev < 0){ /* Get the absolute value */
+        dev = -1 * dev;
+    }
+    
+    /* If the population deviation has hit the threshold, and time step */
+    if(dev >= a_t && t_s > 1){ 
+        paras[106]  = 1; /* Policy is going to be updated now */
+        paras[107]  = 0; /* Zero time steps since last policy update */
+    }else{
+        paras[106]  = 0; /* Policy is not going to be updated now */
+        paras[107] += 1; /* One more time step since the last policy update */
+    }
+}
 
 /* =============================================================================
  * MAIN OBSERVATION FUNCTION:
@@ -400,6 +435,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     int protected_n;         /* Number of protected R objects */
     int vec_pos;             /* Vector position for making arrays */
     int len_PARAMETERS;      /* Length of the parameters vector */
+    int update_policy;       /* If managers act */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
@@ -435,12 +471,6 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     double *abun_est;        /* Vector used to estimate abundances */
     double *temp_util;       /* Vector temporarily holding manager utils */
     double *marg_util;       /* Margin utilities for a manager's actions */
-    
-    /* action threshold test */
-    //int targt;               /* manager target for resource */
-    double dev;              /* estimated population deviation from managers target (fraction) */
-    //double estim;            /* estimated population */
-    //double thres;            /* deviation threshold */
 
     /* First take care of all the reading in of code from R to C */
     /* ====================================================================== */
@@ -655,32 +685,14 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
         update_marg_util(actions, abun_est, temp_util, marg_util, int_d0, a_x);
     }
     
-    /* act or wait ? */
-
-    /* act regardless at the first time step 
-     * the time is in paras[0] */
+    check_action_threshold(actions, paras); /* Check whether to act */
+    update_policy = (int) paras[106];       /* Will managers act? */
     
-    if (paras[0] < 2) {
-      ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, lookup, paras, 0, 1);
-    } else {
-      
-      //update threshold value = paras[105];
-      //estimation of the Resource population = paras[99];           /* will only work for the first resource type */
-      //manager target = actions[0][4][0];
-      
-      dev = (paras[99] / (double) actions[0][4][0]) - 1;
-      paras[109] = dev;
-    
-      if (fabs((double) dev) >= paras[105]) {     /* if deviation is above action threshold, call ga, update tracker and re-initiate number of ts spent without updating policy */
-        ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, lookup, paras, 0, 1);
-        paras[106] = 1;                  /* policy updating tracker */
-        paras[107] = 0;                  /* time steps since last update counter */
-      } else {                           /* if deviation is under action threshold, don't call ga, update tracker and number of ts spent without updating policy */
-        paras[106] = 0;
-        paras[107] += 1;
-      }
+    if(update_policy > 0){
+      ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
+         lookup, paras, 0, 1);
     }
-    
+     
     set_action_costs(actions, costs, paras, agent_array);
     
     free(marg_util);
