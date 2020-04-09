@@ -361,14 +361,14 @@ void set_action_costs(double ***ACTION, double ***COST, double *paras,
  * ========================================================================== */
 void check_action_threshold(double ***ACTION, double *paras){
     
-    int m_lyr, act_row, targ_row, over_threshold, a_t, t_s;
-    double res_abund, target, dev;
+    int m_lyr, act_row, targ_row, over_threshold, t_s;
+    double res_abund, target, dev, a_t;
     
     m_lyr     = 0; /* Layer of the manager */ 
     act_row   = 0; /* Row where the actions are */
     targ_row  = 4; /* column where the target is located */
     res_abund = paras[99]; /* Est. of res type 1 from the observation model */
-    a_t       = (int) paras[105]; /* Dev est pop from manager target trigger */
+    a_t       = paras[105]; /* Dev est pop from manager target trigger */
     t_s       = (int) paras[0]; /* What is the current time step? */
     
     target = ACTION[act_row][targ_row][m_lyr]; /* Manager's target */
@@ -377,9 +377,8 @@ void check_action_threshold(double ***ACTION, double *paras){
     if(dev < 0){ /* Get the absolute value */
         dev = -1 * dev;
     }
-    
     /* If the population deviation has hit the threshold, and time step */
-    if(dev >= a_t && t_s > 1){ 
+    if(dev >= a_t || t_s < 3){ 
         paras[106]  = 1; /* Policy is going to be updated now */
         paras[107]  = 0; /* Zero time steps since last policy update */
     }else{
@@ -395,23 +394,22 @@ void check_action_threshold(double ***ACTION, double *paras){
  * ========================================================================== */
 void apply_budget_bonus(double **agent_array, double *paras){
     
-    int a_t, budget_col, recent_update, budget_bonus;
-    double manager_budget, the_bonus, new_budget;
+    int budget_col, recent_update;
+    double a_t, manager_budget, the_bonus, new_budget, budget_bonus;
     
-    a_t            = (int) paras[105]; /* Dev est pop target trigger */
-    recent_update  = (int) paras[106]; /* Policy recently updated */
-    budget_bonus   = paras[110];       /* The budget bonus */
-    budget_col     = (int) paras[111]; /* Column where budget is recorded */
-    manager_budget = paras[113];
+    a_t            = (double) paras[105]; /* Dev est pop target trigger */
+    recent_update  = (int) paras[106];    /* Policy recently updated */
+    budget_bonus   = (double) paras[110]; /* The budget bonus */
+    budget_col     = (int) paras[112];    /* Column where budget is recorded */
+    manager_budget = (double) paras[113];
     
+    new_budget = manager_budget;
     if(a_t > 0){ /* If the action threshold is being used */
-        if(recent_update > 0){
-            new_budget = manager_budget;
-        }else{
+        if(recent_update == 0){
             the_bonus  = manager_budget * budget_bonus;
             new_budget = agent_array[0][budget_col] + the_bonus;
         }
-        if(new_budget <= 100000){
+        if(new_budget < 100000.00){
             agent_array[0][budget_col] = new_budget;
         }
     }
@@ -715,10 +713,9 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
         estimate_abundances(obs_array, paras, lookup, agent_array, abun_est);
         update_marg_util(actions, abun_est, temp_util, marg_util, int_d0, a_x);
     }
-    
     check_action_threshold(actions, paras); /* Check whether to act */
-    update_policy = (int) paras[106];       /* Will managers act? */
-    
+    update_policy = paras[106];             /* Will managers act? */
+
     if(update_policy > 0){
       ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
          lookup, paras, 0, 1);
