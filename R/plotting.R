@@ -195,9 +195,10 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, COST,
         abline(h=paras[7], col="red", lwd=0.8, lty="dashed");
         abline(h=ACTION[[1]][1,5,1], col=topo.colors(1), lwd=0.8, lty="dashed");
         if (paras[106] > 0) {
-          abline(h=ACTION[[1]][1,5,1]*(1+paras[106]), col="darkgreen", lwd=0.8, lty="dashed");    # can be improved, from the arguments?
-          abline(h=ACTION[[1]][1,5,1]*(1-paras[106]), col="darkgreen", lwd=0.8, lty="dashed");
-          #polygon(y = rep(ACTION[[1]][1,5,1]*(1+paras[106]), max_time), x = rep(ACTION[[1]][1,5,1]*(1-paras[106]), max_time), col = "lightgreen", lwd=0.8, lty="dashed", border = "darkgreen");
+          abline(h=ACTION[[1]][1,5,1]*(1+paras[106]), col="darkgreen", lwd=0.8, 
+                 lty="dashed");    # can be improved, from the arguments?
+          abline(h=ACTION[[1]][1,5,1]*(1-paras[106]), col="darkgreen", lwd=0.8, 
+                 lty="dashed");
         }
         points(x=gens, y=abun, pch=20, type="l", lwd=3, col="black");
         par(new=TRUE);
@@ -422,9 +423,10 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
         abline(h=paras[7], col="red", lwd=0.8, lty="dashed");
         abline(h=ACTION[[1]][1,5,1], col=topo.colors(1), lwd=0.8, lty="dashed");
         if (paras[106] > 0) {
-          abline(h=ACTION[[1]][1,5,1]*(1+paras[106]), col="darkgreen", lwd=0.8, lty="dashed");    # can be improved, from the arguments?
-          abline(h=ACTION[[1]][1,5,1]*(1-paras[106]), col="darkgreen", lwd=0.8, lty="dashed");
-          #polygon(y = rep(ACTION[[1]][1,5,1]*(1+paras[106]), max_time), x = rep(ACTION[[1]][1,5,1]*(1-paras[106]), max_time), col = "lightgreen", lwd=0.8, lty="dashed", border = "darkgreen");
+          abline(h=ACTION[[1]][1,5,1]*(1+paras[106]), col="darkgreen", lwd=0.8, 
+                 lty="dashed");    # can be improved, from the arguments?
+          abline(h=ACTION[[1]][1,5,1]*(1-paras[106]), col="darkgreen", lwd=0.8, 
+                 lty="dashed");
         }
         points(x=gens, y=abun, pch=20, type="l", lwd=3, col="black");
         par(new=TRUE);
@@ -684,9 +686,10 @@ plot_gmse_results <- function(sim_results){
     abline(h = ACTION[[1]][1,5,1], col = topo.colors(1), lwd = 0.8, 
            lty = "dashed");
     if (paras[106] > 0) {
-      abline(h=ACTION[[1]][1,5,1]*(1+paras[106]), col="darkgreen", lwd=0.8, lty="dashed");    # can be improved, from the arguments?
-      abline(h=ACTION[[1]][1,5,1]*(1-paras[106]), col="darkgreen", lwd=0.8, lty="dashed");
-      #polygon(rep(ACTION[[1]][1,5,1]*(1+paras[106]), max_time), rep(ACTION[[1]][1,5,1]*(1-paras[106]), max_time), col = "lightgreen", lwd=0.8, lty="dashed", border = "darkgreen");
+      abline(h=ACTION[[1]][1,5,1]*(1+paras[106]), col="darkgreen", lwd=0.8, 
+             lty="dashed");    # can be improved, from the arguments?
+      abline(h=ACTION[[1]][1,5,1]*(1-paras[106]), col="darkgreen", lwd=0.8, 
+             lty="dashed");
     }
     points(x = gens, y = abun, pch = 20, type = "l", lwd = 3, col = "black");
     par(new = TRUE);
@@ -1020,6 +1023,3 @@ plot_gmse_effort <- function(sim_results){
     }    
     mtext("Time step", side = 1, line = 3.5, cex = 1.5, col = "black");
 }
-
-
-
