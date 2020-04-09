@@ -44,7 +44,7 @@ void res_add(double **res_adding, double *paras){
     oadj            = (int) paras[40]; /* Adjustment to offspring number col */
     klld            = (int) paras[42]; /* Adjustment to kill */
     cadj            = (int) paras[73]; /* Adjust to castrate */
-    arp             = (int) paras[105]; /* Minimum age of reproduction */
+    arp             = (int) paras[111]; /* Minimum age of reproduction */
 
     added = 0; 
     switch(type){
@@ -489,12 +489,14 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     /* Resources affect the landscape (note the **ORDER** of this -- change? */
     res_landscape_interaction(res_new, land, paras, res_num_total);
     
+    /***************************************************************************************/
     /* Did the resource exceeded its carrying capacity ? */
-    if (res_num_total > paras[6]) {
+    if (res_num_total > paras[6]) { /* XXX <----------------------- NEEDS TO GO TO MANAGER */
       paras[108] = 1;
     } else {
       paras[108] = 0;
     }
+    /***************************************************************************************/
         
     /* This code switches from C back to R */
     /* ====================================================================== */        
