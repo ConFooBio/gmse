@@ -389,6 +389,35 @@ void check_action_threshold(double ***ACTION, double *paras){
 }
 
 /* =============================================================================
+ * This applies the budget bonus for managers as appropriate (Adrian Bach)
+ *      agent_array: Agent array, including managers (agent type 0)
+ *      paras:       A vector of parameters needed 
+ * ========================================================================== */
+void apply_budget_bonus(double **agent_array, double *paras){
+    
+    int a_t, budget_col, recent_update, budget_bonus;
+    double manager_budget, the_bonus, new_budget;
+    
+    a_t            = (int) paras[105]; /* Dev est pop target trigger */
+    recent_update  = (int) paras[106]; /* Policy recently updated */
+    budget_bonus   = paras[110];       /* The budget bonus */
+    budget_col     = (int) paras[111]; /* Column where budget is recorded */
+    manager_budget = paras[113];
+    
+    if(a_t > 0){ /* If the action threshold is being used */
+        if(recent_update > 0){
+            new_budget = manager_budget;
+        }else{
+            the_bonus  = manager_budget * budget_bonus;
+            new_budget = agent_array[0][budget_col] + the_bonus;
+        }
+        if(new_budget <= 100000){
+            agent_array[0][budget_col] = new_budget;
+        }
+    }
+}
+
+/* =============================================================================
  * MAIN OBSERVATION FUNCTION:
  * ===========================================================================*/
 
@@ -680,6 +709,8 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     temp_util = malloc(int_d0 * sizeof(double));
     marg_util = malloc(int_d0 * sizeof(double));
     
+    apply_budget_bonus(agent_array, paras); 
+    
     if(paras[8] >= 0){ /* If less than zero, the above already in actions */
         estimate_abundances(obs_array, paras, lookup, agent_array, abun_est);
         update_marg_util(actions, abun_est, temp_util, marg_util, int_d0, a_x);
@@ -692,7 +723,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
       ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
          lookup, paras, 0, 1);
     }
-     
+    
     set_action_costs(actions, costs, paras, agent_array);
     
     free(marg_util);

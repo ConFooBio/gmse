@@ -290,6 +290,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     a_t <- action_thres;
     bb  <- budget_bonus;
     arp <- age_repr;
+    mnb <- manager_budget;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -402,7 +403,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                0,       # 108. Has the Resource population exceeded K?
                0,       # 109. Deviation from target
                bb,      # 110. Budget bonus
-               arp      # 111. Age at which individuals can first reproduce
+               arp,     # 111. Age at which individuals can first reproduce
+               16,      # 112. Column in agent array where budget is located
+               mnb      # 113. The manager's budget
     );
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
@@ -477,17 +480,6 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                        move_agents = mva
         );
         AGENTS <- AGENTS_NEW[[1]];
-        
-        #### <---------------------------------------------------- THIS GOES IN MANAGER.C
-        if (paras[107] == 0) { # Check for budget bonus
-          new_manager_budget <- AGENTS[1,17] + manager_budget * budget_bonus;
-          if (new_manager_budget < 100000) {  # Check if not above the max
-            AGENTS[1,17] <- new_manager_budget;
-          }
-        }else{
-            AGENTS[1,17] <- manager_budget;
-        }
-        #### <---------------------------------------------------- THIS GOES IN MANAGER.C
 
         if(time %% manage_freq == 0){
             MANAGER  <- manager(RESOURCES   = RESOURCES,
