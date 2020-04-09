@@ -488,6 +488,13 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     
     /* Resources affect the landscape (note the **ORDER** of this -- change? */
     res_landscape_interaction(res_new, land, paras, res_num_total);
+    
+    /* Did the resource exceeded its carrying capacity ? */
+    if (res_num_total > paras[6]) {
+      paras[108] = 1;
+    } else {
+      paras[108] = 0;
+    }
         
     /* This code switches from C back to R */
     /* ====================================================================== */        
