@@ -288,11 +288,6 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     pub <- public_land;
     gtk <- group_think;
     a_t <- action_thres;
-    plu <- 1;
-    tsc <- 0;
-    ovk <- 0;
-    bbs <- 0;
-    dev <- 0;
     arp <- age_repr;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
@@ -401,10 +396,10 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                ldo,     # 103. Is there land ownership among stakeholders
                pub,     # 104. How much public land is there (proportion)
                a_t,     # 105. Dev est pop from manager target triggering
-               plu,     # 106. Was the policy updated last time step?
-               tsc,     # 107. Time steps since last policy update
-               ovk,     # 108. Has the Resource population exceeded K?
-               dev,     # 109. Debug - deviation from target
+               1,       # 106. Was the policy updated last time step?
+               0,       # 107. Time steps since last policy update
+               0,       # 108. Has the Resource population exceeded K?
+               0,       # 109. Deviation from target
                arp      # 110. Age at which individuals can first reproduce
     );
     
