@@ -570,6 +570,24 @@ update_old_gmse <- function(arg_vals, ol, list_add){
             ol[["PARAS"]][102] <- list_add[["group_think"]];
         }
     }
+    if("age_repr" %in% names_add){
+        ol[["age_repr"]]     <- list_add[["age_repr"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][112] <- list_add[["age_repr"]];
+        }
+    }
+    if("action_thres" %in% names_add){
+        ol[["action_thres"]]     <- list_add[["action_thres"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][106] <- list_add[["action_thres"]];
+        }
+    }
+    if("budget_bonus" %in% names_add){
+        ol[["budget_bonus"]]     <- list_add[["budget_bonus"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][111] <- list_add[["budget_bonus"]];
+        }
+    }
     return(ol);
 }
 
@@ -648,7 +666,8 @@ pass_paras <- function( old_list = NULL, time_max = 100, land_dim_1 = 100,
                         manage_caution = 1, land_ownership = FALSE, 
                         manage_freq = 1, converge_crit = 1, 
                         manager_sense = 0.1, public_land = 0, 
-                        group_think = FALSE, PARAS = NULL, ...
+                        group_think = FALSE, age_repr = 1, usr_budget_rng = 0,
+                        action_thres = 0, budget_bonus = 0, PARAS = NULL, ...
 ){
     
     if(is.null(PARAS) == FALSE){
@@ -668,8 +687,9 @@ pass_paras <- function( old_list = NULL, time_max = 100, land_dim_1 = 100,
                     scaring, culling, castration, feeding, help_offspring, 
                     tend_crops, tend_crop_yld, kill_crops, stakeholders, 
                     manage_caution, land_ownership, manage_freq, converge_crit, 
-                    manager_sense, public_land, group_think); 
-    
+                    manager_sense, public_land, group_think, age_repr,
+                    usr_budget_rng, action_thres, budget_bonus); 
+
     paras_errors(input_list);
     
     ldims  <- land_errors(input_list, ...);
@@ -707,9 +727,10 @@ pass_paras <- function( old_list = NULL, time_max = 100, land_dim_1 = 100,
                user_res_opts[4], user_res_opts[5], user_lnd_opts[1], 
                user_lnd_opts[2], manage_caution, minimum_cost, user_budget, 
                converge_crit, RESOURCE_ini, lambda, group_think, fixed_recapt, 
-               land_ownership, public_land
+               land_ownership, public_land, action_thres, 1, 0, 0, 0,
+               budget_bonus, age_repr, 16, manager_budget
     );
-    
+
     return( list(gmse_user_input = as.vector(input_list), 
                  gmse_para_vect  = as.vector(paras))
     );
@@ -1104,6 +1125,18 @@ paras_errors <- function(input_list){
     }
     if(input_list[56] < 0 | input_list[56] > 1){
         stop("ERROR: group_think must be TRUE/FALSE");
+    }
+    if(input_list[57] < 0){
+        stop("ERROR: Age of reproduction cannot be negative");
+    }
+    if(input_list[58] < 0){
+        stop("ERROR: Range of user budgets cannot be negative");
+    }
+    if(input_list[59] < 0){
+        stop("ERROR: Action threshold for manager cannot be negative");
+    }
+    if(input_list[60] < 0){
+        stop("ERROR: Manager budget bonus cannot be negative");
     }
 }
 
