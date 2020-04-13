@@ -71,7 +71,7 @@ make_resource <- function(model              = "IBM",
 
 #' Agent initialisation
 #'
-#' Initialise the agents of the G-MSE model.
+#' Initialise the agents of the GMSE model.
 #'
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
@@ -81,18 +81,21 @@ make_resource <- function(model              = "IBM",
 #'@param vision This parameter determines the distance around an agent's location within which it can observe resources. This is relevant for some (but not not all) types of observation in the observation model, particularly for density-based estimation (observe_type = 0 in the gmse() function). 
 #'@param rows The number of rows (y-axis) on the simulated landscape; agents are randomly placed somewhere on the landscape array
 #'@param cols The number of columns (x-axis) on the simulated landscape; agents are randomly placed somewhere on the landscape array
-#'@return the_agents Initialised data frame of agents being modelled
+#'@return An initialised data frame of agents being modelled
 #'@examples
 #'agents <- make_agents(model = "IBM", agent_number = 2, type_counts = c(1, 1), 
 #'move = 0, vision = 20, rows = 100, cols = 100);
 #'@export
-make_agents <- function(model        = "IBM",
-                        agent_number = 2,
-                        type_counts  = c(1,1),
-                        move         = 0,
-                        vision       = 20,
-                        rows         = 100,
-                        cols         = 100
+make_agents <- function(model          = "IBM",
+                        agent_number   = 2,
+                        type_counts    = c(1,1),
+                        move           = 0,
+                        vision         = 20,
+                        rows           = 100,
+                        cols           = 100,
+                        manager_budget = 1000,
+                        user_budget    = 1000,
+                        usr_budget_rng = 0
                         ){
     if(agent_number < 2 & length(type_counts) < 2){
         print("Need >1 agent to make the array, so I'm adding a dummy agent");
@@ -131,6 +134,37 @@ make_agents <- function(model        = "IBM",
         stop("Invalid model selected (Must be 'IBM')");
     }
     return( the_agents );
+}
+
+#' Manager and user budgets
+#' 
+#' Initialise manager and user budgets
+#' 
+#'@param agents The agents array
+#'@param manager_budget The budget of a manager
+#'@param user_budget What is the budget of a user
+#'@usr_budget_rng Uniform range of users budgets
+#'@budget_col Column where the budget is located
+#'@return An updated agents data frame with correct budgets
+manager_user_budgets <- function(agents, 
+                                 manager_budget = 1000, 
+                                 user_budget = 1000, 
+                                 usr_budget_rng = 0,
+                                 budget_col = 17){
+    a_number         <- dim(agents)[1];
+    budget           <- rep(x = NA, times = a_number);
+    type1            <- agents[, 2];
+    the_mana         <- which(type1 == 0);
+    the_users        <- which(type1 > 0);
+    managers         <- length(the_mana);
+    users            <- length(the_users);
+    budget[the_mana] <- rep(x = manager_budget, times = managers);
+    ubudg            <- runif(n = users, min = user_budget - usr_budget_rng,
+                                         max = user_budget + usr_budget_rng);
+    ubudg[ubudg < 0]     <- 1;
+    budget[the_users]    <- round(ubudg);
+    agents[, budget_col] <- budget;
+    return(agents);
 }
 
 #' COST initialisation

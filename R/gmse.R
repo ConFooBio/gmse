@@ -229,14 +229,11 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         ACTION[2, 5, stakeholder_rows]   <- 0;
     }
     
-    agent_budgets   <- runif(n = 1 + stakeholders, 
-                             min = user_budget - usr_budget_rng,
-                             max = user_budget + usr_budget_rng);
-    agent_budgets   <- round(agent_budgets);
-    agent_budgets[agent_budgets < 1] <- 1;
-    
-    AGENTS[,17]     <- agent_budgets;
-    AGENTS[1,17]    <- manager_budget;
+    AGENTS <- manager_user_budgets(agents         = AGENTS, 
+                                   manager_budget = manager_budget, 
+                                   user_budget    = user_budget, 
+                                   usr_budget_rng = usr_budget_rng,
+                                   budget_col     = 17);
     
     time       <- time + 1;  # Ready for the initial time step.
     cells      <- land_dim_1 * land_dim_2; # Number of cells in the landscape
