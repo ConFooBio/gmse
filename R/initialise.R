@@ -92,10 +92,7 @@ make_agents <- function(model          = "IBM",
                         move           = 0,
                         vision         = 20,
                         rows           = 100,
-                        cols           = 100,
-                        manager_budget = 1000,
-                        user_budget    = 1000,
-                        usr_budget_rng = 0
+                        cols           = 100
                         ){
     if(agent_number < 2 & length(type_counts) < 2){
         print("Need >1 agent to make the array, so I'm adding a dummy agent");
@@ -143,8 +140,8 @@ make_agents <- function(model          = "IBM",
 #'@param agents The agents array
 #'@param manager_budget The budget of a manager
 #'@param user_budget What is the budget of a user
-#'@usr_budget_rng Uniform range of users budgets
-#'@budget_col Column where the budget is located
+#'@param usr_budget_rng Uniform range of users budgets
+#'@param budget_col Column where the budget is located
 #'@return An updated agents data frame with correct budgets
 manager_user_budgets <- function(agents, 
                                  manager_budget = 1000, 

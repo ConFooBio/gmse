@@ -210,10 +210,10 @@ update_old_gmse <- function(arg_vals, ol, list_add){
                     mas <- ol[["manager_sense"]];
                 }
             }
-            ol[["PARAS"]][76]  <- -1*mas*(1+lambda);
-            ol[["PARAS"]][77]  <- -1*mas*lambda;
-            ol[["PARAS"]][78]  <-  1*lambda;
-            ol[["PARAS"]][101] <- lambda;
+            ol[["PARAS"]][76]  <- -1 * mas * ( 1+ list_add[["lambda"]]);
+            ol[["PARAS"]][77]  <- -1 * mas * list_add[["lambda"]];
+            ol[["PARAS"]][78]  <-  1 * list_add[["lambda"]];
+            ol[["PARAS"]][101] <-  list_add[["lambda"]];
         }
         ol[["lambda"]] <- list_add[["lambda"]];
     }

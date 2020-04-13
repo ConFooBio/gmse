@@ -4,8 +4,15 @@
 \alias{make_agents}
 \title{Agent initialisation}
 \usage{
-make_agents(model = "IBM", agent_number = 2, type_counts = c(1, 1),
-  move = 0, vision = 20, rows = 100, cols = 100)
+make_agents(
+  model = "IBM",
+  agent_number = 2,
+  type_counts = c(1, 1),
+  move = 0,
+  vision = 20,
+  rows = 100,
+  cols = 100
+)
 }
 \arguments{
 \item{model}{The type of model being applied (Currently only individual-based
@@ -24,10 +31,10 @@ make_agents(model = "IBM", agent_number = 2, type_counts = c(1, 1),
 \item{cols}{The number of columns (x-axis) on the simulated landscape; agents are randomly placed somewhere on the landscape array}
 }
 \value{
-the_agents Initialised data frame of agents being modelled
+An initialised data frame of agents being modelled
 }
 \description{
-Initialise the agents of the G-MSE model.
+Initialise the agents of the GMSE model.
 }
 \examples{
 agents <- make_agents(model = "IBM", agent_number = 2, type_counts = c(1, 1), 

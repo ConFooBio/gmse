@@ -47,4 +47,4 @@ Suggests: knitr,
     rmarkdown,
     testthat,
     R.rsp
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
