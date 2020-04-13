@@ -1809,19 +1809,25 @@ add_obs_defaults <- function(arg_list){
 }
 
 add_agent_budget <- function(AGENTS, arg_list){
-    arg_name <- names(arg_list);
-    manage_budget <- arg_list[["GMSE"]][["manager_budget"]];
+    arg_name      <- names(arg_list);
+    manage_budget <- arg_list[["GMSE"]][["manager_budget"]];   
     if("manager_budget" %in% arg_name){
         mbpos         <- which(arg_name == "manager_budget");
-        manage_budget <- arg_list[[mbpos]];
+        manage_budget <- arg_list[[mbpos]];                     
     }
     user_budget <- arg_list[["GMSE"]][["user_budget"]];
     if("user_budget" %in% arg_name){
         ubpos         <- which(arg_name == "user_budget");
         user_budget   <- arg_list[[ubpos]];
     }
-    AGENTS[AGENTS[, 2] == 0, 17] <- manage_budget;
-    AGENTS[AGENTS[, 2] == 1, 17] <- user_budget;
+    usr_budget_rng <- arg_list[["GMSE"]][["usr_budget_rng"]];
+    if("user_budget" %in% arg_name){
+        urpos            <- which(arg_name == "usr_budget_rng");
+        usr_budget_rng   <- arg_list[[urpos]];
+    }
+    AGENTS <- manager_user_budgets(AGENTS, manager_budget = manage_budget, 
+                                   user_budget = user_budget, 
+                                   usr_budget_rng = usr_budget_rng);
     return(AGENTS);
 }
 
