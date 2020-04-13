@@ -52,7 +52,7 @@ library(rhandsontable)
 
  - **2020**
 
-     - **APR** [1](#u-1-APR-2020) 
+     - **APR** [13](#u-13-APR-2020), [1](#u-1-APR-2020) 
      - **FEB** [4](#u-4-FEB-2020)
 
  - **2019**
@@ -108,6 +108,18 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-1-APR-2020">Update: 13 APR 2020</a>
+
+I have now completed two major tasks in a GMSE update, first mentioned [earlier in the month](#u-1-APR-2020). The new code is up on the [rev](https://github.com/ConFooBio/gmse/tree/a03c0cd75507d6082a55da6722ab22c5671dd126) branch. 
+
+I have resolved Issue [#53](https://github.com/ConFooBio/gmse/issues/53), so partial matching is not allowed in `gmse_apply` (or in the tests). I have also resolved Issue [#59](https://github.com/ConFooBio/gmse/issues/59), meaning that it is now possible to use different action thresholds and budget bonuses in both `gmse` and `gmse_apply` (arguments `action_thres` and `budget_bonus`), and variable user budgets can now be specified in `gmse`, and in `gmse_apply` (argument `usr_budget_rng` -- of course, manual edits to user budgets were always allowed in `gmse_apply` by directly editing the agents array).
+
+In making these changes, I have also allowed `gmse_apply` to keep track of the current time step when old calls to the function are passed back through `old_list` (i.e., when looping old list as [in here](https://confoobio.github.io/gmse/articles/SI2.html#running-gmse-simulations-by-looping-gmse_apply), the time step will also be tracked automatically through the loops, not just outside of `gmse_apply` through the loop index -- this makes the action threshold possible, as it only applies after the first time step). 
+
+I now need to move on to Issue [#56](https://github.com/ConFooBio/gmse/issues/56), which will more or less complete the new version, though I also might update the default landscape ownership placement.
+
+New tests have been written in testthat, and the package builds with now errors, warnings, or notes.
 
 > <a name="u-1-APR-2020">Update: 1 APR 2020</a>
 
