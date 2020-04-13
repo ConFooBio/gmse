@@ -88,7 +88,7 @@ make_resource <- function(model              = "IBM",
 #'@export
 make_agents <- function(model          = "IBM",
                         agent_number   = 2,
-                        type_counts    = c(1,1),
+                        type_counts    = c(1, 1),
                         move           = 0,
                         vision         = 20,
                         rows           = 100,
