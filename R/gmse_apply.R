@@ -41,7 +41,7 @@ gmse_apply <- function(res_mod  = resource,
     
     std_paras           <- pass_paras(old_list, ...);
     all_args            <- as.list(sys.call());
-    all_args[["PARAS"]] <- std_paras[["gmse_para_vect"]];
+    all_args[["PARAS"]] <- std_paras[["gmse_para_vect"]]; 
     all_args[["ilist"]] <- std_paras[["gmse_user_input"]]; 
     all_args[["GMSE"]]  <- formals(gmse);
     
@@ -50,11 +50,11 @@ gmse_apply <- function(res_mod  = resource,
     arg_name    <- needed_args[["all_arg_names"]];
 
     names(arg_vals) <- arg_name;
-
+    
     if(is.null(old_list) == FALSE){
         arg_vals <- apply_old_gmse(arg_vals, old_list, ...);
     }
- 
+    
     # ------ RESOURCE MODEL ----------------------------------------------------
     res_args <- prep_res(arg_list = arg_vals, res_mod = res_mod);
     check_args(arg_list = res_args, the_fun = res_mod);     
@@ -146,6 +146,9 @@ update_old_gmse <- function(arg_vals, ol, list_add){
     names_old  <- names(ol);
     names_arg  <- names(arg_vals);
     names_add  <- names(list_add);
+    if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+        ol[["PARAS"]][1] <- ol[["PARAS"]][1] + 1;
+    }
     if("manager_sense" %in% names_add){
         ol[["manager_sense"]]   <- list_add[["manager_sense"]];
     }
@@ -711,11 +714,11 @@ pass_paras <- function( old_list = NULL, time_max = 100, land_dim_1 = 100,
     lyr <- stakeholders + 1;
     roc <- stakeholders + 3;
     coc <- 13;
-    
-    paras <- c(1, edge_effect, res_move_type, res_birth_type, res_death_type,
-               res_birth_K, res_death_K, 0, observe_type, 1, fixed_mark, 
-               times_observe, land_dim_1, land_dim_2, obs_move_type, 1, 
-               res_min_age, 1, 12, res_move_obs, Euclidean_dist, ga_popsize, 
+
+    paras <- c(1, edge_effect, res_move_type, res_birth_type, 
+               res_death_type, res_birth_K, res_death_K, 0, observe_type, 1, 
+               fixed_mark, times_observe, land_dim_1, land_dim_2, obs_move_type, 
+               1, res_min_age, 1, 12, res_move_obs, Euclidean_dist, ga_popsize, 
                ga_mingen, ga_seedrep, ga_sampleK, ga_chooseK, ga_mutation,
                ga_crossover, move_agents, max_ages, 7, 11, RESOURCE_ini, 4, 5,
                6, 3, 9, 10, 18, 19, ttr, 16, 8, 1, 1, 15, 14, 1, 4, 5, 6, 10, 
@@ -735,7 +738,6 @@ pass_paras <- function( old_list = NULL, time_max = 100, land_dim_1 = 100,
                  gmse_para_vect  = as.vector(paras))
     );
 }
-
 
 old_list_errors <- function(old_list = NULL, RESOURCES = NULL, ACTION = NULL,
                             resource_array = NULL, LAND = NULL, COST = NULL,
@@ -1821,7 +1823,7 @@ add_agent_budget <- function(AGENTS, arg_list){
         user_budget   <- arg_list[[ubpos]];
     }
     usr_budget_rng <- arg_list[["GMSE"]][["usr_budget_rng"]];
-    if("user_budget" %in% arg_name){
+    if("usr_budget_rng" %in% arg_name){
         urpos            <- which(arg_name == "usr_budget_rng");
         usr_budget_rng   <- arg_list[[urpos]];
     }
