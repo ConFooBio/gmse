@@ -96,7 +96,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   times_observe  = 1,     # How many times obs (if type = 0)
                   obs_move_type  = 1,     # Type of movement for agents
                   res_min_age    = 0,     # Minimum age recorded and observed
-                  res_move_obs   = TRUE,  # Move resources while observing
+                  res_move_obs   = FALSE,  # Move resources while observing
                   Euclidean_dist = FALSE, # Use Euclidean distance in view
                   plotting       = TRUE,  # Plot the results
                   hunt           = FALSE, # Does the user hunt resources?

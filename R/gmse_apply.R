@@ -43,9 +43,9 @@ gmse_apply <- function(res_mod  = resource,
     all_args            <- as.list(sys.call());
     all_args[["PARAS"]] <- std_paras[["gmse_para_vect"]]; 
     all_args[["ilist"]] <- std_paras[["gmse_user_input"]]; 
-    all_args[["GMSE"]]  <- formals(gmse);
+    all_args[["GMSE"]]  <- formals(gmse);                                       
     
-    needed_args <- argument_list(res_mod, obs_mod, man_mod, use_mod, all_args);
+    needed_args <- argument_list(res_mod, obs_mod, man_mod, use_mod, all_args); 
     arg_vals    <- needed_args[["all_arg_values"]]; 
     arg_name    <- needed_args[["all_arg_names"]];
 
@@ -67,19 +67,19 @@ gmse_apply <- function(res_mod  = resource,
     arg_vals    <- translate_results(arg_list = arg_vals, output = res_results);
     arg_vals    <- update_para_vec(arg_list   = arg_vals);
     check_extinction(arg_vals);
- 
+    
     # ------ OBSERVATION MODEL -------------------------------------------------
-    obs_args <- prep_obs(arg_list = arg_vals, obs_mod = obs_mod);
-    check_args(arg_list = obs_args, the_fun = obs_mod);
+    obs_args <- prep_obs(arg_list = arg_vals, obs_mod = obs_mod);               
+    check_args(arg_list = obs_args, the_fun = obs_mod);                         
     obs_results <- do.call(what = obs_mod, args = obs_args);                    
     obs_results <- check_name_results(output   = obs_results,
                                       vec_name = "observation_vector", 
-                                      mat_name = "observation_array");
-    arg_vals    <- add_results(arg_list = arg_vals, output = obs_results);
+                                      mat_name = "observation_array");          
+    arg_vals    <- add_results(arg_list = arg_vals, output = obs_results);      
     arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = obs_mod);     
     arg_vals    <- translate_results(arg_list = arg_vals, output = obs_results);
     arg_vals    <- update_para_vec(arg_list   = arg_vals);
-
+    
     # ------ MANAGER MODEL -----------------------------------------------------
     man_args    <- prep_man(arg_list = arg_vals, man_mod = man_mod);
     check_args(arg_list = man_args, the_fun = man_mod);
@@ -103,7 +103,7 @@ gmse_apply <- function(res_mod  = resource,
     arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = use_mod);
     arg_vals    <- translate_results(arg_list = arg_vals, output = usr_results);
     arg_vals    <- update_para_vec(arg_list   = arg_vals);
-
+    
     res <- gmse_apply_out(arg_vals, get_res, res_mod, obs_mod, man_mod, use_mod,
                           res_results, obs_results, man_results, usr_results);
     
