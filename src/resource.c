@@ -320,24 +320,66 @@ void resource_over_death_K(int res_num_total, double *paras){
     }
 }
 
+
+/* =============================================================================
+ * This function models a single resource eating on the landscape
+ * ========================================================================== */
+void resource_feeds(double **resource_array, double ***landscape, double *paras,
+                    int resource){
+
+    int resource_effect, landscape_layer, x_col, y_col, x_pos, y_pos, cons_col;
+    double c_rate, consumed;
+    
+    x_col             = (int) paras[33];
+    y_col             = (int) paras[34];
+    resource_effect   = (int) paras[47];
+    landscape_layer   = (int) paras[48];
+    
+    x_pos    = (int) resource_array[resource][x_col];
+    y_pos    = (int) resource_array[resource][y_col];
+    c_rate   = resource_array[resource][resource_effect];
+    consumed = c_rate * landscape[x_pos][y_pos][landscape_layer];
+    
+    resource_array[resource][cons_col]       += consumed;
+    landscape[x_pos][y_pos][landscape_layer] -= consumed;
+}
+
 /* =============================================================================
  * This function models the process of resources feeding on the landscape
  * ========================================================================== */
 void resource_feeding(double **resource_array, double ***landscape,
                       double *paras, int resource_number){
     
-    int resource, fed_col;
+    int resource, fed_col, tot_fed, is_dead, rm_row;
     int *fed;
     
     fed_col = (int) paras[118]; /* Location of the column tracking fed */
-    
-    fed = malloc(resource_number * sizeof(int *));
+    rm_row  = (int) paras[42];  /* Has the resource already died? */
+    tot_fed = 0;
+
+    fed = (int *) malloc(resource_number * sizeof(int));
     for(resource = 0; resource < resource_number; resource++){
-        fed[resource] = resource_array[resource][fed_col];
+        is_dead = resource_array[resource][rm_row];
+        if(is_dead < 1){
+            fed[resource]  = resource_array[resource][fed_col];
+            tot_fed       += fed[resource];
+        }
     }
     
+    while(tot_fed > 0){
+        
+        do{ /* This will find a resource with feeding actions left */
+            resource = get_rand_int(0, resource_number);
+        } while(fed[resource] == 0);
+                    
+        move_a_resource(resource_array, landscape, paras, resource);
+        
+        resource_feeds(resource_array, landscape, paras, resource);
+        
+        fed[resource]--;
+        tot_fed--;
+    }
 }
-
 
 
 /* =============================================================================
@@ -373,6 +415,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     int vec_pos;             /* Vector position for making arrays */
     int off_col;             /* The column where the offspring are held */
     int rm_col;              /* Column where removal is indiciated */
+    int csr, crp;            /* Consumption requirements, survival and repr */
     int len_PARAMETERS;      /* Length of the parameters vector */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
@@ -462,6 +505,8 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     
     off_col   = (int) paras[38];
     rm_col    = (int) paras[43];
+    csr       = (int) paras[116]; /* Consumption required for survival */
+    crp       = (int) paras[117]; /* Consumption needed for one offspring */
     
     /* Resource time step and age needs to be increased by one */
     add_time(res_old, paras);
@@ -469,6 +514,11 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     /* Resources move according to move function and parameter) */
     res_mover(res_old, land, paras);
 
+    /* If we need to get amount eaten because it affects death or birth*/
+    if(csr > 0 || crp > 0){ 
+        resource_feeding(res_old, land, paras, res_number);
+    }
+    
     /* Identify, and calculate the number of, added individuals */
     res_add(res_old, paras);
     res_nums_added = 0; 
