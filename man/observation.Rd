@@ -10,7 +10,7 @@ observation(
   PARAS = NULL,
   AGENTS = NULL,
   inter_tabl = NULL,
-  fixed_mark = FALSE,
+  fixed_mark = 100,
   times_observe = 1,
   res_min_age = 0,
   agent_type = 0,

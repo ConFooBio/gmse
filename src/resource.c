@@ -323,20 +323,21 @@ void resource_over_death_K(int res_num_total, double *paras){
 /* =============================================================================
  * This function models the process of resources feeding on the landscape
  * ========================================================================== */
-/*
 void resource_feeding(double **resource_array, double ***landscape,
                       double *paras, int resource_number){
     
-    int resource;
+    int resource, fed_col;
     int *fed;
+    
+    fed_col = (int) paras[118]; /* Location of the column tracking fed */
     
     fed = malloc(resource_number * sizeof(int *));
     for(resource = 0; resource < resource_number; resource++){
-        fed[resource] = resource_array[resource][2];
+        fed[resource] = resource_array[resource][fed_col];
     }
     
 }
- */
+
 
 
 /* =============================================================================

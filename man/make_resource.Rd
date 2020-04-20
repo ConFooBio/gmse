@@ -14,7 +14,8 @@ make_resource(
   rm_pr = 0,
   lambda = 0,
   consumption_rate = 0.1,
-  max_age = 5
+  max_age = 5,
+  times_feeding = 1
 )
 }
 \arguments{
@@ -38,6 +39,8 @@ make_resource(
 \item{consumption_rate}{Rate at which resource consumes crops on landscape; consumption affects the landscape by decreasing values on the landscape array (which may, e.g., be interpreted as crop production being decreased), and might also affect resource demographic parameters depending on other global options set in GMSE}
 
 \item{max_age}{Maximum age allowed for a resource to be (in time steps)}
+
+\item{times_feeding}{Number of times a resource moves on a landscape during a single time step in search of food}
 }
 \value{
 the_resources Initialised data frame of resources being modelled
