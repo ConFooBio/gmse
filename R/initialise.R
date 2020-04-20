@@ -13,6 +13,7 @@
 #'@param lambda This is the parameter for Poisson random sampling affecting birthrate; each resource gives birth to Poisson(lambda) offspring in the resource model
 #'@param consumption_rate Rate at which resource consumes crops on landscape; consumption affects the landscape by decreasing values on the landscape array (which may, e.g., be interpreted as crop production being decreased), and might also affect resource demographic parameters depending on other global options set in GMSE
 #'@param max_age Maximum age allowed for a resource to be (in time steps)
+#'@param times_feeding Number of times a resource moves on a landscape during a single time step in search of food
 #'@return the_resources Initialised data frame of resources being modelled
 #'@examples
 #'resource <- make_resource(model = "IBM", resource_quantity = 100, 
@@ -28,7 +29,8 @@ make_resource <- function(model              = "IBM",
                           rm_pr              = 0,
                           lambda             = 0,
                           consumption_rate   = 0.1,
-                          max_age            = 5
+                          max_age            = 5,
+                          times_feeding      = 1
                           ){
     the_resource   <- NULL;
     if(length(consumption_rate) != resource_types){
@@ -60,11 +62,11 @@ make_resource <- function(model              = "IBM",
         adj_gr   <- rep(x = 0, times = resource_quantity);
         adj_h    <- rep(x = 0, times = resource_quantity);
         consumed <- rep(x = 0, times = resource_quantity);
-        ext_col  <- rep(x = 0, times = resource_quantity);
+        fed_col  <- rep(x = times_feeding, times = resource_quantity);
         the_resource <- cbind(IDs, type1, type2, type3, xloc, yloc, mover, time,
                               remov_pr, growth, offspr, age, mark, tally,
                               consume, adj_mv, adj_c, adj_k, adj_gr, adj_h,
-                              consumed, ext_col);
+                              consumed, fed_col);
     }
     if( is.null(the_resource) ){
         stop("Invalid model selected (Must be 'IBM')");

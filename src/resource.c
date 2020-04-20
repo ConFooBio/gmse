@@ -321,6 +321,16 @@ void resource_over_death_K(int res_num_total, double *paras){
 }
 
 /* =============================================================================
+ * This function models the process of resources feeding on the landscape
+ * ========================================================================== */
+/*
+void resource_feeding(double **resource_array, double ***landscape,
+                      double *paras, int resource_number){
+    
+}
+ */
+
+/* =============================================================================
  * MAIN RESOURCE FUNCTION:
  * ===========================================================================*/
 

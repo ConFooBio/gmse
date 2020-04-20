@@ -98,7 +98,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   times_observe  = 1,     # How many times obs (if type = 0)
                   obs_move_type  = 1,     # Type of movement for agents
                   res_min_age    = 0,     # Minimum age recorded and observed
-                  res_move_obs   = FALSE,  # Move resources while observing
+                  res_move_obs   = FALSE, # Move resources while observing
                   Euclidean_dist = FALSE, # Use Euclidean distance in view
                   plotting       = TRUE,  # Plot the results
                   hunt           = FALSE, # Does the user hunt resources?
@@ -139,7 +139,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   action_thres   = 0,     # Managers' policy updating threshold
                   budget_bonus   = 0,     # Budget saved by not acting
                   consume_surv   = 0,     # Required consumption for survival
-                  consume_repr   = 0      # Required consumption to reproduce
+                  consume_repr   = 0,     # Required consumption to reproduce
+                  times_feeding  = 0      # Number of searches to feed on land
 ){
     
     time_max <- time_max + 1; # Add to avoid confusion (see loop below)
@@ -192,7 +193,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                          rm_pr              = remove_pr,
                                          lambda             = lambda,
                                          consumption_rate   = res_consume,
-                                         max_age            = max_ages[1]
+                                         max_age            = max_ages[1],
+                                         times_feeding      = times_feeding
     );
     # This will obviously need to be changed -- new function in initialise.R
     AGENTS   <- make_agents( model        = pop_model,
