@@ -29,4 +29,5 @@ int unif_pois_move(double move_para);
 
 void res_mover(double **res_moving, double ***landscape, double *paras);
 
-void move_a_resource(double **res_moving, double ***landscape, double *paras);
+void move_a_resource(double **res_moving, double ***landscape, double *paras,
+                     int resource);
