@@ -403,7 +403,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                arp,     # 111. Age at which individuals can first reproduce
                16,      # 112. Column in agent array where budget is located
                mnb,     # 113. The manager's budget
-               10       # 114. Column in resource array where offspring located
+               10,      # 114. Column in resource array where offspring located
+               20       # 115. Column in resource array where consumed located
     );
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
