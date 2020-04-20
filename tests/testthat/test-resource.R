@@ -35,7 +35,7 @@ test_that("Dimensions of resource array are correct", {
                17, 1, 2, 3, 13, 3, -1, -1, 1, 0, 2, 2, 8, 7, 13, 4, 7, 0, 16, 0,
                -0.1, -0.1, 0.1, 0.1, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
                1, 1, 1, 1, 10, 1000, 100, 100, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0, 0,
-               1, 16, 1000, 10, 20);
+               1, 16, 1000, 10, 20, 0, 0);
     
     res_res <- resource( RESOURCES = res, 
                          LAND      = land, 
@@ -45,7 +45,7 @@ test_that("Dimensions of resource array are correct", {
     
     expect_equal(length(res_res), 3);
     expect_equal(dim(res_res[[2]]), c(10, 10, 3));
-    expect_equal(length(res_res[[3]]), 116);
+    expect_equal(length(res_res[[3]]), 118);
 })
 
 test_that("Resource model doesn't alter parameters", {
@@ -81,7 +81,7 @@ test_that("Resource model doesn't alter parameters", {
                17, 1, 2, 3, 13, 3, -1, -1, 1, 0, 2, 2, 8, 7, 13, 4, 7, 0, 16, 0,
                -0.1, -0.1, 0.1, 0.1, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
                1, 1, 1, 1, 10, 1000, 100, 100, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0, 0,
-               1, 16, 1000, 10, 20);
+               1, 16, 1000, 10, 20, 0, 0);
     
     res_res <- resource( RESOURCES = res, 
                          LAND      = land, 
@@ -90,5 +90,5 @@ test_that("Resource model doesn't alter parameters", {
     )
     expect_equal(length(res_res), 3);
     expect_equal(dim(res_res[[2]]), c(10, 10, 3));
-    expect_equal(length(res_res[[3]]), 116);
+    expect_equal(length(res_res[[3]]), 118);
 })

@@ -66,6 +66,8 @@
 #'@param usr_budget_rng This specifies a range around the value of `user_budget`, such that the expected value of each user's budget will be `user_budget`, with a uniform distribution plus or minus `usr_budget_rng`. Note that the minimum `usr_budget_rng` allowed is 1 regardless of the range set.
 #'@param action_thres A value for the deviation of the estimated population from the manager target, above which manager will not update the policy.
 #'@param budget_bonus A percentage of the initial budget manager will receive if policy was not updated last time step. Corresponds to the time, energy and money saved by waiting for a better time to update the policy.
+#'@param consume_surv How much from a landscape does an individual resource need to consume in a timestep to survive (default 0)?
+#'@param consume_repr How much from a landscape does an individual resource need to produce one offspring (default 0)?
 #'@return A large list is returned that includes detailed simulation histories for the resource, observation, management, and user models. This list includes eight elements, most of which are themselves complex lists of arrays: (1) A list of length `time_max` in which each element is an array of resources as they exist at the end of each time step. Resource arrays include all resources and their attributes (e.g., locations, growth rates, offspring, how they are affected by stakeholders, etc.). (2) A list of length `time_max` in which each element is an array of resource observations from the observation model. Observation arrays are similar to resource arrays, except that they can have a smaller number of rows if not all resources are observed, and they have additional columns that show the history of each resource being observed over the course of `times_observe` observations in the observation model. (3) A 2D array showing parameter values at each time step (unique rows); most of these values are static but some (e.g., resource number) change over time steps. (4) A list of length `time_max` in which each element is an array of the landscape that identifies proportion of crop production per cell. This allows for looking at where crop production is increased or decreased over time steps as a consequence of resource and stakeholder actions. (5) The total time the simulation took to run (not counting plotting time). (6) A 2D array of agents and their traits. (7) A list of length `time_max` in which each element is a 3D array of the costs of performing each action for managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in costs of particular actions can therefore be be examined over time. (8) A list of length `time_max` in which each element is a 3D array of the actions performed by managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in actions of agents can therefore be examined over time. Because the above lists cannot possibly be interpreted by eye all at once in the simulation output, it is highly recommended that the contents of a simulation be stored and interprted individually if need be; alternativley, simulations can more easily be interpreted through plots when `plotting = TRUE`.
 #'@examples
 #'\dontrun{
@@ -135,7 +137,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   age_repr       = 1,     # Age at which resources can reproduce
                   usr_budget_rng = 0,     # Uniform range of users budgets
                   action_thres   = 0,     # Managers' policy updating threshold
-                  budget_bonus   = 0      # Budget saved by not acting 
+                  budget_bonus   = 0,     # Budget saved by not acting
+                  consume_surv   = 0,     # Required consumption for survival
+                  consume_repr   = 0      # Required consumption to reproduce
 ){
     
     time_max <- time_max + 1; # Add to avoid confusion (see loop below)
@@ -288,6 +292,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     bb  <- budget_bonus;
     arp <- age_repr;
     mnb <- manager_budget;
+    csr <- consume_surv;
+    crp <- consume_repr
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -404,7 +410,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                16,      # 112. Column in agent array where budget is located
                mnb,     # 113. The manager's budget
                10,      # 114. Column in resource array where offspring located
-               20       # 115. Column in resource array where consumed located
+               20,      # 115. Column in resource array where consumed located
+               csr,     # 116. Consumption needed for resource to survive
+               crp      # 117. Consumption needed for resource offspring +1
     );
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
@@ -420,7 +428,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                     tend_crops, tend_crop_yld, kill_crops, stakeholders, 
                     manage_caution, land_ownership, manage_freq, converge_crit, 
                     manager_sense, public_land, group_think, age_repr,
-                    usr_budget_rng, action_thres, budget_bonus); 
+                    usr_budget_rng, action_thres, budget_bonus, consume_surv,
+                    consume_repr); 
     
     paras_errors(input_list);
     

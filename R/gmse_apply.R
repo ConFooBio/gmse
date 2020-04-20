@@ -591,6 +591,18 @@ update_old_gmse <- function(arg_vals, ol, list_add){
             ol[["PARAS"]][111] <- list_add[["budget_bonus"]];
         }
     }
+    if("consume_surv" %in% names_add){
+        ol[["consume_surv"]]     <- list_add[["consume_surv"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][117] <- list_add[["consume_surv"]];
+        }
+    }
+    if("consume_repr" %in% names_add){
+        ol[["consume_repr"]]     <- list_add[["consume_repr"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][118] <- list_add[["consume_repr"]];
+        }
+    }
     return(ol);
 }
 
@@ -670,7 +682,8 @@ pass_paras <- function( old_list = NULL, time_max = 100, land_dim_1 = 100,
                         manage_freq = 1, converge_crit = 1, 
                         manager_sense = 0.1, public_land = 0, 
                         group_think = FALSE, age_repr = 1, usr_budget_rng = 0,
-                        action_thres = 0, budget_bonus = 0, PARAS = NULL, ...
+                        action_thres = 0, budget_bonus = 0, consume_surv = 0,
+                        consume_repr = 0, PARAS = NULL, ...
 ){
     
     if(is.null(PARAS) == FALSE){
@@ -691,7 +704,8 @@ pass_paras <- function( old_list = NULL, time_max = 100, land_dim_1 = 100,
                     tend_crops, tend_crop_yld, kill_crops, stakeholders, 
                     manage_caution, land_ownership, manage_freq, converge_crit, 
                     manager_sense, public_land, group_think, age_repr,
-                    usr_budget_rng, action_thres, budget_bonus); 
+                    usr_budget_rng, action_thres, budget_bonus, consume_surv,
+                    consume_repr); 
 
     paras_errors(input_list);
     
@@ -731,7 +745,8 @@ pass_paras <- function( old_list = NULL, time_max = 100, land_dim_1 = 100,
                user_lnd_opts[2], manage_caution, minimum_cost, user_budget, 
                converge_crit, RESOURCE_ini, lambda, group_think, fixed_recapt, 
                land_ownership, public_land, action_thres, 1, 0, 0, 0,
-               budget_bonus, age_repr, 16, manager_budget, 10, 20
+               budget_bonus, age_repr, 16, manager_budget, 10, 20, consume_surv, 
+               consume_repr
     );
 
     return( list(gmse_user_input = as.vector(input_list), 
@@ -1139,6 +1154,12 @@ paras_errors <- function(input_list){
     }
     if(input_list[60] < 0){
         stop("ERROR: Manager budget bonus cannot be negative");
+    }
+    if(input_list[61] < 0){
+        stop("ERROR: Resource consumption for survival cannot be negative");
+    }
+    if(input_list[62] < 0){
+        stop("ERROR: Resource consumption for reproduction cannot be negative");
     }
 }
 
