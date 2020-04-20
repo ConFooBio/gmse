@@ -731,7 +731,7 @@ pass_paras <- function( old_list = NULL, time_max = 100, land_dim_1 = 100,
                user_lnd_opts[2], manage_caution, minimum_cost, user_budget, 
                converge_crit, RESOURCE_ini, lambda, group_think, fixed_recapt, 
                land_ownership, public_land, action_thres, 1, 0, 0, 0,
-               budget_bonus, age_repr, 16, manager_budget
+               budget_bonus, age_repr, 16, manager_budget, 10
     );
 
     return( list(gmse_user_input = as.vector(input_list), 

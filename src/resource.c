@@ -123,7 +123,7 @@ void res_add(double **res_adding, double *paras){
  * ========================================================================== */
 void res_place(double **make, double **old, double *paras, int res_added){
                
-    int old_number, traits, realised, age;
+    int old_number, traits, realised, age, off_col;
     int resource, newbie, trait, to_make, to_add, last_old;
     double res_index;
     
@@ -131,6 +131,7 @@ void res_place(double **make, double **old, double *paras, int res_added){
     old_number = (int) paras[32];
     realised   = (int) paras[38];
     traits     = (int) paras[41];
+    off_col    = (int) paras[114];
     
     to_make   = 0;
     to_add    = 0; /* Maybe try to cut down the loops here later? */
@@ -143,8 +144,8 @@ void res_place(double **make, double **old, double *paras, int res_added){
             for(trait = 1; trait < traits; trait++){
                 make[newbie][trait] = old[resource][trait];
             }
-            make[newbie][age] = 0; /* A bit inefficient given loop above */
-            make[newbie][10]  = 0; /* Get rid of hard code (offspring = 0) */
+            make[newbie][age]     = 0; /* A bit inefficient given loop above */
+            make[newbie][off_col] = 0;
             res_index++;
         }
         to_make = to_add;
