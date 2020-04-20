@@ -63,7 +63,7 @@ test_that("Dimensions of observation arrays in returned list are correct", {
                          res_move_obs   = paras[20]
     );
     
-    expect_equal(dim(obs[[1]]), c(100, 41));
+    expect_equal(dim(obs[[1]]), c(100, 43));
     expect_equal(dim(obs[[2]]), c(2, 17));
     expect_equal(length(obs[[3]]), 115);
 })
@@ -131,7 +131,7 @@ test_that("Observation model updates new parameters", {
     
     expect_equal(sum(obs[[3]][1:61] - paras[1:61]), 0);
     expect_equal(obs[[3]][62] - paras[62], 101);
-    expect_equal(obs[[3]][63] - paras[63], 42);
+    expect_equal(obs[[3]][63] - paras[63], 44);
     expect_equal(sum(obs[[3]][64:102] - paras[64:102]), 0);
 })
 

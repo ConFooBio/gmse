@@ -63,7 +63,7 @@ gmse_apply <- function(res_mod  = resource,
                                       vec_name = "resource_vector", 
                                       mat_name = "resource_array");
     arg_vals    <- add_results(arg_list = arg_vals, output = res_results);
-    arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = res_mod);
+    arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = res_mod);     
     arg_vals    <- translate_results(arg_list = arg_vals, output = res_results);
     arg_vals    <- update_para_vec(arg_list   = arg_vals);
     check_extinction(arg_vals);
@@ -71,19 +71,19 @@ gmse_apply <- function(res_mod  = resource,
     # ------ OBSERVATION MODEL -------------------------------------------------
     obs_args <- prep_obs(arg_list = arg_vals, obs_mod = obs_mod);
     check_args(arg_list = obs_args, the_fun = obs_mod);
-    obs_results <- do.call(what = obs_mod, args = obs_args);
+    obs_results <- do.call(what = obs_mod, args = obs_args);                    
     obs_results <- check_name_results(output   = obs_results,
                                       vec_name = "observation_vector", 
                                       mat_name = "observation_array");
     arg_vals    <- add_results(arg_list = arg_vals, output = obs_results);
-    arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = obs_mod);
+    arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = obs_mod);     
     arg_vals    <- translate_results(arg_list = arg_vals, output = obs_results);
     arg_vals    <- update_para_vec(arg_list   = arg_vals);
 
     # ------ MANAGER MODEL -----------------------------------------------------
     man_args    <- prep_man(arg_list = arg_vals, man_mod = man_mod);
     check_args(arg_list = man_args, the_fun = man_mod);
-    man_results <- do.call(what = man_mod, args = man_args);
+    man_results <- do.call(what = man_mod, args = man_args);                    
     man_results <- check_name_results(output   = man_results, 
                                       vec_name = "manager_vector", 
                                       mat_name = "manager_array");
@@ -707,7 +707,7 @@ pass_paras <- function( old_list = NULL, time_max = 100, land_dim_1 = 100,
     user_res_opts  <- c(scaring, culling, castration, feeding, help_offspring);
     user_lnd_opts  <- c(tend_crops, kill_crops);
     
-    ttr <- 20;
+    ttr <- 22;
     agn <- stakeholders + 1;
     agt <- 17;
     lkr <- 2;

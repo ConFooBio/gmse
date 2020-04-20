@@ -59,9 +59,12 @@ make_resource <- function(model              = "IBM",
         adj_k    <- rep(x = 0, times = resource_quantity);
         adj_gr   <- rep(x = 0, times = resource_quantity);
         adj_h    <- rep(x = 0, times = resource_quantity);
+        consumed <- rep(x = 0, times = resource_quantity);
+        ext_col  <- rep(x = 0, times = resource_quantity);
         the_resource <- cbind(IDs, type1, type2, type3, xloc, yloc, mover, time,
                               remov_pr, growth, offspr, age, mark, tally,
-                              consume, adj_mv, adj_c, adj_k, adj_gr, adj_h);
+                              consume, adj_mv, adj_c, adj_k, adj_gr, adj_h,
+                              consumed, ext_col);
     }
     if( is.null(the_resource) ){
         stop("Invalid model selected (Must be 'IBM')");

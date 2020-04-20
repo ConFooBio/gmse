@@ -351,7 +351,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                13,      # 59. The tally column of the resource array
                lkr,     # 60. The number of rows in the lookup array
                rsi,     # 61. The number of rows in the observation array
-               ttr+tmo, # 62. The number of cols int he observation array
+               ttr+tmo, # 62. The number of cols in the observation array
                1,       # 63. The ID of the managing agent (usually 1)
                0,       # 64. The layer of ACTION and COST where manager located
                lyr,     # 65. The number of layers in ACTION and COST arrays
@@ -565,7 +565,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                      "Adjust_growth",
                      "Adjust_grown",
                      "temp_adj1",
-                     "temp_adj2"
+                     "temp_adj2",
+                     "Consumption",
+                     "Extra_col"
     );
     colnames(RESOURCES)    <- res_columns;
     
