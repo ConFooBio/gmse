@@ -327,8 +327,17 @@ void resource_over_death_K(int res_num_total, double *paras){
 void resource_feeding(double **resource_array, double ***landscape,
                       double *paras, int resource_number){
     
+    int resource;
+    int *fed;
+    
+    fed = malloc(resource_number * sizeof(int *));
+    for(resource = 0; resource < resource_number; resource++){
+        fed[resource] = resource_array[resource][2];
+    }
+    
 }
  */
+
 
 /* =============================================================================
  * MAIN RESOURCE FUNCTION:
