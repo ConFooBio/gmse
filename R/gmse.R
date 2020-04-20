@@ -141,7 +141,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   budget_bonus   = 0,     # Budget saved by not acting
                   consume_surv   = 0,     # Required consumption for survival
                   consume_repr   = 0,     # Required consumption to reproduce
-                  times_feeding  = 0      # Number of searches to feed on land
+                  times_feeding  = 1      # Number of searches to feed on land
 ){
     
     time_max <- time_max + 1; # Add to avoid confusion (see loop below)

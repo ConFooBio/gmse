@@ -161,29 +161,31 @@ void res_place(double **make, double **old, double *paras, int res_added){
  * ========================================================================== */
 void res_remove(double **res_removing, double *paras){
 
-    int resource_number, rm_row, type, K, rm_adj, max_age, age_col;
+    int resource_number, rm_col, type, K, rm_adj, max_age, age_col, cons_col;
     int resource, over_K;
-    double rand_unif, rm_from_K, rm_from_Ind, base_rm, adj_rm, rm_odds;
+    double rand_unif, rm_from_K, rm_from_Ind, base_rm, adj_rm, rm_odds, csr;
 
     type            = (int) paras[4];
     K               = (int) paras[6]; /* Carrying capacity on removal/death */
     max_age         = (int) paras[29];
     age_col         = (int) paras[31];
     resource_number = (int) paras[32];
-    rm_adj          = (int) paras[42]; /* col in res_adding adjusting removal */
-    rm_row          = (int) paras[43];
+    rm_adj          = (int) paras[42]; /* col in res_removing adjust removal */
+    rm_col          = (int) paras[43];
+    cons_col        = (int) paras[115]; /* col in res_removing of consumption */
+    csr             = paras[116]; /* Consumption required for survival */
     
     switch(type){
         case 0: /* No removal */
             break;
         case 1:
             for(resource = 0; resource < resource_number; resource++){
-                base_rm   = res_removing[resource][rm_row];
+                base_rm   = res_removing[resource][rm_col];
                 adj_rm    = res_removing[resource][rm_adj];
                 rm_odds   = base_rm + adj_rm;
                 rand_unif = runif(0, 1);
                 if(rand_unif < rm_odds){
-                    res_removing[resource][rm_row] = -1;   
+                    res_removing[resource][rm_col] = -1;   
                 }
             }
             break;
@@ -194,7 +196,7 @@ void res_remove(double **res_removing, double *paras){
                 for(resource = 0; resource < resource_number; resource++){
                     rand_unif   = runif(0, 1);
                     if(rand_unif < rm_from_K){
-                        res_removing[resource][rm_row] = -1;   
+                        res_removing[resource][rm_col] = -1;   
                     }
                 }
             }
@@ -202,16 +204,16 @@ void res_remove(double **res_removing, double *paras){
                 rm_from_Ind = res_removing[resource][rm_adj];
                 rand_unif   = runif(0, 1);
                 if(rand_unif < rm_from_Ind){
-                    res_removing[resource][rm_row] = -1;   
+                    res_removing[resource][rm_col] = -1;   
                 }
             }
             break;
         case 3:
             for(resource = 0; resource < resource_number; resource++){
-                rm_odds   = res_removing[resource][rm_row];
+                rm_odds   = res_removing[resource][rm_col];
                 rand_unif = runif(0, 1);
                 if(rand_unif < rm_odds){
-                    res_removing[resource][rm_row] = -1;   
+                    res_removing[resource][rm_col] = -1;   
                 }
             }
             over_K  = resource_number - K;
@@ -220,7 +222,7 @@ void res_remove(double **res_removing, double *paras){
                 for(resource = 0; resource < resource_number; resource++){
                     rand_unif   = runif(0, 1);
                     if(rand_unif < rm_from_K){
-                        res_removing[resource][rm_row] = -1;   
+                        res_removing[resource][rm_col] = -1;   
                     }
                 }
             }
@@ -228,7 +230,7 @@ void res_remove(double **res_removing, double *paras){
                 rm_from_Ind = res_removing[resource][rm_adj];
                 rand_unif   = runif(0, 1);
                 if(rand_unif < rm_from_Ind){
-                    res_removing[resource][rm_row] = -1;   
+                    res_removing[resource][rm_col] = -1;   
                 }
             }
             break;
@@ -239,7 +241,7 @@ void res_remove(double **res_removing, double *paras){
                 for(resource = 0; resource < resource_number; resource++){
                     rand_unif   = runif(0, 1);
                     if(rand_unif < rm_from_K){
-                        res_removing[resource][rm_row] = -1;   
+                        res_removing[resource][rm_col] = -1;   
                     }
                 }
             }
@@ -247,14 +249,17 @@ void res_remove(double **res_removing, double *paras){
                 rm_from_Ind = res_removing[resource][rm_adj];
                 rand_unif   = runif(0, 1);
                 if(rand_unif < rm_from_Ind){
-                   res_removing[resource][rm_row] = -1;   
+                   res_removing[resource][rm_col] = -1;   
                 }
             }
             break;
     }
     for(resource = 0; resource < resource_number; resource++){
         if(res_removing[resource][age_col] > max_age){
-            res_removing[resource][rm_row] = -1;
+            res_removing[resource][rm_col] = -1;
+        }
+        if(res_removing[resource][cons_col] < csr){
+            res_removing[resource][rm_col] = -1;
         }
     }
 }
@@ -334,6 +339,7 @@ void resource_feeds(double **resource_array, double ***landscape, double *paras,
     y_col             = (int) paras[34];
     resource_effect   = (int) paras[47];
     landscape_layer   = (int) paras[48];
+    cons_col          = (int) paras[115]; /* col in res_removing of consump */
     
     x_pos    = (int) resource_array[resource][x_col];
     y_pos    = (int) resource_array[resource][y_col];
@@ -415,10 +421,10 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     int vec_pos;             /* Vector position for making arrays */
     int off_col;             /* The column where the offspring are held */
     int rm_col;              /* Column where removal is indiciated */
-    int csr, crp;            /* Consumption requirements, survival and repr */
     int len_PARAMETERS;      /* Length of the parameters vector */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
+    double csr, crp;         /* Consumption requirements, survival and repr */
     double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
     double *R_ptr_new;       /* Pointer to RESOURCE_NEW (interface R and C) */
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
@@ -505,8 +511,8 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     
     off_col   = (int) paras[38];
     rm_col    = (int) paras[43];
-    csr       = (int) paras[116]; /* Consumption required for survival */
-    crp       = (int) paras[117]; /* Consumption needed for one offspring */
+    csr       = paras[116]; /* Consumption required for survival */
+    crp       = paras[117]; /* Consumption needed for one offspring */
     
     /* Resource time step and age needs to be increased by one */
     add_time(res_old, paras);
@@ -561,6 +567,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
             res_new[resource_new][17] = 0;
             res_new[resource_new][18] = 0;
             res_new[resource_new][19] = 0;
+            res_new[resource_new][20] = 0;
             resource_new++; /* Move on to the next new resource */
         }
     }
@@ -573,6 +580,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
         res_new[resource_new][17] = 0;
         res_new[resource_new][18] = 0;
         res_new[resource_new][19] = 0;
+        res_new[resource_new][20] = 0;
         resource_new++;
     }
     
