@@ -31,8 +31,9 @@ void add_time(double **res_adding, double *paras){
 void res_add(double **res_adding, double *paras){
     
     int resource_number, add, realised, type, K_add, gadj, oadj, cadj, ind_age;
+    int land_add, ccl;
     int resource, sampled, added, loops, castrated, killed, klld, arp, age;
-    double rand_pois, base_lambda, add_lambda, lambda;
+    double rand_pois, base_lambda, add_lambda, lambda, crp;
     
     type            = (int) paras[3];  /* Type of growth (e.g., poisson) */
     K_add           = (int) paras[5];  /* Carrying capacity applied  */
@@ -45,6 +46,8 @@ void res_add(double **res_adding, double *paras){
     klld            = (int) paras[42]; /* Adjustment to kill */
     cadj            = (int) paras[73]; /* Adjust to castrate */
     arp             = (int) paras[111]; /* Minimum age of reproduction */
+    ccl             = (int) paras[115]; /* Column for holding consumption */
+    crp             = paras[117]; /* Consumption required for one offspring */
 
     added = 0; 
     switch(type){
@@ -96,6 +99,13 @@ void res_add(double **res_adding, double *paras){
                added += (int) rand_pois;
             }
             break;
+    }
+    for(resource = 0; resource < resource_number; resource++){
+        if(crp > 0){
+            land_add = floor(res_adding[resource][ccl] / crp);
+            res_adding[resource][realised] += (int) land_add;
+            added                          += (int) land_add;
+        }
     }
     if(K_add > 0){ /* If there is a carrying capacity applied to adding */
         loops = 1000000000;
