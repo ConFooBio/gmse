@@ -509,3 +509,17 @@ test_that("Combination model 14", {
     expect_equal(dim(comb_14[["user_results"]]), c(5, 8));
 })
 
+test_that("Landscape resource regulation", {
+    skip_on_cran();
+    
+    sim <- gmse_apply(res_birth_type = 0, res_death_type = 1, 
+                      consume_surv = 0.5, consume_repr = 0.5, land_dim_1 = 2, 
+                      land_dim_2 = 2, time_max = 8, user_budget = 1, 
+                      res_consume = 1, RESOURCE_ini = 15);
+    
+    reg_pop <- sim[["resource_results"]] < 50;
+    no_act  <- max(sim[["user_results"]][,3]);
+    
+    expect_equal(reg_pop, TRUE);
+    expect_equal(no_act, 0);
+})

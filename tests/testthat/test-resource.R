@@ -92,3 +92,19 @@ test_that("Resource model doesn't alter parameters", {
     expect_equal(dim(res_res[[2]]), c(10, 10, 3));
     expect_equal(length(res_res[[3]]), 119);
 })
+
+
+test_that("Landscape feeding limits growth", {
+    skip_on_cran();
+    
+    sim <- gmse(res_birth_type = 0, res_death_type = 1, consume_surv = 0.5, 
+                consume_repr = 0.5, land_dim_1 = 3, land_dim_2 = 2, 
+                time_max = 10, user_budget = 1, res_consume = 1, 
+                RESOURCE_ini = 30, plotting = FALSE); 
+    
+    stb <- gmse_table(sim);
+    
+    mxe <- max(stb[, 2]) < 50;
+    
+    expect_equal(mxe, TRUE);
+})
