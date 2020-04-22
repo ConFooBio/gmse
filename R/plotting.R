@@ -160,10 +160,13 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, COST,
             max_cost <- gen_max_cost;
         }
     }
-    
-    minK <- min(paras[6:7]);
-    
-    ymaxi    <- minK + (minK * (1 + res[[1]][1,10])); # Add for birth rate
+    if(paras[5] > 1){
+        minK  <- min(paras[6:7]);
+        ymaxi <- minK + (minK * (1 + res[[1]][1,10])); # Add for birth rate
+    }else{
+        minK  <- max(unlist(lapply(X = res, FUN = dim)));
+        ymaxi <- minK + 0.1 * minK;
+    }
     time_max <- length(res);
     for(i in 1:(time_max-1)){
         res_t    <- res[[i]];
@@ -184,7 +187,7 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, COST,
         # ------------- Panel 2 (upper right)
         col_num <- max(land3);
         image(land3, col=topo.colors(col_num), xaxt="n", yaxt="n");    
-        # ------------- Panel 3 (lower left)
+        # ------------- Panel 3 (middle left)
         par(mar=c(4,4,1,4));
         plot(x=gens, y=abun, pch=20, type="l", lwd=2, ylim=c(0, ymaxi),
              xlim=c(0,time_max), xlab="Time Step", ylab="Abundance",
@@ -192,7 +195,9 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, COST,
         new_est   <- sum(obs_t[,13]);
         est       <- c(est, new_est);
         points(x=gens, y=est, pch=20, type="l", lwd=2, col="cyan4");
-        abline(h=paras[7], col="red", lwd=0.8, lty="dashed");
+        if(paras[5] > 1){
+            abline(h=paras[7], col="red", lwd=0.8, lty="dashed");
+        }    
         abline(h=ACTION[[1]][1,5,1], col=topo.colors(1), lwd=0.8, lty="dashed");
         if (paras[106] > 0) {
           abline(h=ACTION[[1]][1,5,1]*(1+paras[106]), col="darkgreen", lwd=0.8, 
@@ -371,10 +376,13 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
             max_cost <- gen_max_cost;
         }
     }
-    
-    minK <- min(paras[6:7]);
-    
-    ymaxi    <- minK + (minK * (1 + res[[1]][1,10])); # Add for birth rate
+    if(paras[5] > 1){
+      minK  <- min(paras[6:7]);
+      ymaxi <- minK + (minK * (1 + res[[1]][1,10])); # Add for birth rate
+    }else{
+      minK  <- max(unlist(lapply(X = res, FUN = dim)));
+      ymaxi <- minK + 0.1 * minK;
+    }
     time_max <- length(res);
     for(i in 1:(time_max-1)){
         res_t    <- res[[i]];
@@ -420,7 +428,9 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
         polygon(y=c(lci,rev(uci)),x=c(gens,rev(gens)), border=NA,
                 col="lightblue");
         points(x=gens, y=est, pch=20, type="l", lwd=2, col="cyan4");
-        abline(h=paras[7], col="red", lwd=0.8, lty="dashed");
+        if(paras[5] > 1){
+          abline(h=paras[7], col="red", lwd=0.8, lty="dashed");
+        }    
         abline(h=ACTION[[1]][1,5,1], col=topo.colors(1), lwd=0.8, lty="dashed");
         if (paras[106] > 0) {
           abline(h=ACTION[[1]][1,5,1]*(1+paras[106]), col="darkgreen", lwd=0.8, 
@@ -682,13 +692,15 @@ plot_gmse_results <- function(sim_results){
         points(x = gens, y = est[-time_max], pch = 20, type = "l", lwd = 2, 
                col = "cyan4");
     }
-    abline(h = para_vec[7], col = "red", lwd = 0.8, lty = "dashed");
+    if(para_vec[5] > 1){
+        abline(h = para_vec[7], col = "red", lwd = 0.8, lty = "dashed");
+    }
     abline(h = ACTION[[1]][1,5,1], col = topo.colors(1), lwd = 0.8, 
            lty = "dashed");
-    if (paras[106] > 0) {
-      abline(h=ACTION[[1]][1,5,1]*(1+paras[106]), col="darkgreen", lwd=0.8, 
+    if (para_vec[106] > 0) {
+      abline(h=ACTION[[1]][1,5,1]*(1+para_vec[106]), col="darkgreen", lwd=0.8, 
              lty="dashed");    # can be improved, from the arguments?
-      abline(h=ACTION[[1]][1,5,1]*(1-paras[106]), col="darkgreen", lwd=0.8, 
+      abline(h=ACTION[[1]][1,5,1]*(1-para_vec[106]), col="darkgreen", lwd=0.8, 
              lty="dashed");
     }
     points(x = gens, y = abun, pch = 20, type = "l", lwd = 3, col = "black");
