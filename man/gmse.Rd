@@ -67,7 +67,7 @@ gmse(
   budget_bonus = 0,
   consume_surv = 0,
   consume_repr = 0,
-  times_feeding = 0
+  times_feeding = 1
 )
 }
 \arguments{
