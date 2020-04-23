@@ -4,9 +4,17 @@
 \alias{user}
 \title{User model}
 \usage{
-user(RESOURCES = NULL, AGENTS = NULL, LAND = NULL, PARAS = NULL,
-  COST = NULL, ACTION = NULL, INTERACT = NULL, inter_tabl = NULL,
-  model = "IBM")
+user(
+  RESOURCES = NULL,
+  AGENTS = NULL,
+  LAND = NULL,
+  PARAS = NULL,
+  COST = NULL,
+  ACTION = NULL,
+  INTERACT = NULL,
+  inter_tabl = NULL,
+  model = "IBM"
+)
 }
 \arguments{
 \item{RESOURCES}{The resources array produced by the resource function within GMSE}

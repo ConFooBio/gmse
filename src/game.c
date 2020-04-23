@@ -91,7 +91,7 @@ void initialise_pop(double ***ACTION, double ***COST, double *paras, int layer,
             }while(COST[xpos][ypos][layer] > budget_count);
             population[xpos][ypos][agent]++;
             budget_count -= COST[xpos][ypos][layer]; 
-        } /* Should now make random actions allowed by budget */
+        } 
     }
 }
 
@@ -267,11 +267,11 @@ void res_to_counts(double ***population, int **interact_table, double *paras,
     lambda  = paras[100];
     
     foc_effect  = 0.0;
-    foc_effect -= population[row][7][agent];  /* Times birth account for repr?*/
+    foc_effect -= population[row][7][agent];  
     foc_effect -= population[row][8][agent];
     foc_effect -= population[row][9][agent]  * lambda;
     foc_effect += population[row][10][agent] * lambda;
-    foc_effect += population[row][11][agent]; /* But should affect offspring? */
+    foc_effect += population[row][11][agent]; 
     interest_row = 0;
     while(interest_row < int_num){
         if(interact_table[interest_row][0] == 0                         &&
@@ -318,7 +318,7 @@ void land_to_counts(double ***population, int **interact_table, double *paras,
         foc_effect = -1;
     }
     interest_row = 0;
-    while(interest_row < int_num){ /* THIS LOOP IS THE PROBLEM */
+    while(interest_row < int_num){ 
         if(interact_table[interest_row][0] == 1){
             break;
         }else{
@@ -503,11 +503,7 @@ void policy_to_counts(double ***population, double **merged_acts, int agent,
         new_act  = new_action(old_cost, new_cost, old_act);
         
         act_change[action_row][col] = new_act;
-        /*
-        if(col == 8 && action_row == 0){
-            printf("%d\t%f\t%f\t%f\t%f\t%f\n", gen, old_cost, new_cost, old_act, new_act, act_change[0][8]);       
-        }
-         */
+
     }
 }
 
@@ -564,22 +560,12 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
     for(i = 0; i < ROWS; i++){ /* Actions > 0 to respond to possible change */
         for(j = 7; j < COLS; j++){
             merged_acts[i][j] += paras[95];
-            /* printf("%f\t",merged_costs[i][j]);*/
         }
-        /* printf("\n"); */
     }
-/*
-    printf("\n");
-  */      
+
     max_dev = 0;
     for(agent = 0; agent < pop_size; agent++){
         for(action_row = 0; action_row < int_num; action_row++){
-            
-            
-            
-            
-            
-            
             count_change[action_row] = 0; 
             utils[action_row]        = 0; 
             manager_row              = 0;
@@ -605,17 +591,6 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
                 count_change[i] += foc_effect * jaco[action_row][i];
             }
             utils[action_row] = ACTION[manager_row][4][m_lyr];
-        
-        
-        /*
-            if(action_row == 0){
-                printf("%d\t%d\t%f\t%f\t%f\t%f\t%f\t", gen, agent, utils[0],
-                       act_change[0][8], foc_effect,
-                       count_change[0], jaco[0][0]);
-            }
-          */  
-            
-            
         }
         change_dev = 0;
         for(i = 0; i < int_num; i++){
@@ -625,8 +600,6 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
             max_dev = change_dev;
         }
         dev_from_util[agent] = change_dev;
-        
-        
     }
     for(agent = 0; agent < pop_size; agent++){
         fitnesses[agent] = max_dev - dev_from_util[agent];
@@ -863,7 +836,6 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
             apply_min_costs(POPULATION, paras, agentID);
             manager_fitness(fitnesses, POPULATION, JACOBIAN, AGENT, lookup, 
                             agentID, COST, ACTION, paras, gen);
-            /*      printf("%d\t%f\t%f\n", gen, POPULATION[2][4][0], POPULATION[2][8][0]);   */
         }else{
             strategy_fitness(AGENT, POPULATION, paras, fitnesses, JACOBIAN, 
                              lookup); 

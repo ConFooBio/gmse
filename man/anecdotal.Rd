@@ -4,9 +4,18 @@
 \alias{anecdotal}
 \title{Anecdotal model}
 \usage{
-anecdotal(RESOURCES = NULL, LAND = NULL, PARAS = NULL,
-  AGENTS = NULL, res_type = 1, samp_age = 1, agent_type = 0,
-  type_cat = 1, move_agents = FALSE, model = "IBM")
+anecdotal(
+  RESOURCES = NULL,
+  LAND = NULL,
+  PARAS = NULL,
+  AGENTS = NULL,
+  res_type = 1,
+  samp_age = 1,
+  agent_type = 0,
+  type_cat = 1,
+  move_agents = FALSE,
+  model = "IBM"
+)
 }
 \arguments{
 \item{RESOURCES}{The resources array produced by the resource function within GMSE}

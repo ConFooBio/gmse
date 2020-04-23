@@ -300,6 +300,8 @@ void update_marg_util(double ***actions, double *abun_est, double *temp_util,
  * This function uses the observation array to estimate resource abundances
  *      COST:        An array of the cost of actions for each agent
  *      ACTION:      An array of the action of agents
+ *      paras:       A vector of parameters needed 
+ *      agent_array: Agent array, including managers (agent type 0)
  * ========================================================================== */
 void set_action_costs(double ***ACTION, double ***COST, double *paras, 
                       double **agent_array){
@@ -352,6 +354,66 @@ void set_action_costs(double ***ACTION, double ***COST, double *paras,
     }
 }
 
+/* =============================================================================
+ * This determines whether action threshold conditions are met (Adrian Bach)
+ *      ACTION:      An array of the action of agents
+ *      paras:       A vector of parameters needed 
+ * ========================================================================== */
+void check_action_threshold(double ***ACTION, double *paras){
+    
+    int m_lyr, act_row, targ_row, over_threshold, t_s;
+    double res_abund, target, dev, a_t;
+    
+    m_lyr     = 0; /* Layer of the manager */ 
+    act_row   = 0; /* Row where the actions are */
+    targ_row  = 4; /* column where the target is located */
+    res_abund = paras[99]; /* Est. of res type 1 from the observation model */
+    a_t       = paras[105]; /* Dev est pop from manager target trigger */
+    t_s       = (int) paras[0]; /* What is the current time step? */
+    
+    target = ACTION[act_row][targ_row][m_lyr]; /* Manager's target */
+
+    dev    = (res_abund / target) - 1; /* Deviation from manager's target */
+    if(dev < 0){ /* Get the absolute value */
+        dev = -1 * dev;
+    }
+    /* If the population deviation has hit the threshold, and time step */
+    if(dev >= a_t || t_s < 3){ 
+        paras[106]  = 1; /* Policy is going to be updated now */
+        paras[107]  = 0; /* Zero time steps since last policy update */
+    }else{
+        paras[106]  = 0; /* Policy is not going to be updated now */
+        paras[107] += 1; /* One more time step since the last policy update */
+    }
+}
+
+/* =============================================================================
+ * This applies the budget bonus for managers as appropriate (Adrian Bach)
+ *      agent_array: Agent array, including managers (agent type 0)
+ *      paras:       A vector of parameters needed 
+ * ========================================================================== */
+void apply_budget_bonus(double **agent_array, double *paras){
+    
+    int budget_col, recent_update;
+    double a_t, manager_budget, the_bonus, new_budget, budget_bonus;
+    
+    a_t            = (double) paras[105]; /* Dev est pop target trigger */
+    recent_update  = (int) paras[106];    /* Policy recently updated */
+    budget_bonus   = (double) paras[110]; /* The budget bonus */
+    budget_col     = (int) paras[112];    /* Column where budget is recorded */
+    manager_budget = (double) paras[113];
+    
+    new_budget = manager_budget;
+    if(a_t > 0){ /* If the action threshold is being used */
+        if(recent_update == 0){
+            the_bonus  = manager_budget * budget_bonus;
+            new_budget = agent_array[0][budget_col] + the_bonus;
+        }
+        if(new_budget < 100000.00){
+            agent_array[0][budget_col] = new_budget;
+        }
+    }
+}
 
 /* =============================================================================
  * MAIN OBSERVATION FUNCTION:
@@ -400,6 +462,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     int protected_n;         /* Number of protected R objects */
     int vec_pos;             /* Vector position for making arrays */
     int len_PARAMETERS;      /* Length of the parameters vector */
+    int update_policy;       /* If managers act */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
@@ -644,13 +707,19 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     temp_util = malloc(int_d0 * sizeof(double));
     marg_util = malloc(int_d0 * sizeof(double));
     
+    apply_budget_bonus(agent_array, paras); 
+    
     if(paras[8] >= 0){ /* If less than zero, the above already in actions */
         estimate_abundances(obs_array, paras, lookup, agent_array, abun_est);
         update_marg_util(actions, abun_est, temp_util, marg_util, int_d0, a_x);
     }
-    
-    ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
-       lookup, paras, 0, 1);
+    check_action_threshold(actions, paras); /* Check whether to act */
+    update_policy = paras[106];             /* Will managers act? */
+
+    if(update_policy > 0){
+      ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
+         lookup, paras, 0, 1);
+    }
     
     set_action_costs(actions, costs, paras, agent_array);
     

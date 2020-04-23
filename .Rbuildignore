@@ -4,6 +4,7 @@ notebook*
 tests/testthat/test-make_gmse.R
 R/gmse_gui/app.R
 R/gmse_gui/rsconnect*
+R/scratch.R
 cran-comments.md
 docs/*
 _pkgdown.yml

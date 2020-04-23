@@ -15,7 +15,7 @@ test_that("Dimensions of gmse_summary resource output are correct", {
     gmse_sim <- gmse(time_max = 3, plotting = FALSE);
     gmse_sum <- gmse_summary(gmse_sim);
     gmse_tab <- gmse_table(gmse_sim);
-    expect_equal(dim(gmse_sum$resources), c(3,2));
+    expect_equal(dim(gmse_sum[["resources"]]), c(3,2));
 })
 
 test_that("Dimensions of simulation observation output are correct", {
@@ -23,7 +23,7 @@ test_that("Dimensions of simulation observation output are correct", {
     gmse_sim <- gmse(time_max = 3, plotting = FALSE);
     gmse_sum <- gmse_summary(gmse_sim);
     gmse_tab <- gmse_table(gmse_sim);
-    expect_equal(dim(gmse_sum$observations), c(3,2));
+    expect_equal(dim(gmse_sum[["observations"]]), c(3,2));
 })
 
 test_that("Dimensions of simulation cost output are correct", {
@@ -31,7 +31,7 @@ test_that("Dimensions of simulation cost output are correct", {
     gmse_sim <- gmse(time_max = 3, plotting = FALSE);
     gmse_sum <- gmse_summary(gmse_sim);
     gmse_tab <- gmse_table(gmse_sim);
-    expect_equal(dim(gmse_sum$costs), c(3,10));
+    expect_equal(dim(gmse_sum[["costs"]]), c(3,10));
 })
 
 test_that("Dimensions of simulation action output are correct", {
@@ -39,7 +39,7 @@ test_that("Dimensions of simulation action output are correct", {
     gmse_sim <- gmse(time_max = 3, plotting = FALSE);
     gmse_sum <- gmse_summary(gmse_sim);
     gmse_tab <- gmse_table(gmse_sim);
-    expect_equal(dim(gmse_sum$actions), c(12,13));
+    expect_equal(dim(gmse_sum[["actions"]]), c(12,13));
 })
 
 test_that("Dimensions of gmse_tab output are correct", {

@@ -4,7 +4,9 @@
 \name{ssb.n}
 \alias{ssb.n}
 \title{R data for spawning stock biomass used in SI4 vignette}
-\format{a set of \code{gmse_apply} output examples}
+\format{
+a set of \code{gmse_apply} output examples
+}
 \usage{
 ssb.n
 }

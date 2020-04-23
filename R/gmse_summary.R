@@ -10,7 +10,7 @@
 #'}
 #'@export
 gmse_summary <- function(gmse_results){
-    time_steps <- length(gmse_results$resource);
+    time_steps <- length(gmse_results$action);
     parameters <- gmse_results$paras[1,];
     #--- First get the resource abundances
     res_types    <- unique(gmse_results$resource[[1]][,2]);
@@ -86,6 +86,9 @@ gmse_summary <- function(gmse_results){
                 actions[a_row, 1] <- i;
                 actions[a_row, 2] <- users[k];
                 actions[a_row, 3] <- res_types[j];
+                if(sum(usr_acts[,1] == -2) < 1){
+                  break;
+                }
                 res_row <- which(usr_acts[,1] == -2 & 
                                      usr_acts[,2] == res_types[j]);
                 if(parameters[89] == TRUE){
@@ -161,7 +164,7 @@ gmse_summary <- function(gmse_results){
 #'@export
 gmse_table <- function(gmse_sim, hide_unused_options = TRUE, all_time = TRUE){
     
-    time_steps <- 1:max(gmse_sim$paras[,1]);
+    time_steps <- 1:length(gmse_sim$action); #max(gmse_sim$paras[,1]);
     t_max      <- length(time_steps);
     sim        <- gmse_summary(gmse_sim);
     res_rows   <- sim$resources;
