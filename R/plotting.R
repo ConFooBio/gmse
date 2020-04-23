@@ -623,7 +623,7 @@ plot_gmse_results <- function(sim_results){
     }
     
     ymaxi <- max(paras[,33]) + (0.1 * (max(paras[,33])));
-    if(ymaxi < para_vec[7]){
+    if(ymaxi < para_vec[7] & para_vec[117] == 0 & para_vec[118] == 0){
         ymaxi <- para_vec[7] + (0.1 * para_vec[7]);
     }
     

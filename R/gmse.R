@@ -207,10 +207,13 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                              move         = agent_move
     ); 
     
-    Jacobian <- make_interaction_array(RESOURCES = starting_resources,
-                                       LAND      = LANDSCAPE_r
+    Jacobian <- make_interaction_array(RESOURCES     = starting_resources,
+                                       LAND          = LANDSCAPE_r,
+                                       res_consume   = res_consume,
+                                       consume_surv  = consume_surv,
+                                       consume_repr  = consume_repr,
+                                       times_feeding = times_feeding
     );
-    Jacobian[1,2] <- -1 * res_consume; # Temporary to fix consumption rate
     
     interaction_tabl <- make_interaction_table(starting_resources, LANDSCAPE_r);
     
@@ -646,7 +649,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                        paras  = paras);
         }
     }
-
+    
     return(sim_results);
 }
 ################################################################################

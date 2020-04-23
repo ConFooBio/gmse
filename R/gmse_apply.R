@@ -1753,7 +1753,42 @@ collect_itb_ini <- function(arg_list){
         dlndarg            <- collect_land_ini(arg_list);
         make_itb_list[[2]] <- do.call(what = make_landscape, args = dlndarg);
     }
-    
+    return(make_itb_list);
+}
+
+collect_ita_ini <- function(arg_list){
+    make_itb_list <- list();
+    arg_names     <- names(arg_list);
+    def_forms     <- formals(gmse);
+    def_names     <- names(def_forms);
+    make_itb_list[[1]] <- NA;
+    if("resource_array" %in% arg_names == TRUE){
+        make_itb_list[[1]] <- arg_list[["resource_array"]];
+    }
+    if(is.na(make_itb_list[[1]][1]) == TRUE){
+        dresarg            <- collect_res_ini(arg_list);
+        make_itb_list[[1]] <- do.call(what = make_resource, args = dresarg);
+    }
+    make_itb_list[[2]] <- NA;
+    if("LAND" %in% arg_names == TRUE){
+        make_itb_list[[2]] <- arg_list[["LAND"]];
+    }
+    if(is.na(make_itb_list[[2]][1]) == TRUE){
+        dlndarg            <- collect_land_ini(arg_list);
+        make_itb_list[[2]] <- do.call(what = make_landscape, args = dlndarg);
+    }
+    if("res_consume" %in% arg_names == TRUE){
+        make_itb_list[[3]] <- arg_list[["res_consume"]];
+    }
+    if("consume_surv" %in% arg_names == TRUE){
+        make_itb_list[[4]] <- arg_list[["consume_surv"]];
+    }
+    if("consume_repr" %in% arg_names == TRUE){
+        make_itb_list[[5]] <- arg_list[["consume_repr"]];
+    }
+    if("times_feeding" %in% arg_names == TRUE){
+        make_itb_list[[6]] <- arg_list[["times_feeding"]];
+    }
     return(make_itb_list);
 }
 
@@ -2078,15 +2113,14 @@ set_interaction_array <- function(arg_list){
     arg_names    <- names(arg_list);
     interact_pos <- which(arg_names == "INTERACT");
     if(is.na(arg_list[[interact_pos]][1]) == TRUE){
-        ditbarg <- collect_itb_ini(arg_list);
-        ini_itb <- do.call(what = make_interaction_array, args = ditbarg);
-        arg_list[[interact_pos]] <- ini_itb;
+        ditbarg <- collect_ita_ini(arg_list);
+        ini_ita <- do.call(what = make_interaction_array, args = ditbarg);
+        arg_list[[interact_pos]] <- ini_ita;
     }
     res_consume <- arg_list[["GMSE"]][["res_consume"]];
     if("res_consume" %in% arg_names == TRUE){
         res_consume <- arg_list[["res_consume"]];
     }
-    arg_list[[interact_pos]][1,2] <- -1 * res_consume;
     return(arg_list);
 }
 
@@ -2153,7 +2187,7 @@ add_usr_defaults <- function(arg_list){
     }
     jac_pos  <- which(arg_names == "INTERACT");
     if(is.na(arg_list[[jac_pos]][1]) == TRUE){
-        arg_list <- set_interaction_array(arg_list);
+        arg_list <- set_interaction_array(arg_list);                            
     }
     inter_tabl_pos <- which(arg_names == "inter_tabl");
     if(is.na(arg_list[[inter_tabl_pos]][1]) == TRUE){

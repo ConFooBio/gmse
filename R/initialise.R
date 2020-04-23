@@ -310,7 +310,9 @@ utility_layer <- function(agent_IDs, agent_number, res_types){
 #'LAND = LANDSCAPE_r);
 #'}
 #'@export
-make_interaction_array <- function(RESOURCES, LAND){
+make_interaction_array <- function(RESOURCES, LAND, res_consume = 0.5, 
+                                   consume_surv = 0, consume_repr = 0, 
+                                   times_feeding = 1){
     resource_types  <- unique(RESOURCES[,2:4]);
     resource_count  <- dim(resource_types)[1];
     landscape_count <- dim(LAND)[3] - 2; # Maybe put all of them in later?
@@ -331,6 +333,17 @@ make_interaction_array <- function(RESOURCES, LAND){
     name_vec <- c(name_vec, as.character(paste("L",1:landscape_count,sep="")));
     rownames(INTERACTIONS) <- name_vec;
     colnames(INTERACTIONS) <- name_vec;
+    
+    mn_land            <- 1; # mean(LAND[,, 2]);
+    E_consumed         <- mn_land * (1 - (1 - res_consume)^times_feeding);
+    
+    INTERACTIONS[1, 2] <- -1 * E_consumed;
+    
+    consuming_repr     <- floor(E_consumed * consume_repr);
+    consuming_survival <- E_consumed - consume_surv;
+    # Note, currently reproduction happens before survival
+    INTERACTIONS[2, 1] <- consuming_repr + consuming_survival;          
+    
     return(INTERACTIONS);
 }
                                    
