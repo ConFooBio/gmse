@@ -101,7 +101,8 @@ void res_add(double **res_adding, double *paras){
             break;
     }
     for(resource = 0; resource < resource_number; resource++){
-        if(crp > 0){
+        ind_age   = res_adding[resource][age];
+        if(crp > 0 && ind_age >= arp){
             land_add = floor(res_adding[resource][ccl] / crp);
             res_adding[resource][realised] += (int) land_add;
             added                          += (int) land_add;

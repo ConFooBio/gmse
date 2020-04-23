@@ -304,6 +304,10 @@ utility_layer <- function(agent_IDs, agent_number, res_types){
 #'
 #'@param RESOURCES The resources array produced by the resource function within GMSE
 #'@param LAND The landscape array on which interactions between resources and agents occur
+#'@param res_consume The proportion of a landscape cell that a resource consumes
+#'@param consume_surv The amount that a resource needs to consume to survive a time step
+#'@param consume_repr The amount that a resource needs to consume to produce one offspring
+#'@param times_feeding The number of times a resource moves to feed on a cell in a time step
 #'@examples
 #'\dontrun{
 #'Jacobian <- make_interaction_array(RESOURCES = starting_resources, 
