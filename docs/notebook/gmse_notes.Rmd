@@ -52,7 +52,7 @@ library(rhandsontable)
 
  - **2020**
 
-     - **APR** [13](#u-13-APR-2020), [1](#u-1-APR-2020) 
+     - **APR** [23](#u-23-APR-2020), [13](#u-13-APR-2020), [1](#u-1-APR-2020) 
      - **FEB** [4](#u-4-FEB-2020)
 
  - **2019**
@@ -109,7 +109,47 @@ library(rhandsontable)
 <a name="updates">Project updates:</a>
 ================================================================================
 
-> <a name="u-1-APR-2020">Update: 13 APR 2020</a>
+> <a name="u-23-APR-2020">Update: 23 APR 2020</a>
+
+With commit [6d1e5e6ca41bc6bb45c62cb174f34480c3c5add1](https://github.com/ConFooBio/gmse/commit/6d1e5e6ca41bc6bb45c62cb174f34480c3c5add1), I believe that I now have resolved Issue [#56](https://github.com/ConFooBio/gmse/issues/56) and created a version of GMSE that now allows resource death and reproduction to be tied to resource consumption on the landscape. Initial testing shows that this works in both `gmse` and `gmse_apply`. I have not had a chance to code in the suggestion from Jeroen to have it be the *probability* of survival or reproduction that changes with increasing consumption. Rather, given that a resource has consumed a sufficient quantity of resources `consume_surv`, the resource will survive. A separate new `gmse` argument `consume_repr` ties reproduction to landscape consumption by having resources produce `floor(consumed / consume_repr)` offspring given some total consumption `consumed`. 
+
+There is still considerable stochasticity introduced in terms of whether or not a resource will survive or reproduce. First, each resource can potentially feed more than once by using the new `times_feeding` argument. When `times_feeding > 1` (default is 1), resources will consume the landscape, then move, then consume, and so forth until all of their `times_feeding` have run out. In practice, all resources get the same `times_feeding` value, but the code for executing it depends on a new column in the resources array. This means that there can be variation in the number of times a resource feeds if using `gmse_apply` (or `gmse`, if we later decide to sample feeding rates from a distribution). Feeding events also occur in a random order, which avoids the first resource on the list filling themselves up before moving on to the next resource (as would be a natural way to program it with a for loop). I did it this (slightly less efficient) way to more realistically model how resources would really move around simultaneously on a landscape eating as they move from place to place.
+
+Hence, in the end, there is a lot of uncertainty surrounding whether an individual resource will have enough to survive and reproduce in a time step. But the probabilistic idea of Jeroen could also be imposed with a function of some sort that would link consumption to a probability of death (will need to think of the best way to actually do this in the code though). Testing shows that resource increases to a carrying capacity imposed by the constraints of the landscape, with a lot more stochasticity than occurs just by settting a value for global `res_death_K`. To get started, for example, the below demonstrates the new features.
+
+```{r, eval = FALSE}
+sim <- gmse(consume_surv = 2, consume_repr = 3, times_feeding = 6, 
+            res_birth_type = 0, res_death_type = 0, land_ownership = TRUE, 
+            stakeholders = 12, scaring = TRUE, time_max = 40, user_budget = 1);
+```
+
+I set the `user_budget` to unity above just to show how the population rises to a natural carrying capacity when the manager and users are unable to cause any population change. We can recover a (usually) well-regulate population by settting the `user_budget` back to the default.
+
+```{r, eval = FALSE}
+sim <- gmse(consume_surv = 2, consume_repr = 3, times_feeding = 6, 
+            res_birth_type = 0, res_death_type = 0, land_ownership = TRUE, 
+            stakeholders = 12, scaring = TRUE, time_max = 40, 
+            user_budget = 1000);
+```
+
+Just to clarify, each landscape cell still puts out a value of 1. The argument `consume_surv = 2` means that resources need to consume two cells worth to survive a time step (by default, resources consume half of what's on a landscape cell with each visit). The argument `consume_repr = 3` means that resources need to consume three cells worth to produce one offspring. The argument `times_feeding = 6` means that resources get to feed on six cells in each time step. 
+
+Setting `res_birth_type = 0` and `res_death_type = 0` effectively removes all other factors in GMSE that affect resource birth and death. Hence, what is observed from running the above code is purely a consequence of the new rules limiting survival and reproduction due to landscape consumption. Note that these values need to be specified, else GMSE will assume that other defaults apply *in addition* to the effects of landscape consumption. In other words, the global external carrying capacity from `res_death_K` will still limit population growth because by default `res_death_type = 2`, and the mean birth number `lambda` will still apply because `res_birth_type = 2`. I don't want to override this just in case anyone wants to include multiple types of processes affecting birth and death (I also want the new version to be backwards compatible with existing code), but I think it will be important for me to write some documentation that makes using these new features really clear. I'll start a new vignette.
+
+The new version is GMSE v0.5.0.0 with Adrian now included in the list of contributors. The `action_thres` and `budget_bonus` can now be run in `gmse` and `gmse_apply`, and `usr_budget_rng` and `age_repr` are also available options. The new version passes all CRAN checks with no notes, warnings, or errors. The new version should be completely backwards compatible. If you have existing code to run, it should do the same thing in the new version that it did in previous versions. Everything is now just a new feature that can be used, but is not by default.
+
+The last thing that I think I want to do before merging with master, updating the website, and sending to CRAN, is to make a new default landscape. It would be good to make each landscape into more farm-like blocks rather than the narrow stripes that exist now. I don't have a good algorithm for doing this for an arbitrary number of stakeholders (i.e., for *N* stakeholders, separate an *X* by *Y* landscape into roughly equal blocks of sizes ca (X*Y / N)). If anyone wants to have a go at this and create a function that does it, please let me know! Else I'll try to get around to it before early next month where the plan is to send to CRAN. If anyone has time (Nils Jeroen Adrian), feel free to download from the `dev` branch and go.
+
+```{r, eval = FALSE}
+install.packages("devtools");
+library(devtools);
+install_github("ConFooBio/GMSE", ref = "dev")
+```
+
+It should be up now.
+
+
+> <a name="u-13-APR-2020">Update: 13 APR 2020</a>
 
 I have now completed two major tasks in a GMSE update, first mentioned [earlier in the month](#u-1-APR-2020). The new code is up on the [rev](https://github.com/ConFooBio/gmse/tree/a03c0cd75507d6082a55da6722ab22c5671dd126) branch. 
 
