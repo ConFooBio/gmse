@@ -37,7 +37,7 @@ library(devtools)
 Use `install_github` to install using `devtools`.
 
 ```
-install_github("bradduthie/GMSE")
+install_github("ConFooBio/GMSE")
 ```
 
 ## Running a simulation
