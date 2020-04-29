@@ -31,7 +31,7 @@ observation <- function(RESOURCES     = NULL,
                         PARAS         = NULL, 
                         AGENTS        = NULL,
                         inter_tabl    = NULL,
-                        fixed_mark    = FALSE,
+                        fixed_mark    = 100,
                         times_observe = 1,
                         res_min_age   = 0,
                         agent_type    = 0,
@@ -55,7 +55,7 @@ observation <- function(RESOURCES     = NULL,
         if(!is.array(AGENTS)){
             stop("Warning: Agents need to be in an array");
         }
-        if(dim(RESOURCES)[2] != 20){
+        if(dim(RESOURCES)[2] != 22){
             stop("The RESOURCES array has the wrong number of columns");
         }
         if(dim(LAND)[3] != 3){

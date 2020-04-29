@@ -4,9 +4,19 @@
 \alias{make_resource}
 \title{Resource initialisation}
 \usage{
-make_resource(model = "IBM", resource_quantity = 100,
-  resource_types = 1, rows = 100, cols = 100, move = 1,
-  rm_pr = 0, lambda = 0, consumption_rate = 0.1, max_age = 5)
+make_resource(
+  model = "IBM",
+  resource_quantity = 100,
+  resource_types = 1,
+  rows = 100,
+  cols = 100,
+  move = 1,
+  rm_pr = 0,
+  lambda = 0,
+  consumption_rate = 0.1,
+  max_age = 5,
+  times_feeding = 1
+)
 }
 \arguments{
 \item{model}{The type of model being applied (Currently only individual-based
@@ -29,6 +39,8 @@ make_resource(model = "IBM", resource_quantity = 100,
 \item{consumption_rate}{Rate at which resource consumes crops on landscape; consumption affects the landscape by decreasing values on the landscape array (which may, e.g., be interpreted as crop production being decreased), and might also affect resource demographic parameters depending on other global options set in GMSE}
 
 \item{max_age}{Maximum age allowed for a resource to be (in time steps)}
+
+\item{times_feeding}{Number of times a resource moves on a landscape during a single time step in search of food}
 }
 \value{
 the_resources Initialised data frame of resources being modelled

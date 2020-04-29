@@ -4,7 +4,9 @@
 \name{rec.n}
 \alias{rec.n}
 \title{R data for recruitment used in SI4 vignette}
-\format{a set of \code{gmse_apply} output examples}
+\format{
+a set of \code{gmse_apply} output examples
+}
 \usage{
 rec.n
 }

@@ -13,6 +13,7 @@
 #'@param lambda This is the parameter for Poisson random sampling affecting birthrate; each resource gives birth to Poisson(lambda) offspring in the resource model
 #'@param consumption_rate Rate at which resource consumes crops on landscape; consumption affects the landscape by decreasing values on the landscape array (which may, e.g., be interpreted as crop production being decreased), and might also affect resource demographic parameters depending on other global options set in GMSE
 #'@param max_age Maximum age allowed for a resource to be (in time steps)
+#'@param times_feeding Number of times a resource moves on a landscape during a single time step in search of food
 #'@return the_resources Initialised data frame of resources being modelled
 #'@examples
 #'resource <- make_resource(model = "IBM", resource_quantity = 100, 
@@ -28,7 +29,8 @@ make_resource <- function(model              = "IBM",
                           rm_pr              = 0,
                           lambda             = 0,
                           consumption_rate   = 0.1,
-                          max_age            = 5
+                          max_age            = 5,
+                          times_feeding      = 1
                           ){
     the_resource   <- NULL;
     if(length(consumption_rate) != resource_types){
@@ -59,9 +61,12 @@ make_resource <- function(model              = "IBM",
         adj_k    <- rep(x = 0, times = resource_quantity);
         adj_gr   <- rep(x = 0, times = resource_quantity);
         adj_h    <- rep(x = 0, times = resource_quantity);
+        consumed <- rep(x = 0, times = resource_quantity);
+        fed_col  <- rep(x = times_feeding, times = resource_quantity);
         the_resource <- cbind(IDs, type1, type2, type3, xloc, yloc, mover, time,
                               remov_pr, growth, offspr, age, mark, tally,
-                              consume, adj_mv, adj_c, adj_k, adj_gr, adj_h);
+                              consume, adj_mv, adj_c, adj_k, adj_gr, adj_h,
+                              consumed, fed_col);
     }
     if( is.null(the_resource) ){
         stop("Invalid model selected (Must be 'IBM')");
@@ -71,7 +76,7 @@ make_resource <- function(model              = "IBM",
 
 #' Agent initialisation
 #'
-#' Initialise the agents of the G-MSE model.
+#' Initialise the agents of the GMSE model.
 #'
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
@@ -81,18 +86,18 @@ make_resource <- function(model              = "IBM",
 #'@param vision This parameter determines the distance around an agent's location within which it can observe resources. This is relevant for some (but not not all) types of observation in the observation model, particularly for density-based estimation (observe_type = 0 in the gmse() function). 
 #'@param rows The number of rows (y-axis) on the simulated landscape; agents are randomly placed somewhere on the landscape array
 #'@param cols The number of columns (x-axis) on the simulated landscape; agents are randomly placed somewhere on the landscape array
-#'@return the_agents Initialised data frame of agents being modelled
+#'@return An initialised data frame of agents being modelled
 #'@examples
 #'agents <- make_agents(model = "IBM", agent_number = 2, type_counts = c(1, 1), 
 #'move = 0, vision = 20, rows = 100, cols = 100);
 #'@export
-make_agents <- function(model        = "IBM",
-                        agent_number = 2,
-                        type_counts  = c(1,1),
-                        move         = 0,
-                        vision       = 20,
-                        rows         = 100,
-                        cols         = 100
+make_agents <- function(model          = "IBM",
+                        agent_number   = 2,
+                        type_counts    = c(1, 1),
+                        move           = 0,
+                        vision         = 20,
+                        rows           = 100,
+                        cols           = 100
                         ){
     if(agent_number < 2 & length(type_counts) < 2){
         print("Need >1 agent to make the array, so I'm adding a dummy agent");
@@ -131,6 +136,37 @@ make_agents <- function(model        = "IBM",
         stop("Invalid model selected (Must be 'IBM')");
     }
     return( the_agents );
+}
+
+#' Manager and user budgets
+#' 
+#' Initialise manager and user budgets
+#' 
+#'@param agents The agents array
+#'@param manager_budget The budget of a manager
+#'@param user_budget What is the budget of a user
+#'@param usr_budget_rng Uniform range of users budgets
+#'@param budget_col Column where the budget is located
+#'@return An updated agents data frame with correct budgets
+manager_user_budgets <- function(agents, 
+                                 manager_budget = 1000, 
+                                 user_budget = 1000, 
+                                 usr_budget_rng = 0,
+                                 budget_col = 17){
+    a_number         <- dim(agents)[1];
+    budget           <- rep(x = NA, times = a_number);
+    type1            <- agents[, 2];
+    the_mana         <- which(type1 == 0);
+    the_users        <- which(type1 > 0);
+    managers         <- length(the_mana);
+    users            <- length(the_users);
+    budget[the_mana] <- rep(x = manager_budget, times = managers);
+    ubudg            <- runif(n = users, min = user_budget - usr_budget_rng,
+                                         max = user_budget + usr_budget_rng);
+    ubudg[ubudg < 0]     <- 1;
+    budget[the_users]    <- round(ubudg);
+    agents[, budget_col] <- budget;
+    return(agents);
 }
 
 #' COST initialisation
@@ -268,13 +304,19 @@ utility_layer <- function(agent_IDs, agent_number, res_types){
 #'
 #'@param RESOURCES The resources array produced by the resource function within GMSE
 #'@param LAND The landscape array on which interactions between resources and agents occur
+#'@param res_consume The proportion of a landscape cell that a resource consumes
+#'@param consume_surv The amount that a resource needs to consume to survive a time step
+#'@param consume_repr The amount that a resource needs to consume to produce one offspring
+#'@param times_feeding The number of times a resource moves to feed on a cell in a time step
 #'@examples
 #'\dontrun{
 #'Jacobian <- make_interaction_array(RESOURCES = starting_resources, 
 #'LAND = LANDSCAPE_r);
 #'}
 #'@export
-make_interaction_array <- function(RESOURCES, LAND){
+make_interaction_array <- function(RESOURCES, LAND, res_consume = 0.5, 
+                                   consume_surv = 0, consume_repr = 0, 
+                                   times_feeding = 1){
     resource_types  <- unique(RESOURCES[,2:4]);
     resource_count  <- dim(resource_types)[1];
     landscape_count <- dim(LAND)[3] - 2; # Maybe put all of them in later?
@@ -295,6 +337,17 @@ make_interaction_array <- function(RESOURCES, LAND){
     name_vec <- c(name_vec, as.character(paste("L",1:landscape_count,sep="")));
     rownames(INTERACTIONS) <- name_vec;
     colnames(INTERACTIONS) <- name_vec;
+    
+    mn_land            <- 1; # mean(LAND[,, 2]);
+    E_consumed         <- mn_land * (1 - (1 - res_consume)^times_feeding);
+    
+    INTERACTIONS[1, 2] <- -1 * E_consumed;
+    
+    consuming_repr     <- floor(E_consumed * consume_repr);
+    consuming_survival <- E_consumed - consume_surv;
+    # Note, currently reproduction happens before survival
+    INTERACTIONS[2, 1] <- consuming_repr + consuming_survival;          
+    
     return(INTERACTIONS);
 }
                                    
