@@ -527,13 +527,12 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     
     /* Resource time step and age needs to be increased by one */
     add_time(res_old, paras);
-    
-    /* Resources move according to move function and parameter) */
-    res_mover(res_old, land, paras);
 
     /* If we need to get amount eaten because it affects death or birth*/
     if(csr > 0 || crp > 0){ 
         resource_feeding(res_old, land, paras, res_number);
+    }else{ /* One-off resources affect the landscape */
+        res_landscape_interaction(res_new, land, paras, res_num_total); 
     }
     
     /* Identify, and calculate the number of, added individuals */
@@ -595,8 +594,8 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
         resource_new++;
     }
     
-    /* Resources affect the landscape (note the **ORDER** of this -- change? */
-    res_landscape_interaction(res_new, land, paras, res_num_total);
+    /* Resources move according to move function and parameter) */
+    res_mover(res_new, land, paras);
     
     /* Check to see if the population is over carrying capacity */
     resource_over_death_K(res_num_total, paras);
