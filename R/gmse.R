@@ -419,7 +419,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                20,      # 115. Column in resource array where consumed located
                csr,     # 116. Consumption needed for resource to survive
                crp,     # 117. Consumption needed for resource offspring +1
-               21       # 118. Column in resource array where fed located
+               21,      # 118. Column in resource array where fed located
+               0,       # 119. Column of the ID location in the agent array
+               13       # 120. Column of agent array total ownership located
     );
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,

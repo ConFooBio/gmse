@@ -339,5 +339,43 @@ void move_a_resource(double **res_moving, double ***landscape, double *paras,
     res_moving[resource][xloc] = new_pos_x;
     res_moving[resource][yloc] = new_pos_y;
 }
+
+/* =============================================================================
+ * This function counts the number of cells owned by each agent and adds the
+ * number to a column of the agent array.
+ * Inputs include:
+ *     landscape: the landscape on which cells are located
+ *     paras: Vector of global parameters used in the model
+ *     agent_array: The array of agents in the model (manager and users)
+ *     land_x: The x dimension of the landscape
+ *     land_y: The y dimension of the landscape
+ *     agent_number: How many agents there are in the agent array
+ * ========================================================================== */
+void count_owned_cells(double ***landscape, double *paras, double **agent_array, 
+                       int land_x, int land_y, int agent_number){
+    
+    int xloc, yloc, own, aID, tcol, agent, own_val, age_row;
+    
+    land_x  = (int) paras[12];
+    land_y  = (int) paras[13];
+    own     = (int) paras[81];
+    aID     = (int) paras[119];
+    tcol    = (int) paras[120];
+
+    for(agent = 0; agent < agent_number; agent++){
+        agent_array[agent][tcol] = 0; /* Clear out the owned cell column */
+    }
+    for(xloc = 0; xloc < land_x; xloc++){
+        for(yloc = 0; yloc < land_y; yloc++){
+            own_val = (int) landscape[xloc][yloc][own];
+            if(own_val >= 0){
+                age_row = own_val - 1; /* Assumes ID is 1 + agent row */
+                agent_array[age_row][tcol]++;
+            }
+        }
+    }
+}
 /* ===========================================================================*/
 
+
+    
