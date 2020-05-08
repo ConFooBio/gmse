@@ -389,9 +389,9 @@ void resource_feeding(double **resource_array, double ***landscape,
             resource = get_rand_int(0, resource_number);
         } while(fed[resource] == 0);
                     
-        move_a_resource(resource_array, landscape, paras, resource);
-        
         resource_feeds(resource_array, landscape, paras, resource);
+        
+        move_a_resource(resource_array, landscape, paras, resource);
         
         fed[resource]--;
         tot_fed--;
