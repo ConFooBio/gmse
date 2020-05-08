@@ -532,7 +532,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     if(csr > 0 || crp > 0){ 
         resource_feeding(res_old, land, paras, res_number);
     }else{ /* One-off resources affect the landscape */
-        res_landscape_interaction(res_new, land, paras, res_num_total); 
+        res_landscape_interaction(res_old, land, paras, res_num_total); 
     }
     
     /* Identify, and calculate the number of, added individuals */
@@ -558,7 +558,8 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     }
     
     res_num_total = res_number + res_nums_added - res_nums_subtracted;
-
+    paras[32]     = (double) res_num_total;
+    
     /* Below makes a new array for new RESOURCE, then adds it */
     res_new = malloc(res_num_total * sizeof(double *));
     for(resource = 0; resource < res_num_total; resource++){
@@ -616,7 +617,6 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
             vec_pos++;
         }
     } 
-    paras[32] = (double) res_num_total;
     
     SEXP LAND_NEW;
     PROTECT( LAND_NEW = alloc3DArray(REALSXP, land_x, land_y, land_z) );
