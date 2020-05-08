@@ -532,7 +532,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     if(csr > 0 || crp > 0){ 
         resource_feeding(res_old, land, paras, res_number);
     }else{ /* One-off resources affect the landscape */
-        res_landscape_interaction(res_old, land, paras, res_num_total); 
+        res_landscape_interaction(res_old, land, paras, res_number); 
     }
     
     /* Identify, and calculate the number of, added individuals */

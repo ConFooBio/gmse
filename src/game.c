@@ -250,6 +250,7 @@ void constrain_costs(double ***population, double ***COST, double *paras,
  *     population: The population array of agents in the genetic algorithm
  *     interact_table: The lookup table for figuring out how resources interact
  *     paras: Vector of global parameters
+ *     pr_land: The total land that the focal agent owns
  *     count_change: A vector of how counts have changed as a result of actions
  *     utilities: A vector of the utilities of each resource/landscape level
  *     jaco: The interaction table itself (i.e., Jacobian matrix)
@@ -257,21 +258,34 @@ void constrain_costs(double ***population, double ***COST, double *paras,
  *     agent: The agent in the population whose fitness is being assessed
  * ========================================================================== */
 void res_to_counts(double ***population, int **interact_table, double *paras,
-                   double *count_change, double *utilities, double **jaco,
-                   int row, int agent){
+                   double pr_land, double *count_change, double *utilities, 
+                   double **jaco, int row, int agent){
     
     int i, interest_row, int_num;
-    double foc_effect, lambda;
+    double foc_effect, lambda, scare_adj, E_off;
+    double res_consume, consume_repr;
     
-    int_num = (int) paras[60];
-    lambda  = paras[100];
+    int_num       = (int) paras[60];
+    lambda        = paras[100];
+    consume_repr  = paras[117];
+    res_consume   = paras[121];
+    
+    scare_adj = pr_land;
+    if(pr_land == 0){ /* No reason to scare if no land owned */
+      scare_adj = 1.0;
+    }
+    
+    E_off = lambda; /* User's perceived offspring production */
+    if(consume_repr > 0){ /* If reproduction is based on consumption */
+        E_off += (res_consume / consume_repr);
+    }
     
     foc_effect  = 0.0;
-    foc_effect -= population[row][7][agent];  
-    foc_effect -= population[row][8][agent];
-    foc_effect -= population[row][9][agent]  * lambda;
-    foc_effect += population[row][10][agent] * lambda;
-    foc_effect += population[row][11][agent]; 
+    foc_effect -= ( population[row][7][agent]  * (1 - scare_adj) );
+    foc_effect -= ( population[row][8][agent]  * (1 + E_off) );
+    foc_effect -= ( population[row][9][agent]  * E_off );
+    foc_effect += ( population[row][10][agent] * E_off );
+    foc_effect +=   population[row][11][agent]; 
     interest_row = 0;
     while(interest_row < int_num){
         if(interact_table[interest_row][0] == 0                         &&
@@ -339,16 +353,21 @@ void land_to_counts(double ***population, int **interact_table, double *paras,
  *     fitnesses: Array to order fitnesses of the agents in the population
  *     jaco: The jacobian matrix of resource and landscape interactions
  *     interact_table: Lookup table for figuring out rows of jaco and types
+ *     pr_lnd: The proportion of land owned by the agent
  * ========================================================================== */
 void strategy_fitness(double **agent_array, double ***population, double *paras,
-                      double *fitnesses, double **jaco, int **interact_table){
+                      double *fitnesses, double **jaco, int **interact_table,
+                      double pr_lnd){
     
-    int agent, i, row, act_type, int_num, pop_size, ROWS;
-    double *count_change, *utilities;
+    int agent, i, row, act_type, int_num, pop_size, ROWS, tcol;
+    double pr_land, land_x, land_y, tcells, acells,  *count_change, *utilities;
     
+    land_x   = paras[12];
+    land_y   = paras[13];
     pop_size = (int) paras[21];
     int_num  = (int) paras[60];
     ROWS     = (int) paras[68];
+    tcol     = (int) paras[120];
     
     count_change = malloc(int_num * sizeof(double));
     utilities    = malloc(int_num * sizeof(double));
@@ -362,7 +381,7 @@ void strategy_fitness(double **agent_array, double ***population, double *paras,
             act_type   = (int) population[row][0][agent];
             switch(act_type){
                 case -2:
-                    res_to_counts(population, interact_table, paras,
+                    res_to_counts(population, interact_table, paras, pr_lnd,
                                   count_change, utilities, jaco, row, agent);
                     break;
                 case -1:
@@ -783,17 +802,20 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double **JACOBIAN, int **lookup, double *paras, 
         int agent, int managing){
     
-    int row, col, gen, layer, most_fit, popsize, new_fitness;
-    int generations, xdim, ydim, agentID, old_fitness, *winners;
-    double budget, converge_crit, fit_change, ***POPULATION, *fitnesses;
+    int row, col, gen, layer, most_fit, popsize, new_fitness, land_x, land_y;
+    int generations, xdim, ydim, agentID, old_fitness, pr_lnd_col, *winners;
+    double pr_lnd, budget, converge_crit, fit_change, ***POPULATION, *fitnesses;
 
+    land_x         = (int) paras[12];
+    land_y         = (int) paras[13];
     popsize        = (int) paras[21];
     generations    = (int) paras[22];
     xdim           = (int) paras[68];
     ydim           = (int) paras[69];
-    converge_crit  = paras[98];
+    converge_crit  = (double)paras[98];
+    pr_lnd_col     = (int) paras[120];
     budget         = (double) AGENT[agent][16];
-    agentID        = AGENT[agent][0];
+    agentID        = (int) AGENT[agent][0];
     most_fit       = 0;
     
     POPULATION = malloc(xdim * sizeof(double *));
@@ -824,6 +846,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     gen          = 0;
     old_fitness  = -10000.0;
     fit_change   = 10000;
+    pr_lnd       = (double) AGENT[agent][pr_lnd_col] / (land_x * land_y);
     while(gen < generations || fit_change > converge_crit){
         
         crossover(POPULATION, paras, agentID); 
@@ -838,7 +861,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
                             agentID, COST, ACTION, paras, gen);
         }else{
             strategy_fitness(AGENT, POPULATION, paras, fitnesses, JACOBIAN, 
-                             lookup); 
+                             lookup, pr_lnd); 
         }
   
         tournament(fitnesses, winners, paras);
