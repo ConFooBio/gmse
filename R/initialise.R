@@ -374,4 +374,3 @@ make_interaction_table <- function(RESOURCES, LAND){
     the_table <- rbind(resource_part, landscape_part);
     return(the_table);
 }
-                                   

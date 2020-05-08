@@ -55,6 +55,39 @@ make_landscape <- function(model, rows, cols, cell_types = 1, cell_val_mn = 1,
     return(the_land);
 }
 
+#' Count the number of owned cells of each agent
+#'
+#' Counts the total number of cells on a landscape owned by each agent and
+#' inserts that total number into a column of the agents array.
+#'
+#'@param AGENTS The agents array holding agents' information
+#'@param LAND The landscape on which some cells are owned
+#'@param tot Column in which the total number of owned cells in AGENTS is added
+#'@param own Layer of the landscape array where ownership information is held
+#'@param ID Column in which the ID of an agent is held in the AGENTS array
+#'@return The AGENTS array with the column of total cell count filled in.
+#'@examples
+#'\dontrun{
+#'agents     <- make_agents(agent_number = 3, type_counts = c(1, 2))
+#'land       <- make_landscape(rows = 10, cols = 10, model = "IBM", 
+#'ownership = 2:3)
+#'new_agents <- count_agent_cells(AGENTS = agents, LAND = land);
+#'}
+#'@export
+count_agent_cells <- function(AGENTS, LAND = NULL, tot = 14, own = 3, ID = 1){
+    if(is.null(LAND) == TRUE){
+        return(AGENTS);
+    }
+    if(dim(LAND)[3] < 3){
+        stop("The landscape needs at least three levels for land ownership");
+    }
+    agents <- dim(AGENTS)[1];
+    for(agent in 1:agents){
+        AGENTS[agent, tot] <- sum(LAND[,,own] == AGENTS[agent, ID]);
+    }
+    return(AGENTS);
+}   
+
 #' Age landscape
 #'
 #' Determines how the landscape will change over the course of one time step.
