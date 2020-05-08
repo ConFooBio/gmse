@@ -52,7 +52,7 @@ library(rhandsontable)
 
  - **2020**
 
-     - **MAY** [6](#u-6-MAY-2020)
+     - **MAY** [8](#u-8-MAY-2020), [6](#u-6-MAY-2020)
      - **APR** [23](#u-23-APR-2020), [13](#u-13-APR-2020), [1](#u-1-APR-2020) 
      - **FEB** [4](#u-4-FEB-2020)
 
@@ -109,6 +109,33 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-8-MAY-2020">Update: 8 MAY 2020</a>
+
+I have made some progress on the plans from [6 MAY 2020](#u-6-MAY-2020). None of my updates are incorporated into the main R branch, so they are not permanent and **I am still happy to take suggestions for improvements or other ideas in addition or in contrast to what folows**.
+
+I have completed the first bullet point of the plans from [6 MAY 2020](#u-6-MAY-2020). The order of operations is therefore changed in the resource model on the work-in-progress rev branch. Hence, calls to the default resource model proceed by first having resources consume on the landscape, then birth, death, and movement. Within resource consumption rules, feeding happens first, followed by movement for up to `times_feed` iterations. The landscape consumption also now calls either one function or another: one function where `consume_surv > 0` or `consume_repr > 0` in which consumption happens in a random order among resources for a variabl enumber of `times_feed`, and a second (faster) function where consumption happens once for all resources (in order of the array, as the order of consumption does not affect the resources themselves).
+
+Despite the information in the [vignette on GMSE structures](https://confoobio.github.io/gmse/articles/SI7.html#agents), column 13 of the agents array was actually being used within the more or less unused `anectdotal` function, in which each agent 'looks around' from the cell on which they are standing to see how many resources are in the general area. This function has no purpose at the moment (I was thinking about using it to model disagreement with the manager's estimate and the users' inferences about population size), but writes to the column anywa in `gmse` (but not `gmse_apply`). I'm going to refer to it as `written to, but unused` in the vignette, and use column 14 of the agent array to record the number of cells owned.
+
+Writing to the number of cells owned is done in a new `count_agent_cells` in R or the `count_owned_cells` function in C. I wrote the R function first, but then had second thoughts about relying on it in `gmse` and particularly `gmse_apply`. What if we later want land ownership to change over the course of a simulation? I'm not sure in this case, actually, how much extra speed we get from C (it relies on two nested for loops across the landscape, rather than a `which` or `==` in R, which I suspect is actually just as fast since the underlying C is probably better than mine). In any case, it seems to make sense to have the owned cells calculated at the beginning of the user function, so this is what I ultimately decided on. But the R function can also be used.
+
+I have changed the fitness function for users as such:
+
+- Scaring is now assumed to decrease the number of resources affecting the user by one minus the proportion of landscape cells owned. Hence, when less land is owned, scaring is assumed to have a bigger effect because resources will more likely move to someone else's land. Also, if no land is owned, scaring is assumed to have no effect, for obvious reasons.
+- Culling is now assumed to decrease the number of resources by one plus the expected number of offspring the resource is assumed to produce in the time step. This expected offspring number `E_off` is the lambda parameter, plus the amount a resource consumes on a landscape cell divided by the amount needed to be consumed for producing one offspring.
+- Castration is assumed to decrease the number of resources by `E_off`.
+- Feeding is assumed to increase the number of resources by `E_off`.
+- Helping offspring is assumed to increase the number of resources by one.
+
+These changes are now pushed to the `rev` branch, which is still under ongoing development. This effectively takes care of the third bullet point from [6 MAY 2020](#u-6-MAY-2020). Hence, bullets one and three are now done, so here is what remains.
+
+- Update the GUI
+- Add new landscape patterns of land ownership options
+- Two new vignettes to add to the package and website
+- Other website updates that need to change (I will actually need to re-read everything so that any old information that is now wrong is replaced from existing vignettes and documentation.
+
+I will try to make the above changes as soon as possible, but the changes that will have the biggest effect on simulations are now finished, so people can play around with the new options. The update in progress builds with no warnings, errors, or notes, and passes all tests in testthat.
 
 > <a name="u-6-MAY-2020">Update: 6 MAY 2020</a>
 
