@@ -421,7 +421,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                crp,     # 117. Consumption needed for resource offspring +1
                21,      # 118. Column in resource array where fed located
                0,       # 119. Column of the ID location in the agent array
-               13       # 120. Column of agent array total ownership located
+               13,      # 120. Column of agent array total ownership located
+               prc      # 121. E Prop. of a landscape cell to be consumed
     );
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
