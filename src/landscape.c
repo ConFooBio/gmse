@@ -1,48 +1,41 @@
 #include "utilities.h"
 
-
-
+/* =============================================================================
+ *  This function uses recursion to break the landscape into ever smaller 
+ *  rectangular chunks. The end result is a mostly even distribution of owned
+ *  cells on the landscape.
+ * ===========================================================================*/
 void break_land(int **land, int x0, int x1, int y0, int y1, int N, int *count,
                 int *bin){
     
     int xx, yy, halfway, N1, N2, x0_new;
+    double Nd1, Nd2, ratio;
     
     if(N > 1){
+        Nd1    = (double) floor(0.5 * N);
+        Nd2    = (double) Nd1 + (N % 2);
+        ratio  = (double )Nd2 / N;
+        N1     = (int) Nd1;
+        N2     = (int) Nd2;
         if( (x1 - x0) > (y1 - y0) ){
-            halfway  = floor( 0.5 * (x0 + x1) );
-            if( (halfway % 2) != 0){
-                halfway = floor(halfway) + (*bin);
-                (*bin)   = (1 - *bin) * (1 - *bin); /* Swap between 0 and 1 */
-            }
-            N1       = floor(0.5 * N);
-            N2       = N1 + (N % 2);
-            break_land(land, x0, halfway, y0, y1, N1, count, bin);
-            break_land(land, halfway, x1, y0, y1, N2, count, bin);
+            halfway  = floor( ratio * (x1 - x0) + x0 );
+            break_land(land, x0, halfway, y0, y1, N2, count, bin);
+            break_land(land, halfway, x1, y0, y1, N1, count, bin);
         }
         if( (x1 - x0) < (y1 - y0) ){
-            halfway  = floor( 0.5 * (y0 + y1) );
-            if( (halfway % 2) != 0){
-                halfway = floor(halfway) + (*bin);
-                (*bin)   = (1 - *bin) * (1 - *bin); /* Swap between 0 and 1 */
-            }
-            N1       = floor(0.5 * N);
-            N2       = N1 + (N % 2);
-            break_land(land, x0, x1, y0, halfway, N1, count, bin);
-            break_land(land, x0, x1, halfway, y1, N2, count, bin);
+            halfway  = floor( ratio * (y1 - y0) + y0);
+            break_land(land, x0, x1, y0, halfway, N2, count, bin);
+            break_land(land, x0, x1, halfway, y1, N1, count, bin);
         }
         if( (x1 - x0) == (y1 - y0) && (*bin) == 0){
-            halfway  = floor( 0.5 * (y0 + y1) );
-            N1       = floor(0.5 * N);
-            N2       = N1;
-            break_land(land, x0, x1, y0, halfway, N1, count, bin);
-            break_land(land, x0, x1, halfway, y1, N2, count, bin);
+            halfway  = (int) floor( ratio * (y1 - y0) + y0 );
+            break_land(land, x0, x1, y0, halfway, N2, count, bin);
+            break_land(land, x0, x1, halfway, y1, N1, count, bin);
         }
         if( (x1 - x0) == (y1 - y0) && (*bin) == 1){
-            halfway  = floor( 0.5 * (x0 + x1) );
-            N1       = floor(0.5 * N);
-            N2       = N1;
-            break_land(land, x0, x1, y0, halfway, N1, count, bin);
-            break_land(land, x0, x1, halfway, y1, N2, count, bin);
+            halfway  = (int) floor( ratio * (x1 - x0) + x0 );
+            break_land(land, x0, x1, y0, halfway, N2, count, bin);
+            break_land(land, x0, x1, halfway, y1, N1, count, bin);
         }
     }else{
         for(xx = x0; xx < x1; xx++){
@@ -66,7 +59,7 @@ SEXP build_ownership(SEXP PARAMETERS){
  
     /* SOME STANDARD DECLARATIONS OF KEY VARIABLES AND POINTERS               */
     /* ====================================================================== */
-    int xloc, yloc, dim_x, dim_y, vec_pos, owners, p_land;
+    int xloc, yloc, dim_x, dim_y, vec_pos, owners, p_land, unique_cells;
     int **land, *count, *bin;
     int protected_n, len_PARAMETERS;
     double *paras_ptr, *land_ptr_new, *build_paras;
@@ -113,7 +106,9 @@ SEXP build_ownership(SEXP PARAMETERS){
     (*bin)   = 0;
     (*count) = 1;
     
-    break_land(land, 0, dim_x, 0, dim_y, owners, count, bin);
+    unique_cells = owners;
+    
+    break_land(land, 0, dim_x, 0, dim_y, unique_cells, count, bin);
 
     /* This code switches from C back to R */
     /* ====================================================================== */        
