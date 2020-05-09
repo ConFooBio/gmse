@@ -110,3 +110,24 @@ age_land <- function(LAND, landscape_ini, layer){
     
     return(LAND);
 }
+
+#' Owner land SSA
+#'
+#' Builds a layer of the landscape with a shortest-splitline algorithm to assign
+#' landscape cells among owners
+#'
+#'@param dim_x The number of cells on the X dimension of the landscape
+#'@param dim_y The number of cells on the Y dimension of the landscape
+#'@param owners Number of owners among which landscape cells will be divided
+#'@param public_land The amount of land that will not be owned
+#'@return A two dimensional array of cells with ownership values
+#'@export
+owner_land_ssa <- function(dim_x, dim_y, owners, public_land){
+    landscape_c_vector <- c(dim_x, dim_y, owners, public_land);
+    OWNER_LAYER        <- run_landscape_a(landscape_c_vector);
+    return(OWNER_LAYER);
+}
+
+run_landscape_a <- function(LANDSCAPE_PARAMETERS){
+    .Call("build_ownership", LANDSCAPE_PARAMETERS);
+}
