@@ -1,5 +1,22 @@
 #include "utilities.h"
 
+void break_land(int **land, int x0, int x1, int y0, int y1, int N, int *count){
+    
+    int xx, yy;
+    
+    if(N > 1){
+        
+    }else{
+        for(xx = x0; xx < x1; xx++){
+            for(yy = y0; yy < y1; yy++){
+                land[xx][yy] = *count;
+            }
+        }
+        (*count)++; /* Recall '++' takes precedence over '*' */
+    }
+}
+
+
 /* =============================================================================
  *  This function takes landscape dimensions, number of land owners, and
  *  proportion of public land as a 4 element vector. It then uses a 
@@ -12,7 +29,7 @@ SEXP build_ownership(SEXP PARAMETERS){
     /* SOME STANDARD DECLARATIONS OF KEY VARIABLES AND POINTERS               */
     /* ====================================================================== */
     int xloc, yloc, dim_x, dim_y, vec_pos, owners, p_land;
-    int **land;
+    int **land, *count;
     int protected_n, len_PARAMETERS;
     double *paras_ptr, *land_ptr_new, *build_paras;
     
@@ -43,17 +60,22 @@ SEXP build_ownership(SEXP PARAMETERS){
     /* Do the biology here now */
     /* ====================================================================== */
     
+    count  = malloc(1 * sizeof(int));
     land   = malloc(dim_x * sizeof(int *));
     for(xloc = 0; xloc < dim_x; xloc++){
         land[xloc] = malloc(dim_y * sizeof(int));   
     } 
-    
     
     for(xloc = 0; xloc < dim_x; xloc++){
         for(yloc = 0; yloc < dim_y; yloc++){
             land[xloc][yloc] = xloc + yloc;
         }
     }
+    
+    *count = 3;
+    
+    break_land(land, 0, 1, 0, 2, 1, count);
+    break_land(land, 1, 2, 0, 2, 1, count);
 
     /* This code switches from C back to R */
     /* ====================================================================== */        
@@ -78,6 +100,7 @@ SEXP build_ownership(SEXP PARAMETERS){
         free(land[xloc]);
     }
     free(land);
+    free(count);
     
     return(LAND_NEW); 
 }
