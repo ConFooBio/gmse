@@ -169,22 +169,17 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     proc_check_start <- proc_start;
     
     # Set the landscape
-    if(land_ownership == TRUE){
-        stake_pr    <- (1 - public_land) / stakeholders;
-        land_alloc  <- c(public_land, rep(x = stake_pr, times = stakeholders));
-    }else{
-        land_alloc  <- c(1, rep(x = 0, times = stakeholders)); 
-    }
     LANDSCAPE_r  <- make_landscape( model       = pop_model, 
                                     rows        = land_dim_1, 
                                     cols        = land_dim_2, 
                                     cell_types  = 1,
                                     cell_val_mn = 1,
                                     cell_val_sd = 0,
-                                    ownership   = 1:(stakeholders + 1),
-                                    owner_pr    = land_alloc,
+                                    ownership   = land_ownership,
+                                    owners      = stakeholders,
                                     public_land = public_land
     );
+    
     # Set the starting conditions for one resource
     starting_resources <- make_resource( model              = pop_model, 
                                          resource_quantity  = RESOURCE_ini,
@@ -441,7 +436,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                     manager_sense, public_land, group_think, age_repr,
                     usr_budget_rng, action_thres, budget_bonus, consume_surv,
                     consume_repr); 
-    
+   
     paras_errors(input_list);
     
     RESOURCE_REC    <- NULL;
@@ -471,7 +466,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         RESOURCES             <- RESOURCE_NEW[[1]];
         LANDSCAPE_r           <- RESOURCE_NEW[[2]];
         paras                 <- RESOURCE_NEW[[3]];
- 
+            
         OBSERVATION_NEW   <- observation(RESOURCES      = RESOURCES,
                                          LAND           = LANDSCAPE_r,
                                          PARAS          = paras,
@@ -499,7 +494,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                        move_agents = mva
         );
         AGENTS <- AGENTS_NEW[[1]];
-
+               
         if(time %% manage_freq == 0){
             MANAGER  <- manager(RESOURCES   = RESOURCES,
                                 AGENTS      = AGENTS,
@@ -516,7 +511,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
             COST   <- MANAGER[[5]];
             paras  <- MANAGER[[6]];
         }
-        
+   
         USERS <- user(RESOURCES  = RESOURCES,
                       AGENTS     = AGENTS,
                       LAND       = LANDSCAPE_r, 
@@ -533,7 +528,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         ACTION       <- USERS[[4]];
         COST         <- USERS[[5]];
         paras        <- USERS[[6]];
-        
+         
         RESOURCE_REC[[time]]     <- RESOURCES;
         OBSERVATION_REC[[time]]  <- OBSERVATION_NEW[[1]];
         AGENT_REC[[time]]        <- AGENTS;
@@ -541,7 +536,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         COST_REC[[time]]         <- COST;
         ACTION_REC[[time]]       <- ACTION;
         PARAS_REC[time,]         <- paras;
-        
+         
         LANDSCAPE_r <- age_land(LAND          = LANDSCAPE_r, 
                                 landscape_ini = LANDSCAPE_INI, layer = 2);
         
@@ -566,7 +561,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
             paras        <- HUNT_OUTCOME$PARAS;
         }
     }
-    
+
     res_columns <- c("Resource_ID",
                      "Resource_type_1",
                      "Resource_type_2",

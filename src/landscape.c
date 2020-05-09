@@ -5,8 +5,8 @@
  *  rectangular chunks. The end result is a mostly even distribution of owned
  *  cells on the landscape.
  * ===========================================================================*/
-void break_land(int **land, int x0, int x1, int y0, int y1, int N, int *count,
-                int *bin){
+void break_land(double **land, int x0, int x1, int y0, int y1, int N, 
+                int *count, int *bin){
     
     int xx, yy, halfway, N1, N2, x0_new;
     double Nd1, Nd2, ratio;
@@ -60,9 +60,9 @@ SEXP build_ownership(SEXP PARAMETERS){
     /* SOME STANDARD DECLARATIONS OF KEY VARIABLES AND POINTERS               */
     /* ====================================================================== */
     int xloc, yloc, dim_x, dim_y, vec_pos, owners, unique_cells;
-    int **land, *count, *bin;
-    int protected_n, len_PARAMETERS;
-    double p_land, *paras_ptr, *land_ptr_new, *build_paras;
+    int *count, *bin;
+    int protected_n, len_P;
+    double p_land, *paras_ptr, *land_ptr_new, *build_paras, **land;
     
     /* First take care of all the reading in of code from R to C */
     /* ====================================================================== */
@@ -73,12 +73,12 @@ SEXP build_ownership(SEXP PARAMETERS){
     protected_n++;
     paras_ptr = REAL(PARAMETERS);
     
-    len_PARAMETERS = GET_LENGTH(PARAMETERS);
+    len_P = GET_LENGTH(PARAMETERS);
     
     /* Code below copies the paras vector into C */
-    build_paras = malloc(len_PARAMETERS * sizeof(double *));
+    build_paras = malloc(len_P * sizeof(double *));
     vec_pos     = 0;
-    for(xloc = 0; xloc < len_PARAMETERS; xloc++){
+    for(xloc = 0; xloc < len_P; xloc++){
         build_paras[xloc] = paras_ptr[vec_pos];
         vec_pos++;
     } /* The parameters vector is now copied into C */
@@ -92,9 +92,9 @@ SEXP build_ownership(SEXP PARAMETERS){
     /* ====================================================================== */
     bin    = malloc(1 * sizeof(int));
     count  = malloc(1 * sizeof(int));
-    land   = malloc(dim_x * sizeof(int *));
+    land   = malloc(dim_x * sizeof(double *));
     for(xloc = 0; xloc < dim_x; xloc++){
-        land[xloc] = malloc(dim_y * sizeof(int));   
+        land[xloc] = malloc(dim_y * sizeof(double));   
     } 
     
     (*bin)   = 0;
@@ -121,7 +121,7 @@ SEXP build_ownership(SEXP PARAMETERS){
     /* ====================================================================== */        
     
     SEXP LAND_NEW;
-    PROTECT( LAND_NEW = allocMatrix(REALSXP, xloc, yloc) );
+    PROTECT( LAND_NEW = allocMatrix(REALSXP, dim_x, dim_y) );
     protected_n++;
     
     land_ptr_new = REAL(LAND_NEW);
@@ -129,7 +129,7 @@ SEXP build_ownership(SEXP PARAMETERS){
     vec_pos = 0;
     for(xloc = 0; xloc < dim_x; xloc++){
         for(yloc = 0; yloc < dim_y; yloc++){
-            land_ptr_new[vec_pos] = land[xloc][yloc];
+            land_ptr_new[vec_pos] = land[xloc][yloc] + 1;
             vec_pos++;
         }
     } 

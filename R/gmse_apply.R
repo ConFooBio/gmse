@@ -1384,14 +1384,8 @@ collect_land_ini <- function(arg_list){
     if("public_land" %in% arg_names){
         public_land <- arg_list[["public_land"]];
     }
-    if(land_is_owned == TRUE){
-        stake_pr    <- (1 - public_land) / stakeholders;
-        land_alloc  <- c(public_land, rep(x = stake_pr, times = stakeholders));
-    }else{
-        land_alloc  <- c(1, rep(x = 0, times = stakeholders)); 
-    }
-    make_lnd_list[[10]] <- 1:(stakeholders + 1);
-    make_lnd_list[[11]] <- land_alloc;
+    make_lnd_list[[10]] <- land_is_owned;
+    make_lnd_list[[11]] <- stakeholders;
     make_lnd_list[[12]] <- public_land;
     
     return(make_lnd_list);

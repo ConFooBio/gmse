@@ -22,10 +22,9 @@
 #'@export
 make_landscape <- function(model, rows, cols, cell_types = 1, cell_val_mn = 1, 
                            cell_val_sd = 0, cell_val_max = 1, cell_val_min = 0,
-                           layers = 3, ownership = 0, owner_pr = NULL,
+                           layers = 3, ownership = FALSE, owners = 4, 
                            public_land = 0){
     the_land  <- NULL;
-    owners    <- length(ownership) - 1; # Minus one to remove the manager
     if(model == "IBM"){
         if(rows < 2){
             stop("Landscape dimensions in IBM must be 2 by 2 or greater");   
@@ -38,14 +37,10 @@ make_landscape <- function(model, rows, cols, cell_types = 1, cell_val_mn = 1,
                                  replace = TRUE);
         the_terrain2   <- rnorm(n = cell_count, mean = cell_val_mn,
                                 sd = cell_val_sd);
-        if( length(ownership) == 1 ){
-            who_owns     <- sample(x = 1:ownership, size = cell_count, 
-                                   replace = TRUE);
-            the_terrain3 <- sort(who_owns); # Make contiguous for now
-        }else{
-            who_owns     <- sample(x = ownership, size = cell_count, 
-                                   replace = TRUE, prob = owner_pr);
+        if( ownership == FALSE){
+            who_owns     <- rep(x = 1, times = cell_count);
             the_terrain3 <- sort(who_owns); 
+        }else{
             who_owns     <- owner_land_ssa(rows, cols, owners, public_land);
             the_terrain3 <- who_owns;
         }
@@ -134,7 +129,9 @@ owner_land_ssa <- function(dim_x, dim_y, owners, public_land){
     }
     landscape_c_vector <- c(dim_x, dim_y, owners, public_land);
     OWNER_LAYER        <- run_landscape_a(landscape_c_vector);
-    return(OWNER_LAYER);
+    vectorise_layer    <- as.vector(OWNER_LAYER);
+    return_array       <- array(data = vectorise_layer, dim = c(dim_x, dim_y));
+    return(return_array);
 }
 
 run_landscape_a <- function(LANDSCAPE_PARAMETERS){
