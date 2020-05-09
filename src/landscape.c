@@ -59,10 +59,10 @@ SEXP build_ownership(SEXP PARAMETERS){
  
     /* SOME STANDARD DECLARATIONS OF KEY VARIABLES AND POINTERS               */
     /* ====================================================================== */
-    int xloc, yloc, dim_x, dim_y, vec_pos, owners, p_land, unique_cells;
+    int xloc, yloc, dim_x, dim_y, vec_pos, owners, unique_cells;
     int **land, *count, *bin;
     int protected_n, len_PARAMETERS;
-    double *paras_ptr, *land_ptr_new, *build_paras;
+    double p_land, *paras_ptr, *land_ptr_new, *build_paras;
     
     /* First take care of all the reading in of code from R to C */
     /* ====================================================================== */
@@ -86,7 +86,7 @@ SEXP build_ownership(SEXP PARAMETERS){
     dim_x  = (int) build_paras[0];
     dim_y  = (int) build_paras[1];
     owners = (int) build_paras[2];
-    p_land = (int) build_paras[3];
+    p_land = (double) build_paras[3];
     
     /* Do the biology here now */
     /* ====================================================================== */
@@ -97,19 +97,26 @@ SEXP build_ownership(SEXP PARAMETERS){
         land[xloc] = malloc(dim_y * sizeof(int));   
     } 
     
-    for(xloc = 0; xloc < dim_x; xloc++){
-        for(yloc = 0; yloc < dim_y; yloc++){
-            land[xloc][yloc] = xloc + yloc;
-        }
-    }
-    
     (*bin)   = 0;
     (*count) = 1;
     
-    unique_cells = owners;
+    if(p_land == 1){
+        unique_cells = 1;
+        owners       = 0;
+    }else{
+        unique_cells = floor( owners / (1 - p_land) );
+    }
     
     break_land(land, 0, dim_x, 0, dim_y, unique_cells, count, bin);
 
+    for(xloc = 0; xloc < dim_x; xloc++){ /* Add the public land back in */
+        for(yloc = 0; yloc < dim_y; yloc++){
+            if(land[xloc][yloc] > owners){
+                land[xloc][yloc] = 0;
+            }
+        }
+    }
+    
     /* This code switches from C back to R */
     /* ====================================================================== */        
     
