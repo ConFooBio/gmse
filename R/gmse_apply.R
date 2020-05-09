@@ -1392,6 +1392,7 @@ collect_land_ini <- function(arg_list){
     }
     make_lnd_list[[10]] <- 1:(stakeholders + 1);
     make_lnd_list[[11]] <- land_alloc;
+    make_lnd_list[[12]] <- public_land;
     
     return(make_lnd_list);
 }
