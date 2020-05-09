@@ -182,7 +182,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                     cell_val_mn = 1,
                                     cell_val_sd = 0,
                                     ownership   = 1:(stakeholders + 1),
-                                    owner_pr    = land_alloc
+                                    owner_pr    = land_alloc,
+                                    public_land = public_land
     );
     # Set the starting conditions for one resource
     starting_resources <- make_resource( model              = pop_model, 

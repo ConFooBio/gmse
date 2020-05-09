@@ -14,6 +14,7 @@
 #'@param layers The number of layers in the 3D landscape (should usually be 3)
 #'@param ownership A scalar or vector of agent IDs that own land
 #'@param owner_pr The proportion of land owned by each agent with a unique ID. Note that `owner_pr` must be of the same size as `ownership`, and the order of `owner_pr` reflects the order of agent IDs to which owned land is being assigned
+#'@param pubplic_land The proportion of landscape cells that are not owned
 #'@return the_land A cols by rows landscape with randomly distributed cell types
 #'@examples
 #'land <- make_landscape(model = "IBM", rows = 10, cols = 10, cell_types = 1, 
@@ -21,8 +22,10 @@
 #'@export
 make_landscape <- function(model, rows, cols, cell_types = 1, cell_val_mn = 1, 
                            cell_val_sd = 0, cell_val_max = 1, cell_val_min = 0,
-                           layers = 3, ownership = 0, owner_pr = NULL){
+                           layers = 3, ownership = 0, owner_pr = NULL,
+                           public_land = 0){
     the_land  <- NULL;
+    owners    <- length(ownership) - 1; # Minus one to remove the manager
     if(model == "IBM"){
         if(rows < 2){
             stop("Landscape dimensions in IBM must be 2 by 2 or greater");   
@@ -43,6 +46,8 @@ make_landscape <- function(model, rows, cols, cell_types = 1, cell_val_mn = 1,
             who_owns     <- sample(x = ownership, size = cell_count, 
                                    replace = TRUE, prob = owner_pr);
             the_terrain3 <- sort(who_owns); 
+            who_owns     <- owner_land_ssa(rows, cols, owners, public_land);
+            the_terrain3 <- who_owns;
         }
         the_terrain2[the_terrain2 > cell_val_max] <- cell_val_max;
         the_terrain2[the_terrain2 < cell_val_min] <- cell_val_min;
@@ -123,6 +128,10 @@ age_land <- function(LAND, landscape_ini, layer){
 #'@return A two dimensional array of cells with ownership values
 #'@export
 owner_land_ssa <- function(dim_x, dim_y, owners, public_land){
+    check_val <- floor( owners / (1 - public_land) );
+    if( (dim_x * dim_y) < check_val){
+        warning("There are probably not enough landscape cells for users");
+    }
     landscape_c_vector <- c(dim_x, dim_y, owners, public_land);
     OWNER_LAYER        <- run_landscape_a(landscape_c_vector);
     return(OWNER_LAYER);
