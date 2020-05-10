@@ -52,7 +52,7 @@ library(rhandsontable)
 
  - **2020**
 
-     - **MAY** [8](#u-8-MAY-2020), [6](#u-6-MAY-2020)
+     - **MAY** [10](#u-10-MAY-2020), [8](#u-8-MAY-2020), [6](#u-6-MAY-2020)
      - **APR** [23](#u-23-APR-2020), [13](#u-13-APR-2020), [1](#u-1-APR-2020) 
      - **FEB** [4](#u-4-FEB-2020)
 
@@ -109,6 +109,16 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-10-MAY-2020">Update: 10 MAY 2020</a>
+
+Yesterday and today I implemented the fourth bullet point listed on [6 MAY 2020](#u-6-MAY-2020), which changes the default pattern of land ownership in GMSE. In over a decade of coding individual-based models, I think this might be the first time that I have needed to apply [recursion](https://en.wikipedia.org/wiki/Recursion_(computer_science)) to a problem. I actually only just learned that recusion [is possible in R](https://www.datamentor.io/r-programming/recursion/), but decided to write the function in C just to get a bit more speed. 
+
+The goal of the new algorithm is to divide the a rectangular landscape of length `land_dim_1` and width `land_dim_2` into `stakeholder` smaller rectangles that are as equal as possible in area (i.e., cell number).
+
+
+
+These changes have now been pushed to the rev branch.
 
 > <a name="u-8-MAY-2020">Update: 8 MAY 2020</a>
 
