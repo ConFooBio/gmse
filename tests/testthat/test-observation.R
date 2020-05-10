@@ -25,8 +25,9 @@ test_that("Dimensions of observation arrays in returned list are correct", {
                            cell_val_max = 1, 
                            cell_val_min = 1,
                            layers       = 3, 
-                           ownership    = 1,  
-                           owner_pr     = NULL
+                           ownership    = 1,
+                           owners       = 1,
+                           public_land  = 0
     );
     
     paras <- c(0, 1, 1, 2, 2, 100, 100, 0, 0, 1, 10, 20, 10, 10, 1, 1, 1, 1, 12,
@@ -91,8 +92,9 @@ test_that("Observation model updates new parameters", {
                            cell_val_max = 1, 
                            cell_val_min = 1,
                            layers       = 3, 
-                           ownership    = 1,  
-                           owner_pr     = NULL
+                           ownership    = 1,
+                           owners       = 1,
+                           public_land  = 0
     );
     
     paras <- c(0, 1, 1, 2, 2, 100, 100, 0, 0, 1, 10, 20, 10, 10, 1, 1, 1, 1, 12,
@@ -158,8 +160,9 @@ test_that("Resources are marked correctly", {
                            cell_val_max = 1, 
                            cell_val_min = 1,
                            layers       = 3, 
-                           ownership    = 1,  
-                           owner_pr     = NULL
+                           ownership    = 1,
+                           owners       = 1,
+                           public_land  = 0
     );
     
     paras <- c(0, 1, 1, 2, 2, 100, 100, 0, 0, 1, 10, 20, 10, 10, 1, 1, 1, 1, 12,

@@ -16,17 +16,18 @@ test_that("Dimensions of resource array are correct", {
                          max_age            = 5
     );
     
-    land <- make_landscape(model        = "IBM", 
-                           rows         = 10, 
-                           cols         = 10, 
-                           cell_types   = 1, 
-                           cell_val_mn  = 1, 
-                           cell_val_sd  = 0, 
-                           cell_val_max = 1, 
-                           cell_val_min = 1,
-                           layers       = 3, 
-                           ownership    = 1,  
-                           owner_pr     = NULL
+    land  <-  make_landscape(model        = "IBM", 
+                             rows         = 10, 
+                             cols         = 10, 
+                             cell_types   = 1, 
+                             cell_val_mn  = 1, 
+                             cell_val_sd  = 0, 
+                             cell_val_max = 1, 
+                             cell_val_min = 1,
+                             layers       = 3, 
+                             ownership    = 1,
+                             owners       = 1,
+                             public_land  = 0
     );
     
     paras <- c(0, 1, 1, 2, 2, 100, 100, 0, 0, 1, 10, 20, 10, 10, 1, 1, 1, 1, 12,
@@ -62,17 +63,18 @@ test_that("Resource model doesn't alter parameters", {
                          max_age            = 5
     );
     
-    land <- make_landscape(model        = "IBM", 
-                           rows         = 10, 
-                           cols         = 10, 
-                           cell_types   = 1, 
-                           cell_val_mn  = 1, 
-                           cell_val_sd  = 0, 
-                           cell_val_max = 1, 
-                           cell_val_min = 1,
-                           layers       = 3, 
-                           ownership    = 1,  
-                           owner_pr     = NULL
+    land  <-  make_landscape(model        = "IBM", 
+                             rows         = 10, 
+                             cols         = 10, 
+                             cell_types   = 1, 
+                             cell_val_mn  = 1, 
+                             cell_val_sd  = 0, 
+                             cell_val_max = 1, 
+                             cell_val_min = 1,
+                             layers       = 3, 
+                             ownership    = 1,
+                             owners       = 1,
+                             public_land  = 0
     );
     
     paras <- c(0, 1, 1, 2, 2, 100, 100, 0, 0, 1, 10, 20, 10, 10, 1, 1, 1, 1, 12,
