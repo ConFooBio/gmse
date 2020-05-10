@@ -14,7 +14,7 @@ void break_land(double **land, int x0, int x1, int y0, int y1, int N,
     if(N > 1){
         Nd1    = (double) floor(0.5 * N);
         Nd2    = (double) Nd1 + (N % 2);
-        ratio  = (double )Nd2 / N;
+        ratio  = (double) Nd2 / N;
         N1     = (int) Nd1;
         N2     = (int) Nd2;
         if( (x1 - x0) > (y1 - y0) ){
@@ -27,7 +27,7 @@ void break_land(double **land, int x0, int x1, int y0, int y1, int N,
             break_land(land, x0, x1, y0, halfway, N2, count, bin);
             break_land(land, x0, x1, halfway, y1, N1, count, bin);
         }
-        if( (x1 - x0) == (y1 - y0) && (*bin) == 0){
+        if( (x1 - x0) == (y1 - y0) && (*bin) == 0 ){
             halfway  = (int) floor( ratio * (y1 - y0) + y0 );
             break_land(land, x0, x1, y0, halfway, N2, count, bin);
             break_land(land, x0, x1, halfway, y1, N1, count, bin);
@@ -83,8 +83,8 @@ SEXP build_ownership(SEXP PARAMETERS){
         vec_pos++;
     } /* The parameters vector is now copied into C */
     
-    dim_x  = (int) build_paras[0];
-    dim_y  = (int) build_paras[1];
+    dim_y  = (int) build_paras[0]; /* Note the weid flip to avoid jagged owns */
+    dim_x  = (int) build_paras[1];
     owners = (int) build_paras[2];
     p_land = (double) build_paras[3];
     
