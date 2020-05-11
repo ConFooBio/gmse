@@ -52,7 +52,7 @@ library(rhandsontable)
 
  - **2020**
 
-     - **MAY** [10](#u-10-MAY-2020), [8](#u-8-MAY-2020), [6](#u-6-MAY-2020)
+     - **MAY** [11](#u-11-MAY-2020), [10](#u-10-MAY-2020), [8](#u-8-MAY-2020), [6](#u-6-MAY-2020)
      - **APR** [23](#u-23-APR-2020), [13](#u-13-APR-2020), [1](#u-1-APR-2020) 
      - **FEB** [4](#u-4-FEB-2020)
 
@@ -85,30 +85,39 @@ library(rhandsontable)
 
      - **DEC** [22](#u-22-DEC-2016)
 
-[Towards a Game-theoretic Management Strategy Evaluation (G-MSE)](#intro)
-
-[General model development](#gendev)
-
-[General software development](#soft)
-
-[Game-theory modelling (game.c; green box above)](#game)
-
-[Game-theory and modelling](#gamemod)
-
-[Notes regarding Nilsen's MSE](#Nilsen)
-
-[Some side-notes that might be of use](#side)
-
-[Potentially relevant conferences and workshops](#meetings)
-
-[References consulted and annotated (Mendeley)](#ref)
-
-[References cited](#cited)
+********************************************************************************
+     
+ - [Older topics of GMSE development](#old_topics)
 
 ********************************************************************************
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-11-MAY-2020">Update: 11 MAY 2020</a>
+
+A small bug was noticed by Jeroen this morning relating to public land allocation. Essentially, when the proportion of public land amounted to fewer cells on the landscape than allocated to a single user, public land would default to zero cells. We needed some way for there to be nonzero public land that was also quite small. Given such situations, a [new function `small_public_land`](https://github.com/ConFooBio/gmse/blob/1a687d700f4889542da8d69ea087641a7947de0e/src/landscape.c#L55) is called. Public land is placed in the centre of the landscape, thereby cutting into at least two users' owned cells equally. First a rectangle proportional to the landscape is produced, followed by more public land cells attached to each side of this rectangle as necessary to achieve approximately the correct number of cells. It is important to recognise that simulation parameter values need to be chosen with care. If the total number of landscape cells cannot be evenly distributed among users and public land, then of course deviations from `gmse` and `gmse_apply` arguments will occur. The updates cause small deviations to occur for larger sections of landscape when possible. For example, the below produces a landscape with four equal quadrants, three for users and one for public land.
+
+```{r, eval = FALSE}
+sim <- gmse(time_max = 4, stakeholders = 3, public_land = 0.25,
+            land_dim_1 = 100, land_dim_2 = 100, land_ownership = TRUE);
+```
+
+The below is a situation in which the amount of public land is not small. A total of 2000 public land cells are called for, with the remaining 8000 to be divided evenly amongst nine users. This is impossible, and the shortest-splitine algorithm cannot give that level of precision and make the landscapes clean.
+
+```{r, eval = FALSE}
+sim <- gmse(time_max = 4, stakeholders = 9, public_land = 0.20, 
+            land_dim_1 = 100, land_dim_2 = 100, land_ownership = TRUE);
+```
+
+Instead, 1840 cells are allocated to public land, with each user being allocated rectangular blocks of 900 or 920 landscape cells. But when public land to be allocated is very low, fewer cells than given to a single user, deviations are then placed on users to make the public land proportion as accurate as possible in the centre of the landscape.
+
+```{r, eval = FALSE}
+sim <- gmse(time_max = 4, stakeholders = 7, public_land = 0.03, 
+            land_dim_1 = 100, land_dim_2 = 100, land_ownership = TRUE);
+```
+
+In the case of the above, e.g., exactly 300 public land cells are put down in the centre of the landscape, while users are given somewhere between 1303 and 1462 cells.
 
 > <a name="u-10-MAY-2020">Update: 10 MAY 2020</a>
 
@@ -7874,6 +7883,29 @@ print(resource);
 A small script can help us see the output of what's going on in the population, both in terms of individual movement and change in population abundance over time. The run time of the below population is negligible -- all of the data underlying the 100 time steps shown in the figure below is produced in a tenth of a second (**4 JAN Update: Assuming instead a carrying capacity of 40000, closer to the ball-park of the Islay geese, 100 time steps takes 11 seconds**). The upper panel of the figure below shows a landscape (light and dark brown -- these colours don't mean anything at the moment, but could represent different landscape properties) with individuals (black) that move around, reproduce, and die in each time step. The lower panel shows the abundance of these individuals as they increase to carrying capacity (red dashed line), whereafter the population size remains stable (of course, simulating a bigger population takes a bit more time -- it takes about nine tenths of a second to simulate 100 time steps at a carrying capacity of 4000). 
 
 ![Image an example run of the population model](images/pop_model_eg.png)
+
+<a name="old_topics">Old topics of development</a>
+================================================================================
+
+[Towards a Game-theoretic Management Strategy Evaluation (G-MSE)](#intro)
+
+[General model development](#gendev)
+
+[General software development](#soft)
+
+[Game-theory modelling (game.c; green box above)](#game)
+
+[Game-theory and modelling](#gamemod)
+
+[Notes regarding Nilsen's MSE](#Nilsen)
+
+[Some side-notes that might be of use](#side)
+
+[Potentially relevant conferences and workshops](#meetings)
+
+[References consulted and annotated (Mendeley)](#ref)
+
+[References cited](#cited)
 
 
 <a name="intro">Towards a Game-theoretic Management Strategy Evaluation (G-MSE):</a>
