@@ -88,11 +88,11 @@ void small_public_land(double **land, int dim_x, int dim_y, double public_land){
     leftover = (int) ((dim_x * dim_y) * public_land ) - (Lx * Ly);
     
     while(leftover > 0){ /* Inelegant, but it works */
-        xx = (int) get_rand_int( (x0-1) , (x1+1) );
-        yy = (int) get_rand_int( (y0-1) , (y1+1) );
-        if(land[xx][yy] > 0){
-            land[xx][yy] = 0;
-        }
+        do{
+            xx = (int) get_rand_int( (x0-1) , (x1+1) );
+            yy = (int) get_rand_int( (y0-1) , (y1+1) );
+        } while (land[xx][yy] == 0);
+        land[xx][yy] = 0;
         leftover--;
     }
 }
