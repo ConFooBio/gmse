@@ -47,6 +47,55 @@ void break_land(double **land, int x0, int x1, int y0, int y1, int N,
     }
 }
 
+/* =============================================================================
+ *  This function is called when the amount of public land is less than that
+ *  allocated to each user (i.e., very small amounts). In such cases, the 
+ *  function places the relevant amount of public land right in the centre.
+ * ===========================================================================*/
+void small_public_land(double **land, int dim_x, int dim_y, double public_land){
+    
+    int xx, yy, x0, x1, y0, y1, Lx, Ly, sq_len_x, sq_len_y, leftover;
+    double cells, rand_x, rand_y;
+    
+    Lx = (int) floor( sqrt(public_land) * (dim_x) );
+    Ly = (int) floor( sqrt(public_land) * (dim_y) );
+    
+    x0 = (0.5 * dim_x) - (0.5 * Lx);
+    x1 = (0.5 * dim_x) + (0.5 * Lx);
+    y0 = (0.5 * dim_y) - (0.5 * Ly);
+    y1 = (0.5 * dim_y) + (0.5 * Ly);
+    
+    if(x0 < 0){ /* This should never happen, but just to avoid a crash. */
+        x0 = 1;
+    }
+    if(x1 >= dim_x){
+        x1 = dim_x - 1;
+    }
+    if(y0 < 0){
+        y0 = 1;
+    }
+    if(y1 >= dim_y){
+        y1 = dim_y - 1;
+    }
+    
+    for(xx = x0; xx < x1; xx++){
+        for(yy = y0; yy < y1; yy++){
+            land[xx][yy] = 0;
+        }
+    }
+    
+    /* Calculate, then add the leftover cells */
+    leftover = (int) ((dim_x * dim_y) * public_land ) - (Lx * Ly);
+    
+    while(leftover > 0){ /* Inelegant, but it works */
+        xx = (int) get_rand_int( (x0-1) , (x1+1) );
+        yy = (int) get_rand_int( (y0-1) , (y1+1) );
+        if(land[xx][yy] > 0){
+            land[xx][yy] = 0;
+        }
+        leftover--;
+    }
+}
 
 /* =============================================================================
  *  This function takes landscape dimensions, number of land owners, and
@@ -115,6 +164,10 @@ SEXP build_ownership(SEXP PARAMETERS){
                 land[xloc][yloc] = 0;
             }
         }
+    }
+    
+    if(p_land > 0 && unique_cells == owners){ /* Very little public land */
+        small_public_land(land, dim_x, dim_y, p_land);
     }
     
     /* This code switches from C back to R */
