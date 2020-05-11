@@ -96,6 +96,8 @@ library(rhandsontable)
 
 > <a name="u-11-MAY-2020">Update: 11 MAY 2020</a>
 
+**Bug fix to public land allocation**
+
 A small bug was noticed by Jeroen this morning relating to public land allocation. Essentially, when the proportion of public land amounted to fewer cells on the landscape than allocated to a single user, public land would default to zero cells. We needed some way for there to be nonzero public land that was also quite small. Given such situations, a [new function `small_public_land`](https://github.com/ConFooBio/gmse/blob/1a687d700f4889542da8d69ea087641a7947de0e/src/landscape.c#L55) is called. Public land is placed in the centre of the landscape, thereby cutting into at least two users' owned cells equally. First a rectangle proportional to the landscape is produced, followed by more public land cells attached to each side of this rectangle as necessary to achieve approximately the correct number of cells. It is important to recognise that simulation parameter values need to be chosen with care. If the total number of landscape cells cannot be evenly distributed among users and public land, then of course deviations from `gmse` and `gmse_apply` arguments will occur. The updates cause small deviations to occur for larger sections of landscape when possible. For example, the below produces a landscape with four equal quadrants, three for users and one for public land.
 
 ```{r, eval = FALSE}
@@ -118,6 +120,10 @@ sim <- gmse(time_max = 4, stakeholders = 7, public_land = 0.03,
 ```
 
 In the case of the above, e.g., exactly 300 public land cells are put down in the centre of the landscape, while users are given somewhere between 1303 and 1462 cells.
+
+**Update gmse GUI**
+
+The `gmse_gui` function has now been updated so that all options are available (and default landscape allocation is enacted) for running simulations from within the shiny GUI. I have not put this up on the shiny server yet, but on the rev branch, the new GUI can be used within R. This now concludes all of the planned updates for code changes to v0.6.0.x, and now the last two things to do will be to add vignettes and update the website. Please contact me to request any additional changes.
 
 > <a name="u-10-MAY-2020">Update: 10 MAY 2020</a>
 
