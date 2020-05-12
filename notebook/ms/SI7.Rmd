@@ -6,10 +6,10 @@ author: A. Bradley Duthie&#xb9;&#xb3;, Jeremy J. Cusack&#xb9;, Isabel L. Jones&#
 date: '[1] Biological and Environmental Sciences, University of Stirling, Stirling,
   UK [2] Norwegian Institute for Nature Research, Trondheim, Norway [3] alexander.duthie@stir.ac.uk'
 output:
+  html_document: default
   pdf_document:
     citation_package: natbib
     fig_caption: yes
-  html_document: default
   word_document:
     fig_caption: yes
     reference_docx: docx_template.docx
