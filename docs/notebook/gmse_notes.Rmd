@@ -52,7 +52,7 @@ library(rhandsontable)
 
  - **2020**
 
-     - **MAY** [11](#u-11-MAY-2020), [10](#u-10-MAY-2020), [8](#u-8-MAY-2020), [6](#u-6-MAY-2020)
+     - **MAY** [12](#u-12-MAY-2020), [11](#u-11-MAY-2020), [10](#u-10-MAY-2020), [8](#u-8-MAY-2020), [6](#u-6-MAY-2020)
      - **APR** [23](#u-23-APR-2020), [13](#u-13-APR-2020), [1](#u-1-APR-2020) 
      - **FEB** [4](#u-4-FEB-2020)
 
@@ -93,6 +93,16 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-12-MAY-2020">Update: 12 MAY 2020</a>
+
+**Updated vignettes**
+
+I have now checked vignettes 5-7 to see if updates were needed. Only an update to [vignette 7](https://confoobio.github.io/gmse/articles/SI7.html) was necessary. Note that even where the code for vignettes remains unchanged, it would still be a good idea to re-knit everything for the website as a test to make sure that everything runs as expected with new defaults for v0.6.0.x. 
+
+**Uneven land allocation**
+
+Jeroen has incorporated some code and a new `ownership_var` argument to adjust the variation in land ownership among users. I've re-worked the way that public land is handled in the new landscape owner building function to account for this, and everything appears to work as intended. 
 
 > <a name="u-11-MAY-2020">Update: 11 MAY 2020</a>
 
