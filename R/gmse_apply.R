@@ -683,7 +683,7 @@ pass_paras <- function( old_list = NULL, time_max = 100, land_dim_1 = 100,
                         manager_sense = 0.1, public_land = 0, 
                         group_think = FALSE, age_repr = 1, usr_budget_rng = 0,
                         action_thres = 0, budget_bonus = 0, consume_surv = 0,
-                        consume_repr = 0, PARAS = NULL, ...
+                        consume_repr = 0, ownership_var = 0, PARAS = NULL, ...
 ){
     
     if(is.null(PARAS) == FALSE){
@@ -705,7 +705,7 @@ pass_paras <- function( old_list = NULL, time_max = 100, land_dim_1 = 100,
                     manage_caution, land_ownership, manage_freq, converge_crit, 
                     manager_sense, public_land, group_think, age_repr,
                     usr_budget_rng, action_thres, budget_bonus, consume_surv,
-                    consume_repr); 
+                    consume_repr, ownership_var); 
 
     paras_errors(input_list);
     
@@ -1160,6 +1160,9 @@ paras_errors <- function(input_list){
     }
     if(input_list[62] < 0){
         stop("ERROR: Resource consumption for reproduction cannot be negative");
+    }
+    if(input_list[63] < 0 | input_list[63] >= 1){
+        stop("land_var needs to be >= 0 and < 1");
     }
 }
 
