@@ -5,8 +5,8 @@
  *  rectangular chunks. The end result is a mostly even distribution of owned
  *  cells on the landscape.
  * ===========================================================================*/
-void break_land(double **land, int x0, int x1, int y0, int y1, int N, double land_var,
-                int *count, int *bin){
+void break_land(double **land, int x0, int x1, int y0, int y1, int N, 
+                double land_var, int *count, int *bin){
     
     int xx, yy, halfway, N1, N2, x0_new;
     double Nd1, Nd2, ratio, ratio_adj;
@@ -18,9 +18,9 @@ void break_land(double **land, int x0, int x1, int y0, int y1, int N, double lan
         N1     = (int) Nd1;
         N2     = (int) Nd2;
         
-        /// Adjusting the adjustment - assuming input parameter is a fraction of a total >=0 && <1
-        ratio_adj = land_var*ratio;
-        /// Adding adjustment to ratio
+        /* Adj the adj. - assuming input param. is a frac. of total >=0 && <1 */
+        ratio_adj = land_var * ratio;
+        /* Adding adjustment to ratio */
         ratio = ratio * (1 - ratio_adj);
         
         if( (x1 - x0) > (y1 - y0) ){
@@ -138,10 +138,10 @@ SEXP build_ownership(SEXP PARAMETERS){
         vec_pos++;
     } /* The parameters vector is now copied into C */
     
-    dim_y  = (int) build_paras[0]; /* Note the weid flip to avoid jagged owns */
-    dim_x  = (int) build_paras[1];
-    owners = (int) build_paras[2];
-    p_land = (double) build_paras[3];
+    dim_y    = (int) build_paras[0]; /* Note the flip to avoid jagged owns */
+    dim_x    = (int) build_paras[1];
+    owners   = (int) build_paras[2];
+    p_land   = (double) build_paras[3];
     land_var = (double) build_paras[4];
     
     /* Do the biology here now */
