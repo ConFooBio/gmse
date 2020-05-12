@@ -69,16 +69,9 @@ gmse_apply <- function(res_mod  = resource,
     check_extinction(arg_vals);
     
     # ------ OBSERVATION MODEL -------------------------------------------------
-<<<<<<< HEAD
-    # The statement below produces a warning, and observe_type in the returned list is a reference to sim_paras.
-    obs_args <- prep_obs(arg_list = arg_vals, obs_mod = obs_mod);
-    check_args(arg_list = obs_args, the_fun = obs_mod);
-    obs_results <- do.call(what = obs_mod, args = obs_args);
-=======
     obs_args <- prep_obs(arg_list = arg_vals, obs_mod = obs_mod);               
     check_args(arg_list = obs_args, the_fun = obs_mod);                         
     obs_results <- do.call(what = obs_mod, args = obs_args);                    
->>>>>>> rev
     obs_results <- check_name_results(output   = obs_results,
                                       vec_name = "observation_vector", 
                                       mat_name = "observation_array");          
