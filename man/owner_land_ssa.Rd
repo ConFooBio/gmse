@@ -4,7 +4,7 @@
 \alias{owner_land_ssa}
 \title{Owner land SSA}
 \usage{
-owner_land_ssa(dim_x, dim_y, owners, public_land)
+owner_land_ssa(dim_x, dim_y, owners, public_land, land_var)
 }
 \arguments{
 \item{dim_x}{The number of cells on the X dimension of the landscape}
@@ -14,6 +14,8 @@ owner_land_ssa(dim_x, dim_y, owners, public_land)
 \item{owners}{Number of owners among which landscape cells will be divided}
 
 \item{public_land}{The amount of land that will not be owned}
+
+\item{land_var}{Does distribution of land vary among users? >=0, <1}
 }
 \value{
 A two dimensional array of cells with ownership values

@@ -16,7 +16,8 @@ make_landscape(
   layers = 3,
   ownership = FALSE,
   owners = 4,
-  public_land = 0
+  public_land = 0,
+  ownership_var = 0
 )
 }
 \arguments{
@@ -44,6 +45,8 @@ make_landscape(
 \item{owners}{The number of stakeholders in the model that own land}
 
 \item{public_land}{The proportion of landscape cells that are not owned}
+
+\item{ownership_var}{Does distribution of land vary among users? >=0, <1}
 }
 \value{
 the_land A cols by rows landscape with randomly distributed cell types
