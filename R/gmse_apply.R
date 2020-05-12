@@ -38,13 +38,13 @@ gmse_apply <- function(res_mod  = resource,
     if(is.null(old_list) == FALSE){
         old_list <- swap_old_gmse(old_list);
     }
-    
+
     std_paras           <- pass_paras(old_list, ...);
     all_args            <- as.list(sys.call());
     all_args[["PARAS"]] <- std_paras[["gmse_para_vect"]]; 
     all_args[["ilist"]] <- std_paras[["gmse_user_input"]]; 
     all_args[["GMSE"]]  <- formals(gmse);                                       
-    
+
     needed_args <- argument_list(res_mod, obs_mod, man_mod, use_mod, all_args); 
     arg_vals    <- needed_args[["all_arg_values"]]; 
     arg_name    <- needed_args[["all_arg_names"]];
@@ -1187,8 +1187,16 @@ argument_list <- function(res_mod, obs_mod, man_mod, use_mod, oth_vals){
     arg_list    <- place_args(all_names, formals(obs_mod), arg_list);
     arg_list    <- place_args(all_names, formals(man_mod), arg_list);
     arg_list    <- place_args(all_names, formals(use_mod), arg_list);
+    
     arg_list    <- place_args(all_names, oth_vals, arg_list);
     arg_out     <- list(all_arg_values = arg_list, all_arg_names = all_names);
+    
+    ### At this point in an "unwrapped" execution, this
+    ###   arg_out$all_arg_values[[which(arg_out$all_arg_names=="get_res")]]  
+    ### returns "Full", as expected.
+    ### 
+    ### However, this value is NA when in the wrapped function???
+    ### 
     
     return(arg_out);        
 }
@@ -1215,9 +1223,19 @@ place_args <- function(all_names, placing_vals, arg_list){
         place_name <- placing_names[i];
         if(place_name %in% all_names){
             place_pos <- which(all_names == place_name);
-            arg_eval  <- eval(placing_vals[[i]]);
+
+            ### The follwing bit was changed to help a wrapper function - seems to work with res_consume and
+            ###  observe_type as custom parameters only, but dramatically crashes R when also including
+            ###  land_dim_1.
+            ###  
+            ###  The lines commented out below are the ones that I replaced the versions below them.
+            
+            #arg_eval  <- eval(placing_vals[[i]]);
+            arg_eval  <- placing_vals[[grep(place_name, names(placing_vals))]]
+
             if(is.null(arg_eval) == FALSE){
-                arg_list[[place_pos]] <- eval(placing_vals[[i]]);
+                #arg_list[[place_pos]] <- eval(placing_vals[[i]]);
+                arg_list[[place_pos]] <- arg_eval;
             }
         }
     }

@@ -5,11 +5,11 @@
  *  rectangular chunks. The end result is a mostly even distribution of owned
  *  cells on the landscape.
  * ===========================================================================*/
-void break_land(double **land, int x0, int x1, int y0, int y1, int N, 
+void break_land(double **land, int x0, int x1, int y0, int y1, int N, double land_var,
                 int *count, int *bin){
     
     int xx, yy, halfway, N1, N2, x0_new;
-    double Nd1, Nd2, ratio;
+    double Nd1, Nd2, ratio, ratio_adj;
     
     if(N > 1){
         Nd1    = (double) floor(0.5 * N);
@@ -17,25 +17,31 @@ void break_land(double **land, int x0, int x1, int y0, int y1, int N,
         ratio  = (double) Nd2 / N;
         N1     = (int) Nd1;
         N2     = (int) Nd2;
+        
+        /// Adjusting the adjustment - assuming input parameter is a fraction of a total >=0 && <1
+        ratio_adj = land_var*ratio;
+        /// Adding adjustment to ratio
+        ratio = ratio * (1 - ratio_adj);
+        
         if( (x1 - x0) > (y1 - y0) ){
             halfway  = floor( ratio * (x1 - x0) + x0 );
-            break_land(land, x0, halfway, y0, y1, N2, count, bin);
-            break_land(land, halfway, x1, y0, y1, N1, count, bin);
+            break_land(land, x0, halfway, y0, y1, N2, land_var, count, bin);
+            break_land(land, halfway, x1, y0, y1, N1, land_var, count, bin);
         }
         if( (x1 - x0) < (y1 - y0) ){
             halfway  = floor( ratio * (y1 - y0) + y0);
-            break_land(land, x0, x1, y0, halfway, N2, count, bin);
-            break_land(land, x0, x1, halfway, y1, N1, count, bin);
+            break_land(land, x0, x1, y0, halfway, N2, land_var, count, bin);
+            break_land(land, x0, x1, halfway, y1, N1, land_var, count, bin);
         }
         if( (x1 - x0) == (y1 - y0) && (*bin) == 0 ){
             halfway  = (int) floor( ratio * (y1 - y0) + y0 );
-            break_land(land, x0, x1, y0, halfway, N2, count, bin);
-            break_land(land, x0, x1, halfway, y1, N1, count, bin);
+            break_land(land, x0, x1, y0, halfway, N2, land_var, count, bin);
+            break_land(land, x0, x1, halfway, y1, N1, land_var, count, bin);
         }
         if( (x1 - x0) == (y1 - y0) && (*bin) == 1){
             halfway  = (int) floor( ratio * (x1 - x0) + x0 );
-            break_land(land, x0, x1, y0, halfway, N2, count, bin);
-            break_land(land, x0, x1, halfway, y1, N1, count, bin);
+            break_land(land, x0, x1, y0, halfway, N2, land_var, count, bin);
+            break_land(land, x0, x1, halfway, y1, N1, land_var, count, bin);
         }
     }else{
         for(xx = x0; xx < x1; xx++){
@@ -111,7 +117,7 @@ SEXP build_ownership(SEXP PARAMETERS){
     int xloc, yloc, dim_x, dim_y, vec_pos, owners, unique_cells;
     int *count, *bin;
     int protected_n, len_P;
-    double p_land, *paras_ptr, *land_ptr_new, *build_paras, **land;
+    double p_land, land_var, *paras_ptr, *land_ptr_new, *build_paras, **land;
     
     /* First take care of all the reading in of code from R to C */
     /* ====================================================================== */
@@ -136,6 +142,7 @@ SEXP build_ownership(SEXP PARAMETERS){
     dim_x  = (int) build_paras[1];
     owners = (int) build_paras[2];
     p_land = (double) build_paras[3];
+    land_var = (double) build_paras[4];
     
     /* Do the biology here now */
     /* ====================================================================== */
@@ -156,7 +163,7 @@ SEXP build_ownership(SEXP PARAMETERS){
         unique_cells = floor( owners / (1 - p_land) );
     }
     
-    break_land(land, 0, dim_x, 0, dim_y, unique_cells, count, bin);
+    break_land(land, 0, dim_x, 0, dim_y, unique_cells, land_var, count, bin);
 
     for(xloc = 0; xloc < dim_x; xloc++){ /* Add the public land back in */
         for(yloc = 0; yloc < dim_y; yloc++){
