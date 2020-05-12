@@ -69,9 +69,9 @@ In the default case above, there are five agents (one manager and four users), e
 10. Error parameter (currently unused)
 11. Resource marking parameter (currently used only for managers)
 12. Resource tally parameter (currently used only for managers)
-13. Unused column 1
-14. Unused column 2
-15. Unused column 3
+13. How many resources an agent has in view (unused)
+14. Total number of cells owned by an agent
+15. Unused column
 16. Yield from owned land (zero for users when default `land_ownership = FALSE`)
 17. Budget
 
@@ -108,6 +108,8 @@ Columns in the resource array represent the individual resource traits listed be
 18. Has the resource been castrated by an agent?
 19. Has the resource's growth rate been increased by an agent?
 20. Has the resource's offspring production been increased by an agent?
+21. How much yield has the resource consumed?
+22. How many times can the resource consume yield in one time step?
 
 In the case of columns 16-20, the value is either zero (if no action has occurred), or some positive integer that matches the ID of the agent that has performed the act (e.g., if column 17 equals 3, then that means that the agent with ID = 3 culled the resource in the corresponding row; where more than one agent's action is possible per time step -- as in scaring -- the integer reflects the most recently acting agent). We anticipate that future versions of gmse will contain multiple resource types, and might add columns to include additional resource traits.
 
@@ -171,30 +173,61 @@ In the [genetic algorithm](SI1.pdf), values in elements of a `user_array` layer 
 6. LAND {#land}
 ================================================================================
 
-Events in default GMSE sub-models occur on a spatially-explicit landscape `LAND`, which is stored as a three dimensional array. The size of this landscape is specified with the `land_dim_1` and `land_dim_2` arguments of GMSE, which determine the length, in cells, of the y and x dimensions of the landscape, respectively (e.g., if `land_dim_1 = 10` and `land_dim_2 = 1000`, then the landscape will be one very long horizontal transect). The total number of landscape cells on which resources and agents can interact is therefore the product of `land_dim_1` and `land_dim_2`. In addition, all landscapes have three layers, which hold three separate values of information for each x-y location. The first layer is unused in GMSE v0.4.0.7; the second layer holds crop production on a cell, and the third layer holds the owner of the cell (corresponding to the ID of an agent, where the manager's ID = 0 defines public land). An $8 \times 8$ portion of the landscape from `sim` is shown below.
+Events in default GMSE sub-models occur on a spatially-explicit landscape `LAND`, which is stored as a three dimensional array. The size of this landscape is specified with the `land_dim_1` and `land_dim_2` arguments of GMSE, which determine the length, in cells, of the y and x dimensions of the landscape, respectively (e.g., if `land_dim_1 = 10` and `land_dim_2 = 1000`, then the landscape will be one very long horizontal transect). The total number of landscape cells on which resources and agents can interact is therefore the product of `land_dim_1` and `land_dim_2`. In addition, all landscapes have three layers, which hold three separate values of information for each x-y location. The first layer is unused as of GMSE v0.4.0.7; the second layer holds crop production on a cell, and the third layer holds the owner of the cell (corresponding to the ID of an agent, where the manager's ID = 0 defines public land). An $8 \times 8$ portion of the landscape from `sim` is shown below.
 
 ```{r}
 print(sim$LAND[1:8,1:8,]);
 ```
 
-In the case of the above, all of the cells in this square patch of landscape are owned by agent 1 (i.e., the manager; see `sim$LAND[,,3]`), and we can see that crop production on this patch of land has been decreased from 1 in several cells as a consequence of consumption by resources (see `sim$LAND[„2]`). In [SI4](SI4.pdf), we show how landscape cell values can be manipulated to customise the placement of land ownership.
+In the case of the above, all of the cells in this square patch of landscape are owned by agent 1 (i.e., the manager; see `sim$LAND[,,3]`). This occurs if `land_ownership = FALSE` and users are prohibited from owning land. We can also see that crop production on this patch of land has been decreased from its initialised value of 1 in several cells as a consequence of consumption by resources (see `sim$LAND[„2]`). By default, landscape yield starts each time step at a value of 1, and hence replenishes in each time even if consumed in the previous time step. Users that own landscape cells (when `land_ownership = TRUE`) can increase yield above 1 using the `tend_crop_yld` action. If resources consume landscape yield, the value of yield can drop to a minimum value of zero.
+
+In [SI4](SI4.pdf), we show how landscape cell values can be manipulated to customise the placement of land ownership. By default, GMSE v0.6.0.0+ places the ownership of landscape cells using a shortest-splitline algorithm (see the lab notebook for [a detailed explanation](https://confoobio.github.io/gmse/notebook/gmse_notes.html#u-10-MAY-2020)). The algorithm splits the landscape evenly into smaller and smaller rectangles until a sufficient number of rectangles are produced for all users to own a similar amount of land (note that how uniformly land is partitioned among users will naturally be influenced by how evenly the total number of landscape cells can be divided among them). Below is an example in which land of `land_dim_1 = 64` and `land_dim_2 = 64` is partitioned equally among eight users.
+
+```{r, echo = FALSE, fig.height = 5, fig.width = 5}
+par(mar = c(0.2, 0.2, 0.2, 0.2));
+land_1 <- owner_land_ssa(dim_x = 64, dim_y = 64, owners = 8, public_land = 0);
+image(land_1, xaxt = "n", yaxt = "n", col = topo.colors(max(land_1)));
+```
+
+Note that all users own exactly `r mean(as.vector(table(land_1)))` cells on the landscape. A bit more complexity can be generated by an uneven landscape of `land_dim_1 = 80` and `land_dim_2 = 100`, with land allocated among nine users. 
+
+
+```{r, echo = FALSE, fig.height = 4, fig.width = 5}
+par(mar = c(0.2, 0.2, 0.2, 0.2));
+land_2 <- owner_land_ssa(dim_x = 100, dim_y = 80, owners = 9, public_land = 0);
+image(land_2, xaxt = "n", yaxt = "n", col = topo.colors(max(land_2)));
+```
+
+In the case of the above landscape, the number of cells allocated to each user ranges from `r min(as.vector(table(land_2)))` to `r max(as.vector(table(land_2)))`.
+
+Public land is placed on the landscape whenever `public_land > 0`, with `public_land` defining the proportion of landscape cells that are not be owned by an user. When the expected number of cells to be allocated to public land is calculated to be equal to or greater than that allocated to a single user, public land is allocated in a block as is with users. For example, the below shows a landscape in which `public_land = 0.5`, with seven other users owning land.
+
+```{r, echo = FALSE, fig.height = 5, fig.width = 5}
+par(mar = c(0.2, 0.2, 0.2, 0.2));
+land_3 <- owner_land_ssa(dim_x = 100, dim_y = 100, owners = 7, 
+                         public_land = 0.5);
+image(land_3, xaxt = "n", yaxt = "n", col = topo.colors(max(land_3)));
+```
+
+Public land is in dark blue above. If, however, the amount of public land is very small, the land is added to the centre of the landscape. Below illustrates a landscape that also includes seven land owning users, but with `public_land = 0.05`.
+
+```{r, echo = FALSE, fig.height = 5, fig.width = 5}
+par(mar = c(0.2, 0.2, 0.2, 0.2));
+land_4 <- owner_land_ssa(dim_x = 100, dim_y = 100, owners = 7, 
+                         public_land = 0.1);
+image(land_4, xaxt = "n", yaxt = "n", col = topo.colors(max(land_4)));
+```
+
+Where `public_land` is small, the default landscape ownership algorithm thereby attempts to be as precise as possible in allocating cell numbers. Of course, as previously mentioned, ownership can also be manually specified when using `gmse_apply`.
+
 
 Conclusions
 ================================================================================
 
-We have focused on the data structures [`AGENTS`](#agents), [`resource_array`](#resources), [`observation_array`](#observation), [`manager_array`](#cost), [`user_array`](#action), and [`LAND`](#land) because these are the data structures that can be most readily manipulated to customise GMSE simulations. An example of how to do this within a loop using `gmse_apply` can be found in [SI4](SI4.pdf). While other data structures exist within GMSE (e.g., see the output of `gmse_apply` when `get_res = Full`), we do not recommend manipulating these structures for custom simulations.
+We have focused on the data structures [`AGENTS`](#agents), [`resource_array`](#resources), [`observation_array`](#observation), [`manager_array`](#cost), [`user_array`](#action), and [`LAND`](#land) because these are the data structures that can be most readily manipulated to customise GMSE simulations. An example of how to do this within a loop using `gmse_apply` can be found in [SI4](SI4.pdf). While other data structures exist within GMSE (e.g., see the output of `gmse_apply` when `get_res = "Full"`), we do not recommend manipulating these structures for custom simulations.
 
-Many data structures contain elements that are unused in GMSE v0.4.0.7, and in all cases this is designed for ease of ongoing development of new GMSE features. Requests for new features can be made on GitHub using the [GMSE Wiki](https://github.com/bradduthie/gmse/wiki) or the [GMSE Issues](https://github.com/bradduthie/gmse/issues) page.
-
-
+Many data structures contain elements that are unused in GMSE v0.6.0.0, and in all cases this is designed for ease of ongoing development of new GMSE features. Requests for new features can be made on GitHub using the [GMSE Wiki](https://github.com/bradduthie/gmse/wiki) or the [GMSE Issues](https://github.com/bradduthie/gmse/issues) page.
 
 
-
-
-
-
-
-
-
-
-
+Reference
+================================================================================
