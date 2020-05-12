@@ -15,7 +15,7 @@ test_that("Dimensions of resource array are correct", {
                          max_age            = 5
     );
     
-    expect_equal(dim(res), c(10, 20));
+    expect_equal(dim(res), c(10, 22));
 })
 
 test_that("Resource IDs are correct", {

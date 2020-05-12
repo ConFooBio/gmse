@@ -18,3 +18,19 @@ void swap_arrays(void **ARRAY_A, void **ARRAY_B);
 int edge_effect(int pos, int edge_1, int edge_2, int edge_type);
 
 void res_mover(double **res_moving, double ***landscape, double *paras);
+
+int rand_dir(void);
+
+int unif_move(int max_move);
+
+int pois_move(double move_para);
+
+int unif_pois_move(double move_para);
+
+void res_mover(double **res_moving, double ***landscape, double *paras);
+
+void move_a_resource(double **res_moving, double ***landscape, double *paras,
+                     int resource);
+
+void count_owned_cells(double ***landscape, double *paras, double **agent_array, 
+                       int land_x, int land_y, int agent_number);

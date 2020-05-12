@@ -62,6 +62,13 @@
 #'@param manager_sense This adjusts the sensitivity that a manager assumes their actions have with respect to changes in costs (their policy). For example, given a `manage_sense` value of 0.9, if the cost of culling resources doubles, then instead of a manager assuming the the number of culled resources per user will be cut in half, the manager will instead assume that the number of resources culled will be cut by one half times eight tenths. As a general rule, a value of ca 0.8 allows the manager to predict stake-holder responses to policy accurately; future versions of GMSE could allow managers to adjust this dynamically based on simulation history.
 #'@param public_land The proportion of the landscape that will be public, and not owned by stakeholders. The remaining proportion of the landscape will be evenly divided among stakeholders. Note that this option is only available when land_ownership == TRUE.
 #'@param group_think If TRUE, all users will have identical actions; the genetic algorithm will find actions for one user and copy them for all users. This is a useful option if a lot of users are required but variation among user decisions can be ignored.
+#'@param age_repr The age below which resources are incapable of reproducing.
+#'@param usr_budget_rng This specifies a range around the value of `user_budget`, such that the expected value of each user's budget will be `user_budget`, with a uniform distribution plus or minus `usr_budget_rng`. Note that the minimum `usr_budget_rng` allowed is 1 regardless of the range set.
+#'@param action_thres A value for the deviation of the estimated population from the manager target, above which manager will not update the policy.
+#'@param budget_bonus A percentage of the initial budget manager will receive if policy was not updated last time step. Corresponds to the time, energy and money saved by waiting for a better time to update the policy.
+#'@param consume_surv How much from a landscape does an individual resource need to consume in a timestep to survive (default 0)?
+#'@param consume_repr How much from a landscape does an individual resource need to produce one offspring (default 0)?
+#'@param times_feeding Number of searches that resources are allowed per time step for feeding on the landscape. 
 #'@return A large list is returned that includes detailed simulation histories for the resource, observation, management, and user models. This list includes eight elements, most of which are themselves complex lists of arrays: (1) A list of length `time_max` in which each element is an array of resources as they exist at the end of each time step. Resource arrays include all resources and their attributes (e.g., locations, growth rates, offspring, how they are affected by stakeholders, etc.). (2) A list of length `time_max` in which each element is an array of resource observations from the observation model. Observation arrays are similar to resource arrays, except that they can have a smaller number of rows if not all resources are observed, and they have additional columns that show the history of each resource being observed over the course of `times_observe` observations in the observation model. (3) A 2D array showing parameter values at each time step (unique rows); most of these values are static but some (e.g., resource number) change over time steps. (4) A list of length `time_max` in which each element is an array of the landscape that identifies proportion of crop production per cell. This allows for looking at where crop production is increased or decreased over time steps as a consequence of resource and stakeholder actions. (5) The total time the simulation took to run (not counting plotting time). (6) A 2D array of agents and their traits. (7) A list of length `time_max` in which each element is a 3D array of the costs of performing each action for managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in costs of particular actions can therefore be be examined over time. (8) A list of length `time_max` in which each element is a 3D array of the actions performed by managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in actions of agents can therefore be examined over time. Because the above lists cannot possibly be interpreted by eye all at once in the simulation output, it is highly recommended that the contents of a simulation be stored and interprted individually if need be; alternativley, simulations can more easily be interpreted through plots when `plotting = TRUE`.
 #'@examples
 #'\dontrun{
@@ -70,7 +77,7 @@
 #'@useDynLib GMSE
 #'@importFrom grDevices topo.colors
 #'@importFrom graphics abline axis image mtext par plot points polygon
-#'@importFrom stats rnorm rpois
+#'@importFrom stats rnorm rpois runif
 #'@export
 gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   land_dim_1     = 100,   # x dimension of the landscape
@@ -92,7 +99,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   times_observe  = 1,     # How many times obs (if type = 0)
                   obs_move_type  = 1,     # Type of movement for agents
                   res_min_age    = 0,     # Minimum age recorded and observed
-                  res_move_obs   = TRUE,  # Move resources while observing
+                  res_move_obs   = FALSE, # Move resources while observing
                   Euclidean_dist = FALSE, # Use Euclidean distance in view
                   plotting       = TRUE,  # Plot the results
                   hunt           = FALSE, # Does the user hunt resources?
@@ -127,7 +134,14 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   converge_crit  = 0.1,   # Convergence criteria
                   manager_sense  = 0.9,   # Manager sensitivity
                   public_land    = 0,     # Proportion of landscape public
-                  group_think    = FALSE  # All users behave identically
+                  group_think    = FALSE, # All users behave identically
+                  age_repr       = 1,     # Age at which resources can reproduce
+                  usr_budget_rng = 0,     # Uniform range of users budgets
+                  action_thres   = 0,     # Managers' policy updating threshold
+                  budget_bonus   = 0,     # Budget saved by not acting
+                  consume_surv   = 0,     # Required consumption for survival
+                  consume_repr   = 0,     # Required consumption to reproduce
+                  times_feeding  = 1      # Number of searches to feed on land
 ){
     
     time_max <- time_max + 1; # Add to avoid confusion (see loop below)
@@ -155,21 +169,17 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     proc_check_start <- proc_start;
     
     # Set the landscape
-    if(land_ownership == TRUE){
-        stake_pr    <- (1 - public_land) / stakeholders;
-        land_alloc  <- c(public_land, rep(x = stake_pr, times = stakeholders));
-    }else{
-        land_alloc  <- c(1, rep(x = 0, times = stakeholders)); 
-    }
     LANDSCAPE_r  <- make_landscape( model       = pop_model, 
                                     rows        = land_dim_1, 
                                     cols        = land_dim_2, 
                                     cell_types  = 1,
                                     cell_val_mn = 1,
                                     cell_val_sd = 0,
-                                    ownership   = 1:(stakeholders + 1),
-                                    owner_pr    = land_alloc
+                                    ownership   = land_ownership,
+                                    owners      = stakeholders,
+                                    public_land = public_land
     );
+    
     # Set the starting conditions for one resource
     starting_resources <- make_resource( model              = pop_model, 
                                          resource_quantity  = RESOURCE_ini,
@@ -180,7 +190,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                          rm_pr              = remove_pr,
                                          lambda             = lambda,
                                          consumption_rate   = res_consume,
-                                         max_age            = max_ages[1]
+                                         max_age            = max_ages[1],
+                                         times_feeding      = times_feeding
     );
     # This will obviously need to be changed -- new function in initialise.R
     AGENTS   <- make_agents( model        = pop_model,
@@ -192,10 +203,13 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                              move         = agent_move
     ); 
     
-    Jacobian <- make_interaction_array(RESOURCES = starting_resources,
-                                       LAND      = LANDSCAPE_r
+    Jacobian <- make_interaction_array(RESOURCES     = starting_resources,
+                                       LAND          = LANDSCAPE_r,
+                                       res_consume   = res_consume,
+                                       consume_surv  = consume_surv,
+                                       consume_repr  = consume_repr,
+                                       times_feeding = times_feeding
     );
-    Jacobian[1,2] <- -1 * res_consume; # Temporary to fix consumption rate
     
     interaction_tabl <- make_interaction_table(starting_resources, LANDSCAPE_r);
     
@@ -221,8 +235,11 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         ACTION[2, 5, stakeholder_rows]   <- 0;
     }
     
-    AGENTS[,17]     <- user_budget;
-    AGENTS[1,17]    <- manager_budget;
+    AGENTS <- manager_user_budgets(agents         = AGENTS, 
+                                   manager_budget = manager_budget, 
+                                   user_budget    = user_budget, 
+                                   usr_budget_rng = usr_budget_rng,
+                                   budget_col     = 17);
     
     time       <- time + 1;  # Ready for the initial time step.
     cells      <- land_dim_1 * land_dim_2; # Number of cells in the landscape
@@ -273,6 +290,12 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
     ldo <- land_ownership;
     pub <- public_land;
     gtk <- group_think;
+    a_t <- action_thres;
+    bb  <- budget_bonus;
+    arp <- age_repr;
+    mnb <- manager_budget;
+    csr <- consume_surv;
+    crp <- consume_repr
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -336,7 +359,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                13,      # 59. The tally column of the resource array
                lkr,     # 60. The number of rows in the lookup array
                rsi,     # 61. The number of rows in the observation array
-               ttr+tmo, # 62. The number of cols int he observation array
+               ttr+tmo, # 62. The number of cols in the observation array
                1,       # 63. The ID of the managing agent (usually 1)
                0,       # 64. The layer of ACTION and COST where manager located
                lyr,     # 65. The number of layers in ACTION and COST arrays
@@ -378,7 +401,24 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                gtk,     # 101. Group think behaviour specified?
                fxr,     # 102. The number of recaptures in RMR estimation
                ldo,     # 103. Is there land ownership among stakeholders
-               pub      # 104. How much public land is there (proportion)
+               pub,     # 104. How much public land is there (proportion)
+               a_t,     # 105. Dev est pop from manager target triggering
+               1,       # 106. Was the policy updated last time step?
+               0,       # 107. Time steps since last policy update
+               0,       # 108. Has the Resource population exceeded K?
+               0,       # 109. Deviation from target
+               bb,      # 110. Budget bonus
+               arp,     # 111. Age at which individuals can first reproduce
+               16,      # 112. Column in agent array where budget is located
+               mnb,     # 113. The manager's budget
+               10,      # 114. Column in resource array where offspring located
+               20,      # 115. Column in resource array where consumed located
+               csr,     # 116. Consumption needed for resource to survive
+               crp,     # 117. Consumption needed for resource offspring +1
+               21,      # 118. Column in resource array where fed located
+               0,       # 119. Column of the ID location in the agent array
+               13,      # 120. Column of agent array total ownership located
+               prc      # 121. E Prop. of a landscape cell to be consumed
     );
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
@@ -393,8 +433,10 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                     scaring, culling, castration, feeding, help_offspring, 
                     tend_crops, tend_crop_yld, kill_crops, stakeholders, 
                     manage_caution, land_ownership, manage_freq, converge_crit, 
-                    manager_sense, public_land, group_think); 
-    
+                    manager_sense, public_land, group_think, age_repr,
+                    usr_budget_rng, action_thres, budget_bonus, consume_surv,
+                    consume_repr); 
+   
     paras_errors(input_list);
     
     RESOURCE_REC    <- NULL;
@@ -424,7 +466,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         RESOURCES             <- RESOURCE_NEW[[1]];
         LANDSCAPE_r           <- RESOURCE_NEW[[2]];
         paras                 <- RESOURCE_NEW[[3]];
- 
+            
         OBSERVATION_NEW   <- observation(RESOURCES      = RESOURCES,
                                          LAND           = LANDSCAPE_r,
                                          PARAS          = paras,
@@ -452,7 +494,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                        move_agents = mva
         );
         AGENTS <- AGENTS_NEW[[1]];
-
+               
         if(time %% manage_freq == 0){
             MANAGER  <- manager(RESOURCES   = RESOURCES,
                                 AGENTS      = AGENTS,
@@ -469,7 +511,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
             COST   <- MANAGER[[5]];
             paras  <- MANAGER[[6]];
         }
-        
+   
         USERS <- user(RESOURCES  = RESOURCES,
                       AGENTS     = AGENTS,
                       LAND       = LANDSCAPE_r, 
@@ -486,7 +528,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         ACTION       <- USERS[[4]];
         COST         <- USERS[[5]];
         paras        <- USERS[[6]];
-        
+         
         RESOURCE_REC[[time]]     <- RESOURCES;
         OBSERVATION_REC[[time]]  <- OBSERVATION_NEW[[1]];
         AGENT_REC[[time]]        <- AGENTS;
@@ -494,7 +536,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
         COST_REC[[time]]         <- COST;
         ACTION_REC[[time]]       <- ACTION;
         PARAS_REC[time,]         <- paras;
-        
+         
         LANDSCAPE_r <- age_land(LAND          = LANDSCAPE_r, 
                                 landscape_ini = LANDSCAPE_INI, layer = 2);
         
@@ -519,7 +561,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
             paras        <- HUNT_OUTCOME$PARAS;
         }
     }
-    
+
     res_columns <- c("Resource_ID",
                      "Resource_type_1",
                      "Resource_type_2",
@@ -539,7 +581,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                      "Adjust_growth",
                      "Adjust_grown",
                      "temp_adj1",
-                     "temp_adj2"
+                     "temp_adj2",
+                     "Consumption",
+                     "Extra_col"
     );
     colnames(RESOURCES)    <- res_columns;
     
@@ -604,7 +648,7 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                        paras  = paras);
         }
     }
-
+    
     return(sim_results);
 }
 ################################################################################

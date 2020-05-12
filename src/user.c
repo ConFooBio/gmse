@@ -665,6 +665,8 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     
     send_agents_home(agent_array, land, paras);
     
+    count_owned_cells(land, paras, agent_array, land_x, land_y, agent_number);
+    
     if(group_think > 0 && agent_number > 2){
         ga(actions, costs, agent_array, resource_array, land, Jacobian_mat,
            lookup, paras, 1, 0);

@@ -16,17 +16,18 @@ test_that("Dimensions of observation arrays in manager model are correct", {
                          max_age            = 5
     );
     
-    land <- make_landscape(model        = "IBM", 
-                           rows         = 10, 
-                           cols         = 10, 
-                           cell_types   = 1, 
-                           cell_val_mn  = 1, 
-                           cell_val_sd  = 0, 
-                           cell_val_max = 1, 
-                           cell_val_min = 1,
-                           layers       = 3, 
-                           ownership    = 1,  
-                           owner_pr     = NULL
+    land  <-  make_landscape(model        = "IBM", 
+                             rows         = 10, 
+                             cols         = 10, 
+                             cell_types   = 1, 
+                             cell_val_mn  = 1, 
+                             cell_val_sd  = 0, 
+                             cell_val_max = 1, 
+                             cell_val_min = 1,
+                             layers       = 3, 
+                             ownership    = 1,
+                             owners       = 1,
+                             public_land  = 0
     );
     
     paras <- c(0, 1, 1, 2, 2, 100, 100, 0, 0, 1, 10, 20, 10, 10, 1, 1, 1, 1, 12,
@@ -34,7 +35,8 @@ test_that("Dimensions of observation arrays in manager model are correct", {
                9, 10, 18, 19, 20, 17, 8, 1, 1, 15, 14, 1, 4, 5, 6, 10, 12, 2, 
                17, 1, 2, 3, 13, 3, -1, -1, 1, 0, 2, 2, 8, 7, 13, 4, 7, 0, 16, 0,
                -0.1, -0.1, 0.1, 0.1, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
-               1, 1, 1, 1, 10, 1000, 100, 100, 0, 0);
+               1, 1, 1, 1, 10, 1000, 100, 100, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0, 0,
+               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1);
     
     agents  <-  make_agents(model        = "IBM",
                             agent_number = 2,
@@ -44,7 +46,6 @@ test_that("Dimensions of observation arrays in manager model are correct", {
                             rows         = 100,
                             cols         = 100
     )
-    
     
     interaction_tabl <- make_interaction_table(res, land);
     int_array        <- make_interaction_array(res, land);
@@ -82,7 +83,7 @@ test_that("Dimensions of observation arrays in manager model are correct", {
     );
     
     expect_equal(length(mana), 6);
-    expect_equal(dim(mana[[1]]), c(100, 20));
+    expect_equal(dim(mana[[1]]), c(100, 22));
     expect_equal(dim(mana[[2]]), c(2, 17));
     expect_equal(dim(mana[[3]]), c(10, 10, 3));
     expect_equal(dim(mana[[4]]), c(7, 13, 2));
@@ -103,26 +104,28 @@ test_that("Manager sets costs of acting on resources", {
                          max_age            = 5
     );
     
-    land <- make_landscape(model        = "IBM", 
-                           rows         = 10, 
-                           cols         = 10, 
-                           cell_types   = 1, 
-                           cell_val_mn  = 1, 
-                           cell_val_sd  = 0, 
-                           cell_val_max = 1, 
-                           cell_val_min = 1,
-                           layers       = 3, 
-                           ownership    = 1,  
-                           owner_pr     = NULL
+    land  <-  make_landscape(model        = "IBM", 
+                             rows         = 10, 
+                             cols         = 10, 
+                             cell_types   = 1, 
+                             cell_val_mn  = 1, 
+                             cell_val_sd  = 0, 
+                             cell_val_max = 1, 
+                             cell_val_min = 1,
+                             layers       = 3, 
+                             ownership    = 1,
+                             owners       = 1,
+                             public_land  = 0
     );
-    
+
     paras <- c(0, 1, 1, 2, 2, 100, 100, 0, 0, 1, 10, 20, 10, 10, 1, 1, 1, 1, 12,
                1, 0, 100, 10, 20, 20, 2, 0.1, 0.1, 0, 5, 7, 11, 100, 4, 5, 6, 3,
                9, 10, 18, 19, 20, 17, 8, 1, 1, 15, 14, 1, 4, 5, 6, 10, 12, 2, 
                17, 1, 2, 3, 13, 3, -1, -1, 1, 0, 2, 2, 8, 7, 13, 4, 7, 0, 16, 0,
                -0.1, -0.1, 0.1, 0.1, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
-               1, 1, 1, 1, 10, 1000, 100, 100, 0, 0);
-    
+               1, 1, 1, 1, 10, 1000, 100, 100, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0, 0,
+               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1);
+
     agents  <-  make_agents(model        = "IBM",
                             agent_number = 2,
                             type_counts  = c(1,1),

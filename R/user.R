@@ -12,7 +12,6 @@
 #'@param inter_tabl Interaction table indexing types with the INTERACT matrix
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
-#'@param ... Other arguments to be passed to a user-defined model
 #'@return The user function outputs an R list that includes five separate arrays, including (1) an new RESOURCES array, (2) a new AGENTS array, (3) a new LAND array, (4) a new ACTIONS array, and a new (5) COST array, each of which might be affected by the user function. The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the resource, observation, and management models.
 #'@examples
 #'\dontrun{
@@ -52,7 +51,7 @@ user <- function(RESOURCES  = NULL,
         if(!is.vector(PARAS) | !is.numeric(PARAS)){
             stop("Warning: Parameters must be in a numeric vector");
         }
-        if(dim(RESOURCES)[2] != 20){
+        if(dim(RESOURCES)[2] != 22){
             stop("The RESOURCES array has the wrong number of columns");
         }
         if(dim(LAND)[3] != 3){

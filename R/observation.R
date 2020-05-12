@@ -17,7 +17,6 @@
 #'@param res_move_obs Defines whether or not resources move during observation (default = FALSE). Note that if this is FALSE, then observation methods (observe_type) 3 and 4 produce no observation error 
 #'@param model The type of model being applied (Currently only individual-based
 #' -- i.e., 'agent-based' -- models are allowed)
-#'@param ... Other arguments to be passed to a user-defined model
 #'@return The observation function outputs an R list that includes three separate arrays, including (1) an new OBSERVATION array that holds observed resources and their traits with additional columns indicating when the resources were observed (relevant, e.g., for mark-recapture), (2) a new AGENTS array, and (3) a new PARAS array, each of which might be affected by the user function.  The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the management, user, and resource models.
 #'@examples
 #'\dontrun{
@@ -32,7 +31,7 @@ observation <- function(RESOURCES     = NULL,
                         PARAS         = NULL, 
                         AGENTS        = NULL,
                         inter_tabl    = NULL,
-                        fixed_mark    = FALSE,
+                        fixed_mark    = 100,
                         times_observe = 1,
                         res_min_age   = 0,
                         agent_type    = 0,
@@ -56,7 +55,7 @@ observation <- function(RESOURCES     = NULL,
         if(!is.array(AGENTS)){
             stop("Warning: Agents need to be in an array");
         }
-        if(dim(RESOURCES)[2] != 20){
+        if(dim(RESOURCES)[2] != 22){
             stop("The RESOURCES array has the wrong number of columns");
         }
         if(dim(LAND)[3] != 3){

@@ -1,7 +1,7 @@
 ---
 title: "Generalised management strategy evaluation"
 author: "Brad Duthie"
-csl: evolution.csl
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document: default
   pdf_document:
@@ -12,13 +12,14 @@ output:
     - --csl
     - evolution.csl
     reference_docx: docx_template.docx
-linestretch: 1
 header-includes:
 - \usepackage{amsmath}
 - \usepackage{natbib}
 - \usepackage{lineno}
 - \linenumbers
 - \bibliographystyle{amnatnat}
+linestretch: 1
+csl: evolution.csl
 bibliography: references.bib
 ---
 
@@ -33,36 +34,47 @@ library(rhandsontable)
 
 <br>
 
-<!--- 
-[![](https://www.r-pkg.org/badges/version/GMSE?color=yellowgreen)](https://cran.r-project.org/package=GMSE) [![](https://cranlogs.r-pkg.org/badges/grand-total/GMSE?color=yellowgreen)](http://cranlogs.r-pkg.org/badges/grand-total/GMSE)
-[![](https://cranlogs.r-pkg.org/badges/last-month/GMSE?color=yellowgreen)](http://cranlogs.r-pkg.org/badges/last-month/GMSE)
+<!---
+[![](http://www.r-pkg.org/badges/version/GMSE?color=yellowgreen)](https://cran.r-project.org/package=GMSE) [![](http://cranlogs.r-pkg.org/badges/grand-total/GMSE?color=yellowgreen)](http://cranlogs.r-pkg.org/badges/grand-total/GMSE)
+[![](http://cranlogs.r-pkg.org/badges/last-month/GMSE?color=yellowgreen)](http://cranlogs.r-pkg.org/badges/last-month/GMSE)
 --->
 
 ********************************************************************************
 
 > **This notebook tracks progress on the development of [GMSE software](https://bradduthie.github.io/gmse/) R package, for game-theoretic management strategy evaluation, and related issues surrounding the development and application of game theory for addressing questions of biodiversity and food security.**
 
-*******************************************************************************
+********************************************************************************
 
 <a name="contents">Contents:</a>
 ================================================================================
 
 [Project updates](#updates)
 
+ - **2020**
+
+     - **MAY** [10](#u-10-MAY-2020), [8](#u-8-MAY-2020), [6](#u-6-MAY-2020)
+     - **APR** [23](#u-23-APR-2020), [13](#u-13-APR-2020), [1](#u-1-APR-2020) 
+     - **FEB** [4](#u-4-FEB-2020)
+
+ - **2019**
+ 
+     - **MAR** [15](#u-15-MAR-2019)
+
  - **2018**
 
+     - **AUG** [21](#u-21-AUG-2018)
      - **MAY** [16](#u-16-MAY-2018), [14](#u-14-MAY-2018)
      - **APR** [13](#u-13-APR-2018)
 
  - **2017**
 
-     - **DEC** [21](#u-21-DEC-2017), [13](#u-13-DEC-2017)
+     - **DEC** [13](#u-13-DEC-2017), [21](#u-21-DEC-2017)
      - **NOV** [1](#u-1-NOV-2017)
      - **OCT** [23](#u-23-OCT-2017), [19](#u-19-OCT-2017), [16](#u-16-OCT-2017), [13](#u-13-OCT-2017), [12](#u-12-OCT-2017), [6](#u-6-OCT-2017)
      - **SEP** [28](#u-28-SEP-2017), [27](#u-27-SEP-2017), [26](#u-26-SEP-2017), [25](#u-25-SEP-2017), [22](#u-22-SEP-2017), [15](#u-15-SEP-2017), [13](#u-13-SEP-2017), [8](#u-8-SEP-2017), [6](#u-6-SEP-2017)
      - **AUG** [28](#u-28-AUG-2017), [23](#u-23-AUG-2017), [17](#u-17-AUG-2017), [16](#u-16-AUG-2017), [15](#u-15-AUG-2017), [7](#u-7-AUG-2017)
      - **JUL** [7](#u-7-JUL-2017), [3](#u-3-JUL-2017)
-     - **JUN** [27](#u-27-JUN-2017), [26](#u-26-JUN-2017), [25](#u-25-JUN-2017), [23](#u-23-JUN-2017), [20](#u-20-JUN-2017), [16](#u-16-JUN-2017), [15](#u-15-JUN-2017), [14](#u-14-JUN-2017), [13](#u-13-JUN-2017), [9](#u-9-JUN-2017), [8](#u-8-JUN-2017), [7](#u-7-JUN-2017), [6](#u-6-JUN-2017), [5](#u-5-JUN-2017), [4](#u-4-JUN-2017)
+     - **JUN** [27](#u-27-JUN-2017), [26](#u-26-JUN-2017), [25](#u-25-JUN-2017), [23](#u-23-JUN-2017), [20](#u-20-JUN-2017), [16](#u-16-JUN-2017), [15](#u-15-JUN-2017), [14](#u-14-JUN-2017), [13](#u-13-JUN-2017), [9](#u-9-JUN-2017), [8](#u-7-JUN-2017), [7](#u-7-JUN-2017), [6](#u-6-JUN-2017), [5](#u-5-JUN-2017), [4](#u-4-JUN-2017) 
      - **MAY** [31](#u-31-MAY-2017), [30](#u-30-MAY-2017), [29](#u-29-MAY-2017), [26](#u-26-MAY-2017), [25](#u-25-MAY-2017), [24](#u-24-MAY-2017), [23](#u-23-MAY-2017), [22](#u-22-MAY-2017), [18](#u-18-MAY-2017), [17](#u-17-MAY-2017), [16](#u-16-MAY-2017), [15](#u-15-MAY-2017), [12](#u-12-MAY-2017), [11](#u-11-MAY-2017), [10](#u-10-MAY-2017), [9](#u-9-MAY-2017), [8](#u-8-MAY-2017), [5](#u-5-MAY-2017), [4](#u-4-MAY-2017), [3](#u-3-MAY-2017), [2](#u-2-MAY-2017), [1](#u-1-MAY-2017)
      - **APR** [28](#u-28-APR-2017), [26](#u-26-APR-2017), [25](#u-25-APR-2017), [24](#u-24-APR-2017), [20](#u-20-APR-2017), [19](#u-19-APR-2017), [18](#u-18-APR-2017), [17](#u-17-APR-2017), [13](#u-13-APR-2017), [12](#u-12-APR-2017), [11](#u-11-APR-2017), [10](#u-10-APR-2017), [7](#u-7-APR-2017), [6](#u-6-APR-2017), [5](#u-5-APR-2017)
      - **MAR** [23](#u-23-MAR-2017), [22](#u-22-MAR-2017), [21](#u-21-MAR-2017), [17](#u-17-MAR-2017), [16](#u-16-MAR-2017), [15](#u-15-MAR-2017), [14](#u-14-MAR-2017), [13](#u-13-MAR-2017), [10](#u-10-MAR-2017), [9](#u-9-MAR-2017), [8](#u-8-MAR-2017), [7](#u-7-MAR-2017), [6](#u-6-MAR-2017), [3](#u-3-MAR-2017)
@@ -91,12 +103,167 @@ library(rhandsontable)
 
 [References consulted and annotated (Mendeley)](#ref)
 
-[References cited](#cited)g
+[References cited](#cited)
 
 ********************************************************************************
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-10-MAY-2020">Update: 10 MAY 2020</a>
+
+Yesterday and today I implemented the fourth bullet point listed on [6 MAY 2020](#u-6-MAY-2020), which changes the default pattern of land ownership in GMSE. In over a decade of coding individual-based models, I think that this might be the first time that I have needed to apply [recursion](https://en.wikipedia.org/wiki/Recursion_(computer_science)) to a problem. I actually only just learned that recusion [is possible in R](https://www.datamentor.io/r-programming/recursion/), but decided to write the function in C just to get a bit more speed. 
+
+The goal of the new algorithm is to divide a rectangular landscape of length `land_dim_1` and width `land_dim_2` into `stakeholder` smaller rectangles that are as equal as possible in area (i.e., cell number). To do this, I used a [shortest-splitline algorithm](https://www.youtube.com/watch?v=kUS9uvYyn3A) in a new file `landscape.c`. The relevant function is [the `break_land`](https://github.com/ConFooBio/gmse/blob/cc35d2444d2394e31d1400190cd71c3223365ebd/src/landscape.c#L8) function. For a given rectangular landscape, the `break_land` function draws a line splitting the landscape along its longest dimension (i.e., if the rectangle has a length of 20 and a width of 10, it is split lengthwise). If the number of owners to be placed within the landscape is even, then the line splits exactly halfway down the middle of the landscaope. If the number of owners to be placed within the landscape is odd, then the line is placed in proportion to the ratio of ownership -- in other words, if 3 owners need to be placed on the landscape, then the split line would be placed 2/3 of the way along the longest dimension (3/5 of the way for 5 owners, 4/7 of the way for 7 owners, and so forth). The rectangular landscape is then split into two smaller sub-rectangles. The same splitting procedure is then run on these sub-rectangles with the new number of owners (i.e., half of the original in the case of an even split, and appropriate portions such as 1 and 2, or 2 and 3, for the odd number of original owners, with the biggest rectangle getting the higher number of owners). The splitting of the landscape into smaller and smaller sub-rectangles continues until the number of owners that need to be placed on a rectangle equals one, in which case an integer representing an agent's ID is placed on all landscape cells in the rectangle.
+
+In the case of public land, the correct proportion `public_land` is put on the landscape by running the above algorithm in the `break_land` function with an [appropriately added number of owners](https://github.com/ConFooBio/gmse/blob/cc35d2444d2394e31d1400190cd71c3223365ebd/src/landscape.c#L103). If, for example, half of the land is meant to be public, then the total number of unique sub-rectangles to be made is adjusted to *users / (1 - proportion_public_land)*. Where if *proportion_public_land = 0.5*, e.g., the total number of sub-rectangles to be made will be twice the number of users. Once all of the cells are assigned an integer value by the algorithm, all cells with a number higher than any user ID are then re-assigned as public land.
+
+These changes have now been pushed to the rev branch, so as of writing this, they are available to use. Relevant testthat functions have been adjusted where necessary to account for the code changes, and the new code passes all checks and all CRAN tests with no notes, warnings, or errors. 
+
+I like the above algorithm so much that I do not see any real need to even make the old straight-line simple sort approach an option in `gmse`. The old approach was a simplification that always seemed a bit unrealistic, and I always wanted to come up with a better way of allocating owned landscape cells. Please contact me or [raise an issue on GitHub](https://github.com/ConFooBio/gmse/issues) if you really want the old way back in `gmse` (note that `gmse_apply` of course always allows custom landscape definition).
+
+With this new feature, I have now tackled bullet points 1, 3, and 4 from [6 MAY 2020](#u-6-MAY-2020). The next thing that I will do will be to update the GUI, which I do not expect to take long. Once this is finished, I will begin writing my vignette on resource density, and updating the website accordingly. I think I might also update the vignette on default GMSE structures to briefly discuss the above algorithm and how landscape ownership is assigned. I will put out another announcement before sending to CRAN, but please let me know if there are changes that you would like to see in GMSE v0.6.0.x.
+
+> <a name="u-8-MAY-2020">Update: 8 MAY 2020</a>
+
+I have made some progress on the plans from [6 MAY 2020](#u-6-MAY-2020). None of my updates are incorporated into the main R branch, so they are not permanent and **I am still happy to take suggestions for improvements or other ideas in addition or in contrast to what folows**.
+
+I have completed the first bullet point of the plans from [6 MAY 2020](#u-6-MAY-2020). The order of operations is therefore changed in the resource model on the work-in-progress rev branch. Hence, calls to the default resource model proceed by first having resources consume on the landscape, then birth, death, and movement. Within resource consumption rules, feeding happens first, followed by movement for up to `times_feed` iterations. The landscape consumption also now calls either one function or another: one function where `consume_surv > 0` or `consume_repr > 0` in which consumption happens in a random order among resources for a variabl enumber of `times_feed`, and a second (faster) function where consumption happens once for all resources (in order of the array, as the order of consumption does not affect the resources themselves).
+
+Despite the information in the [vignette on GMSE structures](https://confoobio.github.io/gmse/articles/SI7.html#agents), column 13 of the agents array was actually being used within the more or less unused `anectdotal` function, in which each agent 'looks around' from the cell on which they are standing to see how many resources are in the general area. This function has no purpose at the moment (I was thinking about using it to model disagreement with the manager's estimate and the users' inferences about population size), but writes to the column anywa in `gmse` (but not `gmse_apply`). I'm going to refer to it as `written to, but unused` in the vignette, and use column 14 of the agent array to record the number of cells owned.
+
+Writing to the number of cells owned is done in a new `count_agent_cells` in R or the `count_owned_cells` function in C. I wrote the R function first, but then had second thoughts about relying on it in `gmse` and particularly `gmse_apply`. What if we later want land ownership to change over the course of a simulation? I'm not sure in this case, actually, how much extra speed we get from C (it relies on two nested for loops across the landscape, rather than a `which` or `==` in R, which I suspect is actually just as fast since the underlying C is probably better than mine). In any case, it seems to make sense to have the owned cells calculated at the beginning of the user function, so this is what I ultimately decided on. But the R function can also be used.
+
+I have changed the fitness function for users as such:
+
+- Scaring is now assumed to decrease the number of resources affecting the user by one minus the proportion of landscape cells owned. Hence, when less land is owned, scaring is assumed to have a bigger effect because resources will more likely move to someone else's land. Also, if no land is owned, scaring is assumed to have no effect, for obvious reasons.
+- Culling is now assumed to decrease the number of resources by one plus the expected number of offspring the resource is assumed to produce in the time step. This expected offspring number `E_off` is the lambda parameter, plus the amount a resource consumes on a landscape cell divided by the amount needed to be consumed for producing one offspring.
+- Castration is assumed to decrease the number of resources by `E_off`.
+- Feeding is assumed to increase the number of resources by `E_off`.
+- Helping offspring is assumed to increase the number of resources by one.
+
+These changes are now pushed to the `rev` branch, which is still under ongoing development. This effectively takes care of the third bullet point from [6 MAY 2020](#u-6-MAY-2020). Hence, bullets one and three are now done, so here is what remains.
+
+- Update the GUI
+- Add new landscape patterns of land ownership options
+- Two new vignettes to add to the package and website
+- Other website updates that need to change (I will actually need to re-read everything so that any old information that is now wrong is replaced from existing vignettes and documentation.
+
+I will try to make the above changes as soon as possible, but the changes that will have the biggest effect on simulations are now finished, so people can play around with the new options. The update in progress builds with no warnings, errors, or notes, and passes all tests in testthat.
+
+> <a name="u-6-MAY-2020">Update: 6 MAY 2020</a>
+
+**New version of GMSE**
+
+A new version of [GMSE v0.5.0.0](https://github.com/ConFooBio/gmse/commit/10d50658720576669c6d402794129a0eba402ff2) is now available on GitHub. Here are the major updates:
+
+- As mentioned on [23 APR 2020](#u-23-APR-2020), new arguments for implementing manager action thresholds and budget bonuses (for not acting in a time step) are available using the arguments `action_thres` and `budget_bonus` in `gmse` and `gmse_apply`.
+- Also as mentioned on [23 APR 2020](#u-23-APR-2020), a minimum age of resource reproduction can now be set using the `age_repr` arguments, and random sampling from a range of user budgets around `user_budget` can be set to be plus or minus `usr_budget_rng` in `gmse` and `gmse_apply`.
+- More complex interactions between resources and landscape can be implemented, such that resource birth and death depend on resource consumption. These values are set using the new arguments `consume_surv`, `consume_repr`, and `times_feeding`. See [details below](#u-23-APR-2020).
+
+The new version can be downloaded from GitHub, but will not be submitted to CRAN. It is likely to be the **last version of GMSE that is completely backwards compatible with previous versions**. In other words, if you set parameter values for previous versions of GMSE as arguments in `gmse` or `gmse_apply` and ran simulations, then you are effectively running the same code (and should get the same results) in v0.5.0.0. In the next version update, this will not necessarily be true because minor changes to the default order of operations are planned (see below). In practice, this is highly unlikely to change any results from simulations in previous versions, but it is good to be aware of what has changed if you are expecting old code to run identically on new versions of GMSE.
+
+**Plans for GMSE v0.6.0.x: what will change**
+
+While backwards compatibility has been a priority up until now with GMSE development, the most recent developments in GMSE v0.5.0.0 make it clear that the benefits of make some small changes to the default simulations outweigh the costs. This mostly has to do with the order of operations in the default resource submodel (currently: movement, feeding, birth, death). Given the new option of resource consumption affecting birth and death rates, and the consequences of farmer actions (i.e., when `land_ownership == TRUE`), a change in the order makes sense. When feeding affects birth and death in v0.5.0.0, resources [first move once](https://github.com/ConFooBio/gmse/blob/10d50658720576669c6d402794129a0eba402ff2/src/resource.c#L532), then move again, then eat, move, eat, move, etc. for as many `times_feeding` as defined. Hence, resources are moving twice at the start of a time step, and potentially landing on good landscape cells, but then not eating at all. With respect to farmer actions, if resources move far in a single time step, then their efforts might have very little actual effect on their individual yield. This is because, since movement happens first, resources might be *highly likely to move to another farmer's land anyway*, making the actions futile. This might not be a problem for modelling some systems (where such actions are in fact futile), but the fitness function of the genetic algorithm is designed in such a way as to have farmers assume that one scare or cull will decrease the effects of a resource accordingly. In practice, this doesn't matter too much because the absolute values in the fitness functions are arbitrary for now (i.e., we could multiply them by the probability that a resource did *not* leave the farmer's landscape and expect the same farmer actions -- there's nothing else they can do). But it could become an issue later, and we might at some point be really interested in looking at patterns among different users in a more interesting way. Therefore, in GMSE v0.6.0.x, I plan to change the order of operations in the default resource submodel (some more of my reasoning is discussed in [Issue 56](https://github.com/ConFooBio/gmse/issues/56)). Overall, I plan for the following changes:
+
+- Change the order of operations [in the resource submodel](https://github.com/ConFooBio/gmse/blob/10d50658720576669c6d402794129a0eba402ff2/src/resource.c#L532) to resource feeding, birth, death, movement. In [feeding subfunction](https://github.com/ConFooBio/gmse/blob/10d50658720576669c6d402794129a0eba402ff2/src/resource.c#L367), the order will also be changed to first feeding, then movement. Hence, the first thing that a resource will do at the start of the time step is feed, then move, then feed, etc., until they have exhausted their `times_feeding`. If the resource is not scared or culled at the end of the previous time step (user submodel), then it will feed on the landscape cell on which it last resided; scaring and culling will therefore directly affect a farmer's landscape. At the end of the resource submodel (after all of the feeding, birth, and death have happened), resources will once again move. This is because the feeding process is not forced in GMSE, so if default `consume_surv = 0` and `consume_repr = 0` were used, movement would not happen at all in the resource submodel. These changes will be small in the code, but will change the default behaviour of `gmse()` and `gmse_apply()`.
+- Update the options for the GUI when running `gmse_gui()`. This is just an oversight from the last version, as I should have done this for the new arguments available in v0.5.0.0. The new GUI will look the same as the old (I'm not sure if anyone is actually using it, but it's worth updating just in case), and I will send it to [the same place](https://bradduthie.shinyapps.io/gmse_gui/) on shiny so that it can also be run without using R.
+- Change the fitness function for users [here](https://github.com/ConFooBio/gmse/blob/10d50658720576669c6d402794129a0eba402ff2/src/game.c#L259) in the genetic algorithm. Users assume that scaring or culling has an effect of removing one resource, that castrating has an effect of decrementing by `lambda`, feeding increments by `lambda`, and helping offspring increments by one. This has worked for a while, but I think some modifications will make it more realistic. 
+    - Scaring should have a predicted effect of decreasing a resources by *1 - land_owned / total_land*. If one farmer owns all of the land, then scaring doesn't make any sense, and this will be reflected in the user fitness function. Similarly, when `land_ownership = FALSE`, scaring also won't make any sense (previously, people using GMSE just had to recognise that the combination `land_ownership = FALSE` and `scaring = TRUE` was nonsensical, now the users will recognise it themselves). 
+    - Culling should really have an effect of *1 + E[offspring]*. That is, *1 + lambda* where `consume_repr = 0`, and something else where `consume_repr > 0`. In the absence of any better ideas, I propose that the user *assumes* that a resource will eat all of the contents of a single landscape cell and produce the consequent number of offspring. This will be false most of the time, but it seems reasonable from the perspective of a landowner, who would have no way of knowing how much more a single resource would be expected to eat and reproduce as a consequence of feeding. Hence, from the user's perspective, the effect of culling will be a decrease in resources of *1 + lambda + (res_consume / consume_repr)*.
+    - Castration, along the same lines of culling above, should decrease resources by a magnitude of *lambda + (res_consume / consume_repr)*.
+    - Feeding should, similarly, increase resources by a magnitude of *lambda + (res_consume / consume_repr)*.
+    - Helping offspring can be kept as incrementing resources by one.
+- Default patterns of land ownership on the landscape can be changed (as long as we're making changes that affect backwards compatibility). The long thin bands of land have worked up until now, but, especially when the number of land owners is medium sized relative to the number of cells (e.g., 100 users on a 100 by 100 landscape, giving each user a 100 by 1 strip of land), this doesn't look quite right. Instead, a new R function can make the default option a polygon design using a [shortest-splitline algorithm](https://www.youtube.com/watch?v=kUS9uvYyn3A). This will look a bit nicer and more realistic.
+- Two new vignettes, the first written by Adrian explaining the action threshold and budget bonus options. The second written by me explaining resource density regulation (including the new `consume_surv` and `consume_repr` arguments).
+- Any other updates to [the website](https://confoobio.github.io/gmse/index.html) that will inevitably need to be made.
+
+The end result of all of this will be, I think, an improved GMSE, but also one that breaks from previous versions in the default options and potentially stakeholder behaviour. For example, land owning users will inevitably see culling as a slightly better option for increasing yield, all else being equal (i.e., given identical costs, as set by the manager). I'm keen to start this new version as soon as possible. The new version will be pushed to CRAN after these changes have been implemented. I will attempt this by the end of the month, or early June at the latest. Please contact me either via email or [GitHub](https://github.com/confoobio/gmse/issues) if you have any thoughts or concerns about the next version.
+
+> <a name="u-23-APR-2020">Update: 23 APR 2020</a>
+
+With commit [6d1e5e6ca41bc6bb45c62cb174f34480c3c5add1](https://github.com/ConFooBio/gmse/commit/6d1e5e6ca41bc6bb45c62cb174f34480c3c5add1), I believe that I now have resolved Issue [#56](https://github.com/ConFooBio/gmse/issues/56) and created a version of GMSE that now allows resource death and reproduction to be tied to resource consumption on the landscape. Initial testing shows that this works in both `gmse` and `gmse_apply`. I have not had a chance to code in the suggestion from Jeroen to have it be the *probability* of survival or reproduction that changes with increasing consumption. Rather, given that a resource has consumed a sufficient quantity of resources `consume_surv`, the resource will survive. A separate new `gmse` argument `consume_repr` ties reproduction to landscape consumption by having resources produce `floor(consumed / consume_repr)` offspring given some total consumption `consumed`. 
+
+There is still considerable stochasticity introduced in terms of whether or not a resource will survive or reproduce. First, each resource can potentially feed more than once by using the new `times_feeding` argument. When `times_feeding > 1` (default is 1), resources will consume the landscape, then move, then consume, and so forth until all of their `times_feeding` have run out. In practice, all resources get the same `times_feeding` value, but the code for executing it depends on a new column in the resources array. This means that there can be variation in the number of times a resource feeds if using `gmse_apply` (or `gmse`, if we later decide to sample feeding rates from a distribution). Feeding events also occur in a random order, which avoids the first resource on the list filling themselves up before moving on to the next resource (as would be a natural way to program it with a for loop). I did it this (slightly less efficient) way to more realistically model how resources would really move around simultaneously on a landscape eating as they move from place to place.
+
+Hence, in the end, there is a lot of uncertainty surrounding whether an individual resource will have enough to survive and reproduce in a time step. But the probabilistic idea of Jeroen could also be imposed with a function of some sort that would link consumption to a probability of death (will need to think of the best way to actually do this in the code though). Testing shows that resource increases to a carrying capacity imposed by the constraints of the landscape, with a lot more stochasticity than occurs just by settting a value for global `res_death_K`. To get started, for example, the below demonstrates the new features.
+
+```{r, eval = FALSE}
+sim <- gmse(consume_surv = 2, consume_repr = 3, times_feeding = 6, 
+            res_birth_type = 0, res_death_type = 0, land_ownership = TRUE, 
+            stakeholders = 12, scaring = TRUE, time_max = 40, user_budget = 1);
+```
+
+I set the `user_budget` to unity above just to show how the population rises to a natural carrying capacity when the manager and users are unable to cause any population change. We can recover a (usually) well-regulate population by settting the `user_budget` back to the default.
+
+```{r, eval = FALSE}
+sim <- gmse(consume_surv = 2, consume_repr = 3, times_feeding = 6, 
+            res_birth_type = 0, res_death_type = 0, land_ownership = TRUE, 
+            stakeholders = 12, scaring = TRUE, time_max = 40, 
+            user_budget = 1000);
+```
+
+Just to clarify, each landscape cell still puts out a value of 1. The argument `consume_surv = 2` means that resources need to consume two cells worth to survive a time step (by default, resources consume half of what's on a landscape cell with each visit). The argument `consume_repr = 3` means that resources need to consume three cells worth to produce one offspring. The argument `times_feeding = 6` means that resources get to feed on six cells in each time step. 
+
+Setting `res_birth_type = 0` and `res_death_type = 0` effectively removes all other factors in GMSE that affect resource birth and death. Hence, what is observed from running the above code is purely a consequence of the new rules limiting survival and reproduction due to landscape consumption. Note that these values need to be specified, else GMSE will assume that other defaults apply *in addition* to the effects of landscape consumption. In other words, the global external carrying capacity from `res_death_K` will still limit population growth because by default `res_death_type = 2`, and the mean birth number `lambda` will still apply because `res_birth_type = 2`. I don't want to override this just in case anyone wants to include multiple types of processes affecting birth and death (I also want the new version to be backwards compatible with existing code), but I think it will be important for me to write some documentation that makes using these new features really clear. I'll start a new vignette.
+
+The new version is GMSE v0.5.0.0 with Adrian now included in the list of contributors. The `action_thres` and `budget_bonus` can now be run in `gmse` and `gmse_apply`, and `usr_budget_rng` and `age_repr` are also available options. The new version passes all CRAN checks with no notes, warnings, or errors. The new version should be completely backwards compatible. If you have existing code to run, it should do the same thing in the new version that it did in previous versions. Everything is now just a new feature that can be used, but is not by default.
+
+The last thing that I think I want to do before merging with master, updating the website, and sending to CRAN, is to make a new default landscape. It would be good to make each landscape into more farm-like blocks rather than the narrow stripes that exist now. I don't have a good algorithm for doing this for an arbitrary number of stakeholders (i.e., for *N* stakeholders, separate an *X* by *Y* landscape into roughly equal blocks of sizes ca (X*Y / N)). If anyone wants to have a go at this and create a function that does it, please let me know! Else I'll try to get around to it before early next month where the plan is to send to CRAN. If anyone has time (Nils Jeroen Adrian), feel free to download from the `dev` branch and go.
+
+```{r, eval = FALSE}
+install.packages("devtools");
+library(devtools);
+install_github("ConFooBio/GMSE", ref = "dev")
+```
+
+It should be up now.
+
+
+> <a name="u-13-APR-2020">Update: 13 APR 2020</a>
+
+I have now completed two major tasks in a GMSE update, first mentioned [earlier in the month](#u-1-APR-2020). The new code is up on the [rev](https://github.com/ConFooBio/gmse/tree/a03c0cd75507d6082a55da6722ab22c5671dd126) branch. 
+
+I have resolved Issue [#53](https://github.com/ConFooBio/gmse/issues/53), so partial matching is not allowed in `gmse_apply` (or in the tests). I have also resolved Issue [#59](https://github.com/ConFooBio/gmse/issues/59), meaning that it is now possible to use different action thresholds and budget bonuses in both `gmse` and `gmse_apply` (arguments `action_thres` and `budget_bonus`), and variable user budgets can now be specified in `gmse`, and in `gmse_apply` (argument `usr_budget_rng` -- of course, manual edits to user budgets were always allowed in `gmse_apply` by directly editing the agents array).
+
+In making these changes, I have also allowed `gmse_apply` to keep track of the current time step when old calls to the function are passed back through `old_list` (i.e., when looping old list as [in here](https://confoobio.github.io/gmse/articles/SI2.html#running-gmse-simulations-by-looping-gmse_apply), the time step will also be tracked automatically through the loops, not just outside of `gmse_apply` through the loop index -- this makes the action threshold possible, as it only applies after the first time step). 
+
+I now need to move on to Issue [#56](https://github.com/ConFooBio/gmse/issues/56), which will more or less complete the new version, though I also might update the default landscape ownership placement.
+
+New tests have been written in testthat, and the package builds with now errors, warnings, or notes.
+
+> <a name="u-1-APR-2020">Update: 1 APR 2020</a>
+
+I am now beginning a moderate update to GMSE, which I hope to have complete and up on CRAN by the end of the month. There are three specific goals of this update:
+
+1. Resolve Issue [#53](https://github.com/ConFooBio/gmse/issues/53): Just to head off any potential issues in `gmse_apply`, several places in the code use the format `sim_list$element_name` rather than `sim_list[["element_name"]]. The latter is more robust because it prohibits partial matching. Hence in [gmse_apply.R](https://github.com/ConFooBio/gmse/blob/master/R/gmse_apply.R), this should be changed.
+
+2. Resolve Issue [#59](https://github.com/ConFooBio/gmse/issues/59): The code from AdrianBach needs to be incorporated into the master branch of GMSE. Doing this will mainly consist of resolving a merge conflict and a bit of refactoring, and I plan to do this early on in developing what I hope to be a new version of GMSE by the end of APR 2020.
+
+3. Resolve Issue [#56](https://github.com/ConFooBio/gmse/issues/56): This is the major one. I want to add options in GMSE to allow resource dynamics to be dependent up on landscape properties. Specifically, for resources to consume the landscape cell contents, and for options to exist that allow resource birth, death, and (potentially) movement to be dependent on consumption. This will mainly involve updates to the resource model, with updates to the `gmse` and `gmse_apply` function as needed.
+
+4. In addressing 1-3, I will need to check to make sure that `gmse_apply` is handling all of the new options correctly, and new tests will need to be written as necessary.
+
+I will continue to update as need be and make sure that any updates from other team members (e.g., Issue [#58](https://github.com/ConFooBio/gmse/issues/58)) are merged appropriately before the new GMSE version.
+
+> <a name="u-4-FEB-2020">Update: 4 FEB 2020</a>
+
+Yesterday, I received an email noting a problem with the GMSE documentation. Specifically, a warning arose because `...` was in the documentation but is no longer allowed as an argument in the default R functions. Notice the issue on [this line of the manager.R file](https://github.com/ConFooBio/gmse/blob/80f211646755ece387b8d1b9dd15390db621cc31/R/manager.R#L16), which is contradicted later by the function itself. This has now been resolved.
+
+> <a name="u-15-MAR-2019">Update: 15 MAR 2019</a>
+
+GMSE v0.4.0.11 is now [available on GitHub](https://github.com/ConFooBio/gmse). Some minor changes and bug fixes are included in the update version.
+
+- [Issue #46](https://github.com/ConFooBio/gmse/issues/46) appears to be resolved. This was caused by some memory management problems, making it impossible to increase the `paras` vector in development. It also made repeated calls to [`gmse_apply`](https://confoobio.github.io/gmse/reference/gmse_apply.html) crash when the exact same arguments were specified but some values (e.g., resource abundance) changed.
+- [A new section](https://confoobio.github.io/gmse/articles/SI2.html#special-considerations-for-looping-with-custom-sub-models) on the website and in the corresponding vignette explains how to loop custom sub-models in [`gmse_apply`](https://confoobio.github.io/gmse/reference/gmse_apply.html), noting some special considerations that could potentially cause confusion.
+- As a consequence of the change in the way that base R generates random numbers, tests using the [testthat](https://github.com/r-lib/testthat) needed to be re-worked. This has been done, and GMSE v0.4.0.11 should be on its way to CRAN as of next week.
+
+I will update once more when GMSE v0.4.0.11 is successfully submitted to CRAN.
+
+> <a name="u-21-AUG-2018">Update: 21 AUG 2018</a>
+
+GMSE v0.4.0.7 is now [available on GitHub](https://github.com/ConFooBio/gmse), and the official GMSE repository is now transferred to the [ConFooBio](https://github.com/ConFooBio) organisation. I am currently in the process of fixing some website issues, but most of the important stuff has transferred to the [new website location](https://confoobio.github.io/gmse/).
 
 > <a name="u-16-MAY-2018">Update: 16 MAY 2018</a>
 
@@ -191,9 +358,9 @@ The new fix has now been checked and built with [Winbuilder](https://win-builder
 
 **CRAN ready GMSE v0.3.1.7 -- more flexibility, better error messages**
 
-I have now completed some substantial coding of error messages, which will be called in both `gmse` and `gmse_apply`. Essentially, these provide some help to software users who parameterise their models in a way that does not work with GMSE. For example, the parameter `stakeholders` is set to equal a negative number, an error message will be returned that informs the user that at least one stakeholder is required in the model. These error messages become a bit more important in `gmse_apply`, where it is possible for users to include arguments that don't make sense (e.g., arrays of incorrect dimensions, or arguments that contradict one another).
+I have now completed some substantial coding of error messages, which will be called in both `gmse` and `gmse_apply`. Essentially, these provide some help to software users who parameterise their models in a way that does not work with GMSE. For example, if the parameter `stakeholders` is set to equal a negative number, an error message will be returned that informs the user that at least one stakeholder is required in the model. These error messages become a bit more important in `gmse_apply`, where it is possible for users to include arguments that don't make sense (e.g., arrays of incorrect dimensions, or arguments that contradict one another).
 
-The function `gmse_apply` has also been improved to make looping it easier. What had been happening during testing was that we were finding it all to easy to crash R by reading in parameters that contradicted one another (e.g., changing setting the landscape dimensions through `land_dim_1` and `land_dim_2` caused a crash when also trying to add in a `LAND` of different dimension -- now this returns an error that `LAND and land_dim_1 disagree about landscape size`).  This has been resolved in two ways. First, I have included many error messages meant to catch bad and contradictory arguments in `gmse_apply` (and, to a lesser extent `gmse`); it is still possible to crash R by setting things incorrectly, but you have to work very hard to do it -- i.e., it almost has to be deliberate, as far as I can tell. Second, I have added the argument `old_list` to `gmse_apply`, which is `FALSE` by default, but can instead take the output of a previous full list return of  `gmse_apply` (where `get_res = Full`). An element of the full list includes the basic output from which key parameters can be pulled. As a reminder, the basic `gmse_apply` output looks like the below.
+The function `gmse_apply` has also been improved to make looping it easier. What had been happening during testing was that we were finding it all too easy to crash R by reading in parameters that contradicted one another (e.g., changing setting the landscape dimensions through `land_dim_1` and `land_dim_2` caused a crash when also trying to add in a `LAND` of different dimension -- now this returns an error that `LAND and land_dim_1 disagree about landscape size`).  This has been resolved in two ways. First, I have included many error messages meant to catch bad and contradictory arguments in `gmse_apply` (and, to a lesser extent `gmse`); it is still possible to crash R by setting things incorrectly, but you have to work very hard to do it -- i.e., it almost has to be deliberate, as far as I can tell. Second, I have added the argument `old_list` to `gmse_apply`, which is `FALSE` by default, but can instead take the output of a previous full list return of  `gmse_apply` (where `get_res = Full`). An element of the full list includes the basic output from which key parameters can be pulled. As a reminder, the basic `gmse_apply` output looks like the below.
 
 ```
 $resource_results
@@ -396,7 +563,7 @@ A new option has been included for the argument `res_death_type`. By setting `re
 
 **New group_think parameter in GMSE v0.3.1.0**
 
-A new `group_think` parameter has been developed by [Jeremy](https://twitter.com/jeremyjcusack) and me, and included into an updated v0.3.1.0. This parameter is defined as `FALSE` be default, but when set to be `TRUE` will cause all users to act as a single block instead of independently. In the code, what happens is that a single user (user ID number 2) runs through the genetic algorithm, but then instead of having the resulting actions apply to this user, they apply to all users so that the genetic algorithm only needs to be run once in the user model. This decreases simulation time, particularly when there are a lot of users to model, but at a cost of removing all variation in actions among users. The `group_think` parameter can be defined in both `gmse()` and `gmse_apply()`, but I have not added it as an option in `gmse_gui()`.
+A new `group_think` parameter has been developed by [Jeremy](https://twitter.com/jeremyjcusack) and me, and included into an updated v0.3.1.0. This parameter is defined as `FALSE` by default, but when set to be `TRUE` will cause all users to act as a single block instead of independently. In the code, what happens is that a single user (user ID number 2) runs through the genetic algorithm, but then instead of having the resulting actions apply to only this user, they apply to all users so that the genetic algorithm only needs to be run once in the user model. This decreases simulation time, particularly when there are a lot of users to model, but at a cost of removing all variation in actions among users. The `group_think` parameter can be defined in both `gmse()` and `gmse_apply()`, but I have not added it as an option in `gmse_gui()`.
 
 > <a name="u-13-OCT-2017">Update: 13 OCT 2017</a>
 
@@ -1080,7 +1247,6 @@ I think at least an initial population needs to be specified, but everything els
 
 **Working this through,** I'm slightly apprehensive about the motivation for including `gmse_apply` function. Once you strip the mechanistic approach from the resource and observation models, all you really have are two values: (1) the population abundance or density and (2) the estimate of the population size or density. Once you include the `manage_target` into `gmse_apply` (necessary, I believe), then the genetic algorithm is really just a fancy way of getting the difference between the population estimate and the target size, and then setting a number of culling actions acceptable for users. Users then cull as much as possible because they're assumed to want to use the resource as much as possible. Of course, we can consider other parameters that affect user actions (e.g., maximum catch, effort), but if we're interested in learning about how these concepts affect harvesting in theory, then they can and should probably be studied using a simpler model. The real point of the genetic algorithm is that it allows for complex, multi-variable goal driven behaviour, as might occur given indirect effects (e.g., organisms on crop yield) or multiple options (e.g., culling versus scaring or growing) and spatial complexities. There seems little to be gained by calling the genetic algorithm to tell users to cull as much as possible, which can be done with a (very) simple function.
 
-
 > <a name="u-28-AUG-2017">Update: 28 AUG 2017</a>
 
 I have finally fixed the annoyance in the [shiny app](https://bradduthie.shinyapps.io/gmse_gui/) of GMSE that caused the bottom of the browser to black, hence making it difficult to set parameter values in some tabs.
@@ -1106,7 +1272,6 @@ In the second example (below), the option for scaring has been removed. Because 
 The below is a final example where all actions except helping are possible options.
 
 ![](https://raw.githubusercontent.com/bradduthie/gmse/0b9e680bdca7318adccbad99270e8439cc848aaa/notebook/images/23-AUG-2017-conflict_plot3.png)
-
 
 > <a name="u-17-AUG-2017">Update: 17 AUG 2017</a>
 
@@ -1318,7 +1483,7 @@ I will also need to add some formal [R tests](http://r-pkgs.had.co.nz/tests.html
 
 When `edge_effect = 0`, and therefore nothing happens when resources and agents move off of the edge of the landscape, R crashes. This is almost certainly due to some sort of memory leak. This is a low priority issue at the moment because I cannot think of a reason why anyone explicitly want the model to just ignore resources moving off of the landscape if someone wants something other than a torus (`edge_effect = 1`), such as a reflective edge or emigration upon leaving the landscape, this should be explicitly coded into the `edge_effect` function in `utilities.c`. Until someone asks for it, I'll stick with a torus.
 
-<a name="gmse_init_doc">**New (draft) documentation for the `gmse()` function**</a>
+**New (draft) documentation for the `gmse()` function**
 
 ********************************************************************************
 
@@ -1388,7 +1553,6 @@ manager_budget This is the total budget for the manager when setting policy. Hig
 **GMSE is now a package**
 
 I have now made GMSE package, including documentation for all of the R code except the main `gmse()` function, which I will complete soon. The package should be available to use as early as tomorrow evening. There are still some additional tweaks that I will continue to make, particularly to the plotting, and I want to add some tests to the model as well. Uploading to CRAN will be done after some beta testing -- I'll mainly follow [Hadley Wickam's book](http://r-pkgs.had.co.nz/) for advice here.
-
 
 > <a name="u-6-JUN-2017">Update: 6 JUN 2017</a>
 
@@ -1585,7 +1749,7 @@ Following these things, it would also be helpful to do the following.
 
 > <a name="u-15-MAY-2017">Update: 15 MAY 2017</a>
 
-**[Resolved Issue #24](https://github.com/bradduthie/gmse/issues/24) Resources retain `helpem` and `feedem`**
+**Resolved [Issue #24](https://github.com/bradduthie/gmse/issues/24) Resources retain `helpem` and `feedem`**
 
 [Issue #24](https://github.com/bradduthie/gmse/issues/24) appears to be resolved, although the it was a bit trickier than anticipated to do so. I created three additional columns in the `RESORUCE` array to store the change in the baseline values of birthrate, death probability, and offspring number. As far as I can tell, there is no longer any carryover in these demographic values, nor do parents pass on their adjusted values to their offspring. Fixing this required several changes to `user.c` and `resource.c`. As a consequence, death rate caused by killing is now completely independent of carrying capacity (as seems sensible). **Another thing to decide is if increases in birth rate or offspring number caused by user actions should also be independent of carrying capacity;** that is, when users `helpem` or `feedem`, are they increasing the carrying capacity itself, or just the population growth rate *to* carrying capacity (as of now, it's the latter).
 
@@ -1600,6 +1764,7 @@ So in the above example, we have the manager effectively prohibiting killing or 
 **Looking good, but still need to clean the code**
 
 The above example is encouraging, but there is still quite a bit of clean-up to do. More unit testing is necessary to make sure that all resources are doing what they should, and I think the interaction between resources and landscape could be made a bit better in the resource model. Also, setting the initial costs and utilities is quite messy -- I need to fix this up a bit so that there is at least one easy place to do this in the code, then an easy way to do it as an argument in the `gmse` function. It would also be nice not to have managers or stake-holders be quite so short-sighted -- but having decisions be made based on history will require quite a bit more work, though the structure is there for it to be done in the code.
+
 
 > <a name="u-12-MAY-2017">Update: 12 MAY 2017</a>
 
@@ -1657,7 +1822,6 @@ One potential issue I've already noticed -- if managers make stake-holder action
 
 Today I have spent my time attempting to completely debug the newly created `manager_fitness` function and its sub-functions. Unfortunately, one bug still appears to remain. For some reason, the function adds actions to the `POPULATION` array in the first row. This issue has been isolated, and I'm almost sure that it is caused by something in `manager_fitness`. Tomorrow, the goal is to fix this so that actions are applied correctly where the row's first column is 1 (the manager `agentID`).
 
-
 > <a name="u-9-MAY-2017">Update: 9 MAY 2017</a>
 
 **New [Issue #23](https://github.com/bradduthie/gmse/issues/23): Revise predicted consequences of user and manager actions**
@@ -1668,7 +1832,7 @@ In functions in the genetic algorithm `res_to_counts` and `policy_to_counts`, th
 
 I have completed an initial draft of the manager fitness function `manager_fitness` and its associated sub-functions `policy_to_counts` and `sum_array_layers`. The function `manager_fitness` might need to be pruned a bit by adding a third sub-function, as it's a bit long at the moment.
 
-```c
+```
 /* =============================================================================
  * This is a preliminary function that checks the fitness of each agent by 
  * passing through a loop to payoffs_to_fitness
@@ -1865,7 +2029,7 @@ This isn't perfect prediction. Sometimes stake-holders will probably radically c
 
 **Other ideas**
 
-I will start coding the above plan, but there are probably other reasonable options to consider. I would like to also add the option of enacting policy via a second resource -- representing resources as something like hunting licenses. The effects of these licenses could be understood through the interaction matrix (essentially, they'd be like introducing a predator, but one that goes through stake-holders). The manager could set the number of hunting licenses using the `feedem` (increases birth rate by action number) and `castem` (causes one fewer so resource doesn't reproduce) columns (licenses would otherwise have a birthrate and death rate of one, so each replaces itself in the next generation) -- birth type would also need to be changed to not be selected from a random Poisson. The `bankem` column could be interpreted as buying a license, somehow. Then again, this is really a round-about way of doing it. The easiest way would probably be to crank up to cost of everything except `killem`. The number of stake-holders allowed to hunt could ten be somehow determined by setting this cost to be finite so that the number of licenses runs out (e.g., perhaps if the manager wants to sell 30, and 40 stake-holders try to purchase one, then the program removes licenses form 10 stake-holders randomly -- simulating lottery -- or based on some criteria of stake-holders).
+I will start coding the above plan, but there are probably other reasonable options to consider. I would like to also add the option of enacting policy via a second resource -- representing resources as something like hunting licenses. The effects of these licenses could be understood through the interaction matrix (essentially, they'd be like introducing a predator, but one that goes through stake-holders). The manager could set the number of hunting licenses using the `feedem` (increases birth rate by action number) and `castem` (causes one fewer so resource doesn't reproduce) columns (licenses would otherwise have a birthrate and death rate of one, so each replaces itself in the next generation) -- birth type would also need to be changed to not be selected from a random Poisson. The `bankem` column could be interpreted as buying a license, somehow.
 
 **Implementation of the initial plan**
 
@@ -1993,7 +2157,6 @@ void policy_to_counts(double ***population, int **interact_table, int int_num,
 ```
 
 The history of struggling with these two functions in a way that is accurate, readable, and efficient is in the git history. I'll consider both functions with fresh eyes tomorrow with the goal of getting something working.
-
 
 > <a name="u-5-MAY-2017">Update: 5 MAY 2017</a>
 
@@ -2707,7 +2870,6 @@ The point of the above break-down, aside from making things more readable, is th
 
 Eventually, I also want the `obs_array[i][1, 2, or 3]` to be able to take -1 as a value in here somehow -- basically, I want the counts to be taken to *ignore one of a resource's type*. For example, we could imagine wanting to have separate sexes indicated by `type2 = 0` or `type2 = 1` in column 2 of the `obs_array`, but perhaps not want managers to actually *use* this when estimating abundance (alternatively -- could combine observations later).
 
-
 > <a name="u-1-MAY-2017">Update: 1 MAY 2017</a>
 
 **Manager function to genetic algorithm link**
@@ -3134,7 +3296,6 @@ The figure tells an interesting story. The light blue individual in the right-ha
 This is exciting -- we have a working model in which a genetic algorithm is being used to identify and enact a stake-holders strategy given their specific interests. **The only major conceptual hurdle** now is likely to be the manager's response, enacting policy by affecting costs of actions, and stake-holders actions that affect other agent's costs (e.g., lobbying a manager). This isn't even much of a jump though -- really, the framework is in place and a lot of the work from here is just grunt work in terms of coding the specifics what options will be available to what agents. **It shouldn't be too long before we have a working model of conflict** that can be applied to real-world case studies. Hence, I'm calling this `v0.0.9` and pushing to `master`. This implementation of the genetic algorithm is also not noticably slower than previous versions -- it took about a second to run the above; my goal is to keep it low.
 
 The next step will be to figure out what options should be available for directly affecting the landscape, and what needs to be done to apply the genetic algorithm to costs of *other* agents actions (hooks for this are already coded in `switch` functions of the genetic algorithm). I would also like to build the `manager.c` function with the ability to empirically derive the Jacobian matrix, and (eventually) make it possible for agents to consider the *histories* of each others actions (shouldn't be too much of a stretch, but this is an extension of the genetic algorithm that can come later).
-
 
 > <a name="u-19-APR-2017">Update: 19 APR 2017</a>
 
@@ -3619,10 +3780,6 @@ The above is in a `switch` function that is currently superfluous but might late
 
 In fact, it will probably be considerably cleaner and more readable to just make the biology-centred part of the whole `resource` function in `resource.c` its own function, `resource_dynamics`, then run `resource_dynamics` *in the genetic algorithm* with appropriate links. As a bonus, this would take care of the landscape-level effects of resources too.
 
-**Change order of resource interacting with landscape**
-
-To be consistent with the emerging fitness function of the genetic algorithm, I have decided to move resource interactions with the landscape to the *end* of the `resources.c` function. So rather than have resources interacting with the landscape before movement, birth, death, now resources will first move, reproduce, and die -- resoures remaining at the end of these demographic processes will then interact with the landscape. It might be useful to have this order flexible later.
-
 **Calculate agent fitness function almost finished**
 
 The function `calc_agent_fitness` is almost complete, which will be an initial draft of the genetic algorithm after I write in the code to translate resource abundances and crop yields to realised utilities. The meat of the function (excluding intialisation an memory management) is below
@@ -3695,7 +3852,7 @@ The function `calc_agent_fitness` is almost complete, which will be an initial d
 
 The next step is to write the `calc_utilities`. Overall, the whole program is noticeably slower, so I will want to optimise a bit if possible. I also need to do some [unit testing](https://en.wikipedia.org/wiki/Unit_testing) for all of this to make sure that the genetic algorithm is doing what I intend it to do.
 
-<a name="delete_fitness_functions">**Moving forward: optimsation and error in `ACTION`**</a>
+**Moving forward: optimsation and error in `ACTION`**
 
 Having completed some initial coding and testing, there is a lot to do on everything downstream of `calc_agent_fitness`. The function doesn't appears to alter agent utilities somehow, and slows down the simulations dramatically, from about half a second to several minutes to get through 100 generations. Options for addressing this include:
 
@@ -4027,7 +4184,6 @@ A `do_actions` function will enact the actions of **one** (usually out of 100) m
  
  This should give a fitness function that is then returned to `strategy_fitness` (might want to have `calc_agent_fitness` return an `int`), which will store all fitnesses in a vector after the above loops. More bells and whistles can be added on to this later, but when this is finished, it should be a working genetic algorithm for modelling complex stake-holder behaviour.
 
-
 > <a name="u-7-APR-2017">Update: 7 APR 2017</a>
 
 Working through implementing the ideas for the fitness function from [yesterday](#u-6-APR-2017). I've linked some key parameters now through `user` and `ga` so they can be run in `strategy_fitness` (namely the resource number and agent_ID, `landowner`). Now it's important to note that building local resources has to be conditional -- if an agent has no land, they cannot do things on their land. And if their interests are global, this needs to be considered too. I think a collection of small functions called according to parameter options is needed, and landscape specific changes are really a subset of general actions, so maybe there's a better way to do this. Really though, it would be nice to have a way for the cost of performing actions on **land owned** versus **land not owned** to be different. Then again, it would be nice to have different utilities for resources on and off your land, but this could get very complex very quickly (might, however, be interesting in that maybe a farmer values crops positively on their own land but negatively on the land of other farmers). I think it will also shake out when the manager actions affecting costs comes into play -- so a manager will naturally up the cost if shooting somehow becomes *not* tied to a location in a way that affects other stake-holders or management decisions, for whatever reason. The bottom line is that I think it's okay for now to run the `ga` with the constraint that **if a resource/landscape utility value is tied to land ownership, then the actions should also be tied to owned landcape cells**. If not, then actions should happen either on all cells or only public land.
@@ -4075,7 +4231,7 @@ A quick reminder to myself what's going on in the `COST` and `ACTION` arrays, as
 | agent | type1 | type2 | type3 | util | u_loc | u_land | movem  | castem | killem | feedem | helpem | bankem |
 |-------|-------|-------|-------|------|-------|--------|--------|--------|--------|--------|--------|--------|
 | -2    |  1    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  2     |  0     |  0     |  0     |
-| -1    |  1    |  0    | 0     | 2    | 0     | 1      | 0      |  0     |  0     |  0     |  0     |  0     |
+| -1    |  1    |  0    | 0     | 2    | 1     | 0      | 0      |  0     |  0     |  0     |  0     |  0     |
 |  1    |  1    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |  0     |
 |  2    |  1    |  0    | 0     | 0    | 0     | 0      | 0      |  0     |  0     |  0     |  0     |  0     |
 
@@ -4096,9 +4252,7 @@ Assume that each agent gets a total budget of `100`. In that case, all of the ta
 
 Eventually we'll want to find some kind of mult-objective fitness function [@Lee2012], especially for the managers. For now I'm going to simplify and just make fitness a simple matter of abundance times *deviation from* utility -- where for a landscape 'abundance' is replaced by owned cell crop yield, then sum over all resources and landscape layers. For now, utilities can be set unreasonably high -- so conservationists might want 1000000 geese and farmers might want 1000000 in yield -- much higher than is possible so that more is always better. The fitness function will then assign fitnesses minimising the deviation from utility somehow. The *deviation from* will eventually allow managers to have more reasonable goals -- allowing the genetic algorithm to find more flexible and dynamic strategies.
 
-
 > <a name="u-6-APR-2017">Update: 6 APR 2017</a>
-
 
 **Quick check on neural networks**
 
@@ -4129,7 +4283,6 @@ Having done the clean-up, I now note again that the utility from an action isn't
     - **Note**, no need to worry if a stake-holder is, e.g., trying to kill 10 resources when there are only 6 on their land -- this just results in 6 kills and wasted energy (perhaps should also add probability of success later)
   
 Although I initially thought option 3 was pretty good, I'm now leaning toward option 4 as being the best one to try out first; it seems more flexible. Eventually, of course, we can specify options for different ways of calculating fitness, but I think it's best to pick one option first and go with it. I think option 4 will be slightly slower than option 3, but I'm curious as to exactly how much slower. Hence, I'll try number 4 first, then potentially move to 3 as a default if it's too clunky. I have to keep in mind as well that managers are probably going to need to run the `user` functions to set policy eventually (unless I can find a work-around that gets managers to anticipate stake-holder actions in making policy), and this will likely slow things down exponentially. Time isn't much of an issue now, and I want to keep things efficient as possible. **Also important,** I need to make sure that there is some `if` statement that only deals with the landscape if the stake-holder owns land. If they don't own any, then their actions need to be restricted accordingly -- maybe to lobbying the manager or only doing things on public land?. **As a next step,** I will attempt to write the code for option 4 above, perhaps excluding (for now) stake-holders that own no land.
-  
 
 > <a name="u-5-APR-2017">Update: 5 APR 2017</a>
 
@@ -4243,7 +4396,6 @@ if(agent_yloc < 0 || agent_yloc >= ydim){
 ```
 
 Now in the very rare cases where agent locations are off the map (and it might be worth figuring out why -- perhaps they're getting moved somewhere arbitrarily and not moved back?), they will be placed on a cell that they own. This was the point of the function anyway, so it's not a huge deal. It's still a bit odd though, and I'm not sure why it was affecting only about one in thirty simulations. I'll consider **Issue #16: Potential bug: In `user.c`** closed now, and move on to the genetic algorithm again.
-
 
 > <a name="u-17-MAR-2017">Update: 17 MAR 2017</a>
 
@@ -4781,7 +4933,6 @@ I might or might not want to tweak this later on because I'm not sure if the typ
 
 The next function that needs to be written is one that constrains the costs to be at or under budget after crossover and mutation, then a fitness function is needed (which will probably require several sub-functions to keep the code readable).
 
-
 > <a name="u-14-MAR-2017">Update: 14 MAR 2017</a>
 
 **Separate `ACTION` and `COST` arrays**
@@ -4793,7 +4944,6 @@ I've now made separate the arrays that affect an agent's *actions* and the agent
 **Working call to `game.c`, but bad action return**
 
 There is now a working `game.c` file that `user.c` functions call, with proper header files to link. For some reason, the action arrays returned right now are incorrect, so this is the next thing that needs to be done. In general, I think it will be a good idea to make sure that calls from `gmse.R` are maintained without crash.
-
 
 > <a name="u-13-MAR-2017">Update: 13 MAR 2017</a>
 
@@ -5113,6 +5263,7 @@ No memory leaks were reported.
 ```
 
 Next, I can start to make the users actually do things that might maximise their own yield (e.g., shoot resources or farm cells more effectively). I play to write a flexible genetic algorithm function in c. The function itself could be called from a higher-level function so as to be used directly in R (though I don't plan to do this for normal G-MSE operations, but it might be useful to include direct R call optoins once the package is complete).
+
 
 > <a name="u-8-MAR-2017">Update: 8 MAR 2017</a>
 
@@ -5551,7 +5702,7 @@ A recent paper by @Miyasaka2017 looks at land use in a social-ecological system 
 1. Break down move functions into easier to digest pieces by creating functions:
     - `movement_dir`: Causes movement in the `x` or `y` direction
     - `edge_effect`: Does something at the edge when encountered
-2. Initialise landscape layer
+2. Initialise landscape layers
 
 **Further progress**
 
@@ -8304,6 +8455,7 @@ Impl1 <- function(TAC=10, ModType="A", p=0.7){
 **Hence, we can put four of these functions together to simulate a very simple MSE model:**
 
 ```{r}
+
 pop_abund      <- 100;
 harvest        <- 20;
 growth_rate    <- 1;

@@ -4,9 +4,15 @@
 \alias{gmse_apply}
 \title{GMSE apply function}
 \usage{
-gmse_apply(res_mod = resource, obs_mod = observation,
-  man_mod = manager, use_mod = user, get_res = "basic",
-  old_list = NULL, ...)
+gmse_apply(
+  res_mod = resource,
+  obs_mod = observation,
+  man_mod = manager,
+  use_mod = user,
+  get_res = "basic",
+  old_list = NULL,
+  ...
+)
 }
 \arguments{
 \item{res_mod}{The function specifying the resource model. By default, the individual-based resource model from gmse is called with default parameter values. User-defined functions must either return an unnamed matrix or vector, or return a named list in which one list element is named either 'resource_array' or 'resource_vector', and arrays must follow the format of GMSE in terms of column number and type (if there is only one resource type, then the model can also just return a scalar value).}

@@ -25,16 +25,18 @@ test_that("Dimensions of observation arrays in returned list are correct", {
                            cell_val_max = 1, 
                            cell_val_min = 1,
                            layers       = 3, 
-                           ownership    = 1,  
-                           owner_pr     = NULL
+                           ownership    = 1,
+                           owners       = 1,
+                           public_land  = 0
     );
     
-    paras <- c(0, 1, 1, 2, 2, 100, 100, 0, 0, 1, 10, 20, 10, 10, 1, 1, 1, 1, 12, 
-               1, 0, 100, 10, 20, 20, 2, 0.1, 0.1, 0, 5, 7, 11, 100, 4, 5, 6, 3, 
+    paras <- c(0, 1, 1, 2, 2, 100, 100, 0, 0, 1, 10, 20, 10, 10, 1, 1, 1, 1, 12,
+               1, 0, 100, 10, 20, 20, 2, 0.1, 0.1, 0, 5, 7, 11, 100, 4, 5, 6, 3,
                9, 10, 18, 19, 20, 17, 8, 1, 1, 15, 14, 1, 4, 5, 6, 10, 12, 2, 
-               17, 1, 2, 3, 13, 3, -1, -1, 1, 0, 2, 2, 8, 7, 13, 4, 7, 0, 16, 0, 
+               17, 1, 2, 3, 13, 3, -1, -1, 1, 0, 2, 2, 8, 7, 13, 4, 7, 0, 16, 0,
                -0.1, -0.1, 0.1, 0.1, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
-               1, 1, 1, 1, 10, 1000, 100, 100, 0, 0);
+               1, 1, 1, 1, 10, 1000, 100, 100, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0, 0,
+               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1);
     
     agents  <-  make_agents(model        = "IBM",
                             agent_number = 2,
@@ -62,9 +64,9 @@ test_that("Dimensions of observation arrays in returned list are correct", {
                          res_move_obs   = paras[20]
     );
     
-    expect_equal(dim(obs[[1]]), c(100, 41));
+    expect_equal(dim(obs[[1]]), c(100, 43));
     expect_equal(dim(obs[[2]]), c(2, 17));
-    expect_equal(length(obs[[3]]), 102);
+    expect_equal(length(obs[[3]]), 122);
 })
 
 test_that("Observation model updates new parameters", {
@@ -90,16 +92,18 @@ test_that("Observation model updates new parameters", {
                            cell_val_max = 1, 
                            cell_val_min = 1,
                            layers       = 3, 
-                           ownership    = 1,  
-                           owner_pr     = NULL
+                           ownership    = 1,
+                           owners       = 1,
+                           public_land  = 0
     );
     
-    paras <- c(0, 1, 1, 2, 2, 100, 100, 0, 0, 1, 10, 20, 10, 10, 1, 1, 1, 1, 12, 
-               1, 0, 100, 10, 20, 20, 2, 0.1, 0.1, 0, 5, 7, 11, 100, 4, 5, 6, 3, 
+    paras <- c(0, 1, 1, 2, 2, 100, 100, 0, 0, 1, 10, 20, 10, 10, 1, 1, 1, 1, 12,
+               1, 0, 100, 10, 20, 20, 2, 0.1, 0.1, 0, 5, 7, 11, 100, 4, 5, 6, 3,
                9, 10, 18, 19, 20, 17, 8, 1, 1, 15, 14, 1, 4, 5, 6, 10, 12, 2, 
-               17, 1, 2, 3, 13, 3, -1, -1, 1, 0, 2, 2, 8, 7, 13, 4, 7, 0, 16, 0, 
+               17, 1, 2, 3, 13, 3, -1, -1, 1, 0, 2, 2, 8, 7, 13, 4, 7, 0, 16, 0,
                -0.1, -0.1, 0.1, 0.1, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
-               1, 1, 1, 1, 10, 1000, 100, 100, 0, 0);
+               1, 1, 1, 1, 10, 1000, 100, 100, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0, 0,
+               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1);
     
     agents  <-  make_agents(model        = "IBM",
                             agent_number = 2,
@@ -129,7 +133,7 @@ test_that("Observation model updates new parameters", {
     
     expect_equal(sum(obs[[3]][1:61] - paras[1:61]), 0);
     expect_equal(obs[[3]][62] - paras[62], 101);
-    expect_equal(obs[[3]][63] - paras[63], 42);
+    expect_equal(obs[[3]][63] - paras[63], 44);
     expect_equal(sum(obs[[3]][64:102] - paras[64:102]), 0);
 })
 
@@ -156,16 +160,18 @@ test_that("Resources are marked correctly", {
                            cell_val_max = 1, 
                            cell_val_min = 1,
                            layers       = 3, 
-                           ownership    = 1,  
-                           owner_pr     = NULL
+                           ownership    = 1,
+                           owners       = 1,
+                           public_land  = 0
     );
     
-    paras <- c(0, 1, 1, 2, 2, 100, 100, 0, 0, 1, 10, 20, 10, 10, 1, 1, 1, 1, 12, 
-               1, 0, 100, 10, 20, 20, 2, 0.1, 0.1, 0, 5, 7, 11, 100, 4, 5, 6, 3, 
+    paras <- c(0, 1, 1, 2, 2, 100, 100, 0, 0, 1, 10, 20, 10, 10, 1, 1, 1, 1, 12,
+               1, 0, 100, 10, 20, 20, 2, 0.1, 0.1, 0, 5, 7, 11, 100, 4, 5, 6, 3,
                9, 10, 18, 19, 20, 17, 8, 1, 1, 15, 14, 1, 4, 5, 6, 10, 12, 2, 
-               17, 1, 2, 3, 13, 3, -1, -1, 1, 0, 2, 2, 8, 7, 13, 4, 7, 0, 16, 0, 
+               17, 1, 2, 3, 13, 3, -1, -1, 1, 0, 2, 2, 8, 7, 13, 4, 7, 0, 16, 0,
                -0.1, -0.1, 0.1, 0.1, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
-               1, 1, 1, 1, 10, 1000, 100, 100, 0, 0);
+               1, 1, 1, 1, 10, 1000, 100, 100, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0, 0,
+               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1);
     
     agents  <-  make_agents(model        = "IBM",
                             agent_number = 2,
