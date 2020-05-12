@@ -15,7 +15,7 @@
 #'@param ownership A TRUE or FALSE whether land should be owned by stakeholders
 #'@param owners The number of stakeholders in the model that own land
 #'@param public_land The proportion of landscape cells that are not owned
-#'@param land_var  Does distribution of land vary among users? >=0, <1
+#'@param ownership_var  Does distribution of land vary among users? >=0, <1
 #'@return the_land A cols by rows landscape with randomly distributed cell types
 #'@examples
 #'land <- make_landscape(model = "IBM", rows = 10, cols = 10, cell_types = 1, 
@@ -24,7 +24,7 @@
 make_landscape <- function(model, rows, cols, cell_types = 1, cell_val_mn = 1, 
                            cell_val_sd = 0, cell_val_max = 1, cell_val_min = 0,
                            layers = 3, ownership = FALSE, owners = 4, 
-                           public_land = 0, land_var = 0){
+                           public_land = 0, ownership_var = 0){
     the_land  <- NULL;
     if(model == "IBM"){
         if(rows < 2){
@@ -42,7 +42,8 @@ make_landscape <- function(model, rows, cols, cell_types = 1, cell_val_mn = 1,
             who_owns     <- rep(x = 1, times = cell_count);
             the_terrain3 <- sort(who_owns); 
         }else{
-            who_owns     <- owner_land_ssa(rows, cols, owners, public_land, land_var);
+            who_owns     <- owner_land_ssa(rows, cols, owners, public_land, 
+                                           ownership_var);
             the_terrain3 <- who_owns;
         }
         the_terrain2[the_terrain2 > cell_val_max] <- cell_val_max;
