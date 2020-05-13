@@ -1162,7 +1162,7 @@ paras_errors <- function(input_list){
         stop("ERROR: Resource consumption for reproduction cannot be negative");
     }
     if(input_list[63] < 0 | input_list[63] >= 1){
-        stop("observation_var needs to be >= 0 and < 1");
+        stop("ownership_var needs to be >= 0 and < 1");
     }
 }
 
