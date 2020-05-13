@@ -1162,7 +1162,7 @@ paras_errors <- function(input_list){
         stop("ERROR: Resource consumption for reproduction cannot be negative");
     }
     if(input_list[63] < 0 | input_list[63] >= 1){
-        stop("land_var needs to be >= 0 and < 1");
+        stop("observation_var needs to be >= 0 and < 1");
     }
 }
 
@@ -1190,17 +1190,8 @@ argument_list <- function(res_mod, obs_mod, man_mod, use_mod, oth_vals){
     arg_list    <- place_args(all_names, formals(obs_mod), arg_list);
     arg_list    <- place_args(all_names, formals(man_mod), arg_list);
     arg_list    <- place_args(all_names, formals(use_mod), arg_list);
-    
     arg_list    <- place_args(all_names, oth_vals, arg_list);
     arg_out     <- list(all_arg_values = arg_list, all_arg_names = all_names);
-    
-    ### At this point in an "unwrapped" execution, this
-    ###   arg_out$all_arg_values[[which(arg_out$all_arg_names=="get_res")]]  
-    ### returns "Full", as expected.
-    ### 
-    ### However, this value is NA when in the wrapped function???
-    ### 
-    
     return(arg_out);        
 }
 
@@ -1226,19 +1217,9 @@ place_args <- function(all_names, placing_vals, arg_list){
         place_name <- placing_names[i];
         if(place_name %in% all_names){
             place_pos <- which(all_names == place_name);
-
-            ### The follwing bit was changed to help a wrapper function - seems to work with res_consume and
-            ###  observe_type as custom parameters only, but dramatically crashes R when also including
-            ###  land_dim_1.
-            ###  
-            ###  The lines commented out below are the ones that I replaced the versions below them.
-            
-            #arg_eval  <- eval(placing_vals[[i]]);
-            arg_eval  <- placing_vals[[grep(place_name, names(placing_vals))]]
-
+            arg_eval  <- eval(placing_vals[[i]]);
             if(is.null(arg_eval) == FALSE){
-                #arg_list[[place_pos]] <- eval(placing_vals[[i]]);
-                arg_list[[place_pos]] <- arg_eval;
+                arg_list[[place_pos]] <- eval(placing_vals[[i]]);
             }
         }
     }
@@ -1405,9 +1386,14 @@ collect_land_ini <- function(arg_list){
     if("public_land" %in% arg_names){
         public_land <- arg_list[["public_land"]];
     }
+    ownership_var <- arg_list[["GMSE"]][["ownership_var"]];
+    if("ownership_var" %in% arg_names){
+        ownership_var <- arg_list[["ownership_var"]];
+    }
     make_lnd_list[[10]] <- land_is_owned;
     make_lnd_list[[11]] <- stakeholders;
     make_lnd_list[[12]] <- public_land;
+    make_lnd_list[[13]] <- ownership_var;
     
     return(make_lnd_list);
 }
