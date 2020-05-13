@@ -558,6 +558,15 @@ gmse_gui <- function(){
                                                     max   = 50,
                                                     step  = 5,
                                                     value = 0)
+                               ),
+                               
+                               tags$div(title="This parameter adjusts the evenness of the ownership of user cells on the landscape. Values of zero result in mostly even rectangles of user land ownership, while values near one cause few users to own a lot of land and many users to own muc less land.", 
+                                        sliderInput("ownership_var",
+                                                    "Variation in user land ownership",
+                                                    min   = 0,
+                                                    max   = 1,
+                                                    step  = 0.1,
+                                                    value = 0)
                                )
                         )
                 ),
@@ -820,7 +829,8 @@ gmse_gui <- function(){
                  budget_bonus   = input$budget_bonus,     
                  consume_surv   = input$consume_surv,    
                  consume_repr   = input$consume_repr,     
-                 times_feeding  = input$times_feeding
+                 times_feeding  = input$times_feeding,
+                 ownership_var  = input$ownership_var
             );
         })
         
