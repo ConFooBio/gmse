@@ -683,7 +683,8 @@ pass_paras <- function( old_list = NULL, time_max = 100, land_dim_1 = 100,
                         manager_sense = 0.1, public_land = 0, 
                         group_think = FALSE, age_repr = 1, usr_budget_rng = 0,
                         action_thres = 0, budget_bonus = 0, consume_surv = 0,
-                        consume_repr = 0, ownership_var = 0, PARAS = NULL, ...
+                        consume_repr = 0, times_feeding = 1, 
+                        ownership_var = 0, PARAS = NULL, ...
 ){
     
     if(is.null(PARAS) == FALSE){
@@ -1351,6 +1352,11 @@ collect_res_ini <- function(arg_list){
         apos                <- which(arg_names == "max_ages");
         make_res_list[[10]] <- arg_list[[apos]];
     }
+    make_res_list[[11]] <- arg_list[["GMSE"]][["times_feeding"]];
+    if("times_feeding" %in% arg_names){
+        apos                <- which(arg_names == "times_feeding");
+        make_res_list[[11]] <- arg_list[[apos]];
+    }
     return(make_res_list);
 }
 
@@ -1759,39 +1765,43 @@ collect_itb_ini <- function(arg_list){
 }
 
 collect_ita_ini <- function(arg_list){
-    make_itb_list <- list();
+    make_ita_list <- list();
     arg_names     <- names(arg_list);
     def_forms     <- formals(gmse);
     def_names     <- names(def_forms);
-    make_itb_list[[1]] <- NA;
+    make_ita_list[[1]] <- NA;
     if("resource_array" %in% arg_names == TRUE){
-        make_itb_list[[1]] <- arg_list[["resource_array"]];
+        make_ita_list[[1]] <- arg_list[["resource_array"]];
     }
-    if(is.na(make_itb_list[[1]][1]) == TRUE){
+    if(is.na(make_ita_list[[1]][1]) == TRUE){
         dresarg            <- collect_res_ini(arg_list);
-        make_itb_list[[1]] <- do.call(what = make_resource, args = dresarg);
+        make_ita_list[[1]] <- do.call(what = make_resource, args = dresarg);
     }
-    make_itb_list[[2]] <- NA;
+    make_ita_list[[2]] <- NA;
     if("LAND" %in% arg_names == TRUE){
-        make_itb_list[[2]] <- arg_list[["LAND"]];
+        make_ita_list[[2]] <- arg_list[["LAND"]];
     }
-    if(is.na(make_itb_list[[2]][1]) == TRUE){
+    if(is.na(make_ita_list[[2]][1]) == TRUE){
         dlndarg            <- collect_land_ini(arg_list);
-        make_itb_list[[2]] <- do.call(what = make_landscape, args = dlndarg);
+        make_ita_list[[2]] <- do.call(what = make_landscape, args = dlndarg);
     }
+    make_ita_list[[3]] <- arg_list[["GMSE"]][["res_consume"]];
     if("res_consume" %in% arg_names == TRUE){
-        make_itb_list[[3]] <- arg_list[["res_consume"]];
+        make_ita_list[[3]] <- arg_list[["res_consume"]];
     }
+    make_ita_list[[4]] <- arg_list[["GMSE"]][["consume_surv"]];
     if("consume_surv" %in% arg_names == TRUE){
-        make_itb_list[[4]] <- arg_list[["consume_surv"]];
+        make_ita_list[[4]] <- arg_list[["consume_surv"]];
     }
+    make_ita_list[[5]] <- arg_list[["GMSE"]][["consume_repr"]];
     if("consume_repr" %in% arg_names == TRUE){
-        make_itb_list[[5]] <- arg_list[["consume_repr"]];
+        make_ita_list[[5]] <- arg_list[["consume_repr"]];
     }
+    make_ita_list[[6]] <- arg_list[["GMSE"]][["times_feeding"]];
     if("times_feeding" %in% arg_names == TRUE){
-        make_itb_list[[6]] <- arg_list[["times_feeding"]];
+        make_ita_list[[6]] <- arg_list[["times_feeding"]];
     }
-    return(make_itb_list);
+    return(make_ita_list);
 }
 
 add_obs_defaults <- function(arg_list){
@@ -2119,10 +2129,11 @@ set_interaction_array <- function(arg_list){
         ini_ita <- do.call(what = make_interaction_array, args = ditbarg);
         arg_list[[interact_pos]] <- ini_ita;
     }
-    res_consume <- arg_list[["GMSE"]][["res_consume"]];
-    if("res_consume" %in% arg_names == TRUE){
-        res_consume <- arg_list[["res_consume"]];
-    }
+    # I don't think that this is needed ----------------------------------
+    #res_consume <- arg_list[["GMSE"]][["res_consume"]];
+    #if("res_consume" %in% arg_names == TRUE){
+    #    res_consume <- arg_list[["res_consume"]];
+    #}
     return(arg_list);
 }
 
