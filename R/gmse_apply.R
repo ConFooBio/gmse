@@ -41,9 +41,12 @@ gmse_apply <- function(res_mod  = resource,
 
     std_paras           <- pass_paras(old_list, ...);
     all_args            <- as.list(sys.call());
+    
+    check_the_var_names(all_args);
+    
     all_args[["PARAS"]] <- std_paras[["gmse_para_vect"]]; 
     all_args[["ilist"]] <- std_paras[["gmse_user_input"]]; 
-    all_args[["GMSE"]]  <- formals(gmse);                                       
+    all_args[["GMSE"]]  <- formals(gmse); 
 
     needed_args <- argument_list(res_mod, obs_mod, man_mod, use_mod, all_args); 
     arg_vals    <- needed_args[["all_arg_values"]]; 
@@ -113,6 +116,30 @@ gmse_apply <- function(res_mod  = resource,
 ################################################################################
 # Subfunctions required                                                        #
 ################################################################################
+check_the_var_names <- function(all_arguments){
+    names_all     <- names(all_arguments);
+    for(arg in 1:length(all_arguments)){
+        if(is.null(all_arguments[["old_list"]]) == FALSE){
+            break;
+        }
+        if("my_way_or_the_highway" %in% names_all == TRUE){
+            break;
+        }
+        arg_read <- as.character(all_arguments[[arg]]);
+        if(arg_read %in% names_all ==  TRUE){
+            please_1 <- paste("Reading in a variable that has the same name");
+            please_2 <- paste("as an argument (",arg_read, "=", arg_read,")");
+            please_3 <- paste("will not necessarily cause a crash, but it is");
+            please_4 <- paste("risky. Please rename the variable", arg_read);
+            please_5 <- paste("and re-run gmse_apply.");
+            please_6 <- paste("To over-ride this (at your own risk!), set");
+            please_7 <- paste("the argument 'my_way_or_the_highway = TRUE");
+            please_n <- paste(please_1, please_2, please_3, please_4, please_5,
+                              please_6, please_7);
+            stop(please_n);
+        }
+    }
+}
 
 swap_old_gmse   <- function(ol){
     names_old <- names(ol);
