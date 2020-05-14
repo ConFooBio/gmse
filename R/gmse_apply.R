@@ -2129,11 +2129,6 @@ set_interaction_array <- function(arg_list){
         ini_ita <- do.call(what = make_interaction_array, args = ditbarg);
         arg_list[[interact_pos]] <- ini_ita;
     }
-    # I don't think that this is needed ----------------------------------
-    #res_consume <- arg_list[["GMSE"]][["res_consume"]];
-    #if("res_consume" %in% arg_names == TRUE){
-    #    res_consume <- arg_list[["res_consume"]];
-    #}
     return(arg_list);
 }
 
