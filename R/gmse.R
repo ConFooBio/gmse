@@ -566,6 +566,8 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
             RESOURCES    <- HUNT_OUTCOME$RESOURCES;
             paras        <- HUNT_OUTCOME$PARAS;
         }
+        
+        invisible( gc() );
     }
 
     res_columns <- c("Resource_ID",

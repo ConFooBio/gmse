@@ -109,7 +109,7 @@ gmse_apply <- function(res_mod  = resource,
     
     res <- gmse_apply_out(arg_vals, get_res, res_mod, obs_mod, man_mod, use_mod,
                           res_results, obs_results, man_results, usr_results);
-    
+    invisible( gc() );
     return(res);    
 }
 
