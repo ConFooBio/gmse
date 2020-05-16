@@ -11,7 +11,27 @@ make_agents(
   move = 0,
   vision = 20,
   rows = 100,
-  cols = 100
+  cols = 100,
+  scaring = FALSE,
+  culling = TRUE,
+  castration = FALSE,
+  feeding = FALSE,
+  help_offspring = FALSE,
+  tend_crops = FALSE,
+  kill_crops = FALSE,
+  perceive_scare = NA,
+  perceive_cull = NA,
+  perceive_cast = NA,
+  perceive_feed = NA,
+  perceive_help = NA,
+  perceive_tend = NA,
+  perceive_kill = NA,
+  manager_sense = 1,
+  lambda = 0.3,
+  res_consume = 0,
+  consume_repr = 0,
+  tend_crop_yld = 0.2,
+  landscape = NA
 )
 }
 \arguments{
@@ -29,6 +49,46 @@ make_agents(
 \item{rows}{The number of rows (y-axis) on the simulated landscape; agents are randomly placed somewhere on the landscape array}
 
 \item{cols}{The number of columns (x-axis) on the simulated landscape; agents are randomly placed somewhere on the landscape array}
+
+\item{scaring}{This is a TRUE or FALSE value determining whether or not scaring is an option for managers and stakeholders. If so, then stakeholders that scare cause resources to be moved from their current landscape cell to a random cell on the landscape (note, it is possible that the resource could be scared back onto the stakeholder's own land again). The default value of this is FALSE.}
+
+\item{culling}{This is a TRUE or FALSE value determining whether or not culling is an option for managers and stakeholders. If so, then stakeholders that cull cause the resource to be removed from the simulation permanently (i.e., killing the resource). The default value of this is TRUE.}
+
+\item{castration}{This is a TRUE or FALSE value determining whether or not castration is an option for managers and stakeholders. If so, then stakeholders that castrate do not remove the resource from the simulation, but prohibit the resource from reproducing by setting its `lambda` value to zero. The default value of this is FALSE.}
+
+\item{feeding}{This is a TRUE or FALSE value determining whether or not feeding is an option for managers and stakeholders. If so, then stakeholders that feed increase a resource's growth rate (lambda) for one time step by 100 percent. The default value of this is FALSE.}
+
+\item{help_offspring}{This is a TRUE or FALSE value determining whether or not feeding is an option for managers and stakeholders. If so, then stakeholders that help_offspring increase a resource's offspring production for one time step by one (i.e., one more offspring is produced). The default value of this is FALSE.}
+
+\item{tend_crops}{This is a TRUE or FALSE value determining whether or not tending crops on the landscape is allowed for stakeholders. If so, then stakeholders can increase one cells yield by 50 percent for each action to `tend_crops`. Actions on the landscape cannot be regulated by managers, so the cost of this action is always `minimum_cost`. The default value of this is FALSE.}
+
+\item{kill_crops}{This is a TRUE or FALSE value determining whether or not killing crops on the landscape is allowed for stakeholders. If so, then stakeholders can remove the crop yield on a cell completely for each action to `kill_crops`. Actions on the landscape cannot be regulated by managers, so the cost of this action is always `minimum_cost`.}
+
+\item{perceive_scare}{For a focal user, the perceived effect of scaring one resource on the total number of resources affecting the user}
+
+\item{perceive_cull}{For a focal user, the perceived effect of culling one resource on the total number of resources affecting the user}
+
+\item{perceive_cast}{For a focal user, the perceived effect of castrating one resource on the total number of resources affecting the user}
+
+\item{perceive_feed}{For a focal user, the perceived effect of feeding one resource on the total number of resources affecting the user}
+
+\item{perceive_help}{For a focal user, the perceived effect of helping the offspring of one resource on the total number of resources affecting the user}
+
+\item{perceive_tend}{For a focal user, the perceived effect of tending to crops on one cell of owned landscape the user's total crop yield}
+
+\item{perceive_kill}{For a focal user, the perceived effect of destroying the crops on one cell of owned landscape on the user's total crop yield}
+
+\item{manager_sense}{This adjusts the sensitivity that a manager assumes their actions have with respect to changes in costs (their policy). For example, given a `manage_sense` value of 0.9, if the cost of culling resources doubles, then instead of a manager assuming the the number of culled resources per user will be cut in half, the manager will instead assume that the number of resources culled will be cut by one half times eight tenths. As a general rule, a value of ca 0.8 allows the manager to predict stake-holder responses to policy accurately; future versions of GMSE could allow managers to adjust this dynamically based on simulation history.}
+
+\item{lambda}{This value is the baseline population growth rate of resources. Each resource in the simulation produces Poisson(lambda) offspring in one time step within the resource model. The value of lambda might be increased or decreased by user actions, and juvenile survival can potentially be decreased by a carrying capacity placed on birth. The default value is 0.3, meaning that the average resource produces one offspring every three time steps.}
+
+\item{res_consume}{The fraction of remaining biomass (e.g. crop production) that a resource consumes while occupying a landscape cell. The default value is 0.5, so if one resource occupies the cell, then landscape production is halved, if two resources occupy the cell, then landscape production drops to 0.25; if three, then production drops to 0.125, etc.}
+
+\item{consume_repr}{How much from a landscape does an individual resource need to produce one offspring (default 0)?}
+
+\item{tend_crop_yld}{The per landscape cell proportional increase in crop yield when stakeholders take one action to increase yield on their landscape. The default value is set to 0.5 (i.e., a 50 percent increase in yield on a cell).}
+
+\item{landscape}{The landscape on which some cells are owned. This needs to have been created with the make_landscape, or be a three dimensional array in which the third layer of the array corresponds to owned cells}
 }
 \value{
 An initialised data frame of agents being modelled
