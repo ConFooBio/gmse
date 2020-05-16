@@ -70,9 +70,9 @@ gmse_apply <- function(res_mod  = resource,
     arg_vals    <- translate_results(arg_list = arg_vals, output = res_results);
     arg_vals    <- update_para_vec(arg_list   = arg_vals);
     check_extinction(arg_vals);
-    
+
     # ------ OBSERVATION MODEL -------------------------------------------------
-    obs_args <- prep_obs(arg_list = arg_vals, obs_mod = obs_mod);               
+    obs_args <- prep_obs(arg_list = arg_vals, obs_mod = obs_mod);   
     check_args(arg_list = obs_args, the_fun = obs_mod);                         
     obs_results <- do.call(what = obs_mod, args = obs_args);                    
     obs_results <- check_name_results(output   = obs_results,
@@ -712,7 +712,11 @@ pass_paras <- function( old_list = NULL, time_max = 100, land_dim_1 = 100,
                         group_think = FALSE, age_repr = 1, usr_budget_rng = 0,
                         action_thres = 0, budget_bonus = 0, consume_surv = 0,
                         consume_repr = 0, times_feeding = 1, 
-                        ownership_var = 0, PARAS = NULL, ...
+                        ownership_var = 0, perceive_scare = NA, 
+                        perceive_cull = NA, perceive_cast = NA, 
+                        perceive_feed = NA, perceive_help = NA, 
+                        perceive_tend = NA, perceive_kill  = NA, 
+                        PARAS = NULL, ...
 ){
     
     if(is.null(PARAS) == FALSE){
@@ -734,7 +738,9 @@ pass_paras <- function( old_list = NULL, time_max = 100, land_dim_1 = 100,
                     manage_caution, land_ownership, manage_freq, converge_crit, 
                     manager_sense, public_land, group_think, age_repr,
                     usr_budget_rng, action_thres, budget_bonus, consume_surv,
-                    consume_repr, ownership_var); 
+                    consume_repr, ownership_var, perceive_scare, perceive_cull,
+                    perceive_cast, perceive_feed, perceive_help, perceive_tend,
+                    perceive_kill); 
 
     paras_errors(input_list);
     
@@ -1193,6 +1199,24 @@ paras_errors <- function(input_list){
     if(input_list[63] < 0 | input_list[63] >= 1){
         stop("ownership_var needs to be >= 0 and < 1");
     }
+    if(is.na(input_list[64]) == FALSE & is.numeric(input_list[64]) == FALSE){
+        stop("perceive_cull needs to be NA or numeric");
+    }
+    if(is.na(input_list[65]) == FALSE & is.numeric(input_list[65]) == FALSE){
+        stop("perceive_cast needs to be NA or numeric");
+    }
+    if(is.na(input_list[66]) == FALSE & is.numeric(input_list[66]) == FALSE){
+        stop("perceive_feed needs to be NA or numeric");
+    }
+    if(is.na(input_list[67]) == FALSE & is.numeric(input_list[67]) == FALSE){
+        stop("perceive_help needs to be NA or numeric");
+    }
+    if(is.na(input_list[68]) == FALSE & is.numeric(input_list[68]) == FALSE){
+        stop("perceive_tend needs to be NA or numeric");
+    }
+    if(is.na(input_list[69]) == FALSE & is.numeric(input_list[69]) == FALSE){
+        stop("perceive_kill needs to be NA or numeric");
+    }
 }
 
 argument_list <- function(res_mod, obs_mod, man_mod, use_mod, oth_vals){
@@ -1406,7 +1430,7 @@ collect_land_ini <- function(arg_list){
     make_lnd_list[[5]] <- 1;
     make_lnd_list[[6]] <- 0;
     make_lnd_list[[7]] <- 1;
-    make_lnd_list[[8]] <- 0
+    make_lnd_list[[8]] <- 0;
     make_lnd_list[[9]] <- 3;
     land_is_owned <- arg_list[["GMSE"]][["land_ownership"]];
     if("land_ownership" %in% arg_names){
@@ -1765,6 +1789,86 @@ collect_agent_ini <- function(arg_list){
     if("land_dim_2" %in% arg_names){
         make_age_list[[7]] <- arg_list[["land_dim_2"]];
     }
+    make_age_list[[8]] <- arg_list[["GMSE"]][["scaring"]];
+    if("scaring" %in% arg_names){
+        make_age_list[[8]] <- arg_list[["scaring"]];
+    }
+    make_age_list[[9]] <- arg_list[["GMSE"]][["culling"]];
+    if("culling" %in% arg_names){
+        make_age_list[[9]] <- arg_list[["culling"]];
+    }
+    make_age_list[[10]] <- arg_list[["GMSE"]][["castration"]];
+    if("castration" %in% arg_names){
+        make_age_list[[10]] <- arg_list[["castration"]];
+    }
+    make_age_list[[11]] <- arg_list[["GMSE"]][["feeding"]];
+    if("feeding" %in% arg_names){
+        make_age_list[[11]] <- arg_list[["feeding"]];
+    }
+    make_age_list[[12]] <- arg_list[["GMSE"]][["help_offspring"]];
+    if("help_offspring" %in% arg_names){
+        make_age_list[[12]] <- arg_list[["help_offspring"]];
+    }
+    make_age_list[[13]] <- arg_list[["GMSE"]][["tend_crops"]];
+    if("tend_crops" %in% arg_names){
+        make_age_list[[13]] <- arg_list[["tend_crops"]];
+    }
+    make_age_list[[14]] <- arg_list[["GMSE"]][["kill_crops"]];
+    if("kill_crops" %in% arg_names){
+        make_age_list[[14]] <- arg_list[["kill_crops"]];
+    }
+    make_age_list[[15]] <- arg_list[["GMSE"]][["perceive_scare"]];
+    if("perceive_scare" %in% arg_names){
+        make_age_list[[15]] <- arg_list[["perceive_scare"]];
+    }
+    make_age_list[[16]] <- arg_list[["GMSE"]][["perceive_cull"]];
+    if("perceive_cull" %in% arg_names){
+        make_age_list[[16]] <- arg_list[["perceive_cull"]];
+    }
+    make_age_list[[17]] <- arg_list[["GMSE"]][["perceive_cast"]];
+    if("perceive_cast" %in% arg_names){
+        make_age_list[[17]] <- arg_list[["perceive_cast"]];
+    }
+    make_age_list[[18]] <- arg_list[["GMSE"]][["perceive_feed"]];
+    if("perceive_feed" %in% arg_names){
+        make_age_list[[18]] <- arg_list[["perceive_feed"]];
+    }
+    make_age_list[[19]] <- arg_list[["GMSE"]][["perceive_help"]];
+    if("perceive_help" %in% arg_names){
+        make_age_list[[19]] <- arg_list[["perceive_help"]];
+    }
+    make_age_list[[20]] <- arg_list[["GMSE"]][["perceive_tend"]];
+    if("perceive_tend" %in% arg_names){
+        make_age_list[[20]] <- arg_list[["perceive_tend"]];
+    }
+    make_age_list[[21]] <- arg_list[["GMSE"]][["perceive_kill"]];
+    if("perceive_kill" %in% arg_names){
+        make_age_list[[21]] <- arg_list[["perceive_kill"]];
+    }
+    make_age_list[[22]] <- arg_list[["GMSE"]][["manager_sense"]];
+    if("manager_sense" %in% arg_names){
+        make_age_list[[22]] <- arg_list[["manager_sense"]];
+    }
+    make_age_list[[23]] <- arg_list[["GMSE"]][["lambda"]];
+    if("lambda" %in% arg_names){
+        make_age_list[[23]] <- arg_list[["lambda"]];
+    }
+    make_age_list[[24]] <- arg_list[["GMSE"]][["res_consume"]];
+    if("res_consume" %in% arg_names){
+        make_age_list[[24]] <- arg_list[["res_consume"]];
+    }
+    make_age_list[[25]] <- arg_list[["GMSE"]][["consume_repr"]];
+    if("consume_repr" %in% arg_names){
+        make_age_list[[25]] <- arg_list[["consume_repr"]];
+    }
+    make_age_list[[26]] <- arg_list[["GMSE"]][["tend_crop_yld"]];
+    if("tend_crop_yld" %in% arg_names){
+        make_age_list[[26]] <- arg_list[["tend_crop_yld"]];
+    }
+    make_age_list[[27]] <- NA;
+    if("LAND" %in% arg_names){
+        make_age_list[[27]] <- arg_list[["LAND"]];
+    }
     return(make_age_list);
 }
 
@@ -1833,9 +1937,9 @@ collect_ita_ini <- function(arg_list){
 }
 
 add_obs_defaults <- function(arg_list){
-    arg_names <- names(arg_list);
+    arg_names <- names(arg_list);                       
     res_pos   <- which(arg_names == "RESOURCES");
-    arr_pos   <- which(arg_names == "resource_array");
+    arr_pos   <- which(arg_names == "resource_array");                
     if(is.na(arg_list[[arr_pos]][1]) == FALSE){
         arg_list <- copy_args(arg_list = arg_list, from = "resource_array",
                               to = "RESOURCES");
@@ -1856,7 +1960,7 @@ add_obs_defaults <- function(arg_list){
         ini_land <- do.call(what = make_landscape, args = dlndarg);
         arg_list[[land_pos]] <- ini_land;
     }
-    agent_pos <- which(arg_names == "AGENTS");
+    agent_pos <- which(arg_names == "AGENTS"); 
     if(is.na(arg_list[[agent_pos]][1]) == TRUE){
         dagearg <- collect_agent_ini(arg_list);
         ini_age <- do.call(what = make_agents, args = dagearg);
@@ -1945,7 +2049,7 @@ double_check_obs_type <- function(arg_list){
 
 prep_obs <- function(arg_list, obs_mod){
     if( identical(obs_mod, observation) == TRUE ){
-        arg_list <- add_obs_defaults(arg_list);
+        arg_list <- add_obs_defaults(arg_list);            
     }
     obs_args <- list();
     arg_name <- names(arg_list);
@@ -2162,6 +2266,11 @@ set_interaction_array <- function(arg_list){
 
 prep_usr <- function(arg_list, usr_mod){
     if( identical(usr_mod, user) == TRUE ){
+        if(is.na(arg_list[["LAND"]][1]) == TRUE){
+            dlndarg             <- collect_land_ini(arg_list);
+            arg_list[["LAND"]]  <- do.call(what = make_landscape, 
+                                           args = dlndarg);
+        }
         arg_list <- add_usr_defaults(arg_list);
     }
     usr_args <- list();
@@ -2194,12 +2303,6 @@ add_usr_defaults <- function(arg_list){
     if(is.na(arg_list[[para_pos]][1]) == TRUE){
         stop("I can't find a vector of parameters that should be initialised
               by default -- something has gone very wrong");
-    }
-    land_pos  <- which(arg_names == "LAND");
-    if(is.na(arg_list[[land_pos]][1]) == TRUE){
-        dlndarg  <- collect_land_ini(arg_list);
-        ini_land <- do.call(what = make_landscape, args = dlndarg);
-        arg_list[[land_pos]] <- ini_land;
     }
     agent_pos <- which(arg_names == "AGENTS");
     if(is.na(arg_list[[agent_pos]][1]) == TRUE){
