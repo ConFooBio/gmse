@@ -47,7 +47,6 @@ test_that("Dimensions of observation arrays in returned list are correct", {
                             cols         = 100
     )
     
-    
     interaction_tabl <- make_interaction_table(res, land);
     
     obs   <- observation(RESOURCES      = res,
@@ -65,7 +64,7 @@ test_that("Dimensions of observation arrays in returned list are correct", {
     );
     
     expect_equal(dim(obs[[1]]), c(100, 43));
-    expect_equal(dim(obs[[2]]), c(2, 17));
+    expect_equal(dim(obs[[2]]), c(2, 24));
     expect_equal(length(obs[[3]]), 122);
 })
 

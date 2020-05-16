@@ -12,7 +12,7 @@ test_that("Dimensions of agent array are correct", {
                             cols         = 100
     )
     
-    expect_equal(dim(agents), c(2, 17));
+    expect_equal(dim(agents), c(2, 24));
 })
 
 test_that("Resource IDs are correct", {
