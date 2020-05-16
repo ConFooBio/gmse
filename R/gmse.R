@@ -70,6 +70,13 @@
 #'@param consume_repr How much from a landscape does an individual resource need to produce one offspring (default 0)?
 #'@param times_feeding Number of searches that resources are allowed per time step for feeding on the landscape. 
 #'@param ownership_var # Does distribution of land vary among users? A default value of 0 places roughly equal landscape ownership, while increasing values (must be < 1) cause an exponential distribution of land ownership cell allocation.
+#'@param perceive_scare For a focal user, the perceived effect of scaring one resource on the total number of resources affecting the user
+#'@param perceive_cull  For a focal user, the perceived effect of culling one resource on the total number of resources affecting the user
+#'@param perceive_cast For a focal user, the perceived effect of castrating one resource on the total number of resources affecting the user
+#'@param perceive_feed For a focal user, the perceived effect of feeding one resource on the total number of resources affecting the user
+#'@param perceive_help For a focal user, the perceived effect of helping the offspring of one resource on the total number of resources affecting the user
+#'@param perceive_tend For a focal user, the perceived effect of tending to crops on one cell of owned landscape the user's total crop yield
+#'@param perceive_kill For a focal user, the perceived effect of destroying the crops on one cell of owned landscape on the user's total crop yield
 #'@return A large list is returned that includes detailed simulation histories for the resource, observation, management, and user models. This list includes eight elements, most of which are themselves complex lists of arrays: (1) A list of length `time_max` in which each element is an array of resources as they exist at the end of each time step. Resource arrays include all resources and their attributes (e.g., locations, growth rates, offspring, how they are affected by stakeholders, etc.). (2) A list of length `time_max` in which each element is an array of resource observations from the observation model. Observation arrays are similar to resource arrays, except that they can have a smaller number of rows if not all resources are observed, and they have additional columns that show the history of each resource being observed over the course of `times_observe` observations in the observation model. (3) A 2D array showing parameter values at each time step (unique rows); most of these values are static but some (e.g., resource number) change over time steps. (4) A list of length `time_max` in which each element is an array of the landscape that identifies proportion of crop production per cell. This allows for looking at where crop production is increased or decreased over time steps as a consequence of resource and stakeholder actions. (5) The total time the simulation took to run (not counting plotting time). (6) A 2D array of agents and their traits. (7) A list of length `time_max` in which each element is a 3D array of the costs of performing each action for managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in costs of particular actions can therefore be be examined over time. (8) A list of length `time_max` in which each element is a 3D array of the actions performed by managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in actions of agents can therefore be examined over time. Because the above lists cannot possibly be interpreted by eye all at once in the simulation output, it is highly recommended that the contents of a simulation be stored and interprted individually if need be; alternativley, simulations can more easily be interpreted through plots when `plotting = TRUE`.
 #'@examples
 #'\dontrun{
@@ -143,7 +150,14 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   consume_surv   = 0,     # Required consumption for survival
                   consume_repr   = 0,     # Required consumption to reproduce
                   times_feeding  = 1,     # Number of searches to feed on land
-                  ownership_var  = 0      # Does distr. land vary among users?
+                  ownership_var  = 0,     # Does distr. land vary among users?
+                  perceive_scare = NA,
+                  perceive_cull  = NA,
+                  perceive_cast  = NA,
+                  perceive_feed  = NA,
+                  perceive_help  = NA,
+                  perceive_tend  = NA,
+                  perceive_kill  = NA
 ){
     
     time_max <- time_max + 1; # Add to avoid confusion (see loop below)
@@ -199,14 +213,34 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                                          max_age            = max_ages[1],
                                          times_feeding      = times_feeding
     );
-    # This will obviously need to be changed -- new function in initialise.R
-    AGENTS   <- make_agents( model        = pop_model,
-                             agent_number = 1 + stakeholders,
-                             type_counts  = c(1, stakeholders),
-                             vision       = agent_view,
-                             rows         = land_dim_1,
-                             cols         = land_dim_2,
-                             move         = agent_move
+
+    AGENTS   <- make_agents( model              = pop_model,
+                             agent_number       = 1 + stakeholders,
+                             type_counts        = c(1, stakeholders),
+                             vision             = agent_view,
+                             rows               = land_dim_1,
+                             cols               = land_dim_2,
+                             move               = agent_move,
+                             scaring            = scaring,
+                             culling            = culling,
+                             castration         = castration,
+                             feeding            = feeding,
+                             help_offspring     = help_offspring,
+                             tend_crops         = tend_crops,
+                             kill_crops         = kill_crops,
+                             perceive_scare     = perceive_scare,
+                             perceive_cull      = perceive_cull,
+                             perceive_cast      = perceive_cast,
+                             perceive_feed      = perceive_feed,
+                             perceive_help      = perceive_help,
+                             perceive_tend      = perceive_tend,
+                             perceive_kill      = perceive_kill,
+                             manager_sense      = manager_sense,
+                             lambda             = lambda,
+                             res_consume        = res_consume,
+                             consume_repr       = consume_repr,
+                             tend_crop_yld      = tend_crop_yld,
+                             landscape          = LANDSCAPE_r
     ); 
     
     Jacobian <- make_interaction_array(RESOURCES     = starting_resources,
