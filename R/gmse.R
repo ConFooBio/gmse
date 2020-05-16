@@ -151,13 +151,13 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                   consume_repr   = 0,     # Required consumption to reproduce
                   times_feeding  = 1,     # Number of searches to feed on land
                   ownership_var  = 0,     # Does distr. land vary among users?
-                  perceive_scare = NA,
-                  perceive_cull  = NA,
-                  perceive_cast  = NA,
-                  perceive_feed  = NA,
-                  perceive_help  = NA,
-                  perceive_tend  = NA,
-                  perceive_kill  = NA
+                  perceive_scare = NA,    # Users' perception of scaring
+                  perceive_cull  = NA,    # Users' perception of culling
+                  perceive_cast  = NA,    # Users' perception of castration
+                  perceive_feed  = NA,    # Users' perception of feeding
+                  perceive_help  = NA,    # Users' perception of helping offspr.
+                  perceive_tend  = NA,    # Users' perception of tending crops
+                  perceive_kill  = NA     # Users' perception of killing crops
 ){
     
     time_max <- time_max + 1; # Add to avoid confusion (see loop below)
