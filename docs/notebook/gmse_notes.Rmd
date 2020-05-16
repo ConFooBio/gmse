@@ -52,7 +52,7 @@ library(rhandsontable)
 
  - **2020**
 
-     - **MAY** [12](#u-12-MAY-2020), [11](#u-11-MAY-2020), [10](#u-10-MAY-2020), [8](#u-8-MAY-2020), [6](#u-6-MAY-2020)
+     - **MAY** [15](#u-15-MAY-2020), [12](#u-12-MAY-2020), [11](#u-11-MAY-2020), [10](#u-10-MAY-2020), [8](#u-8-MAY-2020), [6](#u-6-MAY-2020)
      - **APR** [23](#u-23-APR-2020), [13](#u-13-APR-2020), [1](#u-1-APR-2020) 
      - **FEB** [4](#u-4-FEB-2020)
 
@@ -93,6 +93,16 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-15-MAY-2020">Update: 15 MAY 2020</a>
+
+**Minor bug fix**
+
+Jeroen and I have fixed a minor bug in the GMSE code that was causing a crash given the very restricted situation in which the package is built using the Rstudio drop-down menu. In such builds (but not, curiously, when building from the console), a fatal crash can be caused when looping the `gmse_apply` function with variable names that are identical to argument names (e.g., `stakeholders = 8`, followed by `gmse_apply(stakeholders = stakeholders)`). Just in case, to avoid this issue entirely, I have inserted a short function into `gmse_apply` that produces an error when attempting to set variable names equal to argument names. This can be completely circumvented in `gmse_apply` by setting the hidden argument `my_way_or_the_highway` equal to anything (i.e., not `NULL`). I have also included a garbage collect at the end of `gmse` and `gmse_apply` functions.
+
+**Consistency between `gmse` and `gmse_apply`**
+
+In previous versions of GMSE, the functions `gmse` and `gmse_apply` had a few slightly different defaults. This sometimes led to slightly different dynamics when running simulations and comparing between `gmse` and looped `gmse_apply` under default arguments. To avoid any cofusion, Jeroen and I have decided to make `gmse` and `gmse_apply` default arguments completely identical. The equivalence of the two functions given the same initial conditions has been confirmed through simulations.
 
 > <a name="u-12-MAY-2020">Update: 12 MAY 2020</a>
 
