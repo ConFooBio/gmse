@@ -125,7 +125,7 @@ check_the_var_names <- function(all_arguments){
         if("my_way_or_the_highway" %in% names_all == TRUE){
             break;
         }
-        arg_read <- as.character(all_arguments[[arg]]);
+        arg_read <- as.character( (all_arguments[[arg]]) )[1];
         if(arg_read %in% names_all ==  TRUE){
             please_1 <- paste("Reading in a variable that has the same name");
             please_2 <- paste("as an argument (",arg_read, "=", arg_read,")");
