@@ -411,11 +411,11 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
                7,       # 71. Col actions vary for self individuals in ga
                0,       # 72. Total actions in the action array
                17,      # 73. The column to adjust the castration of a resource
-               0,       # 74. Manager's projected change if resource moved
-               -1*mas,        # 75. Manager's proj change if res killed
-               -1*mas*lambda, # 76. Manager's proj change if res castrated
-               1*mas*lambda,  # 77. Manager's proj change if reso growth +
-               1*mas,   # 78. Manager's projected change if resource offspring +
+               17,      # 74. Column in agents where perceive scaring goes
+               18,      # 75. Column in agents where perceive culling goes
+               19,      # 76. Column in agents where perceive castration goes
+               20,      # 77. Column in agents where perceive feeding goes
+               21,      # 78. Column in agents where perceive help offspr. goes
                tcy,     # 79. User's improvement of land (proportion)
                1,       # 80. Landscape layer on which crop yield is located
                2,       # 81. Landscape layer on which ownership is defined

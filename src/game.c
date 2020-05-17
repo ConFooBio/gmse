@@ -543,7 +543,7 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
                      double ***COST, double ***ACTION, double *paras, int gen){
     
     int agent, i, j, m_lyr, action_row, manager_row, type1, type2, type3;
-    int pop_size, int_num, ROWS, COLS;
+    int pop_size, int_num, ROWS, COLS, psc, pcu, pca, pfe, phe;
     double *count_change, foc_effect, change_dev, max_dev;
     double *dev_from_util, *utils, **merged_acts, **merged_costs, **act_change;
     
@@ -551,6 +551,11 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
     int_num  = (int) paras[60];
     ROWS     = (int) paras[68];
     COLS     = (int) paras[69];
+    psc      = (int) paras[74];
+    pcu      = (int) paras[75];
+    pca      = (int) paras[76];
+    pfe      = (int) paras[77];
+    phe      = (int) paras[78];
     
     count_change  = malloc(int_num * sizeof(double));
     utils         = malloc(int_num * sizeof(double));
@@ -600,12 +605,12 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
             }
             policy_to_counts(population, merged_acts, agent, merged_costs, 
                              act_change, action_row, manager_row, paras, gen);
-            foc_effect  = 0.0;
-            foc_effect  += (paras[74] * paras[88] * act_change[action_row][7]);
-            foc_effect  += (paras[75] * paras[89] * act_change[action_row][8]);
-            foc_effect  += (paras[76] * paras[90] * act_change[action_row][9]);
-            foc_effect  += (paras[77] * paras[91] * act_change[action_row][10]);
-            foc_effect  += (paras[78] * paras[92] * act_change[action_row][11]);
+            foc_effect   = 0.0;
+            foc_effect  += agent_array[m_lyr][psc] * act_change[action_row][7]; /* (paras[74] * paras[88] * act_change[action_row][7]); */
+            foc_effect  += agent_array[m_lyr][pcu] * act_change[action_row][8]; /* (paras[75] * paras[89] * act_change[action_row][8]); */
+            foc_effect  += agent_array[m_lyr][pca] * act_change[action_row][9]; /* (paras[76] * paras[90] * act_change[action_row][9]); */
+            foc_effect  += agent_array[m_lyr][pfe] * act_change[action_row][10];/* (paras[77] * paras[91] * act_change[action_row][10]); */
+            foc_effect  += agent_array[m_lyr][phe] * act_change[action_row][11];/* (paras[78] * paras[92] * act_change[action_row][11]); */
             for(i = 0; i < int_num; i++){
                 count_change[i] += foc_effect * jaco[action_row][i];
             }
