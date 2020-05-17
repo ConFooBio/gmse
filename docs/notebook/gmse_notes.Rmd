@@ -52,7 +52,7 @@ library(rhandsontable)
 
  - **2020**
 
-     - **MAY** [15](#u-15-MAY-2020), [12](#u-12-MAY-2020), [11](#u-11-MAY-2020), [10](#u-10-MAY-2020), [8](#u-8-MAY-2020), [6](#u-6-MAY-2020)
+     - **MAY** [17](#u-17-MAY-2020), [15](#u-15-MAY-2020), [12](#u-12-MAY-2020), [11](#u-11-MAY-2020), [10](#u-10-MAY-2020), [8](#u-8-MAY-2020), [6](#u-6-MAY-2020)
      - **APR** [23](#u-23-APR-2020), [13](#u-13-APR-2020), [1](#u-1-APR-2020) 
      - **FEB** [4](#u-4-FEB-2020)
 
@@ -93,6 +93,45 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-17-MAY-2020">Update: 17 MAY 2020</a>
+
+Over the last two days, I have made some changes to the code and done some additional testing. Changes are summarised below.
+
+**Fixed memory leak**
+
+Since I had been doing some substantial development in C, I thought it would be wise to run valgrind to check for memory leaks. I found one, due to my forgetting to free some memory in the new landscape.c file. The memory [is now correctly freed](https://github.com/ConFooBio/gmse/commit/2feb37b51889e56f394ed7c53a41b11ca4323f42) in the file, and running `gmse` and `gmse_apply` in valgrind produces no memory leaks.
+
+```
+==33279== 
+==33279== HEAP SUMMARY:
+==33279==     in use at exit: 67,085,047 bytes in 12,107 blocks
+==33279==   total heap usage: 896,509 allocs, 884,402 frees, 557,718,069 bytes allocated
+==33279== 
+==33279== LEAK SUMMARY:
+==33279==    definitely lost: 0 bytes in 0 blocks
+==33279==    indirectly lost: 0 bytes in 0 blocks
+==33279==      possibly lost: 0 bytes in 0 blocks
+==33279==    still reachable: 67,085,047 bytes in 12,107 blocks
+==33279==                       of which reachable via heuristic:
+==33279==                         newarray           : 4,264 bytes in 1 blocks
+==33279==         suppressed: 0 bytes in 0 blocks
+==33279== Reachable blocks (those to which a pointer was found) are not shown.
+==33279== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==33279== 
+==33279== For counts of detected and suppressed errors, rerun with: -v
+==33279== ERROR SUMMARY: 2736 errors from 4 contexts (suppressed: 0 from 0)
+```
+
+I have also initialised a [new file](https://github.com/ConFooBio/gmse/blob/2feb37b51889e56f394ed7c53a41b11ca4323f42/notebook/sim_valgrind.R) in the notebook for functions that we will want to periodically run through valgrind. 
+
+**Perceptions of actions for users and managers**
+
+Following a conversation with Jeroen and Nils, we decided that another change would be beneficial for GMSE v0.6.0.x. In all previous versions of GMSE, how managers and users perceive the consequences of scaring actions is hidden. The consequences were calculated in a reasonable way by GMSE and used within the fitness functions of the genetic algorithm to determine which strategies of setting policy (for manager) or acting (for users) was best. The relevant values for the perceived effects of scaring, culling, castration, feeding, helping offspring, tending crops, and killing crops were set partly in the `paras` vector, and partly calculated internally in C. Now, instead, they are calculated for each agent (manager and users) and placed directly in the [AGENTS](https://confoobio.github.io/gmse/articles/SI7.html#agents) array. 
+
+The [AGENTS](https://confoobio.github.io/gmse/articles/SI7.html#agents) array has therefore increased by seven columns. Rows in each of these columns hold the perceived effects of each action for each agent. I'm not sure why I did not think of this before, but there are several benefits to doing it this way. First, anyone running `gmse` or `gmse_apply` can now directly alter how users perceive the effects of their own actions using the `perceive_scare`, `perceive_cull`, `perceive_cast`, `perceive_feed`, `perceive_help`, `perceive_tend`, `perceive_kill` arguments, which set how perceived utility will change given a single instance of scaring, culling, castration, feeding, helping offspring, tending crops, and killing crops, respectively. By default, all of these arguments will be calculated in a realistic way, as has been [described already](#u-8-MAY-2020) for the developing version, so the arguments can be ignored and GMSE will run as normal. But if, e.g., there is reason to model the users' perceived efficacy of culling as being much higher than that of scaring (e.g., based on parameterisation from empirical social data), then more appropriate values for a specific system can be used. Additionally, with `gmse_apply`, the agents array can be changed directly, meaning that manager perception of action effects can be changed, and that perceptions among users can potentially be varied (e.g., if some users are more convinced that scaring will work, while others are more sceptical). I also like that the perceived effects are being returned in the agents array, so the whole parameterisation of the fitness function is much more transparent now.
+
+The code now runs with no memory leaks, and GMSE builds on the rev branch with no notes, warnings, or errors.
 
 > <a name="u-15-MAY-2020">Update: 15 MAY 2020</a>
 
