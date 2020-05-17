@@ -458,7 +458,9 @@ gmse <- function( time_max       = 100,   # Max number of time steps in sim
                21,      # 118. Column in resource array where fed located
                0,       # 119. Column of the ID location in the agent array
                13,      # 120. Column of agent array total ownership located
-               prc      # 121. E Prop. of a landscape cell to be consumed
+               prc,     # 121. E Prop. of a landscape cell to be consumed
+               22,      # 122. Column in agents where perceive tend crops goes
+               23       # 123. Column in agents where perceive kill crops goes
     );
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
