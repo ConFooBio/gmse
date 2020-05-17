@@ -686,7 +686,7 @@ fun_warn <- function(res_mod, obs_mod, man_mod, use_mod){
     }
 }
 
-pass_paras <- function( old_list = NULL, time_max = 100, land_dim_1 = 100, 
+pass_paras <- function( old_list = NULL, time_max = 40, land_dim_1 = 100, 
                         land_dim_2 = 100,  res_movement = 20, remove_pr = 0.0, 
                         lambda = 0.30, agent_view = 10, agent_move = 50, 
                         res_birth_K = 100000, res_death_K = 2000, 

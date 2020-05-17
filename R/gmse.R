@@ -87,7 +87,7 @@
 #'@importFrom graphics abline axis image mtext par plot points polygon
 #'@importFrom stats rnorm rpois runif
 #'@export
-gmse <- function( time_max       = 100,   # Max number of time steps in sim
+gmse <- function( time_max       = 40,    # Max number of time steps in sim
                   land_dim_1     = 100,   # x dimension of the landscape
                   land_dim_2     = 100,   # y dimension of the landscape
                   res_movement   = 20,    # How far do resources move
