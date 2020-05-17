@@ -6,7 +6,7 @@
 #' own, gmse() is really all that is needed to run a simulation. 
 #'
 #' 
-#'@param time_max This value sets the maximum number of time steps for a simulation. There are no constraints for length of time that a simulation can run. The default is 100 time steps.
+#'@param time_max This value sets the maximum number of time steps for a simulation. There are no constraints for length of time that a simulation can run. The default is 40 time steps.
 #'@param land_dim_1 This value sets the number of cells on the x dimension of the landscape (i.e., the number of columns in the landscape array; this can also be thought of as the x-axis when the landscape image is plotted). There is no maximum, but the minimum dimension of a landscape is 2 cells. The default is 100 cells.
 #'@param land_dim_2 This value sets the number of cells on the y dimension of the landscape (i.e., the number of columns in the landscape array; this can also be thought of as the y-axis when the landscape image is plotted). There is no maximum, but the minimum dimension of a landscape is 2 cells. The default is 100 cells.
 #'@param res_movement This value determines how far resources move during a time step. Exact movement is probabilistic and partly affected by `res_move_type` settings. Under default settings, during each time step, resources move from zero to res_movement cells away from their starting cell in any direction. Hence res_movement is the maximum distance away from a resources starting cell that it can move in a time step; other types of resource movement, however, interpret res_movement differently to get the raw distance moved (see res_move_type). The default value is 20.

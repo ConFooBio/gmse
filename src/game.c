@@ -545,11 +545,12 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
                      double ***COST, double ***ACTION, double *paras, int gen){
     
     int agent, i, j, m_lyr, action_row, manager_row, type1, type2, type3;
-    int pop_size, int_num, ROWS, COLS, psc, pcu, pca, pfe, phe;
+    int pop_size, int_num, ROWS, COLS, psc, pcu, pca, pfe, phe, n_agents;
     double *count_change, foc_effect, change_dev, max_dev;
     double *dev_from_util, *utils, **merged_acts, **merged_costs, **act_change;
     
     pop_size = (int) paras[21];
+    n_agents = (int) paras[54];
     int_num  = (int) paras[60];
     ROWS     = (int) paras[68];
     COLS     = (int) paras[69];
@@ -576,7 +577,7 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
     }
     
     m_lyr = 0;
-    while(agent_array[m_lyr][0] != agentID && m_lyr < ROWS){
+    while(agent_array[m_lyr][0] != agentID && m_lyr < n_agents){
         m_lyr++;
     }
     

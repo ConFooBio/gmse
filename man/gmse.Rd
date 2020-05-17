@@ -5,7 +5,7 @@
 \title{GMSE simulation}
 \usage{
 gmse(
-  time_max = 100,
+  time_max = 40,
   land_dim_1 = 100,
   land_dim_2 = 100,
   res_movement = 20,
@@ -79,7 +79,7 @@ gmse(
 )
 }
 \arguments{
-\item{time_max}{This value sets the maximum number of time steps for a simulation. There are no constraints for length of time that a simulation can run. The default is 100 time steps.}
+\item{time_max}{This value sets the maximum number of time steps for a simulation. There are no constraints for length of time that a simulation can run. The default is 40 time steps.}
 
 \item{land_dim_1}{This value sets the number of cells on the x dimension of the landscape (i.e., the number of columns in the landscape array; this can also be thought of as the x-axis when the landscape image is plotted). There is no maximum, but the minimum dimension of a landscape is 2 cells. The default is 100 cells.}
 
