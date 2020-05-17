@@ -204,6 +204,8 @@ SEXP build_ownership(SEXP PARAMETERS){
     }
     free(land);
     free(count);
+    free(bin);
+    free(build_paras);
     
     return(LAND_NEW); 
 }
