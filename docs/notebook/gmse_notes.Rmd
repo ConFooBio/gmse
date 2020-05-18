@@ -52,7 +52,7 @@ library(rhandsontable)
 
  - **2020**
 
-     - **MAY** [17](#u-17-MAY-2020), [15](#u-15-MAY-2020), [12](#u-12-MAY-2020), [11](#u-11-MAY-2020), [10](#u-10-MAY-2020), [8](#u-8-MAY-2020), [6](#u-6-MAY-2020)
+     - **MAY** [18](#u-18-MAY-2020), [17](#u-17-MAY-2020), [15](#u-15-MAY-2020), [12](#u-12-MAY-2020), [11](#u-11-MAY-2020), [10](#u-10-MAY-2020), [8](#u-8-MAY-2020), [6](#u-6-MAY-2020)
      - **APR** [23](#u-23-APR-2020), [13](#u-13-APR-2020), [1](#u-1-APR-2020) 
      - **FEB** [4](#u-4-FEB-2020)
 
@@ -93,6 +93,10 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-18-MAY-2020">Update: 18 MAY 2020</a>
+
+A bug has been found and fixed, which was introduced into `gmse_apply` through the changes to the perceptions of actions for users and managers in commit [86c298eddd1c778defaac04d30ab342eef58fb50](https://github.com/ConFooBio/gmse/commit/86c298eddd1c778defaac04d30ab342eef58fb50). The problem was that the internal elements of the paras vector were changed to reflect columns where perceptions of different actions were to be located in `gmse`. But in `gmse_apply`, the same change was not made, so that all of these elements were interpreted as low integers; it's remarkable that a segfault did not occur in any of the tests. Jeroen pointed out a major difference between the dynamics in runs of `gmse` and `gmse_apply` given identical parameter values, which led the investigation into what was causing the problem. Finally, we found the aforementioned problem, which was resolved in commit [7a97eb08171147f688036851be5e3783ab631495](https://github.com/ConFooBio/gmse/commit/7a97eb08171147f688036851be5e3783ab631495). A subsequent fix was made to the testthat function paras vectors where needed. The dynamics in `gmse` and `gmse_apply` are once again the same. On Friday, we have tentative plans for a crash party with ConFooBio members to download the newest version of GMSE on the rev branch and try to crash it.
 
 > <a name="u-17-MAY-2020">Update: 17 MAY 2020</a>
 
