@@ -12,8 +12,13 @@
 # Make sure this script is opened within the gmse_forkRQ1.Rproj project
 # Update GMSE clicking Build > Clean and Rebuild
 
+#### Libraries ####
 
-#### Simulations ####
+library("colorspace")
+library("ggplot2")
+library("stringr")
+
+#### Simulations ###
 
 ## Set parameters
 
@@ -650,10 +655,10 @@ write.csv(woe_stat, file = "stats_ATI_case_batch4_woEctinctions.csv", row.names 
 ######## Plotting ########
 
 # # import data
-# tab_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/Default-case/tab_OTI_default_batch3.csv")
+# tab_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/tab_ATI_case_batch4.csv")
 # brut <- as.data.frame(tab_OTI_default_results)
 
-# stats_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/Default-case/stats_OTI_default_batch3.csv")
+# stats_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/stats_OTI_default_batch4.csv")
 # stat <- as.data.frame(stats_OTI_default_results)
 
 #### A figure for extinction probability ~ UT : BB ####
@@ -854,6 +859,70 @@ no.mgmt <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/WithoutManagemen
 no.mgmt.extfreq <- length(which(no.mgmt$time_step < 20))/100
 points(y = no.mgmt.extfreq, x = 0, pch = 17, col = "black")
 abline(h = no.mgmt.extfreq, lty = 2, lwd = 1, col = "black")
+}
+
+#### Effect of BB ####
+
+{d <- stat
+
+d$at <- d$at*100
+d$bb <- d$bb*100
+d$act_dev <- d$act_dev*100
+d$act_dev_95ci_inf <- d$act_dev_95ci_inf*100
+d$act_dev_95ci_sup <- d$act_dev_95ci_sup*100
+
+# get max, min and average of each UT
+upth <- levels(as.factor(d$at))
+bubo <- levels(as.factor(d$bb))
+
+sub <- as.data.frame(subset(d, at == upth[1]))
+dev <- c(sub$act_dev, rep(NA,length(upth)-1))
+sd <- c(sub$act_dev_sd, rep(NA,length(upth)-1))
+ci_inf <- c(sub$act_dev_95ci_inf, rep(NA,length(upth)-1))
+ci_sup <- c(sub$act_dev_95ci_sup, rep(NA,length(upth)-1))
+
+for (i in 2:length(upth)) {
+  sub <- as.data.frame(subset(d, at == upth[i]))
+  dev <- rbind(dev, sub$act_dev)
+  sd <- rbind(sd, sub$act_dev_sd)
+  ci_inf <- rbind(ci_inf, sub$act_dev_95ci_inf)
+  ci_sup <- rbind(ci_sup, sub$act_dev_95ci_sup)
+}
+
+
+xadj1 <- as.numeric(upth[-1]) - 1;
+xadj2 <- as.numeric(upth[-1]) + 1;
+xtendrange <- seq(-10,110,1)
+
+par(mar = c(5, 5, 1, 1))
+plot(1, xlab = "Update threshold", type = "n", pch = 20,
+     ylab = "Population deviation from target", cex.lab = 1.5, cex.axis = 1.5, cex = 1.5,
+     ylim = c(-100, 100), xlim = c(0, 100), lwd = 2, col = "blue")
+polygon(c(xtendrange,rev(xtendrange)),c(rep(ci_sup[1,1], length(xtendrange)),rev(rep(ci_inf[1,1], length(xtendrange)))),col="lightgrey", border = "grey") 
+
+# Put the other budget bonuses in a faint grey to show but de-emphasise
+for (i in 3:(dim(dev)[2]-1)) {
+  points(x = as.numeric(upth[-1]), y = dev[-1,i], type = "b", cex = 0.6, lwd = 0.8, lty = "solid",
+         col = "grey", pch = 20);
+}
+abline(h = 0, col = "darkgreen", lty = 2)
+
+arrows(0, ci_inf[1,1], 0, ci_sup[1,1], length=0.05, angle=90, code=3, col = "black")
+arrows(xadj1, ci_inf[-1,2], xadj1, ci_sup[-1,2], length=0.05, angle=90, code=3, col = "darkblue")
+arrows(xadj2, ci_inf[-1,11], xadj2, ci_sup[-1,11], length=0.05, angle=90, code=3, col = "darkblue")
+points(x = xadj1, y = dev[-1,2], xlab = "Update threshold", type = "b", pch = 20,
+       ylab = "Population deviation from target", cex.lab = 1.5, cex.axis = 1.5, cex = 1.5,
+       ylim = c(0, 1), xlim = c(0, 100), lwd = 2, col = "blue");
+points(x = xadj2, y = dev[-1,11], type = "b", cex = 1, lwd = 2, lty = "dashed", col = "blue")
+points(x = 0, y = dev[1,1], pch = 15)
+abline(h=dev[1,1], lty = 1, col = "black")
+
+# # Without management?
+# no.mgmt <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/WithoutManagement.csv")
+# 
+# no.mgmt.extfreq <- length(which(no.mgmt$time_step < 20))/100
+# points(y = no.mgmt.extfreq, x = 0, pch = 17, col = "black")
+# abline(h = no.mgmt.extfreq, lty = 2, lwd = 1, col = "black")
 }
 
 #### box plots ####
@@ -1182,7 +1251,7 @@ stats_resplot <- function(df, proxy = c("dev", "abs.dev", "fin.yie", "yie.equ", 
 
 ## Examples
 stats_resplot(df = stat, proxy = "ovr.K", variance = "sd", omit.extinction = F)
-stats_resplot(df = woe_stat, proxy = "abs.dev", variance = "ci", omit.extinction = T)
+stats_resplot(df = woe_stat, proxy = "dev", variance = "ci", omit.extinction = T)
 
 # attach(stat)
 # 
@@ -1686,9 +1755,9 @@ stats_resplot(df = woe_stat, proxy = "abs.dev", variance = "ci", omit.extinction
 # WE_mci_overK
 
 ## Plot what happens at UT=0.1
-costs <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/Default-case/flw_cos_batch3.csv")
-popul <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/Default-case/flw_pop_batch3.csv")
-actio <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/Default-case/flw_act_batch3.csv")
+# costs <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/Default-case/flw_cos_batch3.csv")
+# popul <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/Default-case/flw_pop_batch3.csv")
+# actio <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/Default-case/flw_act_batch3.csv")
 
 costs <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/case_cos_batch4.csv")
 popul <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/case_pop_batch4.csv")
@@ -1838,7 +1907,8 @@ plot_ATI_diag <- function(upd_thr, bud_bon) {
 
 # example
 plot_ATI_diag(upd_thr = 0.1, bud_bon = 0.5)
-plot_ATI_diag(upd_thr = 0.1, bud_bon = 0.3)
+plot_ATI_diag(upd_thr = 0.6, bud_bon = 0.3)
+plot_ATI_diag(upd_thr = 0.7, bud_bon = 0.6)
 
 #### confronting at = 0 and at = 0.1 ####
 
@@ -2307,6 +2377,14 @@ OTI_diagnostic(df = stat, upth = 0.2, variance = "ci", nb_replicates = 100, omit
 ## 0.3
 OTI_diagnostic(df = woe_stat, upth = 0.3, variance = "ci", nb_replicates = 100, omit.extinction = T)
 OTI_diagnostic(df = stat, upth = 0.3, variance = "ci", nb_replicates = 100, omit.extinction = F)
+
+## 0.6
+OTI_diagnostic(df = woe_stat, upth = 0.6, variance = "ci", nb_replicates = 100, omit.extinction = T)
+OTI_diagnostic(df = stat, upth = 0.6, variance = "ci", nb_replicates = 100, omit.extinction = F)
+
+## 0.7
+OTI_diagnostic(df = woe_stat, upth = 0.7, variance = "ci", nb_replicates = 100, omit.extinction = T)
+OTI_diagnostic(df = stat, upth = 0.7, variance = "ci", nb_replicates = 100, omit.extinction = F)
 
 ## TROUVER UN MOYEN D'ENLEVER LES LEGENDES DES AXES ET L'ACTIVER AVEC UN XLABEL = F EN ARGUMENT
 # ET METTRE LE SUJET DE CHAQUE GRAPHIQUE EN MAIN
