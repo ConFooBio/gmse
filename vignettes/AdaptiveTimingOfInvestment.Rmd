@@ -1,0 +1,63 @@
+---
+title: 'Adaptive timing of investment strategy'
+subtitle: 'GMSE: an R package for generalised management strategy evaluation (New function vignette)'
+author: Adrian Bach&#xb9
+  A. Bradley Duthie&#xb9;&#xb3;, Jeremy J. Cusack&#xb9;, Isabel L. Jones&#xb9;,
+  Jeroen Minderman&#xb9;, Erlend B. Nilsen&#xb2;, Roc&#0237;o A. Pozo&#xb9;, O. Sarobidy Rakotonarivo&#xb9;, Bram Van Moorter&#xb2;
+  , and Nils Bunnefeld&#xb9;
+date: "[1] Biological and Environmental Sciences, University of Stirling, Stirling, UK
+[2] adrian.bach@stir.ac.uk"
+output:
+  pdf_document:
+    citation_package: natbib
+    fig_caption: yes
+  html_document: default
+  word_document:
+    fig_caption: yes
+    reference_docx: docx_template.docx
+header-includes:
+- \usepackage{lineno}
+- \linenumbers
+linestretch: 1
+bibliography: gmse.bib
+biblio-style: apalike
+link-citations: true
+linkcolor: blue
+---
+
+```{r, echo = FALSE}
+library(GMSE);
+sim <- gmse(action_thres = 0.1, budget_bonus = 0.5);
+```
+
+Adaptive timing of investment strategy
+================================================================================
+
+In the context of adaptive management of conservation conflict, Managers tend to invest their ressources in updating the conservation policy as soon as possible, but leaving the policy unchanged when the population is close enough to the target could actually save money, time, and energy, and enpower managers for the next iteration. 
+
+In this GMSE option, the notion of 'close enough to the target' is represented by the 'action_threshold' parameter (between 0 and 1). It is a fraction of the manager target added up and down the target value, defining a band around it. When managers monitored the population to be comprised within this band, managers estimate the current policy is satisfactory so the genetic algorithm is not called and the policy is kept unchanged. For example, with action_threshold = 0.1 and manage_target = 1000, manager will update the policy only if the population is under 900, or above 1100 individuals.
+
+The notion of time, money, and energy saved when leaving the policy unchanged is represented by the `budget_bonus` parameter. If, at a time step, managers did not update the policy, they will receive an extra fraction of their initial budget at the following time step. For example, with `budget_bonus = 0.5` and `manage_budget = 1000`, this extra fraction will be 500 arbitrary budget units. This budget bonus is cumulative, managers can stack budget bonuses if they do not update the policy for several consecutive time steps, but they loose it all as soon as they do. 
+
+Example of utilisation
+================================================================================
+
+To test whether the adaptive timing of investment strategy results in a more efficient management of a conservation conflict than investing every time step regardless, and which combination of update threshold and budget bonus is the most efficient in terms of extinction rate, maintain of the population around the target or users income, one can simulate several replicates of a range of combinations and compare their efficiency to the null update threshold (representing updating every time steps). The following example shows, if managers choose 10% as update threshold, which budget bonus would maximize the management efficiency?
+
+```{r, echo = FALSE}
+# Replicate simulations for a range of combinations; 10 replicates of 20 timesteps simulations
+rep.sim <- ATI_replicate(UTrange = 0.1, BBrange = seq(0,1,0.1), ts = 20, rep = 10, 
+                         bdgt = 1000, popinit = 700, K = 1500, trgt = 1000, stkh = 10,
+                         freq = 10)
+
+# Basic stats on the replicates (means and confidence intervals) ommiting extinctions
+stat <- OTI_stats(df = rep.sim, ts = 20, omit.extinction = T) 
+
+# Plot the comparison between the adaptive timeng of investment strategy and updating every time step
+res.plot <- OTI_diagnostic(df = stat, upth = 0.1, variance = "ci", nb_replicates = 10, omit.extinction = T)
+res.plot
+```
+
+In this figure, the x axes are the different budget bonuses values in % of the initial budget. The black lines are the results for the FLI strategy (0% UT - 0% BB), and the grey shaded area is the 95% confidence interval around them. Upper left panel: Detail of the extinction frequencies (goal 1) according to the BB value. Upper right: Averaged actual Resource population distance from Manager's target in % (goal 2) according the BB value. Lower left: Averaged proportion of time steps of non-updating in % of the total period of management according to the budget bonus value. Lower right : Averaged sum of Users yields (in hundreds of arbitrary money unit) at the end of the management period (goal 3) according to the BB value. All the skewers are the 95% confidence intervals around the averages.
+
+Here the adaptive threshold strategy acheived a similarly low extinction risk, a deviation similarly close to zero, and a similarly high income for users as investing every time steps while saving 15 to 20% of managers time.
