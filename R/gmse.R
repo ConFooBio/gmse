@@ -336,6 +336,7 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
     mnb <- manager_budget;
     csr <- consume_surv;
     crp <- consume_repr
+    tfe <- times_feeding;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -460,7 +461,8 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
                13,      # 120. Column of agent array total ownership located
                prc,     # 121. E Prop. of a landscape cell to be consumed
                22,      # 122. Column in agents where perceive tend crops goes
-               23       # 123. Column in agents where perceive kill crops goes
+               23,      # 123. Column in agents where perceive kill crops goes
+               tfe      # 124. Number of times a resource feeds in a time step
     );
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
