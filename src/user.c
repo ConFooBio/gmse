@@ -403,6 +403,32 @@ void copycat(double ***action_array, int from, int to, double *paras){
 }
 
 /* =============================================================================
+ * Prototype for yield-to-budget function
+ * 
+ * Currently this simply sets user budget as baseline user_budget + yield*yield_to_budget parameter value
+ * 
+ * I suspect this will lead to very high user budgets very quickly so will prob need some further control over this.
+ */
+void yield_to_budget(double **agent_array, double *paras){   
+    
+    int agent, agent_number, agent_type, user_budget;
+    double yield_budget;
+    
+    agent_number = (int) paras[54];
+    user_budget = (int) paras[97];
+    yield_budget = (double) paras[125];                      /* New yield_to_budget parameter added to paras */
+
+    for(agent = 0; agent < agent_number; agent++){
+        agent_type = agent_array[agent][1];                  /* Only move yield to budget for users, not manager */
+        if(agent_type == 1) {
+            agent_array[agent][16] = user_budget + agent_array[agent][15] * yield_budget;
+        }
+    }
+    
+}
+
+
+/* =============================================================================
  * MAIN OBSERVATION FUNCTION:
  * ===========================================================================*/
 
@@ -446,6 +472,7 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     int protected_n;         /* Number of protected R objects */
     int vec_pos;             /* Vector position for making arrays */
     int group_think;         /* Should one user do the thinking for all */
+    double yield_budget;     
     int len_PARAMETERS;      /* Length of the parameters vector */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
@@ -662,10 +689,18 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     /* ====================================================================== */
     
     group_think = (int) paras[101];
+    yield_budget = (double) paras[125];
     
     send_agents_home(agent_array, land, paras);
     
     count_owned_cells(land, paras, agent_array, land_x, land_y, agent_number);
+    
+    /* Currently the IF condition is not strictly necessary (should work fine with zeros), 
+     *  but this would enable simply bypassing the yield_to_budget() call if it is not necessary
+     */
+    if(yield_budget > 0) {
+        yield_to_budget(agent_array, paras);
+    }
     
     if(group_think > 0 && agent_number > 2){
         ga(actions, costs, agent_array, resource_array, land, Jacobian_mat,

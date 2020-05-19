@@ -157,7 +157,8 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
                   perceive_feed  = NA,    # Users' perception of feeding
                   perceive_help  = NA,    # Users' perception of helping offspr.
                   perceive_tend  = NA,    # Users' perception of tending crops
-                  perceive_kill  = NA     # Users' perception of killing crops
+                  perceive_kill  = NA,    # Users' perception of killing crops
+                  yield_budget = 0        # Prop of yield added to (baseline) user budget
 ){
     
     time_max <- time_max + 1; # Add to avoid confusion (see loop below)
@@ -337,6 +338,7 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
     csr <- consume_surv;
     crp <- consume_repr
     tfe <- times_feeding;
+    ytb <- yield_budget;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -462,7 +464,8 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
                prc,     # 121. E Prop. of a landscape cell to be consumed
                22,      # 122. Column in agents where perceive tend crops goes
                23,      # 123. Column in agents where perceive kill crops goes
-               tfe      # 124. Number of times a resource feeds in a time step
+               tfe,     # 124. Number of times a resource feeds in a time step
+               ytb      # 125. Yield to budget parameter
     );
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
@@ -479,7 +482,7 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
                     manage_caution, land_ownership, manage_freq, converge_crit, 
                     manager_sense, public_land, group_think, age_repr,
                     usr_budget_rng, action_thres, budget_bonus, consume_surv,
-                    consume_repr, ownership_var); 
+                    consume_repr, ownership_var, yield_budget); 
    
     paras_errors(input_list);
     
