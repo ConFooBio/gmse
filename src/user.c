@@ -415,7 +415,7 @@ void yield_to_budget(double **agent_array, double *paras){
     double yield_budget;
     
     agent_number = (int) paras[54];
-    user_budget = (int) paras[97];
+    user_budget = (double) paras[97];
     yield_budget = (double) paras[125];                      /* New yield_to_budget parameter added to paras */
 
     for(agent = 0; agent < agent_number; agent++){

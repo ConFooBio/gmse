@@ -428,7 +428,7 @@ void man_budget_from_yield(double **agent_array, double *paras){
   double yield_budget, total_yield, mean_yield;
   
   agent_number = (int) paras[54];
-  manager_budget = (int) paras[113];
+  manager_budget = (double) paras[113];
   yield_budget = (double) paras[125];         /* New yield_to_budget parameter added to paras */
 
   /* Calculate mean yield over all users*/
