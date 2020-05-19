@@ -435,7 +435,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     int len_PARAMETERS;      /* Length of the parameters vector */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
-    double csr, crp;         /* Consumption requirements, survival and repr */
+    double csr, crp, tfe;    /* Consumption requirements, surv, rep, feeding */
     double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
     double *R_ptr_new;       /* Pointer to RESOURCE_NEW (interface R and C) */
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
@@ -524,12 +524,13 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     rm_col    = (int) paras[43];
     csr       = paras[116]; /* Consumption required for survival */
     crp       = paras[117]; /* Consumption needed for one offspring */
+    tfe       = paras[124]; /* Times a resource feeds in one time step */
     
     /* Resource time step and age needs to be increased by one */
     add_time(res_old, paras);
 
     /* If we need to get amount eaten because it affects death or birth*/
-    if(csr > 0 || crp > 0){ 
+    if(csr > 0 || crp > 0 || tfe > 1){ 
         resource_feeding(res_old, land, paras, res_number);
     }else{ /* One-off resources affect the landscape */
         res_landscape_interaction(res_old, land, paras, res_number); 

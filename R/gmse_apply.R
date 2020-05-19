@@ -764,6 +764,7 @@ pass_paras <- function( old_list = NULL, time_max = 40, land_dim_1 = 100,
     roc <- stakeholders + 3;
     coc <- 13;
 
+<<<<<<< HEAD
     paras <- c(1,                   # 0. The dynamic time step for each function to use 
                edge_effect,         # 1. The edge effect (0: nothing, 1: torus)
                res_move_type,       # 2. Res movement (0: none, 1: unif, 2: Poisson, ...)
@@ -888,6 +889,25 @@ pass_paras <- function( old_list = NULL, time_max = 40, land_dim_1 = 100,
                res_consume,         # 121. E Prop. of a landscape cell to be consumed
                22,                  # 122. Column in agents where perceive tend crops goes
                23                   # 123. Column in agents where perceive kill crops goes
+=======
+    paras <- c(1, edge_effect, res_move_type, res_birth_type, 
+               res_death_type, res_birth_K, res_death_K, 0, observe_type, 1, 
+               fixed_mark, times_observe, land_dim_1, land_dim_2, obs_move_type, 
+               1, res_min_age, 1, 12, res_move_obs, Euclidean_dist, ga_popsize, 
+               ga_mingen, ga_seedrep, ga_sampleK, ga_chooseK, ga_mutation,
+               ga_crossover, move_agents, max_ages, 7, 11, RESOURCE_ini, 4, 5,
+               6, 3, 9, 10, 18, 19, ttr, 16, 8, 1, 1, 15, 14, 1, 4, 5, 6, 10, 
+               12, agn, agt, 1, 2, 3, 13, lkr, RESOURCE_ini, ttr+times_observe, 
+               1, 0, lyr, lkr-1, 8, roc, coc, 4, 7, 0, 17, 17, 18, 19, 20, 
+               21, tend_crop_yld, 1, 2, 15, 0, 0, 0, 0, 0, 
+               user_res_opts[1], user_res_opts[2], user_res_opts[3], 
+               user_res_opts[4], user_res_opts[5], user_lnd_opts[1], 
+               user_lnd_opts[2], manage_caution, minimum_cost, user_budget, 
+               converge_crit, RESOURCE_ini, lambda, group_think, fixed_recapt, 
+               land_ownership, public_land, action_thres, 1, 0, 0, 0,
+               budget_bonus, age_repr, 16, manager_budget, 10, 20, consume_surv, 
+               consume_repr, 21, 0, 13, res_consume, 22, 23, times_feeding
+>>>>>>> rev
     );
 
     return( list(gmse_user_input = as.vector(input_list), 
