@@ -180,3 +180,12 @@ test_that("Manager sets costs of acting on resources", {
     expect_equal(mana[[4]][4:5,8:13,1], mana[[5]][1:2,8:13,2]);
 })
 
+test_that("Manager budget bonus compounds over time", {
+    skip_on_cran();
+    sim <- gmse(time_max = 9, RESOURCE_ini = 100, res_death_K = 100, 
+                manage_target = 100, user_budget = 1, action_thres = 2, 
+                budget_bonus = 1, agent_view = 100, stakeholders = 1,
+                plotting = FALSE);
+    
+    expect_equal(sim[["agents"]][[9]][1,25], 63000);
+})

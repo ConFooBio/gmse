@@ -1241,6 +1241,12 @@ paras_errors <- function(input_list){
     if(is.na(input_list[69]) == FALSE & is.numeric(input_list[69]) == FALSE){
         stop("perceive_kill needs to be NA or numeric");
     }
+    if(is.numeric(input_list[70]) == FALSE){
+        stop("usr_yld_budget needs to be numeric")
+    }
+    if(is.numeric(input_list[71]) == FALSE){
+        stop("man_yld_budget needs to be numeric")
+    }
 }
 
 argument_list <- function(res_mod, obs_mod, man_mod, use_mod, oth_vals){

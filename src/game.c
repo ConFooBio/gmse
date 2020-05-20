@@ -822,8 +822,9 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     ydim           = (int) paras[69];
     converge_crit  = (double)paras[98];
     pr_lnd_col     = (int) paras[120];
-    budget         = (double) AGENT[agent][16];
     agentID        = (int) AGENT[agent][0];
+    
+    budget         = AGENT[agent][16] + AGENT[agent][24] + AGENT[agent][25];
     most_fit       = 0;
     
     POPULATION = malloc(xdim * sizeof(double *));

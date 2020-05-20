@@ -388,29 +388,55 @@ void check_action_threshold(double ***ACTION, double *paras){
 }
 
 /* =============================================================================
+ * This function calculates what the budget bonus should be (Adrian Bach)
+ *      agent_array: Agent array, including managers (agent type 0)
+ *      paras:       A vector of parameters needed 
+ *      agent:       The row in agent_array where the bonus is applied
+ * ========================================================================== */
+void calc_budget_bonus(double **agent_array, double *paras, int agent){
+    
+    int budget_col, bonus_col;
+    double baseline, budget_bonus, new_bonus;
+  
+    budget_col   = (int) paras[112];    /* Column where budget is recorded */
+    budget_bonus = (double) paras[110]; /* The budget bonus */
+    bonus_col    = (int) paras[127];    /* Column where budget bonus is */
+
+    /* The recalculation of the baseline allows the bonus to be cumulative */
+    baseline  = agent_array[agent][budget_col] + agent_array[agent][bonus_col];
+    new_bonus = baseline * budget_bonus;
+
+    if( (baseline + new_bonus) < 100000.00 ){
+        agent_array[agent][bonus_col] += new_bonus;
+    }
+}
+                         
+/* =============================================================================
  * This applies the budget bonus for managers as appropriate (Adrian Bach)
  *      agent_array: Agent array, including managers (agent type 0)
  *      paras:       A vector of parameters needed 
  * ========================================================================== */
 void apply_budget_bonus(double **agent_array, double *paras){
     
-    int budget_col, recent_update;
-    double a_t, manager_budget, the_bonus, new_budget, budget_bonus;
+    int recent_update, N_agents, agent, bonus_col;
+    double a_t;
     
+    N_agents       = (int) paras[54];     /* Total number of agents */
     a_t            = (double) paras[105]; /* Dev est pop target trigger */
     recent_update  = (int) paras[106];    /* Policy recently updated */
-    budget_bonus   = (double) paras[110]; /* The budget bonus */
-    budget_col     = (int) paras[112];    /* Column where budget is recorded */
-    manager_budget = (double) paras[113];
-    
-    new_budget = manager_budget;
-    if(a_t > 0){ /* If the action threshold is being used */
-        if(recent_update == 0){
-            the_bonus  = manager_budget * budget_bonus;
-            new_budget = agent_array[0][budget_col] + the_bonus;
+    bonus_col      = (int) paras[127];    /* Column where budget bonus is */
+
+    if(a_t > 0 && recent_update == 0){ /* If action threshold is being used */
+        for(agent = 0; agent < N_agents; agent++){
+            if(agent_array[agent][1] == 0){
+                calc_budget_bonus(agent_array, paras, agent);
+            } 
         }
-        if(new_budget < 100000.00){
-            agent_array[0][budget_col] = new_budget;
+    }else{
+        for(agent = 0; agent < N_agents; agent++){
+            if(agent_array[agent][1] == 0){
+                agent_array[agent][bonus_col] = 0.0;
+            } 
         }
     }
 }
@@ -742,15 +768,17 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     temp_util = malloc(int_d0 * sizeof(double));
     marg_util = malloc(int_d0 * sizeof(double));
     
-    apply_budget_bonus(agent_array, paras); 
+    apply_budget_bonus(agent_array, paras);
 
     /* Currently the IF condition is not strictly necessary (should work fine with zeros), 
      *  but this would enable simply bypassing the yield_to_budget() call if it is not necessary.
      *  It may also be necessary to update this BEFORE apply_budget_bonus(), but not sure.
      */
+    /*
     if(paras[125] > 0) {
       man_budget_from_yield(agent_array, paras);
     }
+     */
 
     if(paras[8] >= 0){ /* If less than zero, the above already in actions */
         estimate_abundances(obs_array, paras, lookup, agent_array, abun_est);
