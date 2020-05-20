@@ -51,40 +51,6 @@ void send_agents_home(double **agent_array, double ***land, double *paras){
 }
 
 /* =============================================================================
- * This function counts the cell yield on a landscape layer
- * Inputs include:
- *     agent_array: The array of agents
- *     land: The landscape array
- *     paras: Vector of global parameters used in the model
- * ========================================================================== */
-void count_cell_yield(double **agent_array, double ***land, double *paras){
-
-    int land_x, land_y, agent_number, yield_layer, own_layer, yield_column;
-    int xpos, ypos, agent, agent_ID;
-    double agent_yield;
-    
-    land_x       = (int) paras[12];
-    land_y       = (int) paras[13];
-    agent_number = (int) paras[54];
-    yield_layer  = (int) paras[80];
-    own_layer    = (int) paras[81];
-    yield_column = (int) paras[82];
-    
-    for(agent = 0; agent < agent_number; agent++){
-        agent_ID    = agent_array[agent][0];
-        agent_yield = 0.0; 
-        for(xpos = 0; xpos < land_x; xpos++){
-            for(ypos = 0; ypos < land_y; ypos++){
-                if(land[xpos][ypos][own_layer] == agent_ID){
-                    agent_yield += land[xpos][ypos][yield_layer];    
-                }
-            }
-        }
-        agent_array[agent][yield_column] = agent_yield; 
-    }
-}
-
-/* =============================================================================
  *  This function clones action arrays so actions can be decremented temporarily
  *  Inputs include:
  *      action_array: The array of actions to be cloned
@@ -696,6 +662,8 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     
     count_owned_cells(land, paras, agent_array, land_x, land_y, agent_number);
     
+    count_cell_yield(agent_array, land, paras);
+    
     /* Currently the IF condition is not strictly necessary (should work fine with zeros), 
      *  but this would enable simply bypassing the yield_to_budget() call if it is not necessary
      */
@@ -718,8 +686,6 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     
     do_acts(actions, resource_array, paras, land);
 
-    count_cell_yield(agent_array, land, paras);
-    
     /* This code switches from C back to R */
     /* ====================================================================== */        
     

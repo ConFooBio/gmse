@@ -442,39 +442,42 @@ void apply_budget_bonus(double **agent_array, double *paras){
 }
 
 /* =============================================================================
- * Prototype for yield-to-budget function for the MANAGER
- * 
- * This mimics yield_to_budget() for users, and exists so that if yield_budget>0, 
- *  manager budget is also updated in response to users' yield - in the current suggestion,
- *  manager budget is set as manager_budget + mean(user_yield)*yield_budget.
- */
+ * This increases the managers budget based on the mean yield of users
+ *      agent_array: Agent array, including managers (agent type 0)
+ *      paras:       A vector of parameters needed    
+ * ========================================================================== */
 void man_budget_from_yield(double **agent_array, double *paras){   
   
-  int agent, agent_number, agent_type, man_budget;
-  double yield_budget, total_yield, mean_yield;
+    int agent, N_agents, agent_type, yield_col, y_bonus_col;
+    double yield_budget, total_yield, mean_yield, user_count;
   
-  agent_number = (int) paras[54];
-  man_budget = (double) paras[113];
-  yield_budget = (double) paras[125];         /* New yield_to_budget parameter added to paras */
+    N_agents     = (int) paras[54];
+    yield_col    = (int) paras[82];
+    yield_budget = (double) paras[126]; /* yield_to_budget parameter in paras */
+    y_bonus_col  = (int) paras[128];
 
-  /* Calculate mean yield over all users*/
-  for(agent = 0; agent < agent_number; agent++){
-    agent_type = agent_array[agent][1];
-    if(agent_type == 1) {
-      total_yield += agent_array[agent][15];
+    /* Calculate mean yield over all users */
+    user_count = 0.0;
+    for(agent = 0; agent < N_agents; agent++){
+        agent_type = agent_array[agent][1];
+        if(agent_type == 1) {
+            total_yield += agent_array[agent][yield_col]; 
+            user_count++;
+        }
     }
-  }
-  mean_yield = total_yield/(agent_number-1);   /* Assuming only number of USERS = number of agents -1 */
+    
+    mean_yield = 0.0;
+    if(user_count > 0){ /* Should always be, but to avoid any DIV 0 issues */
+        mean_yield = total_yield / user_count;
+    }
   
-  for(agent = 0; agent < agent_number; agent++){
-    agent_type = agent_array[agent][1];                  
-    if(agent_type == 0) {       /* Only move yield to budget for users, not manager - assuming possible >1 manager*/
-      agent_array[agent][16] = man_budget + mean_yield * yield_budget;
+    for(agent = 0; agent < N_agents; agent++){
+        agent_type = agent_array[agent][1];                  
+        if(agent_type == 0) { 
+            agent_array[agent][y_bonus_col] = floor(mean_yield * yield_budget);
+        }
     }
-  }
-
 }
-
 
 /* =============================================================================
  * MAIN OBSERVATION FUNCTION:
@@ -524,6 +527,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     int vec_pos;             /* Vector position for making arrays */
     int len_PARAMETERS;      /* Length of the parameters vector */
     int update_policy;       /* If managers act */
+    int observe_type;        /* Type of observation being performed */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
@@ -533,6 +537,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     int *dim_INTERACT;       /* Dimensions of the INTERACT matrix incoming */
     int *dim_OBSERVATION;    /* Dimensions of the OBSERVATION array incoming */
     int **lookup;            /* Lookup table for resource & land interactions */
+    double man_yld_budget;   /* Link from mean user yield to manager budget */
     double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
     double *paras_ptr;       /* Pointer to PARAMETERS (interface R and C) */
@@ -768,32 +773,30 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     temp_util = malloc(int_d0 * sizeof(double));
     marg_util = malloc(int_d0 * sizeof(double));
     
+    observe_type   = (int) paras[8];
+    man_yld_budget = (double) paras[126];
+    
     apply_budget_bonus(agent_array, paras);
-
-    /* Currently the IF condition is not strictly necessary (should work fine with zeros), 
-     *  but this would enable simply bypassing the yield_to_budget() call if it is not necessary.
-     *  It may also be necessary to update this BEFORE apply_budget_bonus(), but not sure.
-     */
-    /*
-    if(paras[125] > 0) {
-      man_budget_from_yield(agent_array, paras);
+    
+    if(man_yld_budget > 0.0){
+        count_cell_yield(agent_array, land, paras);
+        man_budget_from_yield(agent_array, paras);
     }
-     */
-
-    if(paras[8] >= 0){ /* If less than zero, the above already in actions */
+        
+    if(observe_type >= 0){ /* If less than zero, the above already in actions */
         estimate_abundances(obs_array, paras, lookup, agent_array, abun_est);
         update_marg_util(actions, abun_est, temp_util, marg_util, int_d0, a_x);
     }
     check_action_threshold(actions, paras); /* Check whether to act */
     update_policy = paras[106];             /* Will managers act? */
-
+    
     if(update_policy > 0){
-      ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
-         lookup, paras, 0, 1);
+        ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
+           lookup, paras, 0, 1);
     }
     
     set_action_costs(actions, costs, paras, agent_array);
-    
+
     free(marg_util);
     free(temp_util);
     free(abun_est);

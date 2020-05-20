@@ -160,7 +160,7 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
                   perceive_help  = NA,    # Users' perception of helping offspr.
                   perceive_tend  = NA,    # Users' perception of tending crops
                   perceive_kill  = NA,    # Users' perception of killing crops
-                  usr_yld_budget   = 0,   # Prop. yield added to user budget
+                  usr_yld_budget = 0,     # Prop. yield added to user budget
                   man_yld_budget = 0      # Prop. yield added to man budget
 ){
     

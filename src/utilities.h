@@ -34,3 +34,5 @@ void move_a_resource(double **res_moving, double ***landscape, double *paras,
 
 void count_owned_cells(double ***landscape, double *paras, double **agent_array, 
                        int land_x, int land_y, int agent_number);
+
+void count_cell_yield(double **agent_array, double ***land, double *paras);
