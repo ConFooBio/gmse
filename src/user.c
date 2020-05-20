@@ -420,6 +420,7 @@ void yield_to_budget(double **agent_array, double *paras){
 
     for(agent = 0; agent < agent_number; agent++){
         agent_type = agent_array[agent][1];                  /* Only move yield to budget for users, not manager */
+        
         if(agent_type == 1) {
             agent_array[agent][16] = user_budget + agent_array[agent][15] * yield_budget;
         }

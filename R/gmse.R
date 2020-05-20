@@ -554,11 +554,12 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
                                 OBSERVATION = OBSERVATION_r,
                                 model       = "IBM"
             );
+            AGENTS <- MANAGER[[2]];   # I think I needed to add this to ensure updated manager budget is retrieved.
             ACTION <- MANAGER[[4]];
             COST   <- MANAGER[[5]];
             paras  <- MANAGER[[6]];
         }
-   
+        
         USERS <- user(RESOURCES  = RESOURCES,
                       AGENTS     = AGENTS,
                       LAND       = LANDSCAPE_r, 

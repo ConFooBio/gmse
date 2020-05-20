@@ -424,11 +424,11 @@ void apply_budget_bonus(double **agent_array, double *paras){
  */
 void man_budget_from_yield(double **agent_array, double *paras){   
   
-  int agent, agent_number, agent_type, manager_budget;
+  int agent, agent_number, agent_type, man_budget;
   double yield_budget, total_yield, mean_yield;
   
   agent_number = (int) paras[54];
-  manager_budget = (double) paras[113];
+  man_budget = (double) paras[113];
   yield_budget = (double) paras[125];         /* New yield_to_budget parameter added to paras */
 
   /* Calculate mean yield over all users*/
@@ -443,7 +443,7 @@ void man_budget_from_yield(double **agent_array, double *paras){
   for(agent = 0; agent < agent_number; agent++){
     agent_type = agent_array[agent][1];                  
     if(agent_type == 0) {       /* Only move yield to budget for users, not manager - assuming possible >1 manager*/
-      agent_array[agent][16] = manager_budget + mean_yield * yield_budget;
+      agent_array[agent][16] = man_budget + mean_yield * yield_budget;
     }
   }
 
@@ -751,7 +751,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     if(paras[125] > 0) {
       man_budget_from_yield(agent_array, paras);
     }
-        
+
     if(paras[8] >= 0){ /* If less than zero, the above already in actions */
         estimate_abundances(obs_array, paras, lookup, agent_array, abun_est);
         update_marg_util(actions, abun_est, temp_util, marg_util, int_d0, a_x);
