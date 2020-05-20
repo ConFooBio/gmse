@@ -19,7 +19,7 @@ test_that("Dimensions of simulation observation output are correct", {
 
 test_that("Dimensions of simulation paras output are correct", {
     sim <- gmse(time_max = 3, plotting = FALSE);
-    expect_equal(dim(sim[[3]])[2], 125);
+    expect_equal(dim(sim[[3]])[2], 127);
 })
 
 test_that("Dimensions of simulation landscape output are correct", {

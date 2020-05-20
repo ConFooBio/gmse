@@ -280,7 +280,10 @@ update_old_gmse <- function(arg_vals, ol, list_add){
         ol[["res_move_type"]] <- list_add[["res_move_type"]];
     }
     if("res_birth_type" %in% names_add){
-        stop("ERROR: Only res_birth_type = 2 is allowed by GMSE");
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][4] <- list_add[["res_birth_type"]];
+        }
+        ol[["res_birth_type"]] <- list_add[["res_birth_type"]];
     }
     if("res_death_type" %in% names_add){
         if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
@@ -346,6 +349,7 @@ update_old_gmse <- function(arg_vals, ol, list_add){
             ol[["resource_array"]][,15] <- list_add[["res_consume"]];
         }
         ol[["res_consume"]] <- list_add[["res_consume"]];
+        ol[["PARAS"]][122] <- list_add[["res_consume"]];
     }
     if("ga_popsize" %in% names_add){
         if(list_add[["ga_popsize"]] < 2){
@@ -452,6 +456,7 @@ update_old_gmse <- function(arg_vals, ol, list_add){
             ol[["AGENTS"]][use, 17] <- list_add[["manager_budget"]];
         }
         ol[["manager_budget"]] <- list_add[["manager_budget"]];
+        ol[["PARAS"]][114]     <- list_add[["manager_budget"]];
     }
     if("manage_target" %in% names_add){
         ol[["COST"]]          <- NA;
@@ -630,6 +635,24 @@ update_old_gmse <- function(arg_vals, ol, list_add){
             ol[["PARAS"]][118] <- list_add[["consume_repr"]];
         }
     }
+    if("times_feeding" %in% names_add){
+        ol[["times_feeding"]]     <- list_add[["times_feeding"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][125] <- list_add[["consume_repr"]];
+        }
+    }
+    if("yield_budget" %in% names_add){
+        ol[["yield_budget"]]     <- list_add[["yield_budget"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][126] <- list_add[["yield_budget"]];
+        }
+    }
+    if("man_yld_budget" %in% names_add){
+        ol[["man_yld_budget"]]     <- list_add[["man_yld_budget"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][127] <- list_add[["man_yld_budget"]];
+        }
+    }
     return(ol);
 }
 
@@ -716,7 +739,7 @@ pass_paras <- function( old_list = NULL, time_max = 40, land_dim_1 = 100,
                         perceive_cull = NA, perceive_cast = NA, 
                         perceive_feed = NA, perceive_help = NA, 
                         perceive_tend = NA, perceive_kill  = NA, 
-                        PARAS = NULL, ...
+                        yield_budget = 0, man_yld_budget = 0, PARAS = NULL, ...
 ){
     
     if(is.null(PARAS) == FALSE){
@@ -740,7 +763,7 @@ pass_paras <- function( old_list = NULL, time_max = 40, land_dim_1 = 100,
                     usr_budget_rng, action_thres, budget_bonus, consume_surv,
                     consume_repr, ownership_var, perceive_scare, perceive_cull,
                     perceive_cast, perceive_feed, perceive_help, perceive_tend,
-                    perceive_kill); 
+                    perceive_kill, yield_budget, man_yld_budget); 
 
     paras_errors(input_list);
     
@@ -780,7 +803,7 @@ pass_paras <- function( old_list = NULL, time_max = 40, land_dim_1 = 100,
                converge_crit, RESOURCE_ini, lambda, group_think, fixed_recapt, 
                land_ownership, public_land, action_thres, 1, 0, 0, 0,
                budget_bonus, age_repr, 16, manager_budget, 10, 20, consume_surv, 
-               consume_repr, 21, 0, 13, res_consume, 22, 23, times_feeding
+               consume_repr, 21, 0, 13, res_consume, 22, 23, times_feeding, 0, 0
     );
 
     return( list(gmse_user_input = as.vector(input_list), 
