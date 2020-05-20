@@ -470,7 +470,9 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
                23,      # 123. Column in agents where perceive kill crops goes
                tfe,     # 124. Number of times a resource feeds in a time step
                ytb,     # 125. Yield to budget parameter for users
-               myb      # 126. Yield to budget parameter for managers
+               myb,     # 126. Yield to budget parameter for managers
+               24,      # 127. Column in the agents array where budget bonus is
+               25       # 128. Column in the agents array where yield bonus is
     );
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
