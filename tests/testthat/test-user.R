@@ -261,3 +261,16 @@ test_that("Managers don't act like users", {
     
     expect_equal(max(usem[[4]][,3:13,1]), 0);
 })
+
+
+test_that("Users can get a budget increment from their yield", {
+    skip_on_cran();
+    sim <- gmse(time_max = 2, usr_yld_budget = 1, land_ownership = TRUE, 
+                stakeholders = 1, plotting = FALSE);
+    yield_incr <- sim[["agents"]][[2]][2, 26];
+    
+    expect_equal(yield_incr > 0, TRUE);
+})
+
+
+

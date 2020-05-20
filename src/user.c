@@ -352,6 +352,7 @@ void do_acts(double ***action_array, double **resource_array, double *paras,
  *      action_array: An array of the action of agents
  *      from: The layer of the action array to be copied
  *      to: The layer of the action array to copy to
+ *      paras: Vector of global parameters used in the model
  * ========================================================================== */
 void copycat(double ***action_array, int from, int to, double *paras){
     
@@ -369,31 +370,30 @@ void copycat(double ***action_array, int from, int to, double *paras){
 }
 
 /* =============================================================================
- * Prototype for yield-to-budget function
- * 
- * Currently this simply sets user budget as baseline user_budget + yield*yield_to_budget parameter value
- * 
- * I suspect this will lead to very high user budgets very quickly so will prob need some further control over this.
- */
+ * This adds more budget to a column in agent_array based on agent yield
+ * Inputs include:
+ *     action_array: An array of the action of agents
+ *     paras: Vector of global parameters used in the model
+ * ========================================================================== */
 void yield_to_budget(double **agent_array, double *paras){   
     
-    int agent, agent_number, agent_type, user_budget;
-    double yield_budget;
+    int agent, N_agents, agent_type, user_budget, y_bonus_col, yield_col;
+    double yield_budget, yield_incr;
     
-    agent_number = (int) paras[54];
-    user_budget = (double) paras[97];
-    yield_budget = (double) paras[125];                      /* New yield_to_budget parameter added to paras */
+    N_agents     = (int) paras[54];
+    yield_col    = (int) paras[82];
+    user_budget  = (double) paras[97];
+    yield_budget = (double) paras[125]; 
+    y_bonus_col  = (int) paras[128];
 
-    for(agent = 0; agent < agent_number; agent++){
-        agent_type = agent_array[agent][1];                  /* Only move yield to budget for users, not manager */
-        
+    for(agent = 0; agent < N_agents; agent++){
+        agent_type = agent_array[agent][1];   
         if(agent_type == 1) {
-            agent_array[agent][16] = user_budget + agent_array[agent][15] * yield_budget;
+            yield_incr = agent_array[agent][yield_col] * yield_budget;
+            agent_array[agent][y_bonus_col] = floor(yield_incr);
         }
     }
-    
 }
-
 
 /* =============================================================================
  * MAIN OBSERVATION FUNCTION:
@@ -655,7 +655,7 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     /* Do the biology here now */
     /* ====================================================================== */
     
-    group_think = (int) paras[101];
+    group_think  = (int) paras[101];
     yield_budget = (double) paras[125];
     
     send_agents_home(agent_array, land, paras);
@@ -664,9 +664,6 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     
     count_cell_yield(agent_array, land, paras);
     
-    /* Currently the IF condition is not strictly necessary (should work fine with zeros), 
-     *  but this would enable simply bypassing the yield_to_budget() call if it is not necessary
-     */
     if(yield_budget > 0) {
         yield_to_budget(agent_array, paras);
     }

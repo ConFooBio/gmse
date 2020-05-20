@@ -192,7 +192,8 @@ test_that("Manager budget bonus compounds over time", {
 
 test_that("Manager budget is incremented by user yield", {
     skip_on_cran();
-    sim <- gmse(time_max = 2, land_ownership = TRUE, man_yld_budget = 1);
+    sim <- gmse(time_max = 2, land_ownership = TRUE, man_yld_budget = 1,
+                plotting = FALSE);
     
     expect_equal(sim[["agents"]][[2]][1, 26] > 0, TRUE);
 })
