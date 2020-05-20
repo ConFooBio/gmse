@@ -804,8 +804,8 @@ pass_paras <- function( old_list = NULL, time_max = 40, land_dim_1 = 100,
                converge_crit, RESOURCE_ini, lambda, group_think, fixed_recapt, 
                land_ownership, public_land, action_thres, 1, 0, 0, 0,
                budget_bonus, age_repr, 16, manager_budget, 10, 20, consume_surv, 
-               consume_repr, 21, 0, 13, res_consume, 22, 23, times_feeding, 0, 
-               0, 24, 25
+               consume_repr, 21, 0, 13, res_consume, 22, 23, times_feeding, 
+               usr_yld_budget, man_yld_budget, 24, 25
     );
 
     return( list(gmse_user_input = as.vector(input_list), 
@@ -1094,6 +1094,9 @@ action_errors <- function(input_list, stakes, ...){
 }
 
 paras_errors <- function(input_list){
+    if(is.numeric(input_list) == FALSE){
+        stop("ERROR: Something needs to be read in as numeric that was not")
+    }
     if(input_list[7] < 0){
         stop("ERROR: Agents cannot see negative distance");
     }
@@ -1221,31 +1224,31 @@ paras_errors <- function(input_list){
         stop("ERROR: Resource consumption for reproduction cannot be negative");
     }
     if(input_list[63] < 0 | input_list[63] >= 1){
-        stop("ownership_var needs to be >= 0 and < 1");
+        stop("ERROR: ownership_var needs to be >= 0 and < 1");
     }
     if(is.na(input_list[64]) == FALSE & is.numeric(input_list[64]) == FALSE){
-        stop("perceive_cull needs to be NA or numeric");
+        stop("ERROR: perceive_cull needs to be NA or numeric");
     }
     if(is.na(input_list[65]) == FALSE & is.numeric(input_list[65]) == FALSE){
-        stop("perceive_cast needs to be NA or numeric");
+        stop("ERROR: perceive_cast needs to be NA or numeric");
     }
     if(is.na(input_list[66]) == FALSE & is.numeric(input_list[66]) == FALSE){
-        stop("perceive_feed needs to be NA or numeric");
+        stop("ERROR: perceive_feed needs to be NA or numeric");
     }
     if(is.na(input_list[67]) == FALSE & is.numeric(input_list[67]) == FALSE){
-        stop("perceive_help needs to be NA or numeric");
+        stop("ERROR: perceive_help needs to be NA or numeric");
     }
     if(is.na(input_list[68]) == FALSE & is.numeric(input_list[68]) == FALSE){
-        stop("perceive_tend needs to be NA or numeric");
+        stop("ERROR: perceive_tend needs to be NA or numeric");
     }
     if(is.na(input_list[69]) == FALSE & is.numeric(input_list[69]) == FALSE){
-        stop("perceive_kill needs to be NA or numeric");
+        stop("ERROR: perceive_kill needs to be NA or numeric");
     }
     if(is.numeric(input_list[70]) == FALSE){
-        stop("usr_yld_budget needs to be numeric")
+        stop("ERROR: usr_yld_budget needs to be numeric")
     }
     if(is.numeric(input_list[71]) == FALSE){
-        stop("man_yld_budget needs to be numeric")
+        stop("ERROR: man_yld_budget needs to be numeric")
     }
 }
 
