@@ -42,7 +42,21 @@ The notion of time, money, and energy saved when leaving the policy unchanged is
 Example of utilisation
 ================================================================================
 
-To test whether the adaptive timing of investment strategy results in a more efficient management of a conservation conflict than investing every time step regardless, and which combination of update threshold and budget bonus is the most efficient in terms of extinction rate, maintain of the population around the target or users income, one can simulate several replicates of a range of combinations and compare their efficiency to the null update threshold (representing updating every time steps). The following example shows, if managers choose 10% as update threshold, which budget bonus would maximize the management efficiency?
+Here is a default simulation where managers update every time steps.
+
+```{r, echo = FALSE}
+sim.fli <- gmse();
+```
+
+And here the same situation exept managers update policy only when they monitor the population to be up or down the target by 20%, and receive a bonus of 30% of their initial budget when they do not.
+
+```{r, echo = FALSE}
+sim.ati <- gmse(action_thres = 0.2, budget_bonus = 0.3);
+```
+
+Note how the costs plateau (lower left panel) when the population is monitored (blue line in the upper left panel) is in between the two green dotted lines. Leaving the policy unchanged in these cases allowed managers to set the costs higher than the default maximum of 110 budget units. It also shows on the number of cullings performed by users (lower right panel) which is stabler then when managers update policy every time steps.
+
+<!-- To test whether the adaptive timing of investment strategy results in a more efficient management of a conservation conflict than investing every time step regardless, and which combination of update threshold and budget bonus is the most efficient in terms of extinction rate, maintain of the population around the target or users income, one can simulate several replicates of a range of combinations and compare their efficiency to the null update threshold (representing updating every time steps). The following example shows, if managers choose 10% as update threshold, which budget bonus would maximize the management efficiency?
 
 ```{r, echo = FALSE}
 # Replicate simulations for a range of combinations; 10 replicates of 20 timesteps simulations
@@ -60,4 +74,4 @@ res.plot
 
 In this figure, the x axes are the different budget bonuses values in % of the initial budget. The black lines are the results for the FLI strategy (0% UT - 0% BB), and the grey shaded area is the 95% confidence interval around them. Upper left panel: Detail of the extinction frequencies (goal 1) according to the BB value. Upper right: Averaged actual Resource population distance from Manager's target in % (goal 2) according the BB value. Lower left: Averaged proportion of time steps of non-updating in % of the total period of management according to the budget bonus value. Lower right : Averaged sum of Users yields (in hundreds of arbitrary money unit) at the end of the management period (goal 3) according to the BB value. All the skewers are the 95% confidence intervals around the averages.
 
-Here the adaptive threshold strategy acheived a similarly low extinction risk, a deviation similarly close to zero, and a similarly high income for users as investing every time steps while saving 15 to 20% of managers time.
+Here the adaptive threshold strategy acheived a similarly low extinction risk, a deviation similarly close to zero, and a similarly high income for users as investing every time steps while saving 15 to 20% of managers time. -->
