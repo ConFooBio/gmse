@@ -158,7 +158,8 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
                   perceive_help  = NA,    # Users' perception of helping offspr.
                   perceive_tend  = NA,    # Users' perception of tending crops
                   perceive_kill  = NA,    # Users' perception of killing crops
-                  yield_budget = 0        # Prop of yield added to (baseline) user budget
+                  yield_budget   = 0,     # Prop. yield added to user budget
+                  man_yld_budget = 0      # Prop. yield added to man budget
 ){
     
     time_max <- time_max + 1; # Add to avoid confusion (see loop below)
@@ -339,6 +340,7 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
     crp <- consume_repr
     tfe <- times_feeding;
     ytb <- yield_budget;
+    myb <- man_yld_budget;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -465,7 +467,8 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
                22,      # 122. Column in agents where perceive tend crops goes
                23,      # 123. Column in agents where perceive kill crops goes
                tfe,     # 124. Number of times a resource feeds in a time step
-               ytb      # 125. Yield to budget parameter
+               ytb,     # 125. Yield to budget parameter for users
+               myb      # 126. Yield to budget parameter for managers
     );
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
@@ -482,7 +485,7 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
                     manage_caution, land_ownership, manage_freq, converge_crit, 
                     manager_sense, public_land, group_think, age_repr,
                     usr_budget_rng, action_thres, budget_bonus, consume_surv,
-                    consume_repr, ownership_var, yield_budget); 
+                    consume_repr, ownership_var, yield_budget, man_yld_budget); 
    
     paras_errors(input_list);
     
@@ -554,7 +557,7 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
                                 OBSERVATION = OBSERVATION_r,
                                 model       = "IBM"
             );
-            AGENTS <- MANAGER[[2]];   # I think I needed to add this to ensure updated manager budget is retrieved.
+            AGENTS <- MANAGER[[2]];
             ACTION <- MANAGER[[4]];
             COST   <- MANAGER[[5]];
             paras  <- MANAGER[[6]];
