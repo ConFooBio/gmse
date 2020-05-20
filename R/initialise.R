@@ -176,10 +176,13 @@ make_agents <- function(model              = "IBM",
         p_help  <- rep(x = 0, times = agent_number);
         p_tend  <- rep(x = 0, times = agent_number);
         p_krop  <- rep(x = 0, times = agent_number);
+        adj_b_1 <- rep(x = 0, times = agent_number);
+        adj_b_2 <- rep(x = 0, times = agent_number);
+        adj_b_3 <- rep(x = 0, times = agent_number);
         the_agents <- cbind(IDs, type1, type2, type3, xloc, yloc, mover, time,
                             view, error, mark, tally, see1, see2, see3, yield,
                             budget, p_scare, p_cull, p_castr, p_feed, p_help,
-                            p_tend, p_krop);
+                            p_tend, p_krop, adj_b_1, adj_b_2, adj_b_3);
         the_agents <- agent_perceptions(the_agents, scaring, culling,
                                         castration, feeding, help_offspring,
                                         tend_crops, kill_crops, perceive_scare,

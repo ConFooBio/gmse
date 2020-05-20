@@ -64,7 +64,7 @@ test_that("Dimensions of observation arrays in returned list are correct", {
     );
     
     expect_equal(dim(obs[[1]]), c(100, 43));
-    expect_equal(dim(obs[[2]]), c(2, 24));
+    expect_equal(dim(obs[[2]]), c(2, 27));
     expect_equal(length(obs[[3]]), 127);
 })
 

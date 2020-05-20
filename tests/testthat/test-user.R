@@ -84,7 +84,7 @@ test_that("Dimensions of observation arrays in user model are correct", {
     
     expect_equal(length(usem), 6);
     expect_equal(dim(usem[[1]]), c(100, 22));
-    expect_equal(dim(usem[[2]]), c(2, 24));
+    expect_equal(dim(usem[[2]]), c(2, 27));
     expect_equal(dim(usem[[3]]), c(10, 10, 3));
     expect_equal(dim(usem[[4]]), c(7, 13, 2));
     expect_equal(dim(usem[[5]]), c(7, 13, 2));

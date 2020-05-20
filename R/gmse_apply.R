@@ -641,10 +641,10 @@ update_old_gmse <- function(arg_vals, ol, list_add){
             ol[["PARAS"]][125] <- list_add[["consume_repr"]];
         }
     }
-    if("yield_budget" %in% names_add){
-        ol[["yield_budget"]]     <- list_add[["yield_budget"]];
+    if("usr_yld_budget" %in% names_add){
+        ol[["usr_yld_budget"]]     <- list_add[["usr_yld_budget"]];
         if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
-            ol[["PARAS"]][126] <- list_add[["yield_budget"]];
+            ol[["PARAS"]][126] <- list_add[["usr_yld_budget"]];
         }
     }
     if("man_yld_budget" %in% names_add){
@@ -739,7 +739,8 @@ pass_paras <- function( old_list = NULL, time_max = 40, land_dim_1 = 100,
                         perceive_cull = NA, perceive_cast = NA, 
                         perceive_feed = NA, perceive_help = NA, 
                         perceive_tend = NA, perceive_kill  = NA, 
-                        yield_budget = 0, man_yld_budget = 0, PARAS = NULL, ...
+                        usr_yld_budget = 0, man_yld_budget = 0, 
+                        PARAS = NULL, ...
 ){
     
     if(is.null(PARAS) == FALSE){
@@ -763,7 +764,7 @@ pass_paras <- function( old_list = NULL, time_max = 40, land_dim_1 = 100,
                     usr_budget_rng, action_thres, budget_bonus, consume_surv,
                     consume_repr, ownership_var, perceive_scare, perceive_cull,
                     perceive_cast, perceive_feed, perceive_help, perceive_tend,
-                    perceive_kill, yield_budget, man_yld_budget); 
+                    perceive_kill, usr_yld_budget, man_yld_budget); 
 
     paras_errors(input_list);
     

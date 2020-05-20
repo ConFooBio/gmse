@@ -84,7 +84,7 @@ test_that("Dimensions of observation arrays in manager model are correct", {
     
     expect_equal(length(mana), 6);
     expect_equal(dim(mana[[1]]), c(100, 22));
-    expect_equal(dim(mana[[2]]), c(2, 24));
+    expect_equal(dim(mana[[2]]), c(2, 27));
     expect_equal(dim(mana[[3]]), c(10, 10, 3));
     expect_equal(dim(mana[[4]]), c(7, 13, 2));
     expect_equal(dim(mana[[5]]), c(7, 13, 2));
