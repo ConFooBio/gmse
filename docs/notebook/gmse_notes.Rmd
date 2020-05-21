@@ -52,7 +52,7 @@ library(rhandsontable)
 
  - **2020**
 
-     - **MAY** [18](#u-18-MAY-2020), [17](#u-17-MAY-2020), [15](#u-15-MAY-2020), [12](#u-12-MAY-2020), [11](#u-11-MAY-2020), [10](#u-10-MAY-2020), [8](#u-8-MAY-2020), [6](#u-6-MAY-2020)
+     - **MAY** [21](#u-21-MAY-2020), [18](#u-18-MAY-2020), [17](#u-17-MAY-2020), [15](#u-15-MAY-2020), [12](#u-12-MAY-2020), [11](#u-11-MAY-2020), [10](#u-10-MAY-2020), [8](#u-8-MAY-2020), [6](#u-6-MAY-2020)
      - **APR** [23](#u-23-APR-2020), [13](#u-13-APR-2020), [1](#u-1-APR-2020) 
      - **FEB** [4](#u-4-FEB-2020)
 
@@ -93,6 +93,12 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-21-MAY-2020">Update: 21 MAY 2020</a>
+
+Several new features have been added, which will also make their way into the next version of GMSE v0.6.0.x. Two new arguments `usr_yld_budget` and `man_yld_budget` are now available in `gmse` and `gmse_apply`. These arguments allow an increment of user and manager budget from yield obtained from the landscape. Total yield from one time step of for a user is multiplied by `usr_yld_budget`, and this product is then added to whatever the user's baseline budget was. Similarly, the mean total yield of all users is multiplied by `man_yld_budget`, and this product is then added to whatever the manager's baseline budget was. There was a bit of an issue when integrating the code with the action threshold budget bonus, so the solution was to add two new columns to the agent array. The budget for any agent is then just the [sum of the basline and each of these columns](https://github.com/ConFooBio/gmse/blob/72b868e4eb6bf92800a6ceb358ab5f9ef61eb385/src/game.c#L827). Hence future development affecting the budget bonus and yield to budget effects can be more easily done independently. 
+
+A new vignette has also be written by Adrian, which will be on the updated GMSE website soon.
 
 > <a name="u-18-MAY-2020">Update: 18 MAY 2020</a>
 
