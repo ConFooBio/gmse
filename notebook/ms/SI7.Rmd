@@ -73,9 +73,21 @@ In the default case above, there are five agents (one manager and four users), e
 14. Total number of cells owned by an agent
 15. Unused column
 16. Yield from owned land (zero for users when default `land_ownership = FALSE`)
-17. Budget
+17. Agent's baseline budget
+18. Agent's perception of the efficacy of scaring one resource
+19. Agent's perception of the efficacy of culling one resource
+20. Agent's perception of the efficacy of castrating one resource
+21. Agent's perception of the efficacy of feeding one resource
+22. Agent's perception of the efficacy of helping offspring of one resource
+23. Agent's perception of the efficacy of tending the crop on one landscape cell
+24. Agent's perception of the efficacy of killing the crop on one landscape cell
+25. Increment added to the manager's (row 1) baseline budget caused by a budget bonus
+26. Increment added to an agent's budget caused by yield
+27. Unused column
 
-It is obvious from the above list that most columns represent traits that are either typically ignored or currently not in use. This is intended to allow for easier future development of default model options and potential customisation of sub-models in `gmse_apply`. We anticipate that future versions of GMSE will contain multiple user types with unique traits and among-user interactions.
+Note that for the perceptions of the efficacy of different actions (columns 18-24), this relates to whatever it is that the agents are acting upon. For example, for columns 18-22, actions are on the resources, so if an agent's perception of the efficacy of scaring is -1, this means that they believe that scaring a resource will decrease the number of resources affecting them by 1 (lower default values for landowners are caused based on the probability of a scared resource landing on a different cell owned by the same agent). For columns 23-24, actions are on the landscape, so if an agent tends the crop on one landscape cell, this value defines an agent's perception of how much yield on that cell will increase.
+
+It is obvious from the above list that several columns represent traits that are either typically ignored or currently not in use. This is intended to allow for easier future development of default model options and potential customisation of sub-models in `gmse_apply`. We anticipate that future versions of GMSE will contain multiple user types with unique traits and among-user interactions.
 
 2. resource_array {#resources}
 ================================================================================
@@ -185,7 +197,8 @@ In [SI4](SI4.pdf), we show how landscape cell values can be manipulated to custo
 
 ```{r, echo = FALSE, fig.height = 5, fig.width = 5}
 par(mar = c(0.2, 0.2, 0.2, 0.2));
-land_1 <- owner_land_ssa(dim_x = 64, dim_y = 64, owners = 8, public_land = 0);
+land_1 <- owner_land_ssa(dim_x = 64, dim_y = 64, owners = 8, public_land = 0, 
+                         land_var = 0);
 image(land_1, xaxt = "n", yaxt = "n", col = topo.colors(max(land_1)));
 ```
 
@@ -194,7 +207,8 @@ Note that all users own exactly `r mean(as.vector(table(land_1)))` cells on the 
 
 ```{r, echo = FALSE, fig.height = 4, fig.width = 5}
 par(mar = c(0.2, 0.2, 0.2, 0.2));
-land_2 <- owner_land_ssa(dim_x = 100, dim_y = 80, owners = 9, public_land = 0);
+land_2 <- owner_land_ssa(dim_x = 100, dim_y = 80, owners = 9, public_land = 0,
+                         land_var = 0);
 image(land_2, xaxt = "n", yaxt = "n", col = topo.colors(max(land_2)));
 ```
 
@@ -205,7 +219,7 @@ Public land is placed on the landscape whenever `public_land > 0`, with `public_
 ```{r, echo = FALSE, fig.height = 5, fig.width = 5}
 par(mar = c(0.2, 0.2, 0.2, 0.2));
 land_3 <- owner_land_ssa(dim_x = 100, dim_y = 100, owners = 7, 
-                         public_land = 0.5);
+                         public_land = 0.5, land_var = 0);
 image(land_3, xaxt = "n", yaxt = "n", col = topo.colors(max(land_3)));
 ```
 
@@ -214,7 +228,7 @@ Public land is in dark blue above. If, however, the amount of public land is ver
 ```{r, echo = FALSE, fig.height = 5, fig.width = 5}
 par(mar = c(0.2, 0.2, 0.2, 0.2));
 land_4 <- owner_land_ssa(dim_x = 100, dim_y = 100, owners = 7, 
-                         public_land = 0.1);
+                         public_land = 0.1, land_var = 0);
 image(land_4, xaxt = "n", yaxt = "n", col = topo.colors(max(land_4)));
 ```
 
