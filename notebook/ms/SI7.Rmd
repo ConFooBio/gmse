@@ -193,6 +193,8 @@ print(sim$LAND[1:8,1:8,]);
 
 In the case of the above, all of the cells in this square patch of landscape are owned by agent 1 (i.e., the manager; see `sim$LAND[,,3]`). This occurs if `land_ownership = FALSE` and users are prohibited from owning land. We can also see that crop production on this patch of land has been decreased from its initialised value of 1 in several cells as a consequence of consumption by resources (see `sim$LAND[„2]`). By default, landscape yield starts each time step at a value of 1, and hence replenishes in each time even if consumed in the previous time step. Users that own landscape cells (when `land_ownership = TRUE`) can increase yield above 1 using the `tend_crop_yld` action. If resources consume landscape yield, the value of yield can drop to a minimum value of zero.
 
+### 6.1. Default land distribution algorithm
+
 In [SI4](SI4.pdf), we show how landscape cell values can be manipulated to customise the placement of land ownership. By default, GMSE v0.6.0.0+ places the ownership of landscape cells using a shortest-splitline algorithm (see the lab notebook for [a detailed explanation](https://confoobio.github.io/gmse/notebook/gmse_notes.html#u-10-MAY-2020)). The algorithm splits the landscape evenly into smaller and smaller rectangles until a sufficient number of rectangles are produced for all users to own a similar amount of land (note that how uniformly land is partitioned among users will naturally be influenced by how evenly the total number of landscape cells can be divided among them). Below is an example in which land of `land_dim_1 = 64` and `land_dim_2 = 64` is partitioned equally among eight users.
 
 ```{r, echo = FALSE, fig.height = 5, fig.width = 5}
@@ -212,6 +214,8 @@ image(land_2, xaxt = "n", yaxt = "n", col = topo.colors(max(land_2)));
 ```
 
 In the case of the above landscape, the number of cells allocated to each user ranges from `r min(as.vector(table(land_2)))` to `r max(as.vector(table(land_2)))`.
+
+### 6.2. Varying land ownership: `ownership_var`
 
 In addition, [whereas in previous versions variable landscape ownership among users had to be customised using `gmse_apply`](SI4.pdf), GMSE v. 0.6.0.0+ now includes an additional parameter `ownership_var`, which takes effect when `land_ownership = TRUE`. The value of this parameter is expected to be >=0 and <1. At its default value of 0, land ownership is equal among users as demonstrated in the code above. Values >0 increase the extent of variability of landownership among users; in technical terms, `ownership_var` controls the extent to which each split in the shortest-splitline algorithm is proportional to the number of users the landscape is to be divided into, with larger numbers shifting the split away from even distribution.
 In practical terms, this means that increasing values of `ownership_var` produce more unevenly distributed landscapes among users. For example, a value of `ownership_var = 0.1` produces a relatively limited about of inequity in landscape distribution among users.
@@ -244,6 +248,8 @@ hist(tl2, xlim = c(0,0.16), col = "grey", breaks = 12, main = "")
 In the latter case, user ownership varies between <0.001% and `r round((max(table(l2)/(xd*yd)))*100,1)`%.
 
 It should be noted that it is still entirely possible for the user to customise landscapes to whatever extent necessary, using custom `gmse_apply` loops [as described previously](SI4.pdf); however, the new `ownership_var` provides an option in GMSE to alter landscape ownership in a relatively straightforward way.  
+
+### 6.3. Public land
 
 Public land is placed on the landscape whenever `public_land > 0`, with `public_land` defining the proportion of landscape cells that are not be owned by an user. When the expected number of cells to be allocated to public land is calculated to be equal to or greater than that allocated to a single user, public land is allocated in a block as is with users. For example, the below shows a landscape in which `public_land = 0.5`, with seven other users owning land.
 
