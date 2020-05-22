@@ -213,9 +213,37 @@ image(land_2, xaxt = "n", yaxt = "n", col = topo.colors(max(land_2)));
 
 In the case of the above landscape, the number of cells allocated to each user ranges from `r min(as.vector(table(land_2)))` to `r max(as.vector(table(land_2)))`.
 
-In addition, whereas in previous versions variable landscape ownership among users had to be customised using `gmse_apply`, GMSE v. 0.6.0.0+ now includes an additional parameter `ownership_var`, which takes effect when `land_ownership = TRUE`. The value of this parameter is expected to be >=0 and <1. At its default value of 0, land ownership is equal among users as demonstrated in the code above. Values >0 increase the extent of variability of landownership among users. 
+In addition, [whereas in previous versions variable landscape ownership among users had to be customised using `gmse_apply`](SI4.pdf), GMSE v. 0.6.0.0+ now includes an additional parameter `ownership_var`, which takes effect when `land_ownership = TRUE`. The value of this parameter is expected to be >=0 and <1. At its default value of 0, land ownership is equal among users as demonstrated in the code above. Values >0 increase the extent of variability of landownership among users; in technical terms, `ownership_var` controls the extent to which each split in the shortest-splitline algorithm is proportional to the number of users the landscape is to be divided into, with larger numbers shifting the split away from even distribution.
+In practical terms, this means that increasing values of `ownership_var` produce more unevenly distributed landscapes among users. For example, a value of `ownership_var = 0.1` produces a relatively limited about of inequity in landscape distribution among users.
 
-*** Working on examples here ***
+```{r, echo = FALSE, fig.height = 5, fig.width = 10}
+par(mfrow=c(1,2))
+par(mar = c(2, 2, 2, 2))
+xd = 100
+yd = 100
+l1 = owner_land_ssa(dim_x = xd, dim_y = yd, owners = 48, public_land = 0, land_var = 0.2)
+tl1 = table(l1)/(xd*yd)
+image(l1, xaxt = "n", yaxt = "n", main = "ownership_var = 0.2", col = topo.colors(max(land_2)))
+hist(tl1, xlim = c(0,0.16), col = "grey", breaks = 12, main = "")
+```
+As can be seen from the frequency distribution, in this case, all users own between `r round((min(table(l1)/(xd*yd)))*100,1)`% and `r round((max(table(l1)/(xd*yd)))*100,1)`% of the landscape.
+
+By contrast, when increasing `ownership_var` to 0.8, overall inequity increases substantially:
+
+```{r, echo = FALSE, fig.height = 5, fig.width = 10}
+par(mfrow=c(1,2))
+par(mar = c(2, 2, 2, 2))
+xd = 100
+yd = 100
+l2 = owner_land_ssa(dim_x = xd, dim_y = yd, owners = 48, public_land = 0, land_var = 0.8)
+tl2 = table(l2)/(xd*yd)
+image(l2, xaxt = "n", yaxt = "n", main = "ownership_var = 0.8", col = topo.colors(max(land_2)))
+hist(tl2, xlim = c(0,0.16), col = "grey", breaks = 12, main = "")
+```
+
+In the latter case, user ownership varies between <0.001% and `r round((max(table(l2)/(xd*yd)))*100,1)`%.
+
+It should be noted that it is still entirely possible for the user to customise landscapes to whatever extent necessary, using custom `gmse_apply` loops [as described previously](SI4.pdf); however, the new `ownership_var` provides an option in GMSE to alter landscape ownership in a relatively straightforward way.  
 
 Public land is placed on the landscape whenever `public_land > 0`, with `public_land` defining the proportion of landscape cells that are not be owned by an user. When the expected number of cells to be allocated to public land is calculated to be equal to or greater than that allocated to a single user, public land is allocated in a block as is with users. For example, the below shows a landscape in which `public_land = 0.5`, with seven other users owning land.
 
