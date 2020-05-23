@@ -1902,9 +1902,13 @@ collect_agent_ini <- function(arg_list){
     if("tend_crop_yld" %in% arg_names){
         make_age_list[[26]] <- arg_list[["tend_crop_yld"]];
     }
-    make_age_list[[27]] <- NA;
+    make_age_list[[27]] <- arg_list[["GMSE"]][["times_feeding"]];
+    if("times_feeding" %in% arg_names){
+        make_age_list[[27]] <- arg_list[["times_feeding"]];
+    }
+    make_age_list[[28]] <- NA;
     if("LAND" %in% arg_names){
-        make_age_list[[27]] <- arg_list[["LAND"]];
+        make_age_list[[28]] <- arg_list[["LAND"]];
     }
     return(make_age_list);
 }

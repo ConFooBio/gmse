@@ -31,6 +31,7 @@ make_agents(
   res_consume = 0,
   consume_repr = 0,
   tend_crop_yld = 0.2,
+  times_feeding = 1,
   landscape = NA
 )
 }
@@ -87,6 +88,8 @@ make_agents(
 \item{consume_repr}{How much from a landscape does an individual resource need to produce one offspring (default 0)?}
 
 \item{tend_crop_yld}{The per landscape cell proportional increase in crop yield when stakeholders take one action to increase yield on their landscape. The default value is set to 0.5 (i.e., a 50 percent increase in yield on a cell).}
+
+\item{times_feeding}{Number of searches that resources are allowed per time step for feeding on the landscape. Resources will move between times feeding based on whatever `res_movement` and `res_move_type` parameters are specified.}
 
 \item{landscape}{The landscape on which some cells are owned. This needs to have been created with the make_landscape, or be a three dimensional array in which the third layer of the array corresponds to owned cells}
 }
