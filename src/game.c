@@ -824,8 +824,14 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     pr_lnd_col     = (int) paras[120];
     agentID        = (int) AGENT[agent][0];
     
-    budget         = AGENT[agent][16] + AGENT[agent][24] + AGENT[agent][25];
     most_fit       = 0;
+    budget         = AGENT[agent][16] + AGENT[agent][24] + AGENT[agent][25]; 
+    if(budget < 1){
+      budget = 1;
+    }
+    if(budget > 100001){
+      budget = 100000;
+    }
     
     POPULATION = malloc(xdim * sizeof(double *));
     for(row = 0; row < xdim; row++){

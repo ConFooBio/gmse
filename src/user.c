@@ -664,7 +664,7 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     
     count_cell_yield(agent_array, land, paras);
     
-    if(yield_budget > 0) {
+    if(yield_budget != 0) {
         yield_to_budget(agent_array, paras);
     }
     
