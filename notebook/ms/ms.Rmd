@@ -9,10 +9,10 @@ date: '[1] Biological and Environmental Sciences, University of Stirling, Stirli
   Biological and Environmental Sciences 3A149 University of Stirling Stirling, FK9
   4LA, UK'
 output:
+  html_document: default
   pdf_document:
     citation_package: natbib
     fig_caption: yes
-  html_document: default
   word_document: default
 header-includes:
 - \usepackage{fancyhdr}
