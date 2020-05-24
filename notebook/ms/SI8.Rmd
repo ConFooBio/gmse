@@ -1,7 +1,8 @@
 ---
 title: 'Adaptive timing of investment strategy'
 subtitle: 'GMSE: an R package for generalised management strategy evaluation (New function vignette)'
-author: Adrian Bach&#xb9; &#xb2;
+author: | 
+        | Adrian Bach&#xb9; &#xb2;
 date: "[1] Biological and Environmental Sciences, University of Stirling, Stirling, UK [2] adrian.bach@stir.ac.uk"
 output:
   pdf_document:

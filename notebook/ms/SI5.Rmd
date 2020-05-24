@@ -1,10 +1,10 @@
 ---
 title: "Fisheries example integrating FLR"
-author: A. Bradley Duthie&#xb9;&#xb3;, Jeremy J. Cusack&#xb9;, Isabel L. Jones&#xb9;,
-  Jeroen Minderman&#xb9;, Erlend B. Nilsen&#xb2;, Roc&#0237;o A. Pozo&#xb9;, O. Sarobidy
-  Rakotonarivo&#xb9;, Bram Van Moorter&#xb2;, and Nils Bunnefeld&#xb9;
-date: '[1] Biological and Environmental Sciences, University of Stirling, Stirling,
-  UK [2] Norwegian Institute for Nature Research, Trondheim, Norway [3] alexander.duthie@stir.ac.uk'
+author: |
+        | A. Bradley Duthie&#xb9;&#xb3;, Jeremy J. Cusack&#xb9;, Isabel L. Jones&#xb9;, Jeroen Minderman&#xb9;, 
+        | Erlend B. Nilsen&#xb2;, Roc&#0237;o A. Pozo&#xb9;, O. Sarobidy Rakotonarivo&#xb9;, 
+        | Bram Van Moorter&#xb2;, and Nils Bunnefeld&#xb9;
+date: '[1] Biological and Environmental Sciences, University of Stirling, Stirling, UK [2] Norwegian Institute for Nature Research, Trondheim, Norway [3] alexander.duthie@stir.ac.uk'
 output:
   pdf_document:
     citation_package: natbib
