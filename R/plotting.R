@@ -582,7 +582,7 @@ plot_gmse_results <- function(sim_results){
         land3 <- land2[[i]][,,3];
     }
     
-    max_time <- length(res) - 1;
+    max_time <- length(res);
         
     gens <- NULL;
     abun <- NULL;
@@ -628,7 +628,7 @@ plot_gmse_results <- function(sim_results){
     }
     
     time_max <- length(res);
-    for(i in 1:(time_max-1)){
+    for(i in 1:(time_max)){
         res_t    <- res[[i]];
         obs_t    <- obs[[i]];
         lnd_t    <- land2[[i]][,,2] * 100;
