@@ -168,7 +168,7 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, COST,
         ymaxi <- minK + 0.1 * minK;
     }
     time_max <- length(res);
-    for(i in 1:(time_max-1)){
+    for(i in 1:(time_max)){
         res_t    <- res[[i]];
         obs_t    <- obs[[i]];
         lnd_t    <- land2[[i]] * 100;
@@ -384,7 +384,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
       ymaxi <- minK + 0.1 * minK;
     }
     time_max <- length(res);
-    for(i in 1:(time_max-1)){
+    for(i in 1:(time_max)){
         res_t    <- res[[i]];
         obs_t    <- obs[[i]];
         lnd_t    <- land2[[i]] * 100;
