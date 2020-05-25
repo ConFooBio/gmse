@@ -689,7 +689,7 @@ plot_gmse_results <- function(sim_results){
                 col="lightblue");
         points(x = gens, y = est, pch = 20, type = "l", lwd = 2, col = "cyan4");
     }else{
-        points(x = gens, y = est[-time_max], pch = 20, type = "l", lwd = 2, 
+        points(x = gens, y = est, pch = 20, type = "l", lwd = 2, 
                col = "cyan4");
     }
     if(para_vec[5] > 1){
