@@ -6,18 +6,19 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Use of the gmse_apply function • GMSE</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Use of the gmse_apply function">
-<meta property="og:description" content="">
-<meta name="twitter:card" content="summary">
+<meta property="og:description" content="GMSE">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body>
+<body data-spy="scroll" data-target="#toc">
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -30,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0.0</span>
       </span>
     </div>
 
@@ -38,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -76,7 +77,13 @@
     <li>
       <a href="../articles/SI7.html">Default GMSE data structures</a>
     </li>
+    <li>
+      <a href="../articles/SI8.html">Adaptive timing of investment strategy</a>
+    </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -98,17 +105,20 @@
 <!--/.navbar -->
 
       
+
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>Use of the gmse_apply function</h1>
+      <h1 data-toc-skip>Use of the gmse_apply function</h1>
             <h3 class="subtitle">GMSE: an R package for generalised management strategy evaluation (Supporting Information 2)</h3>
-                        <h4 class="author">A. Bradley Duthie¹³, Jeremy J. Cusack¹, Isabel L. Jones¹, Jeroen Minderman¹, Erlend B. Nilsen², Rocío A. Pozo¹, O. Sarobidy Rakotonarivo¹, Bram Van Moorter², and Nils Bunnefeld¹</h4>
+                        <h4 class="author"><div class="line-block">A. Bradley Duthie¹³, Jeremy J. Cusack¹, Isabel L. Jones¹, Jeroen Minderman¹,<br>
+Erlend B. Nilsen², Rocío A. Pozo¹, O. Sarobidy Rakotonarivo¹,<br>
+Bram Van Moorter², and Nils Bunnefeld¹</div></h4>
             
-            <h4 class="date">[1] Biological and Environmental Sciences, University of Stirling, Stirling, UK [2] Norwegian Institute for Nature Research, Trondheim, Norway [3] <a href="mailto:alexander.duthie@stir.ac.uk">alexander.duthie@stir.ac.uk</a>
+            <h4 class="date">[1] Biological and Environmental Sciences, University of Stirling, Stirling, UK [2] Norwegian Institute for Nature Research, Trondheim, Norway [3] <a href="mailto:alexander.duthie@stir.ac.uk" class="email">alexander.duthie@stir.ac.uk</a>
 </h4>
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/confoobio/gmse/blob/master/vignettes/SI2.Rmd"><code>vignettes/SI2.Rmd</code></a></small>
       <div class="hidden name"><code>SI2.Rmd</code></div>
 
     </div>
@@ -120,26 +130,26 @@
 <a href="#extended-introduction-to-the-gmse-apply-function-gmse_apply" class="anchor"></a>Extended introduction to the GMSE apply function (<code>gmse_apply</code>)</h1>
 <p>The <code>gmse_apply</code> function is a flexible function that allows for user-defined sub-functions calling resource, observation, manager, and user models. Where such models are not specified, predefined GMSE sub-models ‘resource’, ‘observation’, ‘manager’, and ‘user’ are run by default. Any type of sub-model (e.g., numerical, individual-based) is permitted as long as the input and output are appropriately specified. Only one time step is simulated per call to <code>gmse_apply</code>, so the function must be looped for simulation over time. Where model parameters are needed but not specified, defaults from GMSE are used. Here we demonstrate some uses of <code>gmse_apply</code>, and how it might be used to simulate myriad management scenarios <em>in silico</em>.</p>
 <p>A simple run of <code><a href="../reference/gmse_apply.html">gmse_apply()</a></code> returns one time step of GMSE using predefined sub-models and default parameter values.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sim_1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_apply.html">gmse_apply</a></span>();</code></pre></div>
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="no">sim_1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>();</pre></body></html></div>
 <p>For <code>sim_1</code>, the default ‘basic’ results are returned as below, which summarise key values for all sub-models.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(sim_1);</code></pre></div>
+<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">sim_1</span>);</pre></body></html></div>
 <pre><code>## $resource_results
-## [1] 1066
+## [1] 1118
 ## 
 ## $observation_results
-## [1] 680.2721
+## [1] 1224.49
 ## 
 ## $manager_results
 ##          resource_type scaring culling castration feeding help_offspring
-## policy_1             1      NA      64         NA      NA             NA
+## policy_1             1      NA      59         NA      NA             NA
 ## 
 ## $user_results
 ##         resource_type scaring culling castration feeding help_offspring
 ## Manager             1      NA       0         NA      NA             NA
-## user_1              1      NA      15         NA      NA             NA
-## user_2              1      NA      15         NA      NA             NA
-## user_3              1      NA      15         NA      NA             NA
-## user_4              1      NA      15         NA      NA             NA
+## user_1              1      NA      16         NA      NA             NA
+## user_2              1      NA      16         NA      NA             NA
+## user_3              1      NA      16         NA      NA             NA
+## user_4              1      NA      16         NA      NA             NA
 ##         tend_crops kill_crops
 ## Manager         NA         NA
 ## user_1          NA         NA
@@ -147,14 +157,14 @@
 ## user_3          NA         NA
 ## user_4          NA         NA</code></pre>
 <p>Note that in the case above we have the total abundance of resources returned (<code>sim_1$resource_results</code>), the estimate of resource abundance from the observation function (<code>sim_1$observation_results</code>), the costs the manager sets for the only available action of culling (<code>sim_1$manager_results</code>), and the number of culls attempted by each user (<code>sim_1$user_results</code>). By default, only one resource type is used, but custom sub-functions could potentially allow for models with multiple resource types. Any custom sub-functions can replace GMSE predefined functions, provided that they have appropriately defined inputs and outputs (see <a href="https://cran.r-project.org/web/packages/GMSE/GMSE.pdf">GMSE documentation</a>). For example, we can define a very simple logistic growth function to send to <code>res_mod</code> instead.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">alt_res &lt;-<span class="st"> </span>function(X, <span class="dt">K =</span> <span class="dv">2000</span>, <span class="dt">rate =</span> <span class="dv">1</span>){
-    X_1 &lt;-<span class="st"> </span>X +<span class="st"> </span>rate*X*(<span class="dv">1</span> -<span class="st"> </span>X/K);
-    <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/function">return</a></span>(X_1);
-}</code></pre></div>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">alt_res</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">X</span>, <span class="no">K</span> <span class="kw">=</span> <span class="fl">2000</span>, <span class="no">rate</span> <span class="kw">=</span> <span class="fl">1</span>){
+    <span class="no">X_1</span> <span class="kw">&lt;-</span> <span class="no">X</span> + <span class="no">rate</span>*<span class="no">X</span>*(<span class="fl">1</span> - <span class="no">X</span>/<span class="no">K</span>);
+    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="no">X_1</span>);
+}</pre></body></html></div>
 <p>The above function takes in a population size of <code>X</code> and returns a value <code>X_1</code> based on the population intrinsic growth rate <code>rate</code> and carrying capacity <code>K</code>. Iterating the logistic growth model by itself under default parameter values with a starting population of 100 will cause the population to increase to carrying capacity in ca seven time steps The function can be substituted into <code>gmse_apply</code> to use it instead of the predefined GMSE resource model.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sim_2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="dt">res_mod =</span> alt_res, <span class="dt">X =</span> <span class="dv">100</span>, <span class="dt">rate =</span> <span class="fl">0.3</span>);</code></pre></div>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">sim_2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">res_mod</span> <span class="kw">=</span> <span class="no">alt_res</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="fl">100</span>, <span class="kw">rate</span> <span class="kw">=</span> <span class="fl">0.3</span>);</pre></body></html></div>
 <p>The <code>gmse_apply</code> function will find the parameters it needs to run the <code>alt_res</code> function in place of the default resource function, either by running the default function values (e.g., <code>K = 2000</code>) or values specified directly into <code>gmse_apply</code> (e.g., <code>X = 100</code> and <code>rate = 0.3</code>). If an argument to a custom function is required but not provided either as a default or specified in <code>gmse_apply</code>, then an error will be returned. Results for the above <code>sim_2</code> are returned below.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(sim_2);</code></pre></div>
+<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">sim_2</span>);</pre></body></html></div>
 <pre><code>## $resource_results
 ## [1] 128
 ## 
@@ -163,15 +173,15 @@
 ## 
 ## $manager_results
 ##          resource_type scaring culling castration feeding help_offspring
-## policy_1             1      NA      48         NA      NA             NA
+## policy_1             1      NA      59         NA      NA             NA
 ## 
 ## $user_results
 ##         resource_type scaring culling castration feeding help_offspring
 ## Manager             1      NA       0         NA      NA             NA
-## user_1              1      NA      20         NA      NA             NA
-## user_2              1      NA      20         NA      NA             NA
-## user_3              1      NA      20         NA      NA             NA
-## user_4              1      NA      20         NA      NA             NA
+## user_1              1      NA      16         NA      NA             NA
+## user_2              1      NA      16         NA      NA             NA
+## user_3              1      NA      16         NA      NA             NA
+## user_4              1      NA      16         NA      NA             NA
 ##         tend_crops kill_crops
 ## Manager         NA         NA
 ## user_1          NA         NA
@@ -182,29 +192,29 @@
 <h2 class="hasAnchor">
 <a href="#how-gmse_apply-integrates-across-sub-models" class="anchor"></a>How <code>gmse_apply</code> integrates across sub-models</h2>
 <p>To integrate across different types of sub-models, <code>gmse_apply</code> translates between vectors and arrays between each sub-model. For example, because the default GMSE observation model requires a resource array with particular requirements for column identites, when a resource model sub-function returns a vector, or a list with a named element ‘resource_vector’, this vector is translated into an array that can be used by the observation model. Specifically, each element of the vector identifies the abundance of a resource type (and hence will usually be just a single value denoting abundance of the only focal population). If this is all the information provided, then a ‘resource_array’ will be made with default GMSE parameter values with an identical number of rows to the abundance value (floored if the value is a non-integer; non-default values can also be put into this transformation from vector to array if they are specified in <code>gmse_apply</code>, e.g., through an argument such as <code>lambda = 0.8</code>). Similarly, a <code>resource_array</code> is also translated into a vector after the default individual-based resource model is run, should a custom observation model require simple abundances instead of an array. The same is true of <code>observation_vector</code> and <code>observation_array</code> objects returned by observation models, of <code>manager_vector</code> and <code>manager_array</code> (i.e., <code>COST</code> in the <code>gmse</code> function) objects returned by manager models, and of <code>user_vector</code> and <code>user_array</code> (i.e., <code>ACTION</code> in the <code>gmse</code> function) objects returned by user models. At each step, a translation between the two is made, with necessary adjustments that can be tweaked through arguments to <code>gmse_apply</code> when needed. Alternative observation, manager, and user, sub-models, for example, are defined below; note that each requires a vector from the preceding model.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Alternative observation sub-model</span>
-alt_obs &lt;-<span class="st"> </span>function(resource_vector){ 
-    X_obs &lt;-<span class="st"> </span>resource_vector -<span class="st"> </span><span class="fl">0.1</span> *<span class="st"> </span>resource_vector;
-    <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/function">return</a></span>(X_obs);
+<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="co"># Alternative observation sub-model</span>
+<span class="no">alt_obs</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">resource_vector</span>){
+    <span class="no">X_obs</span> <span class="kw">&lt;-</span> <span class="no">resource_vector</span> - <span class="fl">0.1</span> * <span class="no">resource_vector</span>;
+    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="no">X_obs</span>);
 }
 
 <span class="co"># Alternative manager sub-model</span>
-alt_man &lt;-<span class="st"> </span>function(observation_vector){
-    policy &lt;-<span class="st"> </span>observation_vector -<span class="st"> </span><span class="dv">1000</span>;
-    if(policy &lt;<span class="st"> </span><span class="dv">0</span>){
-        policy &lt;-<span class="st"> </span><span class="dv">0</span>;
+<span class="no">alt_man</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">observation_vector</span>){
+    <span class="no">policy</span> <span class="kw">&lt;-</span> <span class="no">observation_vector</span> - <span class="fl">1000</span>;
+    <span class="kw">if</span>(<span class="no">policy</span> <span class="kw">&lt;</span> <span class="fl">0</span>){
+        <span class="no">policy</span> <span class="kw">&lt;-</span> <span class="fl">0</span>;
     }
-    <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/function">return</a></span>(policy);
+    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="no">policy</span>);
 }
 
 <span class="co"># Alternative user sub-model</span>
-alt_usr &lt;-<span class="st"> </span>function(manager_vector){
-    harvest &lt;-<span class="st"> </span>manager_vector +<span class="st"> </span>manager_vector *<span class="st"> </span><span class="fl">0.1</span>;
-    <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/function">return</a></span>(harvest);
-}</code></pre></div>
+<span class="no">alt_usr</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">manager_vector</span>){
+    <span class="no">harvest</span> <span class="kw">&lt;-</span> <span class="no">manager_vector</span> + <span class="no">manager_vector</span> * <span class="fl">0.1</span>;
+    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="no">harvest</span>);
+}</pre></body></html></div>
 <p>All of these sub-models are completely deterministic, so when run with the same parameter combinations, they produce replicable outputs.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="dt">res_mod =</span> alt_res, <span class="dt">obs_mod =</span> alt_obs, 
-           <span class="dt">man_mod =</span> alt_man, <span class="dt">use_mod =</span> alt_usr, <span class="dt">X =</span> <span class="dv">1000</span>);</code></pre></div>
+<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">res_mod</span> <span class="kw">=</span> <span class="no">alt_res</span>, <span class="kw">obs_mod</span> <span class="kw">=</span> <span class="no">alt_obs</span>,
+           <span class="kw">man_mod</span> <span class="kw">=</span> <span class="no">alt_man</span>, <span class="kw">use_mod</span> <span class="kw">=</span> <span class="no">alt_usr</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="fl">1000</span>);</pre></body></html></div>
 <pre><code>## $resource_results
 ## [1] 1500
 ## 
@@ -217,22 +227,22 @@ alt_usr &lt;-<span class="st"> </span>function(manager_vector){
 ## $user_results
 ## [1] 385</code></pre>
 <p>Note that the <code>manager_results</code> and <code>user_results</code> are ambiguous here, and can be interpreted as desired – e.g., as total allowable catch and catches made, or as something like costs of catching set by the manager and effort to catching made by the user. Hence, while manger output is set in terms of costs of performing each action, and user output is set in terms of action attempts, this need not be the case when using <code>gmse_apply</code> (though it should be recognised when using default GMSE manager and user functions). GMSE default sub-models can be added in at any point.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="dt">res_mod =</span> alt_res, <span class="dt">obs_mod =</span> observation, 
-           <span class="dt">man_mod =</span> alt_man, <span class="dt">use_mod =</span> alt_usr, <span class="dt">X =</span> <span class="dv">1000</span>);</code></pre></div>
+<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">res_mod</span> <span class="kw">=</span> <span class="no">alt_res</span>, <span class="kw">obs_mod</span> <span class="kw">=</span> <span class="no">observation</span>,
+           <span class="kw">man_mod</span> <span class="kw">=</span> <span class="no">alt_man</span>, <span class="kw">use_mod</span> <span class="kw">=</span> <span class="no">alt_usr</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="fl">1000</span>);</pre></body></html></div>
 <pre><code>## $resource_results
 ## [1] 1500
 ## 
 ## $observation_results
-## [1] 1247.166
+## [1] 1451.247
 ## 
 ## $manager_results
-## [1] 247.1655
+## [1] 451.2472
 ## 
 ## $user_results
-## [1] 271.8821</code></pre>
-<p>It is possible to, e.g., specify a simple resource and observation model, but then take advantage of the genetic algorithm to predict policy decisions and user actions (see <a href="SI5.pdf">SI5</a> for a fisheries example). This can be done by using the default GMSE manager and user functions (written below explicitly, though this is not necessary).</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="dt">res_mod =</span> alt_res, <span class="dt">obs_mod =</span> alt_obs, 
-           <span class="dt">man_mod =</span> manager, <span class="dt">use_mod =</span> user, <span class="dt">X =</span> <span class="dv">1000</span>);</code></pre></div>
+## [1] 496.3719</code></pre>
+<p>It is possible to, e.g., specify a simple resource and observation model, but then take advantage of the genetic algorithm to predict policy decisions and user actions (see <a href="SI5.html">Fisheries example integrating FLR</a> for a fisheries example). This can be done by using the default GMSE manager and user functions (written below explicitly, though this is not necessary).</p>
+<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">res_mod</span> <span class="kw">=</span> <span class="no">alt_res</span>, <span class="kw">obs_mod</span> <span class="kw">=</span> <span class="no">alt_obs</span>,
+           <span class="kw">man_mod</span> <span class="kw">=</span> <span class="no">manager</span>, <span class="kw">use_mod</span> <span class="kw">=</span> <span class="no">user</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="fl">1000</span>);</pre></body></html></div>
 <pre><code>## $resource_results
 ## [1] 1500
 ## 
@@ -241,7 +251,7 @@ alt_usr &lt;-<span class="st"> </span>function(manager_vector){
 ## 
 ## $manager_results
 ##          resource_type scaring culling castration feeding help_offspring
-## policy_1             1      NA      59         NA      NA             NA
+## policy_1             1      NA      61         NA      NA             NA
 ## 
 ## $user_results
 ##         resource_type scaring culling castration feeding help_offspring
@@ -262,45 +272,45 @@ alt_usr &lt;-<span class="st"> </span>function(manager_vector){
 <a href="#running-gmse-simulations-by-looping-gmse_apply" class="anchor"></a>Running GMSE simulations by looping <code>gmse_apply</code>
 </h2>
 <p>Instead of using the <code>gmse</code> function, multiple simulations of GMSE can be run by calling <code>gmse_apply</code> through a loop, reassigning outputs where necessary for the next generation. This is best accomplished using the argument <code>old_list</code>, which allows previous full results from <code>gmse_apply</code> to be reinserted into the <code>gmse_apply</code> function. The argument <code>old_list</code> is <code>NULL</code> by default, but can instead take the output of a previous full list return of <code>gmse_apply</code>. This <code>old_list</code> produced when <code>get_res = Full</code> includes all data structures and parameter values necessary for a unique simulation of GMSE. Note that custom functions sent to <code>gmse_apply</code> still need to be specified (<code>res_mod</code>, <code>obs_mod</code>, <code>man_mod</code>, and <code>use_mod</code>). An example of using <code>get_res</code> and <code>old_list</code> in tandem to loop <code>gmse_apply</code> is shown below.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">to_scare  &lt;-<span class="st"> </span><span class="ot">FALSE</span>;
-sim_old   &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="dt">scaring =</span> to_scare, <span class="dt">get_res =</span> <span class="st">"Full"</span>, <span class="dt">stakeholders =</span> <span class="dv">6</span>);
-sim_sum_1 &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">matrix</a></span>(<span class="dt">data =</span> <span class="ot">NA</span>, <span class="dt">nrow =</span> <span class="dv">20</span>, <span class="dt">ncol =</span> <span class="dv">7</span>);
-for(time_step in <span class="dv">1</span>:<span class="dv">20</span>){
-    sim_new               &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="dt">scaring =</span> to_scare, <span class="dt">get_res =</span> <span class="st">"Full"</span>, 
-                                        <span class="dt">old_list =</span> sim_old);
-    sim_sum_1[time_step, <span class="dv">1</span>] &lt;-<span class="st"> </span>time_step;
-    sim_sum_1[time_step, <span class="dv">2</span>] &lt;-<span class="st"> </span>sim_new$basic_output$resource_results[<span class="dv">1</span>];
-    sim_sum_1[time_step, <span class="dv">3</span>] &lt;-<span class="st"> </span>sim_new$basic_output$observation_results[<span class="dv">1</span>];
-    sim_sum_1[time_step, <span class="dv">4</span>] &lt;-<span class="st"> </span>sim_new$basic_output$manager_results[<span class="dv">2</span>];
-    sim_sum_1[time_step, <span class="dv">5</span>] &lt;-<span class="st"> </span>sim_new$basic_output$manager_results[<span class="dv">3</span>];
-    sim_sum_1[time_step, <span class="dv">6</span>] &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(sim_new$basic_output$user_results[,<span class="dv">2</span>]); 
-    sim_sum_1[time_step, <span class="dv">7</span>] &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(sim_new$basic_output$user_results[,<span class="dv">3</span>]); 
-    sim_old                 &lt;-<span class="st"> </span>sim_new;
+<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">to_scare</span>  <span class="kw">&lt;-</span> <span class="fl">FALSE</span>;
+<span class="no">sim_old</span>   <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">scaring</span> <span class="kw">=</span> <span class="no">to_scare</span>, <span class="kw">get_res</span> <span class="kw">=</span> <span class="st">"Full"</span>, <span class="kw">stakeholders</span> <span class="kw">=</span> <span class="fl">6</span>);
+<span class="no">sim_sum_1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw">data</span> <span class="kw">=</span> <span class="fl">NA</span>, <span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">20</span>, <span class="kw">ncol</span> <span class="kw">=</span> <span class="fl">7</span>);
+<span class="kw">for</span>(<span class="no">time_step</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="fl">20</span>){
+    <span class="no">sim_new</span>               <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">scaring</span> <span class="kw">=</span> <span class="no">to_scare</span>, <span class="kw">get_res</span> <span class="kw">=</span> <span class="st">"Full"</span>,
+                                        <span class="kw">old_list</span> <span class="kw">=</span> <span class="no">sim_old</span>);
+    <span class="no">sim_sum_1</span>[<span class="no">time_step</span>, <span class="fl">1</span>] <span class="kw">&lt;-</span> <span class="no">time_step</span>;
+    <span class="no">sim_sum_1</span>[<span class="no">time_step</span>, <span class="fl">2</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">resource_results</span>[<span class="fl">1</span>];
+    <span class="no">sim_sum_1</span>[<span class="no">time_step</span>, <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">observation_results</span>[<span class="fl">1</span>];
+    <span class="no">sim_sum_1</span>[<span class="no">time_step</span>, <span class="fl">4</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">manager_results</span>[<span class="fl">2</span>];
+    <span class="no">sim_sum_1</span>[<span class="no">time_step</span>, <span class="fl">5</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">manager_results</span>[<span class="fl">3</span>];
+    <span class="no">sim_sum_1</span>[<span class="no">time_step</span>, <span class="fl">6</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">user_results</span>[,<span class="fl">2</span>]);
+    <span class="no">sim_sum_1</span>[<span class="no">time_step</span>, <span class="fl">7</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">user_results</span>[,<span class="fl">3</span>]);
+    <span class="no">sim_old</span>                 <span class="kw">&lt;-</span> <span class="no">sim_new</span>;
 }
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colnames">colnames</a></span>(sim_sum_1) &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"Time"</span>, <span class="st">"Pop_size"</span>, <span class="st">"Pop_est"</span>, <span class="st">"Scare_cost"</span>, 
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">sim_sum_1</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Time"</span>, <span class="st">"Pop_size"</span>, <span class="st">"Pop_est"</span>, <span class="st">"Scare_cost"</span>,
                          <span class="st">"Cull_cost"</span>, <span class="st">"Scare_count"</span>, <span class="st">"Cull_count"</span>);
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(sim_sum_1);</code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">sim_sum_1</span>);</pre></body></html></div>
 <pre><code>##       Time Pop_size   Pop_est Scare_cost Cull_cost Scare_count Cull_count
-##  [1,]    1     1119  907.0295         NA       110          NA         54
-##  [2,]    2     1251 1269.8413         NA        10          NA        600
-##  [3,]    3      760  702.9478         NA       110          NA         54
-##  [4,]    4      810  793.6508         NA       110          NA         54
-##  [5,]    5      984  952.3810         NA       110          NA         54
-##  [6,]    6     1083 1020.4082         NA        30          NA        198
-##  [7,]    7     1026  929.7052         NA       110          NA         54
-##  [8,]    8     1161  793.6508         NA       110          NA         54
-##  [9,]    9     1331  997.7324         NA       110          NA         54
-## [10,]   10     1527 1541.9501         NA        10          NA        600
-## [11,]   11     1103  884.3537         NA       110          NA         54
-## [12,]   12     1272 1564.6259         NA        10          NA        600
-## [13,]   13      801  793.6508         NA       110          NA         54
-## [14,]   14      922 1383.2200         NA        10          NA        600
-## [15,]   15      379  476.1905         NA       110          NA         54
-## [16,]   16      385  430.8390         NA       110          NA         54
-## [17,]   17      386  430.8390         NA       110          NA         54
-## [18,]   18      402  317.4603         NA       110          NA         54
-## [19,]   19      418  294.7846         NA       110          NA         54
-## [20,]   20      439  408.1633         NA       110          NA         54</code></pre>
+##  [1,]    1     1109 1133.7868         NA        52          NA        114
+##  [2,]    2     1152 1156.4626         NA        44          NA        132
+##  [3,]    3     1170 1088.4354         NA        78          NA         72
+##  [4,]    4     1307 1678.0045         NA        10          NA        600
+##  [5,]    5      926  884.3537         NA       110          NA         54
+##  [6,]    6     1003  952.3810         NA       110          NA         54
+##  [7,]    7     1095 1111.1111         NA        64          NA         90
+##  [8,]    8     1182 1156.4626         NA        44          NA        132
+##  [9,]    9     1287  975.0567         NA       110          NA         54
+## [10,]   10     1474 1247.1655         NA        29          NA        204
+## [11,]   11     1505 1473.9229         NA        15          NA        396
+## [12,]   12     1347 1179.1383         NA        39          NA        150
+## [13,]   13     1423 1451.2472         NA        15          NA        396
+## [14,]   14     1246 1337.8685         NA        21          NA        282
+## [15,]   15     1155  997.7324         NA       110          NA         54
+## [16,]   16     1374 1519.2744         NA        14          NA        426
+## [17,]   17     1130 1088.4354         NA        79          NA         72
+## [18,]   18     1298 1224.4898         NA        30          NA        198
+## [19,]   19     1291 1201.8141         NA        35          NA        168
+## [20,]   20     1362 1541.9501         NA        12          NA        498</code></pre>
 <p>Note that one element of the full list <code>gmse_apply</code> output is the ‘basic_output’ itself, which is produced by default when <code>get_res = "basic"</code>. This is what is being used to store the output of <code>sim_new</code> into <code>sim_sum_1</code>. Next, we show how the flexibility of <code>gmse_apply</code> can be used to dynamically redefine simulation conditions.</p>
 </div>
 </div>
@@ -309,88 +319,88 @@ for(time_step in <span class="dv">1</span>:<span class="dv">20</span>){
 <a href="#changing-simulation-conditions-using-gmse_apply" class="anchor"></a>Changing simulation conditions using <code>gmse_apply</code>
 </h1>
 <p>We can take advantage of <code>gmse_apply</code> to dynamically change parameter values mid-loop. For example, below shows the same code used in the previous example, but with a policy of scaring introduced on time step 10.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">to_scare  &lt;-<span class="st"> </span><span class="ot">FALSE</span>;
-sim_old   &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="dt">scaring =</span> to_scare, <span class="dt">get_res =</span> <span class="st">"Full"</span>, <span class="dt">stakeholders =</span> <span class="dv">6</span>);
-sim_sum_2 &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">matrix</a></span>(<span class="dt">data =</span> <span class="ot">NA</span>, <span class="dt">nrow =</span> <span class="dv">20</span>, <span class="dt">ncol =</span> <span class="dv">7</span>);
-for(time_step in <span class="dv">1</span>:<span class="dv">20</span>){
-    sim_new               &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="dt">scaring =</span> to_scare, <span class="dt">get_res =</span> <span class="st">"Full"</span>, 
-                                        <span class="dt">old_list =</span> sim_old);
-    sim_sum_2[time_step, <span class="dv">1</span>] &lt;-<span class="st"> </span>time_step;
-    sim_sum_2[time_step, <span class="dv">2</span>] &lt;-<span class="st"> </span>sim_new$basic_output$resource_results[<span class="dv">1</span>];
-    sim_sum_2[time_step, <span class="dv">3</span>] &lt;-<span class="st"> </span>sim_new$basic_output$observation_results[<span class="dv">1</span>];
-    sim_sum_2[time_step, <span class="dv">4</span>] &lt;-<span class="st"> </span>sim_new$basic_output$manager_results[<span class="dv">2</span>];
-    sim_sum_2[time_step, <span class="dv">5</span>] &lt;-<span class="st"> </span>sim_new$basic_output$manager_results[<span class="dv">3</span>];
-    sim_sum_2[time_step, <span class="dv">6</span>] &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(sim_new$basic_output$user_results[,<span class="dv">2</span>]); 
-    sim_sum_2[time_step, <span class="dv">7</span>] &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(sim_new$basic_output$user_results[,<span class="dv">3</span>]); 
-    sim_old                 &lt;-<span class="st"> </span>sim_new;
-    if(time_step ==<span class="st"> </span><span class="dv">10</span>){
-        to_scare &lt;-<span class="st"> </span><span class="ot">TRUE</span>;
+<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="no">to_scare</span>  <span class="kw">&lt;-</span> <span class="fl">FALSE</span>;
+<span class="no">sim_old</span>   <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">scaring</span> <span class="kw">=</span> <span class="no">to_scare</span>, <span class="kw">get_res</span> <span class="kw">=</span> <span class="st">"Full"</span>, <span class="kw">stakeholders</span> <span class="kw">=</span> <span class="fl">6</span>);
+<span class="no">sim_sum_2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw">data</span> <span class="kw">=</span> <span class="fl">NA</span>, <span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">20</span>, <span class="kw">ncol</span> <span class="kw">=</span> <span class="fl">7</span>);
+<span class="kw">for</span>(<span class="no">time_step</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="fl">20</span>){
+    <span class="no">sim_new</span>               <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">scaring</span> <span class="kw">=</span> <span class="no">to_scare</span>, <span class="kw">get_res</span> <span class="kw">=</span> <span class="st">"Full"</span>,
+                                        <span class="kw">old_list</span> <span class="kw">=</span> <span class="no">sim_old</span>);
+    <span class="no">sim_sum_2</span>[<span class="no">time_step</span>, <span class="fl">1</span>] <span class="kw">&lt;-</span> <span class="no">time_step</span>;
+    <span class="no">sim_sum_2</span>[<span class="no">time_step</span>, <span class="fl">2</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">resource_results</span>[<span class="fl">1</span>];
+    <span class="no">sim_sum_2</span>[<span class="no">time_step</span>, <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">observation_results</span>[<span class="fl">1</span>];
+    <span class="no">sim_sum_2</span>[<span class="no">time_step</span>, <span class="fl">4</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">manager_results</span>[<span class="fl">2</span>];
+    <span class="no">sim_sum_2</span>[<span class="no">time_step</span>, <span class="fl">5</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">manager_results</span>[<span class="fl">3</span>];
+    <span class="no">sim_sum_2</span>[<span class="no">time_step</span>, <span class="fl">6</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">user_results</span>[,<span class="fl">2</span>]);
+    <span class="no">sim_sum_2</span>[<span class="no">time_step</span>, <span class="fl">7</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">user_results</span>[,<span class="fl">3</span>]);
+    <span class="no">sim_old</span>                 <span class="kw">&lt;-</span> <span class="no">sim_new</span>;
+    <span class="kw">if</span>(<span class="no">time_step</span> <span class="kw">==</span> <span class="fl">10</span>){
+        <span class="no">to_scare</span> <span class="kw">&lt;-</span> <span class="fl">TRUE</span>;
     }
 }
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colnames">colnames</a></span>(sim_sum_2) &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"Time"</span>, <span class="st">"Pop_size"</span>, <span class="st">"Pop_est"</span>, <span class="st">"Scare_cost"</span>, 
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">sim_sum_2</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Time"</span>, <span class="st">"Pop_size"</span>, <span class="st">"Pop_est"</span>, <span class="st">"Scare_cost"</span>,
                          <span class="st">"Cull_cost"</span>, <span class="st">"Scare_count"</span>, <span class="st">"Cull_count"</span>);
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(sim_sum_2);</code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">sim_sum_2</span>);</pre></body></html></div>
 <pre><code>##       Time Pop_size   Pop_est Scare_cost Cull_cost Scare_count Cull_count
-##  [1,]    1     1219  816.3265         NA       110          NA         54
-##  [2,]    2     1349 1473.9229         NA        10          NA        600
-##  [3,]    3      896 1043.0839         NA        14          NA        426
-##  [4,]    4      580  634.9206         NA       109          NA         54
-##  [5,]    5      696  476.1905         NA       110          NA         54
-##  [6,]    6      763  498.8662         NA       110          NA         54
-##  [7,]    7      854  748.2993         NA       110          NA         54
-##  [8,]    8      938  793.6508         NA       110          NA         54
-##  [9,]    9     1074  952.3810         NA       110          NA         54
-## [10,]   10     1232 1111.1111         NA        10          NA        600
-## [11,]   11      781  839.0023         10       110         600          0
-## [12,]   12      926  884.3537         10       110         600          0
-## [13,]   13     1109 1292.5170         61        10           0        600
-## [14,]   14      639  612.2449         10       110         600          0
-## [15,]   15      766  793.6508         10       110         600          0
-## [16,]   16      918  839.0023         10       110         600          0
-## [17,]   17     1078  952.3810         10       110         600          0
-## [18,]   18     1280 1405.8957         51        10           0        600
-## [19,]   19      840  793.6508         10       110         600          0
-## [20,]   20      999  907.0295         10       110         600          0</code></pre>
+##  [1,]    1     1048  929.7052         NA       110          NA         54
+##  [2,]    2     1153  861.6780         NA       110          NA         54
+##  [3,]    3     1234 1020.4082         NA       110          NA         54
+##  [4,]    4     1382 1156.4626         NA        45          NA        132
+##  [5,]    5     1615 1564.6259         NA        12          NA        498
+##  [6,]    6     1283 1292.5170         NA        24          NA        246
+##  [7,]    7     1208 1337.8685         NA        21          NA        282
+##  [8,]    8     1078  997.7324         NA       110          NA         54
+##  [9,]    9     1195 1292.5170         NA        24          NA        246
+## [10,]   10     1139  997.7324         NA       110          NA         54
+## [11,]   11     1281  929.7052         10       110           1         54
+## [12,]   12     1455 1179.1383         61        39           0        150
+## [13,]   13     1543 1224.4898         33        30           0        198
+## [14,]   14     1626 1405.8957         64        17           0        348
+## [15,]   15     1548 1315.1927         90        21           0        282
+## [16,]   16     1487 1315.1927         98        22           0        270
+## [17,]   17     1484 1405.8957         99        17           0        348
+## [18,]   18     1324 1383.2200        102        18           0        330
+## [19,]   19     1203 1292.5170         40        24           0        246
+## [20,]   20     1153 1156.4626         45        44           0        132</code></pre>
 <p>Hence, in addition to the previously explained benefits of the flexible <code>gmse_apply</code> function, one particularly useful feature is that we can use it to study change in policy availability – in the above case, what happens when scaring is suddenly introduced as a possible policy option. Similar things can be done, for example, to see how manager or user power changes over time. In the example below, users’ budgets increase by 100 every time step, with the manager’s budget remaining the same. The consequence of this increasing user budget is higher rates of culling and decreased population size.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ub          &lt;-<span class="st"> </span><span class="dv">500</span>;
-sim_old     &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="dt">get_res =</span> <span class="st">"Full"</span>, <span class="dt">stakeholders =</span> <span class="dv">6</span>, <span class="dt">user_budget =</span> ub);
-sim_sum_3   &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">matrix</a></span>(<span class="dt">data =</span> <span class="ot">NA</span>, <span class="dt">nrow =</span> <span class="dv">20</span>, <span class="dt">ncol =</span> <span class="dv">6</span>);
-for(time_step in <span class="dv">1</span>:<span class="dv">20</span>){
-    sim_new               &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="dt">get_res =</span> <span class="st">"Full"</span>, <span class="dt">old_list =</span> sim_old,
-                                        <span class="dt">user_budget =</span> ub);
-    sim_sum_3[time_step, <span class="dv">1</span>] &lt;-<span class="st"> </span>time_step;
-    sim_sum_3[time_step, <span class="dv">2</span>] &lt;-<span class="st"> </span>sim_new$basic_output$resource_results[<span class="dv">1</span>];
-    sim_sum_3[time_step, <span class="dv">3</span>] &lt;-<span class="st"> </span>sim_new$basic_output$observation_results[<span class="dv">1</span>];
-    sim_sum_3[time_step, <span class="dv">4</span>] &lt;-<span class="st"> </span>sim_new$basic_output$manager_results[<span class="dv">3</span>];
-    sim_sum_3[time_step, <span class="dv">5</span>] &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(sim_new$basic_output$user_results[,<span class="dv">3</span>]);
-    sim_sum_3[time_step, <span class="dv">6</span>] &lt;-<span class="st"> </span>ub;
-    sim_old               &lt;-<span class="st"> </span>sim_new;
-    ub                    &lt;-<span class="st"> </span>ub +<span class="st"> </span><span class="dv">100</span>;
+<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="no">ub</span>          <span class="kw">&lt;-</span> <span class="fl">500</span>;
+<span class="no">sim_old</span>     <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">get_res</span> <span class="kw">=</span> <span class="st">"Full"</span>, <span class="kw">stakeholders</span> <span class="kw">=</span> <span class="fl">6</span>, <span class="kw">user_budget</span> <span class="kw">=</span> <span class="no">ub</span>);
+<span class="no">sim_sum_3</span>   <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw">data</span> <span class="kw">=</span> <span class="fl">NA</span>, <span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">20</span>, <span class="kw">ncol</span> <span class="kw">=</span> <span class="fl">6</span>);
+<span class="kw">for</span>(<span class="no">time_step</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="fl">20</span>){
+    <span class="no">sim_new</span>               <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">get_res</span> <span class="kw">=</span> <span class="st">"Full"</span>, <span class="kw">old_list</span> <span class="kw">=</span> <span class="no">sim_old</span>,
+                                        <span class="kw">user_budget</span> <span class="kw">=</span> <span class="no">ub</span>);
+    <span class="no">sim_sum_3</span>[<span class="no">time_step</span>, <span class="fl">1</span>] <span class="kw">&lt;-</span> <span class="no">time_step</span>;
+    <span class="no">sim_sum_3</span>[<span class="no">time_step</span>, <span class="fl">2</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">resource_results</span>[<span class="fl">1</span>];
+    <span class="no">sim_sum_3</span>[<span class="no">time_step</span>, <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">observation_results</span>[<span class="fl">1</span>];
+    <span class="no">sim_sum_3</span>[<span class="no">time_step</span>, <span class="fl">4</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">manager_results</span>[<span class="fl">3</span>];
+    <span class="no">sim_sum_3</span>[<span class="no">time_step</span>, <span class="fl">5</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">user_results</span>[,<span class="fl">3</span>]);
+    <span class="no">sim_sum_3</span>[<span class="no">time_step</span>, <span class="fl">6</span>] <span class="kw">&lt;-</span> <span class="no">ub</span>;
+    <span class="no">sim_old</span>               <span class="kw">&lt;-</span> <span class="no">sim_new</span>;
+    <span class="no">ub</span>                    <span class="kw">&lt;-</span> <span class="no">ub</span> + <span class="fl">100</span>;
 }
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colnames">colnames</a></span>(sim_sum_3) &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"Time"</span>, <span class="st">"Pop_size"</span>, <span class="st">"Pop_est"</span>, <span class="st">"Cull_cost"</span>, <span class="st">"Cull_count"</span>,
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">sim_sum_3</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Time"</span>, <span class="st">"Pop_size"</span>, <span class="st">"Pop_est"</span>, <span class="st">"Cull_cost"</span>, <span class="st">"Cull_count"</span>,
                          <span class="st">"User_budget"</span>);
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(sim_sum_3);</code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">sim_sum_3</span>);</pre></body></html></div>
 <pre><code>##       Time Pop_size   Pop_est Cull_cost Cull_count User_budget
-##  [1,]    1     1182 1065.7596        10        300         500
-##  [2,]    2     1007  816.3265       110         30         600
-##  [3,]    3     1149 1269.8413        10        420         700
-##  [4,]    4      829  907.0295       110         42         800
-##  [5,]    5     1029  952.3810       110         48         900
-##  [6,]    6     1176 1065.7596        10        600        1000
-##  [7,]    7      680  408.1633       110         60        1100
-##  [8,]    8      763  702.9478       110         60        1200
-##  [9,]    9      864 1020.4082        33        234        1300
-## [10,]   10      777 1020.4082        38        216        1400
-## [11,]   11      686  770.9751       110         78        1500
-## [12,]   12      720  952.3810       110         84        1600
-## [13,]   13      749  748.2993       110         90        1700
-## [14,]   14      785  657.5964       110         96        1800
-## [15,]   15      820  770.9751       110        102        1900
-## [16,]   16      878  770.9751       110        108        2000
-## [17,]   17      879  793.6508       110        114        2100
-## [18,]   18      902  612.2449       110        120        2200
-## [19,]   19      948  929.7052       110        120        2300
-## [20,]   20      985  997.7324       110        126        2400</code></pre>
+##  [1,]    1     1106 1269.8413        13        228         500
+##  [2,]    2     1004 1043.0839        81         42         600
+##  [3,]    3     1110 1043.0839        96         42         700
+##  [4,]    4     1281  997.7324       110         42         800
+##  [5,]    5     1639 1496.5986        11        486         900
+##  [6,]    6     1381 1292.5170        21        282        1000
+##  [7,]    7     1307 1405.8957        17        384        1100
+##  [8,]    8     1081 1292.5170        27        264        1200
+##  [9,]    9      981 1065.7596       110         66        1300
+## [10,]   10     1076  929.7052       110         72        1400
+## [11,]   11     1217 1179.1383        52        168        1500
+## [12,]   12     1262 1723.3560        14        684        1600
+## [13,]   13      696  907.0295       110         90        1700
+## [14,]   14      717  748.2993       110         96        1800
+## [15,]   15      744  634.9206       110        102        1900
+## [16,]   16      752  748.2993       110        108        2000
+## [17,]   17      795  770.9751       110        114        2100
+## [18,]   18      795  816.3265       110        120        2200
+## [19,]   19      820 1111.1111       110        120        2300
+## [20,]   20      864  861.6780       110        126        2400</code></pre>
 <p>There is an important note to make about changing arguments to <code>gmse_apply</code> when <code>old_list</code> is being used: The function <code>gmse_apply</code> is trying to avoid a crash, so <code>gmse_apply</code> will accomodate parameter changes by rebuilding data structures if necessary. For example, if the number of stakeholders is changed (and by including an argument such as <code>stakeholders</code> to <code>gmse_apply</code>, it is assumed that stakeholders are changing even they are not), then a new array of agents will need to be built. If landscape dimensions are changed (or just include the argument <code>land_dim_1</code> or <code>land_dim_2</code>), then a new landscape willl be built. For most simulation purposes, this will not introduce any undesirable effect on simulation results, but it should be noted and understood when developing models.</p>
 </div>
 <div id="special-considerations-for-looping-with-custom-sub-models" class="section level1">
@@ -398,26 +408,26 @@ for(time_step in <span class="dv">1</span>:<span class="dv">20</span>){
 <a href="#special-considerations-for-looping-with-custom-sub-models" class="anchor"></a>Special considerations for looping with custom sub-models</h1>
 <p>There are some special considerations that need to be made when using custom sub-models and the <code>old_list</code> argument within a loop as above. These considerations boil down to two key points.</p>
 <ol style="list-style-type: decimal">
-<li>Custom sub-models <em>always</em> need to read in explicitly as an argument in <code>gmse_apply</code> (i.e., they will not be remembered by <code>old_list</code>).</li>
+<li>Custom sub-models <em>always</em> need to be read in explicitly as an argument in <code>gmse_apply</code> (i.e., they will not be remembered by <code>old_list</code>).</li>
 <li>Custom sub-model arguments also <em>always</em> need to be updated <em>outside</em> of <code>gmse_apply</code> before output is used as an argument in <code>old_list</code> (i.e., <code>gmse_apply</code> cannot know what custom function argument needs to be updated, so this needs to be done manually).</li>
 </ol>
 <p>An example below illustrates the above points more clearly. Assume that the custom resource sub-model defined above needs to be integrated with the default observation, manager, and user sub-models using <code>gmse_apply</code>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">alt_res &lt;-<span class="st"> </span>function(X, <span class="dt">K =</span> <span class="dv">2000</span>, <span class="dt">rate =</span> <span class="dv">1</span>){
-    X_1 &lt;-<span class="st"> </span>X +<span class="st"> </span>rate*X*(<span class="dv">1</span> -<span class="st"> </span>X/K);
-    <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/function">return</a></span>(X_1);
-}</code></pre></div>
+<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="no">alt_res</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">X</span>, <span class="no">K</span> <span class="kw">=</span> <span class="fl">2000</span>, <span class="no">rate</span> <span class="kw">=</span> <span class="fl">1</span>){
+    <span class="no">X_1</span> <span class="kw">&lt;-</span> <span class="no">X</span> + <span class="no">rate</span>*<span class="no">X</span>*(<span class="fl">1</span> - <span class="no">X</span>/<span class="no">K</span>);
+    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="no">X_1</span>);
+}</pre></body></html></div>
 <p>The sub-model can be integrated once using <code>gmse_apply</code> as demonstrated above, but in the full <code>gmse_apply</code> output, the argument <code>X</code> will not change from its initial value (because sub-model functions can take any number of arbitrary arguments, <code>gmse_apply</code> has no way of knowing that <code>X</code> is meant to be the resource number and not some other parameter).</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sim_4 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="dt">res_mod =</span> alt_res, <span class="dt">X =</span> <span class="dv">1000</span>, <span class="dt">get_res =</span> <span class="st">"Full"</span>);
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(sim_4$basic_output);</code></pre></div>
+<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="no">sim_4</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">res_mod</span> <span class="kw">=</span> <span class="no">alt_res</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="fl">1000</span>, <span class="kw">get_res</span> <span class="kw">=</span> <span class="st">"Full"</span>);
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">sim_4</span>$<span class="no">basic_output</span>);</pre></body></html></div>
 <pre><code>## $resource_results
 ## [1] 1500
 ## 
 ## $observation_results
-## [1] 1587.302
+## [1] 1768.707
 ## 
 ## $manager_results
 ##          resource_type scaring culling castration feeding help_offspring
-## policy_1             1      NA      57         NA      NA             NA
+## policy_1             1      NA      58         NA      NA             NA
 ## 
 ## $user_results
 ##         resource_type scaring culling castration feeding help_offspring
@@ -433,63 +443,53 @@ for(time_step in <span class="dv">1</span>:<span class="dv">20</span>){
 ## user_3          NA         NA
 ## user_4          NA         NA</code></pre>
 <p>Note that in the above output, the resource abundance has increased and is now <code>sim_4$basic_output$resource_results</code>. But if we look at <code>sim_4$X</code>, the value is still 1000.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(sim_4$X);</code></pre></div>
+<div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">sim_4</span>$<span class="no">X</span>);</pre></body></html></div>
 <pre><code>## [1] 1000</code></pre>
 <p>To loop through multiple time steps with the custom function <code>alt_res</code>, it is therefore necessary to update <code>sim4$X</code> with the updated value from either <code>sim4$resource_vector</code> or <code>sim4$basic_output$resource_results</code> (the two values should be identical). The loop below shows a simple example.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">init_abun   &lt;-<span class="st"> </span><span class="dv">1000</span>;
-sim_old     &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="dt">get_res =</span> <span class="st">"Full"</span>, <span class="dt">res_mod =</span> alt_res, <span class="dt">X =</span> init_abun);
-for(time_step in <span class="dv">1</span>:<span class="dv">20</span>){
-    sim_new               &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="dt">res_mod =</span> alt_res, <span class="dt">get_res =</span> <span class="st">"Full"</span>, 
-                                        <span class="dt">old_list =</span> sim_old);
-    sim_old               &lt;-<span class="st"> </span>sim_new;
-    sim_old$X             &lt;-<span class="st"> </span>sim_new$resource_vector;
-}</code></pre></div>
+<div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="no">init_abun</span>   <span class="kw">&lt;-</span> <span class="fl">1000</span>;
+<span class="no">sim_old</span>     <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">get_res</span> <span class="kw">=</span> <span class="st">"Full"</span>, <span class="kw">res_mod</span> <span class="kw">=</span> <span class="no">alt_res</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">init_abun</span>);
+<span class="kw">for</span>(<span class="no">time_step</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="fl">20</span>){
+    <span class="no">sim_new</span>               <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">res_mod</span> <span class="kw">=</span> <span class="no">alt_res</span>, <span class="kw">get_res</span> <span class="kw">=</span> <span class="st">"Full"</span>,
+                                        <span class="kw">old_list</span> <span class="kw">=</span> <span class="no">sim_old</span>);
+    <span class="no">sim_old</span>               <span class="kw">&lt;-</span> <span class="no">sim_new</span>;
+    <span class="no">sim_old</span>$<span class="no">X</span>             <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">resource_vector</span>;
+}</pre></body></html></div>
 <p>Note again that the custom sub-model is read into to <code>gmse_apply</code> as an argument within the loop (<code>res_mod = alt_res</code>), and the output of <code>sim_new</code> is used to update the custom argument <code>X</code> in <code>alt_res</code> (<code>sim_old$X &lt;- sim_new$resource_vector</code>). The population quickly increases to near carrying capacity, which can be summarised by using the same table structure explained above.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">init_abun   &lt;-<span class="st"> </span><span class="dv">1000</span>;
-sim_old     &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="dt">get_res =</span> <span class="st">"Full"</span>, <span class="dt">res_mod =</span> alt_res, <span class="dt">X =</span> init_abun);
-sim_sum_4   &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">matrix</a></span>(<span class="dt">data =</span> <span class="ot">NA</span>, <span class="dt">nrow =</span> <span class="dv">5</span>, <span class="dt">ncol =</span> <span class="dv">5</span>);
-for(time_step in <span class="dv">1</span>:<span class="dv">5</span>){
-    sim_new                 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="dt">res_mod =</span> alt_res, <span class="dt">get_res =</span> <span class="st">"Full"</span>, 
-                                          <span class="dt">old_list =</span> sim_old);
-    sim_sum_4[time_step, <span class="dv">1</span>] &lt;-<span class="st"> </span>time_step;
-    sim_sum_4[time_step, <span class="dv">2</span>] &lt;-<span class="st"> </span>sim_new$basic_output$resource_results[<span class="dv">1</span>];
-    sim_sum_4[time_step, <span class="dv">3</span>] &lt;-<span class="st"> </span>sim_new$basic_output$observation_results[<span class="dv">1</span>];
-    sim_sum_4[time_step, <span class="dv">4</span>] &lt;-<span class="st"> </span>sim_new$basic_output$manager_results[<span class="dv">3</span>];
-    sim_sum_4[time_step, <span class="dv">5</span>] &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(sim_new$basic_output$user_results[,<span class="dv">3</span>]);
-    sim_old                 &lt;-<span class="st"> </span>sim_new;
-    sim_old$X               &lt;-<span class="st"> </span>sim_new$resource_vector;
+<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="no">init_abun</span>   <span class="kw">&lt;-</span> <span class="fl">1000</span>;
+<span class="no">sim_old</span>     <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">get_res</span> <span class="kw">=</span> <span class="st">"Full"</span>, <span class="kw">res_mod</span> <span class="kw">=</span> <span class="no">alt_res</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">init_abun</span>);
+<span class="no">sim_sum_4</span>   <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw">data</span> <span class="kw">=</span> <span class="fl">NA</span>, <span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">5</span>, <span class="kw">ncol</span> <span class="kw">=</span> <span class="fl">5</span>);
+<span class="kw">for</span>(<span class="no">time_step</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="fl">5</span>){
+    <span class="no">sim_new</span>                 <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">res_mod</span> <span class="kw">=</span> <span class="no">alt_res</span>, <span class="kw">get_res</span> <span class="kw">=</span> <span class="st">"Full"</span>,
+                                          <span class="kw">old_list</span> <span class="kw">=</span> <span class="no">sim_old</span>);
+    <span class="no">sim_sum_4</span>[<span class="no">time_step</span>, <span class="fl">1</span>] <span class="kw">&lt;-</span> <span class="no">time_step</span>;
+    <span class="no">sim_sum_4</span>[<span class="no">time_step</span>, <span class="fl">2</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">resource_results</span>[<span class="fl">1</span>];
+    <span class="no">sim_sum_4</span>[<span class="no">time_step</span>, <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">observation_results</span>[<span class="fl">1</span>];
+    <span class="no">sim_sum_4</span>[<span class="no">time_step</span>, <span class="fl">4</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">manager_results</span>[<span class="fl">3</span>];
+    <span class="no">sim_sum_4</span>[<span class="no">time_step</span>, <span class="fl">5</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">user_results</span>[,<span class="fl">3</span>]);
+    <span class="no">sim_old</span>                 <span class="kw">&lt;-</span> <span class="no">sim_new</span>;
+    <span class="no">sim_old</span>$<span class="no">X</span>               <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">resource_vector</span>;
 }
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colnames">colnames</a></span>(sim_sum_4) &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"Time"</span>, <span class="st">"Pop_size"</span>, <span class="st">"Pop_est"</span>, <span class="st">"Cull_cost"</span>, 
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">sim_sum_4</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Time"</span>, <span class="st">"Pop_size"</span>, <span class="st">"Pop_est"</span>, <span class="st">"Cull_cost"</span>,
                          <span class="st">"Cull_count"</span>);
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(sim_sum_4);</code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">sim_sum_4</span>);</pre></body></html></div>
 <pre><code>##      Time Pop_size  Pop_est Cull_cost Cull_count
-## [1,]    1     1500 1292.517        10        400
-## [2,]    2     1875 1768.707        10        400
-## [3,]    3     1992 2154.195        10        400
-## [4,]    4     1999 2358.277        10        400
-## [5,]    5     1999 1904.762        10        400</code></pre>
+## [1,]    1     1500 1541.950        10        400
+## [2,]    2     1875 2176.871        10        400
+## [3,]    3     1992 1632.653        10        400
+## [4,]    4     1999 2040.816        10        400
+## [5,]    5     1999 1859.410        10        400</code></pre>
 <p>This is the recommended way to loop custom functions in <code>gmse_apply</code>. Note that elements of <code>old_list</code> will over-ride custom arguments to <code>gmse_apply</code> so <strong>specifying custom arguments that are already present in <code>old_list</code> will not work</strong>.</p>
 </div>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-        <div id="tocnav">
-      <h2 class="hasAnchor">
-<a href="#tocnav" class="anchor"></a>Contents</h2>
-      <ul class="nav nav-pills nav-stacked">
-<li>
-<a href="#extended-introduction-to-the-gmse-apply-function-gmse_apply">Extended introduction to the GMSE apply function (<code>gmse_apply</code>)</a><ul class="nav nav-pills nav-stacked">
-<li><a href="#how-gmse_apply-integrates-across-sub-models">How <code>gmse_apply</code> integrates across sub-models</a></li>
-      <li><a href="#running-gmse-simulations-by-looping-gmse_apply">Running GMSE simulations by looping <code>gmse_apply</code></a></li>
-      </ul>
-</li>
-      <li><a href="#changing-simulation-conditions-using-gmse_apply">Changing simulation conditions using <code>gmse_apply</code></a></li>
-      <li><a href="#special-considerations-for-looping-with-custom-sub-models">Special considerations for looping with custom sub-models</a></li>
-      </ul>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
 </div>
-      </div>
 
 </div>
+
 
 
       <footer><div class="copyright">
@@ -497,12 +497,14 @@ for(time_step in <span class="dv">1</span>:<span class="dv">5</span>){
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>

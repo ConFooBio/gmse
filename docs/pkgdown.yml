@@ -1,5 +1,5 @@
-pandoc: 1.17.2
-pkgdown: 1.3.0
+pandoc: 2.3.1
+pkgdown: 1.5.1
 pkgdown_sha: ~
 articles:
   GMSE: GMSE.html
@@ -10,4 +10,6 @@ articles:
   SI5: SI5.html
   SI6: SI6.html
   SI7: SI7.html
+  SI8: SI8.html
+last_built: 2020-05-26T08:26Z
 
