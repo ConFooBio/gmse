@@ -60,7 +60,7 @@ ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 2
         sim <- gmse(time_max = ts, 
                     consume_surv = surv, consume_repr = repr, times_feeding = tf, res_consume = cons,
                     res_birth_type = 0, res_death_type = 0, land_ownership = TRUE, land_dim_1 = 200, land_dim_2 = 200,
-                    stakeholders = stkh, scaring = FALSE, manager_budget = bdgt, user_budget = bdgt,
+                    stakeholders = stkh, scaring = FALSE, manager_budget = bdgt, user_budget = bdgt, manager_sense = 0.15,
                     action_thres = 0, budget_bonus = 0, manage_target = trgt,
                     RESOURCE_ini = 1000, observe_type = obstype, res_move_obs = FALSE, plotting = FALSE)
         
@@ -175,7 +175,7 @@ ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 2
           sim <- gmse(time_max = ts, 
                       consume_surv = surv, consume_repr = repr, times_feeding = tf, res_consume = cons,
                       res_birth_type = 0, res_death_type = 0, land_ownership = TRUE, land_dim_1 = 200, land_dim_2 = 200,
-                      stakeholders = stkh, scaring = FALSE, manager_budget = bdgt, user_budget = bdgt,
+                      stakeholders = stkh, scaring = FALSE, manager_budget = bdgt, user_budget = bdgt, manager_sense = 0.15,
                       action_thres = at[i], budget_bonus = bb[j], manage_target = trgt,
                       RESOURCE_ini = 1000, observe_type = obstype, res_move_obs = FALSE, plotting = FALSE)
           
@@ -320,7 +320,7 @@ rep.pop <- gmse_replicates(replicates = 100,
                            consume_surv = 4.75, consume_repr = 5, times_feeding = 12, res_consume = 0.5,
                            res_birth_type = 0, res_death_type = 0,
                            land_ownership = TRUE, land_dim_1 = 200, land_dim_2 = 200,
-                           stakeholders = 40, scaring = FALSE, time_max = 20, manager_budget = 1, user_budget = 1,
+                           stakeholders = 40, scaring = FALSE, time_max = 20, manager_budget = 1, user_budget = 1, manager_sense = 0.15,
                            RESOURCE_ini = 1000, observe_type = 3, res_move_obs = FALSE, plotting = TRUE)
 write.csv(rep.pop, file = "batch5-popOnly.csv")
 
@@ -329,6 +329,6 @@ rep.use <- gmse_replicates(replicates = 100,
                            consume_surv = 4.75, consume_repr = 5, times_feeding = 12, res_consume = 0.5,
                            res_birth_type = 0, res_death_type = 0,
                            land_ownership = TRUE, land_dim_1 = 200, land_dim_2 = 200,
-                           stakeholders = 40, scaring = FALSE, time_max = 20, manager_budget = 1, user_budget = 1000,
+                           stakeholders = 40, scaring = FALSE, time_max = 20, manager_budget = 1, user_budget = 1000, manager_sense = 0.15,
                            RESOURCE_ini = 1000, observe_type = 3, res_move_obs = FALSE, plotting = TRUE)
 write.csv(rep.use, file = "batch5-popAndUsers.csv")
