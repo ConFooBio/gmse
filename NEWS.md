@@ -28,3 +28,5 @@
 * Differences between default arguments of `gmse` and `gmse_apply` have now been rectified. Now a run of `gmse` and looped `gmse_apply` with default subfunctions returns the same system dynamics.
 
 * A crash in `gmse_apply` caused by setting an argument name to the argument itself (e.g., `stakeholders = stakeholders`) was noticed sometimes. An error message is now produced in `gmse_apply` to warn against having the same name for an argument and the argument's value.
+
+

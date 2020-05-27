@@ -153,6 +153,32 @@
       <small>Source: <a href='https://github.com/confoobio/gmse/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+<!--- ADDED ALL OF THIS IN MANUALLY. NOT SURE WHY pkgdown didn't find it --->
+
+<h1 id="gmse-version-0.6.0.0">GMSE VERSION 0.6.0.0</h1>
+<h2 id="major-changes">MAJOR CHANGES</h2>
+<ul>
+<li><p>The order of operations in the resource submodel has changed. Formerly, resources would move on the landscape, reproduce, die, and then potentially consume on the landscape. Now, resources feed on the landscape, reproduce, die, and then move.</p></li>
+<li><p>The default landscape ownership is now divided using a shortest-splitline algorithm, which generates more realistic rectangular blocks of land.</p></li>
+<li><p>The default perceived effects of different actions have been changed for both the manager and users in the fitness function of the genetic algorithm.</p></li>
+</ul>
+<h2 id="new-features">NEW FEATURES</h2>
+<ul>
+<li><p>Resource birth and death can now be caused by resource consumption on the landscape using the new arguments <code>consume_repr</code>, <code>consume_surv</code>, and <code>times_feeding</code> (note that movement to new cells occurs between times feeding).</p></li>
+<li><p>Managers can apply an action threshold, which stops them from updating policy in a time step if the observed resource density is sufficiently close to the target. If they do not update policy, managers can receive a budget bonus that can be applied to the next time step. Relevant arguments are <code>action_thres</code> and <code>budget_bonus</code>, and a new vignette explains their use.</p></li>
+<li><p>The perceived effects of different actions for users can now be manually set using the arguments, <code>perceive_scare</code>, <code>perceive_cull</code>, <code>perceive_cast</code>, <code>perceive_feed</code>, <code>perceive_help</code>, <code>perceive_tend</code> and <code>perceive_kill</code>. Hence, it is possible to make users perceive some actions to be more or less effective than they are likely to be.</p></li>
+<li><p>Land ownership can be allocated unevenly among users using the <code>ownership_var</code> argument.</p></li>
+<li><p>Manager and user budgets can now be incremented as a function of landscape yield using the <code>usr_yld_budget</code> and <code>man_yld_budget</code> arguments.</p></li>
+</ul>
+<h2 id="bug-fixes">BUG FIXES</h2>
+<ul>
+<li><p>The <code>gmse_gui</code> function has been updated so that options available in <code>gmse</code> and <code>gmse_apply</code> also work in <code>gmse</code>.</p></li>
+<li><p>Differences between default arguments of <code>gmse</code> and <code>gmse_apply</code> have now been rectified. Now a run of <code>gmse</code> and looped <code>gmse_apply</code> with default subfunctions returns the same system dynamics.</p></li>
+<li><p>A crash in <code>gmse_apply</code> caused by setting an argument name to the argument itself (e.g., <code>stakeholders = stakeholders</code>) was noticed sometimes. An error message is now produced in <code>gmse_apply</code> to warn against having the same name for an argument and the argument's value.</p></li>
+</ul>
+
+
+
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
