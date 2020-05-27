@@ -1,11 +1,11 @@
 ---
 title: 'Use of the gmse_apply function'
 subtitle: 'GMSE: an R package for generalised management strategy evaluation (Supporting Information 2)'
-author: A. Bradley Duthie&#xb9;&#xb3;, Jeremy J. Cusack&#xb9;, Isabel L. Jones&#xb9;,
-  Jeroen Minderman&#xb9;, Erlend B. Nilsen&#xb2;, Roc&#0237;o A. Pozo&#xb9;, 
-  O. Sarobidy Rakotonarivo&#xb9;, Bram Van Moorter&#xb2;, and Nils Bunnefeld&#xb9;
-date: "[1] Biological and Environmental Sciences, University of Stirling, Stirling, UK
-[2] Norwegian Institute for Nature Research, Trondheim, Norway [3] alexander.duthie@stir.ac.uk"
+author: |
+        | A. Bradley Duthie&#xb9;&#xb3;, Jeremy J. Cusack&#xb9;, Isabel L. Jones&#xb9;, Jeroen Minderman&#xb9;, 
+        | Erlend B. Nilsen&#xb2;, Roc&#0237;o A. Pozo&#xb9;, O. Sarobidy Rakotonarivo&#xb9;, 
+        | Bram Van Moorter&#xb2;, and Nils Bunnefeld&#xb9;'
+date: '[1] Biological and Environmental Sciences, University of Stirling, Stirling, UK [2] Norwegian Institute for Nature Research, Trondheim, Norway [3] alexander.duthie@stir.ac.uk'
 output:
   pdf_document:
     citation_package: natbib
@@ -198,7 +198,7 @@ Special considerations for looping with custom sub-models
 
 There are some special considerations that need to be made when using custom sub-models and the `old_list` argument within a loop as above. These considerations boil down to two key points.
 
-1. Custom sub-models *always* need to read in explicitly as an argument in `gmse_apply` (i.e., they will not be remembered by `old_list`).
+1. Custom sub-models *always* need to be read in explicitly as an argument in `gmse_apply` (i.e., they will not be remembered by `old_list`).
 2. Custom sub-model arguments also *always* need to be updated *outside* of `gmse_apply` before output is used as an argument in `old_list` (i.e., `gmse_apply` cannot know what custom function argument needs to be updated, so this needs to be done manually).
 
 An example below illustrates the above points more clearly. Assume that the custom resource sub-model defined above needs to be integrated with the default observation, manager, and user sub-models using `gmse_apply`.

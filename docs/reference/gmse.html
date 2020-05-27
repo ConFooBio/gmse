@@ -8,21 +8,29 @@
 
 <title>GMSE simulation — gmse • GMSE</title>
 
+
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -30,13 +38,13 @@
 
 
 
-<meta property="og:title" content="GMSE simulation — gmse" />
 
+<meta property="og:title" content="GMSE simulation — gmse" />
 <meta property="og:description" content="The gmse function is the the primary function to call to run a simulation.
 It calls other functions that run resource, observation, management, and user
 models in each time step. Hence while individual models can be used on their
 own, gmse() is really all that is needed to run a simulation." />
-<meta name="twitter:card" content="summary" />
+
 
 
 
@@ -50,9 +58,10 @@ own, gmse() is really all that is needed to run a simulation." />
 <![endif]-->
 
 
+
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -66,7 +75,7 @@ own, gmse() is really all that is needed to run a simulation." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0.0</span>
       </span>
     </div>
 
@@ -74,7 +83,7 @@ own, gmse() is really all that is needed to run a simulation." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -112,10 +121,15 @@ own, gmse() is really all that is needed to run a simulation." />
     <li>
       <a href="../articles/SI7.html">Default GMSE data structures</a>
     </li>
+    <li>
+      <a href="../articles/SI8.html">Adaptive timing of investment strategy</a>
+    </li>
   </ul>
 </li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://confoobio.github.io/gmse/notebook/gmse_notes.html">Lab notebook</a>
@@ -133,51 +147,106 @@ own, gmse() is really all that is needed to run a simulation." />
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>GMSE simulation</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/confoobio/gmse/blob/master/R/gmse.R'><code>R/gmse.R</code></a></small>
     <div class="hidden name"><code>gmse.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    
     <p>The gmse function is the the primary function to call to run a simulation.
 It calls other functions that run resource, observation, management, and user
 models in each time step. Hence while individual models can be used on their
 own, gmse() is really all that is needed to run a simulation.</p>
-    
     </div>
 
-    <pre class="usage"><span class='fu'>gmse</span>(<span class='kw'>time_max</span> <span class='kw'>=</span> <span class='fl'>100</span>, <span class='kw'>land_dim_1</span> <span class='kw'>=</span> <span class='fl'>100</span>, <span class='kw'>land_dim_2</span> <span class='kw'>=</span> <span class='fl'>100</span>,
-  <span class='kw'>res_movement</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>remove_pr</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>lambda</span> <span class='kw'>=</span> <span class='fl'>0.3</span>, <span class='kw'>agent_view</span> <span class='kw'>=</span> <span class='fl'>10</span>,
-  <span class='kw'>agent_move</span> <span class='kw'>=</span> <span class='fl'>50</span>, <span class='kw'>res_birth_K</span> <span class='kw'>=</span> <span class='fl'>1e+05</span>, <span class='kw'>res_death_K</span> <span class='kw'>=</span> <span class='fl'>2000</span>,
-  <span class='kw'>edge_effect</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>res_move_type</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>res_birth_type</span> <span class='kw'>=</span> <span class='fl'>2</span>,
-  <span class='kw'>res_death_type</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>observe_type</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>fixed_mark</span> <span class='kw'>=</span> <span class='fl'>100</span>,
-  <span class='kw'>fixed_recapt</span> <span class='kw'>=</span> <span class='fl'>500</span>, <span class='kw'>times_observe</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>obs_move_type</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>res_min_age</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>res_move_obs</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>Euclidean_dist</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>plotting</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>hunt</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>start_hunting</span> <span class='kw'>=</span> <span class='fl'>95</span>,
-  <span class='kw'>res_consume</span> <span class='kw'>=</span> <span class='fl'>0.5</span>, <span class='kw'>ga_popsize</span> <span class='kw'>=</span> <span class='fl'>100</span>, <span class='kw'>ga_mingen</span> <span class='kw'>=</span> <span class='fl'>40</span>,
-  <span class='kw'>ga_seedrep</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>ga_sampleK</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>ga_chooseK</span> <span class='kw'>=</span> <span class='fl'>2</span>,
-  <span class='kw'>ga_mutation</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>ga_crossover</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>move_agents</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>max_ages</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>minimum_cost</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>user_budget</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
-  <span class='kw'>manager_budget</span> <span class='kw'>=</span> <span class='fl'>1000</span>, <span class='kw'>manage_target</span> <span class='kw'>=</span> <span class='fl'>1000</span>, <span class='kw'>RESOURCE_ini</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
-  <span class='kw'>scaring</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>culling</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>castration</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>feeding</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>help_offspring</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>tend_crops</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>tend_crop_yld</span> <span class='kw'>=</span> <span class='fl'>0.2</span>, <span class='kw'>kill_crops</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>stakeholders</span> <span class='kw'>=</span> <span class='fl'>4</span>,
-  <span class='kw'>manage_caution</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>land_ownership</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>manage_freq</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>converge_crit</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>manager_sense</span> <span class='kw'>=</span> <span class='fl'>0.9</span>, <span class='kw'>public_land</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>group_think</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
-    
+    <pre class="usage"><span class='fu'>gmse</span>(
+  <span class='kw'>time_max</span> <span class='kw'>=</span> <span class='fl'>40</span>,
+  <span class='kw'>land_dim_1</span> <span class='kw'>=</span> <span class='fl'>100</span>,
+  <span class='kw'>land_dim_2</span> <span class='kw'>=</span> <span class='fl'>100</span>,
+  <span class='kw'>res_movement</span> <span class='kw'>=</span> <span class='fl'>20</span>,
+  <span class='kw'>remove_pr</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>lambda</span> <span class='kw'>=</span> <span class='fl'>0.3</span>,
+  <span class='kw'>agent_view</span> <span class='kw'>=</span> <span class='fl'>10</span>,
+  <span class='kw'>agent_move</span> <span class='kw'>=</span> <span class='fl'>50</span>,
+  <span class='kw'>res_birth_K</span> <span class='kw'>=</span> <span class='fl'>1e+05</span>,
+  <span class='kw'>res_death_K</span> <span class='kw'>=</span> <span class='fl'>2000</span>,
+  <span class='kw'>edge_effect</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>res_move_type</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>res_birth_type</span> <span class='kw'>=</span> <span class='fl'>2</span>,
+  <span class='kw'>res_death_type</span> <span class='kw'>=</span> <span class='fl'>2</span>,
+  <span class='kw'>observe_type</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>fixed_mark</span> <span class='kw'>=</span> <span class='fl'>100</span>,
+  <span class='kw'>fixed_recapt</span> <span class='kw'>=</span> <span class='fl'>500</span>,
+  <span class='kw'>times_observe</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>obs_move_type</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>res_min_age</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>res_move_obs</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>Euclidean_dist</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>plotting</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>hunt</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>start_hunting</span> <span class='kw'>=</span> <span class='fl'>95</span>,
+  <span class='kw'>res_consume</span> <span class='kw'>=</span> <span class='fl'>0.5</span>,
+  <span class='kw'>ga_popsize</span> <span class='kw'>=</span> <span class='fl'>100</span>,
+  <span class='kw'>ga_mingen</span> <span class='kw'>=</span> <span class='fl'>40</span>,
+  <span class='kw'>ga_seedrep</span> <span class='kw'>=</span> <span class='fl'>20</span>,
+  <span class='kw'>ga_sampleK</span> <span class='kw'>=</span> <span class='fl'>20</span>,
+  <span class='kw'>ga_chooseK</span> <span class='kw'>=</span> <span class='fl'>2</span>,
+  <span class='kw'>ga_mutation</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
+  <span class='kw'>ga_crossover</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
+  <span class='kw'>move_agents</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>max_ages</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+  <span class='kw'>minimum_cost</span> <span class='kw'>=</span> <span class='fl'>10</span>,
+  <span class='kw'>user_budget</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
+  <span class='kw'>manager_budget</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
+  <span class='kw'>manage_target</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
+  <span class='kw'>RESOURCE_ini</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
+  <span class='kw'>scaring</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>culling</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>castration</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>feeding</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>help_offspring</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>tend_crops</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>tend_crop_yld</span> <span class='kw'>=</span> <span class='fl'>0.2</span>,
+  <span class='kw'>kill_crops</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>stakeholders</span> <span class='kw'>=</span> <span class='fl'>4</span>,
+  <span class='kw'>manage_caution</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>land_ownership</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>manage_freq</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>converge_crit</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
+  <span class='kw'>manager_sense</span> <span class='kw'>=</span> <span class='fl'>0.9</span>,
+  <span class='kw'>public_land</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>group_think</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>age_repr</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>usr_budget_rng</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>action_thres</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>budget_bonus</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>consume_surv</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>consume_repr</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>times_feeding</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>ownership_var</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>perceive_scare</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+  <span class='kw'>perceive_cull</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+  <span class='kw'>perceive_cast</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+  <span class='kw'>perceive_feed</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+  <span class='kw'>perceive_help</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+  <span class='kw'>perceive_tend</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+  <span class='kw'>perceive_kill</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+  <span class='kw'>usr_yld_budget</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>man_yld_budget</span> <span class='kw'>=</span> <span class='fl'>0</span>
+)</pre>
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>time_max</th>
-      <td><p>This value sets the maximum number of time steps for a simulation. There are no constraints for length of time that a simulation can run. The default is 100 time steps.</p></td>
+      <td><p>This value sets the maximum number of time steps for a simulation. There are no constraints for length of time that a simulation can run. The default is 40 time steps.</p></td>
     </tr>
     <tr>
       <th>land_dim_1</th>
@@ -389,38 +458,102 @@ own, gmse() is really all that is needed to run a simulation.</p>
     </tr>
     <tr>
       <th>manager_sense</th>
-      <td><p>This adjusts the sensitivity that a manager assumes their actions have with respect to changes in costs (their policy). For example, given a `manage_sense` value of 0.9, if the cost of culling resources doubles, then instead of a manager assuming the the number of culled resources per user will be cut in half, the manager will instead assume that the number of resources culled will be cut by one half times eight tenths. As a general rule, a value of ca 0.8 allows the manager to predict stake-holder responses to policy accurately; future versions of GMSE could allow managers to adjust this dynamically based on simulation history.</p></td>
+      <td><p>This adjusts the sensitivity that a manager assumes their actions have with respect to changes in costs (their policy). For example, given a default `manage_sense` value of 0.9, if the cost of culling resources doubles, then instead of a manager assuming the the number of culled resources per user will be cut in half, the manager will instead assume that the number of resources culled will be cut by one half times eight tenths. As a general rule, a value of ca 0.8 allows the manager to predict stake-holder responses to policy accurately; future versions of GMSE could allow managers to adjust this dynamically based on simulation history.</p></td>
     </tr>
     <tr>
       <th>public_land</th>
-      <td><p>The proportion of the landscape that will be public, and not owned by stakeholders. The remaining proportion of the landscape will be evenly divided among stakeholders. Note that this option is only available when land_ownership == TRUE.</p></td>
+      <td><p>The proportion of the landscape that will be public, and not owned by stakeholders. The remaining proportion of the landscape will be evenly divided among stakeholders. Note that this option is only available when land_ownership == TRUE. The default value is 0.</p></td>
     </tr>
     <tr>
       <th>group_think</th>
-      <td><p>If TRUE, all users will have identical actions; the genetic algorithm will find actions for one user and copy them for all users. This is a useful option if a lot of users are required but variation among user decisions can be ignored.</p></td>
+      <td><p>If TRUE, all users will have identical actions; the genetic algorithm will find actions for one user and copy them for all users. This is a useful option if a lot of users are required but variation among user decisions can be ignored. The default value is FALSE.</p></td>
+    </tr>
+    <tr>
+      <th>age_repr</th>
+      <td><p>The age below which resources are incapable of reproducing. The default value is 1.</p></td>
+    </tr>
+    <tr>
+      <th>usr_budget_rng</th>
+      <td><p>This specifies a range around the value of `user_budget`, such that the expected value of each user's budget will be `user_budget`, with a uniform distribution plus or minus `usr_budget_rng`. Note that the minimum `usr_budget_rng` allowed is 1 regardless of the range set, and the maximum is always 100000. The default value for this argument is 0.</p></td>
+    </tr>
+    <tr>
+      <th>action_thres</th>
+      <td><p>A value for the deviation of the estimated population from the manager target, below which manager will not update the policy. Recommended values are between 0 and 1, with the default value being 0.</p></td>
+    </tr>
+    <tr>
+      <th>budget_bonus</th>
+      <td><p>A percentage of the initial budget manager will receive if policy was not updated last time step. Corresponds to the time, energy and money saved by waiting for a better time to update the policy. Budget bonuses are cumulative, so many time steps of not updating policy can cause a compounding increase in the budget bonus. The default value is 0.</p></td>
+    </tr>
+    <tr>
+      <th>consume_surv</th>
+      <td><p>This value defines the amount of yield on a landscape that an individual resource need to consume in a timestep to survive. The default value is 0 (i.e., no consumption is required for survival).</p></td>
+    </tr>
+    <tr>
+      <th>consume_repr</th>
+      <td><p>This value defines the amount of yield on a landscape that an individual resource need to produce one offspring. Resources will produce as many offspring as is possible given their yield in take; e.g., if a resource consumes between three and four times the amount of yield required for reproduction, then they will produce three offspring. The default value is 0 (i.e., no consumption is required for reproduction).</p></td>
+    </tr>
+    <tr>
+      <th>times_feeding</th>
+      <td><p>Number of searches that resources are allowed per time step for feeding on the landscape. Resources will move between times feeding based on whatever `res_movement` and `res_move_type` parameters are specified.</p></td>
+    </tr>
+    <tr>
+      <th>ownership_var</th>
+      <td><p>Defines the extent to which the amount of land ownership allocated among users varies when `land_ownership = TRUE`. A default value of 0 places roughly equal landscape ownership, while increasing values (must be &lt; 1) cause an exponential distribution of land ownership cell allocation.</p></td>
+    </tr>
+    <tr>
+      <th>perceive_scare</th>
+      <td><p>For a focal user, the perceived effect of scaring one resource on the total number of resources affecting the user (e.g., if -1, then the user perceives scaring as removing the equivalent of one resource from their land; NA by default, and calculated from other argument inputs).</p></td>
+    </tr>
+    <tr>
+      <th>perceive_cull</th>
+      <td><p>For a focal user, the perceived effect of culling one resource on the total number of resources affecting the user (e.g., if -1, then the user perceives culling as removing the equivalent of one resource; NA by default, and calculated from other argument inputs).</p></td>
+    </tr>
+    <tr>
+      <th>perceive_cast</th>
+      <td><p>For a focal user, the perceived effect of castrating one resource on the total number of resources affecting the user (e.g., if -1, then the user perceives castration as removing the equivalent of one resource; NA by default, and calculated from other argument inputs).</p></td>
+    </tr>
+    <tr>
+      <th>perceive_feed</th>
+      <td><p>For a focal user, the perceived effect of feeding one resource on the total number of resources affecting the user (e.g., if 1, then the user perceives feeding as adding the equivalent of one resource; NA by default, and calculated from other argument inputs).</p></td>
+    </tr>
+    <tr>
+      <th>perceive_help</th>
+      <td><p>For a focal user, the perceived effect of helping the offspring of one resource on the total number of resources affecting the user (e.g., if 1, then the user perceives helping offspring as adding the equivalent of one resource; NA by default, and calculated from other argument inputs).</p></td>
+    </tr>
+    <tr>
+      <th>perceive_tend</th>
+      <td><p>For a focal user, the perceived effect of tending to crops on one cell of owned landscape the user's total crop yield (e.g., if 1, then the user perceives tending crop to increase crop yield on one of their landscape cells by 1; NA by default, and calculated from other argument inputs).</p></td>
+    </tr>
+    <tr>
+      <th>perceive_kill</th>
+      <td><p>For a focal user, the perceived effect of destroying the crops on one cell of owned landscape on the user's total crop yield (e.g., if -1, then the user perceives killing crop to reduce their total crop yield on a landscape cell by 1; unlike other perceived actions, this is not additive. The value defines that absolute effect on crop yield predicted at a single cell, so -1 assumes a 100 per cent loss of yield. This is NA by default).</p></td>
+    </tr>
+    <tr>
+      <th>usr_yld_budget</th>
+      <td><p>An increase in user budget caused by yield on their owned cells. The value of this parameter is multiplied by the user's total yield to get the user's budget increment (default 0). This argument can take any real value, but user budgets are always restricted to being between 1 and 100000. Where yield adjustments result in budgets &lt; 1, the actual budget is set to 1. And where yield adjustments result in budgets &gt; 100000, the actual budget is set to 100000.</p></td>
+    </tr>
+    <tr>
+      <th>man_yld_budget</th>
+      <td><p>An increase in manager budget caused by mean yield on user owned cells. The value of this parameter is multiplied by the users' mean total yield to get the manager's budget increment (default 0). This argument can take any real value, but manager budgets are always restricted to being between 1 and 100000. Where yield adjustments result in budgets &lt; 1, the actual budget is set to 1. And where yield adjustments result in budgets &gt; 100000, the actual budget is set to 100000.</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A large list is returned that includes detailed simulation histories for the resource, observation, management, and user models. This list includes eight elements, most of which are themselves complex lists of arrays: (1) A list of length `time_max` in which each element is an array of resources as they exist at the end of each time step. Resource arrays include all resources and their attributes (e.g., locations, growth rates, offspring, how they are affected by stakeholders, etc.). (2) A list of length `time_max` in which each element is an array of resource observations from the observation model. Observation arrays are similar to resource arrays, except that they can have a smaller number of rows if not all resources are observed, and they have additional columns that show the history of each resource being observed over the course of `times_observe` observations in the observation model. (3) A 2D array showing parameter values at each time step (unique rows); most of these values are static but some (e.g., resource number) change over time steps. (4) A list of length `time_max` in which each element is an array of the landscape that identifies proportion of crop production per cell. This allows for looking at where crop production is increased or decreased over time steps as a consequence of resource and stakeholder actions. (5) The total time the simulation took to run (not counting plotting time). (6) A 2D array of agents and their traits. (7) A list of length `time_max` in which each element is a 3D array of the costs of performing each action for managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in costs of particular actions can therefore be be examined over time. (8) A list of length `time_max` in which each element is a 3D array of the actions performed by managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in actions of agents can therefore be examined over time. Because the above lists cannot possibly be interpreted by eye all at once in the simulation output, it is highly recommended that the contents of a simulation be stored and interprted individually if need be; alternativley, simulations can more easily be interpreted through plots when `plotting = TRUE`.</p>
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>sim</span> <span class='kw'>&lt;-</span> <span class='fu'>gmse</span>(<span class='kw'>lambda</span> <span class='kw'>=</span> <span class='fl'>0.4</span>, <span class='kw'>land_ownership</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>time_max</span> <span class='kw'>=</span> <span class='fl'>5</span>);</div><div class='output co'>#&gt; [1] "Initialising simulations ... "</div><div class='img'><img src='gmse-1.png' alt='' width='700' height='433' /></div><div class='img'><img src='gmse-2.png' alt='' width='700' height='433' /></div><div class='img'><img src='gmse-3.png' alt='' width='700' height='433' /></div><div class='img'><img src='gmse-4.png' alt='' width='700' height='433' /></div></pre>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='no'>sim</span> <span class='kw'>&lt;-</span> <span class='fu'>gmse</span>(<span class='kw'>lambda</span> <span class='kw'>=</span> <span class='fl'>0.4</span>, <span class='kw'>time_max</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>plotting</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>);
+}</div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
+
 
       <footer>
       <div class="copyright">
@@ -428,13 +561,16 @@ own, gmse() is really all that is needed to run a simulation.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 

@@ -19,7 +19,7 @@ test_that("Dimensions of simulation observation output are correct", {
 
 test_that("Dimensions of simulation paras output are correct", {
     sim <- gmse(time_max = 3, plotting = FALSE);
-    expect_equal(dim(sim[[3]])[2], 119);
+    expect_equal(dim(sim[[3]])[2], 129);
 })
 
 test_that("Dimensions of simulation landscape output are correct", {
@@ -35,7 +35,7 @@ test_that("Dimensions of time elapsed are correct", {
 
 test_that("Dimensions of simulation agent output are correct", {
     sim <- gmse(time_max = 3, plotting = FALSE);
-    expect_equal(dim(sim[[6]][[1]]), c(5, 17));
+    expect_equal(dim(sim[[6]][[1]]), c(5, 27));
 })
 
 test_that("Dimensions of simulation cost array output are correct", {

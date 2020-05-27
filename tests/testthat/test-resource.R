@@ -16,26 +16,28 @@ test_that("Dimensions of resource array are correct", {
                          max_age            = 5
     );
     
-    land <- make_landscape(model        = "IBM", 
-                           rows         = 10, 
-                           cols         = 10, 
-                           cell_types   = 1, 
-                           cell_val_mn  = 1, 
-                           cell_val_sd  = 0, 
-                           cell_val_max = 1, 
-                           cell_val_min = 1,
-                           layers       = 3, 
-                           ownership    = 1,  
-                           owner_pr     = NULL
+    land  <-  make_landscape(model        = "IBM", 
+                             rows         = 10, 
+                             cols         = 10, 
+                             cell_types   = 1, 
+                             cell_val_mn  = 1, 
+                             cell_val_sd  = 0, 
+                             cell_val_max = 1, 
+                             cell_val_min = 1,
+                             layers       = 3, 
+                             ownership    = 1,
+                             owners       = 1,
+                             public_land  = 0
     );
     
     paras <- c(0, 1, 1, 2, 2, 100, 100, 0, 0, 1, 10, 20, 10, 10, 1, 1, 1, 1, 12,
                1, 0, 100, 10, 20, 20, 2, 0.1, 0.1, 0, 5, 7, 11, 100, 4, 5, 6, 3,
                9, 10, 18, 19, 20, 17, 8, 1, 1, 15, 14, 1, 4, 5, 6, 10, 12, 2, 
-               17, 1, 2, 3, 13, 3, -1, -1, 1, 0, 2, 2, 8, 7, 13, 4, 7, 0, 16, 0,
-               -0.1, -0.1, 0.1, 0.1, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
+               17, 1, 2, 3, 13, 3, -1, -1, 1, 0, 2, 2, 8, 7, 13, 4, 7, 0, 17, 
+               17, 18, 19, 20, 21, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
                1, 1, 1, 1, 10, 1000, 100, 100, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0, 0,
-               1, 16, 1000, 10, 20, 0, 0, 21);
+               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1, 0, 0, 
+               24, 25);
     
     res_res <- resource( RESOURCES = res, 
                          LAND      = land, 
@@ -45,7 +47,7 @@ test_that("Dimensions of resource array are correct", {
     
     expect_equal(length(res_res), 3);
     expect_equal(dim(res_res[[2]]), c(10, 10, 3));
-    expect_equal(length(res_res[[3]]), 119);
+    expect_equal(length(res_res[[3]]), 129);
 })
 
 test_that("Resource model doesn't alter parameters", {
@@ -62,26 +64,28 @@ test_that("Resource model doesn't alter parameters", {
                          max_age            = 5
     );
     
-    land <- make_landscape(model        = "IBM", 
-                           rows         = 10, 
-                           cols         = 10, 
-                           cell_types   = 1, 
-                           cell_val_mn  = 1, 
-                           cell_val_sd  = 0, 
-                           cell_val_max = 1, 
-                           cell_val_min = 1,
-                           layers       = 3, 
-                           ownership    = 1,  
-                           owner_pr     = NULL
+    land  <-  make_landscape(model        = "IBM", 
+                             rows         = 10, 
+                             cols         = 10, 
+                             cell_types   = 1, 
+                             cell_val_mn  = 1, 
+                             cell_val_sd  = 0, 
+                             cell_val_max = 1, 
+                             cell_val_min = 1,
+                             layers       = 3, 
+                             ownership    = 1,
+                             owners       = 1,
+                             public_land  = 0
     );
     
     paras <- c(0, 1, 1, 2, 2, 100, 100, 0, 0, 1, 10, 20, 10, 10, 1, 1, 1, 1, 12,
                1, 0, 100, 10, 20, 20, 2, 0.1, 0.1, 0, 5, 7, 11, 100, 4, 5, 6, 3,
                9, 10, 18, 19, 20, 17, 8, 1, 1, 15, 14, 1, 4, 5, 6, 10, 12, 2, 
-               17, 1, 2, 3, 13, 3, -1, -1, 1, 0, 2, 2, 8, 7, 13, 4, 7, 0, 16, 0,
-               -0.1, -0.1, 0.1, 0.1, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
+               17, 1, 2, 3, 13, 3, -1, -1, 1, 0, 2, 2, 8, 7, 13, 4, 7, 0, 17, 
+               17, 18, 19, 20, 21, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
                1, 1, 1, 1, 10, 1000, 100, 100, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0, 0,
-               1, 16, 1000, 10, 20, 0, 0, 21);
+               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1, 0, 0, 
+               24, 25);
     
     res_res <- resource( RESOURCES = res, 
                          LAND      = land, 
@@ -90,7 +94,7 @@ test_that("Resource model doesn't alter parameters", {
     )
     expect_equal(length(res_res), 3);
     expect_equal(dim(res_res[[2]]), c(10, 10, 3));
-    expect_equal(length(res_res[[3]]), 119);
+    expect_equal(length(res_res[[3]]), 129);
 })
 
 

@@ -8,6 +8,7 @@
 */
 
 /* .Call calls */
+extern SEXP build_ownership(SEXP);
 extern SEXP anecdotal(SEXP, SEXP, SEXP, SEXP);
 extern SEXP manager(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP observation(SEXP, SEXP, SEXP, SEXP, SEXP);
@@ -15,11 +16,12 @@ extern SEXP resource(SEXP, SEXP, SEXP);
 extern SEXP user(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-    {"anecdotal",   (DL_FUNC) &anecdotal,   4},
-    {"manager",     (DL_FUNC) &manager,     9},
-    {"observation", (DL_FUNC) &observation, 5},
-    {"resource",    (DL_FUNC) &resource,    3},
-    {"user",        (DL_FUNC) &user,        8},
+    {"build_ownership", (DL_FUNC) &build_ownership, 1},
+    {"anecdotal",       (DL_FUNC) &anecdotal,   4},
+    {"manager",         (DL_FUNC) &manager,     9},
+    {"observation",     (DL_FUNC) &observation, 5},
+    {"resource",        (DL_FUNC) &resource,    3},
+    {"user",            (DL_FUNC) &user,        8},
     {NULL, NULL, 0}
 };
 

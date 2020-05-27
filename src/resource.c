@@ -33,7 +33,7 @@ void res_add(double **res_adding, double *paras){
     int resource_number, add, realised, type, K_add, gadj, oadj, cadj, ind_age;
     int land_add, ccl;
     int resource, sampled, added, loops, castrated, killed, klld, arp, age;
-    double rand_pois, base_lambda, add_lambda, lambda, crp;
+    double rand_pois, rand_off, base_lambda, add_lambda, lambda, crp;
     
     type            = (int) paras[3];  /* Type of growth (e.g., poisson) */
     K_add           = (int) paras[5];  /* Carrying capacity applied  */
@@ -54,7 +54,28 @@ void res_add(double **res_adding, double *paras){
         case 0:
             break;
         case 1:
-            break; /* Add in a different type of birth here */
+            for(resource = 0; resource < resource_number; resource++){
+                res_adding[resource][realised] = 0;
+                castrated = res_adding[resource][cadj];
+                killed    = res_adding[resource][klld];
+                ind_age   = res_adding[resource][age];
+                if(castrated >= 1 || killed >= 1 || ind_age < arp){
+                    rand_off = 0;
+                }else{
+                    base_lambda = res_adding[resource][add];
+                    add_lambda  = base_lambda * res_adding[resource][gadj];
+                    lambda      = base_lambda + add_lambda;
+                    if(lambda < 0){
+                        lambda = 0;
+                    }
+                    rand_off  = lambda;
+                    rand_off += res_adding[resource][oadj];
+                    rand_off  = floor(rand_off);
+                    res_adding[resource][realised] = rand_off;
+                }
+                added += (int) rand_off;
+            }
+            break;
         case 2:
             for(resource = 0; resource < resource_number; resource++){
                 res_adding[resource][realised] = 0;
@@ -389,9 +410,9 @@ void resource_feeding(double **resource_array, double ***landscape,
             resource = get_rand_int(0, resource_number);
         } while(fed[resource] == 0);
                     
-        move_a_resource(resource_array, landscape, paras, resource);
-        
         resource_feeds(resource_array, landscape, paras, resource);
+        
+        move_a_resource(resource_array, landscape, paras, resource);
         
         fed[resource]--;
         tot_fed--;
@@ -435,7 +456,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     int len_PARAMETERS;      /* Length of the parameters vector */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
-    double csr, crp;         /* Consumption requirements, survival and repr */
+    double csr, crp, tfe;    /* Consumption requirements, surv, rep, feeding */
     double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
     double *R_ptr_new;       /* Pointer to RESOURCE_NEW (interface R and C) */
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
@@ -524,16 +545,16 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     rm_col    = (int) paras[43];
     csr       = paras[116]; /* Consumption required for survival */
     crp       = paras[117]; /* Consumption needed for one offspring */
+    tfe       = paras[124]; /* Times a resource feeds in one time step */
     
     /* Resource time step and age needs to be increased by one */
     add_time(res_old, paras);
-    
-    /* Resources move according to move function and parameter) */
-    res_mover(res_old, land, paras);
 
     /* If we need to get amount eaten because it affects death or birth*/
-    if(csr > 0 || crp > 0){ 
+    if(csr > 0 || crp > 0 || tfe > 1){ 
         resource_feeding(res_old, land, paras, res_number);
+    }else{ /* One-off resources affect the landscape */
+        res_landscape_interaction(res_old, land, paras, res_number); 
     }
     
     /* Identify, and calculate the number of, added individuals */
@@ -559,7 +580,8 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     }
     
     res_num_total = res_number + res_nums_added - res_nums_subtracted;
-
+    paras[32]     = (double) res_num_total;
+    
     /* Below makes a new array for new RESOURCE, then adds it */
     res_new = malloc(res_num_total * sizeof(double *));
     for(resource = 0; resource < res_num_total; resource++){
@@ -595,8 +617,8 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
         resource_new++;
     }
     
-    /* Resources affect the landscape (note the **ORDER** of this -- change? */
-    res_landscape_interaction(res_new, land, paras, res_num_total);
+    /* Resources move according to move function and parameter) */
+    res_mover(res_new, land, paras);
     
     /* Check to see if the population is over carrying capacity */
     resource_over_death_K(res_num_total, paras);
@@ -617,7 +639,6 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
             vec_pos++;
         }
     } 
-    paras[32] = (double) res_num_total;
     
     SEXP LAND_NEW;
     PROTECT( LAND_NEW = alloc3DArray(REALSXP, land_x, land_y, land_z) );

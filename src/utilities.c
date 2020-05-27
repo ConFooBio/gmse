@@ -339,5 +339,74 @@ void move_a_resource(double **res_moving, double ***landscape, double *paras,
     res_moving[resource][xloc] = new_pos_x;
     res_moving[resource][yloc] = new_pos_y;
 }
-/* ===========================================================================*/
 
+/* =============================================================================
+ * This function counts the number of cells owned by each agent and adds the
+ * number to a column of the agent array.
+ * Inputs include:
+ *     landscape: the landscape on which cells are located
+ *     paras: Vector of global parameters used in the model
+ *     agent_array: The array of agents in the model (manager and users)
+ *     land_x: The x dimension of the landscape
+ *     land_y: The y dimension of the landscape
+ *     agent_number: How many agents there are in the agent array
+ * ========================================================================== */
+void count_owned_cells(double ***landscape, double *paras, double **agent_array, 
+                       int land_x, int land_y, int agent_number){
+    
+    int xloc, yloc, own, aID, tcol, agent, own_val, age_row;
+    
+    land_x  = (int) paras[12];
+    land_y  = (int) paras[13];
+    own     = (int) paras[81];
+    aID     = (int) paras[119];
+    tcol    = (int) paras[120];
+
+    for(agent = 0; agent < agent_number; agent++){
+        agent_array[agent][tcol] = 0; /* Clear out the owned cell column */
+    }
+    for(xloc = 0; xloc < land_x; xloc++){
+        for(yloc = 0; yloc < land_y; yloc++){
+            own_val = (int) landscape[xloc][yloc][own];
+            if(own_val >= 0){
+                age_row = own_val - 1; /* Assumes ID is 1 + agent row */
+                agent_array[age_row][tcol]++;
+            }
+        }
+    }
+}
+
+/* =============================================================================
+ * This function counts the cell yield on a landscape layer
+ * Inputs include:
+ *     agent_array: The array of agents
+ *     land: The landscape array
+ *     paras: Vector of global parameters used in the model
+ * ========================================================================== */
+void count_cell_yield(double **agent_array, double ***land, double *paras){
+    
+    int land_x, land_y, agent_number, yield_layer, own_layer, yield_column;
+    int xpos, ypos, agent, agent_ID;
+    double agent_yield;
+    
+    land_x       = (int) paras[12];
+    land_y       = (int) paras[13];
+    agent_number = (int) paras[54];
+    yield_layer  = (int) paras[80];
+    own_layer    = (int) paras[81];
+    yield_column = (int) paras[82];
+    
+    for(agent = 0; agent < agent_number; agent++){
+        agent_ID    = agent_array[agent][0];
+        agent_yield = 0.0; 
+        for(xpos = 0; xpos < land_x; xpos++){
+            for(ypos = 0; ypos < land_y; ypos++){
+                if(land[xpos][ypos][own_layer] == agent_ID){
+                    agent_yield += land[xpos][ypos][yield_layer];    
+                }
+            }
+        }
+        agent_array[agent][yield_column] = agent_yield; 
+    }
+}
+/* ===========================================================================*/

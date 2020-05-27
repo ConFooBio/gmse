@@ -57,7 +57,7 @@ user <- function(RESOURCES  = NULL,
         if(dim(LAND)[3] != 3){
             stop("The landscape doesn't have enough layers");
         }
-        if(dim(AGENTS)[2] != 17){
+        if(dim(AGENTS)[2] != 27){
             stop("The agent array has the wrong number of columns");
         }
         # If all checks out, then run the user model
