@@ -4,8 +4,19 @@
 \alias{case01plot}
 \title{Plot results for density-based or mark-recapture sampling}
 \usage{
-case01plot(res, obs, land1, land2, land3, agents, paras, ACTION, COST,
-  view = NULL, times = 1)
+case01plot(
+  res,
+  obs,
+  land1,
+  land2,
+  land3,
+  agents,
+  paras,
+  ACTION,
+  COST,
+  view = NULL,
+  times = 1
+)
 }
 \arguments{
 \item{res}{The resources array produced by the resource function within GMSE}

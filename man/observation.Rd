@@ -4,10 +4,21 @@
 \alias{observation}
 \title{Observation model}
 \usage{
-observation(RESOURCES = NULL, LAND = NULL, PARAS = NULL,
-  AGENTS = NULL, inter_tabl = NULL, fixed_mark = FALSE,
-  times_observe = 1, res_min_age = 0, agent_type = 0, type_cat = 1,
-  observe_type = 0, res_move_obs = FALSE, model = "IBM")
+observation(
+  RESOURCES = NULL,
+  LAND = NULL,
+  PARAS = NULL,
+  AGENTS = NULL,
+  inter_tabl = NULL,
+  fixed_mark = 100,
+  times_observe = 1,
+  res_min_age = 0,
+  agent_type = 0,
+  type_cat = 1,
+  observe_type = 0,
+  res_move_obs = FALSE,
+  model = "IBM"
+)
 }
 \arguments{
 \item{RESOURCES}{The resources array produced by the resource function within GMSE}
@@ -36,8 +47,6 @@ observation(RESOURCES = NULL, LAND = NULL, PARAS = NULL,
 
 \item{model}{The type of model being applied (Currently only individual-based
 -- i.e., 'agent-based' -- models are allowed)}
-
-\item{...}{Other arguments to be passed to a user-defined model}
 }
 \value{
 The observation function outputs an R list that includes three separate arrays, including (1) an new OBSERVATION array that holds observed resources and their traits with additional columns indicating when the resources were observed (relevant, e.g., for mark-recapture), (2) a new AGENTS array, and (3) a new PARAS array, each of which might be affected by the user function.  The new arrays can then be read back into the broader GMSE function, thereby affecting the input into the management, user, and resource models.

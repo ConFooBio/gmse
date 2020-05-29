@@ -4,9 +4,21 @@
 \alias{make_landscape}
 \title{Landscape initialisation}
 \usage{
-make_landscape(model, rows, cols, cell_types = 1, cell_val_mn = 1,
-  cell_val_sd = 0, cell_val_max = 1, cell_val_min = 0, layers = 3,
-  ownership = 0, owner_pr = NULL)
+make_landscape(
+  model,
+  rows,
+  cols,
+  cell_types = 1,
+  cell_val_mn = 1,
+  cell_val_sd = 0,
+  cell_val_max = 1,
+  cell_val_min = 0,
+  layers = 3,
+  ownership = FALSE,
+  owners = 4,
+  public_land = 0,
+  ownership_var = 0
+)
 }
 \arguments{
 \item{model}{The type of model being applied (Currently only individual-based
@@ -28,9 +40,13 @@ make_landscape(model, rows, cols, cell_types = 1, cell_val_mn = 1,
 
 \item{layers}{The number of layers in the 3D landscape (should usually be 3)}
 
-\item{ownership}{A scalar or vector of agent IDs that own land}
+\item{ownership}{A TRUE or FALSE whether land should be owned by stakeholders}
 
-\item{owner_pr}{The proportion of land owned by each agent with a unique ID. Note that `owner_pr` must be of the same size as `ownership`, and the order of `owner_pr` reflects the order of agent IDs to which owned land is being assigned}
+\item{owners}{The number of stakeholders in the model that own land}
+
+\item{public_land}{The proportion of landscape cells that are not owned}
+
+\item{ownership_var}{Does distribution of land vary among users? >=0, <1}
 }
 \value{
 the_land A cols by rows landscape with randomly distributed cell types

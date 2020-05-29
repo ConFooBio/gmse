@@ -7,7 +7,7 @@
 Generalised Management Strategy Evaluation
 --------------------------------------------------------------------------------
 
-**The GMSE package integrates game theory and ecological theory to construct social-ecological models that simulate the management of populations and stakeholder actions. These models build off of a previously developed management strategy evaluation (MSE) framework to simulate all aspects of management: population dynamics, manager observation of populations, manager decision making, and stakeholder responses to management decisions. The newly developed generalised management strategy evaluation (GMSE) framework uses genetic algorithms to mimic the decision-making process of managers and stakeholders under conditions of change, uncertainty, and conflict. Simulations can be run using gmse(), gmse_apply(), and gmse_gui() functions.**
+**The GMSE package integrates game theory and ecological theory to construct social-ecological models that simulate the management of populations and stakeholder actions. These models build off of a previously developed management strategy evaluation (MSE) framework to simulate all aspects of management: population dynamics, manager observation of populations, manager decision making, and stakeholder responses to management decisions. The newly developed generalised management strategy evaluation (GMSE) framework uses genetic algorithms to mimic the decision-making process of managers and stakeholders under conditions of change, uncertainty, and conflict. Simulations can be run using gmse(), gmse_apply(), and gmse_gui() functions. For more, see [the GMSE website](https://confoobio.github.io/gmse/index.html).**
 
 --------------------------------------------------------------------------------
 
@@ -37,7 +37,7 @@ library(devtools)
 Use `install_github` to install using `devtools`.
 
 ```
-install_github("bradduthie/GMSE")
+install_github("ConFooBio/GMSE")
 ```
 
 ## Running a simulation
@@ -61,7 +61,7 @@ Simulations can also be run from a browser-based graphical user interface by run
 gmse_gui();
 ```
 
-This function is also available as a [standalone application](https://bradduthie.shinyapps.io/gmse_gui/) in shiny.
+This function is also available as a [standalone application](https://bradduthie.shinyapps.io/gmse_gui) in shiny.
 
 Finally, simulations can be run using `gmse_apply()`, a function for modellers that allows the integration of custom resource, observation, manager, and user subfunctions into the GMSE framework. The `gmse_apply()` function simulates a single time step and can incorporate both custom and standard `gmse()` arguments.
 

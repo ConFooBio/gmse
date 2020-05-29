@@ -4,12 +4,27 @@
 \alias{make_interaction_array}
 \title{Initialise array of resource and landscape-level interactions.}
 \usage{
-make_interaction_array(RESOURCES, LAND)
+make_interaction_array(
+  RESOURCES,
+  LAND,
+  res_consume = 0.5,
+  consume_surv = 0,
+  consume_repr = 0,
+  times_feeding = 1
+)
 }
 \arguments{
 \item{RESOURCES}{The resources array produced by the resource function within GMSE}
 
 \item{LAND}{The landscape array on which interactions between resources and agents occur}
+
+\item{res_consume}{The proportion of a landscape cell that a resource consumes}
+
+\item{consume_surv}{The amount that a resource needs to consume to survive a time step}
+
+\item{consume_repr}{The amount that a resource needs to consume to produce one offspring}
+
+\item{times_feeding}{The number of times a resource moves to feed on a cell in a time step}
 }
 \description{
 Initialise array of resource and landscape-level interactions.

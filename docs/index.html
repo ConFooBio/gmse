@@ -6,9 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Generalised Management Strategy Evaluation Simulator • GMSE</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
+<script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Generalised Management Strategy Evaluation Simulator">
 <meta property="og:description" content="Integrates game theory and ecological theory to construct 
     social-ecological models that simulate the management of populations and 
@@ -21,13 +23,12 @@
     managers and stakeholders under conditions of change, uncertainty, and 
     conflict. Simulations can be run using gmse(), gmse_apply(), and
     gmse_gui() functions.">
-<meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body>
+<body data-spy="scroll" data-target="#toc">
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -40,7 +41,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0.0</span>
       </span>
     </div>
 
@@ -48,7 +49,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -86,7 +87,13 @@
     <li>
       <a href="articles/SI7.html">Default GMSE data structures</a>
     </li>
+    <li>
+      <a href="articles/SI8.html">Adaptive timing of investment strategy</a>
+    </li>
   </ul>
+</li>
+<li>
+  <a href="news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -108,6 +115,7 @@
 <!--/.navbar -->
 
       
+
       </header><div class="row">
   <div class="contents col-md-9">
 
@@ -116,7 +124,7 @@
 <div id="generalised-management-strategy-evaluation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#generalised-management-strategy-evaluation" class="anchor"></a>Generalised Management Strategy Evaluation</h2>
-<p><strong>The GMSE package integrates game theory and ecological theory to construct social-ecological models that simulate the management of populations and stakeholder actions. These models build off of a previously developed management strategy evaluation (MSE) framework to simulate all aspects of management: population dynamics, manager observation of populations, manager decision making, and stakeholder responses to management decisions. The newly developed generalised management strategy evaluation (GMSE) framework uses genetic algorithms to mimic the decision-making process of managers and stakeholders under conditions of change, uncertainty, and conflict. Simulations can be run using gmse(), gmse_apply(), and gmse_gui() functions.</strong></p>
+<p><strong>The GMSE package integrates game theory and ecological theory to construct social-ecological models that simulate the management of populations and stakeholder actions. These models build off of a previously developed management strategy evaluation (MSE) framework to simulate all aspects of management: population dynamics, manager observation of populations, manager decision making, and stakeholder responses to management decisions. The newly developed generalised management strategy evaluation (GMSE) framework uses genetic algorithms to mimic the decision-making process of managers and stakeholders under conditions of change, uncertainty, and conflict. Simulations can be run using gmse(), gmse_apply(), and gmse_gui() functions. For more, see <a href="https://confoobio.github.io/gmse/index.html">the GMSE website</a>.</strong></p>
 <hr>
 <p><em>This project has received funding from the <a href="http://ec.europa.eu/programmes/horizon2020/">European Union’s Horizon 2020 research and innovation programme</a> under grant agreement No 679651 to <a href="https://sti-cs.org/nils-bunnefeld/">Nils Bunnefeld</a>. Package maintainer <a href="https://bradduthie.github.io/">Brad Duthie</a> is currently funded by a <a href="https://www.leverhulme.ac.uk/">Leverhulme Trust</a> <a href="https://www.leverhulme.ac.uk/funding/grant-schemes/early-career-fellowships">ECF</a>.</em></p>
 <hr>
@@ -126,13 +134,13 @@
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p><strong>Install from CRAN</strong></p>
 <p>To install <a href="https://CRAN.R-project.org/package=GMSE">this package</a> from CRAN.</p>
-<pre><code><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages("GMSE")</a></code></pre>
+<pre><code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages("GMSE")</a></code></pre>
 <p><strong>Install with GitHub</strong></p>
 <p>To install this package from GitHub, make sure that the <code>devtools</code> library is installed.</p>
-<pre><code><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages("devtools")
+<pre><code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages("devtools")
 library(devtools)</a></code></pre>
 <p>Use <code>install_github</code> to install using <code>devtools</code>.</p>
-<pre><code>install_github("bradduthie/GMSE")</code></pre>
+<pre><code>install_github("ConFooBio/GMSE")</code></pre>
 </div>
 <div id="running-a-simulation" class="section level2">
 <h2 class="hasAnchor">
@@ -144,7 +152,7 @@ library(devtools)</a></code></pre>
 agents = sim$agents, paras = sim$paras, ACTION = sim$action, COST = sim$cost)</a></code></pre>
 <p>Simulations can also be run from a browser-based graphical user interface by running the <code><a href="reference/gmse_gui.html">gmse_gui()</a></code> function.</p>
 <pre><code><a href="reference/gmse_gui.html">gmse_gui();</a></code></pre>
-<p>This function is also available as a <a href="https://bradduthie.shinyapps.io/gmse_gui/">standalone application</a> in shiny.</p>
+<p>This function is also available as a <a href="https://bradduthie.shinyapps.io/gmse_gui">standalone application</a> in shiny.</p>
 <p>Finally, simulations can be run using <code><a href="reference/gmse_apply.html">gmse_apply()</a></code>, a function for modellers that allows the integration of custom resource, observation, manager, and user subfunctions into the GMSE framework. The <code><a href="reference/gmse_apply.html">gmse_apply()</a></code> function simulates a single time step and can incorporate both custom and standard <code><a href="reference/gmse.html">gmse()</a></code> arguments.</p>
 <pre><code># Example alternative, custom-made, logistic growth resource function
 alt_res &lt;- function(X, K = 2000, rate = 1){
@@ -187,11 +195,13 @@ sim &lt;- gmse_apply(res_mod = alt_res, X = 1000, stakeholders = 6); </code></pr
 
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
 <li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=GMSE">https://​cloud.r-project.org/​package=GMSE</a>
+</li>
+<li>Browse source code at <br><a href="https://github.com/confoobio/gmse/">https://​github.com/​confoobio/​gmse/​</a>
 </li>
 <li>Report a bug at <br><a href="https://github.com/confoobio/gmse/issues">https://​github.com/​confoobio/​gmse/​issues</a>
 </li>
@@ -206,8 +216,8 @@ sim &lt;- gmse_apply(res_mod = alt_res, X = 1000, stakeholders = 6); </code></pr
 <div class="developers">
 <h2>Developers</h2>
 <ul class="list-unstyled">
-<li>A. Bradley Duthie <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-8343-4995" target="orcid.widget"><img src="https://members.orcid.org/sites/default/files/vector_iD_icon.svg" class="orcid" alt="ORCID" height="16"></a> </li>
-<li>Nils Bunnefeld <br><small class="roles"> Contributor, funder </small> <a href="https://orcid.org/0000-0002-1349-4463" target="orcid.widget"><img src="https://members.orcid.org/sites/default/files/vector_iD_icon.svg" class="orcid" alt="ORCID" height="16"></a> </li>
+<li>A. Bradley Duthie <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-8343-4995" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Nils Bunnefeld <br><small class="roles"> Contributor, funder </small> <a href="https://orcid.org/0000-0002-1349-4463" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li><a href="authors.html">All authors...</a></li>
 </ul>
 </div>
@@ -215,17 +225,20 @@ sim &lt;- gmse_apply(res_mod = alt_res, X = 1000, stakeholders = 6); </code></pr
   </div>
 </div>
 
+
       <footer><div class="copyright">
   <p>Developed by A. Bradley Duthie, Nils Bunnefeld.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>

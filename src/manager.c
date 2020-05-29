@@ -300,6 +300,8 @@ void update_marg_util(double ***actions, double *abun_est, double *temp_util,
  * This function uses the observation array to estimate resource abundances
  *      COST:        An array of the cost of actions for each agent
  *      ACTION:      An array of the action of agents
+ *      paras:       A vector of parameters needed 
+ *      agent_array: Agent array, including managers (agent type 0)
  * ========================================================================== */
 void set_action_costs(double ***ACTION, double ***COST, double *paras, 
                       double **agent_array){
@@ -352,6 +354,130 @@ void set_action_costs(double ***ACTION, double ***COST, double *paras,
     }
 }
 
+/* =============================================================================
+ * This determines whether action threshold conditions are met (Adrian Bach)
+ *      ACTION:      An array of the action of agents
+ *      paras:       A vector of parameters needed 
+ * ========================================================================== */
+void check_action_threshold(double ***ACTION, double *paras){
+    
+    int m_lyr, act_row, targ_row, over_threshold, t_s;
+    double res_abund, target, dev, a_t;
+    
+    m_lyr     = 0; /* Layer of the manager */ 
+    act_row   = 0; /* Row where the actions are */
+    targ_row  = 4; /* column where the target is located */
+    res_abund = paras[99]; /* Est. of res type 1 from the observation model */
+    a_t       = paras[105]; /* Dev est pop from manager target trigger */
+    t_s       = (int) paras[0]; /* What is the current time step? */
+    
+    target = ACTION[act_row][targ_row][m_lyr]; /* Manager's target */
+
+    dev    = (res_abund / target) - 1; /* Deviation from manager's target */
+    if(dev < 0){ /* Get the absolute value */
+        dev = -1 * dev;
+    }
+    /* If the population deviation has hit the threshold, and time step */
+    if(dev >= a_t || t_s < 3){ 
+        paras[106]  = 1; /* Policy is going to be updated now */
+        paras[107]  = 0; /* Zero time steps since last policy update */
+    }else{
+        paras[106]  = 0; /* Policy is not going to be updated now */
+        paras[107] += 1; /* One more time step since the last policy update */
+    }
+}
+
+/* =============================================================================
+ * This function calculates what the budget bonus should be (Adrian Bach)
+ *      agent_array: Agent array, including managers (agent type 0)
+ *      paras:       A vector of parameters needed 
+ *      agent:       The row in agent_array where the bonus is applied
+ * ========================================================================== */
+void calc_budget_bonus(double **agent_array, double *paras, int agent){
+    
+    int budget_col, bonus_col;
+    double baseline, budget_bonus, new_bonus;
+  
+    budget_col   = (int) paras[112];    /* Column where budget is recorded */
+    budget_bonus = (double) paras[110]; /* The budget bonus */
+    bonus_col    = (int) paras[127];    /* Column where budget bonus is */
+
+    /* The recalculation of the baseline allows the bonus to be cumulative */
+    baseline  = agent_array[agent][budget_col] + agent_array[agent][bonus_col];
+    new_bonus = baseline * budget_bonus;
+
+    if( (baseline + new_bonus) < 100000.00 ){
+        agent_array[agent][bonus_col] += new_bonus;
+    }
+}
+                         
+/* =============================================================================
+ * This applies the budget bonus for managers as appropriate (Adrian Bach)
+ *      agent_array: Agent array, including managers (agent type 0)
+ *      paras:       A vector of parameters needed 
+ * ========================================================================== */
+void apply_budget_bonus(double **agent_array, double *paras){
+    
+    int recent_update, N_agents, agent, bonus_col;
+    double a_t;
+    
+    N_agents       = (int) paras[54];     /* Total number of agents */
+    a_t            = (double) paras[105]; /* Dev est pop target trigger */
+    recent_update  = (int) paras[106];    /* Policy recently updated */
+    bonus_col      = (int) paras[127];    /* Column where budget bonus is */
+
+    if(a_t > 0 && recent_update == 0){ /* If action threshold is being used */
+        for(agent = 0; agent < N_agents; agent++){
+            if(agent_array[agent][1] == 0){
+                calc_budget_bonus(agent_array, paras, agent);
+            } 
+        }
+    }else{
+        for(agent = 0; agent < N_agents; agent++){
+            if(agent_array[agent][1] == 0){
+                agent_array[agent][bonus_col] = 0.0;
+            } 
+        }
+    }
+}
+
+/* =============================================================================
+ * This increases the managers budget based on the mean yield of users
+ *      agent_array: Agent array, including managers (agent type 0)
+ *      paras:       A vector of parameters needed    
+ * ========================================================================== */
+void man_budget_from_yield(double **agent_array, double *paras){   
+  
+    int agent, N_agents, agent_type, yield_col, y_bonus_col;
+    double yield_budget, total_yield, mean_yield, user_count;
+  
+    N_agents     = (int) paras[54];
+    yield_col    = (int) paras[82];
+    yield_budget = (double) paras[126]; /* yield_to_budget parameter in paras */
+    y_bonus_col  = (int) paras[128];
+
+    /* Calculate mean yield over all users */
+    user_count = 0.0;
+    for(agent = 0; agent < N_agents; agent++){
+        agent_type = agent_array[agent][1];
+        if(agent_type == 1) {
+            total_yield += agent_array[agent][yield_col]; 
+            user_count++;
+        }
+    }
+    
+    mean_yield = 0.0;
+    if(user_count > 0){ /* Should always be, but to avoid any DIV 0 issues */
+        mean_yield = total_yield / user_count;
+    }
+  
+    for(agent = 0; agent < N_agents; agent++){
+        agent_type = agent_array[agent][1];                  
+        if(agent_type == 0) { 
+            agent_array[agent][y_bonus_col] = floor(mean_yield * yield_budget);
+        }
+    }
+}
 
 /* =============================================================================
  * MAIN OBSERVATION FUNCTION:
@@ -400,6 +526,8 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     int protected_n;         /* Number of protected R objects */
     int vec_pos;             /* Vector position for making arrays */
     int len_PARAMETERS;      /* Length of the parameters vector */
+    int update_policy;       /* If managers act */
+    int observe_type;        /* Type of observation being performed */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
@@ -409,6 +537,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     int *dim_INTERACT;       /* Dimensions of the INTERACT matrix incoming */
     int *dim_OBSERVATION;    /* Dimensions of the OBSERVATION array incoming */
     int **lookup;            /* Lookup table for resource & land interactions */
+    double man_yld_budget;   /* Link from mean user yield to manager budget */
     double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
     double *paras_ptr;       /* Pointer to PARAMETERS (interface R and C) */
@@ -644,16 +773,30 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     temp_util = malloc(int_d0 * sizeof(double));
     marg_util = malloc(int_d0 * sizeof(double));
     
-    if(paras[8] >= 0){ /* If less than zero, the above already in actions */
+    observe_type   = (int) paras[8];
+    man_yld_budget = (double) paras[126];
+    
+    apply_budget_bonus(agent_array, paras);
+    
+    if(man_yld_budget > 0.0){
+        count_cell_yield(agent_array, land, paras);
+        man_budget_from_yield(agent_array, paras);
+    }
+        
+    if(observe_type >= 0){ /* If less than zero, the above already in actions */
         estimate_abundances(obs_array, paras, lookup, agent_array, abun_est);
         update_marg_util(actions, abun_est, temp_util, marg_util, int_d0, a_x);
     }
+    check_action_threshold(actions, paras); /* Check whether to act */
+    update_policy = paras[106];             /* Will managers act? */
     
-    ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
-       lookup, paras, 0, 1);
+    if(update_policy > 0){
+        ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
+           lookup, paras, 0, 1);
+    }
     
     set_action_costs(actions, costs, paras, agent_array);
-    
+
     free(marg_util);
     free(temp_util);
     free(abun_est);

@@ -4,28 +4,84 @@
 \alias{gmse}
 \title{GMSE simulation}
 \usage{
-gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
-  res_movement = 20, remove_pr = 0, lambda = 0.3, agent_view = 10,
-  agent_move = 50, res_birth_K = 1e+05, res_death_K = 2000,
-  edge_effect = 1, res_move_type = 1, res_birth_type = 2,
-  res_death_type = 2, observe_type = 0, fixed_mark = 100,
-  fixed_recapt = 500, times_observe = 1, obs_move_type = 1,
-  res_min_age = 0, res_move_obs = TRUE, Euclidean_dist = FALSE,
-  plotting = TRUE, hunt = FALSE, start_hunting = 95,
-  res_consume = 0.5, ga_popsize = 100, ga_mingen = 40,
-  ga_seedrep = 20, ga_sampleK = 20, ga_chooseK = 2,
-  ga_mutation = 0.1, ga_crossover = 0.1, move_agents = TRUE,
-  max_ages = 5, minimum_cost = 10, user_budget = 1000,
-  manager_budget = 1000, manage_target = 1000, RESOURCE_ini = 1000,
-  scaring = FALSE, culling = TRUE, castration = FALSE,
-  feeding = FALSE, help_offspring = FALSE, tend_crops = FALSE,
-  tend_crop_yld = 0.2, kill_crops = FALSE, stakeholders = 4,
-  manage_caution = 1, land_ownership = FALSE, manage_freq = 1,
-  converge_crit = 0.1, manager_sense = 0.9, public_land = 0,
-  group_think = FALSE)
+gmse(
+  time_max = 40,
+  land_dim_1 = 100,
+  land_dim_2 = 100,
+  res_movement = 20,
+  remove_pr = 0,
+  lambda = 0.3,
+  agent_view = 10,
+  agent_move = 50,
+  res_birth_K = 1e+05,
+  res_death_K = 2000,
+  edge_effect = 1,
+  res_move_type = 1,
+  res_birth_type = 2,
+  res_death_type = 2,
+  observe_type = 0,
+  fixed_mark = 100,
+  fixed_recapt = 500,
+  times_observe = 1,
+  obs_move_type = 1,
+  res_min_age = 0,
+  res_move_obs = FALSE,
+  Euclidean_dist = FALSE,
+  plotting = TRUE,
+  hunt = FALSE,
+  start_hunting = 95,
+  res_consume = 0.5,
+  ga_popsize = 100,
+  ga_mingen = 40,
+  ga_seedrep = 20,
+  ga_sampleK = 20,
+  ga_chooseK = 2,
+  ga_mutation = 0.1,
+  ga_crossover = 0.1,
+  move_agents = TRUE,
+  max_ages = 5,
+  minimum_cost = 10,
+  user_budget = 1000,
+  manager_budget = 1000,
+  manage_target = 1000,
+  RESOURCE_ini = 1000,
+  scaring = FALSE,
+  culling = TRUE,
+  castration = FALSE,
+  feeding = FALSE,
+  help_offspring = FALSE,
+  tend_crops = FALSE,
+  tend_crop_yld = 0.2,
+  kill_crops = FALSE,
+  stakeholders = 4,
+  manage_caution = 1,
+  land_ownership = FALSE,
+  manage_freq = 1,
+  converge_crit = 0.1,
+  manager_sense = 0.9,
+  public_land = 0,
+  group_think = FALSE,
+  age_repr = 1,
+  usr_budget_rng = 0,
+  action_thres = 0,
+  budget_bonus = 0,
+  consume_surv = 0,
+  consume_repr = 0,
+  times_feeding = 1,
+  ownership_var = 0,
+  perceive_scare = NA,
+  perceive_cull = NA,
+  perceive_cast = NA,
+  perceive_feed = NA,
+  perceive_help = NA,
+  perceive_tend = NA,
+  perceive_kill = NA,
+  usr_yld_budget = 0,
+  man_yld_budget = 0
+)
 }
 \arguments{
-\item{time_max}{This value sets the maximum number of time steps for a simulation. There are no constraints for length of time that a simulation can run. The default is 100 time steps.}
+\item{time_max}{This value sets the maximum number of time steps for a simulation. There are no constraints for length of time that a simulation can run. The default is 40 time steps.}
 
 \item{land_dim_1}{This value sets the number of cells on the x dimension of the landscape (i.e., the number of columns in the landscape array; this can also be thought of as the x-axis when the landscape image is plotted). There is no maximum, but the minimum dimension of a landscape is 2 cells. The default is 100 cells.}
 
@@ -131,11 +187,45 @@ gmse(time_max = 100, land_dim_1 = 100, land_dim_2 = 100,
 
 \item{converge_crit}{This is the convergence criteria for terminating a genetic algorithm. After continuing for the minimum number of generations, `ga_mingen`, the genetic algorithm will terminate if the convergence criteria is met. Usually making this criteria low doesn't do much to improve adaptive strategies; the default value is 1, which means that the genetic algorithm will continue as long as there is greater than a 1 percent increase in strategy fitness.}
 
-\item{manager_sense}{This adjusts the sensitivity that a manager assumes their actions have with respect to changes in costs (their policy). For example, given a `manage_sense` value of 0.9, if the cost of culling resources doubles, then instead of a manager assuming the the number of culled resources per user will be cut in half, the manager will instead assume that the number of resources culled will be cut by one half times eight tenths. As a general rule, a value of ca 0.8 allows the manager to predict stake-holder responses to policy accurately; future versions of GMSE could allow managers to adjust this dynamically based on simulation history.}
+\item{manager_sense}{This adjusts the sensitivity that a manager assumes their actions have with respect to changes in costs (their policy). For example, given a default `manage_sense` value of 0.9, if the cost of culling resources doubles, then instead of a manager assuming the the number of culled resources per user will be cut in half, the manager will instead assume that the number of resources culled will be cut by one half times eight tenths. As a general rule, a value of ca 0.8 allows the manager to predict stake-holder responses to policy accurately; future versions of GMSE could allow managers to adjust this dynamically based on simulation history.}
 
-\item{public_land}{The proportion of the landscape that will be public, and not owned by stakeholders. The remaining proportion of the landscape will be evenly divided among stakeholders. Note that this option is only available when land_ownership == TRUE.}
+\item{public_land}{The proportion of the landscape that will be public, and not owned by stakeholders. The remaining proportion of the landscape will be evenly divided among stakeholders. Note that this option is only available when land_ownership == TRUE. The default value is 0.}
 
-\item{group_think}{If TRUE, all users will have identical actions; the genetic algorithm will find actions for one user and copy them for all users. This is a useful option if a lot of users are required but variation among user decisions can be ignored.}
+\item{group_think}{If TRUE, all users will have identical actions; the genetic algorithm will find actions for one user and copy them for all users. This is a useful option if a lot of users are required but variation among user decisions can be ignored. The default value is FALSE.}
+
+\item{age_repr}{The age below which resources are incapable of reproducing. The default value is 1.}
+
+\item{usr_budget_rng}{This specifies a range around the value of `user_budget`, such that the expected value of each user's budget will be `user_budget`, with a uniform distribution plus or minus `usr_budget_rng`. Note that the minimum `usr_budget_rng` allowed is 1 regardless of the range set, and the maximum is always 100000. The default value for this argument is 0.}
+
+\item{action_thres}{A value for the deviation of the estimated population from the manager target, below which manager will not update the policy. Recommended values are between 0 and 1, with the default value being 0.}
+
+\item{budget_bonus}{A percentage of the initial budget manager will receive if policy was not updated last time step. Corresponds to the time, energy and money saved by waiting for a better time to update the policy. Budget bonuses are cumulative, so many time steps of not updating policy can cause a compounding increase in the budget bonus. The default value is 0.}
+
+\item{consume_surv}{This value defines the amount of yield on a landscape that an individual resource need to consume in a timestep to survive. The default value is 0 (i.e., no consumption is required for survival).}
+
+\item{consume_repr}{This value defines the amount of yield on a landscape that an individual resource need to produce one offspring. Resources will produce as many offspring as is possible given their yield in take; e.g., if a resource consumes between three and four times the amount of yield required for reproduction, then they will produce three offspring. The default value is 0 (i.e., no consumption is required for reproduction).}
+
+\item{times_feeding}{Number of searches that resources are allowed per time step for feeding on the landscape. Resources will move between times feeding based on whatever `res_movement` and `res_move_type` parameters are specified.}
+
+\item{ownership_var}{Defines the extent to which the amount of land ownership allocated among users varies when `land_ownership = TRUE`. A default value of 0 places roughly equal landscape ownership, while increasing values (must be < 1) cause an exponential distribution of land ownership cell allocation.}
+
+\item{perceive_scare}{For a focal user, the perceived effect of scaring one resource on the total number of resources affecting the user (e.g., if -1, then the user perceives scaring as removing the equivalent of one resource from their land; NA by default, and calculated from other argument inputs).}
+
+\item{perceive_cull}{For a focal user, the perceived effect of culling one resource on the total number of resources affecting the user (e.g., if -1, then the user perceives culling as removing the equivalent of one resource; NA by default, and calculated from other argument inputs).}
+
+\item{perceive_cast}{For a focal user, the perceived effect of castrating one resource on the total number of resources affecting the user (e.g., if -1, then the user perceives castration as removing the equivalent of one resource; NA by default, and calculated from other argument inputs).}
+
+\item{perceive_feed}{For a focal user, the perceived effect of feeding one resource on the total number of resources affecting the user (e.g., if 1, then the user perceives feeding as adding the equivalent of one resource; NA by default, and calculated from other argument inputs).}
+
+\item{perceive_help}{For a focal user, the perceived effect of helping the offspring of one resource on the total number of resources affecting the user (e.g., if 1, then the user perceives helping offspring as adding the equivalent of one resource; NA by default, and calculated from other argument inputs).}
+
+\item{perceive_tend}{For a focal user, the perceived effect of tending to crops on one cell of owned landscape the user's total crop yield (e.g., if 1, then the user perceives tending crop to increase crop yield on one of their landscape cells by 1; NA by default, and calculated from other argument inputs).}
+
+\item{perceive_kill}{For a focal user, the perceived effect of destroying the crops on one cell of owned landscape on the user's total crop yield (e.g., if -1, then the user perceives killing crop to reduce their total crop yield on a landscape cell by 1; unlike other perceived actions, this is not additive. The value defines that absolute effect on crop yield predicted at a single cell, so -1 assumes a 100 per cent loss of yield. This is NA by default).}
+
+\item{usr_yld_budget}{An increase in user budget caused by yield on their owned cells. The value of this parameter is multiplied by the user's total yield to get the user's budget increment (default 0). This argument can take any real value, but user budgets are always restricted to being between 1 and 100000. Where yield adjustments result in budgets < 1, the actual budget is set to 1. And where yield adjustments result in budgets > 100000, the actual budget is set to 100000.}
+
+\item{man_yld_budget}{An increase in manager budget caused by mean yield on user owned cells. The value of this parameter is multiplied by the users' mean total yield to get the manager's budget increment (default 0). This argument can take any real value, but manager budgets are always restricted to being between 1 and 100000. Where yield adjustments result in budgets < 1, the actual budget is set to 1. And where yield adjustments result in budgets > 100000, the actual budget is set to 100000.}
 }
 \value{
 A large list is returned that includes detailed simulation histories for the resource, observation, management, and user models. This list includes eight elements, most of which are themselves complex lists of arrays: (1) A list of length `time_max` in which each element is an array of resources as they exist at the end of each time step. Resource arrays include all resources and their attributes (e.g., locations, growth rates, offspring, how they are affected by stakeholders, etc.). (2) A list of length `time_max` in which each element is an array of resource observations from the observation model. Observation arrays are similar to resource arrays, except that they can have a smaller number of rows if not all resources are observed, and they have additional columns that show the history of each resource being observed over the course of `times_observe` observations in the observation model. (3) A 2D array showing parameter values at each time step (unique rows); most of these values are static but some (e.g., resource number) change over time steps. (4) A list of length `time_max` in which each element is an array of the landscape that identifies proportion of crop production per cell. This allows for looking at where crop production is increased or decreased over time steps as a consequence of resource and stakeholder actions. (5) The total time the simulation took to run (not counting plotting time). (6) A 2D array of agents and their traits. (7) A list of length `time_max` in which each element is a 3D array of the costs of performing each action for managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in costs of particular actions can therefore be be examined over time. (8) A list of length `time_max` in which each element is a 3D array of the actions performed by managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in actions of agents can therefore be examined over time. Because the above lists cannot possibly be interpreted by eye all at once in the simulation output, it is highly recommended that the contents of a simulation be stored and interprted individually if need be; alternativley, simulations can more easily be interpreted through plots when `plotting = TRUE`.
