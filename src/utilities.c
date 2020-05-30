@@ -169,7 +169,7 @@ int unif_move(int max_move){
  * This function moves a value sampled from a poisson distribution
  * ========================================================================== */
 int pois_move(double move_para){
-    int rand_pois, raw_move, move_len, the_move, move_dir;
+    int raw_move, move_len, the_move, move_dir;
     
     raw_move = (int) rpois(move_para);
     move_len = (int) floor(raw_move);
@@ -183,11 +183,8 @@ int pois_move(double move_para){
  * This function moves a uniform a poisson number of times
  * ========================================================================== */
 int unif_pois_move(double move_para){
-    int raw_move, move_len, the_move, move_dir;
+    int raw_move, move_len, move_dir;
     double rand_uni;
-    
-    move_len = (int) floor(raw_move);
-    the_move = move_dir * move_len;
     
     raw_move  = 0;
     while(move_para > 0){
@@ -220,12 +217,6 @@ void res_mover(double **res_moving, double ***landscape, double *paras){
     int max_move, move_x, move_y, new_pos_x, new_pos_y;
     int resource;     /* Resource number index                        */
     int move_len;     /* Length of a move                             */
-    int move_dir;     /* Move direction (-1 or 1)                     */
-    int new_pos;      /* New position: check if over landscape edge   */
-    double rand_num;  /* Random number used for sampling              */
-    double rand_uni;  /* Random uniform number                        */
-    double rand_pois; /* Random poisson number                        */
-    double raw_move;  /* Movement length before floor() truncation    */
 
     edge_eff        = (int) paras[1];
     type            = (int) paras[2];
@@ -240,6 +231,8 @@ void res_mover(double **res_moving, double ***landscape, double *paras){
     for(resource=0; resource < resource_number; resource++){
         new_pos_x  = (int) res_moving[resource][xloc];
         new_pos_y  = (int) res_moving[resource][yloc];
+        move_x     = 0;
+        move_y     = 0;
         switch(type){
             case 0: /* No change in position */
                 break;
@@ -308,25 +301,27 @@ void move_a_resource(double **res_moving, double ***landscape, double *paras,
 
     new_pos_x  = (int) res_moving[resource][xloc];
     new_pos_y  = (int) res_moving[resource][yloc];
+    move_x     = 0;
+    move_y     = 0;
     switch(type){
-    case 0: /* No change in position */
-    break;
-    case 1: /* Uniform selection of position change */
-    max_move = res_moving[resource][move_para] + 1;
-        move_x   = unif_move(max_move);
-        move_y   = unif_move(max_move);
-        break;
-    case 2: /* Poisson selection of position change */
-    move_x = pois_move(res_moving[resource][move_para]);    
-        move_y = pois_move(res_moving[resource][move_para]);
-        break;
-    case 3: /* Uniform position movement a Poisson number of times */
-    move_len = rpois(res_moving[resource][move_para]);
-        move_x   = unif_pois_move(move_len);
-        move_y   = unif_pois_move(move_len);
-        break;
-    default:
-        break;
+        case 0: /* No change in position */
+            break;
+        case 1: /* Uniform selection of position change */
+            max_move = res_moving[resource][move_para] + 1;
+            move_x   = unif_move(max_move);
+            move_y   = unif_move(max_move);
+            break;
+        case 2: /* Poisson selection of position change */
+            move_x = pois_move(res_moving[resource][move_para]);    
+            move_y = pois_move(res_moving[resource][move_para]);
+            break;
+        case 3: /* Uniform position movement a Poisson number of times */
+            move_len = rpois(res_moving[resource][move_para]);
+            move_x   = unif_pois_move(move_len);
+            move_y   = unif_pois_move(move_len);
+            break;
+        default:
+            break;
     }
     new_pos_x = (int) new_pos_x + move_x;
     new_pos_y = (int) new_pos_y + move_y;
@@ -354,12 +349,11 @@ void move_a_resource(double **res_moving, double ***landscape, double *paras,
 void count_owned_cells(double ***landscape, double *paras, double **agent_array, 
                        int land_x, int land_y, int agent_number){
     
-    int xloc, yloc, own, aID, tcol, agent, own_val, age_row;
+    int xloc, yloc, own, tcol, agent, own_val, age_row;
     
     land_x  = (int) paras[12];
     land_y  = (int) paras[13];
     own     = (int) paras[81];
-    aID     = (int) paras[119];
     tcol    = (int) paras[120];
 
     for(agent = 0; agent < agent_number; agent++){

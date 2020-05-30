@@ -377,12 +377,11 @@ void copycat(double ***action_array, int from, int to, double *paras){
  * ========================================================================== */
 void yield_to_budget(double **agent_array, double *paras){   
     
-    int agent, N_agents, agent_type, user_budget, y_bonus_col, yield_col;
+    int agent, N_agents, agent_type, y_bonus_col, yield_col;
     double yield_budget, yield_incr;
     
     N_agents     = (int) paras[54];
     yield_col    = (int) paras[82];
-    user_budget  = (double) paras[97];
     yield_budget = (double) paras[125]; 
     y_bonus_col  = (int) paras[128];
 
