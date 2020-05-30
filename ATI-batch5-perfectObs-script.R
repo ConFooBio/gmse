@@ -16,7 +16,22 @@
 
 #### Simulations ####
 
-ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 20, rep = 100, bdgt = 1000, popinit = 1000, tf = 12, cons = 0.41, surv = 3, repr = 0.4, trgt = 1000, stkh = 10, freq = 10, obstype = 3) {
+ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 20, rep = 100, bdgt = 1000, popinit = 1000, tf = 12, cons = 0.41, surv = 3, repr = 0.4, trgt = 1000, stkh = 10, freq = 10, obstype = 3,
+                          out_file = "OTI_default_results.csv") {
+  
+  file.create(out_file); # Initialise a file in the directory.
+  
+  # Now initialise other files to print 
+  bgt_file <- paste("flw_bgt-", out_file, sep = ""); # Each now has a prefix
+  pop_file <- paste("flw_pop-", out_file, sep = "");
+  cos_file <- paste("flw_cos-", out_file, sep = "");
+  act_file <- paste("flw_act-", out_file, sep = "");
+  
+  # Now create the other new files
+  file.create(bgt_file);
+  file.create(pop_file);
+  file.create(cos_file);
+  file.create(act_file);
   
   # Array of Action Threshold values to explore
   at <- UTrange
@@ -26,7 +41,7 @@ ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 2
   
   ## Create empty structures to gather simulation results
   
-  columns <- c("rep", "budget", "at", "bb", "extinct", "act_dev", "abs_act_dev", "fin_yield", "max_diff_yield", "inac_ts", "overK")
+  columns <- c("rep", "budget", "at", "bb", "extinct", "act_dev", "abs_act_dev", "fin_yield", "max_diff_yield", "inac_ts", "overK", "param_set")
   
   # Empty 3D array of correct size 
   # Dimensions(lines = replicates, columns = measures, layer = parameter combination)
@@ -88,7 +103,7 @@ ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 2
         if (k %% freq == 0) {
           print("Saving budget, costs, actions, actual and observed pop")
           para <- OTI_default_results[k,2:5, param_set]
-          para <- c(para, K, trgt, popinit)
+          para <- c(para, k, trgt, popinit)
           
           bdg <- rep(0, ts)
           pop <- rep(0, ts)
@@ -104,11 +119,17 @@ ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 2
             # obs[t] <- dim(sim$observation[[t]])[1]
           }
           
-          flw_bgt <- rbind(flw_bgt, c(para, bdg))
-          flw_pop <- rbind(flw_pop, c(para, pop))
-          flw_cos <- rbind(flw_cos, c(para, cos))
-          flw_act <- rbind(flw_act, c(para, act))
-          # flw_obs <- rbind(flw_obs, c(para, obs))
+          # Append the files now
+          write.table(t(c(para, bdg)), file = bgt_file, append = TRUE, sep = "\t", row.names = FALSE, col.names = FALSE); 
+          write.table(t(c(para, pop)), file = pop_file, append = TRUE, sep = "\t", row.names = FALSE, col.names = FALSE); 
+          write.table(t(c(para, cos)), file = cos_file, append = TRUE, sep = "\t", row.names = FALSE, col.names = FALSE); 
+          write.table(t(c(para, act)), file = act_file, append = TRUE, sep = "\t", row.names = FALSE, col.names = FALSE); 
+          
+            #flw_bgt <- rbind(flw_bgt, c(para, bdg))
+            #flw_pop <- rbind(flw_pop, c(para, pop))
+            #flw_cos <- rbind(flw_cos, c(para, cos))
+            # flw_act <- rbind(flw_act, c(para, act))
+            #flw_obs <- rbind(flw_obs, c(para, obs))
         }
         
         # Next measures involve calculus that can be disturbed if extinction occured
@@ -133,6 +154,9 @@ ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 2
           
           # Number of K exceedings
           OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])/final_ts
+          
+          # Param set
+          OTI_default_results[k,12,param_set] <- param_set
         }
         
         # If extinction did not occured
@@ -155,7 +179,13 @@ ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 2
           
           # Number of K exceedings
           OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])/final_ts
+          
+          # Param set
+          OTI_default_results[k,12,param_set] <- param_set
         }
+        
+        gc(); # Run a garbage collect here
+        
       } # end rep for loop
       
       # Increment parameter combo index
@@ -219,11 +249,17 @@ ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 2
               # obs[t] <- dim(sim$observation[[t]])[1]
             }
             
-            flw_bgt <- rbind(flw_bgt, c(para, bdg))
-            flw_pop <- rbind(flw_pop, c(para, pop))
-            flw_cos <- rbind(flw_cos, c(para, cos))
-            flw_act <- rbind(flw_act, c(para, act))
-            # flw_obs <- rbind(flw_obs, c(para, obs))
+            # Append the files now
+            write.table(t(c(para, bdg)), file = bgt_file, append = TRUE, sep = "\t", row.names = FALSE, col.names = FALSE); 
+            write.table(t(c(para, pop)), file = pop_file, append = TRUE, sep = "\t", row.names = FALSE, col.names = FALSE); 
+            write.table(t(c(para, cos)), file = cos_file, append = TRUE, sep = "\t", row.names = FALSE, col.names = FALSE); 
+            write.table(t(c(para, act)), file = act_file, append = TRUE, sep = "\t", row.names = FALSE, col.names = FALSE); 
+            
+              #flw_bgt <- rbind(flw_bgt, c(para, bdg))
+              #flw_pop <- rbind(flw_pop, c(para, pop))
+              #flw_cos <- rbind(flw_cos, c(para, cos))
+              #flw_act <- rbind(flw_act, c(para, act))
+              #flw_obs <- rbind(flw_obs, c(para, obs))
           }
           
           # Next measures involve calculus that can be disturbed if extinction occured
@@ -248,6 +284,9 @@ ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 2
             
             # Number of K exceedings
             OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])/final_ts
+            
+            # Param set
+            OTI_default_results[k,12,param_set] <- param_set
           }
           
           # If extinction did not occured
@@ -270,6 +309,9 @@ ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 2
             
             # Number of K exceedings
             OTI_default_results[k,11,param_set] <- sum(sim$paras[,109])/final_ts
+            
+            # Param set
+            OTI_default_results[k,12,param_set] <- param_set
           }
         } # end rep for loop
         
@@ -280,27 +322,36 @@ ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 2
         
         # Increment parameter combo index
         param_set <- param_set + 1
+        
+        gc(); # Run a garbage collect here
       } # end bb for loop
+      
     } # end at else loop
+    
+    write.table(x = OTI_default_results[, , param_set-1], file = out_file, append = TRUE, sep = "\t", row.names = FALSE, col.names = FALSE);
+    gc(); # Run a garbage collect here
   } # end at for loop
   
   # Simulation time
   end <- Sys.time()
+  
   print(paste("Batch started", start, "and ended", end, sep = " "))
   
-  # rbind the layers
-  if (param_set > 2) {
+   #rbind the layers
+  # if (param_set > 2) {
+  #   
+  #   tab_OTI_default_results <- OTI_default_results[,,1]
+  #   
+  #   for (i in 2:dim(OTI_default_results)[3]) {
+   #    tab_OTI_default_results <- rbind(tab_OTI_default_results, OTI_default_results[,,i])
+  #   }
+   #} else {
+  #   tab_OTI_default_results <- OTI_default_results
+   #}
     
-    tab_OTI_default_results <- OTI_default_results[,,1]
-    
-    for (i in 2:dim(OTI_default_results)[3]) {
-      tab_OTI_default_results <- rbind(tab_OTI_default_results, OTI_default_results[,,i])
-    }
-  } else {
-    tab_OTI_default_results <- OTI_default_results
-  }
+   #return(list(tab_OTI_default_results, flw_pop, flw_cos, flw_bgt, flw_act))
   
-  return(list(tab_OTI_default_results, flw_pop, flw_cos, flw_bgt, flw_act, flw_obs))
+  return(OTI_default_results);
   
 } # end function
 
@@ -308,11 +359,11 @@ ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 2
 batch5 <- ATI_replicate()
 
 # Save the results on GitHub
-write.csv(batch5[[1]], file = "tab_ATI_batch5.csv")
-write.csv(batch5[[2]], file = "case_pop_batch5.csv")
-write.csv(batch5[[3]], file = "case_cos_batch5.csv")
-write.csv(batch5[[4]], file = "case_bgt_batch5.csv")
-write.csv(batch5[[5]], file = "case_act_batch5.csv")
+#write.csv(batch5[[1]], file = "tab_ATI_batch5.csv")
+#write.csv(batch5[[2]], file = "case_pop_batch5.csv")
+#write.csv(batch5[[3]], file = "case_cos_batch5.csv")
+#write.csv(batch5[[4]], file = "case_bgt_batch5.csv")
+#write.csv(batch5[[5]], file = "case_act_batch5.csv")
 # write.csv(batch5[[6]], file = "case_obs_batch5.csv")
 
 # Population only
