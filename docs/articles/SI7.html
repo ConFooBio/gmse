@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0.4</span>
       </span>
     </div>
 
@@ -397,7 +397,7 @@ Bram Van Moorter², and Nils Bunnefeld¹</div></h4>
 <div id="land" class="section level1">
 <h1 class="hasAnchor">
 <a href="#land" class="anchor"></a>6. LAND</h1>
-<p>Events in default GMSE sub-models occur on a spatially-explicit landscape <code>LAND</code>, which is stored as a three dimensional array. The size of this landscape is specified with the <code>land_dim_1</code> and <code>land_dim_2</code> arguments of GMSE, which determine the length, in cells, of the y and x dimensions of the landscape, respectively (e.g., if <code>land_dim_1 = 10</code> and <code>land_dim_2 = 1000</code>, then the landscape will be one very long horizontal transect). The total number of landscape cells on which resources and agents can interact is therefore the product of <code>land_dim_1</code> and <code>land_dim_2</code>. In addition, all landscapes have three layers, which hold three separate values of information for each x-y location. The first layer is unused as of GMSE v0.6.0.0; the second layer holds crop production on a cell, and the third layer holds the owner of the cell (corresponding to the ID of an agent, where the manager’s ID = 0 defines public land). An <span class="math inline">\(8 \times 8\)</span> portion of the landscape from <code>sim</code> is shown below.</p>
+<p>Events in default GMSE sub-models occur on a spatially-explicit landscape <code>LAND</code>, which is stored as a three dimensional array. The size of this landscape is specified with the <code>land_dim_1</code> and <code>land_dim_2</code> arguments of GMSE, which determine the length, in cells, of the y and x dimensions of the landscape, respectively (e.g., if <code>land_dim_1 = 10</code> and <code>land_dim_2 = 1000</code>, then the landscape will be one very long horizontal transect). The total number of landscape cells on which resources and agents can interact is therefore the product of <code>land_dim_1</code> and <code>land_dim_2</code>. In addition, all landscapes have three layers, which hold three separate values of information for each x-y location. The first layer is unused as of GMSE v0.6.0.4; the second layer holds crop production on a cell, and the third layer holds the owner of the cell (corresponding to the ID of an agent, where the manager’s ID = 0 defines public land). An <span class="math inline">\(8 \times 8\)</span> portion of the landscape from <code>sim</code> is shown below.</p>
 <div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">sim</span>$<span class="no">LAND</span>[<span class="fl">1</span>:<span class="fl">8</span>,<span class="fl">1</span>:<span class="fl">8</span>,]);</pre></body></html></div>
 <pre><code>## , , 1
 ## 

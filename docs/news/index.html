@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0.4</span>
       </span>
     </div>
 
@@ -155,14 +155,14 @@
 
 <!--- ADDED ALL OF THIS IN MANUALLY. NOT SURE WHY pkgdown didn't find it --->
 
-<h1 id="gmse-version-0.6.0.0">GMSE VERSION 0.6.0.0</h1>
-<h2 id="major-changes">MAJOR CHANGES (0.6.0.0)</h2>
+<h1 id="gmse-version-0.6.0.4">GMSE VERSION 0.6.0.4</h1>
+<h2 id="major-changes">MAJOR CHANGES (0.6.0.4)</h2>
 <ul>
 <li><p>The order of operations in the resource submodel has changed. Formerly, resources would move on the landscape, reproduce, die, and then potentially consume on the landscape. Now, resources feed on the landscape, reproduce, die, and then move.</p></li>
 <li><p>The default landscape ownership is now divided using a shortest-splitline algorithm, which generates more realistic rectangular blocks of land.</p></li>
 <li><p>The default perceived effects of different actions have been changed for both the manager and users in the fitness function of the genetic algorithm.</p></li>
 </ul>
-<h2 id="new-features">NEW FEATURES (0.6.0.0)</h2>
+<h2 id="new-features">NEW FEATURES (0.6.0.4)</h2>
 <ul>
 <li><p>Resource birth and death can now be caused by resource consumption on the landscape using the new arguments <code>consume_repr</code>, <code>consume_surv</code>, and <code>times_feeding</code> (note that movement to new cells occurs between times feeding).</p></li>
 <li><p>Managers can apply an action threshold, which stops them from updating policy in a time step if the observed resource density is sufficiently close to the target. If they do not update policy, managers can receive a budget bonus that can be applied to the next time step. Relevant arguments are <code>action_thres</code> and <code>budget_bonus</code>, and a new vignette explains their use.</p></li>
@@ -170,7 +170,7 @@
 <li><p>Land ownership can be allocated unevenly among users using the <code>ownership_var</code> argument.</p></li>
 <li><p>Manager and user budgets can now be incremented as a function of landscape yield using the <code>usr_yld_budget</code> and <code>man_yld_budget</code> arguments.</p></li>
 </ul>
-<h2 id="bug-fixes">BUG FIXES (0.6.0.0)</h2>
+<h2 id="bug-fixes">BUG FIXES (0.6.0.4)</h2>
 <ul>
 <li><p>The <code>gmse_gui</code> function has been updated so that options available in <code>gmse</code> and <code>gmse_apply</code> also work in <code>gmse</code>.</p></li>
 <li><p>Differences between default arguments of <code>gmse</code> and <code>gmse_apply</code> have now been rectified. Now a run of <code>gmse</code> and looped <code>gmse_apply</code> with default subfunctions returns the same system dynamics.</p></li>
