@@ -283,12 +283,6 @@ void move_a_resource(double **res_moving, double ***landscape, double *paras,
     int edge_eff, type, land_x, land_y, xloc, yloc, move_para;
     int max_move, move_x, move_y, new_pos_x, new_pos_y;
     int move_len;     /* Length of a move                             */
-    int move_dir;     /* Move direction (-1 or 1)                     */
-    int new_pos;      /* New position: check if over landscape edge   */
-    double rand_num;  /* Random number used for sampling              */
-    double rand_uni;  /* Random uniform number                        */
-    double rand_pois; /* Random poisson number                        */
-    double raw_move;  /* Movement length before floor() truncation    */
 
     edge_eff        = (int) paras[1];
     type            = (int) paras[2];

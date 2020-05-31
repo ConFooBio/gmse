@@ -354,7 +354,7 @@ void strategy_fitness(double **agent_array, double ***population, double *paras,
                       double *fitnesses, double **jaco, int **interact_table,
                       int agentID){
     
-    int agent, i, row, act_type, int_num, pop_size, ROWS, tcol, n_agents, a_row;
+    int agent, i, row, act_type, int_num, pop_size, ROWS, n_agents, a_row;
     double *count_change, *utilities;
     
     pop_size = (int) paras[21];
@@ -807,18 +807,15 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double **JACOBIAN, int **lookup, double *paras, 
         int agent, int managing){
     
-    int row, col, gen, layer, most_fit, popsize, new_fitness, land_x, land_y;
-    int generations, xdim, ydim, agentID, old_fitness, pr_lnd_col, *winners;
+    int row, col, gen, layer, most_fit, popsize, new_fitness;
+    int generations, xdim, ydim, agentID, old_fitness, *winners;
     double budget, converge_crit, fit_change, ***POPULATION, *fitnesses;
 
-    land_x         = (int) paras[12];
-    land_y         = (int) paras[13];
     popsize        = (int) paras[21];
     generations    = (int) paras[22];
     xdim           = (int) paras[68];
     ydim           = (int) paras[69];
     converge_crit  = (double)paras[98];
-    pr_lnd_col     = (int) paras[120];
     agentID        = (int) AGENT[agent][0];
     
     most_fit       = 0;
