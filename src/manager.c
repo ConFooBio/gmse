@@ -362,7 +362,7 @@ void set_action_costs(double ***ACTION, double ***COST, double *paras,
 void check_action_threshold(double ***ACTION, double *paras){
     
     int m_lyr, act_row, targ_row, over_threshold, t_s;
-    double res_abund, target, dev, a_t;
+    double res_abund, target, dev, a_t, prv_est;
     
     m_lyr     = 0; /* Layer of the manager */ 
     act_row   = 0; /* Row where the actions are */
@@ -370,6 +370,7 @@ void check_action_threshold(double ***ACTION, double *paras){
     res_abund = paras[99]; /* Est. of res type 1 from the observation model */
     a_t       = paras[105]; /* Dev est pop from manager target trigger */
     t_s       = (int) paras[0]; /* What is the current time step? */
+    prv_est   = paras[129]; /* Previous time step population estimation */
     
     target = ACTION[act_row][targ_row][m_lyr]; /* Manager's target */
 
@@ -377,14 +378,27 @@ void check_action_threshold(double ***ACTION, double *paras){
     if(dev < 0){ /* Get the absolute value */
         dev = -1 * dev;
     }
-    /* If the population deviation has hit the threshold, and time step */
-    if(dev >= a_t || t_s < 3){ 
+    
+    var = res_abund - prv_est; /* variation from previous time step */
+
+    pred = res_abund + var; /* manager's prediction for next time step population size based on variation */
+    /* Could be interesting to make the manager_sense inteviene here */
+
+    up_bound = (1 + a_t) * target; /* upper bound of the non-updating band */
+
+    lo_bound = (1 - a_t) * target; /* lower bound of the non-updating band */
+    
+    /* If the population deviation has hit the threshold, and time step, and that prediction is outside the non-updating band */
+    if(dev >= a_t || t_s < 3 || pred > up_bound || pred < lo_bound){ 
         paras[106]  = 1; /* Policy is going to be updated now */
         paras[107]  = 0; /* Zero time steps since last policy update */
     }else{
         paras[106]  = 0; /* Policy is not going to be updated now */
         paras[107] += 1; /* One more time step since the last policy update */
     }
+
+    paras[129] = res_abund; /* update this time step estimation */
+    /* Is that the right place for this? */
 }
 
 /* =============================================================================
