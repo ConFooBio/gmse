@@ -362,7 +362,7 @@ void set_action_costs(double ***ACTION, double ***COST, double *paras,
 void check_action_threshold(double ***ACTION, double *paras){
     
     int m_lyr, act_row, targ_row, over_threshold, t_s;
-    double res_abund, target, dev, a_t, prv_est;
+    double res_abund, target, dev, a_t, prv_est, var, pred, up_bound, lo_bound;
     
     m_lyr     = 0; /* Layer of the manager */ 
     act_row   = 0; /* Row where the actions are */
