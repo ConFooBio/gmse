@@ -16,7 +16,7 @@
 
 #### Simulations ####
 
-ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 20, rep = 100, bdgt = 1000, popinit = 1000, tf = 12, cons = 0.41, surv = 3, repr = 0.4, trgt = 1000, stkh = 10, freq = 10, obstype = 3,
+ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 20, rep = 100, bdgt = 1000, popinit = 1000, tf = 12, cons = 0.41, surv = 3, repr = 0.4, trgt = 1000, stkh = 40, freq = 10, obstype = 3,
                           out_file = "OTI_default_results.csv") {
   
   file.create(out_file); # Initialise a file in the directory.
