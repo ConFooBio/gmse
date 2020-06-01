@@ -93,7 +93,7 @@ ATI_replicate <- function(UTrange = seq(0,1,0.5), BBrange = seq(0,1,0.5), ts = 1
         if (k %% freq == 0) {
           print("Saving budget, costs, actions, actual and observed pop")
           para <- OTI_default_results[k,2:5, param_set]
-          para <- c(para, K, trgt, popinit)
+          para <- c(para, k, trgt, popinit)
           
           bdg <- rep(0, ts)
           pop <- rep(0, ts)
@@ -319,7 +319,7 @@ ATI_replicate <- function(UTrange = seq(0,1,0.5), BBrange = seq(0,1,0.5), ts = 1
 } # end function
 
 # Run the simulations
-batch5 <- ATI_replicate(UTrange = c(0, 0.1), BBrange = seq(0,1,0.1), ts = 5, rep = 2, stkh = 40)
+batch5 <- ATI_replicate(UTrange = c(0, 0.1), BBrange = seq(0,1,0.1), ts = 5, rep = 2, stkh = 40, freq = 1)
 
 # Save the results on GitHub
 write.csv(batch5[[1]], file = "AT_results/tab_ATI_batch5.csv")
