@@ -63,7 +63,7 @@ ATI_replicate <- function(UTrange = seq(0,1,0.5), BBrange = seq(0,1,0.5), ts = 1
         # Run GMSE for the parameter combo
         sim <- gmse(time_max = ts, 
                     consume_surv = surv, consume_repr = repr, times_feeding = tf, res_consume = cons,
-                    res_birth_type = 0, res_death_type = 0,
+                    res_birth_type = 0, res_death_type = 0, group_think = TRUE,
                     land_ownership = TRUE, land_dim_1 = 200, land_dim_2 = 200, stakeholders = stkh,
                     scaring = FALSE, manager_budget = bdgt, user_budget = bdgt, manager_sense = 0.15,
                     action_thres = 0, budget_bonus = 0, manage_target = trgt,
@@ -186,7 +186,7 @@ ATI_replicate <- function(UTrange = seq(0,1,0.5), BBrange = seq(0,1,0.5), ts = 1
                       consume_surv = surv, consume_repr = repr, times_feeding = tf, res_consume = cons,
                       res_birth_type = 0, res_death_type = 0, land_ownership = TRUE, land_dim_1 = 200, land_dim_2 = 200,
                       stakeholders = stkh, scaring = FALSE, manager_budget = bdgt, user_budget = bdgt, manager_sense = 0.15,
-                      action_thres = at[i], budget_bonus = bb[j], manage_target = trgt,
+                      action_thres = at[i], budget_bonus = bb[j], manage_target = trgt, group_think = TRUE,
                       RESOURCE_ini = 1000, observe_type = obstype, res_move_obs = FALSE, plotting = FALSE)
           
           # Store the last time step number (for extinction-related bugs)
@@ -322,11 +322,11 @@ ATI_replicate <- function(UTrange = seq(0,1,0.5), BBrange = seq(0,1,0.5), ts = 1
 batch5 <- ATI_replicate(UTrange = c(0, 0.1), BBrange = seq(0,1,0.1), ts = 5, rep = 2, stkh = 40)
 
 # Save the results on GitHub
-write.csv(batch5[[1]], file = "tab_ATI_batch5.csv")
-write.csv(batch5[[2]], file = "pop_batch5.csv")
-write.csv(batch5[[3]], file = "cos_batch5.csv")
-write.csv(batch5[[4]], file = "bgt_batch5.csv")
-write.csv(batch5[[5]], file = "act_batch5.csv")
+write.csv(batch5[[1]], file = "AT_results/tab_ATI_batch5.csv")
+write.csv(batch5[[2]], file = "AT_results/pop_batch5.csv")
+write.csv(batch5[[3]], file = "AT_results/cos_batch5.csv")
+write.csv(batch5[[4]], file = "AT_results/bgt_batch5.csv")
+write.csv(batch5[[5]], file = "AT_results/act_batch5.csv")
 # write.csv(batch5[[6]], file = "case_obs_batch5.csv")
 
 # Population only
