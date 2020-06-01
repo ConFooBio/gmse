@@ -9,14 +9,13 @@
 
 #### Update GMSE with the new features ####
 
-# Make sure this script is opened within the gmse_forkRQ1.Rproj project
 # Update GMSE clicking Build > Clean and Rebuild
 # batch 5 ==> with perfect observation (obs_type = 3 & res_move_obs = FALSE & agent_view = land_dim_1 to make counting as fast as possible)
 
 
 #### Simulations ####
 
-ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 20, rep = 100, bdgt = 1000, popinit = 1000, tf = 12, cons = 0.41, surv = 3, repr = 0.4, trgt = 1000, stkh = 10, freq = 10, obstype = 3) {
+ATI_replicate <- function(UTrange = seq(0,1,0.5), BBrange = seq(0,1,0.5), ts = 10, rep = 2, bdgt = 1000, popinit = 1000, tf = 12, cons = 0.41, surv = 3, repr = 0.4, trgt = 1000, stkh = 10, freq = 10, obstype = 3) {
   
   # Array of Action Threshold values to explore
   at <- UTrange
@@ -56,11 +55,17 @@ ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 2
       # With 'rep' number of replicate per parameter combo
       for (k in 1:rep) {
         
+        # Print info
+        if (k == 1 | k%%10 == 0) {
+          print(paste("AT = 0, replicate", k, "of", rep))
+        }
+        
         # Run GMSE for the parameter combo
         sim <- gmse(time_max = ts, 
                     consume_surv = surv, consume_repr = repr, times_feeding = tf, res_consume = cons,
-                    res_birth_type = 0, res_death_type = 0, land_ownership = TRUE, land_dim_1 = 200, land_dim_2 = 200,
-                    stakeholders = stkh, scaring = FALSE, manager_budget = bdgt, user_budget = bdgt, manager_sense = 0.15,
+                    res_birth_type = 0, res_death_type = 0,
+                    land_ownership = TRUE, land_dim_1 = 200, land_dim_2 = 200, stakeholders = stkh,
+                    scaring = FALSE, manager_budget = bdgt, user_budget = bdgt, manager_sense = 0.15,
                     action_thres = 0, budget_bonus = 0, manage_target = trgt,
                     RESOURCE_ini = 1000, observe_type = obstype, res_move_obs = FALSE, plotting = FALSE)
         
@@ -170,6 +175,11 @@ ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 2
         
         # With 'rep' number of replicate per parameter combo
         for (k in 1:rep) {
+          
+          # Print info
+          if (k == 1 | k%%10 == 0) {
+            print(paste("AT =", at[i], ", BB =", bb[j], "replicate", k, "of", rep))
+          }
           
           # Run GMSE for the parameter combo
           sim <- gmse(time_max = ts, 
@@ -300,35 +310,35 @@ ATI_replicate <- function(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 2
     tab_OTI_default_results <- OTI_default_results
   }
   
-  return(list(tab_OTI_default_results, flw_pop, flw_cos, flw_bgt, flw_act, flw_obs))
+  return(list(tab_OTI_default_results, flw_pop, flw_cos, flw_bgt, flw_act))#, flw_obs
   
 } # end function
 
 # Run the simulations
-batch5 <- ATI_replicate()
+batch5 <- ATI_replicate(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 20, rep = 100, stkh = 40)
 
 # Save the results on GitHub
 write.csv(batch5[[1]], file = "tab_ATI_batch5.csv")
-write.csv(batch5[[2]], file = "case_pop_batch5.csv")
-write.csv(batch5[[3]], file = "case_cos_batch5.csv")
-write.csv(batch5[[4]], file = "case_bgt_batch5.csv")
-write.csv(batch5[[5]], file = "case_act_batch5.csv")
+write.csv(batch5[[2]], file = "pop_batch5.csv")
+write.csv(batch5[[3]], file = "cos_batch5.csv")
+write.csv(batch5[[4]], file = "bgt_batch5.csv")
+write.csv(batch5[[5]], file = "act_batch5.csv")
 # write.csv(batch5[[6]], file = "case_obs_batch5.csv")
 
 # Population only
-rep.pop <- gmse_replicates(replicates = 100,
+rep.pop <- gmse_replicates(replicates = 100, time_max = 20,
                            consume_surv = 4.75, consume_repr = 5, times_feeding = 12, res_consume = 0.5,
                            res_birth_type = 0, res_death_type = 0,
                            land_ownership = TRUE, land_dim_1 = 200, land_dim_2 = 200,
-                           stakeholders = 40, scaring = FALSE, time_max = 20, manager_budget = 1, user_budget = 1, manager_sense = 0.15,
-                           RESOURCE_ini = 1000, observe_type = 3, res_move_obs = FALSE, plotting = TRUE)
+                           stakeholders = 40, scaring = FALSE, manager_budget = 1, user_budget = 1, manager_sense = 0.15,
+                           RESOURCE_ini = 1000, observe_type = 3, res_move_obs = FALSE, plotting = FALSE)
 write.csv(rep.pop, file = "batch5-popOnly.csv")
 
 # pop and users only
-rep.use <- gmse_replicates(replicates = 100,
+rep.use <- gmse_replicates(replicates = 100, time_max = 20,
                            consume_surv = 4.75, consume_repr = 5, times_feeding = 12, res_consume = 0.5,
                            res_birth_type = 0, res_death_type = 0,
                            land_ownership = TRUE, land_dim_1 = 200, land_dim_2 = 200,
-                           stakeholders = 40, scaring = FALSE, time_max = 20, manager_budget = 1, user_budget = 1000, manager_sense = 0.15,
-                           RESOURCE_ini = 1000, observe_type = 3, res_move_obs = FALSE, plotting = TRUE)
+                           stakeholders = 40, scaring = FALSE, manager_budget = 1, user_budget = 1000, manager_sense = 0.15,
+                           RESOURCE_ini = 1000, observe_type = 3, res_move_obs = FALSE, plotting = FALSE)
 write.csv(rep.use, file = "batch5-popAndUsers.csv")
