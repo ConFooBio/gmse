@@ -290,9 +290,13 @@ ATI_replicate <- function(UTrange = seq(0,1,0.5), BBrange = seq(0,1,0.5), ts = 1
         
         # Increment parameter combo index
         param_set <- param_set + 1
+        gc();
       } # end bb for loop
+      gc();
     } # end at else loop
+    gc();
   } # end at for loop
+  gc();
   
   # Simulation time
   end <- Sys.time()
@@ -315,7 +319,7 @@ ATI_replicate <- function(UTrange = seq(0,1,0.5), BBrange = seq(0,1,0.5), ts = 1
 } # end function
 
 # Run the simulations
-batch5 <- ATI_replicate(UTrange = seq(0,1,0.1), BBrange = seq(0,1,0.1), ts = 20, rep = 100, stkh = 40)
+batch5 <- ATI_replicate(UTrange = c(0, 0.1), BBrange = seq(0,1,0.1), ts = 5, rep = 2, stkh = 40)
 
 # Save the results on GitHub
 write.csv(batch5[[1]], file = "tab_ATI_batch5.csv")
@@ -326,19 +330,19 @@ write.csv(batch5[[5]], file = "act_batch5.csv")
 # write.csv(batch5[[6]], file = "case_obs_batch5.csv")
 
 # Population only
-rep.pop <- gmse_replicates(replicates = 100, time_max = 20,
-                           consume_surv = 4.75, consume_repr = 5, times_feeding = 12, res_consume = 0.5,
-                           res_birth_type = 0, res_death_type = 0,
-                           land_ownership = TRUE, land_dim_1 = 200, land_dim_2 = 200,
-                           stakeholders = 40, scaring = FALSE, manager_budget = 1, user_budget = 1, manager_sense = 0.15,
-                           RESOURCE_ini = 1000, observe_type = 3, res_move_obs = FALSE, plotting = FALSE)
-write.csv(rep.pop, file = "batch5-popOnly.csv")
+#rep.pop <- gmse_replicates(replicates = 100, time_max = 20,
+#                           consume_surv = 4.75, consume_repr = 5, times_feeding = 12, res_consume = 0.5,
+#                           res_birth_type = 0, res_death_type = 0,
+#                           land_ownership = TRUE, land_dim_1 = 200, land_dim_2 = 200,
+#                           stakeholders = 40, scaring = FALSE, manager_budget = 1, user_budget = 1, manager_sense = 0.15,
+#                           RESOURCE_ini = 1000, observe_type = 3, res_move_obs = FALSE, plotting = FALSE)
+#write.csv(rep.pop, file = "batch5-popOnly.csv")
 
 # pop and users only
-rep.use <- gmse_replicates(replicates = 100, time_max = 20,
-                           consume_surv = 4.75, consume_repr = 5, times_feeding = 12, res_consume = 0.5,
-                           res_birth_type = 0, res_death_type = 0,
-                           land_ownership = TRUE, land_dim_1 = 200, land_dim_2 = 200,
-                           stakeholders = 40, scaring = FALSE, manager_budget = 1, user_budget = 1000, manager_sense = 0.15,
-                           RESOURCE_ini = 1000, observe_type = 3, res_move_obs = FALSE, plotting = FALSE)
-write.csv(rep.use, file = "batch5-popAndUsers.csv")
+#rep.use <- gmse_replicates(replicates = 100, time_max = 20,
+#                           consume_surv = 4.75, consume_repr = 5, times_feeding = 12, res_consume = 0.5,
+#                           res_birth_type = 0, res_death_type = 0,
+#                           land_ownership = TRUE, land_dim_1 = 200, land_dim_2 = 200,
+#                           stakeholders = 40, scaring = FALSE, manager_budget = 1, user_budget = 1000, manager_sense = 0.15,
+#                           RESOURCE_ini = 1000, observe_type = 3, res_move_obs = FALSE, plotting = FALSE)
+#write.csv(rep.use, file = "batch5-popAndUsers.csv")
