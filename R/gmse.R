@@ -495,7 +495,7 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
                     manager_sense, public_land, group_think, age_repr,
                     usr_budget_rng, action_thres, budget_bonus, consume_surv,
                     consume_repr, times_feeding, ownership_var, usr_yld_budget, 
-                    man_yld_budget); 
+                    man_yld_budget, mem_prv_observ); 
    
     paras_errors(input_list);
     
