@@ -413,7 +413,8 @@ void check_action_threshold(double ***ACTION, double *paras){
 
         paras[129] = res_abund; /* update this time step estimation */
     }
-
+}
+    
 /* =============================================================================
  * This function calculates what the budget bonus should be (Adrian Bach)
  *      agent_array: Agent array, including managers (agent type 0)
