@@ -361,7 +361,7 @@ void set_action_costs(double ***ACTION, double ***COST, double *paras,
  * ========================================================================== */
 void check_action_threshold(double ***ACTION, double *paras){
     
-    int m_lyr, act_row, targ_row, over_threshold, t_s;
+    int m_lyr, act_row, targ_row, over_threshold, t_s, mem;
     double res_abund, target, dev, a_t, prv_est, var, pred, up_bound, lo_bound;
     
     m_lyr     = 0; /* Layer of the manager */ 
@@ -371,6 +371,7 @@ void check_action_threshold(double ***ACTION, double *paras){
     a_t       = paras[105]; /* Dev est pop from manager target trigger */
     t_s       = (int) paras[0]; /* What is the current time step? */
     prv_est   = paras[129]; /* Previous time step population estimation */
+    mem = (int) paras[130]; /* Do manager memorize the previous pop size estimation? */
     
     target = ACTION[act_row][targ_row][m_lyr]; /* Manager's target */
 
@@ -379,27 +380,39 @@ void check_action_threshold(double ***ACTION, double *paras){
         dev = -1 * dev;
     }
     
-    var = res_abund - prv_est; /* variation from previous time step */
-
-    pred = res_abund + var; /* manager's prediction for next time step population size based on variation */
-    /* Could be interesting to make the manager_sense inteviene here */
-
-    up_bound = (1 + a_t) * target; /* upper bound of the non-updating band */
-
-    lo_bound = (1 - a_t) * target; /* lower bound of the non-updating band */
-    
-    /* If the population deviation has hit the threshold, and time step, and that prediction is outside the non-updating band */
-    if(dev >= a_t || t_s < 3 || pred > up_bound || pred < lo_bound){ 
-        paras[106]  = 1; /* Policy is going to be updated now */
-        paras[107]  = 0; /* Zero time steps since last policy update */
+    if (mem == FALSE) {
+        
+        /* If the population deviation has hit the threshold, and time step, and that prediction is outside the non-updating band */
+        if(dev >= a_t || t_s < 3){ 
+            paras[106]  = 1; /* Policy is going to be updated now */
+            paras[107]  = 0; /* Zero time steps since last policy update */
+        }else{
+            paras[106]  = 0; /* Policy is not going to be updated now */
+            paras[107] += 1; /* One more time step since the last policy update */
+        }
+        
     }else{
-        paras[106]  = 0; /* Policy is not going to be updated now */
-        paras[107] += 1; /* One more time step since the last policy update */
-    }
+        
+        var = res_abund - prv_est; /* variation from previous time step */
 
-    paras[129] = res_abund; /* update this time step estimation */
-    /* Is that the right place for this? */
-}
+        pred = res_abund + var; /* manager's prediction for next time step population size based on variation */
+        /* Could be interesting to make the manager_sense inteviene here */
+
+        up_bound = (1 + a_t) * target; /* upper bound of the non-updating band */
+
+        lo_bound = (1 - a_t) * target; /* lower bound of the non-updating band */
+    
+        /* If the population deviation has hit the threshold, and time step, and that prediction is outside the non-updating band */
+        if(dev >= a_t || t_s < 3 || pred > up_bound || pred < lo_bound){ 
+            paras[106]  = 1; /* Policy is going to be updated now */
+            paras[107]  = 0; /* Zero time steps since last policy update */
+        }else{
+            paras[106]  = 0; /* Policy is not going to be updated now */
+            paras[107] += 1; /* One more time step since the last policy update */
+        }
+
+        paras[129] = res_abund; /* update this time step estimation */
+    }
 
 /* =============================================================================
  * This function calculates what the budget bonus should be (Adrian Bach)
