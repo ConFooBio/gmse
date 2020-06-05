@@ -78,7 +78,8 @@
 #'@param perceive_tend For a focal user, the perceived effect of tending to crops on one cell of owned landscape the user's total crop yield (e.g., if 1, then the user perceives tending crop to increase crop yield on one of their landscape cells by 1; NA by default, and calculated from other argument inputs).
 #'@param perceive_kill For a focal user, the perceived effect of destroying the crops on one cell of owned landscape on the user's total crop yield (e.g., if -1, then the user perceives killing crop to reduce their total crop yield on a landscape cell by 1; unlike other perceived actions, this is not additive. The value defines that absolute effect on crop yield predicted at a single cell, so -1 assumes a 100 per cent loss of yield. This is NA by default).
 #'@param usr_yld_budget An increase in user budget caused by yield on their owned cells. The value of this parameter is multiplied by the user's total yield to get the user's budget increment (default 0). This argument can take any real value, but user budgets are always restricted to being between 1 and 100000. Where yield adjustments result in budgets < 1, the actual budget is set to 1. And where yield adjustments result in budgets > 100000, the actual budget is set to 100000. 
-#'@param man_yld_budget An increase in manager budget caused by mean yield on user owned cells. The value of this parameter is multiplied by the users' mean total yield to get the manager's budget increment (default 0). This argument can take any real value, but manager budgets are always restricted to being between 1 and 100000. Where yield adjustments result in budgets < 1, the actual budget is set to 1. And where yield adjustments result in budgets > 100000, the actual budget is set to 100000. 
+#'@param man_yld_budget An increase in manager budget caused by mean yield on user owned cells. The value of this parameter is multiplied by the users' mean total yield to get the manager's budget increment (default 0). This argument can take any real value, but manager budgets are always restricted to being between 1 and 100000. Where yield adjustments result in budgets < 1, the actual budget is set to 1. And where yield adjustments result in budgets > 100000, the actual budget is set to 100000.
+#'@param mem_prv_observ A boolean parameter triggering the memorization of last time step's population size observation
 #'@return A large list is returned that includes detailed simulation histories for the resource, observation, management, and user models. This list includes eight elements, most of which are themselves complex lists of arrays: (1) A list of length `time_max` in which each element is an array of resources as they exist at the end of each time step. Resource arrays include all resources and their attributes (e.g., locations, growth rates, offspring, how they are affected by stakeholders, etc.). (2) A list of length `time_max` in which each element is an array of resource observations from the observation model. Observation arrays are similar to resource arrays, except that they can have a smaller number of rows if not all resources are observed, and they have additional columns that show the history of each resource being observed over the course of `times_observe` observations in the observation model. (3) A 2D array showing parameter values at each time step (unique rows); most of these values are static but some (e.g., resource number) change over time steps. (4) A list of length `time_max` in which each element is an array of the landscape that identifies proportion of crop production per cell. This allows for looking at where crop production is increased or decreased over time steps as a consequence of resource and stakeholder actions. (5) The total time the simulation took to run (not counting plotting time). (6) A 2D array of agents and their traits. (7) A list of length `time_max` in which each element is a 3D array of the costs of performing each action for managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in costs of particular actions can therefore be be examined over time. (8) A list of length `time_max` in which each element is a 3D array of the actions performed by managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in actions of agents can therefore be examined over time. Because the above lists cannot possibly be interpreted by eye all at once in the simulation output, it is highly recommended that the contents of a simulation be stored and interprted individually if need be; alternativley, simulations can more easily be interpreted through plots when `plotting = TRUE`.
 #'@examples
 #'\dontrun{
@@ -161,7 +162,8 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
                   perceive_tend  = NA,    # Users' perception of tending crops
                   perceive_kill  = NA,    # Users' perception of killing crops
                   usr_yld_budget = 0,     # Prop. yield added to user budget
-                  man_yld_budget = 0      # Prop. yield added to man budget
+                  man_yld_budget = 0,     # Prop. yield added to man budget
+                  mem_prv_observ = FALSE  # Memorize previous time step pop size estimation
 ){
     
     time_max <- time_max + 1; # Add to avoid confusion (see loop below)
@@ -343,6 +345,7 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
     tfe <- times_feeding;
     ytb <- usr_yld_budget;
     myb <- man_yld_budget;
+    pve <- mem_prv_observ;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -473,7 +476,8 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
                myb,     # 126. Yield to budget parameter for managers
                24,      # 127. Column in the agents array where budget bonus is
                25,      # 128. Column in the agents array where yield bonus is
-               0        # 129. Population estimation at previous time step
+               0,       # 129. Population estimation at previous time step
+               pve      # 130. Memory of previous pop size observation
     );
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
