@@ -106,11 +106,11 @@ body <- dashboardBody(
                            
                            tags$div(title="This value sets the maximum number of time steps for a simulation.",   
                                     sliderInput("time",
-                                                "Number of generations",
+                                                "Number of time steps",
                                                 min = 10,
                                                 max = 200,
                                                 step  = 10,
-                                                value = 100)
+                                                value = 40)
                            ),
                            
                            tags$div(title="This value sets the number of cells on the x dimension of the landscape (i.e., the number of columns in the landscape array; this can also be thought of as the x-axis when the landscape image is plotted). ", 
@@ -198,7 +198,7 @@ body <- dashboardBody(
                                     sliderInput("res_birth_K",
                                                 "Carrying capacity applied to birth",
                                                 min   = 10,
-                                                max   = 10000,
+                                                max   = 100000,
                                                 step  = 10,
                                                 value = 10000)
                            ),
@@ -207,7 +207,7 @@ body <- dashboardBody(
                                     sliderInput("res_death_K",
                                                 "Carrying capacity applied to death",
                                                 min   = 10,
-                                                max   = 10000,
+                                                max   = 100000,
                                                 step  = 10,
                                                 value = 2000)
                            ),
@@ -225,11 +225,46 @@ body <- dashboardBody(
                                     sliderInput("RESOURCE_ini",
                                                 "Initial population size",
                                                 min   = 10,
-                                                max   = 10000,
+                                                max   = 100000,
                                                 step  = 10,
                                                 value = 1000)
-                           )
+                           ),
                            
+                           tags$div(title="This is the age at which a resource is capable of reproducing in the simulation. Any resources that have not presistent for at least this number of time steps cannot reproduce.", 
+                                    sliderInput("age_repr",
+                                                "Age at which a resource can reproduce",
+                                                min   = 0,
+                                                max   = 5,
+                                                step  = 1,
+                                                value = 1)
+                           ), 
+                           
+                           tags$div(title="This is the amount of landscape yield that a resource needs to consume to survive to the next time step. This assumes that resource survival is limited by landscape consumption.", 
+                                    sliderInput("consume_surv",
+                                                "Consumption required to survive",
+                                                min   = 0,
+                                                max   = 4,
+                                                step  = 0.1,
+                                                value = 0)
+                           ),
+                           
+                           tags$div(title="This is the amount of landscape yield that a resource needs to consume to produce one offspring. More offspring will be produced if the resource consumes sufficient yield (e.g., if a resource consumes twice what they need to produce one offspring, then they will produce two offspring). This assumes that resource reproduction is limited by landscape consumption.", 
+                                    sliderInput("consume_repr",
+                                                "Consumption required to produce 1 offspring",
+                                                min   = 0,
+                                                max   = 4,
+                                                step  = 0.1,
+                                                value = 0)
+                           ),
+                           
+                           tags$div(title="This is the number of times that a resource can attempt to feed on the landscape in a time step. A resource will feed once on the landscape cell on which it begins, then move to a new landscape cell and feed again as many times as is specified.", 
+                                    sliderInput("times_feeding",
+                                                "Times a resource attempts to feed",
+                                                min   = 1,
+                                                max   = 8,
+                                                step  = 1,
+                                                value = 1)
+                           )
                     )
                     
             ),
@@ -343,7 +378,7 @@ body <- dashboardBody(
                                     sliderInput("manager_budget",
                                                 "Total manager policy-setting budget",
                                                 min   = 100,
-                                                max   = 10000,
+                                                max   = 100000,
                                                 step  = 100,
                                                 value = 1000)
                            ),
@@ -352,7 +387,7 @@ body <- dashboardBody(
                                     sliderInput("manage_target",
                                                 "Target size of the resource population",
                                                 min   = 10,
-                                                max   = 10000,
+                                                max   = 100000,
                                                 step  = 10,
                                                 value = 1000)
                            ),
@@ -364,6 +399,24 @@ body <- dashboardBody(
                                                 max   = 5,
                                                 step  = 1,
                                                 value = 1)
+                           ),
+                           
+                           tags$div(title="By default, managers update policy every time step. The action threshold causes managers to not update policy unless the observed resource abundance is outside a set proportion of the manager's target (e.g., for 0.5, if the observed abundance is less than 50% or more than 150% of the manager's target", 
+                                    sliderInput("action_thres",
+                                                "Threshold for manager updating policy",
+                                                min   = 0,
+                                                max   = 1,
+                                                step  = 0.01,
+                                                value = 0)
+                           ),
+                           
+                           tags$div(title="The proportion increase to a manager's budget accrued by not acting in a time step. For example, if a manager does not act in time t (due to the resource being within the range of inaction for the aciton threshold), then their budget will be incremented by a fixed proportion in t+1 (e.g., if the budget bonus is 0.5, then their budget will be increased by 50%)", 
+                                    sliderInput("budget_bonus",
+                                                "Proportion budget bonus for previous inaction",
+                                                min   = 0,
+                                                max   = 1,
+                                                step  = 0.01,
+                                                value = 0)
                            )
                     )
             ),
@@ -465,13 +518,38 @@ body <- dashboardBody(
                                                 value = 10)
                            ),
                            
-                           tags$div(title="This is the total budget of each stakeholder for performing actions. The cost of performing an action is determined by the 'miminimum_cost' of actions, and the policy set by the manager.",
+                           tags$div(title="This is the total budget of each user for performing actions. The cost of performing an action is determined by the 'miminimum_cost' of actions, and the policy set by the manager.",
                                     sliderInput("user_budget",
                                                 "Total user action budget",
                                                 min   = 100,
-                                                max   = 10000,
+                                                max   = 100000,
                                                 step  = 100,
                                                 value = 1000)
+                           ),
+                           
+                           tags$div(title="This determines whether or not all users think the same in how they allocate their actions. By setting this to 'True', simulation speed can be increased, but at the expense of independent user decision-making.", 
+                                    radioButtons("group_think", 
+                                                 "All users think and act identically",
+                                                 c("True" = "0",
+                                                   "False" = "1"))
+                           ),
+                           
+                           tags$div(title="By default, all users have the same budget. Adjusting this parameter gives a uniform distribution of user budgets around the mean, with a range of plus or minus this parameter", 
+                                    sliderInput("usr_budget_rng",
+                                                "Range around the expected user budget",
+                                                min   = 0,
+                                                max   = 50,
+                                                step  = 5,
+                                                value = 0)
+                           ),
+                           
+                           tags$div(title="This parameter adjusts the evenness of the ownership of user cells on the landscape. Values of zero result in mostly even rectangles of user land ownership, while values near one cause few users to own a lot of land and many users to own muc less land.", 
+                                    sliderInput("ownership_var",
+                                                "Variation in user land ownership",
+                                                min   = 0,
+                                                max   = 1,
+                                                step  = 0.1,
+                                                value = 0)
                            )
                     )
             ),
@@ -725,25 +803,30 @@ server <- function(input, output){
              land_ownership = as.numeric(input$land_ownership),
              manage_freq    = input$manage_freq,
              converge_crit  = input$converge_crit,
-             manager_sense  = 0.1,
-             public_land    = input$public_land
+             manager_sense  = 0.9,
+             public_land    = input$public_land,
+             group_think    = FALSE,
+             age_repr       = input$age_repr,     
+             usr_budget_rng = input$usr_budget_rng,    
+             action_thres   = input$action_thres,   
+             budget_bonus   = input$budget_bonus,     
+             consume_surv   = input$consume_surv,    
+             consume_repr   = input$consume_repr,     
+             times_feeding  = input$times_feeding,
+             ownership_var  = input$ownership_var
         );
     })
-
+    
     output$plot1 <- renderPlot({
         set.seed(systime());
         sim <- run_gmse();
-        plot_gmse_results(res = sim$resource, obs = sim$observation, 
-                          land = sim$land, agents = sim$agents, 
-                          paras = sim$paras, ACTION = sim$action, 
-                          COST = sim$cost);
+        plot_gmse_results(sim_results = sim);
     })
     
     output$plot2 <- renderPlot({
         set.seed(systime());
         sim <- run_gmse();
-        plot_gmse_effort(agents = sim$agents, paras = sim$paras, 
-                         ACTION = sim$action,  COST = sim$cost);
+        plot_gmse_effort(sim_results = sim);
     })
     
     output$table1 <- renderTable({
@@ -776,7 +859,8 @@ server <- function(input, output){
         simact[,includ];
     }, include.colnames = TRUE)
     
-}    
+} 
+
 
 # Run the application 
 shinyApp(ui = ui, server = server)

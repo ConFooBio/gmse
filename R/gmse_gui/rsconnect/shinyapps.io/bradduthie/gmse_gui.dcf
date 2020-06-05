@@ -5,8 +5,8 @@ account: bradduthie
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 205319
-bundleId: 1132774
+bundleId: 3232259
 url: https://bradduthie.shinyapps.io/gmse_gui/
-when: 1513181793.02368
+when: 1591357216.11927
 asMultiple: FALSE
 asStatic: FALSE
