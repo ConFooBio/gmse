@@ -9,14 +9,15 @@
 
 #### Update GMSE with the new features ####
 
-# Make sure this script is opened within the gmse_forkRQ1.Rproj project
-# Update GMSE clicking Build > Clean and Rebuild
-# batch 5 ==> with perfect observation (obs_type = 3 & res_move_obs = FALSE & agent_view = land_dim_1 to make counting as fast as possible)
-
+# batch 5 ==> with perfect observation (obs_type = 3 & res_move_obs = FALSE)
 
 #### Simulations ####
 
-ATI_replicate <- function(UTrange = 0, BBrange = 0, ts = 20, rep = 100, bdgt = 1000, popinit = 1000, tf = 12, cons = 0.5, surv = 4.75, repr = 5, trgt = 1000, stkh = 40, ldim = 200, freq = 10, obstype = 3,
+ATI_replicate <- function(UTrange = 0, BBrange = 0, 
+                          ts = 20, rep = 100, freq = 10,
+                          bdgt = 1000, trgt = 2000, stkh = 40, obstype = 3,
+                          popinit = 1000, tf = 12, cons = 0.5, surv = 4.75, repr = 5, 
+                          ldim = 200,
                           out_file = "OTI_default_results.csv") {
   
   file.create(out_file); # Initialise a file in the directory.
@@ -73,11 +74,13 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0, ts = 20, rep = 100, bdgt = 1
         
         # Run GMSE for the parameter combo
         sim <- gmse(time_max = ts, 
+                    RESOURCE_ini = popinit, res_birth_type = 0, res_death_type = 0, 
                     consume_surv = surv, consume_repr = repr, times_feeding = tf, res_consume = cons,
-                    res_birth_type = 0, res_death_type = 0, land_ownership = TRUE, land_dim_1 = ldim, land_dim_2 = ldim,
-                    stakeholders = stkh, scaring = FALSE, manager_budget = bdgt, user_budget = bdgt, manager_sense = 0.15,
-                    action_thres = 0, budget_bonus = 0, manage_target = trgt,
-                    RESOURCE_ini = 1000, observe_type = obstype, res_move_obs = FALSE, plotting = FALSE)
+                    land_ownership = TRUE, land_dim_1 = ldim, land_dim_2 = ldim,
+                    stakeholders = stkh, scaring = FALSE, manager_budget = bdgt, user_budget = bdgt, 
+                    manager_sense = 0.15, manage_target = trgt, observe_type = obstype, res_move_obs = FALSE,
+                    action_thres = 0, budget_bonus = 0, 
+                    plotting = FALSE)
         
         # Store the last time step number (for extinction-related bugs)
         final_ts <- length(which(sim$paras[,1] != 0))
@@ -203,11 +206,13 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0, ts = 20, rep = 100, bdgt = 1
           
           # Run GMSE for the parameter combo
           sim <- gmse(time_max = ts, 
+                      RESOURCE_ini = popinit, res_birth_type = 0, res_death_type = 0, 
                       consume_surv = surv, consume_repr = repr, times_feeding = tf, res_consume = cons,
-                      res_birth_type = 0, res_death_type = 0, land_ownership = TRUE, land_dim_1 = ldim, land_dim_2 = ldim,
-                      stakeholders = stkh, scaring = FALSE, manager_budget = bdgt, user_budget = bdgt, manager_sense = 0.15,
-                      action_thres = at, budget_bonus = bb, manage_target = trgt,
-                      RESOURCE_ini = 1000, observe_type = obstype, res_move_obs = FALSE, plotting = FALSE)
+                      land_ownership = TRUE, land_dim_1 = ldim, land_dim_2 = ldim,
+                      stakeholders = stkh, scaring = FALSE, manager_budget = bdgt, user_budget = bdgt, 
+                      manager_sense = 0.15, manage_target = trgt, observe_type = obstype, res_move_obs = FALSE,
+                      action_thres = at, budget_bonus = bb, 
+                      plotting = FALSE)
           
           # Store the last time step number (for extinction-related bugs)
           final_ts <- length(which(sim$paras[,1] != 0))
