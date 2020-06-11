@@ -22,11 +22,13 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0,
   
   file.create(out_file); # Initialise a file in the directory.
   
+  out_head <- as.character(strsplit(out_file, split = ".csv"));
+  
   # Now initialise other files to print 
-  bgt_file <- paste("flw_bgt-", out_file, sep = ""); # Each now has a prefix
-  pop_file <- paste("flw_pop-", out_file, sep = "");
-  cos_file <- paste("flw_cos-", out_file, sep = "");
-  act_file <- paste("flw_act-", out_file, sep = "");
+  bgt_file <- paste(out_head, "-flw_bgt", ".csv", sep = ""); 
+  pop_file <- paste(out_head, "-flw_pop", ".csv", sep = "");
+  cos_file <- paste(out_head, "-flw_cos", ".csv", sep = "");
+  act_file <- paste(out_head, "-flw_act", ".csv", sep = "");
   
   # Now create the other new files
   file.create(bgt_file);
