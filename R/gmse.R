@@ -477,7 +477,8 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
                24,      # 127. Column in the agents array where budget bonus is
                25,      # 128. Column in the agents array where yield bonus is
                0,       # 129. Population estimation at previous time step
-               pve      # 130. Memory of previous pop size observation
+               pve,     # 130. Memory of previous pop size observation
+               0        # 131. Final budget of managers after applying bonuses
     );
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
