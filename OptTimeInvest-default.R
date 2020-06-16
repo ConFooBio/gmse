@@ -639,18 +639,18 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
 
 ## Example
 # import data
-tab_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/tab_ATI_case_batch4.csv")
+tab_OTI_default_results <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/batch6-perfObs/ATI-sim-merged-results.csv")
 brut <- as.data.frame(tab_OTI_default_results)
 
 stat <- OTI_stats(df = brut, ts = 20, omit.extinction = F) 
 woe_stat <- OTI_stats(df = brut, ts = 20, omit.extinction = T)
 
-# 100% d'extinction pour 100 - 100
-woe_stat <- woe_stat[-dim(woe_stat)[1],]
+# eliminate 100% extinction parameter sets
+woe_stat <- woe_stat[-which(as.numeric(as.character(woe_stat$rep)) < 1),]
 
 # Save the table in a csv file
-write.csv(stat, file = "stats_ATI_case_batch4.csv", row.names = F)
-write.csv(woe_stat, file = "stats_ATI_case_batch4_woEctinctions.csv", row.names = F)
+write.csv(stat, file = "stats_ATI_case_batch6.csv", row.names = F)
+write.csv(woe_stat, file = "stats_ATI_case_batch6_woEctinctions.csv", row.names = F)
 
 ######## Plotting ########
 
@@ -1250,7 +1250,7 @@ stats_resplot <- function(df, proxy = c("dev", "abs.dev", "fin.yie", "yie.equ", 
 }
 
 ## Examples
-stats_resplot(df = stat, proxy = "ovr.K", variance = "sd", omit.extinction = F)
+stats_resplot(df = stat, proxy = "dev", variance = "ci", omit.extinction = F)
 stats_resplot(df = woe_stat, proxy = "dev", variance = "ci", omit.extinction = T)
 
 # attach(stat)
@@ -1759,44 +1759,44 @@ stats_resplot(df = woe_stat, proxy = "dev", variance = "ci", omit.extinction = T
 # popul <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/Default-case/flw_pop_batch3.csv")
 # actio <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/Default-case/flw_act_batch3.csv")
 
-costs <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/case_cos_batch4.csv")
-popul <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/case_pop_batch4.csv")
-actio <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/case_act_batch4.csv")
-budge <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/case_bgt_batch4.csv")
-obser <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/case_obs_batch4.csv")
+costs <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/batch6-perfObs/cos-ATI-res-merged.csv")
+popul <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/batch6-perfObs/pop-ATI-res-merged.csv")
+actio <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/batch6-perfObs/act-ATI-res-merged.csv")
+#budge <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/batch6-perfObs/")
+#obser <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/batch6-perfObs/")
 
 # only without extinction
-we_costs <- subset(costs, extinct == 0)
-we_popul <- subset(popul, extinct == 0)
-we_actio <- subset(actio, extinct == 0)
-we_budge <- subset(budge, extinct == 0)
-we_obser <- subset(obser, extinct == 0)
+we_costs <- subset(costs, Extinct == 0)
+we_popul <- subset(popul, Extinct == 0)
+we_actio <- subset(actio, Extinct == 0)
+#we_budge <- subset(budge, extinct == 0)
+#we_obser <- subset(obser, extinct == 0)
 
 # function returning ymax, ymin and ymean and plot
 maxminmean <- function(df, upth, bubo, tmax, color, yaxis) {
   # subsetting
-  dd <- subset(df, at == upth & bb == bubo)  
+  dd <- subset(df, UT == upth & BB == bubo)  
   
   # max
-  ymax <- max(dd[,6])
+  ymax <- max(dd[,9])
   # ymax <- max(dd[,8])
-  for (k in 7:dim(dd)[2]) {
+  for (k in 10:dim(dd)[2]) {
   # for (k in 9:dim(dd)[2]) {
     ymax <- c(ymax,max(dd[,k]))
   }
   
   # min
-  ymin <- min(dd[,6])
+  ymin <- min(dd[,9])
   # ymax <- max(dd[,8])
-  for (k in 7:dim(dd)[2]) {
+  for (k in 10:dim(dd)[2]) {
     # for (k in 9:dim(dd)[2]) 
     ymin <- c(ymin,min(dd[,k]))
   }
   
   # mean
-  ymean <- mean(dd[,6])
+  ymean <- mean(dd[,9])
   # ymax <- max(dd[,8])
-  for (k in 7:dim(dd)[2]) {
+  for (k in 10:dim(dd)[2]) {
     # for (k in 9:dim(dd)[2]) 
     ymean <- c(ymean,mean(dd[,k]))
   }
@@ -1817,8 +1817,9 @@ maxminmean <- function(df, upth, bubo, tmax, color, yaxis) {
   } else if (str_detect(yaxis, "cull")){
     abline(h = dd[1,2]/10, lty = 2, pch = 2, col = "black")
   } else if (str_detect(yaxis, "pop") | str_detect(yaxis, "Pop") ){
-    abline(h = dd[1,5], lty = 2, pch = 2, col = "red")
-    abline(h = dd[1,6], lty = 2, pch = 2, col = "green")
+    abline(h = dd[1,7], lty = 2, pch = 2, col = "red")
+    abline(h = dd[1,7]*(1-dd[1,3]), lty = 2, pch = 2, col = "green")
+    abline(h = dd[1,7]*(1+dd[1,3]), lty = 2, pch = 2, col = "green")
   }
   
   lines(x = xrange, y = ymean, type = "b", pch = 20, col = color)
@@ -1827,7 +1828,7 @@ maxminmean <- function(df, upth, bubo, tmax, color, yaxis) {
 # all the different trajectories
 multi <- function(df, upth, bubo, tmax, yaxis) {
   # subsetting
-  dd <- subset(df, at == upth & bb == bubo)  
+  dd <- subset(df, UT == upth & BB == bubo)  
   
   # # max
   # ymax <- max(dd[,6])
@@ -1869,11 +1870,11 @@ multi <- function(df, upth, bubo, tmax, yaxis) {
   } else if (str_detect(yaxis, "population")){
     xtendrange <- seq(-1,tmax+1,1)
     trans <- adjustcolor("lightgreen",alpha.f=0.5)
-    upperUT <- rep((1+upth)*1000, length(xtendrange))
-    lowerUT <- rep((1-upth)*1000, length(xtendrange))
+    upperUT <- rep((1+upth)*dd[1,7], length(xtendrange))
+    lowerUT <- rep((1-upth)*dd[1,7], length(xtendrange))
     
     polygon(c(xtendrange,rev(xtendrange)),c(upperUT,rev(lowerUT)),col=trans, border = "green")
-    abline(h = c(1000, 1500), col = c("darkgreen", "darkred"), lty = 2)
+    abline(h = dd[1,7], col = "darkgreen", lty = 2)
   }
   
   # all the trajectories
@@ -1884,7 +1885,7 @@ multi <- function(df, upth, bubo, tmax, yaxis) {
 
 # Example
 maxminmean(we_costs, upth = 0.2, bubo = 0.4, tmax = 20, color = "blue", yaxis = "Costs of actions (in a.b.u.)")
-multi(we_actio, upth = 0.5, bubo = 0.7, tmax = 20, yaxis = "Number of individuals culled per time step")
+multi(we_actio, upth = 0.1, bubo = 0.5, tmax = 20, yaxis = "Number of individuals culled per time step")
 maxminmean(we_popul, upth = 0, bubo = 0, tmax = 20, color = "green", yaxis = "Population density on the map")
 
 # a function to compare the trajectories between FLI and ATI results
@@ -2150,11 +2151,11 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci"), nb
       
       # plot base
       plot(1, type = "n", xlab = "Budget bonus\n(in % of initial budget)", ylab = "Sum of Users final budgets\n(in k-a.b.u, mean +/- SD)",
-           ylim = c(min(min(fli_avg+fli_sd)-5,min(oti_avg+oti_sd))-5,100), xlim = c(0,100)) # ,
+           ylim = c(min(min(fli_avg+fli_sd)-5,min(oti_avg+oti_sd))-5,400), xlim = c(0,100)) # ,
            # main = paste("UT = ", upth*100,"%"))
       polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "grey")
       abline(h = fli_avg, lwd = 2)
-      abline(h = 100, lty = 2, lwd = 1.5, col = "darkgreen")
+      abline(h = 400, lty = 2, lwd = 1.5, col = "darkgreen")
       
       points(y = oti_avg, x = xoti, pch = 16, col = "blue")
       # arrows(xoti, oti_avg-oti_sd_neg, xoti, oti_avg+oti_sd_pos, length=0.05, angle=90, code=3, col = "blue")
@@ -2189,11 +2190,11 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci"), nb
       
       # plot base
       plot(1, type = "n", xlab = "Budget bonus\n(in % of initial budget)", ylab = "Sum of Users final budgets\n(in k-a.b.u, mean +/- 95CI)",
-           ylim = c(min(min(fli_95ci_inf)-2,min(oti_95ci_inf))-2,100), xlim = c(0,100)) # , 
+           ylim = c(min(min(fli_95ci_inf)-2,min(oti_95ci_inf))-2,400), xlim = c(0,100)) # , 
            # main = paste("UT = ", upth*100,"%"))
       polygon(c(xtendrange,rev(xtendrange)),c(flimax,rev(flimin)),col=trans, border = "grey")
       abline(h = fli_avg, lwd = 2)
-      abline(h = 100, lty = 2, lwd = 1.5, col = "darkgreen")
+      abline(h = 400, lty = 2, lwd = 1.5, col = "darkgreen")
       
       points(y = oti_avg, x = xoti, pch = 16, col = "blue")
       arrows(xoti, oti_95ci_inf, xoti, oti_95ci_sup, length=0.05, angle=90, code=3, col = "darkblue")
