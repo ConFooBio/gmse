@@ -826,6 +826,10 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     
     most_fit       = 0;
     budget         = AGENT[agent][16] + AGENT[agent][24] + AGENT[agent][25]; 
+    
+    /* store final budget in paras vector */
+    paras[131] = budget;
+    
     if(budget < 1){
       budget = 1;
     }
