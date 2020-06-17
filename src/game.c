@@ -825,16 +825,18 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     agentID        = (int) AGENT[agent][0];
     
     most_fit       = 0;
-    budget         = AGENT[agent][16] + AGENT[agent][24] + AGENT[agent][25]; 
-    
-    /* store final budget in paras vector */
-    paras[131] = budget;
+    budget         = AGENT[agent][16] + AGENT[agent][24] + AGENT[agent][25];
     
     if(budget < 1){
       budget = 1;
     }
     if(budget > 100001){
       budget = 100000;
+    } 
+    
+    /* store final budget in paras vector */
+    if (managing == 1) {
+        paras[131] = budget;
     }
     
     POPULATION = malloc(xdim * sizeof(double *));
