@@ -361,7 +361,7 @@ void set_action_costs(double ***ACTION, double ***COST, double *paras,
  * ========================================================================== */
 void check_action_threshold(double ***ACTION, double *paras){
     
-    int m_lyr, act_row, targ_row, over_threshold, t_s, mem;
+    int m_lyr, act_row, targ_row, t_s, mem; /* over_threshold, */
     double res_abund, target, dev, a_t, prv_est, var, pred, up_bound, lo_bound;
     
     m_lyr     = 0; /* Layer of the manager */ 
@@ -446,12 +446,13 @@ void calc_budget_bonus(double **agent_array, double *paras, int agent){
  * ========================================================================== */
 void apply_budget_bonus(double **agent_array, double *paras){
     
-    int recent_update, N_agents, agent, bonus_col;
+    int recent_update, N_agents, agent, bonus_col, budget_col;
     double a_t;
     
     N_agents       = (int) paras[54];     /* Total number of agents */
     a_t            = (double) paras[105]; /* Dev est pop target trigger */
     recent_update  = (int) paras[106];    /* Policy recently updated */
+    budget_col   = (int) paras[112];    /* Column where budget is recorded */
     bonus_col      = (int) paras[127];    /* Column where budget bonus is */
 
     if(a_t > 0 && recent_update == 0){ /* If action threshold is being used */
@@ -467,6 +468,10 @@ void apply_budget_bonus(double **agent_array, double *paras){
             } 
         }
     }
+    
+    /* store managers budget in paras */
+    paras[131] = agent_array[0][budget_col] + agent_array[0][bonus_col];
+    
 }
 
 /* =============================================================================

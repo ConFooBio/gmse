@@ -117,7 +117,7 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0,
           # obs <- rep(0, ts)
           
           for (t in 1:final_ts) {
-            bdg[t] <- sim$agents[[t]][1,17]
+            bdg[t] <- sim$paras[t,132]
             pop[t] <- dim(sim$resource[[t]])[1]
             cos[t] <- sim$cost[[t]][1,9,2]
             act[t] <- mean(sim$action[[t]][1,9,2:stkh])
@@ -249,7 +249,7 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0,
             # obs <- rep(0, ts)
             
             for (t in 1:final_ts) {
-              bdg[t] <- sim$agents[[t]][1,17]
+              bdg[t] <- sim$paras[t,132]
               pop[t] <- dim(sim$resource[[t]])[1]
               cos[t] <- sim$cost[[t]][1,9,2]
               act[t] <- mean(sim$action[[t]][1,9,2:stkh])

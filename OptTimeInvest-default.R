@@ -803,7 +803,7 @@ for (n in 1:length(upth)) {
 }
 }
 
-### another alternative
+#### UT BB effect on extinction frequency ####
 {d <- stat
 
 d$at <- d$at*100
@@ -852,13 +852,20 @@ points(x = xadj1, y = ext[-1,2], xlab = "Update threshold", type = "b", pch = 20
 points(x = xadj2, y = ext[-1,11], type = "b", cex = 1, lwd = 2, lty = "dashed", col = "blue")
 points(x = 0, y = ext[1,1], pch = 15)
 abline(h=ext[1,1], lty = 1, col = "black")
-
 # Without management?
-no.mgmt <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/WithoutManagement.csv")
+no.mgmt <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/batch6-perfObs/manager_budget_is_1.csv", sep = "\t", header = FALSE)
 
-no.mgmt.extfreq <- length(which(no.mgmt$time_step < 20))/100
+# no.mgmt.extfreq <- length(which(no.mgmt$time_step < 20))/100
+no.mgmt.extfreq <- sum(no.mgmt[,5])/dim(no.mgmt)[1]
 points(y = no.mgmt.extfreq, x = 0, pch = 17, col = "black")
 abline(h = no.mgmt.extfreq, lty = 2, lwd = 1, col = "black")
+
+# Without humans?
+no.hum <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/batch6-perfObs/user_and_manager_budget_is_1.csv", sep = "\t", header = FALSE)
+
+no.hum.extfreq <- sum(no.hum[,5])/dim(no.hum)[1]
+points(y = no.hum.extfreq, x = 0, pch = 23, col = "black")
+abline(h = no.hum.extfreq, lty = 3, lwd = 1, col = "black")
 }
 
 #### Effect of BB ####
@@ -887,8 +894,22 @@ for (i in 2:length(upth)) {
   sd <- rbind(sd, sub$act_dev_sd)
   ci_inf <- rbind(ci_inf, sub$act_dev_95ci_inf)
   ci_sup <- rbind(ci_sup, sub$act_dev_95ci_sup)
+  
+  # Without management?
+  no.mgmt <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/batch6-perfObs/manager_budget_is_1.csv", sep = "\t", header = FALSE)
+  
+  # no.mgmt.extfreq <- length(which(no.mgmt$time_step < 20))/100
+  no.mgmt.extfreq <- sum(no.mgmt[,5])/dim(no.mgmt)[1]
+  points(y = no.mgmt.extfreq, x = 0, pch = 17, col = "black")
+  abline(h = no.mgmt.extfreq, lty = 2, lwd = 1, col = "black")
+  
+  # Without humans?
+  no.hum <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/batch6-perfObs/user_and_manager_budget_is_1.csv", sep = "\t", header = FALSE)
+  
+  no.hum.extfreq <- sum(no.hum[,5])/dim(no.hum)[1]
+  points(y = no.hum.extfreq, x = 5, pch = 23, col = "black")
+  abline(h = no.hum.extfreq, lty = 3, lwd = 1, col = "black")
 }
-
 
 xadj1 <- as.numeric(upth[-1]) - 1;
 xadj2 <- as.numeric(upth[-1]) + 1;
@@ -917,12 +938,24 @@ points(x = xadj2, y = dev[-1,11], type = "b", cex = 1, lwd = 2, lty = "dashed", 
 points(x = 0, y = dev[1,1], pch = 15)
 abline(h=dev[1,1], lty = 1, col = "black")
 
-# # Without management?
-# no.mgmt <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/data/WithoutManagement.csv")
-# 
+# Without management?
+no.mgmt <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/batch6-perfObs/manager_budget_is_1.csv", sep = "\t", header = FALSE)
+
 # no.mgmt.extfreq <- length(which(no.mgmt$time_step < 20))/100
-# points(y = no.mgmt.extfreq, x = 0, pch = 17, col = "black")
-# abline(h = no.mgmt.extfreq, lty = 2, lwd = 1, col = "black")
+no.mgmt.extfreq <- 100*sum(no.mgmt[,6])/dim(no.mgmt)[1]
+boot <- 100*boot_sd_ci(no.mgmt[,6])
+arrows(0, boot[2], 0, boot[3], length=0.05, angle=90, code=3, col = "black")
+points(y = no.mgmt.extfreq, x = 0, pch = 17, col = "black")
+abline(h = no.mgmt.extfreq, lty = 2, lwd = 1, col = "black")
+
+# Without humans?
+no.hum <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/batch6-perfObs/user_and_manager_budget_is_1.csv", sep = "\t", header = FALSE)
+
+no.hum.extfreq <- 100*sum(no.hum[,6])/dim(no.hum)[1]
+boot <- 100*boot_sd_ci(no.hum[,6])
+arrows(0, boot[2], 0, boot[3], length=0.05, angle=90, code=3, col = "black")
+points(y = no.hum.extfreq, x = 0, pch = 23, col = "black")
+abline(h = no.hum.extfreq, lty = 3, lwd = 1, col = "black")
 }
 
 #### box plots ####
