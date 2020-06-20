@@ -44,7 +44,7 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0,
   
   ## Create empty structures to gather simulation results
   
-  columns <- c("rep", "budget", "at", "bb", "extinct", "act_dev", "abs_act_dev", "fin_yield", "max_diff_yield", "inac_ts", "overK") #, "param_set"
+  columns <- c("rep", "budget", "at", "bb", "extinct", "act_dev", "abs_act_dev", "fin_yield", "max_diff_yield", "inac_ts", "SSD") #, "overK", "param_set"
   
   # Empty 3D array of correct size 
   # Dimensions(lines = replicates, columns = measures, layer = parameter combination)
@@ -157,8 +157,15 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0,
           # Number of timesteps during which Manager chose not to update policy
           OTI_default_results[k,10] <- (final_ts-sum(sim$paras[,107]))/final_ts
           
-          # Number of K exceedings
-          OTI_default_results[k,11] <- sum(sim$paras[,109])/final_ts
+          # # Number of K exceedings
+          # OTI_default_results[k,11] <- sum(sim$paras[,109])/final_ts
+          
+          # Sum of squared deviation from target along time steps
+          ssd <- 0
+          for (i in 1:final_ts){
+            ssd <- ssd + (dim(sim$resource[[i]])[1]-sim$paras[i,7])^2
+          }
+          OTI_default_results[k,11] <- ssd
           
           # # Param set
           # OTI_default_results[k,12,param_set] <- param_set
@@ -184,6 +191,13 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0,
           
           # Number of K exceedings
           OTI_default_results[k,11] <- sum(sim$paras[,109])/final_ts
+          
+          # Sum of squared deviation from target along time steps
+          ssd <- 0
+          for (i in 1:final_ts){
+            ssd <- ssd + (dim(sim$resource[[i]])[1]-sim$paras[i,7])^2
+          }
+          OTI_default_results[k,11] <- ssd
           
           # # Param set
           # OTI_default_results[k,12,param_set] <- param_set
@@ -292,6 +306,13 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0,
             # Number of K exceedings
             OTI_default_results[k,11] <- sum(sim$paras[,109])/final_ts
             
+            # Sum of squared deviation from target along time steps
+            ssd <- 0
+            for (i in 1:final_ts){
+              ssd <- ssd + (dim(sim$resource[[i]])[1]-sim$paras[i,7])^2
+            }
+            OTI_default_results[k,11] <- ssd
+            
             # # Param set
             # OTI_default_results[k,12] <- param_set
           }
@@ -316,6 +337,13 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0,
             
             # Number of K exceedings
             OTI_default_results[k,11] <- sum(sim$paras[,109])/final_ts
+            
+            # Sum of squared deviation from target along time steps
+            ssd <- 0
+            for (i in 1:final_ts){
+              ssd <- ssd + (dim(sim$resource[[i]])[1]-sim$paras[i,7])^2
+            }
+            OTI_default_results[k,11] <- ssd
             
             # # Param set
             # OTI_default_results[k,12] <- param_set

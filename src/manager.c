@@ -431,7 +431,7 @@ void calc_budget_bonus(double **agent_array, double *paras, int agent){
     bonus_col    = (int) paras[127];    /* Column where budget bonus is */
 
     /* The recalculation of the baseline allows the bonus to be cumulative */
-    baseline  = agent_array[agent][budget_col] + agent_array[agent][bonus_col];
+    baseline  = agent_array[agent][budget_col];  /* + agent_array[agent][bonus_col] */
     new_bonus = baseline * budget_bonus;
 
     if( (baseline + new_bonus) < 100000.00 ){
