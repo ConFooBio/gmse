@@ -13,12 +13,12 @@
 
 #### Simulations ####
 
-ATI_replicate <- function(UTrange = 0, BBrange = 0, 
+ATI_replicate <- function(UTrange = 0, BBrange = 0,
                           ts = 20, rep = 100, freq = 10,
                           bdgt = 1000, trgt = 2000, stkh = 40, obstype = 3,
                           popinit = 1000, tf = 12, cons = 0.5, surv = 4.75, repr = 5, 
                           ldim = 200,
-                          out_file = "ATI_MEMORY_results.csv") {
+                          out_file = "ATI_NOBONUSRESET_results.csv") {
   
   file.create(out_file); # Initialise a file in the directory.
   
@@ -75,7 +75,7 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0,
       for (k in 1:rep) {
         
         # Run GMSE for the parameter combo
-        sim <- gmse(time_max = ts, mem_prv_observ = TRUE, 
+        sim <- gmse(time_max = ts, mem_prv_observ = FALSE, bgt_bonus_reset = FALSE, 
                     RESOURCE_ini = popinit, res_birth_type = 0, res_death_type = 0, 
                     consume_surv = surv, consume_repr = repr, times_feeding = tf, res_consume = cons,
                     land_ownership = TRUE, land_dim_1 = ldim, land_dim_2 = ldim,
@@ -221,7 +221,7 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0,
         for (k in 1:rep) {
           
           # Run GMSE for the parameter combo
-          sim <- gmse(time_max = ts, mem_prv_observ = TRUE, 
+          sim <- gmse(time_max = ts, mem_prv_observ = FALSE, bgt_bonus_reset = FALSE, 
                       RESOURCE_ini = popinit, res_birth_type = 0, res_death_type = 0, 
                       consume_surv = surv, consume_repr = repr, times_feeding = tf, res_consume = cons,
                       land_ownership = TRUE, land_dim_1 = ldim, land_dim_2 = ldim,
