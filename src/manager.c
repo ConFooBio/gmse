@@ -446,29 +446,50 @@ void calc_budget_bonus(double **agent_array, double *paras, int agent){
  * ========================================================================== */
 void apply_budget_bonus(double **agent_array, double *paras){
     
-    int recent_update, N_agents, agent, bonus_col, budget_col;
-    double a_t;
+    int recent_update, N_agents, agent, bonus_col, budget_col, bonus_reset, cost_decrease;
+    double a_t, b_b;
     
     N_agents       = (int) paras[54];     /* Total number of agents */
     a_t            = (double) paras[105]; /* Dev est pop target trigger */
+    b_b            = (double) paras[110]; /* budget bonus */
     recent_update  = (int) paras[106];    /* Policy recently updated */
-    budget_col   = (int) paras[112];    /* Column where budget is recorded */
+    budget_col     = (int) paras[112];    /* Column where budget is recorded */
     bonus_col      = (int) paras[127];    /* Column where budget bonus is */
-
-    if(a_t > 0 && recent_update == 0){ /* If action threshold is being used */
+    bonus_reset    = (int) paras[132];    /* Reset budget bonus when cost decreased? */
+    cost_decrease  = (int) paras[133];    /* Have the cost decreased last time step */
+       
+    if (bonus_reset == 1) {
+      if(a_t > 0 && recent_update == 0){ /* If action threshold is being used */
+          for(agent = 0; agent < N_agents; agent++){
+              if(agent_array[agent][1] == 0){
+                  calc_budget_bonus(agent_array, paras, agent);
+              } 
+          }
+      }else{
+          for(agent = 0; agent < N_agents; agent++){
+              if(agent_array[agent][1] == 0){
+                  agent_array[agent][bonus_col] = 0.0;
+              } 
+          }
+      }
+    } else {
+      if(a_t > 0 && recent_update == 0){ /* If action threshold is being used */
         for(agent = 0; agent < N_agents; agent++){
-            if(agent_array[agent][1] == 0){
-                calc_budget_bonus(agent_array, paras, agent);
-            } 
+          if(agent_array[agent][1] == 0){
+            calc_budget_bonus(agent_array, paras, agent);
+          } 
         }
-    }else{
-        for(agent = 0; agent < N_agents; agent++){
+      }else{
+        if (cost_decrease == 0) {
+          for(agent = 0; agent < N_agents; agent++){
             if(agent_array[agent][1] == 0){
-                agent_array[agent][bonus_col] = 0.0;
+              agent_array[agent][bonus_col] = 0.0;
             } 
+          }
         }
+      }
     }
-    
+      
     /* store managers budget in paras */
     paras[131] = agent_array[0][budget_col] + agent_array[0][bonus_col];
     
@@ -561,6 +582,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     int len_PARAMETERS;      /* Length of the parameters vector */
     int update_policy;       /* If managers act */
     int observe_type;        /* Type of observation being performed */
+    int bonus_reset;         /* reset budget bonus to zero when cost decreased ? */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
@@ -571,6 +593,9 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     int *dim_OBSERVATION;    /* Dimensions of the OBSERVATION array incoming */
     int **lookup;            /* Lookup table for resource & land interactions */
     double man_yld_budget;   /* Link from mean user yield to manager budget */
+    double bb;               /* Budget bonus */
+    double prv_cost;         /* Culling cost before calling GA */
+    double new_cost;         /* Culling cost after calling GA */
     double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
     double *paras_ptr;       /* Pointer to PARAMETERS (interface R and C) */
@@ -729,7 +754,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
                 vec_pos++;
             }
         }
-    } /* ACTION is now stored as costs */
+    } /* ACTION is now stored as actions */
     
     /* Code below remakes the AGENT matrix for easier use */
     agent_number        = dim_AGENT[0];
@@ -808,6 +833,13 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     
     observe_type   = (int) paras[8];
     man_yld_budget = (double) paras[126];
+    bb = (double) paras[110];
+    bonus_reset    = (int) paras[132];    /* Reset budget bonus when cost decreased? */
+    
+    /* get the costs from last time step */
+    if (bb > 0 && bonus_reset == 0) {
+      prv_cost = costs[0][8][1];
+    }
     
     apply_budget_bonus(agent_array, paras);
     
@@ -829,6 +861,16 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     }
     
     set_action_costs(actions, costs, paras, agent_array);
+    
+    /* get the costs after the update */
+    if (bb > 0 && bonus_reset == 0) {
+     new_cost = costs[0][8][1]; 
+     if (prv_cost - new_cost > 0) {
+       paras[133] = 1;
+       } else {
+         paras[133] = 0;
+       }
+    }
 
     free(marg_util);
     free(temp_util);
