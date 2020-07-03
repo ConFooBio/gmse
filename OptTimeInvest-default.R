@@ -531,9 +531,9 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
   sd_ci <- boot_sd_ci(sub$inac_ts, itr = nbs)
   res_str <- c(res_str, mean(sub$inac_ts), sd_ci[1], sd_ci[2], sd_ci[3])
   
-  # Percentage of time steps of K overshooting
-  sd_ci <- boot_sd_ci(sub$overK, itr = nbs)
-  res_str <- c(res_str, mean(sub$overK), sd_ci[1], sd_ci[2], sd_ci[3])
+  # Sum of squared deviation from target
+  sd_ci <- boot_sd_ci(sub$SumSqDev, itr = nbs)
+  res_str <- c(res_str, mean(sub$SumSqDev), sd_ci[1], sd_ci[2], sd_ci[3])
   
   # binding the string to the tab
   res_tab <- rbind(res_tab, as.numeric(res_str))
