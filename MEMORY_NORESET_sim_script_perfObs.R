@@ -18,7 +18,7 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0,
                           bdgt = 1000, trgt = 2000, stkh = 40, obstype = 3,
                           popinit = 1000, tf = 12, cons = 0.5, surv = 4.75, repr = 5, 
                           ldim = 200,
-                          out_file = "ATI_NOBONUSRESET_results.csv") {
+                          out_file = "ATI_MEMORY_NOBONUSRESET_results.csv") {
   
   file.create(out_file); # Initialise a file in the directory.
   
