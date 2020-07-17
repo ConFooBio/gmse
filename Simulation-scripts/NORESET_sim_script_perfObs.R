@@ -163,12 +163,12 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0,
           # Sum of squared deviation from target along time steps
           ssd <- 0
           for (i in 1:final_ts){
-            ssd <- ssd + (dim(sim$resource[[i]])[1]-sim$paras[i,7])^2
+            ssd <- ssd + abs(dim(sim$resource[[i]])[1]-sim$paras[i,7])
           }
           OTI_default_results[k,11] <- ssd
           
-          # # Param set
-          # OTI_default_results[k,12,param_set] <- param_set
+          # Param set
+          OTI_default_results[k,12] <- final_ts
         }
         
         # If extinction did not occured
@@ -195,12 +195,12 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0,
           # Sum of squared deviation from target along time steps
           ssd <- 0
           for (i in 1:final_ts){
-            ssd <- ssd + (dim(sim$resource[[i]])[1]-sim$paras[i,7])^2
+            ssd <- ssd + abs(dim(sim$resource[[i]])[1]-sim$paras[i,7])
           }
           OTI_default_results[k,11] <- ssd
           
-          # # Param set
-          # OTI_default_results[k,12,param_set] <- param_set
+          # Param set
+          OTI_default_results[k,12] <- final_ts
         }
         
         gc(); # Run a garbage collect here
@@ -309,12 +309,12 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0,
             # Sum of squared deviation from target along time steps
             ssd <- 0
             for (i in 1:final_ts){
-              ssd <- ssd + (dim(sim$resource[[i]])[1]-sim$paras[i,7])^2
+              ssd <- ssd + abs(dim(sim$resource[[i]])[1]-sim$paras[i,7])
             }
             OTI_default_results[k,11] <- ssd
             
-            # # Param set
-            # OTI_default_results[k,12] <- param_set
+            # Param set
+            OTI_default_results[k,12] <- final_ts
           }
           
           # If extinction did not occured
@@ -341,12 +341,12 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0,
             # Sum of squared deviation from target along time steps
             ssd <- 0
             for (i in 1:final_ts){
-              ssd <- ssd + (dim(sim$resource[[i]])[1]-sim$paras[i,7])^2
+              ssd <- ssd + abs(dim(sim$resource[[i]])[1]-sim$paras[i,7])
             }
             OTI_default_results[k,11] <- ssd
             
-            # # Param set
-            # OTI_default_results[k,12] <- param_set
+            # Param set
+            OTI_default_results[k,12] <- final_ts
           }
         } # end rep for loop
         
