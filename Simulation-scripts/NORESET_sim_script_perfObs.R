@@ -18,7 +18,7 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0,
                           bdgt = 1000, trgt = 2000, stkh = 40, obstype = 3,
                           popinit = 1000, tf = 12, cons = 0.5, surv = 4.75, repr = 5, 
                           ldim = 200,
-                          out_file = "ATI_NOBONUSRESET_results.csv") {
+                          out_file = "test-immense.csv") {
   
   file.create(out_file); # Initialise a file in the directory.
   
@@ -44,7 +44,7 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0,
   
   ## Create empty structures to gather simulation results
   
-  columns <- c("rep", "budget", "at", "bb", "extinct", "act_dev", "abs_act_dev", "fin_yield", "max_diff_yield", "inac_ts", "SSD") #, "overK", "param_set"
+  columns <- c("rep", "budget", "at", "bb", "extinct", "act_dev", "abs_act_dev", "fin_yield", "max_diff_yield", "inac_ts", "SSD", "final_ts") #, "overK", "param_set"
   
   # Empty 3D array of correct size 
   # Dimensions(lines = replicates, columns = measures, layer = parameter combination)
