@@ -595,9 +595,13 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
         sd_ci <- boot_sd_ci(sub$inac_ts, itr = nbs)
         res_str <- c(res_str, mean(sub$inac_ts), sd_ci[1], sd_ci[2], sd_ci[3])
         
-        # Percentage of time steps of K overshooting
-        sd_ci <- boot_sd_ci(sub$overK, itr = nbs)
-        res_str <- c(res_str, mean(sub$overK), sd_ci[1], sd_ci[2], sd_ci[3])
+        # # Percentage of time steps of K overshooting
+        # sd_ci <- boot_sd_ci(sub$overK, itr = nbs)
+        # res_str <- c(res_str, mean(sub$overK), sd_ci[1], sd_ci[2], sd_ci[3])
+        
+        # Sum of squared deviation from target
+        sd_ci <- boot_sd_ci(sub$SumSqDev, itr = nbs)
+        res_str <- c(res_str, mean(sub$SumSqDev), sd_ci[1], sd_ci[2], sd_ci[3])
         
       } else {
         
@@ -618,8 +622,11 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
         # Percentage of time steps of non-updating
         res_str <- c(res_str, sub$inac_ts, 0, sub$inac_ts, sub$inac_ts)
         
-        # Percentage of time steps of K overshooting
-        res_str <- c(res_str, sub$overK, 0, sub$overK, sub$overK)
+        # # Percentage of time steps of K overshooting
+        # res_str <- c(res_str, sub$overK, 0, sub$overK, sub$overK)
+        
+        # Sum of squared deviation from target
+        res_str <- c(res_str, sub$SumSqDev, 0, sub$SumSqDev, sub$SumSqDev)
       } # end else loop on nbrep
       
       # binding the string to the tab
@@ -629,7 +636,7 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
   } # end for loop on update threshold
   
   # Array of column names
-  colnames(res_tab) <- c("rep", "budget", "at", "bb", "ext_prob", "ext_prob_sd", "ext_prob_95ci_inf", "ext_prob_95ci_sup", "act_dev", "act_dev_sd", "act_dev_95ci_inf", "act_dev_95ci_sup", "abs_act_dev", "abs_act_dev_sd", "abs_act_dev_95ci_inf", "abs_act_dev_95ci_sup", "fin_yield", "fin_yield_sd", "fin_yield_95ci_inf", "fin_yield_95ci_sup", "max_diff_yield", "max_diff_yield_sd", "max_diff_yield_95ci_inf", "max_diff_yield_95ci_sup", "inac_ts", "inac_ts_sd", "inac_ts_95ci_inf", "inac_ts_95ci_sup", "overK_tot", "overK_sd", "overK_95ci_inf", "overK_95ci_sup")
+  colnames(res_tab) <- c("rep", "budget", "at", "bb", "ext_prob", "ext_prob_sd", "ext_prob_95ci_inf", "ext_prob_95ci_sup", "act_dev", "act_dev_sd", "act_dev_95ci_inf", "act_dev_95ci_sup", "abs_act_dev", "abs_act_dev_sd", "abs_act_dev_95ci_inf", "abs_act_dev_95ci_sup", "fin_yield", "fin_yield_sd", "fin_yield_95ci_inf", "fin_yield_95ci_sup", "max_diff_yield", "max_diff_yield_sd", "max_diff_yield_95ci_inf", "max_diff_yield_95ci_sup", "inac_ts", "inac_ts_sd", "inac_ts_95ci_inf", "inac_ts_95ci_sup", "SumSqDev", "SumSqDev_sd", "SumSqDev_95ci_inf", "SumSqDev_95ci_sup")
   
   res_tab <- as.data.frame(res_tab)
   
@@ -960,7 +967,7 @@ abline(h = no.hum.extfreq, lty = 3, lwd = 1, col = "black")
 
 #### box plots ####
 
-bp_resplot <- function(df, proxy = c("dev", "abs.dev", "fin.yie", "yie.equ", "non.int", "ovr.K"), omit.extinction = FALSE) {
+bp_resplot <- function(df, proxy = c("dev", "abs.dev", "fin.yie", "yie.equ", "non.int", "sq.dev"), omit.extinction = FALSE) {
   
   attach(df)
   
@@ -987,8 +994,8 @@ bp_resplot <- function(df, proxy = c("dev", "abs.dev", "fin.yie", "yie.equ", "no
     yvar <- max_diff_yield*100
   } else if (proxy == "non.int") {
     yvar <- inac_ts*100
-  } else if (proxy == "ovr.K") {
-    yvar <- overK*100 }
+  } else if (proxy == "sq.dev") {
+    yvar <- SumSqDev/10^6 }
   
   # plot base
   p <- ggplot(df, aes(x=as.factor(bb*100), y=yvar)) +
@@ -1022,10 +1029,10 @@ bp_resplot <- function(df, proxy = c("dev", "abs.dev", "fin.yie", "yie.equ", "no
   } else if (proxy == "non.int") {
     p <- p + geom_boxplot(position=position_dodge()) +
             labs(x="Budget Bonus (in % of Initial Budget)", y= "Time steps of non-intervention \n (in % of conservation scheme period)")
-  } else if (proxy == "ovr.K") {
+  } else if (proxy == "sq.dev") {
     p <- p + geom_boxplot(position=position_dodge()) +
             geom_hline(yintercept = 0, linetype = "dashed", color = "darkgreen") +
-            labs(x="Budget Bonus (in % of Initial Budget)", y= "Time steps of K-overshooting \n (in % of convervation scheme period)")
+            labs(x="Budget Bonus (in % of Initial Budget)", y= "Sum of squared population deviation from target (in millions of indiviuals)")
   }
   
   detach(df)
@@ -1139,7 +1146,7 @@ bp_resplot(brut, proxy = "non.int", omit.extinction = F)
 
 ## A fonction to plot the results in box plots
 
-stats_resplot <- function(df, proxy = c("dev", "abs.dev", "fin.yie", "yie.equ", "non.int", "ovr.K"), variance = c("sd", "ci"), omit.extinction = FALSE) {
+stats_resplot <- function(df, proxy = c("dev", "abs.dev", "fin.yie", "yie.equ", "non.int", "sq.dev"), variance = c("sd", "ci"), omit.extinction = FALSE) {
   
   attach(df)
   
@@ -1181,11 +1188,11 @@ stats_resplot <- function(df, proxy = c("dev", "abs.dev", "fin.yie", "yie.equ", 
     ysd <- inac_ts_sd*100
     yci_inf <- inac_ts_95ci_inf*100
     yci_sup <- inac_ts_95ci_sup*100
-  } else if (proxy == "ovr.K") {
-    yvar <- overK_tot*100
-    ysd <- overK_sd*100
-    yci_inf <- overK_95ci_inf*100
-    yci_sup <- overK_95ci_sup*100 }
+  } else if (proxy == "sq.dev") {
+    yvar <- SumSqDev/10^6
+    ysd <- SumSqDev_sd/10^6
+    yci_inf <- SumSqDev_95ci_inf/10^6
+    yci_sup <- SumSqDev_95ci_sup/10^6 }
   
   # plot base
   p <- ggplot(df, aes(x=as.factor(bb*100), y=yvar)) +
@@ -1233,11 +1240,11 @@ stats_resplot <- function(df, proxy = c("dev", "abs.dev", "fin.yie", "yie.equ", 
       p <-  p + geom_errorbar(aes(ymin=yvar-ysd, ymax=yvar+ysd), position=position_dodge(1), colour = "darkblue", width=0.5) +
         geom_point(colour = "blue") +
         labs(x="Budget Bonus (in % of Initial Budget)", y= "Time steps of non-intervention \n (in % of conservation scheme period)")
-    } else if (proxy == "ovr.K") {
+    } else if (proxy == "sq.dev") {
       p <-  p + geom_errorbar(aes(ymin=yvar-ysd, ymax=yvar+ysd), position=position_dodge(1), colour = "darkblue", width=0.5) +
         geom_point(colour = "blue") +
         geom_hline(yintercept = 0, linetype = "dashed", color = "darkgreen") +
-        labs(x="Budget Bonus (in % of Initial Budget)", y= "Time steps of K-overshooting \n (in % of convervation scheme period)")
+        labs(x="Budget Bonus (in % of Initial Budget)", y= "Sum of population squared deviation from target (ind.10^5)")
     }
     
   } else if (variance == "ci") {
@@ -1269,11 +1276,11 @@ stats_resplot <- function(df, proxy = c("dev", "abs.dev", "fin.yie", "yie.equ", 
       p <-  p + geom_errorbar(aes(ymin=yci_inf, ymax=yci_sup), position=position_dodge(1), colour = "darkblue", width=0.5) +
         geom_point(colour = "blue") +
         labs(x="Budget Bonus (in % of Initial Budget)", y= "Time steps of non-intervention \n (in % of conservation scheme period)")
-    } else if (proxy == "ovr.K") {
+    } else if (proxy == "sq.dev") {
       p <-  p + geom_errorbar(aes(ymin=yci_inf, ymax=yci_sup), position=position_dodge(1), colour = "darkblue", width=0.5) +
         geom_point(colour = "blue") +
         geom_hline(yintercept = 0, linetype = "dashed", color = "darkgreen") +
-        labs(x="Budget Bonus (in % of Initial Budget)", y= "Time steps of K-overshooting \n (in % of convervation scheme period)")
+        labs(x="Budget Bonus (in % of Initial Budget)", y= "Sum of population squared deviation from target (ind.10^5)")
     }
   }  
   
@@ -1946,7 +1953,7 @@ plot_ATI_diag(upd_thr = 0.7, bud_bon = 0.6)
 
 #### confronting at = 0 and at = 0.1 ####
 
-OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci"), nb_replicates, nemar = FALSE) {
+OTI_vs_FLI_plot <- function(df, upth, goal = c(0:5), variance = c("sd","ci"), nb_replicates, nemar = FALSE) {
   
   # subsetting
   fli <- subset(df, at == 0)
@@ -2371,6 +2378,58 @@ OTI_vs_FLI_plot <- function(df, upth, goal = c(0:4), variance = c("sd","ci"), nb
       # arrows(diag, oti_avg-oti_95ci_neg, diag, oti_avg+oti_95ci_pos, length=0.03, angle=90, code=3, col = "black")
     }
   }
+  
+  if (goal == 5) {
+    
+    # get means, sd, 95ci and plot
+    oti_avg <- oti$SumSqDev/10^6
+    
+    if (variance == "sd") {
+      
+      # OTI strat
+      oti_sd <- oti$SumSqDev_sd/10^6
+      # # prevent the sd range to go over the borders
+      # oti_sd_neg <- ifelse(test = oti_avg-oti_sd < 0, oti_sd+(oti_avg-oti_sd), oti_sd)
+      # oti_sd_pos <- ifelse(test = oti_avg+oti_sd > 100, oti_sd-(oti_avg+oti_sd-100), oti_sd)
+      
+      # plotting
+      xoti <- oti$bb*100
+      
+      # barplot
+      diag = barplot(oti_avg, col = "lightblue", space = 1, width = 4, names.arg = xoti,
+                     xlab = "Budget bonus\n(in % of initial budget)", ylab = "Sum of sq. deviation from target\n(ind.10^6 +/- SD)",
+                     ylim = c(0,max(oti_avg+oti_sd))) # ,
+      # ylim = c(0,max(oti_avg+oti_sd_pos))) # ,
+      # ylim = c(0,100), xlim = c(0,100)) # ,
+      # main = paste("UT = ", upth*100,"%"))
+      # arrows(diag, oti_avg-oti_sd_neg, diag, oti_avg+oti_sd_pos, length=0.03, angle=90, code=3, col = "black")
+      arrows(diag, oti_avg-oti_sd, diag, oti_avg+oti_sd, length=0.03, angle=90, code=3, col = "black")
+    }
+    
+    if (variance == "ci") {
+      
+      # OTI strat
+      # oti_95ci <- oti$inac_ts_95ci*100
+      # # prevent the 95ci range to go over the borders
+      # oti_95ci_neg <- ifelse(test = oti_avg-oti_95ci < 0, oti_95ci+(oti_avg-oti_95ci), oti_95ci)
+      # oti_95ci_pos <- ifelse(test = oti_avg+oti_95ci > 100, oti_95ci-(oti_avg+oti_95ci-100), oti_95ci)
+      oti_95ci_inf <- oti$SumSqDev_95ci_inf/10^6
+      oti_95ci_sup <- oti$SumSqDev_95ci_sup/10^6
+      
+      # plotting
+      xoti <- oti$bb*100
+      
+      # barplot
+      diag = barplot(oti_avg, col = "lightblue", space = 1, width = 4, names.arg = xoti,
+                     xlab = "Budget bonus\n(in % of initial budget)", ylab = "Sum of sq. deviation from target\n (ind.10^6 +/- 95%CI)",
+                     ylim = c(0,max(oti_95ci_sup)))
+      # ylim = c(0,max(oti_avg+oti_95ci_pos))) 
+      # , xlim = c(0,100)) # ,
+      # main = paste("UT = ", upth*100,"%"))
+      arrows(diag, oti_95ci_inf, diag, oti_95ci_sup, length=0.03, angle=90, code=3, col = "black")
+      # arrows(diag, oti_avg-oti_95ci_neg, diag, oti_avg+oti_95ci_pos, length=0.03, angle=90, code=3, col = "black")
+    }
+  }
 }
 
 OTI_diagnostic <- function(df, upth, variance = c("sd", "ci"), nb_replicates, omit.extinction = FALSE) {
@@ -2398,7 +2457,7 @@ OTI_diagnostic <- function(df, upth, variance = c("sd", "ci"), nb_replicates, om
 
 # Examples
 OTI_diagnostic(df = stat, upth = 0.3, variance = "ci", nb_replicates = 100, omit.extinction = F)
-OTI_diagnostic(df = woe_stat, upth = 0.2, variance = "sd", nb_replicates = 100, omit.extinction = T)
+OTI_diagnostic(df = woe_stat, upth = 0.3, variance = "sd", nb_replicates = 100, omit.extinction = T)
 
 ## 0.1
 OTI_diagnostic(df = woe_stat, upth = 0.1, variance = "ci", nb_replicates = 100, omit.extinction = T)
