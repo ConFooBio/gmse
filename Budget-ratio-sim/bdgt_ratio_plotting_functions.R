@@ -121,7 +121,7 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
   }
   
   # start filling the string in
-  res_str <- c(nbrep, mean(sub$memory), mean(sub$budget), ratio[1], upd_thr[1], bud_bon[1], ext)
+  res_str <- c(nbrep, mean(sub$memory), mean(sub$budget), bgt_rat[1], upd_thr[1], bud_bon[1], ext)
   
   ## mean, sd and 95ci for each proxy
   
@@ -146,18 +146,18 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
   res_str <- c(res_str, mean(sub$inac_ts), sd_ci[1], sd_ci[2], sd_ci[3])
   
   # Sum of absolute deviation from target
-  sd_ci <- boot_sd_ci(sub$SAD/sub$final_ts, itr = nbs)
-  res_str <- c(res_str, mean(sub$SAD/sub$final_ts), sd_ci[1], sd_ci[2], sd_ci[3])
+  sd_ci <- boot_sd_ci(sub$SumAbsDev/sub$final_ts, itr = nbs)
+  res_str <- c(res_str, mean(sub$SumAbsDev/sub$final_ts), sd_ci[1], sd_ci[2], sd_ci[3])
   
   # binding the string to the tab
   res_tab <- rbind(res_tab, as.numeric(res_str))
   
   ## loop over the other OTI parameters
   # for each ratio value
-  for (i in 2:length(ratio)) {
+  for (i in 2:length(bgt_rat)) {
     
     # for each at value
-    for (j in 1:length(act_thr)) {
+    for (j in 1:length(upd_thr)) {
       
       # for each bb value
       for (k in 1:length(bud_bon)) {
@@ -171,7 +171,7 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
         res_str <- NULL
         
         # subset
-        sub <- subset(df, ratio == ratio[i] & at == upd_thr[j] & bb == bud_bon[k])
+        sub <- subset(df, ratio == bgt_rat[i] & at == upd_thr[j] & bb == bud_bon[k])
         
         # number of replicates
         nbrep <- dim(sub)[1]
@@ -185,7 +185,7 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
         }
         
         # start filling the string in
-        res_str <- c(nbrep,mean(sub$memory), mean(sub$budget), ratio[i], upd_thr[j], bud_bon[k], ext)
+        res_str <- c(nbrep,mean(sub$memory), mean(sub$budget), bgt_rat[i], upd_thr[j], bud_bon[k], ext)
         
         # avoid problems if there is only one replicate
         if (nbrep >= 2) {
@@ -213,8 +213,8 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
           res_str <- c(res_str, mean(sub$inac_ts), sd_ci[1], sd_ci[2], sd_ci[3])
           
           # Sum of absolute deviation from target
-          sd_ci <- boot_sd_ci(sub$SAD/sub$final_ts, itr = nbs)
-          res_str <- c(res_str, mean(sub$SAD/sub$final_ts), sd_ci[1], sd_ci[2], sd_ci[3])
+          sd_ci <- boot_sd_ci(sub$SumAbsDev/sub$final_ts, itr = nbs)
+          res_str <- c(res_str, mean(sub$SumAbsDev/sub$final_ts), sd_ci[1], sd_ci[2], sd_ci[3])
           
         } else {
           
@@ -236,7 +236,7 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
           res_str <- c(res_str, sub$inac_ts, 0, sub$inac_ts, sub$inac_ts)
           
           # Sum of squared deviation from target
-          res_str <- c(res_str, sub$SAD/sub$final_ts, 0, sub$SAD, sub$SAD)
+          res_str <- c(res_str, sub$SumAbsDev/sub$final_ts, 0, sub$SumAbsDev, sub$SumAbsDev)
         } # end else loop on nbrep
         
         # binding the string to the tab
@@ -261,9 +261,9 @@ path <- "~/Desktop/PhD/GitKraken/gmse_fork_RQ1/Budget-ratio-sim/"
 
 setwd(path)
 
-dir.name <- "/Mem-res"
+dir.name <- "noMem-res/"
 
-brut <- as.data.frame(read.csv(paste(dir.name, "/BGT-RATIO-memory-merged-results.csv", sep = "")))
+brut <- as.data.frame(read.csv(paste(dir.name, "merged-res/noMem-budget-ratio-merged.csv", sep = "")))
 
 stat <- OTI_stats(df = brut, ts = 20, omit.extinction = F) 
 woe_stat <- OTI_stats(df = brut, ts = 20, omit.extinction = T)

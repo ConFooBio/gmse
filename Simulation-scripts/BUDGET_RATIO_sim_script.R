@@ -84,7 +84,7 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0,
       OTI_default_results[k,1] <- k
       
       # Memory?
-      OTI_default_results[k,2] <- 1
+      OTI_default_results[k,2] <- 0
       
       # Budget
       OTI_default_results[k,3] <- bdgt
@@ -217,7 +217,7 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0,
       OTI_default_results[k,1] <- k
       
       # Memory?
-      OTI_default_results[k,2] <- 1
+      OTI_default_results[k,2] <- 0
       
       # Budget
       OTI_default_results[k,3] <- bdgt

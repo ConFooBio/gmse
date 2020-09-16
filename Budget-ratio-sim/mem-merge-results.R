@@ -1,4 +1,4 @@
-path <- "~/Desktop/PhD/GitKraken/gmse_fork_RQ1/Budget-ratio-sim/Mem-res/"
+path <- "~/Desktop/PhD/GitKraken/gmse_fork_RQ1/Budget-ratio-sim/Memres/"
 setwd(dir = path)
 
 # get the directory content
@@ -21,6 +21,9 @@ colnames(tab) <- tab.names
 # remove it from content
 rest <- content[-which(content == at0.tab[1])]
 
+# only the csv files
+rest <- grep(pattern = c(".csv"), x = rest, fixed = T, value = T, invert = F)
+
 # select the sim results only
 rest.sim <- grep(pattern = c("flw_"), x = rest, fixed = T, value = T, invert = T)
 
@@ -32,7 +35,7 @@ for (i in 1:length(rest.sim)) {
 }
 
 # export table
-write.csv(tab, file = paste(path, "/merged-res/mem-budget-ratio-merged.csv", sep = ""))
+write.csv(tab, file = paste(path, "/merged-res/membudget-ratio-merged.csv", sep = ""), row.names = FALSE)
 
 #### follow up over population ####
 
@@ -60,7 +63,7 @@ for (i in 1:length(rest.pop)) {
 }
 
 # export table
-write.csv(pop, file = paste(path, "/merged-res/pop-mem-budget-ratio-merged.csv", sep = ""))
+write.csv(pop, file = paste(path, "/merged-res/pop-membudget-ratio-merged.csv", sep = ""), row.names = FALSE)
 
 #### follow up over costs ####
 
@@ -85,7 +88,7 @@ for (i in 1:length(rest.cos)) {
 }
 
 # export table
-write.csv(cos, file = paste(path, "/merged-res/cos-mem-budget-ratio-merged.csv", sep = ""))
+write.csv(cos, file = paste(path, "/merged-res/cos-nMem-budget-ratio-merged.csv", sep = ""), row.names = FALSE)
 
 #### follow up over actions ####
 
@@ -110,7 +113,7 @@ for (i in 1:length(rest.act)) {
 }
 
 # export table
-write.csv(act, file = paste(path, "/merged-res/act-mem-budget-ratio-merged.csv", sep = ""))
+write.csv(act, file = paste(path, "/merged-res/act-membudget-ratio-merged.csv", sep = ""), row.names = FALSE)
 
 #### follow up over budget ####
 
@@ -135,4 +138,4 @@ for (i in 1:length(rest.bgt)) {
 }
 
 # export table
-write.csv(bgt, file = paste(path, "/merged-res/bgt-mem-budget-ratio-merged.csv", sep = ""))
+write.csv(bgt, file = paste(path, "/merged-res/bgt-membudget-ratio-merged.csv", sep = ""), row.names = FALSE)
