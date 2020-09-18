@@ -67,7 +67,7 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
   if (omit.extinction == "TRUE") { 
     
     # a loop to calculate extinction freq
-    sub <- subset(df, at == 0 & bb == 0 & ratio == bdt_rat[1])
+    sub <- subset(df, at == 0 & bb == 0 & ratio == bgt_rat[1])
     
     # NULL tab
     ext_freq <- NULL
@@ -75,8 +75,17 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
     res <- c(sum(sub$extinct)/dim(sub)[1], sd_ci[1], sd_ci[2],sd_ci[3])
     ext_freq <- rbind(ext_freq, res)
     
+    # loop over BRs just for control strat
     for (i in 2:length(bgt_rat)) {
-      for (j in 1:length(upt_thr)) {
+      sub <- subset(df, at == upd_thr[1] & bb == bud_bon[1] & ratio == bgt_rat[i])
+      sd_ci <- boot_sd_ci(sub$extinct, itr = nbs)
+      res <- c(sum(sub$extinct)/dim(sub)[1], sd_ci[1], sd_ci[2],sd_ci[3])
+      ext_freq <- rbind(ext_freq, res)
+    }
+    
+    # loop over the rest
+    for (i in 1:length(bgt_rat)) {
+      for (j in 2:length(upd_thr)) {
         for (k in 1:length(bud_bon)) {
           sub <- subset(df, at == upd_thr[j] & bb == bud_bon[k] & ratio == bgt_rat[i])
           sd_ci <- boot_sd_ci(sub$extinct, itr = nbs)
@@ -107,7 +116,7 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
   res_str <- NULL
   
   # subset
-  sub <- subset(df, at == upd_thr[1] & bb == bud_bon[1] & ratio == bgt_rat[1] )
+  sub <- subset(df, at == upd_thr[1] & bb == bud_bon[1] & ratio == bgt_rat[1])
   
   # number of replicates
   nbrep <- dim(sub)[1]
@@ -152,12 +161,97 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
   # binding the string to the tab
   res_tab <- rbind(res_tab, as.numeric(res_str))
   
-  ## loop over the other OTI parameters
-  # for each ratio value
+  # loop over BRs just for control strat
   for (i in 2:length(bgt_rat)) {
     
-    # for each at value
-    for (j in 1:length(upd_thr)) {
+    # increment tracker
+    if (omit.extinction == TRUE) {
+      zz <- zz + 1
+    }
+    
+    # initiate a string
+    res_str <- NULL
+    
+    # subset
+    sub <- subset(df, ratio == bgt_rat[i] & at == upd_thr[1] & bb == bud_bon[1])
+    
+    # number of replicates
+    nbrep <- dim(sub)[1]
+    
+    # extinction frequency
+    if (omit.extinction == TRUE) {
+      ext <- ext_freq[zz,]
+    } else {
+      sd_ci <- boot_sd_ci(sub$extinct, itr = nbs)
+      ext <- c(sum(sub$extinct)/dim(sub)[1], sd_ci[1], sd_ci[2], sd_ci[3])
+    }
+    
+    # start filling the string in
+    res_str <- c(nbrep,mean(sub$memory), mean(sub$budget), bgt_rat[i], upd_thr[1], bud_bon[1], ext)
+    
+    # avoid problems if there is only one replicate
+    if (nbrep >= 2) {
+      
+      ## mean, sd and 95ci for each proxy
+      
+      # Actual Resource population deviation from Manager's target
+      sd_ci <- boot_sd_ci(sub$act_dev, itr = nbs)
+      res_str <- c(res_str, mean(sub$act_dev), sd_ci[1], sd_ci[2], sd_ci[3])
+      
+      # Absolute value of the Actual Resource population deviation from Manager's target
+      sd_ci <- boot_sd_ci(sub$abs_act_dev, itr = nbs)
+      res_str <- c(res_str, mean(sub$abs_act_dev), sd_ci[1], sd_ci[2], sd_ci[3])
+      
+      # Users' total final yield
+      sd_ci <- boot_sd_ci(sub$fin_yield, itr = nbs)
+      res_str <- c(res_str, mean(sub$fin_yield), sd_ci[1], sd_ci[2], sd_ci[3])
+      
+      # Difference between the highest and the lowest yield
+      sd_ci <- boot_sd_ci(sub$max_diff_yield, itr = nbs)
+      res_str <- c(res_str, mean(sub$max_diff_yield), sd_ci[1], sd_ci[2], sd_ci[3])
+      
+      # Percentage of time steps of non-updating
+      sd_ci <- boot_sd_ci(sub$inac_ts, itr = nbs)
+      res_str <- c(res_str, mean(sub$inac_ts), sd_ci[1], sd_ci[2], sd_ci[3])
+      
+      # Sum of absolute deviation from target
+      sd_ci <- boot_sd_ci(sub$SumAbsDev/sub$final_ts, itr = nbs)
+      res_str <- c(res_str, mean(sub$SumAbsDev/sub$final_ts), sd_ci[1], sd_ci[2], sd_ci[3])
+      
+    } else {
+      
+      print(paste("parameter set with budget ratio = ", as.numeric(bgt_rat)[i]*100, "%, UT = ", as.numeric(upd_thr[j])*100, "% and BB = ", as.numeric(bud_bon[k])*100, "% has less than 2 replicates"))
+      
+      # Actual Resource population deviation from Manager's target
+      res_str <- c(res_str, sub$act_dev, 0, sub$act_dev, sub$act_dev)
+      
+      # Absolute value of the Actual Resource population deviation from Manager's target
+      res_str <- c(res_str, sub$abs_act_dev, 0, sub$abs_act_dev, sub$abs_act_dev)
+      
+      # Users' total final yield
+      res_str <- c(res_str, sub$fin_yield, 0, sub$fin_yield, sub$fin_yield)
+      
+      # Difference between the highest and the lowest yield
+      res_str <- c(res_str, sub$max_diff_yield, 0, sub$max_diff_yield, sub$max_diff_yield)
+      
+      # Percentage of time steps of non-updating
+      res_str <- c(res_str, sub$inac_ts, 0, sub$inac_ts, sub$inac_ts)
+      
+      # Sum of squared deviation from target
+      res_str <- c(res_str, sub$SumAbsDev/sub$final_ts, 0, sub$SumAbsDev, sub$SumAbsDev)
+    } # end else loop on nbrep
+    
+    # binding the string to the tab
+    res_tab <- rbind(res_tab, as.numeric(res_str))
+    
+  }
+  
+  ## loop over the other OTI parameters
+  # for each ratio value
+  for (i in 1:length(bgt_rat)) {
+    
+    # for each positive at value
+    for (j in 2:length(upd_thr)) {
       
       # for each bb value
       for (k in 1:length(bud_bon)) {
@@ -261,24 +355,24 @@ path <- "~/Desktop/PhD/GitKraken/gmse_fork_RQ1/Budget-ratio-sim/"
 
 setwd(path)
 
-dir.name <- "noMem-res/"
+dir.name <- "noMem-res"
 
-brut <- as.data.frame(read.csv(paste(dir.name, "merged-res/noMem-budget-ratio-merged.csv", sep = "")))
+brut <- as.data.frame(read.csv(paste(dir.name, "/merged-res/noMem-budget-ratio-merged.csv", sep = "")))
 
 stat <- OTI_stats(df = brut, ts = 20, omit.extinction = F) 
 woe_stat <- OTI_stats(df = brut, ts = 20, omit.extinction = T)
 
-write.csv(stat, file = paste(dir.name, "/ATI-mem-noreset-stats.csv", sep=""))
-write.csv(woe_stat, file = paste(dir.name,"/ATI-mem-noreset-woExt-stats.csv", sep=""))
+write.csv(stat, file = paste(dir.name, "/bgt-ratio-noMem-stats.csv", sep=""))
+write.csv(woe_stat, file = paste(dir.name,"/bgt-ratio-noMem-woExt-stats.csv", sep=""))
 
 # # eliminate 100% extinction parameter sets if necessary
 # woe_stat <- woe_stat[-which(as.numeric(as.character(woe_stat$rep)) < 1),]
 
 # evolution of some replicates along simulation time
-costs <- read.csv(paste(path, dir.name, "/cos-BGT-RATIO-mem-merged.csv", sep = ""))
-popul <- read.csv(paste(path, dir.name, "/pop-BGT-RATIO-mem-merged.csv", sep = ""))
-actio <- read.csv(paste(path, dir.name, "/act-BGT-RATIO-mem-merged.csv", sep = ""))
-budge <- read.csv(paste(path, dir.name, "/bgt-BGT-RATIO-mem-merged.csv", sep = ""))
+costs <- read.csv(paste(path, dir.name, "/merged-res/cos-noMem-budget-ratio-merged.csv", sep = ""))
+popul <- read.csv(paste(path, dir.name, "/merged-res/pop-noMem-budget-ratio-merged.csv", sep = ""))
+actio <- read.csv(paste(path, dir.name, "/merged-res/act-noMem-budget-ratio-merged.csv", sep = ""))
+budge <- read.csv(paste(path, dir.name, "/merged-res/bgt-noMem-budget-ratio-merged.csv", sep = ""))
 
 # only without extinction
 we_costs <- subset(costs, Extinct == 0)
@@ -286,24 +380,110 @@ we_popul <- subset(popul, Extinct == 0)
 we_actio <- subset(actio, Extinct == 0)
 we_budge <- subset(budge, Extinct == 0)
 
-#### effect of BB:ratio on extinction frequency ####
+#### effect of BR on extfreq for control strat ####
 
-{d <- stat
+{d <- subset(stat, at == 0)
+
+  d$ratio <- d$ratio*100
+  
+  bura <- levels(as.factor(d$ratio))
+  
+  # with the same budget
+  same.bgt <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/noreset-results-save/noreset-merged-results/ATI-noreset-stats.csv", header = T)[,-1]
+  same.bgt.var <- same.bgt[1,5] 
+  same.bgt.inf <- same.bgt[1,7] 
+  same.bgt.sup <- same.bgt[1,8] 
+  
+  # Without management?
+  no.mgmt <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/batch6-perfObs/manager_budget_is_1.csv", sep = "\t", header = FALSE)
+  no.mgmt.var <- sum(no.mgmt[,5])/dim(no.mgmt)[1]
+  
+  # Without humans?
+  no.hum <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/batch6-perfObs/user_and_manager_budget_is_1.csv", sep = "\t", header = FALSE)
+  no.hum.var <- sum(no.hum[,5])/dim(no.hum)[1]
+  
+  # plot and export in pdf
+  {pdf(file = "bgt-ratio-control-extfreq.pdf", width = par('din')[1], height = par('din')[2])
+    
+    {# # enlarge margins
+      # par(mar = c(5, 5, 1, 1))
+      
+      # points cex
+      pts <- 0.5
+      # pts <- 1
+      
+      # plot base
+      plot(1, type = "n",
+           ylim = c(0, 1),
+           xlim = c(10, 100),
+           ylab = "Extinction frequency (+/- 95%CI)", #
+           xlab = "Budget ratio (%)", #cex.lab = 1.5, cex.axis = 1.5, cex = 1.5,
+           cex.lab = pts + 0.2, cex.axis = pts + 0.2)
+      
+      # Plot the results
+      arrows(d$ratio, d$ext_prob_95ci_inf, d$ratio, d$ext_prob_95ci_sup, length=0.02, angle=90, code=3, col = "black")
+      points(d$ratio, d$ext_prob, type = "b", pch = 15, col = "black", cex = pts, lwd = pts)
+      
+      # When they have the same budget
+      arrows(100, same.bgt.inf, 100, same.bgt.sup, length=0.02, angle=90, code=3, col = "violet")
+      points(100, same.bgt.var, pch = 15, col = "violet", cex = pts)
+      
+      # No management
+      abline(h = no.mgmt.var, lty = 2, col = "grey", lwd = pts)
+      
+      # No humans
+      abline(h = no.hum.var, lty = 3, col = "gray", lwd = pts)
+      
+      # legend
+      legend( # 110, 0.5,             # Location of legend 
+        "bottomleft",
+        # xpd = TRUE,                          # Allow drawing outside plot area
+        # ncol = 2,
+        # xjust = 0,                           # Left justify legend box on x
+        # yjust = 0.5,                          # Center legend box on y
+        legend = c("No humans",
+                   "No management",
+                   "Equal budget"),
+        col = c("grey",                 # Legend Element Colors
+                "grey",
+                "violet"),          
+        pch = c(NA_integer_,
+                NA_integer_,
+                15),                      # Legend Element Styles          
+        lty = c(3,
+                2,
+                NA_integer_),       
+        cex = pts-0.2,
+        # cex = 0.6,
+        title = "Strategies") #,                  # Legend Title
+      # title.col = gray(.2) ,                # Legend title color
+      # box.lty = 1,                         # Legend box line type
+      # box.lwd = 1)                         # Legend box line width
+    }
+    dev.off()
+  }
+}
+
+#### effect of BB:ratio on extinction frequency according to UT ####
+
+{d <- subset(stat, at == 0.1)
   
   d$at <- d$at*100
+  d$bb <- d$bb*100
   
   # get max, min and average of each UT
   upth <- levels(as.factor(d$at))
   bubo <- levels(as.factor(d$bb))
+  bura <- levels(as.factor(d$ratio))
   
-  sub <- as.data.frame(subset(d, at == upth[1]))
-  ext <- c(sub$ext_prob, rep(NA,length(upth)-1))
-  sd <- c(sub$ext_prob_sd, rep(NA,length(upth)-1))
-  ci_inf <- c(sub$ext_prob_95ci_inf, rep(NA,length(upth)-1))
-  ci_sup <- c(sub$ext_prob_95ci_sup, rep(NA,length(upth)-1))
+  sub <- as.data.frame(subset(d, ratio == bura[1]))
+  ext <- sub$ext_prob
+  sd <- sub$ext_prob_sd
+  ci_inf <- sub$ext_prob_95ci_inf
+  ci_sup <- sub$ext_prob_95ci_sup
   
-  for (i in 2:length(upth)) {
-    sub <- as.data.frame(subset(d, at == upth[i]))
+  for (i in 2:length(bura)) {
+    sub <- as.data.frame(subset(d, ratio == bura[i]))
     ext <- rbind(ext, sub$ext_prob)
     sd <- rbind(sd, sub$ext_prob_sd)
     ci_inf <- rbind(ci_inf, sub$ext_prob_95ci_inf)
@@ -318,10 +498,10 @@ we_budge <- subset(budge, Extinct == 0)
   no.hum <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/batch6-perfObs/user_and_manager_budget_is_1.csv", sep = "\t", header = FALSE)
   no.hum.var <- sum(no.hum[,5])/dim(no.hum)[1]
   
-  # plotting convenience
-  xadj1 <- as.numeric(upth[-1]) - 1;
-  xadj2 <- as.numeric(upth[-1]) + 1;
-  xtendrange <- seq(-10,110,1)
+  # # plotting convenience
+  # xadj1 <- as.numeric(upth[-1]) - 1;
+  # xadj2 <- as.numeric(upth[-1]) + 1;
+  # xtendrange <- seq(-10,110,1)
 }
 
 # plot and export in pdf
@@ -334,74 +514,94 @@ we_budge <- subset(budge, Extinct == 0)
   pts <- 0.5
   # pts <- 1
   
+  xadj <- seq(-4,4,length.out=11)
+  colo <- rainbow(dim(ext)[1])
+  
   # plot base
   plot(1, type = "n",
        ylim = c(0, 1),
        xlim = c(0, 100),
        ylab = "Extinction frequency (+/- 95%CI)", #
-       xlab = "Update threshold (%)", #cex.lab = 1.5, cex.axis = 1.5, cex = 1.5,
+       xlab = "Budget Bonus (%)", #cex.lab = 1.5, cex.axis = 1.5, cex = 1.5,
        cex.lab = pts + 0.2, cex.axis = pts + 0.2)
   
-  # Control band
-  polygon(c(xtendrange,rev(xtendrange)),c(rep(ci_sup[1,1], length(xtendrange)),rev(rep(ci_inf[1,1], length(xtendrange)))),col="lightgrey", border = "grey") 
+  # # Control band
+  # polygon(c(xtendrange,rev(xtendrange)),c(rep(ci_sup[1,1], length(xtendrange)),rev(rep(ci_inf[1,1], length(xtendrange)))),col="lightgrey", border = "grey") 
   
+  k <- 1
   # Put the other budget bonuses in a faint grey to show but de-emphasise
-  for (i in 3:(dim(ext)[2]-1)) {
-    points(x = as.numeric(upth[-1]), y = ext[-1,i], type = "b", cex = pts-0.2, lwd = pts-0.2, lty = "solid",
-           col = "grey", pch = 20);
+  for (i in 1:(dim(ext)[1])) {
+    arrows(x0 = as.numeric(bubo) + xadj[k], y0 = ci_inf[i,], x1 = as.numeric(bubo) + xadj[k], y1 = ci_sup[i,], length=0.02, angle=90, code=3, col = colo[i])
+    points(x = as.numeric(bubo) + xadj[k], y = ext[i,], type = "b", cex = pts, lwd = pts-0.2, col = colo[i], pch = 20);
+    k <- k+1
   }
   
-  # Plot the results
-  arrows(0, ci_inf[1,1], 0, ci_sup[1,1], length=0.02, angle=90, code=3, col = "black")
-  arrows(xadj1, ci_inf[-1,2], xadj1, ci_sup[-1,2], length=0.02, angle=90, code=3, col = "darkred")
-  arrows(xadj2, ci_inf[-1,11], xadj2, ci_sup[-1,11], length=0.02, angle=90, code=3, col = "darkred")
-  points(x = xadj1, y = ext[-1,2], type = "b", pch = 16, col = "darkred", cex = pts, lwd = pts)
-  points(x = xadj2, y = ext[-1,11], type = "b", pch = 21, lty = "dashed", col = "darkred", cex = pts, lwd = pts)
-  points(x = 0, y = ext[1,1], pch = 15, cex = pts, lwd = pts)
-  abline(h=ext[1,1], lty = 1, col = "black", lwd = pts)
+  # # Plot the results
+  # arrows(0, ci_inf[1,1], 0, ci_sup[1,1], length=0.02, angle=90, code=3, col = "black")
+  # arrows(xadj1, ci_inf[-1,2], xadj1, ci_sup[-1,2], length=0.02, angle=90, code=3, col = "darkred")
+  # arrows(xadj2, ci_inf[-1,11], xadj2, ci_sup[-1,11], length=0.02, angle=90, code=3, col = "darkred")
+  # points(x = xadj1, y = ext[-1,2], type = "b", pch = 16, col = "darkred", cex = pts, lwd = pts)
+  # points(x = xadj2, y = ext[-1,11], type = "b", pch = 21, lty = "dashed", col = "darkred", cex = pts, lwd = pts)
+  # points(x = 0, y = ext[1,1], pch = 15, cex = pts, lwd = pts)
+  # abline(h=ext[1,1], lty = 1, col = "black", lwd = pts)
   
-  # No management
-  points(y = no.mgmt.var, x = 0, pch = 17, col = "black", cex = pts)
-  abline(h = no.mgmt.var, lty = 2, col = "black", lwd = pts)
+  # # No management
+  # points(y = no.mgmt.var, x = 0, pch = 17, col = "black", cex = pts)
+  # abline(h = no.mgmt.var, lty = 2, col = "black", lwd = pts)
+  # 
+  # # No humans
+  # points(y = no.hum.var, x = 0, pch = 23, col = "black", cex = pts)
+  # abline(h = no.hum.var, lty = 3, col = "black", lwd = pts)
   
-  # No humans
-  points(y = no.hum.var, x = 0, pch = 23, col = "black", cex = pts)
-  abline(h = no.hum.var, lty = 3, col = "black", lwd = pts)
+  leg <- paste("BR = ", bura[1])
+  for (i in 2:length(bura)) {
+    leg <- c(leg, paste("BR = ", bura[i]))
+  }
   
   # legend
   legend( # 110, 0.5,             # Location of legend 
-         "right",
+         "bottomright",
          # xpd = TRUE,                          # Allow drawing outside plot area
-         # ncol = 2,
+         ncol = 2,
          # xjust = 0,                           # Left justify legend box on x
          # yjust = 0.5,                          # Center legend box on y
-         legend = c("No humans",
-                    "No management",
-                    "Control", 
-                    "ATI - 0% BB",
-                    "ATI - 100% BB", 
-                    "other BB values"),
-         col = c("black",                 # Legend Element Colors
-                 "black",
-                 "black",
-                 "darkred",
-                 "darkred",
-                 "lightgrey"),          
-         pch = c(23,
-                 17,
-                 15,
-                 19,
-                 21,
-                 20),                      # Legend Element Styles          
-         lty = c(3,
-                 2,
-                 1,
-                 1,
-                 2,
-                 1),       
+         legend = leg,
+           # c(paste("BR = ", bura[1]),
+           #          paste("BR = ", bura[2]),
+           #          paste("BR = ", bura[3]),
+           #          paste("BR = ", bura[4]),
+           #          paste("BR = ", bura[5]),
+           #          paste("BR = ", bura[6]),
+           #          paste("BR = ", bura[7]),
+           #          paste("BR = ", bura[8]),
+           #          paste("BR = ", bura[9])),
+         col = colo,
+           # c(colo[1],
+           #       colo[2],
+           #       colo[3],
+           #       colo[4],
+           #       colo[5],
+           #       colo[6],
+           #       colo[7],
+           #       colo[8],
+           #       colo[9]),          
+         pch = rep(16, dim(ext)[1]),
+           # c(23,
+           #       17,
+           #       15,
+           #       19,
+           #       21,
+           #       20),                      # Legend Element Styles          
+         lty = rep(1, dim(ext)[1]),
+           # c(3,
+           #       2,
+           #       1,
+           #       1,
+           #       2,
+           #       1),       
          cex = pts-0.2,
          # cex = 0.6,
-         title = "Strategies") #,                  # Legend Title
+         title = "Ratios") #,                  # Legend Title
          # title.col = gray(.2) ,                # Legend title color
          # box.lty = 1,                         # Legend box line type
          # box.lwd = 1)                         # Legend box line width

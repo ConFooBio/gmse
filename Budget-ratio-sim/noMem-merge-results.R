@@ -88,7 +88,7 @@ for (i in 1:length(rest.cos)) {
 }
 
 # export table
-write.csv(cos, file = paste(path, "/merged-res/cos-nMem-budget-ratio-merged.csv", sep = ""), row.names = FALSE)
+write.csv(cos, file = paste(path, "/merged-res/cos-noMem-budget-ratio-merged.csv", sep = ""), row.names = FALSE)
 
 #### follow up over actions ####
 
