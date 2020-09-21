@@ -355,24 +355,24 @@ path <- "~/Desktop/PhD/GitKraken/gmse_fork_RQ1/Budget-ratio-sim/"
 
 setwd(path)
 
-dir.name <- "noMem-res"
+dir.name <- "Mem-res"
 
-brut <- as.data.frame(read.csv(paste(dir.name, "/merged-res/noMem-budget-ratio-merged.csv", sep = "")))
+brut <- as.data.frame(read.csv(paste(dir.name, "/merged-res/mem-budget-ratio-merged.csv", sep = "")))
 
 stat <- OTI_stats(df = brut, ts = 20, omit.extinction = F) 
 woe_stat <- OTI_stats(df = brut, ts = 20, omit.extinction = T)
 
-write.csv(stat, file = paste(dir.name, "/bgt-ratio-noMem-stats.csv", sep=""))
+write.csv(stat, file = paste(dir.name, "/bgt-ratio-mem-stats.csv", sep=""))
 write.csv(woe_stat, file = paste(dir.name,"/bgt-ratio-noMem-woExt-stats.csv", sep=""))
 
 # # eliminate 100% extinction parameter sets if necessary
 # woe_stat <- woe_stat[-which(as.numeric(as.character(woe_stat$rep)) < 1),]
 
 # evolution of some replicates along simulation time
-costs <- read.csv(paste(path, dir.name, "/merged-res/cos-noMem-budget-ratio-merged.csv", sep = ""))
-popul <- read.csv(paste(path, dir.name, "/merged-res/pop-noMem-budget-ratio-merged.csv", sep = ""))
-actio <- read.csv(paste(path, dir.name, "/merged-res/act-noMem-budget-ratio-merged.csv", sep = ""))
-budge <- read.csv(paste(path, dir.name, "/merged-res/bgt-noMem-budget-ratio-merged.csv", sep = ""))
+costs <- read.csv(paste(path, dir.name, "/merged-res/cos-mem-budget-ratio-merged.csv", sep = ""))
+popul <- read.csv(paste(path, dir.name, "/merged-res/pop-mem-budget-ratio-merged.csv", sep = ""))
+actio <- read.csv(paste(path, dir.name, "/merged-res/act-mem-budget-ratio-merged.csv", sep = ""))
+budge <- read.csv(paste(path, dir.name, "/merged-res/bgt-mem-budget-ratio-merged.csv", sep = ""))
 
 # only without extinction
 we_costs <- subset(costs, Extinct == 0)
@@ -389,7 +389,7 @@ we_budge <- subset(budge, Extinct == 0)
   bura <- levels(as.factor(d$ratio))
   
   # with the same budget
-  same.bgt <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/noreset-results-save/noreset-merged-results/ATI-noreset-stats.csv", header = T)[,-1]
+  same.bgt <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/mem-noreset-results/mem-noreset-merged-results/ATI-mem-noreset-stats.csv", header = T)[,-1]
   same.bgt.var <- same.bgt[1,5] 
   same.bgt.inf <- same.bgt[1,7] 
   same.bgt.sup <- same.bgt[1,8] 
@@ -403,7 +403,7 @@ we_budge <- subset(budge, Extinct == 0)
   no.hum.var <- sum(no.hum[,5])/dim(no.hum)[1]
   
   # plot and export in pdf
-  {pdf(file = "bgt-ratio-control-extfreq.pdf", width = par('din')[1], height = par('din')[2])
+  {pdf(file = "MEM-bgt-ratio-control-extfreq.pdf", width = par('din')[1], height = par('din')[2])
     
     {# # enlarge margins
       # par(mar = c(5, 5, 1, 1))
@@ -466,7 +466,7 @@ we_budge <- subset(budge, Extinct == 0)
 
 #### effect of BB:ratio on extinction frequency according to UT ####
 
-{d <- subset(stat, at == 0.1)
+{d <- subset(stat, at == 0.3)
   
   d$at <- d$at*100
   d$bb <- d$bb*100
@@ -505,7 +505,7 @@ we_budge <- subset(budge, Extinct == 0)
 }
 
 # plot and export in pdf
-{pdf(file = "T1Q1-extfreq-small.pdf", width = par('din')[1], height = par('din')[2])
+{pdf(file = "noMem-UT30-extfreq.pdf", width = par('din')[1], height = par('din')[2])
 
   {# # enlarge margins
   # par(mar = c(5, 5, 1, 1))
@@ -514,7 +514,7 @@ we_budge <- subset(budge, Extinct == 0)
   pts <- 0.5
   # pts <- 1
   
-  xadj <- seq(-4,4,length.out=11)
+  xadj <- seq(-8,8,length.out=11)
   colo <- rainbow(dim(ext)[1])
   
   # plot base
