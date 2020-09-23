@@ -520,7 +520,7 @@ we_budge <- subset(budge, Extinct == 0)
   # plot base
   plot(1, type = "n",
        ylim = c(0, 1),
-       xlim = c(0, 100),
+       xlim = c(0, 105),
        ylab = "Extinction frequency (+/- 95%CI)", #
        xlab = "Budget Bonus (%)", #cex.lab = 1.5, cex.axis = 1.5, cex = 1.5,
        cex.lab = pts + 0.2, cex.axis = pts + 0.2)
@@ -553,11 +553,6 @@ we_budge <- subset(budge, Extinct == 0)
   # points(y = no.hum.var, x = 0, pch = 23, col = "black", cex = pts)
   # abline(h = no.hum.var, lty = 3, col = "black", lwd = pts)
   
-  leg <- paste("BR = ", bura[1])
-  for (i in 2:length(bura)) {
-    leg <- c(leg, paste("BR = ", bura[i]))
-  }
-  
   # legend
   legend( # 110, 0.5,             # Location of legend 
          "bottomright",
@@ -565,7 +560,7 @@ we_budge <- subset(budge, Extinct == 0)
          ncol = 2,
          # xjust = 0,                           # Left justify legend box on x
          # yjust = 0.5,                          # Center legend box on y
-         legend = leg,
+         legend = bura,
            # c(paste("BR = ", bura[1]),
            #          paste("BR = ", bura[2]),
            #          paste("BR = ", bura[3]),
