@@ -1,8 +1,12 @@
-path <- "~/Desktop/PhD/GitKraken/gmse_fork_RQ1/Budget-ratio-sim/Mem-res/"
+path <- "~/Desktop/PhD/GitKraken/gmse_fork_RQ1/Budget-ratio-large-batch/Mem-res/"
 setwd(dir = path)
 
 # get the directory content
 content <- dir()
+
+# remove weird "Squishy's conflicted copy"
+content <- content[-which(content == grep(pattern = "conflicted", x = content, value = T))]
+content <- content[-which(content == grep(pattern = "conflicted", x = content, value = T))]
 
 # order alphabetically
 content <- content[order(content)]
@@ -139,3 +143,4 @@ for (i in 1:length(rest.bgt)) {
 
 # export table
 write.csv(bgt, file = paste(path, "/merged-res/bgt-mem-budget-ratio-merged.csv", sep = ""), row.names = FALSE)
+
