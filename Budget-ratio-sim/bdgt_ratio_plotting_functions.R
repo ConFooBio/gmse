@@ -7,9 +7,10 @@
 # 4 strategies: default, memory of previous observation of population size, bonus reset only after raisong the costs, a combination of the latter two
 
 #### libraries ####
-library("colorspace")
-library("ggplot2")
-library("stringr")
+# library("colorspace")
+# library("ggplot2")
+# library("stringr")
+library(plotly)
 
 #### functions needed ####
 
@@ -355,9 +356,9 @@ path <- "~/Desktop/PhD/GitKraken/gmse_fork_RQ1/Budget-ratio-large-batch/"
 
 setwd(path)
 
-dir.name <- "noMem-res"
+dir.name <- "Mem-res"
 
-brut <- as.data.frame(read.csv(paste(dir.name, "/merged-res/noMem-budget-ratio-merged.csv", sep = "")))
+brut <- as.data.frame(read.csv(paste(dir.name, "/merged-res/mem-budget-ratio-merged.csv", sep = "")))
 
 stat <- OTI_stats(df = brut, ts = 20, omit.extinction = F) 
 woe_stat <- OTI_stats(df = brut, ts = 20, omit.extinction = T)
@@ -392,11 +393,11 @@ we_budge <- subset(budge, Extinct == 0)
   
   bura <- levels(as.factor(d$ratio))
   
-  # with the same budget
-  same.bgt <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/mem-noreset-results/mem-noreset-merged-results/ATI-mem-noreset-stats.csv", header = T)[,-1]
-  same.bgt.var <- same.bgt[1,5] 
-  same.bgt.inf <- same.bgt[1,7] 
-  same.bgt.sup <- same.bgt[1,8] 
+  # # with the same budget
+  # same.bgt <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/mem-noreset-results/mem-noreset-merged-results/ATI-mem-noreset-stats.csv", header = T)[,-1]
+  # same.bgt.var <- same.bgt[1,5] 
+  # same.bgt.inf <- same.bgt[1,7] 
+  # same.bgt.sup <- same.bgt[1,8] 
   
   # Without management?
   no.mgmt <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/batch6-perfObs/manager_budget_is_1.csv", sep = "\t", header = FALSE)
@@ -420,7 +421,7 @@ we_budge <- subset(budge, Extinct == 0)
       plot(1, type = "n",
            ylim = c(0, 1),
            xlim = c(10, 100),
-           ylab = "Extinction frequency (+/- 95%CI)", #
+           ylab = "Extinction frequency", #
            xlab = "Budget ratio (%)", #cex.lab = 1.5, cex.axis = 1.5, cex = 1.5,
            cex.lab = pts + 0.2, cex.axis = pts + 0.2)
       
@@ -428,9 +429,9 @@ we_budge <- subset(budge, Extinct == 0)
       arrows(d$ratio, d$ext_prob_95ci_inf, d$ratio, d$ext_prob_95ci_sup, length=0.02, angle=90, code=3, col = "black")
       points(d$ratio, d$ext_prob, type = "b", pch = 15, col = "black", cex = pts, lwd = pts)
       
-      # When they have the same budget
-      arrows(100, same.bgt.inf, 100, same.bgt.sup, length=0.02, angle=90, code=3, col = "violet")
-      points(100, same.bgt.var, pch = 15, col = "violet", cex = pts)
+      # # When they have the same budget
+      # arrows(100, same.bgt.inf, 100, same.bgt.sup, length=0.02, angle=90, code=3, col = "violet")
+      # points(100, same.bgt.var, pch = 15, col = "violet", cex = pts)
       
       # No management
       abline(h = no.mgmt.var, lty = 2, col = "grey", lwd = pts)
@@ -446,20 +447,20 @@ we_budge <- subset(budge, Extinct == 0)
         # xjust = 0,                           # Left justify legend box on x
         # yjust = 0.5,                          # Center legend box on y
         legend = c("No humans",
-                   "No management",
-                   "Equal budget"),
+                   "No management"),
+                   # "Equal budget"),
         col = c("grey",                 # Legend Element Colors
-                "grey",
-                "violet"),          
+                "grey"),
+                # "violet"),          
         pch = c(NA_integer_,
-                NA_integer_,
-                15),                      # Legend Element Styles          
+                NA_integer_),
+                # 15),                      # Legend Element Styles          
         lty = c(3,
-                2,
-                NA_integer_),       
-        cex = pts-0.2,
+                2),
+                # NA_integer_),       
+        cex = pts-0.2) # ,
         # cex = 0.6,
-        title = "Strategies") #,                  # Legend Title
+        # title = "Strategies") #,                  # Legend Title
       # title.col = gray(.2) ,                # Legend title color
       # box.lty = 1,                         # Legend box line type
       # box.lwd = 1)                         # Legend box line width
@@ -473,25 +474,28 @@ we_budge <- subset(budge, Extinct == 0)
 {d <- subset(stat, at == 0)
 
 d$ratio <- d$ratio*100
+d$act_dev <- d$act_dev*100
+d$act_dev_95ci_inf <- d$act_dev_95ci_inf*100
+d$act_dev_95ci_sup <- d$act_dev_95ci_sup*100
 
 bura <- levels(as.factor(d$ratio))
 
-# with the same budget
-same.bgt <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/mem-noreset-results/mem-noreset-merged-results/ATI-mem-noreset-stats.csv", header = T)[,-1]
-same.bgt.var <- same.bgt[1,5] 
-same.bgt.inf <- same.bgt[1,7] 
-same.bgt.sup <- same.bgt[1,8] 
+# # with the same budget
+# same.bgt <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/mem-noreset-results/mem-noreset-merged-results/ATI-mem-noreset-stats.csv", header = T)[,-1]
+# same.bgt.var <- same.bgt[1,5] 
+# same.bgt.inf <- same.bgt[1,7] 
+# same.bgt.sup <- same.bgt[1,8] 
 
 # Without management?
 no.mgmt <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/batch6-perfObs/manager_budget_is_1.csv", sep = "\t", header = FALSE)
-no.mgmt.var <- sum(no.mgmt[,5])/dim(no.mgmt)[1]
+no.mgmt.var <- 100*sum(no.mgmt[,6])/dim(no.mgmt)[1]
 
 # Without humans?
 no.hum <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/batch6-perfObs/user_and_manager_budget_is_1.csv", sep = "\t", header = FALSE)
-no.hum.var <- sum(no.hum[,5])/dim(no.hum)[1]
+no.hum.var <- 100*sum(no.hum[,6])/dim(no.hum)[1]
 
 # plot and export in pdf
-{pdf(file = "MEM-bgt-ratio-control-extfreq.pdf", width = par('din')[1], height = par('din')[2])
+{pdf(file = "MEM-bgt-ratio-control-dev.pdf", width = par('din')[1], height = par('din')[2])
   
   {# # enlarge margins
     # par(mar = c(5, 5, 1, 1))
@@ -502,25 +506,28 @@ no.hum.var <- sum(no.hum[,5])/dim(no.hum)[1]
     
     # plot base
     plot(1, type = "n",
-         ylim = c(0, 1),
+         ylim = c(-100, 100),
          xlim = c(10, 100),
-         ylab = "Extinction frequency (+/- 95%CI)", #
+         ylab = "Population deviation from target (%)", #
          xlab = "Budget ratio (%)", #cex.lab = 1.5, cex.axis = 1.5, cex = 1.5,
          cex.lab = pts + 0.2, cex.axis = pts + 0.2)
     
-    # Plot the results
-    arrows(d$ratio, d$ext_prob_95ci_inf, d$ratio, d$ext_prob_95ci_sup, length=0.02, angle=90, code=3, col = "black")
-    points(d$ratio, d$ext_prob, type = "b", pch = 15, col = "black", cex = pts, lwd = pts)
-    
-    # When they have the same budget
-    arrows(100, same.bgt.inf, 100, same.bgt.sup, length=0.02, angle=90, code=3, col = "violet")
-    points(100, same.bgt.var, pch = 15, col = "violet", cex = pts)
+    # best res
+    abline(h = 0, col = "darkgreen", lty = 2, lwd = pts)
     
     # No management
     abline(h = no.mgmt.var, lty = 2, col = "grey", lwd = pts)
     
     # No humans
     abline(h = no.hum.var, lty = 3, col = "gray", lwd = pts)
+    
+    # Plot the results
+    arrows(d$ratio, d$act_dev_95ci_inf, d$ratio, d$act_dev_95ci_sup, length=0.02, angle=90, code=3, col = "black")
+    points(d$ratio, d$act_dev, type = "b", pch = 15, col = "black", cex = pts, lwd = pts)
+    
+    # # When they have the same budget
+    # arrows(100, same.bgt.inf, 100, same.bgt.sup, length=0.02, angle=90, code=3, col = "violet")
+    # points(100, same.bgt.var, pch = 15, col = "violet", cex = pts)
     
     # legend
     legend( # 110, 0.5,             # Location of legend 
@@ -530,20 +537,20 @@ no.hum.var <- sum(no.hum[,5])/dim(no.hum)[1]
       # xjust = 0,                           # Left justify legend box on x
       # yjust = 0.5,                          # Center legend box on y
       legend = c("No humans",
-                 "No management",
-                 "Equal budget"),
+                 "No management"),
+                 # "Equal budget"),
       col = c("grey",                 # Legend Element Colors
-              "grey",
-              "violet"),          
+              "grey"),
+              # "violet"),          
       pch = c(NA_integer_,
-              NA_integer_,
-              15),                      # Legend Element Styles          
+              NA_integer_),
+              # 15),                      # Legend Element Styles          
       lty = c(3,
-              2,
-              NA_integer_),       
-      cex = pts-0.2,
+              2),
+              # NA_integer_),       
+      cex = pts-0.2) #,
       # cex = 0.6,
-      title = "Strategies") #,                  # Legend Title
+      # title = "Strategies") #,                  # Legend Title
     # title.col = gray(.2) ,                # Legend title color
     # box.lty = 1,                         # Legend box line type
     # box.lwd = 1)                         # Legend box line width
@@ -576,8 +583,8 @@ bura <- levels(as.factor(d$ratio))
 # }
 
 # resmat <- matrix(data = seq(1:(length(bubo)*length(bura))), ncol = length(bura), nrow = length(bubo))
-# resmat <- matrix(data = d$ext_prob, ncol = length(bura), nrow = length(bubo))
-# 
+resmat <- matrix(data = d$ext_prob, ncol = length(bura), nrow = length(bubo))
+
 # resfin <- resmat[,9]
 # for (i in (length(bura)-1):1) {
 #   resfin <- rbind(resfin, resmat[,i])
@@ -586,12 +593,15 @@ bura <- levels(as.factor(d$ratio))
 fig <- plot_ly(
   x = bubo, 
   y = bura, 
-  z = matrix(data = d$ext_prob, ncol = length(bubo), nrow = length(bura)), 
+  # z = matrix(data = d$ext_prob, ncol = length(bubo), nrow = length(bura)), 
+  z = t(resmat),
   type = "contour",
-  colorscale = 'Reds',
+  colorscale = list(c(0, 0.5, 1), c('green', 'orange', 'red')),
   autocontour = F,
   contours = list(showlabels = TRUE)
 )
+
+fig <- fig %>% colorbar(title = "Extinction \n frequency")
 
 # fig <- fig %>% colorbar(title = "Extinction \n frequency")
 fig
@@ -607,10 +617,13 @@ d$bb <- d$bb*100
 bubo <- levels(as.factor(d$bb))
 bura <- levels(as.factor(d$ratio))
 
+resmat <- matrix(data = 100*d$act_dev, nrow = length(bubo), ncol = length(bura))
+# resmat <- t(resmat)
+
 fig <- plot_ly(
   x = bubo, 
   y = bura, 
-  z = matrix(data = d$act_dev, ncol = length(bubo), nrow = length(bura)), 
+  z = t(resmat), 
   type = "contour",
   colorscale = 'Viridis',
   autocontour = F,
@@ -618,6 +631,7 @@ fig <- plot_ly(
 )
 
 fig <- fig %>% colorbar(title = "Deviation \n from target")
+
 fig
 
 #### users yield ####
@@ -631,10 +645,12 @@ d$bb <- d$bb*100
 bubo <- levels(as.factor(d$bb))
 bura <- levels(as.factor(d$ratio))
 
+resmat <- matrix(data = d$fin_yield, ncol = length(bubo), nrow = length(bura))
+
 fig <- plot_ly(
   x = bubo, 
   y = bura, 
-  z = matrix(data = d$fin_yield, ncol = length(bubo), nrow = length(bura)), 
+  z = t(resmat), 
   type = "contour",
   colorscale = 'Viridis',
   autocontour = F,
@@ -725,7 +741,7 @@ fig
   plot(1, type = "n",
        ylim = c(0, 1),
        xlim = c(0, 105),
-       ylab = "Extinction frequency (+/- 95%CI)", #
+       ylab = "Extinction frequency", #
        xlab = "Budget Bonus (%)", #cex.lab = 1.5, cex.axis = 1.5, cex = 1.5,
        cex.lab = pts + 0.2, cex.axis = pts + 0.2)
   
@@ -866,7 +882,7 @@ no.hum.var <- sum(no.hum[,5])/dim(no.hum)[1]
     plot(1, type = "n",
          ylim = c(0, 1),
          xlim = c(0, 105),
-         ylab = "Extinction frequency (+/- 95%CI)", #
+         ylab = "Extinction frequency", #
          xlab = "Budget Bonus (%)", #cex.lab = 1.5, cex.axis = 1.5, cex = 1.5,
          cex.lab = pts + 0.2, cex.axis = pts + 0.2)
     
@@ -1005,7 +1021,7 @@ xtendrange <- seq(-10,110,1)
     plot(1, type = "n",
          ylim = c(-100, 100),
          xlim = c(0, 100),
-         ylab = "Average deviation from target (+/- 95%CI)", #
+         ylab = "Average deviation from target", #
          xlab = "Update threshold (%)", #cex.lab = 1.5, cex.axis = 1.5, cex = 1.5,
          cex.lab = pts + 0.2, cex.axis = pts + 0.2)
     

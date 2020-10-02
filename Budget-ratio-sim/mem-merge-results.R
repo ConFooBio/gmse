@@ -5,8 +5,10 @@ setwd(dir = path)
 content <- dir()
 
 # remove weird "Squishy's conflicted copy"
-content <- content[-which(content == grep(pattern = "conflicted", x = content, value = T))]
-content <- content[-which(content == grep(pattern = "conflicted", x = content, value = T))]
+conf <- grep(pattern = "conflicted", x = content, value = TRUE)
+for (i in 1:length(conf)) {
+  content <- content[-which(content == conf[i])]
+}
 
 # order alphabetically
 content <- content[order(content)]
