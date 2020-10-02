@@ -356,9 +356,9 @@ path <- "~/Desktop/PhD/GitKraken/gmse_fork_RQ1/Budget-ratio-large-batch/"
 
 setwd(path)
 
-dir.name <- "Mem-res"
+dir.name <- "noMem-res"
 
-brut <- as.data.frame(read.csv(paste(dir.name, "/merged-res/mem-budget-ratio-merged.csv", sep = "")))
+brut <- as.data.frame(read.csv(paste(dir.name, "/merged-res/noMem-budget-ratio-merged.csv", sep = "")))
 
 stat <- OTI_stats(df = brut, ts = 20, omit.extinction = F) 
 woe_stat <- OTI_stats(df = brut, ts = 20, omit.extinction = T)
@@ -565,7 +565,7 @@ no.hum.var <- 100*sum(no.hum[,6])/dim(no.hum)[1]
 
 # build results matrix
 
-d <- subset(stat, at == 0.3)
+d <- subset(stat, at == 0.5)
 
 d$bb <- d$bb*100
 
@@ -598,19 +598,33 @@ fig <- plot_ly(
   type = "contour",
   colorscale = list(c(0, 0.5, 1), c('green', 'orange', 'red')),
   autocontour = F,
-  contours = list(showlabels = TRUE)
+  # contours = list(showlabels = TRUE),
+  contours = list(
+    start = 0,
+    end = 1,
+    size = 0.1,
+    showlabels = T
+  )
+)
+
+xlab <- list(
+  title = "Budget bonus (%)"#,
+  # titlefont = f
+)
+ylab <- list(
+  title = "Budget ratio"#,
+  # titlefont = f
 )
 
 fig <- fig %>% colorbar(title = "Extinction \n frequency")
-
-# fig <- fig %>% colorbar(title = "Extinction \n frequency")
+fig <- fig %>% layout(xaxis = xlab, yaxis = ylab)
 fig
 
 #### Deviation from target ####
 
 # build results matrix
 
-d <- subset(stat, at == 0.5)
+d <- subset(stat, at == 0.3)
 
 d$bb <- d$bb*100
 
@@ -627,11 +641,26 @@ fig <- plot_ly(
   type = "contour",
   colorscale = 'Viridis',
   autocontour = F,
-  contours = list(showlabels = TRUE)
+  # contours = list(showlabels = TRUE)#,
+  contours = list(
+    start = -100,
+    end = 20,
+    size = 10,
+    showlabels = T
+  )
 )
+# 
+# xlab <- list(
+#   title = "Budget bonus (%)"#,
+#   # titlefont = f
+# )
+# ylab <- list(
+#   title = "Budget ratio"#,
+#   # titlefont = f
+# )
 
-fig <- fig %>% colorbar(title = "Deviation \n from target")
-
+fig <- fig %>% colorbar(title = "Dev. from \n target (%)")
+fig <- fig %>% layout(xaxis = xlab, yaxis = ylab)
 fig
 
 #### users yield ####
@@ -645,19 +674,26 @@ d$bb <- d$bb*100
 bubo <- levels(as.factor(d$bb))
 bura <- levels(as.factor(d$ratio))
 
-resmat <- matrix(data = d$fin_yield, ncol = length(bubo), nrow = length(bura))
+resmat <- matrix(data = d$fin_yield/1000, ncol = length(bubo), nrow = length(bura))
 
 fig <- plot_ly(
   x = bubo, 
   y = bura, 
   z = t(resmat), 
   type = "contour",
-  colorscale = 'Viridis',
+  colorscale = list(c(0, 1), c('orange', 'green')),
   autocontour = F,
-  contours = list(showlabels = TRUE)
+  # contours = list(showlabels = TRUE),
+  contours = list(
+    start = 20,
+    end = 40,
+    size = 2,
+    showlabels = T
+  )
 )
 
-fig <- fig %>% colorbar(title = "Final \n yield")
+fig <- fig %>% colorbar(title = "Final yield \n (in k)")
+fig <- fig %>% layout(xaxis = xlab, yaxis = ylab)
 fig
 
 #### users yield ####
