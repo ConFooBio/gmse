@@ -696,7 +696,7 @@ fig <- fig %>% colorbar(title = "Final yield \n (in k)")
 fig <- fig %>% layout(xaxis = xlab, yaxis = ylab)
 fig
 
-#### users yield ####
+#### Yiel inequity ####
 
 # build results matrix
 
@@ -722,7 +722,7 @@ fig
 
 #### effect of BB:ratio on extinction frequency according to UT ####
 
-{d <- subset(stat, at == 0.3)
+{d <- subset(stat, at == 0.5)
   
   d$at <- d$at*100
   d$bb <- d$bb*100
@@ -761,7 +761,7 @@ fig
 }
 
 # plot and export in pdf
-{pdf(file = "noMem-UT30-extfreq.pdf", width = par('din')[1], height = par('din')[2])
+{pdf(file = "mem-UT50-bgtRatio-extfreq.pdf", width = par('din')[1], height = par('din')[2])
 
   {# # enlarge margins
   # par(mar = c(5, 5, 1, 1))
@@ -769,8 +769,13 @@ fig
   # points cex
   pts <- 0.5
   # pts <- 1
+    
+  # trunk ext if necessary
+  ext <- ext[-(1:2),]
+  ci_inf <- ci_inf[-(1:2),]
+  ci_sup <- ci_sup[-(1:2),]
   
-  xadj <- seq(-8,8,length.out=11)
+  xadj <- seq(-2,2,length.out=dim(ext)[1])
   colo <- rainbow(dim(ext)[1])
   
   # plot base
@@ -785,8 +790,7 @@ fig
   # polygon(c(xtendrange,rev(xtendrange)),c(rep(ci_sup[1,1], length(xtendrange)),rev(rep(ci_inf[1,1], length(xtendrange)))),col="lightgrey", border = "grey") 
   
   k <- 1
-  # Put the other budget bonuses in a faint grey to show but de-emphasise
-  for (i in 1:(dim(ext)[1])) {
+  for (i in 1:dim(ext)[1]) {
     arrows(x0 = as.numeric(bubo) + xadj[k], y0 = ci_inf[i,], x1 = as.numeric(bubo) + xadj[k], y1 = ci_sup[i,], length=0.02, angle=90, code=3, col = colo[i])
     points(x = as.numeric(bubo) + xadj[k], y = ext[i,], type = "b", cex = pts, lwd = pts-0.2, col = colo[i], pch = 20);
     k <- k+1
@@ -811,12 +815,12 @@ fig
   
   # legend
   legend( # 110, 0.5,             # Location of legend 
-         "bottomright",
+         "topright",
          # xpd = TRUE,                          # Allow drawing outside plot area
          ncol = 2,
          # xjust = 0,                           # Left justify legend box on x
          # yjust = 0.5,                          # Center legend box on y
-         legend = bura,
+         legend = bura[3:6],
            # c(paste("BR = ", bura[1]),
            #          paste("BR = ", bura[2]),
            #          paste("BR = ", bura[3]),
@@ -867,6 +871,10 @@ dev.off()
 
 d$at <- d$at*100
 d$bb <- d$bb*100
+d$act_dev <- d$act_dev*100
+d$act_dev_sd <- d$act_dev_sd*100
+d$act_dev_95ci_inf <- d$act_dev_95ci_inf*100
+d$act_dev_95ci_sup <- d$act_dev_95ci_sup*100
 
 # get max, min and average of each UT
 upth <- levels(as.factor(d$at))
@@ -874,26 +882,26 @@ bubo <- levels(as.factor(d$bb))
 bura <- levels(as.factor(d$ratio))
 
 sub <- as.data.frame(subset(d, ratio == bura[1]))
-ext <- sub$ext_prob
-sd <- sub$ext_prob_sd
-ci_inf <- sub$ext_prob_95ci_inf
-ci_sup <- sub$ext_prob_95ci_sup
+ext <- sub$act_dev
+sd <- sub$act_dev_sd
+ci_inf <- sub$act_dev_95ci_inf
+ci_sup <- sub$act_dev_95ci_sup
 
 for (i in 2:length(bura)) {
   sub <- as.data.frame(subset(d, ratio == bura[i]))
-  ext <- rbind(ext, sub$ext_prob)
-  sd <- rbind(sd, sub$ext_prob_sd)
-  ci_inf <- rbind(ci_inf, sub$ext_prob_95ci_inf)
-  ci_sup <- rbind(ci_sup, sub$ext_prob_95ci_sup)
+  ext <- rbind(ext, sub$act_dev)
+  sd <- rbind(sd, sub$act_dev_sd)
+  ci_inf <- rbind(ci_inf, sub$act_dev_95ci_inf)
+  ci_sup <- rbind(ci_sup, sub$act_dev_95ci_sup)
 }
 
-# Without management?
-no.mgmt <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/batch6-perfObs/manager_budget_is_1.csv", sep = "\t", header = FALSE)
-no.mgmt.var <- sum(no.mgmt[,5])/dim(no.mgmt)[1]
-
-# Without humans?
-no.hum <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/batch6-perfObs/user_and_manager_budget_is_1.csv", sep = "\t", header = FALSE)
-no.hum.var <- sum(no.hum[,5])/dim(no.hum)[1]
+# # Without management?
+# no.mgmt <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/batch6-perfObs/manager_budget_is_1.csv", sep = "\t", header = FALSE)
+# no.mgmt.var <- sum(no.mgmt[,5])/dim(no.mgmt)[1]
+# 
+# # Without humans?
+# no.hum <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/batch6-perfObs/user_and_manager_budget_is_1.csv", sep = "\t", header = FALSE)
+# no.hum.var <- sum(no.hum[,5])/dim(no.hum)[1]
 
 # # plotting convenience
 # xadj1 <- as.numeric(upth[-1]) - 1;
@@ -902,7 +910,7 @@ no.hum.var <- sum(no.hum[,5])/dim(no.hum)[1]
 }
 
 # plot and export in pdf
-{pdf(file = "noMem-UT30-extfreq.pdf", width = par('din')[1], height = par('din')[2])
+{pdf(file = "mem-UT30-bgtRatio-dev.pdf", width = par('din')[1], height = par('din')[2])
   
   {# # enlarge margins
     # par(mar = c(5, 5, 1, 1))
@@ -911,23 +919,30 @@ no.hum.var <- sum(no.hum[,5])/dim(no.hum)[1]
     pts <- 0.5
     # pts <- 1
     
-    xadj <- seq(-8,8,length.out=11)
+    # trunk ext if necessary
+    ext <- ext[-(1:2),]
+    ci_inf <- ci_inf[-(1:2),]
+    ci_sup <- ci_sup[-(1:2),]
+    
+    xadj <- seq(-2,2,length.out=dim(ext)[1])
     colo <- rainbow(dim(ext)[1])
     
     # plot base
     plot(1, type = "n",
-         ylim = c(0, 1),
-         xlim = c(0, 105),
-         ylab = "Extinction frequency", #
+         ylim = c(-100, 20),
+         xlim = c(0, 100),
+         ylab = "Deviation from\ntarget (%)", #
          xlab = "Budget Bonus (%)", #cex.lab = 1.5, cex.axis = 1.5, cex = 1.5,
          cex.lab = pts + 0.2, cex.axis = pts + 0.2)
+    
+    # best possible
+    abline(h = 0, lty = 2, lwd = pts-0.2, col = "black")
     
     # # Control band
     # polygon(c(xtendrange,rev(xtendrange)),c(rep(ci_sup[1,1], length(xtendrange)),rev(rep(ci_inf[1,1], length(xtendrange)))),col="lightgrey", border = "grey") 
     
     k <- 1
-    # Put the other budget bonuses in a faint grey to show but de-emphasise
-    for (i in 1:(dim(ext)[1])) {
+    for (i in 1:dim(ext)[1]) {
       arrows(x0 = as.numeric(bubo) + xadj[k], y0 = ci_inf[i,], x1 = as.numeric(bubo) + xadj[k], y1 = ci_sup[i,], length=0.02, angle=90, code=3, col = colo[i])
       points(x = as.numeric(bubo) + xadj[k], y = ext[i,], type = "b", cex = pts, lwd = pts-0.2, col = colo[i], pch = 20);
       k <- k+1
@@ -957,7 +972,7 @@ no.hum.var <- sum(no.hum[,5])/dim(no.hum)[1]
       ncol = 2,
       # xjust = 0,                           # Left justify legend box on x
       # yjust = 0.5,                          # Center legend box on y
-      legend = bura,
+      legend = bura[3:6],
       # c(paste("BR = ", bura[1]),
       #          paste("BR = ", bura[2]),
       #          paste("BR = ", bura[3]),
@@ -994,6 +1009,170 @@ no.hum.var <- sum(no.hum[,5])/dim(no.hum)[1]
       cex = pts-0.2,
       # cex = 0.6,
       title = "Ratios") #,                  # Legend Title
+    # title.col = gray(.2) ,                # Legend title color
+    # box.lty = 1,                         # Legend box line type
+    # box.lwd = 1)                         # Legend box line width
+  }
+  dev.off()
+}
+
+#### Details of BB effect and waiting strategy on dev according to ratio ####
+
+{d <- subset(stat, at == 0 & ratio == 0.8 | at == 0.3 & ratio == 0.8 | at == 0.5 & ratio == 0.8)
+
+d$at <- d$at*100
+d$bb <- d$bb*100
+
+bubo <- levels(as.factor(d$bb))
+
+sub <- subset(d, at != 50)
+ext <- sub$act_dev*100
+sd <- sub$act_dev_sd*100
+ci_inf <- sub$act_dev_95ci_inf*100
+ci_sup <- sub$act_dev_95ci_sup*100
+
+sub <- subset(d, at != 30)
+ext <- cbind(ext, sub$act_dev*100)
+sd <- cbind(sd, sub$act_dev_sd*100)
+ci_inf <- cbind(ci_inf, sub$act_dev_95ci_inf*100)
+ci_sup <- cbind(ci_sup, sub$act_dev_95ci_sup*100)
+}
+
+# plot and export in pdf
+{pdf(file = "mem-BR08-bgtRatio-dev.pdf", width = par('din')[1], height = par('din')[2])
+  
+  { # points cex
+    pts <- 0.5
+    
+    # plot base
+    plot(1, type = "n",
+         ylim = c(-100, 20),
+         xlim = c(0, 100),
+         ylab = "Deviation from target (%)", #
+         xlab = "Budget Bonus (%)", #cex.lab = 1.5, cex.axis = 1.5, cex = 1.5,
+         cex.lab = pts + 0.2, cex.axis = pts + 0.2)
+    
+    # Control band
+    xtendrange <- seq(-10,110,1)
+    
+    polygon(c(xtendrange,rev(xtendrange)),c(rep(ci_sup[1,1], length(xtendrange)),rev(rep(ci_inf[1,1], length(xtendrange)))),col="lightgrey", border = "grey")
+    abline(h = ext[1,1], lwd = pts)
+    
+    # best possible
+    abline(h = 0, lty = 2, lwd = pts, col = "darkgreen")
+    
+    # UT30
+    arrows(x0 = as.numeric(bubo)-1, y0 = ci_inf[-1,1], x1 = as.numeric(bubo)-1, y1 = ci_sup[-1,1], length=0.02, angle=90, code=3, col = 'blue')
+    points(x = as.numeric(bubo)-1, y = ext[-1,1], type = "b", cex = pts, lwd = pts, col = 'blue', pch = 20);
+    
+    # UT50
+    arrows(x0 = as.numeric(bubo)+1, y0 = ci_inf[-1,2], x1 = as.numeric(bubo)+1, y1 = ci_sup[-1,2], length=0.02, angle=90, code=3, col = 'violet')
+    points(x = as.numeric(bubo)+1, y = ext[-1,2], type = "b", cex = pts, lwd = pts, col = 'violet', pch = 4);
+    
+    # legend
+    legend( # 110, 0.5,             # Location of legend 
+      "topright",
+      # xpd = TRUE,                          # Allow drawing outside plot area
+      # ncol = 2,
+      # xjust = 0,                           # Left justify legend box on x
+      # yjust = 0.5,                          # Center legend box on y
+      legend = c("Control",
+                 "UT 30%",
+                 "UT 50%"),
+      col = c("black",
+              "blue",
+              "violet"),        
+      pch = c(NA_integer_,
+              20,
+              4),                    # Legend Element Styles          
+      lty = c(1, 
+              1,
+              1),     
+      cex = pts-0.2,
+      # cex = 0.6,
+      title = "Strategies - 0.8 ratio") #,                  # Legend Title
+    # title.col = gray(.2) ,                # Legend title color
+    # box.lty = 1,                         # Legend box line type
+    # box.lwd = 1)                         # Legend box line width
+}
+  dev.off()
+}
+
+#### Details of BB effect and waiting strategy on ext freq according to ratio ####
+
+{d <- subset(stat, at == 0 & ratio == 0.7 | at == 0.3 & ratio == 0.7 | at == 0.5 & ratio == 0.7)
+
+d$at <- d$at*100
+d$bb <- d$bb*100
+
+bubo <- levels(as.factor(d$bb))
+
+sub <- subset(d, at != 50)
+ext <- sub$ext_prob
+sd <- sub$ext_prob_sd
+ci_inf <- sub$ext_prob_95ci_inf
+ci_sup <- sub$ext_prob_95ci_sup
+
+sub <- subset(d, at != 30)
+ext <- cbind(ext, sub$ext_prob)
+sd <- cbind(sd, sub$ext_prob_sd)
+ci_inf <- cbind(ci_inf, sub$ext_prob_95ci_inf)
+ci_sup <- cbind(ci_sup, sub$ext_prob_95ci_sup)
+}
+
+# plot and export in pdf
+{pdf(file = "mem-BR07-bgtRatio-extfreq.pdf", width = par('din')[1], height = par('din')[2])
+  
+  { # points cex
+    pts <- 0.5
+    
+    # plot base
+    plot(1, type = "n",
+         ylim = c(0, 1),
+         xlim = c(0, 100),
+         ylab = "Extinction frequency", #
+         xlab = "Budget Bonus (%)", #cex.lab = 1.5, cex.axis = 1.5, cex = 1.5,
+         cex.lab = pts + 0.2, cex.axis = pts + 0.2)
+    
+    # Control band
+    xtendrange <- seq(-10,110,1)
+    
+    polygon(c(xtendrange,rev(xtendrange)),c(rep(ci_sup[1,1], length(xtendrange)),rev(rep(ci_inf[1,1], length(xtendrange)))),col="lightgrey", border = "grey")
+    abline(h = ext[1,1], lwd = pts)
+    
+    # best possible
+    abline(h = 0, lty = 2, lwd = pts, col = "darkgreen")
+    
+    # UT30
+    arrows(x0 = as.numeric(bubo)-1, y0 = ci_inf[-1,1], x1 = as.numeric(bubo)-1, y1 = ci_sup[-1,1], length=0.02, angle=90, code=3, col = 'blue')
+    points(x = as.numeric(bubo)-1, y = ext[-1,1], type = "b", cex = pts, lwd = pts, col = 'blue', pch = 20);
+    
+    # UT50
+    arrows(x0 = as.numeric(bubo)+1, y0 = ci_inf[-1,2], x1 = as.numeric(bubo)+1, y1 = ci_sup[-1,2], length=0.02, angle=90, code=3, col = 'violet')
+    points(x = as.numeric(bubo)+1, y = ext[-1,2], type = "b", cex = pts, lwd = pts, col = 'violet', pch = 4);
+    
+    # legend
+    legend( # 110, 0.5,             # Location of legend 
+      "topright",
+      # xpd = TRUE,                          # Allow drawing outside plot area
+      # ncol = 2,
+      # xjust = 0,                           # Left justify legend box on x
+      # yjust = 0.5,                          # Center legend box on y
+      legend = c("Control",
+                 "UT 30%",
+                 "UT 50%"),
+      col = c("black",
+              "blue",
+              "violet"),        
+      pch = c(NA_integer_,
+              20,
+              4),                    # Legend Element Styles          
+      lty = c(1, 
+              1,
+              1),     
+      cex = pts-0.2,
+      # cex = 0.6,
+      title = "Strategies - 0.7 ratio") #,                  # Legend Title
     # title.col = gray(.2) ,                # Legend title color
     # box.lty = 1,                         # Legend box line type
     # box.lwd = 1)                         # Legend box line width
@@ -1092,7 +1271,7 @@ xtendrange <- seq(-10,110,1)
     
     # legend
     legend( # 110, 0.5,             # Location of legend 
-      "topright",
+      "bottomright",
       # xpd = TRUE,                          # Allow drawing outside plot area
       # ncol = 2,
       # xjust = 0,                           # Left justify legend box on x
