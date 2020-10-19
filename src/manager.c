@@ -403,7 +403,7 @@ void check_action_threshold(double ***ACTION, double *paras){
         lo_bound = (1 - a_t) * target; /* lower bound of the non-updating band */
     
         /* If the population deviation has hit the threshold, and time step, and that prediction is outside the non-updating band */
-        if(dev >= a_t || t_s < 3 || pred > up_bound || pred < lo_bound){ 
+        if(dev >= a_t || t_s < 2 || pred > up_bound || pred < lo_bound){ 
             paras[106]  = 1; /* Policy is going to be updated now */
             paras[107]  = 0; /* Zero time steps since last policy update */
         }else{
