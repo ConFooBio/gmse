@@ -1100,7 +1100,7 @@ ci_sup <- cbind(ci_sup, sub$act_dev_95ci_sup*100)
 
 #### Details of BB effect and waiting strategy on ext freq according to ratio ####
 
-{d <- subset(stat, at == 0 & ratio == 0.7 | at == 0.3 & ratio == 0.7 | at == 0.5 & ratio == 0.7)
+{d <- subset(stat, at == 0 & ratio == 0.8 | at == 0.5 & ratio == 0.8) # | at == 0.5 & ratio == 0.7
 
 d$at <- d$at*100
 d$bb <- d$bb*100
@@ -1113,15 +1113,21 @@ sd <- sub$ext_prob_sd
 ci_inf <- sub$ext_prob_95ci_inf
 ci_sup <- sub$ext_prob_95ci_sup
 
-sub <- subset(d, at != 30)
-ext <- cbind(ext, sub$ext_prob)
-sd <- cbind(sd, sub$ext_prob_sd)
-ci_inf <- cbind(ci_inf, sub$ext_prob_95ci_inf)
-ci_sup <- cbind(ci_sup, sub$ext_prob_95ci_sup)
+# sub <- subset(d, at != 30)
+# ext <- cbind(ext, sub$ext_prob)
+# sd <- cbind(sd, sub$ext_prob_sd)
+# ci_inf <- cbind(ci_inf, sub$ext_prob_95ci_inf)
+# ci_sup <- cbind(ci_sup, sub$ext_prob_95ci_sup)
+
+sub <- subset(d, at != 0)
+ext <- c(ext, sub$ext_prob)
+sd <- c(sd, sub$ext_prob_sd)
+ci_inf <- c(ci_inf, sub$ext_prob_95ci_inf)
+ci_sup <- c(ci_sup, sub$ext_prob_95ci_sup)
 }
 
 # plot and export in pdf
-{pdf(file = "mem-BR07-bgtRatio-extfreq.pdf", width = par('din')[1], height = par('din')[2])
+{pdf(file = "mem-BR08-UT50-bgtRatio-extfreq.pdf", width = par('din')[1], height = par('din')[2])
   
   { # points cex
     pts <- 0.5
@@ -1137,19 +1143,24 @@ ci_sup <- cbind(ci_sup, sub$ext_prob_95ci_sup)
     # Control band
     xtendrange <- seq(-10,110,1)
     
-    polygon(c(xtendrange,rev(xtendrange)),c(rep(ci_sup[1,1], length(xtendrange)),rev(rep(ci_inf[1,1], length(xtendrange)))),col="lightgrey", border = "grey")
-    abline(h = ext[1,1], lwd = pts)
+    # polygon(c(xtendrange,rev(xtendrange)),c(rep(ci_sup[1,1], length(xtendrange)),rev(rep(ci_inf[1,1], length(xtendrange)))),col="lightgrey", border = "grey")
+    # abline(h = ext[1,1], lwd = pts)
+    
+    polygon(c(xtendrange,rev(xtendrange)),c(rep(ci_sup[1], length(xtendrange)),rev(rep(ci_inf[1], length(xtendrange)))),col="lightgrey", border = "grey")
+    abline(h = ext[1], lwd = pts)
     
     # best possible
     abline(h = 0, lty = 2, lwd = pts, col = "darkgreen")
     
-    # UT30
-    arrows(x0 = as.numeric(bubo)-1, y0 = ci_inf[-1,1], x1 = as.numeric(bubo)-1, y1 = ci_sup[-1,1], length=0.02, angle=90, code=3, col = 'blue')
-    points(x = as.numeric(bubo)-1, y = ext[-1,1], type = "b", cex = pts, lwd = pts, col = 'blue', pch = 20);
+    # # UT30
+    # arrows(x0 = as.numeric(bubo)-1, y0 = ci_inf[-1,1], x1 = as.numeric(bubo)-1, y1 = ci_sup[-1,1], length=0.02, angle=90, code=3, col = 'blue')
+    # points(x = as.numeric(bubo)-1, y = ext[-1,1], type = "b", cex = pts, lwd = pts, col = 'blue', pch = 20);
     
     # UT50
-    arrows(x0 = as.numeric(bubo)+1, y0 = ci_inf[-1,2], x1 = as.numeric(bubo)+1, y1 = ci_sup[-1,2], length=0.02, angle=90, code=3, col = 'violet')
-    points(x = as.numeric(bubo)+1, y = ext[-1,2], type = "b", cex = pts, lwd = pts, col = 'violet', pch = 4);
+    # arrows(x0 = as.numeric(bubo)+1, y0 = ci_inf[-1,2], x1 = as.numeric(bubo)+1, y1 = ci_sup[-1,2], length=0.02, angle=90, code=3, col = 'violet')
+    # points(x = as.numeric(bubo)+1, y = ext[-1,2], type = "b", cex = pts, lwd = pts, col = 'violet', pch = 4);
+    arrows(x0 = as.numeric(bubo), y0 = ci_inf[-1], x1 = as.numeric(bubo), y1 = ci_sup[-1], length=0.02, angle=90, code=3, col = 'violet')
+    points(x = as.numeric(bubo), y = ext[-1], type = "b", cex = pts, lwd = pts, col = 'violet', pch = 4);
     
     # legend
     legend( # 110, 0.5,             # Location of legend 
@@ -1159,20 +1170,20 @@ ci_sup <- cbind(ci_sup, sub$ext_prob_95ci_sup)
       # xjust = 0,                           # Left justify legend box on x
       # yjust = 0.5,                          # Center legend box on y
       legend = c("Control",
-                 "UT 30%",
+                 # "UT 30%",
                  "UT 50%"),
       col = c("black",
-              "blue",
+              # "blue",
               "violet"),        
       pch = c(NA_integer_,
-              20,
+              # 20,
               4),                    # Legend Element Styles          
       lty = c(1, 
-              1,
+              # 1,
               1),     
       cex = pts-0.2,
       # cex = 0.6,
-      title = "Strategies - 0.7 ratio") #,                  # Legend Title
+      title = "Strategies") #,          - 0.7 ratio         # Legend Title
     # title.col = gray(.2) ,                # Legend title color
     # box.lty = 1,                         # Legend box line type
     # box.lwd = 1)                         # Legend box line width
