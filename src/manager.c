@@ -397,6 +397,7 @@ void check_action_threshold(double ***ACTION, double *paras){
 
         pred = res_abund + var; /* manager's prediction for next time step population size based on variation */
         /* Could be interesting to make the manager_sense inteviene here */
+        /* And use the absolute value to make the following if statement lighter */
 
         up_bound = (1 + a_t) * target; /* upper bound of the non-updating band */
 
