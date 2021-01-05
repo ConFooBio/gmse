@@ -30,6 +30,7 @@ gmse_apply <- function(res_mod  = resource,
                        use_mod  = user,
                        get_res  = "basic",
                        old_list = NULL,
+                       manage_me = FALSE,
                        ...
                        ){
 
@@ -90,6 +91,18 @@ gmse_apply <- function(res_mod  = resource,
     man_results <- check_name_results(output   = man_results, 
                                       vec_name = "manager_vector", 
                                       mat_name = "manager_array");
+    
+    if(manage_me == TRUE) {
+        print("Observed population size:");
+        print(arg_vals[["observation_vector"]]);
+        print("Suggested culling costs:");
+        print(man_results$COST[1,9,2:5]);
+        print("Enter desired culling cost for all users (blank/Enter accepts suggested cost):")
+        new_cost <- scan(n=1);
+        if(length(new_cost)==0) new_cost = unique(man_results$COST[1,9,2:5])
+        man_results$COST[1,9,2:5] = new_cost;
+    }
+    
     arg_vals    <- add_results(arg_list = arg_vals, output = man_results);
     arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = man_mod);
     arg_vals    <- translate_results(arg_list = arg_vals, output = man_results);
