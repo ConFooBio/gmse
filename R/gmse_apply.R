@@ -1639,6 +1639,12 @@ translate_results <- function(arg_list, output){
             if(is.na(arg_list[["user_array"]])[1] == TRUE){
                 arg_list <- set_action_array(arg_list);
             }
+            ### Attempt at circumventing an issue with specifying extended custom man_mod.
+            ### `user_array` seems to be missing from `arg_list`, whereas `ACTION` is there,
+            ###  so just set the former to be the latter:
+            if(is.na(arg_list[["user_array"]][1]) & !is.na(arg_list[["ACTION"]][1])) {
+                arg_list[["user_array"]] = arg_list[["ACTION"]]
+            }
             u_out <- arg_list[["user_array"]];
             rows  <- which(u_out[, 1, 1] == -2);
             acts  <- u_out[rows, 9, ];
@@ -1649,6 +1655,11 @@ translate_results <- function(arg_list, output){
             }
             arg_list[["user_vector"]] <- allac;
         }
+    }
+    ### Further addition similar to the one above, dealing with an apparently missing `manager_array` while COST
+    ### does exist:
+    if(is.na(arg_list[["manager_array"]][1]) & !is.na(arg_list[["COST"]][1])) {
+        arg_list[["manager_array"]] = arg_list[["COST"]]
     }
     return(arg_list);
 }
