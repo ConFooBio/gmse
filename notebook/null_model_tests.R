@@ -36,7 +36,9 @@ sim_old = gmse_apply(get_res = "Full", manage_target = 500, man_mod = manager_NU
 sim_old$basic_output
 
 
-### Looping tests.
+### Looping tests. Just to verify that (1) gmse_apply() looping `old_list` works as expected with the above null models,
+### and (2) that repeated simulation runs of these give the same approximate trajectories to the default models where no
+### actions can be taken.
 
 ### Number of iterations:
 J = 10
