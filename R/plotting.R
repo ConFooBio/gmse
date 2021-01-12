@@ -168,7 +168,7 @@ case23plot <- function(res, obs, land1, land2, land3, agents, paras, COST,
         ymaxi <- minK + 0.1 * minK;
     }
     time_max <- length(res);
-    for(i in 1:(time_max-1)){
+    for(i in 1:(time_max)){
         res_t    <- res[[i]];
         obs_t    <- obs[[i]];
         lnd_t    <- land2[[i]] * 100;
@@ -384,7 +384,7 @@ case01plot <- function(res, obs, land1, land2, land3, agents, paras, ACTION,
       ymaxi <- minK + 0.1 * minK;
     }
     time_max <- length(res);
-    for(i in 1:(time_max-1)){
+    for(i in 1:(time_max)){
         res_t    <- res[[i]];
         obs_t    <- obs[[i]];
         lnd_t    <- land2[[i]] * 100;
@@ -582,7 +582,7 @@ plot_gmse_results <- function(sim_results){
         land3 <- land2[[i]][,,3];
     }
     
-    max_time <- length(res) - 1;
+    max_time <- length(res);
         
     gens <- NULL;
     abun <- NULL;
@@ -628,7 +628,7 @@ plot_gmse_results <- function(sim_results){
     }
     
     time_max <- length(res);
-    for(i in 1:(time_max-1)){
+    for(i in 1:(time_max)){
         res_t    <- res[[i]];
         obs_t    <- obs[[i]];
         lnd_t    <- land2[[i]][,,2] * 100;
@@ -689,7 +689,7 @@ plot_gmse_results <- function(sim_results){
                 col="lightblue");
         points(x = gens, y = est, pch = 20, type = "l", lwd = 2, col = "cyan4");
     }else{
-        points(x = gens, y = est[-time_max], pch = 20, type = "l", lwd = 2, 
+        points(x = gens, y = est, pch = 20, type = "l", lwd = 2, 
                col = "cyan4");
     }
     if(para_vec[5] > 1){

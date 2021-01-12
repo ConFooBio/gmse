@@ -52,7 +52,7 @@ library(rhandsontable)
 
  - **2020**
 
-     - **MAY** [10](#u-10-MAY-2020), [8](#u-8-MAY-2020), [6](#u-6-MAY-2020)
+     - **MAY** [21](#u-21-MAY-2020), [18](#u-18-MAY-2020), [17](#u-17-MAY-2020), [15](#u-15-MAY-2020), [12](#u-12-MAY-2020), [11](#u-11-MAY-2020), [10](#u-10-MAY-2020), [8](#u-8-MAY-2020), [6](#u-6-MAY-2020)
      - **APR** [23](#u-23-APR-2020), [13](#u-13-APR-2020), [1](#u-1-APR-2020) 
      - **FEB** [4](#u-4-FEB-2020)
 
@@ -85,30 +85,114 @@ library(rhandsontable)
 
      - **DEC** [22](#u-22-DEC-2016)
 
-[Towards a Game-theoretic Management Strategy Evaluation (G-MSE)](#intro)
-
-[General model development](#gendev)
-
-[General software development](#soft)
-
-[Game-theory modelling (game.c; green box above)](#game)
-
-[Game-theory and modelling](#gamemod)
-
-[Notes regarding Nilsen's MSE](#Nilsen)
-
-[Some side-notes that might be of use](#side)
-
-[Potentially relevant conferences and workshops](#meetings)
-
-[References consulted and annotated (Mendeley)](#ref)
-
-[References cited](#cited)
+********************************************************************************
+     
+ - [Older topics of GMSE development](#old_topics)
 
 ********************************************************************************
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-21-MAY-2020">Update: 21 MAY 2020</a>
+
+Several new features have been added, which will also make their way into the next version of GMSE v0.6.0.x. Two new arguments `usr_yld_budget` and `man_yld_budget` are now available in `gmse` and `gmse_apply`. These arguments allow an increment of user and manager budget from yield obtained from the landscape. Total yield from one time step of for a user is multiplied by `usr_yld_budget`, and this product is then added to whatever the user's baseline budget was. Similarly, the mean total yield of all users is multiplied by `man_yld_budget`, and this product is then added to whatever the manager's baseline budget was. There was a bit of an issue when integrating the code with the action threshold budget bonus, so the solution was to add two new columns to the agent array. The budget for any agent is then just the [sum of the basline and each of these columns](https://github.com/ConFooBio/gmse/blob/72b868e4eb6bf92800a6ceb358ab5f9ef61eb385/src/game.c#L827). Hence future development affecting the budget bonus and yield to budget effects can be more easily done independently. 
+
+A new vignette has also be written by Adrian, which will be on the updated GMSE website soon.
+
+> <a name="u-18-MAY-2020">Update: 18 MAY 2020</a>
+
+A bug has been found and fixed, which was introduced into `gmse_apply` through the changes to the perceptions of actions for users and managers in commit [86c298eddd1c778defaac04d30ab342eef58fb50](https://github.com/ConFooBio/gmse/commit/86c298eddd1c778defaac04d30ab342eef58fb50). The problem was that the internal elements of the paras vector were changed to reflect columns where perceptions of different actions were to be located in `gmse`. But in `gmse_apply`, the same change was not made, so that all of these elements were interpreted as low integers; it's remarkable that a segfault did not occur in any of the tests. Jeroen pointed out a major difference between the dynamics in runs of `gmse` and `gmse_apply` given identical parameter values, which led the investigation into what was causing the problem. Finally, we found the aforementioned problem, which was resolved in commit [7a97eb08171147f688036851be5e3783ab631495](https://github.com/ConFooBio/gmse/commit/7a97eb08171147f688036851be5e3783ab631495). A subsequent fix was made to the testthat function paras vectors where needed. The dynamics in `gmse` and `gmse_apply` are once again the same. On Friday, we have tentative plans for a crash party with ConFooBio members to download the newest version of GMSE on the rev branch and try to crash it.
+
+> <a name="u-17-MAY-2020">Update: 17 MAY 2020</a>
+
+Over the last two days, I have made some changes to the code and done some additional testing. Changes are summarised below.
+
+**Fixed memory leak**
+
+Since I had been doing some substantial development in C, I thought it would be wise to run valgrind to check for memory leaks. I found one, due to my forgetting to free some memory in the new landscape.c file. The memory [is now correctly freed](https://github.com/ConFooBio/gmse/commit/2feb37b51889e56f394ed7c53a41b11ca4323f42) in the file, and running `gmse` and `gmse_apply` in valgrind produces no memory leaks.
+
+```
+==33279== 
+==33279== HEAP SUMMARY:
+==33279==     in use at exit: 67,085,047 bytes in 12,107 blocks
+==33279==   total heap usage: 896,509 allocs, 884,402 frees, 557,718,069 bytes allocated
+==33279== 
+==33279== LEAK SUMMARY:
+==33279==    definitely lost: 0 bytes in 0 blocks
+==33279==    indirectly lost: 0 bytes in 0 blocks
+==33279==      possibly lost: 0 bytes in 0 blocks
+==33279==    still reachable: 67,085,047 bytes in 12,107 blocks
+==33279==                       of which reachable via heuristic:
+==33279==                         newarray           : 4,264 bytes in 1 blocks
+==33279==         suppressed: 0 bytes in 0 blocks
+==33279== Reachable blocks (those to which a pointer was found) are not shown.
+==33279== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==33279== 
+==33279== For counts of detected and suppressed errors, rerun with: -v
+==33279== ERROR SUMMARY: 2736 errors from 4 contexts (suppressed: 0 from 0)
+```
+
+I have also initialised a [new file](https://github.com/ConFooBio/gmse/blob/2feb37b51889e56f394ed7c53a41b11ca4323f42/notebook/sim_valgrind.R) in the notebook for functions that we will want to periodically run through valgrind. 
+
+**Perceptions of actions for users and managers**
+
+Following a conversation with Jeroen and Nils, we decided that another change would be beneficial for GMSE v0.6.0.x. In all previous versions of GMSE, how managers and users perceive the consequences of scaring actions is hidden. The consequences were calculated in a reasonable way by GMSE and used within the fitness functions of the genetic algorithm to determine which strategies of setting policy (for manager) or acting (for users) was best. The relevant values for the perceived effects of scaring, culling, castration, feeding, helping offspring, tending crops, and killing crops were set partly in the `paras` vector, and partly calculated internally in C. Now, instead, they are calculated for each agent (manager and users) and placed directly in the [AGENTS](https://confoobio.github.io/gmse/articles/SI7.html#agents) array. 
+
+The [AGENTS](https://confoobio.github.io/gmse/articles/SI7.html#agents) array has therefore increased by seven columns. Rows in each of these columns hold the perceived effects of each action for each agent. I'm not sure why I did not think of this before, but there are several benefits to doing it this way. First, anyone running `gmse` or `gmse_apply` can now directly alter how users perceive the effects of their own actions using the `perceive_scare`, `perceive_cull`, `perceive_cast`, `perceive_feed`, `perceive_help`, `perceive_tend`, `perceive_kill` arguments, which set how perceived utility will change given a single instance of scaring, culling, castration, feeding, helping offspring, tending crops, and killing crops, respectively. By default, all of these arguments will be calculated in a realistic way, as has been [described already](#u-8-MAY-2020) for the developing version, so the arguments can be ignored and GMSE will run as normal. But if, e.g., there is reason to model the users' perceived efficacy of culling as being much higher than that of scaring (e.g., based on parameterisation from empirical social data), then more appropriate values for a specific system can be used. Additionally, with `gmse_apply`, the agents array can be changed directly, meaning that manager perception of action effects can be changed, and that perceptions among users can potentially be varied (e.g., if some users are more convinced that scaring will work, while others are more sceptical). I also like that the perceived effects are being returned in the agents array, so the whole parameterisation of the fitness function is much more transparent now.
+
+The code now runs with no memory leaks, and GMSE builds on the rev branch with no notes, warnings, or errors.
+
+> <a name="u-15-MAY-2020">Update: 15 MAY 2020</a>
+
+**Minor bug fix**
+
+Jeroen and I have fixed a minor bug in the GMSE code that was causing a crash given the very restricted situation in which the package is built using the Rstudio drop-down menu. In such builds (but not, curiously, when building from the console), a fatal crash can be caused when looping the `gmse_apply` function with variable names that are identical to argument names (e.g., `stakeholders = 8`, followed by `gmse_apply(stakeholders = stakeholders)`). Just in case, to avoid this issue entirely, I have inserted a short function into `gmse_apply` that produces an error when attempting to set variable names equal to argument names. This can be completely circumvented in `gmse_apply` by setting the hidden argument `my_way_or_the_highway` equal to anything (i.e., not `NULL`). I have also included a garbage collect at the end of `gmse` and `gmse_apply` functions.
+
+**Consistency between `gmse` and `gmse_apply`**
+
+In previous versions of GMSE, the functions `gmse` and `gmse_apply` had a few slightly different defaults. This sometimes led to slightly different dynamics when running simulations and comparing between `gmse` and looped `gmse_apply` under default arguments. To avoid any cofusion, Jeroen and I have decided to make `gmse` and `gmse_apply` default arguments completely identical. The equivalence of the two functions given the same initial conditions has been confirmed through simulations.
+
+> <a name="u-12-MAY-2020">Update: 12 MAY 2020</a>
+
+**Updated vignettes**
+
+I have now checked vignettes 5-7 to see if updates were needed. Only an update to [vignette 7](https://confoobio.github.io/gmse/articles/SI7.html) was necessary. Note that even where the code for vignettes remains unchanged, it would still be a good idea to re-knit everything for the website as a test to make sure that everything runs as expected with new defaults for v0.6.0.x. 
+
+**Uneven land allocation**
+
+Jeroen has incorporated some code and a new `ownership_var` argument to adjust the variation in land ownership among users. I've re-worked the way that public land is handled in the new landscape owner building function to account for this, and everything appears to work as intended. 
+
+> <a name="u-11-MAY-2020">Update: 11 MAY 2020</a>
+
+**Bug fix to public land allocation**
+
+A small bug was noticed by Jeroen this morning relating to public land allocation. Essentially, when the proportion of public land amounted to fewer cells on the landscape than allocated to a single user, public land would default to zero cells. We needed some way for there to be nonzero public land that was also quite small. Given such situations, a [new function `small_public_land`](https://github.com/ConFooBio/gmse/blob/1a687d700f4889542da8d69ea087641a7947de0e/src/landscape.c#L55) is called. Public land is placed in the centre of the landscape, thereby cutting into at least two users' owned cells equally. First a rectangle proportional to the landscape is produced, followed by more public land cells attached to each side of this rectangle as necessary to achieve approximately the correct number of cells. It is important to recognise that simulation parameter values need to be chosen with care. If the total number of landscape cells cannot be evenly distributed among users and public land, then of course deviations from `gmse` and `gmse_apply` arguments will occur. The updates cause small deviations to occur for larger sections of landscape when possible. For example, the below produces a landscape with four equal quadrants, three for users and one for public land.
+
+```{r, eval = FALSE}
+sim <- gmse(time_max = 4, stakeholders = 3, public_land = 0.25,
+            land_dim_1 = 100, land_dim_2 = 100, land_ownership = TRUE);
+```
+
+The below is a situation in which the amount of public land is not small. A total of 2000 public land cells are called for, with the remaining 8000 to be divided evenly amongst nine users. This is impossible, and the shortest-splitine algorithm cannot give that level of precision and make the landscapes clean.
+
+```{r, eval = FALSE}
+sim <- gmse(time_max = 4, stakeholders = 9, public_land = 0.20, 
+            land_dim_1 = 100, land_dim_2 = 100, land_ownership = TRUE);
+```
+
+Instead, 1840 cells are allocated to public land, with each user being allocated rectangular blocks of 900 or 920 landscape cells. But when public land to be allocated is very low, fewer cells than given to a single user, deviations are then placed on users to make the public land proportion as accurate as possible in the centre of the landscape.
+
+```{r, eval = FALSE}
+sim <- gmse(time_max = 4, stakeholders = 7, public_land = 0.03, 
+            land_dim_1 = 100, land_dim_2 = 100, land_ownership = TRUE);
+```
+
+In the case of the above, e.g., exactly 300 public land cells are put down in the centre of the landscape, while users are given somewhere between 1303 and 1462 cells.
+
+**Update gmse GUI**
+
+The `gmse_gui` function has now been updated so that all options are available (and default landscape allocation is enacted) for running simulations from within the shiny GUI. I have not put this up on the shiny server yet, but on the rev branch, the new GUI can be used within R. This now concludes all of the planned updates for code changes to v0.6.0.x, and now the last two things to do will be to add vignettes and update the website. Please contact me to request any additional changes.
 
 > <a name="u-10-MAY-2020">Update: 10 MAY 2020</a>
 
@@ -7874,6 +7958,29 @@ print(resource);
 A small script can help us see the output of what's going on in the population, both in terms of individual movement and change in population abundance over time. The run time of the below population is negligible -- all of the data underlying the 100 time steps shown in the figure below is produced in a tenth of a second (**4 JAN Update: Assuming instead a carrying capacity of 40000, closer to the ball-park of the Islay geese, 100 time steps takes 11 seconds**). The upper panel of the figure below shows a landscape (light and dark brown -- these colours don't mean anything at the moment, but could represent different landscape properties) with individuals (black) that move around, reproduce, and die in each time step. The lower panel shows the abundance of these individuals as they increase to carrying capacity (red dashed line), whereafter the population size remains stable (of course, simulating a bigger population takes a bit more time -- it takes about nine tenths of a second to simulate 100 time steps at a carrying capacity of 4000). 
 
 ![Image an example run of the population model](images/pop_model_eg.png)
+
+<a name="old_topics">Old topics of development</a>
+================================================================================
+
+[Towards a Game-theoretic Management Strategy Evaluation (G-MSE)](#intro)
+
+[General model development](#gendev)
+
+[General software development](#soft)
+
+[Game-theory modelling (game.c; green box above)](#game)
+
+[Game-theory and modelling](#gamemod)
+
+[Notes regarding Nilsen's MSE](#Nilsen)
+
+[Some side-notes that might be of use](#side)
+
+[Potentially relevant conferences and workshops](#meetings)
+
+[References consulted and annotated (Mendeley)](#ref)
+
+[References cited](#cited)
 
 
 <a name="intro">Towards a Game-theoretic Management Strategy Evaluation (G-MSE):</a>

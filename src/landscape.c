@@ -8,7 +8,7 @@
 void break_land(double **land, int x0, int x1, int y0, int y1, int N, 
                 double land_var, int *count, int *bin, int ow){
     
-    int xx, yy, halfway, N1, N2, x0_new;
+    int xx, yy, halfway, N1, N2;
     double Nd1, Nd2, ratio, ratio_adj;
     
     if(N > 1){
@@ -61,8 +61,7 @@ void break_land(double **land, int x0, int x1, int y0, int y1, int N,
  * ===========================================================================*/
 void small_public_land(double **land, int dim_x, int dim_y, double public_land){
     
-    int xx, yy, x0, x1, y0, y1, Lx, Ly, sq_len_x, sq_len_y, leftover;
-    double cells, rand_x, rand_y;
+    int xx, yy, x0, x1, y0, y1, Lx, Ly, leftover;
     
     Lx = (int) floor( sqrt(public_land) * (dim_x) );
     Ly = (int) floor( sqrt(public_land) * (dim_y) );

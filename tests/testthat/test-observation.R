@@ -36,7 +36,8 @@ test_that("Dimensions of observation arrays in returned list are correct", {
                17, 1, 2, 3, 13, 3, -1, -1, 1, 0, 2, 2, 8, 7, 13, 4, 7, 0, 17, 
                17, 18, 19, 20, 21, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
                1, 1, 1, 1, 10, 1000, 100, 100, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0, 0,
-               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1);
+               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1, 0, 0, 
+               24, 25);
     
     agents  <-  make_agents(model        = "IBM",
                             agent_number = 2,
@@ -64,8 +65,8 @@ test_that("Dimensions of observation arrays in returned list are correct", {
     );
     
     expect_equal(dim(obs[[1]]), c(100, 43));
-    expect_equal(dim(obs[[2]]), c(2, 24));
-    expect_equal(length(obs[[3]]), 125);
+    expect_equal(dim(obs[[2]]), c(2, 27));
+    expect_equal(length(obs[[3]]), 129);
 })
 
 test_that("Observation model updates new parameters", {
@@ -102,7 +103,8 @@ test_that("Observation model updates new parameters", {
                17, 1, 2, 3, 13, 3, -1, -1, 1, 0, 2, 2, 8, 7, 13, 4, 7, 0, 17, 
                17, 18, 19, 20, 21, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
                1, 1, 1, 1, 10, 1000, 100, 100, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0, 0,
-               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1);
+               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1, 0, 0, 
+               24, 25);
     
     agents  <-  make_agents(model        = "IBM",
                             agent_number = 2,
@@ -170,7 +172,8 @@ test_that("Resources are marked correctly", {
                17, 1, 2, 3, 13, 3, -1, -1, 1, 0, 2, 2, 8, 7, 13, 4, 7, 0, 17, 
                17, 18, 19, 20, 21, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
                1, 1, 1, 1, 10, 1000, 100, 100, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0, 0,
-               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1, 1);
+               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1, 1, 0, 0, 
+               24, 25);
     
     agents  <-  make_agents(model        = "IBM",
                             agent_number = 2,

@@ -106,6 +106,7 @@ make_resource <- function(model              = "IBM",
 #'@param res_consume The fraction of remaining biomass (e.g. crop production) that a resource consumes while occupying a landscape cell. The default value is 0.5, so if one resource occupies the cell, then landscape production is halved, if two resources occupy the cell, then landscape production drops to 0.25; if three, then production drops to 0.125, etc.
 #'@param consume_repr How much from a landscape does an individual resource need to produce one offspring (default 0)?
 #'@param tend_crop_yld The per landscape cell proportional increase in crop yield when stakeholders take one action to increase yield on their landscape. The default value is set to 0.5 (i.e., a 50 percent increase in yield on a cell).
+#'@param times_feeding Number of searches that resources are allowed per time step for feeding on the landscape. Resources will move between times feeding based on whatever `res_movement` and `res_move_type` parameters are specified.
 #'@param landscape The landscape on which some cells are owned. This needs to have been created with the make_landscape, or be a three dimensional array in which the third layer of the array corresponds to owned cells
 #'@return An initialised data frame of agents being modelled
 #'@examples
@@ -138,6 +139,7 @@ make_agents <- function(model              = "IBM",
                         res_consume        = 0,
                         consume_repr       = 0,
                         tend_crop_yld      = 0.2,
+                        times_feeding      = 1,
                         landscape          = NA
                         ){
     if(agent_number < 2 & length(type_counts) < 2){
@@ -176,10 +178,13 @@ make_agents <- function(model              = "IBM",
         p_help  <- rep(x = 0, times = agent_number);
         p_tend  <- rep(x = 0, times = agent_number);
         p_krop  <- rep(x = 0, times = agent_number);
+        adj_b_1 <- rep(x = 0, times = agent_number);
+        adj_b_2 <- rep(x = 0, times = agent_number);
+        adj_b_3 <- rep(x = 0, times = agent_number);
         the_agents <- cbind(IDs, type1, type2, type3, xloc, yloc, mover, time,
                             view, error, mark, tally, see1, see2, see3, yield,
                             budget, p_scare, p_cull, p_castr, p_feed, p_help,
-                            p_tend, p_krop);
+                            p_tend, p_krop, adj_b_1, adj_b_2, adj_b_3);
         the_agents <- agent_perceptions(the_agents, scaring, culling,
                                         castration, feeding, help_offspring,
                                         tend_crops, kill_crops, perceive_scare,
@@ -187,7 +192,8 @@ make_agents <- function(model              = "IBM",
                                         perceive_feed, perceive_help, 
                                         perceive_tend, perceive_kill,
                                         manager_sense, lambda, res_consume,
-                                        consume_repr, tend_crop_yld, landscape);
+                                        consume_repr, tend_crop_yld, 
+                                        times_feeding ,landscape);
     }
     if( is.null(the_agents) ){
         stop("Invalid model selected (Must be 'IBM')");
@@ -215,6 +221,7 @@ agent_perceptions <- function(agents,
                               res_consume        = 0,
                               consume_repr       = 0,
                               tend_crop_yld      = 0.2,
+                              times_feeding      = 1,
                               landscape          = NA){
     
     if(is.array(agents) == FALSE){
@@ -229,7 +236,7 @@ agent_perceptions <- function(agents,
     }
     E_off <- lambda;
     if(consume_repr > 0){
-        E_off <- E_off + (res_consume / consume_repr);
+        E_off <- E_off + ((times_feeding * res_consume) / consume_repr);
     }
     for(i in 1:n_agents){
         if(agents[i, 2] == 0){ # If this is the manager

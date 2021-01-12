@@ -293,7 +293,10 @@ update_old_gmse <- function(arg_vals, ol, list_add){
         ol[["res_move_type"]] <- list_add[["res_move_type"]];
     }
     if("res_birth_type" %in% names_add){
-        stop("ERROR: Only res_birth_type = 2 is allowed by GMSE");
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][4] <- list_add[["res_birth_type"]];
+        }
+        ol[["res_birth_type"]] <- list_add[["res_birth_type"]];
     }
     if("res_death_type" %in% names_add){
         if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
@@ -359,6 +362,7 @@ update_old_gmse <- function(arg_vals, ol, list_add){
             ol[["resource_array"]][,15] <- list_add[["res_consume"]];
         }
         ol[["res_consume"]] <- list_add[["res_consume"]];
+        ol[["PARAS"]][122] <- list_add[["res_consume"]];
     }
     if("ga_popsize" %in% names_add){
         if(list_add[["ga_popsize"]] < 2){
@@ -465,6 +469,7 @@ update_old_gmse <- function(arg_vals, ol, list_add){
             ol[["AGENTS"]][use, 17] <- list_add[["manager_budget"]];
         }
         ol[["manager_budget"]] <- list_add[["manager_budget"]];
+        ol[["PARAS"]][114]     <- list_add[["manager_budget"]];
     }
     if("manage_target" %in% names_add){
         ol[["COST"]]          <- NA;
@@ -643,6 +648,24 @@ update_old_gmse <- function(arg_vals, ol, list_add){
             ol[["PARAS"]][118] <- list_add[["consume_repr"]];
         }
     }
+    if("times_feeding" %in% names_add){
+        ol[["times_feeding"]]     <- list_add[["times_feeding"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][125] <- list_add[["consume_repr"]];
+        }
+    }
+    if("usr_yld_budget" %in% names_add){
+        ol[["usr_yld_budget"]]     <- list_add[["usr_yld_budget"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][126] <- list_add[["usr_yld_budget"]];
+        }
+    }
+    if("man_yld_budget" %in% names_add){
+        ol[["man_yld_budget"]]     <- list_add[["man_yld_budget"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][127] <- list_add[["man_yld_budget"]];
+        }
+    }
     return(ol);
 }
 
@@ -729,6 +752,7 @@ pass_paras <- function( old_list = NULL, time_max = 40, land_dim_1 = 100,
                         perceive_cull = NA, perceive_cast = NA, 
                         perceive_feed = NA, perceive_help = NA, 
                         perceive_tend = NA, perceive_kill  = NA, 
+                        usr_yld_budget = 0, man_yld_budget = 0, 
                         PARAS = NULL, ...
 ){
     
@@ -751,9 +775,10 @@ pass_paras <- function( old_list = NULL, time_max = 40, land_dim_1 = 100,
                     manage_caution, land_ownership, manage_freq, converge_crit, 
                     manager_sense, public_land, group_think, age_repr,
                     usr_budget_rng, action_thres, budget_bonus, consume_surv,
-                    consume_repr, ownership_var, perceive_scare, perceive_cull,
-                    perceive_cast, perceive_feed, perceive_help, perceive_tend,
-                    perceive_kill); 
+                    consume_repr, times_feeding, ownership_var, perceive_scare, 
+                    perceive_cull, perceive_cast, perceive_feed, perceive_help, 
+                    perceive_tend, perceive_kill, usr_yld_budget, 
+                    man_yld_budget); 
 
     paras_errors(input_list);
     
@@ -793,7 +818,8 @@ pass_paras <- function( old_list = NULL, time_max = 40, land_dim_1 = 100,
                converge_crit, RESOURCE_ini, lambda, group_think, fixed_recapt, 
                land_ownership, public_land, action_thres, 1, 0, 0, 0,
                budget_bonus, age_repr, 16, manager_budget, 10, 20, consume_surv, 
-               consume_repr, 21, 0, 13, res_consume, 22, 23, times_feeding
+               consume_repr, 21, 0, 13, res_consume, 22, 23, times_feeding, 
+               usr_yld_budget, man_yld_budget, 24, 25
     );
 
     return( list(gmse_user_input = as.vector(input_list), 
@@ -1082,6 +1108,9 @@ action_errors <- function(input_list, stakes, ...){
 }
 
 paras_errors <- function(input_list){
+    if(is.numeric(input_list) == FALSE){
+        stop("ERROR: Something needs to be read in as numeric that was not")
+    }
     if(input_list[7] < 0){
         stop("ERROR: Agents cannot see negative distance");
     }
@@ -1097,8 +1126,8 @@ paras_errors <- function(input_list){
     if(input_list[12] < 0 | input_list[12] > 3){
         stop("ERROR: Unrecognised GMSE res_move_type");
     }
-    if(input_list[13] != 2 && input_list[13] != 0){
-        stop("ERROR: Currently, only res_birth_type == 0 or 2 allowed by GMSE");
+    if(input_list[13] > 2 | input_list[13] < 0){
+        stop("ERROR: Only res_birth_type == 0, 1, 2 allowed by GMSE");
     }
     if(input_list[14] < 0 | input_list[14] > 3){
         stop("ERROR: Unrecognised GMSE res_death_type");
@@ -1208,26 +1237,35 @@ paras_errors <- function(input_list){
     if(input_list[62] < 0){
         stop("ERROR: Resource consumption for reproduction cannot be negative");
     }
-    if(input_list[63] < 0 | input_list[63] >= 1){
-        stop("ownership_var needs to be >= 0 and < 1");
+    if(input_list[63] < 0){
+        stop("ERROR: Resource cannot feed a negative number of times");
+    }    
+    if(input_list[64] < 0 | input_list[64] >= 1){
+        stop("ERROR: ownership_var needs to be >= 0 and < 1");
     }
-    if(is.na(input_list[64]) == FALSE & is.numeric(input_list[64]) == FALSE){
-        stop("perceive_cull needs to be NA or numeric");
+    if(is.na(input_list[65]) == FALSE & is.numeric(input_list[64]) == FALSE){
+        stop("ERROR: perceive_cull needs to be NA or numeric");
     }
-    if(is.na(input_list[65]) == FALSE & is.numeric(input_list[65]) == FALSE){
-        stop("perceive_cast needs to be NA or numeric");
+    if(is.na(input_list[66]) == FALSE & is.numeric(input_list[65]) == FALSE){
+        stop("ERROR: perceive_cast needs to be NA or numeric");
     }
-    if(is.na(input_list[66]) == FALSE & is.numeric(input_list[66]) == FALSE){
-        stop("perceive_feed needs to be NA or numeric");
+    if(is.na(input_list[67]) == FALSE & is.numeric(input_list[66]) == FALSE){
+        stop("ERROR: perceive_feed needs to be NA or numeric");
     }
-    if(is.na(input_list[67]) == FALSE & is.numeric(input_list[67]) == FALSE){
-        stop("perceive_help needs to be NA or numeric");
+    if(is.na(input_list[68]) == FALSE & is.numeric(input_list[67]) == FALSE){
+        stop("ERROR: perceive_help needs to be NA or numeric");
     }
-    if(is.na(input_list[68]) == FALSE & is.numeric(input_list[68]) == FALSE){
-        stop("perceive_tend needs to be NA or numeric");
+    if(is.na(input_list[69]) == FALSE & is.numeric(input_list[68]) == FALSE){
+        stop("ERROR: perceive_tend needs to be NA or numeric");
     }
-    if(is.na(input_list[69]) == FALSE & is.numeric(input_list[69]) == FALSE){
-        stop("perceive_kill needs to be NA or numeric");
+    if(is.na(input_list[70]) == FALSE & is.numeric(input_list[69]) == FALSE){
+        stop("ERROR: perceive_kill needs to be NA or numeric");
+    }
+    if(is.numeric(input_list[71]) == FALSE){
+        stop("ERROR: usr_yld_budget needs to be numeric")
+    }
+    if(is.numeric(input_list[72]) == FALSE){
+        stop("ERROR: man_yld_budget needs to be numeric")
     }
 }
 
@@ -1888,9 +1926,13 @@ collect_agent_ini <- function(arg_list){
     if("tend_crop_yld" %in% arg_names){
         make_age_list[[26]] <- arg_list[["tend_crop_yld"]];
     }
-    make_age_list[[27]] <- NA;
+    make_age_list[[27]] <- arg_list[["GMSE"]][["times_feeding"]];
+    if("times_feeding" %in% arg_names){
+        make_age_list[[27]] <- arg_list[["times_feeding"]];
+    }
+    make_age_list[[28]] <- NA;
     if("LAND" %in% arg_names){
-        make_age_list[[27]] <- arg_list[["LAND"]];
+        make_age_list[[28]] <- arg_list[["LAND"]];
     }
     return(make_age_list);
 }

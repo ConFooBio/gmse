@@ -33,7 +33,7 @@ void res_add(double **res_adding, double *paras){
     int resource_number, add, realised, type, K_add, gadj, oadj, cadj, ind_age;
     int land_add, ccl;
     int resource, sampled, added, loops, castrated, killed, klld, arp, age;
-    double rand_pois, base_lambda, add_lambda, lambda, crp;
+    double rand_pois, rand_off, base_lambda, add_lambda, lambda, crp;
     
     type            = (int) paras[3];  /* Type of growth (e.g., poisson) */
     K_add           = (int) paras[5];  /* Carrying capacity applied  */
@@ -54,7 +54,28 @@ void res_add(double **res_adding, double *paras){
         case 0:
             break;
         case 1:
-            break; /* Add in a different type of birth here */
+            for(resource = 0; resource < resource_number; resource++){
+                res_adding[resource][realised] = 0;
+                castrated = res_adding[resource][cadj];
+                killed    = res_adding[resource][klld];
+                ind_age   = res_adding[resource][age];
+                if(castrated >= 1 || killed >= 1 || ind_age < arp){
+                    rand_off = 0;
+                }else{
+                    base_lambda = res_adding[resource][add];
+                    add_lambda  = base_lambda * res_adding[resource][gadj];
+                    lambda      = base_lambda + add_lambda;
+                    if(lambda < 0){
+                        lambda = 0;
+                    }
+                    rand_off  = lambda;
+                    rand_off += res_adding[resource][oadj];
+                    rand_off  = floor(rand_off);
+                    res_adding[resource][realised] = rand_off;
+                }
+                added += (int) rand_off;
+            }
+            break;
         case 2:
             for(resource = 0; resource < resource_number; resource++){
                 res_adding[resource][realised] = 0;

@@ -36,7 +36,8 @@ test_that("Dimensions of observation arrays in user model are correct", {
                17, 1, 2, 3, 13, 3, -1, -1, 1, 0, 2, 2, 8, 7, 13, 4, 7, 0, 17, 
                17, 18, 19, 20, 21, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
                1, 1, 1, 1, 10, 1000, 100, 100, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0, 0,
-               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1);
+               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1, 0, 0, 
+               24, 25);
     
     agents  <-  make_agents(model        = "IBM",
                             agent_number = 2,
@@ -84,7 +85,7 @@ test_that("Dimensions of observation arrays in user model are correct", {
     
     expect_equal(length(usem), 6);
     expect_equal(dim(usem[[1]]), c(100, 22));
-    expect_equal(dim(usem[[2]]), c(2, 24));
+    expect_equal(dim(usem[[2]]), c(2, 27));
     expect_equal(dim(usem[[3]]), c(10, 10, 3));
     expect_equal(dim(usem[[4]]), c(7, 13, 2));
     expect_equal(dim(usem[[5]]), c(7, 13, 2));
@@ -124,7 +125,8 @@ test_that("Users act according to costs", {
                17, 1, 2, 3, 13, 3, -1, -1, 1, 0, 2, 2, 8, 7, 13, 4, 7, 0, 17, 
                17, 18, 19, 20, 21, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
                1, 1, 1, 1, 10, 1000, 100, 100, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0, 0,
-               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1);
+               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1, 0, 0, 
+               24, 25);
     
     agents  <-  make_agents(model        = "IBM",
                             agent_number = 2,
@@ -210,7 +212,8 @@ test_that("Managers don't act like users", {
                17, 1, 2, 3, 13, 3, -1, -1, 1, 0, 2, 2, 8, 7, 13, 4, 7, 0, 17, 
                17, 18, 19, 20, 21, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
                1, 1, 1, 1, 10, 1000, 100, 100, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0, 0,
-               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1);
+               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1, 0, 0, 
+               24, 25);
     
     agents  <-  make_agents(model        = "IBM",
                             agent_number = 2,
@@ -258,3 +261,16 @@ test_that("Managers don't act like users", {
     
     expect_equal(max(usem[[4]][,3:13,1]), 0);
 })
+
+
+test_that("Users can get a budget increment from their yield", {
+    skip_on_cran();
+    sim <- gmse(time_max = 2, usr_yld_budget = 1, land_ownership = TRUE, 
+                stakeholders = 1, plotting = FALSE);
+    yield_incr <- sim[["agents"]][[2]][2, 26];
+    
+    expect_equal(yield_incr > 0, TRUE);
+})
+
+
+

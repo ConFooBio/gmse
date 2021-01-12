@@ -36,7 +36,8 @@ test_that("Dimensions of observation arrays in manager model are correct", {
                17, 1, 2, 3, 13, 3, -1, -1, 1, 0, 2, 2, 8, 7, 13, 4, 7, 0, 17, 
                17, 18, 19, 20, 21, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
                1, 1, 1, 1, 10, 1000, 100, 100, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0, 0,
-               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1);
+               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1, 0, 0, 
+               24, 25);
     
     agents  <-  make_agents(model        = "IBM",
                             agent_number = 2,
@@ -84,7 +85,7 @@ test_that("Dimensions of observation arrays in manager model are correct", {
     
     expect_equal(length(mana), 6);
     expect_equal(dim(mana[[1]]), c(100, 22));
-    expect_equal(dim(mana[[2]]), c(2, 24));
+    expect_equal(dim(mana[[2]]), c(2, 27));
     expect_equal(dim(mana[[3]]), c(10, 10, 3));
     expect_equal(dim(mana[[4]]), c(7, 13, 2));
     expect_equal(dim(mana[[5]]), c(7, 13, 2));
@@ -124,7 +125,8 @@ test_that("Manager sets costs of acting on resources", {
                17, 1, 2, 3, 13, 3, -1, -1, 1, 0, 2, 2, 8, 7, 13, 4, 7, 0, 17, 
                17, 18, 19, 20, 21, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
                1, 1, 1, 1, 10, 1000, 100, 100, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0, 0,
-               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1);
+               1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1, 0, 0, 
+               24, 25);
 
     agents  <-  make_agents(model        = "IBM",
                             agent_number = 2,
@@ -178,3 +180,20 @@ test_that("Manager sets costs of acting on resources", {
     expect_equal(mana[[4]][4:5,8:13,1], mana[[5]][1:2,8:13,2]);
 })
 
+test_that("Manager budget bonus compounds over time", {
+    skip_on_cran();
+    sim <- gmse(time_max = 9, RESOURCE_ini = 100, res_death_K = 100, 
+                manage_target = 100, user_budget = 1, action_thres = 2, 
+                budget_bonus = 1, agent_view = 100, stakeholders = 1,
+                plotting = FALSE);
+    
+    expect_equal(sim[["agents"]][[9]][1,25], 63000);
+})
+
+test_that("Manager budget is incremented by user yield", {
+    skip_on_cran();
+    sim <- gmse(time_max = 2, land_ownership = TRUE, man_yld_budget = 1,
+                plotting = FALSE);
+    
+    expect_equal(sim[["agents"]][[2]][1, 26] > 0, TRUE);
+})

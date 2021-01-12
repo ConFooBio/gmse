@@ -354,16 +354,13 @@ void strategy_fitness(double **agent_array, double ***population, double *paras,
                       double *fitnesses, double **jaco, int **interact_table,
                       int agentID){
     
-    int agent, i, row, act_type, int_num, pop_size, ROWS, tcol, n_agents, a_row;
-    double pr_land, land_x, land_y, tcells, acells,  *count_change, *utilities;
+    int agent, i, row, act_type, int_num, pop_size, ROWS, n_agents, a_row;
+    double *count_change, *utilities;
     
-    land_x   = paras[12];
-    land_y   = paras[13];
     pop_size = (int) paras[21];
     n_agents = (int) paras[54];
     int_num  = (int) paras[60];
     ROWS     = (int) paras[68];
-    tcol     = (int) paras[120];
     
     a_row = 0;
     while(agent_array[a_row][0] != agentID && a_row < n_agents){
@@ -810,21 +807,25 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double **JACOBIAN, int **lookup, double *paras, 
         int agent, int managing){
     
-    int row, col, gen, layer, most_fit, popsize, new_fitness, land_x, land_y;
-    int generations, xdim, ydim, agentID, old_fitness, pr_lnd_col, *winners;
-    double pr_lnd, budget, converge_crit, fit_change, ***POPULATION, *fitnesses;
+    int row, col, gen, layer, most_fit, popsize, new_fitness;
+    int generations, xdim, ydim, agentID, old_fitness, *winners;
+    double budget, converge_crit, fit_change, ***POPULATION, *fitnesses;
 
-    land_x         = (int) paras[12];
-    land_y         = (int) paras[13];
     popsize        = (int) paras[21];
     generations    = (int) paras[22];
     xdim           = (int) paras[68];
     ydim           = (int) paras[69];
     converge_crit  = (double)paras[98];
-    pr_lnd_col     = (int) paras[120];
-    budget         = (double) AGENT[agent][16];
     agentID        = (int) AGENT[agent][0];
+    
     most_fit       = 0;
+    budget         = AGENT[agent][16] + AGENT[agent][24] + AGENT[agent][25]; 
+    if(budget < 1){
+      budget = 1;
+    }
+    if(budget > 100001){
+      budget = 100000;
+    }
     
     POPULATION = malloc(xdim * sizeof(double *));
     for(row = 0; row < xdim; row++){
@@ -854,7 +855,6 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     gen          = 0;
     old_fitness  = -10000.0;
     fit_change   = 10000;
-    pr_lnd       = (double) AGENT[agent][pr_lnd_col] / (land_x * land_y);
     while(gen < generations || fit_change > converge_crit){
         
         crossover(POPULATION, paras, agentID); 
