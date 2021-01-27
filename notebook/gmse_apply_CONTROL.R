@@ -1,10 +1,10 @@
-gmse_apply_SKIPUSER = function(res_mod  = resource, 
-                           obs_mod  = observation, 
-                           man_mod  = manager, 
-                           use_mod  = user,
-                           get_res  = "basic",
-                           old_list = NULL,
-                           ...) {
+gmse_apply_INTERIM = function(res_mod  = resource, 
+                              obs_mod  = observation, 
+                              man_mod  = manager, 
+                              use_mod  = user,
+                              get_res  = "basic",
+                              old_list = NULL,
+                              ...) {
     fun_warn(res_mod, obs_mod, man_mod, use_mod);
     
     if(is.null(old_list) == FALSE){
@@ -12,8 +12,9 @@ gmse_apply_SKIPUSER = function(res_mod  = resource,
     }
     
     std_paras           <- pass_paras(old_list, ...);
-    #all_args = as.list(call_bogus_for_debug(get_res = "Full", old_list = sim_old))
+    #std_paras           <- pass_paras(old_list);       # removed ellipsis to mimic function call
     all_args            <- as.list(sys.call());
+    #all_args = as.list(call_bogus_for_debug(get_res = "Full", old_list = sim_old))  # replicates arguments recall
     
     check_the_var_names(all_args);
     
@@ -29,6 +30,7 @@ gmse_apply_SKIPUSER = function(res_mod  = resource,
     
     if(is.null(old_list) == FALSE){
         arg_vals <- apply_old_gmse(arg_vals, old_list, ...);
+        #arg_vals <- apply_old_gmse(arg_vals, old_list);  # removed ellipsis to mimic function call
     }
     
     # ------ RESOURCE MODEL ----------------------------------------------------
@@ -63,18 +65,47 @@ gmse_apply_SKIPUSER = function(res_mod  = resource,
     man_results <- check_name_results(output   = man_results, 
                                       vec_name = "manager_vector", 
                                       mat_name = "manager_array");
-    
     arg_vals    <- add_results(arg_list = arg_vals, output = man_results);
     arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = man_mod);
     arg_vals    <- translate_results(arg_list = arg_vals, output = man_results);
     arg_vals    <- update_para_vec(arg_list   = arg_vals);
     
+    # ------ USER MODEL --------------------------------------------------------
+    #usr_args    <- prep_usr(arg_list = arg_vals, usr_mod = use_mod);
+    #check_args(arg_list = usr_args, the_fun = use_mod);
+    #usr_results <- do.call(what = use_mod, args = usr_args);
+    usr_results = list(RESOURCES = arg_vals$RESOURCES,
+                       AGENTS = arg_vals$AGENTS,
+                       LAND = arg_vals$LAND,
+                       ACTION = arg_vals$ACTION,
+                       COST = arg_vals$COST,
+                       PARAS = arg_vals$PARAS
+                       )
     
+    # usr_results$RESOURCES == arg_vals$RESOURCES
+    # usr_results$AGENTS == arg_vals$AGENTS
+    # usr_results$LAND == arg_vals$LAND
+    # usr_results$ACTION == arg_vals$ACTION
+    # usr_results$COST == arg_vals$COST
+    # usr_results$PARAS == arg_vals$PARAS
+    ### Adapt COST, possibly RESOURCES (culls?)
+    usr_results$ACTION[1,8:12,2:5] = 0  ########## RESETS ALL ACTIONS TO ZERO
+    usr_results$RESOURCES[,17] = 0      ########## ENSURES no actions on resources were taken across (culls)
+    usr_results$RESOURCES[,16] = 0      ########## ENSURES no actions on resources were taken across (scares)
+    usr_results$RESOURCES[,18] = 0      ########## ENSURES no actions on resources were taken across (castrations)
+    
+    usr_results <- check_name_results(output   = usr_results, 
+                                      vec_name = "user_vector", 
+                                      mat_name = "user_array");
+    arg_vals    <- add_results(arg_list = arg_vals, output = usr_results);
+    arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = use_mod);
+    arg_vals    <- translate_results(arg_list = arg_vals, output = usr_results);
+    arg_vals    <- update_para_vec(arg_list   = arg_vals);
     
     res <- gmse_apply_out(arg_vals, get_res, res_mod, obs_mod, man_mod, use_mod,
                           res_results, obs_results, man_results, usr_results);
     invisible( gc() );
-    return(res);
+    return(res);  
 }
 
 gmse_apply_UROM = function(res_mod  = resource, 
@@ -92,6 +123,7 @@ gmse_apply_UROM = function(res_mod  = resource,
     }
     
     std_paras           <- pass_paras(old_list, ...);
+    #all_args = as.list(call_bogus_for_debug(get_res = "Full", old_list = sim_old))
     all_args            <- as.list(sys.call());
     
     check_the_var_names(all_args);
