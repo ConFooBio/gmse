@@ -1,8 +1,9 @@
+rm(list=ls())
 source("notebook/gmse_apply_CONTROL.R")
 source("R/gmse_apply.R")
 rm(gmse_apply)
 
-J = 10
+J = 3
 
 ### Default gmse_apply() runs:
 OUT_DEFAULT = list()

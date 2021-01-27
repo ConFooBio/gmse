@@ -2595,4 +2595,13 @@ get_user_sum <- function(arg_list){
     
     return(act_mat);
 }
+
+testing_wrapper = function() {
+    sim_old = gmse_apply(get_res = "Full", land_ownership = TRUE, scaring = TRUE)
+    for(i in 1:5) {
+        sim_new = gmse_apply(get_res = "Full", old_list = sim_old)
+        sim_old = sim_new
+    }
+}
+
 ################################################################################

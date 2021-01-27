@@ -270,6 +270,7 @@ set_man_costs = function(dat, newcost) {
 init_man_control = function(K = 5) {
     
     K1 = K-1 # Because the "interim" time step will be the fifth, where actions aren't yet taken (pending user input)
+    print("K1 set")
     
     sim_old = gmse_apply(get_res = "Full", 
                          land_ownership = TRUE, 
@@ -280,7 +281,11 @@ init_man_control = function(K = 5) {
                          manage_target = 1000, 
                          stakeholders = 4
     )
+    print("First gmse_apply() call success")
+    
     output = gmse_apply_summary(sim_old, include = c("res","obs","culls","scares", "cull_cost", "scare_cost", "RES_CULLS"))
+    
+    assign("sim_old", sim_old, env = .GlobalEnv)
     
     #### 1. First K1-1 time steps as normal to set up population run:
     for(i in 2:K1) {
