@@ -6,7 +6,7 @@ rm(gmse_apply)
 K1 = 5
 K2 = 15
 
-sim_old = gmse_apply(get_res = "Full", land_ownership = TRUE, scaring = FALSE, culling = TRUE, manage_target = 1500, res_death_K = 3000, lambda = 0.2)
+sim_old = gmse_apply(get_res = "Full", land_ownership = TRUE, scaring = FALSE, culling = TRUE, manage_target = 1500, res_death_K = 3000, lambda = 0.25)
 output = gmse_apply_summary(sim_old, include = c("res","obs","culls","scares", "cull_cost", "scare_cost", "RES_CULLS"))
 
 #### 1. First K1-1 time steps as normal to set up population run:
@@ -28,7 +28,7 @@ output
 observed_suggested(sim_new)
 
 #### 4. Set desired action costs (user input), and reset sim_old:
-sim_new = set_man_costs(sim_new, newcost = list(culling = 99999))
+sim_new = set_man_costs(sim_new, newcost = list(culling = 50))
 sim_old = sim_new
 
 #### 5. Run UROM gmse_apply():
@@ -37,8 +37,8 @@ sim_new = gmse_apply_UROM(get_res = "Full", old_list = sim_old)
 # This is the MANUALLY set costs, i.e. those retained in sim_old, but the actions taken from sim_new:
 output[nrow(output),"cull_cost"] = mean(observed_suggested(sim_old)$culling)
 output[nrow(output),"scare_cost"] = mean(observed_suggested(sim_old)$scaring)
-output[nrow(output),"culls"] = sum(sim_new$ACTION[1,9,2:dim(sim_new$ACTION)[3]])
-output[nrow(output),"scares"] = sum(sim_new$ACTION[1,8,2:dim(sim_new$ACTION)[3]])
+output[nrow(output),"culls"] = sum(sim_new$PREV_ACTS[1,9,2:dim(sim_new$ACTION)[3]])
+output[nrow(output),"scares"] = sum(sim_new$PREV_ACTS[1,8,2:dim(sim_new$ACTION)[3]])
 output[nrow(output),"RES_CULLS"] = sum(sim_new$RESOURCES[,17]!=0)
 # Add next output line, and append new resource and observed:
 output = rbind(output, output[nrow(output),])
