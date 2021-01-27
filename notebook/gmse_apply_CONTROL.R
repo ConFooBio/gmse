@@ -263,6 +263,46 @@ set_man_costs = function(dat, newcost) {
     return(dat)
 }
 
+##### init_man_control is intended as a "setup" for manager control gmse_apply() runs as tested in
+##### gmse_apply_CONTROL_EXAMPLE.R. The idea is to run K-1 iterations of "default" gmse_apply() with given parameters,
+##### followed by a single run of gmse_apply_interim.
+
+init_man_control = function(K = 5) {
+    
+    K1 = K-1 # Because the "interim" time step will be the fifth, where actions aren't yet taken (pending user input)
+    
+    sim_old = gmse_apply(get_res = "Full", 
+                         land_ownership = TRUE, 
+                         observe_type = 3, 
+                         res_move_obs = FALSE, 
+                         res_death_K = 1500,
+                         lambda = 0.275,
+                         manage_target = 1000, 
+                         stakeholders = 4
+    )
+    output = gmse_apply_summary(sim_old, include = c("res","obs","culls","scares", "cull_cost", "scare_cost", "RES_CULLS"))
+    
+    #### 1. First K1-1 time steps as normal to set up population run:
+    for(i in 2:K1) {
+        sim_new = gmse_apply(get_res = "Full", old_list = sim_old)
+        output = gmse_apply_summary(sim_new, output)
+        sim_old = sim_new
+    }
+    
+    #### 2. Run "interim" time step where user actions as surpressed:
+    sim_new = gmse_apply_INTERIM(get_res = "Full", old_list = sim_old)
+    output = gmse_apply_summary(sim_new, output) 
+    # Reset selected output for interim time step (as no actions have been taken)
+    output[nrow(output),c("culls","scares","cull_cost","scare_cost","RES_CULLS")] = NA
+    
+    init_steps = list(output = output, 
+                      observed_suggested = observed_suggested(sim_new))
+    return(init_steps)
+}
+
+
+############################# UTILITY FUNCTIONS - FOR DEBUGGING PURPOSES ONLY ########################################
+
 call_bogus_for_debug = function(res_mod  = resource, 
          obs_mod  = observation, 
          man_mod  = manager, 
@@ -271,4 +311,20 @@ call_bogus_for_debug = function(res_mod  = resource,
          old_list = NULL,
          ...) {
     return(sys.call())
+}
+
+check_res = function(m) {
+    return(cbind(nrow(m$resource_array), nrow(m$RESOURCES), m$resource_vector, m$observation_vector))
+}
+
+check_acts = function(m) {
+    return(list(users = t(m$ACTION[1,8:12,2:5]), manager = m$ACTION[1,8:12,1]))
+}
+
+check_costs = function(m) {
+    return(list(users = t(m$COST[1,8:12,2:5]), manager = m$COST[3,8:12,1]))
+}
+
+test_resource = function(resource_vector) {
+    return(resource_vector)
 }
