@@ -1320,9 +1320,13 @@ place_args <- function(all_names, placing_vals, arg_list){
         place_name <- placing_names[i];
         if(place_name %in% all_names){
             place_pos <- which(all_names == place_name);
-            arg_eval  <- eval(placing_vals[[i]]);
+            if(place_name=="old_list") {
+                arg_eval  <- eval(placing_vals[[i]], envir = parent.frame(3))
+            } else {
+                arg_eval  <- eval(placing_vals[[i]]);    
+            }
             if(is.null(arg_eval) == FALSE){
-                arg_list[[place_pos]] <- eval(placing_vals[[i]]);
+                arg_list[[place_pos]] <- arg_eval;
             }
         }
     }
@@ -2595,13 +2599,4 @@ get_user_sum <- function(arg_list){
     
     return(act_mat);
 }
-
-testing_wrapper = function() {
-    sim_old = gmse_apply(get_res = "Full", land_ownership = TRUE, scaring = TRUE)
-    for(i in 1:5) {
-        sim_new = gmse_apply(get_res = "Full", old_list = sim_old)
-        sim_old = sim_new
-    }
-}
-
 ################################################################################
