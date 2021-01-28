@@ -308,6 +308,26 @@ init_man_control = function(K = 5) {
 
 ############################# UTILITY FUNCTIONS - FOR DEBUGGING PURPOSES ONLY ########################################
 
+testing_wrapper = function(K = 1) {
+    
+    test_old = gmse_apply(get_res = "Full", 
+                          land_ownership = LAND_OWNERSHIP, 
+                          scaring = SCARING, 
+                          manage_target = MANAGE_TARGET, 
+                          res_death_K = RES_DEATH_K, 
+                          lambda = LAMBDA)
+    output = gmse_apply_summary(test_old, include = c("res","obs","culls","scares"))
+    print("bleep")
+    for(i in 1:K) {
+        test_new = gmse_apply(get_res = "Full", old_list = test_old)
+        output = gmse_apply_summary(test_new, output)
+        test_old = test_new    
+    }
+
+    return(output)
+
+}
+
 call_bogus_for_debug = function(res_mod  = resource, 
          obs_mod  = observation, 
          man_mod  = manager, 

@@ -5,6 +5,8 @@ rm(gmse_apply)
 
 J = 3
 
+init_man_control()
+
 ### Default gmse_apply() runs:
 OUT_DEFAULT = list()
 
