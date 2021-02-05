@@ -263,35 +263,55 @@ set_man_costs = function(dat, newcost) {
     return(dat)
 }
 
+##### Appends output to an output table set up by gmse_apply_summary() but treats this as "part-finished line";
+#####  i.e. following a gmse_apply_UROM() run, so following user-resource-observation-manager run.
+##### Assumes last output line is blank apart from true and observed resource pop size. 
+##### Costs for the last line will be set as input as set by user during the previous time step (`costs`), 
+##### Actions will be set as those taken by users in the new sim step in `dat`, and a new line will be added
+#####  with new true and observed resource counts. 
+append_UROM_output = function(dat, costs, old_output) {
+    # Costs as set previously:
+    old_output[nrow(old_output),"cull_cost"] = costs$culling
+    old_output[nrow(old_output),"scare_cost"] = costs$scaring
+    # Actions as enacted previously:
+    old_output[nrow(old_output),c("scares","culls")] = get_acts(dat$PREV_ACTS)[c("scares","culls")]
+    # Add a new line for newly observed population, and add current counts:
+    old_output = rbind(old_output, old_output[nrow(old_output),])
+    old_output[nrow(old_output),] = NA
+    old_output[nrow(old_output),c("res","obs")] = gmse_apply_summary(dat, include = c("res","obs"))
+    return(old_output)
+}
+
 ##### init_man_control is intended as a "setup" for manager control gmse_apply() runs as tested in
 ##### gmse_apply_CONTROL_EXAMPLE.R. The idea is to run K-1 iterations of "default" gmse_apply() with given parameters,
 ##### followed by a single run of gmse_apply_interim.
-
 init_man_control = function(K = 5) {
     
-    K1 = K-1 # Because the "interim" time step will be the fifth, where actions aren't yet taken (pending user input)
-    print("K1 set")
+    gmse_list = list()
     
+    K1 = K-1 # Because the "interim" time step will be the fifth, where actions aren't yet taken (pending user input)
+
     sim_old = gmse_apply(get_res = "Full", 
-                         land_ownership = TRUE, 
-                         observe_type = 3, 
-                         res_move_obs = FALSE, 
-                         res_death_K = 1500,
-                         lambda = 0.275,
-                         manage_target = 1000, 
-                         stakeholders = 4
+                         land_ownership = LAND_OWNERSHIP, 
+                         observe_type = OBSERVE_TYPE, 
+                         res_move_obs = RES_MOVE_OBS, 
+                         res_death_K = RES_DEATH_K,
+                         lambda = LAMBDA,
+                         manage_target = MANAGE_TARGET, 
+                         stakeholders = STAKEHOLDERS,
+                         user_budget = USER_BUDGET
     )
-    print("First gmse_apply() call success")
     
     output = gmse_apply_summary(sim_old, include = c("res","obs","culls","scares", "cull_cost", "scare_cost", "RES_CULLS"))
     
-    assign("sim_old", sim_old, env = .GlobalEnv)
+    gmse_list[[1]] = sim_old
     
     #### 1. First K1-1 time steps as normal to set up population run:
     for(i in 2:K1) {
         sim_new = gmse_apply(get_res = "Full", old_list = sim_old)
         output = gmse_apply_summary(sim_new, output)
         sim_old = sim_new
+        gmse_list[[i]] = sim_old
     }
     
     #### 2. Run "interim" time step where user actions as surpressed:
@@ -300,15 +320,24 @@ init_man_control = function(K = 5) {
     # Reset selected output for interim time step (as no actions have been taken)
     output[nrow(output),c("culls","scares","cull_cost","scare_cost","RES_CULLS")] = NA
     
-    init_steps = list(output = output, 
+    gmse_list[[length(gmse_list)+1]] = sim_new
+    
+    init_steps = list(gmse_list = gmse_list,
+                      summary = output, 
                       observed_suggested = observed_suggested(sim_new))
     return(init_steps)
 }
 
+### Takes an action array and returns a vector of the total number of actions summed across stakeholders
+get_acts = function(actions) {
+    acts = apply(actions[1,8:12,2:dim(actions)[3]],1,sum)
+    names(acts) = c("scares","culls","castrations","feeds","helps")
+    return(acts)
+}
 
 ############################# UTILITY FUNCTIONS - FOR DEBUGGING PURPOSES ONLY ########################################
 
-testing_wrapper = function(K = 1) {
+testing_wrapper = function(K = 1, SCARING = FALSE) {
     
     test_old = gmse_apply(get_res = "Full", 
                           land_ownership = LAND_OWNERSHIP, 
@@ -337,6 +366,7 @@ call_bogus_for_debug = function(res_mod  = resource,
          ...) {
     return(sys.call())
 }
+
 
 check_res = function(m) {
     return(cbind(nrow(m$resource_array), nrow(m$RESOURCES), m$resource_vector, m$observation_vector))
