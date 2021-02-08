@@ -17,7 +17,7 @@ gmse_apply_summary <- function(data,
                                include = NULL) {
     
     valid_includes <- c("res","obs","culls","scares",
-                        "castrations","feeds","helps","tend_crops","kill_crops","yield", "cull_cost", "scare_cost","RES_CULLS")
+                        "castrations","feeds","helps","tend_crops","kill_crops","yield", "cull_cost", "scare_cost")
     
     if(is.null(output)) {
         if(is.null(include)) {
@@ -51,11 +51,10 @@ gmse_apply_summary <- function(data,
     kill_crops <- sum(data$basic_output$user_results[,"kill_crops"],na.rm=T)
     cull_cost <- mean(data$COST[1,9,2:dim(data$COST)[3]])   ### MEAN COST ACROSS USERS
     scare_cost <- mean(data$COST[1,8,2:dim(data$COST)[3]])  ### MEAN COST ACROSS USERS                           
-    RES_CULLS <- sum(data$RESOURCES[,17]!=0)
     yield <- sum(data$AGENTS[,16],na.rm=T)
     
     output <- rbind(output, cbind(res, obs, culls, scares, castrations, 
-                                 feeds, helps, tend_crops,kill_crops, cull_cost, scare_cost, RES_CULLS, yield)[,include] )
+                                 feeds, helps, tend_crops,kill_crops, cull_cost, scare_cost, yield)[,include] )
     
     ### Removes any lines that are all NA from output (typically only the "first" line from a sim run, 
     ###  as the function needed to create an empty output frame at that point.)

@@ -23,7 +23,7 @@ init_steps$summary
 init_steps$observed_suggested
 
 ### User input
-costs_as_input = list(culling = 10, scaring = 100001)
+costs_as_input = list(culling = 100001, scaring = 10)
 prev = set_man_costs(prev, newcost = costs_as_input)
 
 ### Run next time step:

@@ -302,7 +302,7 @@ init_man_control = function(K = 5) {
                          user_budget = USER_BUDGET
     )
     
-    output = gmse_apply_summary(sim_old, include = c("res","obs","culls","scares", "cull_cost", "scare_cost", "RES_CULLS"))
+    output = gmse_apply_summary(sim_old, include = c("res","obs","culls","scares", "cull_cost", "scare_cost"))
     
     gmse_list[[1]] = sim_old
     
@@ -318,7 +318,7 @@ init_man_control = function(K = 5) {
     sim_new = gmse_apply_INTERIM(get_res = "Full", old_list = sim_old)
     output = gmse_apply_summary(sim_new, output) 
     # Reset selected output for interim time step (as no actions have been taken)
-    output[nrow(output),c("culls","scares","cull_cost","scare_cost","RES_CULLS")] = NA
+    output[nrow(output),c("culls","scares","cull_cost","scare_cost")] = NA
     
     gmse_list[[length(gmse_list)+1]] = sim_new
     
