@@ -292,17 +292,21 @@ init_man_control = function(K = 5) {
     K1 = K-1 # Because the "interim" time step will be the fifth, where actions aren't yet taken (pending user input)
 
     sim_old = gmse_apply(get_res = "Full", 
-                         land_ownership = LAND_OWNERSHIP, 
+                         land_ownership = LAND_OWNERSHIP,
+                         tend_crops = TEND_CROPS,
+                         scaring = SCARING,
+                         culling = CULLING,
                          observe_type = OBSERVE_TYPE, 
                          res_move_obs = RES_MOVE_OBS, 
                          res_death_K = RES_DEATH_K,
                          lambda = LAMBDA,
                          manage_target = MANAGE_TARGET, 
                          stakeholders = STAKEHOLDERS,
-                         user_budget = USER_BUDGET
+                         user_budget = USER_BUDGET,
+                         manager_budget = MANAGER_BUDGET
     )
     
-    output = gmse_apply_summary(sim_old, include = c("res","obs","culls","scares", "cull_cost", "scare_cost"))
+    output = gmse_apply_summary(sim_old, include = c("res","obs","culls","scares","tend_crops","cull_cost", "scare_cost"))
     
     gmse_list[[1]] = sim_old
     

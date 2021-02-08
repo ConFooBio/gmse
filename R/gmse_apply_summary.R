@@ -50,7 +50,7 @@ gmse_apply_summary <- function(data,
     tend_crops <- sum(data$basic_output$user_results[,"tend_crops"],na.rm=T)
     kill_crops <- sum(data$basic_output$user_results[,"kill_crops"],na.rm=T)
     cull_cost <- mean(data$COST[1,9,2:dim(data$COST)[3]])   ### MEAN COST ACROSS USERS
-    scare_cost <- mean(data$COST[1,8,2:dim(data$COST)[3]])  ### MEAN COST ACROSS USERS                           
+    scare_cost <- mean(data$COST[1,8,2:dim(data$COST)[3]])  ### MEAN COST ACROSS USERS
     yield <- sum(data$AGENTS[,16],na.rm=T)
     
     output <- rbind(output, cbind(res, obs, culls, scares, castrations, 

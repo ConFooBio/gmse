@@ -4,13 +4,17 @@ source("R/gmse_apply.R")
 rm(gmse_apply)
 
 LAND_OWNERSHIP = TRUE
+TEND_CROPS = TRUE
+SCARING = TRUE
+CULLING = TRUE
 OBSERVE_TYPE = 1
 RES_MOVE_OBS = TRUE
 RES_DEATH_K = 3000
 LAMBDA = 0.3
-MANAGE_TARGET = 1500
+MANAGE_TARGET = 3000
 STAKEHOLDERS = 4
-USER_BUDGET = 1500
+USER_BUDGET = 1000
+MANAGER_BUDGET = 4000
 
 ### Initial time steps:
 init_steps = init_man_control()
@@ -21,6 +25,7 @@ prev = init_steps$gmse_list[[length(init_steps$gmse_list)]]
 # Print output:
 init_steps$summary
 init_steps$observed_suggested
+
 
 ### User input
 costs_as_input = list(culling = 100001, scaring = 10)
