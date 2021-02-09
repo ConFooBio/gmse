@@ -205,19 +205,6 @@ gmse_apply_UROM = function(res_mod  = resource,
     
 }
 
-user_NULL <- function(RESOURCES  = NULL,
-                      AGENTS     = NULL,
-                      LAND       = NULL, 
-                      PARAS      = NULL,
-                      COST       = NULL,
-                      ACTION     = NULL){
-    
-    USER_OUT = list(RESOURCES, AGENTS, LAND, ACTION, COST, PARAS)
-    names(USER_OUT) <- c("RESOURCES", "AGENTS", "LAND", "ACTION", "COST","PARAS");
-
-    return(USER_OUT);
-}
-
 observed_suggested = function(dat) {
     out = list(observed = round(dat$basic_output$observation_results,2), 
                culling = dat[["COST"]][1,9,2:dim(dat$COST)[3]],
@@ -274,7 +261,7 @@ append_UROM_output = function(dat, costs, old_output) {
     old_output[nrow(old_output),"cull_cost"] = costs$culling
     old_output[nrow(old_output),"scare_cost"] = costs$scaring
     # Actions as enacted previously:
-    old_output[nrow(old_output),c("scares","culls")] = get_acts(dat$PREV_ACTS)[c("scares","culls")]
+    old_output[nrow(old_output),c("scares","culls","tend_crops")] = get_acts(dat$PREV_ACTS)[c("scares","culls","tend_crops")]
     # Add a new line for newly observed population, and add current counts:
     old_output = rbind(old_output, old_output[nrow(old_output),])
     old_output[nrow(old_output),] = NA
@@ -322,7 +309,7 @@ init_man_control = function(K = 5) {
     sim_new = gmse_apply_INTERIM(get_res = "Full", old_list = sim_old)
     output = gmse_apply_summary(sim_new, output) 
     # Reset selected output for interim time step (as no actions have been taken)
-    output[nrow(output),c("culls","scares","cull_cost","scare_cost")] = NA
+    output[nrow(output),c("culls","scares","tend_crops","cull_cost","scare_cost")] = NA
     
     gmse_list[[length(gmse_list)+1]] = sim_new
     
@@ -335,7 +322,8 @@ init_man_control = function(K = 5) {
 ### Takes an action array and returns a vector of the total number of actions summed across stakeholders
 get_acts = function(actions) {
     acts = apply(actions[1,8:12,2:dim(actions)[3]],1,sum)
-    names(acts) = c("scares","culls","castrations","feeds","helps")
+    acts = c(acts, sum(actions[2,10,2:dim(actions)[3]]))
+    names(acts) = c("scares","culls","castrations","feeds","helps","tend_crops")
     return(acts)
 }
 

@@ -14,7 +14,7 @@ LAMBDA = 0.3
 MANAGE_TARGET = 3000
 STAKEHOLDERS = 4
 USER_BUDGET = 1000
-MANAGER_BUDGET = 4000
+MANAGER_BUDGET = 1000
 
 ### Initial time steps:
 init_steps = init_man_control()
