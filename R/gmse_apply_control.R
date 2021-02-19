@@ -63,6 +63,10 @@ gmse_apply_INTERIM = function(res_mod  = resource,
     arg_vals    <- update_para_vec(arg_list   = arg_vals);
     check_extinction(arg_vals);
     
+    ###### APPARENTLY "user actions" are reset following the observation model!
+    ###### So if we want a return of actions taken, we need to do this here.
+    PREV_ACTS = arg_vals$ACTION
+    
     # ------ OBSERVATION MODEL -------------------------------------------------
     obs_args <- prep_obs(arg_list = arg_vals, obs_mod = obs_mod);   
     check_args(arg_list = obs_args, the_fun = obs_mod);                         
@@ -121,6 +125,8 @@ gmse_apply_INTERIM = function(res_mod  = resource,
     
     res <- gmse_apply_out(arg_vals, get_res, res_mod, obs_mod, man_mod, use_mod,
                           res_results, obs_results, man_results, usr_results);
+    res$PREV_ACTS = PREV_ACTS
+
     invisible( gc() );
     return(res);  
 }
