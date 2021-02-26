@@ -399,7 +399,9 @@ init_man_control = function(K = 5) {
                          manager_budget = MANAGER_BUDGET
     )
     
-    output = gmse_apply_summary(sim_old, include = c("res","obs","culls","scares","tend_crops","cull_cost", "scare_cost"))
+    output = gmse_apply_summary(sim_old, include = c("res","obs","culls","scares","tend_crops","cull_cost", "scare_cost","yield"))
+    
+    sim_old$LAND[,,2] = 1   ## Resent landscape yield
     
     gmse_list[[1]] = sim_old
     
@@ -408,6 +410,7 @@ init_man_control = function(K = 5) {
         sim_new = gmse_apply(get_res = "Full", old_list = sim_old)
         output = gmse_apply_summary(sim_new, output)
         sim_old = sim_new
+        sim_old$LAND[,,2] = 1   ## Resent landscape yield
         gmse_list[[i]] = sim_old
     }
     
