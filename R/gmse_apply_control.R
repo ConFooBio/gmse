@@ -401,6 +401,7 @@ init_man_control = function(K = 5) {
     
     output = gmse_apply_summary(sim_old, include = c("res","obs","culls","scares","tend_crops","cull_cost", "scare_cost","yield"))
     
+    PREV_YIELD = tapply(sim_old$LAND[,,2], sim_old$LAND[,,3], mean)
     sim_old$LAND[,,2] = 1   ## Resent landscape yield
     
     gmse_list[[1]] = sim_old
@@ -410,6 +411,7 @@ init_man_control = function(K = 5) {
         sim_new = gmse_apply(get_res = "Full", old_list = sim_old)
         output = gmse_apply_summary(sim_new, output)
         sim_old = sim_new
+        PREV_YIELD = rbind(PREV_YIELD, tapply(sim_old$LAND[,,2], sim_old$LAND[,,3], mean))
         sim_old$LAND[,,2] = 1   ## Resent landscape yield
         gmse_list[[i]] = sim_old
     }
@@ -420,9 +422,13 @@ init_man_control = function(K = 5) {
     # Reset selected output for interim time step (as no actions have been taken)
     output[nrow(output),c("culls","scares","tend_crops","cull_cost","scare_cost")] = NA
     
+    # Append last "previous yield:
+    PREV_YIELD = rbind(PREV_YIELD, tapply(sim_new$LAND[,,2], sim_new$LAND[,,3], mean))
+    
     gmse_list[[length(gmse_list)+1]] = sim_new
     
     init_steps = list(gmse_list = gmse_list,
+                      prev_yield = PREV_YIELD,
                       summary = output, 
                       observed_suggested = observed_suggested(sim_new))
     return(init_steps)

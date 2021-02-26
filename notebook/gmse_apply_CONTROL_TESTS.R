@@ -10,7 +10,23 @@ call_bogus_for_debug = function(res_mod  = resource,
     return(sys.call())
 }
 
-plot_pop = function(dat, yrange = 10, track_range = TRUE) {
+
+list.to.df = function(l) {
+    return(data.frame(matrix(unlist(l), nrow=length(l), byrow=T)))
+}
+
+### Takes a list of GMSE apply objects and extracts the mean or total yields across all users
+get_init_yields = function(x, type = "mean") {
+    if(type == "mean") {
+        mn_ylds = lapply(x, function(x) tapply(x$LAND[,,2], x$LAND[,,3],mean))
+        mn_ylds = list.to.df(mn_ylds)
+        return(mn_ylds)
+    }
+}
+
+
+
+plot_pop = function(dat, yield_dat = NULL, yrange = 10, track_range = TRUE, extinction_message = FALSE) {
     obs = dat[,"obs"]
     t = 1:nrow(dat)
     if(length(obs)<yrange) {
@@ -21,12 +37,43 @@ plot_pop = function(dat, yrange = 10, track_range = TRUE) {
         obs = tail(obs, yrange)
         t = tail(t, yrange)
     }
+    
+    par(mar = c(5,5,2,5))
+    
     plot(t, obs, ylim = c(0, max(obs, na.rm=T)*2), 
          type = "b", pch = 21, col = "black", bg = "grey", lwd = 2, xaxt = "n",
-         xlab = "Time step", ylab = "Observed resource population size")
-    axis(1, at = t)
+         xlab = "Time step", ylab = "Observed population size", cex.axis = 1.5, cex.lab = 2)
+    axis(1, at = t, cex.lab = 1.5)
     points(tail(t[!is.na(obs)],1),tail(obs[!is.na(obs)],1), 
-           pch = 21, col = "black", bg = "red", lwd = 2, cex = 1.25)
+           pch = 21, col = "black", bg = "red", lwd = 2, cex = 2)
+    
+    if(!is.null(yield_dat)) {
+        par(new = T)
+        yield_ylim = c(0, round(max(yield_dat)*1.25,2))
+        #yield_pos = seq(yield_ylim[1],yield_ylim[2],(yield_ylim[2]-yield_ylim[1])/6)
+        #yield_labs = yield_pos*100
+        plot(yield_dat[,1], type = "n", col = "darkgreen", xaxt = "n", yaxt = "n", xlab = "", ylab = "", ylim = yield_ylim)
+        apply(yield_dat, 2, function(x) lines(x, col = "darkgreen"))
+        #axis(4, at = yield_pos, labels = yield_labs, col.ticks = "darkgreen")
+        axis(4, col.ticks = "darkgreen")
+        mtext("Yield %",side = 4,cex = 2, line = 3, col = "darkgreen")
+        abline(h=1, col = "darkgreen", lty = "dashed")
+    }
+    
+    # The below needs amending for when yield data is added.
+    if(extinction_message == TRUE) {
+    if(!is.null(yield_dat)) {
+      ext_mess_pos = max(yield_dat)*1.1
+    } else {
+      ext_mess_pos = max(obs, na.rm=T)*1.8
+    }
+
+    text(x = length(obs)/2, 
+         y = ext_mess_pos,
+         "Population wiped out!", 
+         col = "#D35E60", cex = 2.5)
+  }
+  
 }
 
 plot_land = function(x) {
@@ -65,11 +112,11 @@ RES_MOVE_OBS = TRUE
 RES_DEATH_K = 3000
 LAMBDA = 0.3
 MANAGE_TARGET = 1500
-STAKEHOLDERS = 11
+STAKEHOLDERS = 4
 USER_BUDGET = 1500
 MANAGER_BUDGET = 1000
 RES_DEATH_TYPE = 3
-REMOVE_PR = 0.10
+REMOVE_PR = 0.05
 
 ### Initial time steps:
 init_steps = init_man_control(K = 5)
@@ -80,13 +127,17 @@ prev = init_steps$gmse_list[[length(init_steps$gmse_list)]]
 # Print output:
 init_steps$summary
 init_steps$observed_suggested
+init_steps$prev_yield
+yields = init_steps$prev_yield
+#get_init_yields(init_steps$gmse_list)
 
-par(mfrow = c(1,2))
-plot_pop(output, track_range = FALSE)
-plot_land_res(prev$LAND, prev$RESOURCES)
+
+#par(mfrow = c(1,2))
+plot_pop(output, track_range = FALSE, yield_dat = yields)
+#plot_land_res(prev$LAND, prev$RESOURCES)
 
 ### User input
-costs_as_input = list(culling = 10, scaring = 10)
+costs_as_input = list(culling = 40, scaring = 110)
 prev = set_man_costs(prev, newcost = costs_as_input)
 
 ### Run next time step:
@@ -95,15 +146,18 @@ nxt = try({gmse_apply_UROM(get_res = "Full", old_list = prev)}, silent = TRUE)
 if(class(nxt)!="try-error") {
     # Add appropriate outputs.
     output = append_UROM_output(dat = nxt, costs = costs_as_input, old_output = output)
+    yields = rbind(yields, tapply(nxt$LAND[,,2], nxt$LAND[,,3], mean))
+    
     # Reset time step
+    nxt$LAND[,,2] = 1   # Reset landscape yield
     prev = nxt
     
     ### Output new results:
     observed_suggested(prev)
     output
-    par(mfrow = c(1,2))
-    plot_pop(output, track_range = FALSE)
-    plot_land_res(prev$LAND, prev$RESOURCES)
+    #par(mfrow = c(1,2))
+    plot_pop(output, track_range = FALSE, yield_dat = yields)
+    #plot_land_res(prev$LAND, prev$RESOURCES)
 } else {
     print("STOP - POPULATION WIPED OUT")
     output
