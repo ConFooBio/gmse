@@ -181,10 +181,12 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0,
           OTI_default_results[k,7] <- abs(OTI_default_results[k,6])
           
           # Users total final yield
-          OTI_default_results[k,8] <- sum(sim$agents[[final_ts-1]][,16])
+          # OTI_default_results[k,8] <- sum(sim$agents[[final_ts-1]][,16])
+          OTI_default_results[k,8] <- sum(sim$agents[[final_ts]][,16])
           
           # Maximum difference between Users yield
-          OTI_default_results[k,9] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
+          # OTI_default_results[k,9] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
+          OTI_default_results[k,9] <- (max(sim$agents[[final_ts]][,16]) - min(sim$agents[[final_ts]][-1,16]))/max(sim$agents[[final_ts]][,16])
           
           # Number of timesteps during which Manager chose not to update policy
           OTI_default_results[k,10] <- (final_ts-sum(sim$paras[,107]))/final_ts
@@ -327,10 +329,12 @@ ATI_replicate <- function(UTrange = 0, BBrange = 0,
             OTI_default_results[k,7] <- abs(OTI_default_results[k,6])
             
             # Users total final yield
-            OTI_default_results[k,8] <- sum(sim$agents[[final_ts-1]][,16])
+            # OTI_default_results[k,8] <- sum(sim$agents[[final_ts-1]][,16])
+            OTI_default_results[k,8] <- sum(sim$agents[[final_ts]][,16])
             
             # Maximum difference between Users yield (in percentage of the highest yield)
-            OTI_default_results[k,9] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
+            # OTI_default_results[k,9] <- (max(sim$agents[[final_ts-1]][,16]) - min(sim$agents[[final_ts-1]][-1,16]))/max(sim$agents[[final_ts-1]][,16])
+            OTI_default_results[k,9] <- (max(sim$agents[[final_ts]][,16]) - min(sim$agents[[final_ts]][-1,16]))/max(sim$agents[[final_ts]][,16])
             
             # Number of timesteps during which Manager chose not to update policy
             OTI_default_results[k,10] <- 1-sum(sim$paras[,107])/final_ts

@@ -144,8 +144,8 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
   res_str <- c(res_str, mean(sub$abs_act_dev), sd_ci[1], sd_ci[2], sd_ci[3])
   
   # Users' total final yield
-  sd_ci <- boot_sd_ci(sub$fin_yield, itr = nbs)
-  res_str <- c(res_str, mean(sub$fin_yield), sd_ci[1], sd_ci[2], sd_ci[3])
+  sd_ci <- boot_sd_ci(sub$fin_yield/40000, itr = nbs)
+  res_str <- c(res_str, mean(sub$fin_yield/40000), sd_ci[1], sd_ci[2], sd_ci[3])
   
   # Difference between the highest and the lowest yield
   sd_ci <- boot_sd_ci(sub$max_diff_yield, itr = nbs)
@@ -204,8 +204,8 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
       res_str <- c(res_str, mean(sub$abs_act_dev), sd_ci[1], sd_ci[2], sd_ci[3])
       
       # Users' total final yield
-      sd_ci <- boot_sd_ci(sub$fin_yield, itr = nbs)
-      res_str <- c(res_str, mean(sub$fin_yield), sd_ci[1], sd_ci[2], sd_ci[3])
+      sd_ci <- boot_sd_ci(sub$fin_yield/40000, itr = nbs)
+      res_str <- c(res_str, mean(sub$fin_yield/40000), sd_ci[1], sd_ci[2], sd_ci[3])
       
       # Difference between the highest and the lowest yield
       sd_ci <- boot_sd_ci(sub$max_diff_yield, itr = nbs)
@@ -230,7 +230,7 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
       res_str <- c(res_str, sub$abs_act_dev, 0, sub$abs_act_dev, sub$abs_act_dev)
       
       # Users' total final yield
-      res_str <- c(res_str, sub$fin_yield, 0, sub$fin_yield, sub$fin_yield)
+      res_str <- c(res_str, sub$fin_yield/40000, 0, sub$fin_yield/40000, sub$fin_yield/40000)
       
       # Difference between the highest and the lowest yield
       res_str <- c(res_str, sub$max_diff_yield, 0, sub$max_diff_yield, sub$max_diff_yield)
@@ -296,8 +296,8 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
           res_str <- c(res_str, mean(sub$abs_act_dev), sd_ci[1], sd_ci[2], sd_ci[3])
           
           # Users' total final yield
-          sd_ci <- boot_sd_ci(sub$fin_yield, itr = nbs)
-          res_str <- c(res_str, mean(sub$fin_yield), sd_ci[1], sd_ci[2], sd_ci[3])
+          sd_ci <- boot_sd_ci(sub$fin_yield/40000, itr = nbs)
+          res_str <- c(res_str, mean(sub$fin_yield/40000), sd_ci[1], sd_ci[2], sd_ci[3])
           
           # Difference between the highest and the lowest yield
           sd_ci <- boot_sd_ci(sub$max_diff_yield, itr = nbs)
@@ -322,7 +322,7 @@ OTI_stats <- function(df, ts, omit.extinction = FALSE) {
           res_str <- c(res_str, sub$abs_act_dev, 0, sub$abs_act_dev, sub$abs_act_dev)
           
           # Users' total final yield
-          res_str <- c(res_str, sub$fin_yield, 0, sub$fin_yield, sub$fin_yield)
+          res_str <- c(res_str, sub$fin_yield/40000, 0, sub$fin_yield/40000, sub$fin_yield/40000)
           
           # Difference between the highest and the lowest yield
           res_str <- c(res_str, sub$max_diff_yield, 0, sub$max_diff_yield, sub$max_diff_yield)
@@ -356,9 +356,9 @@ path <- "~/Desktop/PhD/GitKraken/gmse_fork_RQ1/Budget-ratio-large-batch/"
 
 setwd(path)
 
-dir.name <- "noMem-res"
+dir.name <- "Mem-res"
 
-brut <- as.data.frame(read.csv(paste(dir.name, "/merged-res/noMem-budget-ratio-merged.csv", sep = "")))
+brut <- as.data.frame(read.csv(paste(dir.name, "/merged-res/mem-budget-ratio-merged.csv", sep = "")))
 
 stat <- OTI_stats(df = brut, ts = 20, omit.extinction = F) 
 woe_stat <- OTI_stats(df = brut, ts = 20, omit.extinction = T)
@@ -369,6 +369,14 @@ stat2 <- stat2[-c(1:6),]
 
 write.csv(stat, file = paste(dir.name, "/merged-res/bgt-ratio-mem-stats.csv", sep=""))
 write.csv(woe_stat, file = paste(dir.name,"/bgt-ratio-noMem-woExt-stats.csv", sep=""))
+
+#### change dev of extinctions ####
+
+brut <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/Budget-ratio-large-batch/Mem-res/merged-res/mem-budget-ratio-merged.csv")
+brut.mod <- brut
+brut.mod[which(brut.mod$extinct == 1), 8] <- -1
+
+stat.mod <- OTI_stats(df = brut.mod, ts = 20, omit.extinction = F)
 
 # # eliminate 100% extinction parameter sets if necessary
 # woe_stat <- woe_stat[-which(as.numeric(as.character(woe_stat$rep)) < 1),]
@@ -384,6 +392,13 @@ we_costs <- subset(costs, Extinct == 0)
 we_popul <- subset(popul, Extinct == 0)
 we_actio <- subset(actio, Extinct == 0)
 we_budge <- subset(budge, Extinct == 0)
+
+# extinctions only
+ext_costs <- subset(costs, Extinct == 1)
+ext_popul <- subset(popul, Extinct == 1)
+ext_actio <- subset(actio, Extinct == 1)
+ext_budge <- subset(budge, Extinct == 1)
+
 
 #### effect of BR on extfreq for control strat ####
 
@@ -561,13 +576,16 @@ no.hum.var <- 100*sum(no.hum[,6])/dim(no.hum)[1]
 
 ######## Contour figures ########
 
+stat <- read.csv("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/Budget-ratio-large-batch/Mem-res/merged-res/bgt-ratio-mem-stats.csv")
+
 #### Extinction frequency ####
 
 # build results matrix
 
-d <- subset(stat, at == 0.5)
+d <- subset(stat, at == 0.5)[,-1]
 
 d$bb <- d$bb*100
+d$ratio <- d$ratio*1000
 
 bubo <- levels(as.factor(d$bb))
 bura <- levels(as.factor(d$ratio))
@@ -612,7 +630,7 @@ xlab <- list(
   # titlefont = f
 )
 ylab <- list(
-  title = "Budget ratio"#,
+  title = "Initial budget"#,
   # titlefont = f
 )
 
@@ -624,7 +642,7 @@ fig
 
 # build results matrix
 
-d <- subset(stat, at == 0.3)
+d <- subset(stat, at == 0.5)
 
 d$bb <- d$bb*100
 
@@ -639,64 +657,116 @@ fig <- plot_ly(
   y = bura, 
   z = t(resmat), 
   type = "contour",
-  colorscale = 'Viridis',
+  colorscale = list(c(0, 0.35, 0.5, 0.65, 1), c('red', 'orange', 'green', 'orange', 'red')),
   autocontour = F,
   # contours = list(showlabels = TRUE)#,
   contours = list(
     start = -100,
-    end = 20,
+    end = 100,
     size = 10,
     showlabels = T
   )
 )
-# 
-# xlab <- list(
-#   title = "Budget bonus (%)"#,
-#   # titlefont = f
-# )
-# ylab <- list(
-#   title = "Budget ratio"#,
-#   # titlefont = f
-# )
+
+xlab <- list(
+  title = "Budget bonus (%)"#,
+  # titlefont = f
+)
+ylab <- list(
+  title = "Manager's budget"#,
+  # titlefont = f
+)
 
 fig <- fig %>% colorbar(title = "Dev. from \n target (%)")
 fig <- fig %>% layout(xaxis = xlab, yaxis = ylab)
 fig
 
-#### users yield ####
+#### Deviation from target at last ts ####
 
 # build results matrix
 
-d <- subset(stat, at == 0.5)
+d <- subset(stat.mod, at == 0.5)
 
 d$bb <- d$bb*100
 
 bubo <- levels(as.factor(d$bb))
 bura <- levels(as.factor(d$ratio))
 
-resmat <- matrix(data = d$fin_yield/1000, ncol = length(bubo), nrow = length(bura))
+resmat <- matrix(data = 100*d$act_dev, nrow = length(bubo), ncol = length(bura))
+# resmat <- t(resmat)
 
 fig <- plot_ly(
   x = bubo, 
   y = bura, 
   z = t(resmat), 
   type = "contour",
-  colorscale = list(c(0, 1), c('orange', 'green')),
+  colorscale = list(c(0, 0.35, 0.5, 0.65, 1), c('red', 'orange', 'green', 'orange', 'red')),
   autocontour = F,
-  # contours = list(showlabels = TRUE),
+  # contours = list(showlabels = TRUE)#,
   contours = list(
-    start = 20,
-    end = 40,
-    size = 2,
+    start = -100,
+    end = 100,
+    size = 10,
     showlabels = T
   )
 )
 
-fig <- fig %>% colorbar(title = "Final yield \n (in k)")
+xlab <- list(
+  title = "Budget bonus (%)"#,
+  # titlefont = f
+)
+ylab <- list(
+  title = "Manager's budget"#,
+  # titlefont = f
+)
+
+fig <- fig %>% colorbar(title = "Dev. from \n target (%)")
 fig <- fig %>% layout(xaxis = xlab, yaxis = ylab)
 fig
 
-#### Yiel inequity ####
+#### users yield ####
+# build results matrix
+
+d <- subset(stat, at == 0.5)[,-1]
+
+d$bb <- d$bb*100
+d$ratio <- d$ratio*100
+
+bubo <- levels(as.factor(d$bb))
+bura <- levels(as.factor(d$ratio))
+
+resmat <- matrix(data = 100*d$fin_yield, ncol = length(bura), nrow = length(bubo))
+
+fig <- plot_ly(
+  x = bubo, 
+  y = bura, 
+  z = t(resmat), 
+  type = "contour",
+  colorscale = list(c(0, 0.5, 1), c('red', 'orange', 'green')),
+  autocontour = F,
+  # contours = list(showlabels = TRUE)#,
+  contours = list(
+    start = 50,
+    end = 100,
+    size = 5,
+    showlabels = T
+  )
+)
+
+xlab <- list(
+  title = "Budget bonus (%)"#,
+  # titlefont = f
+)
+ylab <- list(
+  title = "Manager's budget"#,
+  # titlefont = f
+)
+
+fig <- fig %>% colorbar(title = "final\nyield (%)")
+fig <- fig %>% layout(xaxis = xlab, yaxis = ylab)
+fig
+
+#### Yield inequity ####
 
 # build results matrix
 
@@ -707,17 +777,93 @@ d$bb <- d$bb*100
 bubo <- levels(as.factor(d$bb))
 bura <- levels(as.factor(d$ratio))
 
+resmat <- matrix(data = 100*d$max_diff_yield, ncol = length(bura), nrow = length(bubo))
+
+# resmat[4,4] <- 1
+
+# resfin <- resmat[,9]
+# for (i in (length(bura)-1):1) {
+#   resfin <- rbind(resfin, resmat[,i])
+# }
+
 fig <- plot_ly(
   x = bubo, 
   y = bura, 
-  z = matrix(data = d$max_diff_yield, ncol = length(bubo), nrow = length(bura)), 
+  # z = matrix(data = d$ext_prob, ncol = length(bubo), nrow = length(bura)), 
+  z = t(resmat),
   type = "contour",
-  colorscale = 'Viridis',
+  colorscale = list(c(0, 0.5, 1), c('green', 'orange', 'red')),
   autocontour = F,
-  contours = list(showlabels = TRUE)
+  # contours = list(showlabels = TRUE),
+  contours = list(
+    start = 0,
+    end = 20,
+    size = 2,
+    showlabels = T
+  )
 )
 
-fig <- fig %>% colorbar(title = "Yield \n inequity")
+xlab <- list(
+  title = "Budget bonus (%)"#,
+  # titlefont = f
+)
+ylab <- list(
+  title = "Manager's budget (%)"#,
+  # titlefont = f
+)
+
+fig <- fig %>% colorbar(title = "Equity\n(%)")
+fig <- fig %>% layout(xaxis = xlab, yaxis = ylab)
+fig
+
+#### time waiting ####
+
+# build results matrix
+
+d <- subset(stat, at == 0.5)
+
+d$bb <- d$bb*100
+
+bubo <- levels(as.factor(d$bb))
+bura <- levels(as.factor(d$ratio))
+
+resmat <- matrix(data = 100*d$inac_ts, ncol = length(bura), nrow = length(bubo))
+
+# resmat[4,4] <- 1
+
+# resfin <- resmat[,9]
+# for (i in (length(bura)-1):1) {
+#   resfin <- rbind(resfin, resmat[,i])
+# }
+
+fig <- plot_ly(
+  x = bubo, 
+  y = bura, 
+  # z = matrix(data = d$ext_prob, ncol = length(bubo), nrow = length(bura)), 
+  z = t(resmat),
+  type = "contour",
+  #colorscale = list(c(0, 0.5, 1), c('green', 'orange', 'red')),
+  autocontour = F,
+  # contours = list(showlabels = TRUE),
+  contours = list(
+    start = 0,
+    end = 50,
+    size = 5,
+    showlabels = T
+  )
+)
+
+xlab <- list(
+  title = "Budget bonus (%)"#,
+  # titlefont = f
+)
+ylab <- list(
+  title = "Manager's budget (%)"#,
+  # titlefont = f
+)
+
+fig <- fig %>% colorbar(title = "Waiting\n(%)")
+fig <- fig %>% layout(xaxis = xlab, yaxis = ylab)
 fig
 
 #### effect of BB:ratio on extinction frequency according to UT ####
@@ -863,7 +1009,6 @@ fig
   }
 dev.off()
 }
-  
 
 #### effect of BB:ratio on deviation from target according to UT ####
 
@@ -907,113 +1052,6 @@ for (i in 2:length(bura)) {
 # xadj1 <- as.numeric(upth[-1]) - 1;
 # xadj2 <- as.numeric(upth[-1]) + 1;
 # xtendrange <- seq(-10,110,1)
-}
-
-# plot and export in pdf
-{pdf(file = "mem-UT30-bgtRatio-dev.pdf", width = par('din')[1], height = par('din')[2])
-  
-  {# # enlarge margins
-    # par(mar = c(5, 5, 1, 1))
-    
-    # points cex
-    pts <- 0.5
-    # pts <- 1
-    
-    # trunk ext if necessary
-    ext <- ext[-(1:2),]
-    ci_inf <- ci_inf[-(1:2),]
-    ci_sup <- ci_sup[-(1:2),]
-    
-    xadj <- seq(-2,2,length.out=dim(ext)[1])
-    colo <- rainbow(dim(ext)[1])
-    
-    # plot base
-    plot(1, type = "n",
-         ylim = c(-100, 20),
-         xlim = c(0, 100),
-         ylab = "Deviation from\ntarget (%)", #
-         xlab = "Budget Bonus (%)", #cex.lab = 1.5, cex.axis = 1.5, cex = 1.5,
-         cex.lab = pts + 0.2, cex.axis = pts + 0.2)
-    
-    # best possible
-    abline(h = 0, lty = 2, lwd = pts-0.2, col = "black")
-    
-    # # Control band
-    # polygon(c(xtendrange,rev(xtendrange)),c(rep(ci_sup[1,1], length(xtendrange)),rev(rep(ci_inf[1,1], length(xtendrange)))),col="lightgrey", border = "grey") 
-    
-    k <- 1
-    for (i in 1:dim(ext)[1]) {
-      arrows(x0 = as.numeric(bubo) + xadj[k], y0 = ci_inf[i,], x1 = as.numeric(bubo) + xadj[k], y1 = ci_sup[i,], length=0.02, angle=90, code=3, col = colo[i])
-      points(x = as.numeric(bubo) + xadj[k], y = ext[i,], type = "b", cex = pts, lwd = pts-0.2, col = colo[i], pch = 20);
-      k <- k+1
-    }
-    
-    # # Plot the results
-    # arrows(0, ci_inf[1,1], 0, ci_sup[1,1], length=0.02, angle=90, code=3, col = "black")
-    # arrows(xadj1, ci_inf[-1,2], xadj1, ci_sup[-1,2], length=0.02, angle=90, code=3, col = "darkred")
-    # arrows(xadj2, ci_inf[-1,11], xadj2, ci_sup[-1,11], length=0.02, angle=90, code=3, col = "darkred")
-    # points(x = xadj1, y = ext[-1,2], type = "b", pch = 16, col = "darkred", cex = pts, lwd = pts)
-    # points(x = xadj2, y = ext[-1,11], type = "b", pch = 21, lty = "dashed", col = "darkred", cex = pts, lwd = pts)
-    # points(x = 0, y = ext[1,1], pch = 15, cex = pts, lwd = pts)
-    # abline(h=ext[1,1], lty = 1, col = "black", lwd = pts)
-    
-    # # No management
-    # points(y = no.mgmt.var, x = 0, pch = 17, col = "black", cex = pts)
-    # abline(h = no.mgmt.var, lty = 2, col = "black", lwd = pts)
-    # 
-    # # No humans
-    # points(y = no.hum.var, x = 0, pch = 23, col = "black", cex = pts)
-    # abline(h = no.hum.var, lty = 3, col = "black", lwd = pts)
-    
-    # legend
-    legend( # 110, 0.5,             # Location of legend 
-      "bottomright",
-      # xpd = TRUE,                          # Allow drawing outside plot area
-      ncol = 2,
-      # xjust = 0,                           # Left justify legend box on x
-      # yjust = 0.5,                          # Center legend box on y
-      legend = bura[3:6],
-      # c(paste("BR = ", bura[1]),
-      #          paste("BR = ", bura[2]),
-      #          paste("BR = ", bura[3]),
-      #          paste("BR = ", bura[4]),
-      #          paste("BR = ", bura[5]),
-      #          paste("BR = ", bura[6]),
-      #          paste("BR = ", bura[7]),
-      #          paste("BR = ", bura[8]),
-      #          paste("BR = ", bura[9])),
-      col = colo,
-      # c(colo[1],
-      #       colo[2],
-      #       colo[3],
-      #       colo[4],
-      #       colo[5],
-      #       colo[6],
-      #       colo[7],
-      #       colo[8],
-      #       colo[9]),          
-      pch = rep(16, dim(ext)[1]),
-      # c(23,
-      #       17,
-      #       15,
-      #       19,
-      #       21,
-      #       20),                      # Legend Element Styles          
-      lty = rep(1, dim(ext)[1]),
-      # c(3,
-      #       2,
-      #       1,
-      #       1,
-      #       2,
-      #       1),       
-      cex = pts-0.2,
-      # cex = 0.6,
-      title = "Ratios") #,                  # Legend Title
-    # title.col = gray(.2) ,                # Legend title color
-    # box.lty = 1,                         # Legend box line type
-    # box.lwd = 1)                         # Legend box line width
-  }
-  dev.off()
 }
 
 #### Details of BB effect and waiting strategy on dev according to ratio ####
@@ -1098,7 +1136,11 @@ ci_sup <- cbind(ci_sup, sub$act_dev_95ci_sup*100)
   dev.off()
 }
 
+
+
 #### Details of BB effect and waiting strategy on ext freq according to ratio ####
+
+stat <- read.csv(file = "~/Desktop/PhD/GitKraken/gmse_fork_RQ1/Budget-ratio-large-batch/Mem-res/merged-res/bgt-ratio-mem-stats.csv", header = T, stringsAsFactors = T)[,-1]
 
 {d <- subset(stat, at == 0 & ratio == 0.8 | at == 0.5 & ratio == 0.8) # | at == 0.5 & ratio == 0.7
 
@@ -1188,6 +1230,344 @@ ci_sup <- c(ci_sup, sub$ext_prob_95ci_sup)
     # box.lty = 1,                         # Legend box line type
     # box.lwd = 1)                         # Legend box line width
 }
+  dev.off()
+}
+
+# plot and export in png
+setwd("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/Budget-ratio-large-batch/")
+{png(file = "extfreq-TRJ-PT50-BR800-bigLabs.png", width = 1000, height = 1000)
+  
+  { # enlarge margins
+    par(mar = c(5, 6, 1, 1)+0.1)
+    
+    # sizes
+    pts <- 3
+    lb <- 3
+    ax <- 2
+    
+    # plot base
+    plot(1, type = "n",
+         ylim = c(0, 1),
+         xlim = c(0, 100),
+         ylab = "Extinction frequency", #
+         xlab = "Budget Bonus (%)", #cex.lab = 1.5, cex.axis = 1.5, cex = 1.5,
+         cex.lab = lb, cex.axis = ax)
+    
+    # Control band
+    xtendrange <- seq(-10,110,1)
+    
+    # polygon(c(xtendrange,rev(xtendrange)),c(rep(ci_sup[1,1], length(xtendrange)),rev(rep(ci_inf[1,1], length(xtendrange)))),col="lightgrey", border = "grey")
+    # abline(h = ext[1,1], lwd = pts)
+    
+    polygon(c(xtendrange,rev(xtendrange)),c(rep(ci_sup[1], length(xtendrange)),rev(rep(ci_inf[1], length(xtendrange)))),col="lightgrey", border = "grey")
+    abline(h = ext[1], lwd = pts)
+    
+    # best possible
+    abline(h = 0, lty = 2, lwd = pts, col = "darkgreen")
+    
+    # # UT30
+    # arrows(x0 = as.numeric(bubo)-1, y0 = ci_inf[-1,1], x1 = as.numeric(bubo)-1, y1 = ci_sup[-1,1], length=0.02, angle=90, code=3, col = 'blue')
+    # points(x = as.numeric(bubo)-1, y = ext[-1,1], type = "b", cex = pts, lwd = pts, col = 'blue', pch = 20);
+    
+    # UT50
+    # arrows(x0 = as.numeric(bubo)+1, y0 = ci_inf[-1,2], x1 = as.numeric(bubo)+1, y1 = ci_sup[-1,2], length=0.02, angle=90, code=3, col = 'violet')
+    # points(x = as.numeric(bubo)+1, y = ext[-1,2], type = "b", cex = pts, lwd = pts, col = 'violet', pch = 4);
+    arrows(x0 = as.numeric(bubo), y0 = ci_inf[-1], x1 = as.numeric(bubo), y1 = ci_sup[-1], length=0.1, angle=90, code=3, col = 'darkmagenta', lwd = pts-1)
+    points(x = as.numeric(bubo), y = ext[-1], type = "b", cex = pts, lwd = pts-1, col = 'darkmagenta', pch = 17, lty = 3);
+    
+    # legend
+    legend( # 110, 0.5,             # Location of legend 
+      "topright",
+      # xpd = TRUE,                          # Allow drawing outside plot area
+      # ncol = 2,
+      # xjust = 0,                           # Left justify legend box on x
+      # yjust = 0.5,                          # Center legend box on y
+      legend = c("Control",
+                 # "UT 30%",
+                 "TRJ - PT 50%"),
+      col = c("black",
+              # "blue",
+              "darkmagenta"),        
+      pch = c(NA_integer_,
+              # 20,
+              17),                    # Legend Element Styles          
+      lty = c(1, 
+              # 1,
+              3),     
+      cex = pts-1,
+      # cex = 0.6,
+      title = "Strategies") #,          - 0.7 ratio         # Legend Title
+    # title.col = gray(.2) ,                # Legend title color
+    # box.lty = 1,                         # Legend box line type
+    # box.lwd = 1)                         # Legend box line width
+}
+  dev.off()
+}
+
+#### Details of BB effect and waiting strategy on yield according to ratio ####
+
+{d <- subset(stat, at == 0 & ratio == 0.8 | at == 0.5 & ratio == 0.8) # | at == 0.5 & ratio == 0.7
+
+d$at <- d$at*100
+d$bb <- d$bb*100
+d$fin_yield <-                   d$fin_yield*100
+d$fin_yield_sd <-             d$fin_yield_sd*100
+d$fin_yield_95ci_inf <- d$fin_yield_95ci_inf*100
+d$fin_yield_95ci_sup <- d$fin_yield_95ci_sup*100
+
+bubo <- levels(as.factor(d$bb))
+
+sub <- subset(d, at != 50)
+ext <-    sub$fin_yield
+sd <-     sub$fin_yield_sd
+ci_inf <- sub$fin_yield_95ci_inf
+ci_sup <- sub$fin_yield_95ci_sup
+
+# sub <- subset(d, at != 30)
+# ext <- cbind(ext, sub$ext_prob)
+# sd <- cbind(sd, sub$ext_prob_sd)
+# ci_inf <- cbind(ci_inf, sub$ext_prob_95ci_inf)
+# ci_sup <- cbind(ci_sup, sub$ext_prob_95ci_sup)
+
+sub <- subset(d, at != 0)
+ext <- c(ext, sub$fin_yield)
+sd <- c(sd, sub$fin_yield_sd)
+ci_inf <- c(ci_inf, sub$fin_yield_95ci_inf)
+ci_sup <- c(ci_sup, sub$fin_yield_95ci_sup)
+}
+
+# plot and export in pdf
+{pdf(file = "BDG-PT50-BM800-finYie.pdf", width = par('din')[1], height = par('din')[2])
+  
+  { # points cex
+    # pts <- 0.5
+    pts <- 1
+    
+    # plot base
+    plot(1, type = "n",
+         ylim = c(80, 100),
+         xlim = c(0, 100),
+         ylab = "Farmers final yield (%)", #
+         xlab = "Budget Bonus (%)", #cex.lab = 1.5, cex.axis = 1.5, cex = 1.5,
+         cex.lab = pts + 0.2, cex.axis = pts + 0.2)
+    
+    # Control band
+    xtendrange <- seq(-10,110,1)
+    
+    # polygon(c(xtendrange,rev(xtendrange)),c(rep(ci_sup[1,1], length(xtendrange)),rev(rep(ci_inf[1,1], length(xtendrange)))),col="lightgrey", border = "grey")
+    # abline(h = ext[1,1], lwd = pts)
+    
+    polygon(c(xtendrange,rev(xtendrange)),c(rep(ci_sup[1], length(xtendrange)),rev(rep(ci_inf[1], length(xtendrange)))),col="lightgrey", border = "grey")
+    abline(h = ext[1], lwd = pts)
+    
+    # best possible
+    abline(h = 40, lty = 2, lwd = pts, col = "darkgreen")
+    
+    # # UT30
+    # arrows(x0 = as.numeric(bubo)-1, y0 = ci_inf[-1,1], x1 = as.numeric(bubo)-1, y1 = ci_sup[-1,1], length=0.02, angle=90, code=3, col = 'blue')
+    # points(x = as.numeric(bubo)-1, y = ext[-1,1], type = "b", cex = pts, lwd = pts, col = 'blue', pch = 20);
+    
+    # UT50
+    # arrows(x0 = as.numeric(bubo)+1, y0 = ci_inf[-1,2], x1 = as.numeric(bubo)+1, y1 = ci_sup[-1,2], length=0.02, angle=90, code=3, col = 'violet')
+    # points(x = as.numeric(bubo)+1, y = ext[-1,2], type = "b", cex = pts, lwd = pts, col = 'violet', pch = 4);
+    arrows(x0 = as.numeric(bubo), y0 = ci_inf[-1], x1 = as.numeric(bubo), y1 = ci_sup[-1], length=0.02, angle=90, code=3, col = 'violet')
+    points(x = as.numeric(bubo), y = ext[-1], type = "b", cex = pts, lwd = pts, col = 'violet', pch = 20);
+    
+    # legend
+    legend( # 110, 0.5,             # Location of legend 
+      "bottomright",
+      # xpd = TRUE,                          # Allow drawing outside plot area
+      # ncol = 2,
+      # xjust = 0,                           # Left justify legend box on x
+      # yjust = 0.5,                          # Center legend box on y
+      legend = c("Control",
+                 # "UT 30%",
+                 "Trajectory"),
+      col = c("black",
+              # "blue",
+              "violet"),        
+      pch = c(NA_integer_,
+              # 20,
+              20),                    # Legend Element Styles          
+      lty = c(1, 
+              # 1,
+              1),     
+      # cex = pts-0.2,
+      cex = 0.6,
+      title = "Strategies") #,          - 0.7 ratio         # Legend Title
+    # title.col = gray(.2) ,                # Legend title color
+    # box.lty = 1,                         # Legend box line type
+    # box.lwd = 1)                         # Legend box line width
+}
+  dev.off()
+}
+
+# plot and export in png
+setwd("~/Desktop/PhD/GitKraken/gmse_fork_RQ1/Budget-ratio-large-batch/")
+{png(file = "finYie-TRJ-PT50-BR800-bigLabs.png", width = 1000, height = 1000)
+  
+  { # enlarge margins
+    par(mar = c(5, 6, 1, 1)+0.1)
+    
+    # sizes
+    pts <- 3
+    lb <- 3
+    ax <- 2
+    
+    # plot base
+    plot(1, type = "n",
+         ylim = c(85, 100),
+         xlim = c(0, 100),
+         ylab = "Farmers final yield (%)", #
+         xlab = "Budget Bonus (%)", #cex.lab = 1.5, cex.axis = 1.5, cex = 1.5,
+         cex.lab = lb, cex.axis = ax)
+
+    # Control band
+    xtendrange <- seq(-10,110,1)
+    
+    # polygon(c(xtendrange,rev(xtendrange)),c(rep(ci_sup[1,1], length(xtendrange)),rev(rep(ci_inf[1,1], length(xtendrange)))),col="lightgrey", border = "grey")
+    # abline(h = ext[1,1], lwd = pts)
+    
+    polygon(c(xtendrange,rev(xtendrange)),c(rep(ci_sup[1], length(xtendrange)),rev(rep(ci_inf[1], length(xtendrange)))),col="lightgrey", border = "grey")
+    abline(h = ext[1], lwd = pts)
+    
+    # best possible
+    abline(h = 100, lty = pts, lwd = pts, col = "darkgreen")
+    
+    # # UT30
+    # arrows(x0 = as.numeric(bubo)-1, y0 = ci_inf[-1,1], x1 = as.numeric(bubo)-1, y1 = ci_sup[-1,1], length=0.02, angle=90, code=3, col = 'blue')
+    # points(x = as.numeric(bubo)-1, y = ext[-1,1], type = "b", cex = pts, lwd = pts, col = 'blue', pch = 20);
+    
+    # UT50
+    # arrows(x0 = as.numeric(bubo)+1, y0 = ci_inf[-1,2], x1 = as.numeric(bubo)+1, y1 = ci_sup[-1,2], length=0.02, angle=90, code=3, col = 'violet')
+    # points(x = as.numeric(bubo)+1, y = ext[-1,2], type = "b", cex = pts, lwd = pts, col = 'violet', pch = 4);
+    arrows(x0 = as.numeric(bubo), y0 = ci_inf[-1], x1 = as.numeric(bubo), y1 = ci_sup[-1], length=0.1, angle=90, code=3, col = 'darkmagenta', lwd = pts-1)
+    points(x = as.numeric(bubo), y = ext[-1], type = "b", cex = pts, lwd = pts-1, col = 'darkmagenta', pch = 17, lty = 3);
+    
+    # legend
+    legend( # 110, 0.5,             # Location of legend 
+      "bottomright",
+      # xpd = TRUE,                          # Allow drawing outside plot area
+      # ncol = 2,
+      # xjust = 0,                           # Left justify legend box on x
+      # yjust = 0.5,                          # Center legend box on y
+      legend = c("Control",
+                 # "UT 30%",
+                 "TRJ - PT 50%"),
+      col = c("black",
+              # "blue",
+              "darkmagenta"),        
+      pch = c(NA_integer_,
+              # 20,
+              17),                    # Legend Element Styles          
+      lty = c(1, 
+              # 1,
+              3),     
+      cex = pts-1,
+      # cex = 0.6,
+      title = "Strategies") #,          - 0.7 ratio         # Legend Title
+    # title.col = gray(.2) ,                # Legend title color
+    # box.lty = 1,                         # Legend box line type
+    # box.lwd = 1)                         # Legend box line width
+    }
+  dev.off()
+}
+    
+#### Details of BB effect and waiting strategy on time waiting according to ratio ####
+
+{d <- subset(stat, at == 0 & ratio == 0.8 | at == 0.5 & ratio == 0.8) # | at == 0.5 & ratio == 0.7
+
+d$at <- d$at*100
+d$bb <- d$bb*100
+d$inac_ts          <- d$inac_ts*100
+d$inac_ts_sd       <- d$inac_ts_sd*100
+d$inac_ts_95ci_inf <- d$inac_ts_95ci_inf*100
+d$inac_ts_95ci_sup <- d$inac_ts_95ci_sup*100
+
+bubo <- levels(as.factor(d$bb))
+
+sub <- subset(d, at != 50)
+ext <-    sub$inac_ts
+sd <-     sub$inac_ts_sd
+ci_inf <- sub$inac_ts_95ci_inf
+ci_sup <- sub$inac_ts_95ci_sup
+
+# sub <- subset(d, at != 30)
+# ext <- cbind(ext, sub$ext_prob)
+# sd <- cbind(sd, sub$ext_prob_sd)
+# ci_inf <- cbind(ci_inf, sub$ext_prob_95ci_inf)
+# ci_sup <- cbind(ci_sup, sub$ext_prob_95ci_sup)
+
+sub <- subset(d, at != 0)
+ext    <- c(ext,    sub$inac_ts)
+sd     <- c(sd,     sub$inac_ts_sd)
+ci_inf <- c(ci_inf, sub$inac_ts_95ci_inf)
+ci_sup <- c(ci_sup, sub$inac_ts_95ci_sup)
+}
+
+# plot and export in pdf
+{pdf(file = "mem-BR08-UT50-bgtRatio-tw-large.pdf", width = par('din')[1], height = par('din')[2])
+  
+  { # points cex
+    # pts <- 0.5
+    pts <- 1
+    
+    # plot base
+    plot(1, type = "n",
+         ylim = c(0, 40),
+         xlim = c(0, 100),
+         ylab = "Average waiting time (%)", #
+         xlab = "Budget Bonus (%)", #cex.lab = 1.5, cex.axis = 1.5, cex = 1.5,
+         cex.lab = pts + 0.2, cex.axis = pts + 0.2)
+    
+    # # Control band
+    # xtendrange <- seq(-10,110,1)
+    
+    # polygon(c(xtendrange,rev(xtendrange)),c(rep(ci_sup[1,1], length(xtendrange)),rev(rep(ci_inf[1,1], length(xtendrange)))),col="lightgrey", border = "grey")
+    # abline(h = ext[1,1], lwd = pts)
+    
+    # polygon(c(xtendrange,rev(xtendrange)),c(rep(ci_sup[1], length(xtendrange)),rev(rep(ci_inf[1], length(xtendrange)))),col="lightgrey", border = "grey")
+    # abline(h = ext[1], lwd = pts)
+    
+    # # best possible
+    # abline(h = 40, lty = 2, lwd = pts, col = "darkgreen")
+    
+    # # UT30
+    # arrows(x0 = as.numeric(bubo)-1, y0 = ci_inf[-1,1], x1 = as.numeric(bubo)-1, y1 = ci_sup[-1,1], length=0.02, angle=90, code=3, col = 'blue')
+    # points(x = as.numeric(bubo)-1, y = ext[-1,1], type = "b", cex = pts, lwd = pts, col = 'blue', pch = 20);
+    
+    # UT50
+    # arrows(x0 = as.numeric(bubo)+1, y0 = ci_inf[-1,2], x1 = as.numeric(bubo)+1, y1 = ci_sup[-1,2], length=0.02, angle=90, code=3, col = 'violet')
+    # points(x = as.numeric(bubo)+1, y = ext[-1,2], type = "b", cex = pts, lwd = pts, col = 'violet', pch = 4);
+    arrows(x0 = as.numeric(bubo), y0 = ci_inf[-1], x1 = as.numeric(bubo), y1 = ci_sup[-1], length=0.02, angle=90, code=3, col = 'violet')
+    points(x = as.numeric(bubo), y = ext[-1], type = "b", cex = pts, lwd = pts, col = 'violet', pch = 20);
+    
+#     # legend
+#     legend( # 110, 0.5,             # Location of legend 
+#       "bottomright",
+#       # xpd = TRUE,                          # Allow drawing outside plot area
+#       # ncol = 2,
+#       # xjust = 0,                           # Left justify legend box on x
+#       # yjust = 0.5,                          # Center legend box on y
+#       legend = c("Control",
+#                  # "UT 30%",
+#                  "Trajectory"),
+#       col = c("black",
+#               # "blue",
+#               "violet"),        
+#       pch = c(NA_integer_,
+#               # 20,
+#               20),                    # Legend Element Styles          
+#       lty = c(1, 
+#               # 1,
+#               1),     
+#       # cex = pts-0.2,
+#       cex = 0.6,
+#       title = "Strategies") #,          - 0.7 ratio         # Legend Title
+#     # title.col = gray(.2) ,                # Legend title color
+#     # box.lty = 1,                         # Legend box line type
+#     # box.lwd = 1)                         # Legend box line width
+  }
   dev.off()
 }
 
@@ -2080,13 +2460,13 @@ OTI_diagnostic(df = woe_stat, upth = 0.3, variance = "ci", nb_replicates = 100, 
 
 #### Plot the evolution of population, costs and actions in FLI and OTI strategy ####
 
-multi <- function(df, upth, bubo, tmax, yaxis) {
+multi <- function(df, upth, bubo, bura, tmax, yaxis) {
   # subsetting
-  dd <- subset(df, UT == upth & BB == bubo) 
+  dd <- subset(df, UT == upth & BB == bubo & ratio == bura) 
   
   # plot
-  xrange <- seq(1, tmax, 1)
-  plot(1, type = "n", xlab = "time", ylab = yaxis, ylim = c(0,max(dd[9:dim(dd)[2]])), xlim = c(0,20)) # , main = paste("UT = ", upth, " BB = ",bubo)
+  xrange <- seq(0, tmax, 1)
+  plot(1, type = "n", xlab = "time", ylab = yaxis, ylim = c(0,max(df[9:dim(dd)[2]])), xlim = c(0,20)) # , main = paste("UT = ", upth, " BB = ",bubo)
   
   # max with FLI strategy
   if (str_detect(yaxis, "Cost")){
@@ -2098,11 +2478,11 @@ multi <- function(df, upth, bubo, tmax, yaxis) {
   } else if (str_detect(yaxis, "population")){
     xtendrange <- seq(-1,tmax+1,1)
     trans <- adjustcolor("lightgreen",alpha.f=0.5)
-    upperUT <- rep((1+upth)*dd[1,7], length(xtendrange))
-    lowerUT <- rep((1-upth)*dd[1,7], length(xtendrange))
+    upperUT <- rep((1+upth)*dd[1,8], length(xtendrange))
+    lowerUT <- rep((1-upth)*dd[1,8], length(xtendrange))
     
     polygon(c(xtendrange,rev(xtendrange)),c(upperUT,rev(lowerUT)),col=trans, border = "green")
-    abline(h = dd[1,7], col = "darkgreen", lty = 2)
+    abline(h = dd[1,8], col = "darkgreen", lty = 2)
   }
   
   # all the trajectories
@@ -2111,25 +2491,222 @@ multi <- function(df, upth, bubo, tmax, yaxis) {
   }
 }
 
-  plot_ATI_diag <- function(upd_thr, bud_bon) {
+multi.mean <- function(df, upth, bubo, bura, tmax, yaxis) {
+  # subsetting
+  dd <- subset(df, UT == upth & BB == bubo & ratio == bura)
   
+  # zz <- subset(df, UT == 0 & BB == 0 & ratio == bura)
+  
+  max.dd <- max(dd[10:dim(dd)[2]])+0.2*max(dd[10:dim(dd)[2]])
+  # max.zz <- max(zz[10:dim(dd)[2]])+0.2*max(zz[10:dim(dd)[2]])
+  
+  # plot
+  xrange <- seq(1, tmax, 1)
+  plot(1, type = "n", xlab = "time", ylab = yaxis, ylim = c(0,max.dd), xlim = c(0,20)) # , main = paste("UT = ", upth, " BB = ",bubo)
+  # plot(1, type = "n", xlab = "time", ylab = yaxis, ylim = c(0,max(max.zz,max.dd)), xlim = c(0,20)) # , main = paste("UT = ", upth, " BB = ",bubo)
+  
+  # max with FLI strategy
+  if (str_detect(yaxis, "Cost")){
+    abline(h = (dd[1,3]*1000/10)+10, lty = 2, pch = 2, col = "black")
+    abline(h = 10, lty = 2, pch = 2, col = "black")
+  } else if (str_detect(yaxis, "budget")){
+    abline(h = dd[1,3]*1000, lty = 2, pch = 2, col = "black")
+  } else if (str_detect(yaxis, "action")){
+    abline(h = dd[1,2]/10, lty = 2, pch = 2, col = "black")
+  } else if (str_detect(yaxis, "population")){
+    xtendrange <- seq(-1,tmax+1,1)
+    trans <- adjustcolor("lightgreen",alpha.f=0.5)
+    upperUT <- rep((1+upth)*dd[1,8], length(xtendrange))
+    lowerUT <- rep((1-upth)*dd[1,8], length(xtendrange))
+    
+    polygon(c(xtendrange,rev(xtendrange)),c(upperUT,rev(lowerUT)),col=trans, border = "green")
+    abline(h = dd[1,8], col = "darkgreen", lty = 2)
+  }
+  
+  # maxminmean
+  transgray <- adjustcolor("lightgrey",alpha.f=0.75)
+  
+  maxi <- max(dd[,10])
+  mini <- min(dd[,10])
+  moy <- mean(dd[,10])
+  infci <- NULL
+  supci <- NULL
+  for (i in 11:(dim(dd)[2])) {
+    maxi <- c(maxi, max(dd[,i]))
+    mini <- c(mini, min(dd[,i]))
+    moy <- c(moy, mean(dd[,i]))
+    infci <- c(infci, boot_sd_ci(dd[,i])[2])
+    supci <- c(supci, boot_sd_ci(dd[,i])[3])
+  }
+  
+  # max and min area
+  polygon(c(xrange,rev(xrange)),c(maxi,rev(mini)),col=transgray, border = "grey")
+  
+  # confidence interval
+  arrows(xrange[-1], infci, xrange[-1], supci, length=0.03, angle=90, code=3, col = "black")
+  
+  # trajectory
+  points(x = xrange, y = moy, type = 'b', pch = 1, col = "black")
+}
+
+# plot_ATI_diag <- function(upd_thr, bud_bon, bud_rat, method = c("all","mean"), omit.extinction = c(TRUE,FALSE)) {
+plot_ATI_diag <- function(upd_thr, bud_bon, bud_rat, method = c("all","mean")) {
+
   layout(matrix(c(1,2,3,4,5,6), nrow = 3), widths = c(4,4))
   # layout.show(n = 3)
   # set space for a title
   # par(oma = c(0, 0, 3, 0))
   
-  multi(we_popul, upth = 0, bubo = 0, tmax = 20, yaxis = "population")
-  multi(we_costs, upth = 0, bubo = 0, tmax = 20, yaxis = "Costs")
-  # multi(we_actio, upth = 0, bubo = 0, tmax = 20, yaxis = "actions")
-  multi(we_budge, upth = 0, bubo = 0, tmax = 20, yaxis = "budget")
-  multi(we_popul, upth = upd_thr, bubo = bud_bon, tmax = 20, yaxis = "population")
-  multi(we_costs, upth = upd_thr, bubo = bud_bon, tmax = 20, yaxis = "Costs")
-  # multi(we_actio, upth = upd_thr, bubo = bud_bon, tmax = 20, yaxis = "actions")
-  multi(we_budge, upth = upd_thr, bubo = bud_bon, tmax = 20, yaxis = "budget")
+  # if(omit.extinction == TRUE) {
+    if (method == "all") {
+      multi(we_popul, upth = 0, bubo = 0, bura = bud_rat, tmax = 20, yaxis = "population")
+      multi(we_budge, upth = 0, bubo = 0, bura = bud_rat, tmax = 20, yaxis = "budget")
+      multi(we_costs, upth = 0, bubo = 0, bura = bud_rat, tmax = 20, yaxis = "Costs")
+      multi(we_actio, upth = 0, bubo = 0, bura = bud_rat, tmax = 20, yaxis = "actions")
+      multi(we_popul, upth = upd_thr, bubo = bud_bon, bura = bud_rat, tmax = 20, yaxis = "population")
+      multi(we_budge, upth = upd_thr, bubo = bud_bon, bura = bud_rat, tmax = 20, yaxis = "budget")
+      multi(we_costs, upth = upd_thr, bubo = bud_bon, bura = bud_rat, tmax = 20, yaxis = "Costs")
+      multi(we_actio, upth = upd_thr, bubo = bud_bon, bura = bud_rat, tmax = 20, yaxis = "actions")
+    }
+    if (method == "mean") {
+      multi.mean(we_popul, upth = 0, bubo = 0, bura = bud_rat, tmax = 20, yaxis = "population")
+      multi.mean(we_budge, upth = 0, bubo = 0, bura = bud_rat, tmax = 20, yaxis = "budget")
+      multi.mean(we_costs, upth = 0, bubo = 0, bura = bud_rat, tmax = 20, yaxis = "Costs")
+      # multi.mean(we_actio, upth = 0, bubo = 0, bura = bud_rat, tmax = 20, yaxis = "actions")
+      multi.mean(we_popul, upth = upd_thr, bubo = bud_bon, bura = bud_rat, tmax = 20, yaxis = "population")
+      multi.mean(we_budge, upth = upd_thr, bubo = bud_bon, bura = bud_rat, tmax = 20, yaxis = "budget")
+      multi.mean(we_costs, upth = upd_thr, bubo = bud_bon, bura = bud_rat, tmax = 20, yaxis = "Costs")
+      # multi.mean(we_actio, upth = upd_thr, bubo = bud_bon, bura = bud_rat, tmax = 20, yaxis = "actions")
+    }
+  # }
   
-  mtext(paste("FLI VS UT =", upd_thr*100, "% - BB =", bud_bon*100, "%"), outer = TRUE, cex = 1, line = 1.5)
+  # if (omit.extinction==FALSE) {
+  #   if (method == "all") {
+  #     multi(popul, upth = 0, bubo = 0, bura = bud_rat, tmax = 20, yaxis = "population")
+  #     multi(budge, upth = 0, bubo = 0, bura = bud_rat, tmax = 20, yaxis = "budget")
+  #     multi(costs, upth = 0, bubo = 0, bura = bud_rat, tmax = 20, yaxis = "Costs")
+  #     # multi(actio, upth = 0, bubo = 0, bura = bud_rat, tmax = 20, yaxis = "actions")
+  #     multi(popul, upth = upd_thr, bubo = bud_bon, bura = bud_rat, tmax = 20, yaxis = "population")
+  #     multi(budge, upth = upd_thr, bubo = bud_bon, bura = bud_rat, tmax = 20, yaxis = "budget")
+  #     multi(costs, upth = upd_thr, bubo = bud_bon, bura = bud_rat, tmax = 20, yaxis = "Costs")
+  #     # multi(actio, upth = upd_thr, bubo = bud_bon, bura = bud_rat, tmax = 20, yaxis = "actions")
+  #   }
+  #   if (method == "mean") {
+  #     multi.mean(popul, upth = 0, bubo = 0, bura = bud_rat, tmax = 20, yaxis = "population")
+  #     multi.mean(budge, upth = 0, bubo = 0, bura = bud_rat, tmax = 20, yaxis = "budget")
+  #     multi.mean(costs, upth = 0, bubo = 0, bura = bud_rat, tmax = 20, yaxis = "Costs")
+  #     # multi.mean(actio, upth = 0, bubo = 0, bura = bud_rat, tmax = 20, yaxis = "actions")
+  #     multi.mean(popul, upth = upd_thr, bubo = bud_bon, bura = bud_rat, tmax = 20, yaxis = "population")
+  #     multi.mean(budge, upth = upd_thr, bubo = bud_bon, bura = bud_rat, tmax = 20, yaxis = "budget")
+  #     multi.mean(costs, upth = upd_thr, bubo = bud_bon, bura = bud_rat, tmax = 20, yaxis = "Costs")
+  #     # multi.mean(actio, upth = upd_thr, bubo = bud_bon, bura = bud_rat, tmax = 20, yaxis = "actions")
+  #   }
+  # }
+  
+  # mtext(paste("Control VS Trajectory - Perm =", upd_thr*100, "% - BB =", bud_bon*100, "% - initial budget = ", bura*1000, "-", ifelse(omit.extinction == TRUE, "including","excluding"), "extinctions"), outer = TRUE, cex = 1, line = 1.5)
+  mtext(paste("Control VS Trajectory - Perm =", upd_thr*100, "% - BB =", bud_bon*100, "% - initial budget = ", bura*1000), outer = TRUE, cex = 1, line = 1.5)
+  
 }
 
 # example
-plot_ATI_diag(upd_thr = 0.3, bud_bon = 0.1)
- 
+# plot_ATI_diag(upd_thr = 0.3, bud_bon = 0.3, bud_rat = 0.8, method = "mean", omit.extinction = FALSE)
+plot_ATI_diag(upd_thr = 0.3, bud_bon = 0.3, bud_rat = 0.8, method = "mean")
+
+multi.mean.trj <- function(df, upth, bubo, bura, tmax, yaxis) {
+  
+  # sizes
+  pts <- 7
+  lb <- 3
+  ax <- 2
+  
+  # subsetting
+  dd <- subset(df, UT == upth & BB == bubo & ratio == bura)
+  
+  # zz <- subset(df, UT == 0 & BB == 0 & ratio == bura)
+  
+  max.dd <- max(dd[10:dim(dd)[2]])+0.2*max(dd[10:dim(dd)[2]])
+  # max.zz <- max(zz[10:dim(dd)[2]])+0.2*max(zz[10:dim(dd)[2]])
+  
+  # plot
+  xrange <- seq(0, tmax, 1)
+  plot.new()
+  plot(1, type = "n", xlab = "Time", ylab = yaxis, ylim = c(0,max.dd), xlim = c(0,20), xaxt = 'n',
+       cex.lab = lb, cex.axis=ax) # , main = paste("UT = ", upth, " BB = ",bubo)
+  # plot(1, type = "n", xlab = "time", ylab = yaxis, ylim = c(0,max(max.zz,max.dd)), xlim = c(0,20)) # , main = paste("UT = ", upth, " BB = ",bubo)
+  axis(side=1, at=seq(0,length(xrange)-1,1), labels=xrange, cex.axis=ax)
+  
+  # max with FLI strategy
+  if (str_detect(yaxis, "Cost")){
+    abline(h = (dd[1,3]*1000/10)+10, lty = 2, pch = 2, col = "black")
+    abline(h = 10, lty = 2, pch = 2, col = "black")
+  } else if (str_detect(yaxis, "budget")){
+    abline(h = dd[1,3]*1000, lty = 2, pch = 2, col = "black")
+  } else if (str_detect(yaxis, "action")){
+    abline(h = dd[1,2]/10, lty = 2, pch = 2, col = "black")
+  } else if (str_detect(yaxis, "Population size")){
+    xtendrange <- seq(-1,tmax+1,1)
+    trans <- adjustcolor("lightgreen",alpha.f=0.5)
+    upperUT <- rep((1+upth)*dd[1,8], length(xtendrange))
+    lowerUT <- rep((1-upth)*dd[1,8], length(xtendrange))
+    
+    polygon(c(xtendrange,rev(xtendrange)),c(upperUT,rev(lowerUT)),col=trans, border = "green")
+    abline(h = dd[1,8], col = "darkgreen", lty = 2, lwd = pts-2)
+  }
+  
+  # loop over replicates
+  for (i in which(dd$rep %% 10 == 0)) {
+    points(x = xrange, y = dd[i,9:dim(dd)[2]], type = 'l', lwd = pts-2, col = 'grey')
+  }
+  
+  moy <- mean(dd[,10])
+  infci <- NULL
+  supci <- NULL
+  for (i in 11:(dim(dd)[2])) {
+    moy <- c(moy, mean(dd[,i]))
+    infci <- c(infci, boot_sd_ci(dd[,i])[2])
+    supci <- c(supci, boot_sd_ci(dd[,i])[3])
+  }
+  
+  # confidence interval
+  arrows(xrange[-c(1,2)], infci, xrange[-c(1,2)], supci, length=0.1, angle=90, code=3, col = "black", lwd = pts-4)
+  
+  # trajectory
+  points(x = xrange[-1], y = moy, type = 'l', pch = 1, col = "black", lwd = pts)
+}
+
+popul <- read.csv(file = "~/Desktop/PhD/GitKraken/gmse_fork_RQ1/Budget-ratio-large-batch/Mem-res/merged-res/pop-mem-budget-ratio-merged.csv")
+library(stringr)
+par(mar = c(5,6,1,1)+0.1)
+multi.mean.trj(df = popul, upth = 0.5, bubo = 1.0, bura = 0.8, tmax = 20, yaxis = "Population size")
+setwd(dir = "~/Desktop/PhD/GitKraken/gmse_fork_RQ1/Budget-ratio-large-batch/")
+dev.print(device = png, file = "pop-TRJ-PT50-BB100-BM800-bigLabs.png", width = 1000)
+
+#### plot only one replicate ####
+uniq <- function(df, upth, bubo, tmax, yaxis, replicate) {
+  # subsetting
+  d <- subset(df, UT == upth)
+  dd <- subset(df, UT == upth & BB == bubo & rep == replicate) 
+  
+  # plot
+  xrange <- seq(1, tmax, 1)
+  plot(1, type = "n", xlab = "time", ylab = yaxis, ylim = c(0,max(d[9:dim(d)[2]])), xlim = c(0,20)) # , main = paste("UT = ", upth, " BB = ",bubo)
+  
+  # max with FLI strategy
+  if (str_detect(yaxis, "Cost")){
+    abline(h = (dd[1,1]/10)+10, lty = 2, pch = 2, col = "black")
+  } else if (str_detect(yaxis, "budget")){
+    abline(h = dd[1,1], lty = 2, pch = 2, col = "black")
+  } else if (str_detect(yaxis, "action")){
+    abline(h = dd[1,1]/10, lty = 2, pch = 2, col = "black")
+  } else if (str_detect(yaxis, "population")){
+    xtendrange <- seq(-1,tmax+1,1)
+    trans <- adjustcolor("lightgreen",alpha.f=0.5)
+    upperUT <- rep((1+upth)*dd[1,6], length(xtendrange))
+    lowerUT <- rep((1-upth)*dd[1,6], length(xtendrange))
+    
+    polygon(c(xtendrange,rev(xtendrange)),c(upperUT,rev(lowerUT)),col=trans, border = "green")
+    abline(h = dd[1,6], col = "darkgreen", lty = 2)
+  }
+  
+  points(x = xrange, y = dd[,8:dim(dd)[2]], type = "b", pch = 1, col = "black")
+}
