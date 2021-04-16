@@ -119,6 +119,7 @@ RES_DEATH_TYPE = 3
 REMOVE_PR = 0.05
 LAND_DIM_1 = 100
 LAND_DIM_2 = 100
+RESOURCE_INI = 1000
  
 ### Initial time steps:
 init_steps = init_man_control(K = 5)

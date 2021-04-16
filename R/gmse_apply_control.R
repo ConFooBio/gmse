@@ -398,7 +398,8 @@ init_man_control = function(K = 5) {
                          user_budget = USER_BUDGET,
                          manager_budget = MANAGER_BUDGET,
                          land_dim_1 = LAND_DIM_1,
-                         land_dim_2 = LAND_DIM_2
+                         land_dim_2 = LAND_DIM_2,
+                         RESOURCE_ini = RESOURCE_INI
     )
     
     output = gmse_apply_summary(sim_old, include = c("res","obs","culls","scares","tend_crops","cull_cost", "scare_cost","yield"))
