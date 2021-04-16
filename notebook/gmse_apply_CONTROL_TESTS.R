@@ -117,6 +117,8 @@ USER_BUDGET = 1500
 MANAGER_BUDGET = 1000
 RES_DEATH_TYPE = 3
 REMOVE_PR = 0.05
+LAND_DIM_1 = 100
+LAND_DIM_2 = 100
 
 ### Initial time steps:
 init_steps = init_man_control(K = 5)
@@ -137,7 +139,7 @@ plot_pop(output, track_range = FALSE, yield_dat = yields)
 #plot_land_res(prev$LAND, prev$RESOURCES)
 
 ### User input
-costs_as_input = list(culling = 40, scaring = 110)
+costs_as_input = list(culling = 10, scaring = 110)
 prev = set_man_costs(prev, newcost = costs_as_input)
 
 ### Run next time step:
