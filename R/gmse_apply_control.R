@@ -387,6 +387,7 @@ init_man_control = function(K = 5) {
                          tend_crops = TEND_CROPS,
                          scaring = SCARING,
                          culling = CULLING,
+                         tend_crop_yld = TEND_CROP_YLD,
                          observe_type = OBSERVE_TYPE, 
                          res_move_obs = RES_MOVE_OBS, 
                          res_death_K = RES_DEATH_K,
