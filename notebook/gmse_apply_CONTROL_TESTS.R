@@ -103,27 +103,30 @@ plot_land_res = function(land, resources) {
     image(res_positions, col = "darkred", xaxt = "n", yaxt = "n")
 }
 
-LAND_OWNERSHIP = TRUE
-TEND_CROPS = TRUE
-SCARING = TRUE
-CULLING = TRUE
-TEND_CROP_YLD = 0.2
-OBSERVE_TYPE = 1
-RES_MOVE_OBS = TRUE
-RES_DEATH_K = 3000
-LAMBDA = 0.3
-MANAGE_TARGET = 1500
-STAKEHOLDERS = 4
-USER_BUDGET = 1500
-MANAGER_BUDGET = 1000
-RES_DEATH_TYPE = 3
-REMOVE_PR = 0.05
-LAND_DIM_1 = 100
-LAND_DIM_2 = 100
-RESOURCE_INI = 1000
+GMSE_PARAS = list(LAND_OWNERSHIP = TRUE,
+                  TEND_CROPS = TRUE,
+                  SCARING = TRUE,
+                  CULLING = TRUE,
+                  TEND_CROP_YLD = runif(1, 0.1, 0.75),
+                  OBSERVE_TYPE = 0,
+                  RES_MOVE_OBS = TRUE,
+                  RES_DEATH_K = round(runif(1, 1000, 6000)),
+                  RES_DEATH_TYPE = 3,
+                  LAMBDA = runif(1, 0.2, 0.4),
+                  REMOVE_PR = runif(1, 0, 0.1),
+                  MANAGE_TARGET = 2000,
+                  STAKEHOLDERS = round(runif(1, 4, 12)),
+                  USER_BUDGET = 1500,
+                  MANAGER_BUDGET = 1000,
+                  LAND_DIM_1 = 100,
+                  LAND_DIM_2 = 100,
+                  RESOURCE_INI = 1000
+)
  
 ### Initial time steps:
-init_steps = init_man_control(K = 5)
+init_steps = init_man_control(K = 5, gmse_paras = GMSE_PARAS)
+lapply(init_steps$gmse_list, function(x) x$stakeholders) # Test para extraction 
+
 # Appends output:
 output = init_steps$summary 
 # Extracts last time step (last `old_list`)
@@ -141,7 +144,7 @@ plot_pop(output, track_range = FALSE, yield_dat = yields)
 #plot_land_res(prev$LAND, prev$RESOURCES)
 
 ### User input
-costs_as_input = list(culling = 10, scaring = 110)
+costs_as_input = list(culling = 110, scaring = 110)
 prev = set_man_costs(prev, newcost = costs_as_input)
 
 ### Run next time step:

@@ -376,31 +376,31 @@ append_UROM_output = function(dat, costs, old_output) {
 #'
 #'}
 #'@export
-init_man_control = function(K = 5) {
+init_man_control = function(K = 5, gmse_paras) {
     
     gmse_list = list()
     
     K1 = K-1 # Because the "interim" time step will be the fifth, where actions aren't yet taken (pending user input)
 
     sim_old = gmse_apply(get_res = "Full", 
-                         land_ownership = LAND_OWNERSHIP,
-                         tend_crops = TEND_CROPS,
-                         scaring = SCARING,
-                         culling = CULLING,
-                         tend_crop_yld = TEND_CROP_YLD,
-                         observe_type = OBSERVE_TYPE, 
-                         res_move_obs = RES_MOVE_OBS, 
-                         res_death_K = RES_DEATH_K,
-                         res_death_type = RES_DEATH_TYPE,
-                         lambda = LAMBDA,
-                         remove_pr = REMOVE_PR,
-                         manage_target = MANAGE_TARGET, 
-                         stakeholders = STAKEHOLDERS,
-                         user_budget = USER_BUDGET,
-                         manager_budget = MANAGER_BUDGET,
-                         land_dim_1 = LAND_DIM_1,
-                         land_dim_2 = LAND_DIM_2,
-                         RESOURCE_ini = RESOURCE_INI
+                         land_ownership = gmse_paras$LAND_OWNERSHIP,
+                         tend_crops = gmse_paras$TEND_CROPS,
+                         scaring = gmse_paras$SCARING,
+                         culling = gmse_paras$CULLING,
+                         tend_crop_yld = gmse_paras$TEND_CROP_YLD,
+                         observe_type = gmse_paras$OBSERVE_TYPE, 
+                         res_move_obs = gmse_paras$RES_MOVE_OBS, 
+                         res_death_K = gmse_paras$RES_DEATH_K,
+                         res_death_type = gmse_paras$RES_DEATH_TYPE,
+                         lambda = gmse_paras$LAMBDA,
+                         remove_pr = gmse_paras$REMOVE_PR,
+                         manage_target = gmse_paras$MANAGE_TARGET, 
+                         stakeholders = gmse_paras$STAKEHOLDERS,
+                         user_budget = gmse_paras$USER_BUDGET,
+                         manager_budget = gmse_paras$MANAGER_BUDGET,
+                         land_dim_1 = gmse_paras$LAND_DIM_1,
+                         land_dim_2 = gmse_paras$LAND_DIM_2,
+                         RESOURCE_ini = gmse_paras$RESOURCE_INI
     )
     
     output = gmse_apply_summary(sim_old, include = c("res","obs","culls","scares","tend_crops","cull_cost", "scare_cost","yield"))
