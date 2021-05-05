@@ -111,3 +111,27 @@ f3 = function(S) {
 M = f1(3)
 lapply(M, function(x) x$stakeholders)
 # OK
+
+
+### Does it work when paras are in lists?
+rm(list=ls())
+
+f10 = function(x) {
+    GMSE_PARAS = list(land_dim_2 = 123)
+    gmse_apply(get_res = "Full", land_dim_2 = GMSE_PARAS$land_dim_2)
+}
+m = f10()
+m$land_dim_2
+# OK
+
+rm(list=ls())
+f10 = function(gmse_paras) {
+    f11(pars = gmse_paras)
+}
+f11 = function(pars) {
+    gmse_apply(get_res = "Full", land_dim_2 = pars$land_dim_2)
+}
+GMSE_PARAS = list(land_dim_2 = 111)
+m = f10(gmse_paras = GMSE_PARAS)
+m$land_dim_2
+# OK
