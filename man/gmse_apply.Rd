@@ -11,6 +11,7 @@ gmse_apply(
   use_mod = user,
   get_res = "basic",
   old_list = NULL,
+  manage_me = FALSE,
   ...
 )
 }

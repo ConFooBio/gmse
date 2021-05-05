@@ -1,0 +1,12 @@
+name: gmse_gui
+title: gmse_gui
+username:
+account: jejoenje
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3884405
+bundleId: 4411458
+url: https://jejoenje.shinyapps.io/gmse_gui/
+when: 1617107307.56025
+asMultiple: FALSE
+asStatic: FALSE

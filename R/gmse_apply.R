@@ -30,6 +30,7 @@ gmse_apply <- function(res_mod  = resource,
                        use_mod  = user,
                        get_res  = "basic",
                        old_list = NULL,
+                       manage_me = FALSE,
                        ...
                        ){
 
@@ -90,6 +91,18 @@ gmse_apply <- function(res_mod  = resource,
     man_results <- check_name_results(output   = man_results, 
                                       vec_name = "manager_vector", 
                                       mat_name = "manager_array");
+    
+    if(manage_me == TRUE) {
+        print("Observed population size:");
+        print(arg_vals[["observation_vector"]]);
+        print("Suggested culling costs:");
+        print(man_results$COST[1,9,2:5]);
+        print("Enter desired culling cost for all users (blank/Enter accepts suggested cost):")
+        new_cost <- scan(n=1);
+        if(length(new_cost)==0) new_cost = unique(man_results$COST[1,9,2:5])
+        man_results$COST[1,9,2:5] = new_cost;
+    }
+    
     arg_vals    <- add_results(arg_list = arg_vals, output = man_results);
     arg_vals    <- fix_gmse_defaults(arg_list = arg_vals, model = man_mod);
     arg_vals    <- translate_results(arg_list = arg_vals, output = man_results);
@@ -1664,6 +1677,12 @@ translate_results <- function(arg_list, output){
             if(is.na(arg_list[["user_array"]])[1] == TRUE){
                 arg_list <- set_action_array(arg_list);
             }
+            ### Attempt at circumventing an issue with specifying extended custom man_mod.
+            ### `user_array` seems to be missing from `arg_list`, whereas `ACTION` is there,
+            ###  so just set the former to be the latter:
+            if(is.na(arg_list[["user_array"]][1]) & !is.na(arg_list[["ACTION"]][1])) {
+                arg_list[["user_array"]] = arg_list[["ACTION"]]
+            }
             u_out <- arg_list[["user_array"]];
             rows  <- which(u_out[, 1, 1] == -2);
             acts  <- u_out[rows, 9, ];
@@ -1674,6 +1693,11 @@ translate_results <- function(arg_list, output){
             }
             arg_list[["user_vector"]] <- allac;
         }
+    }
+    ### Further addition similar to the one above, dealing with an apparently missing `manager_array` while COST
+    ### does exist:
+    if(is.na(arg_list[["manager_array"]][1]) & !is.na(arg_list[["COST"]][1])) {
+        arg_list[["manager_array"]] = arg_list[["COST"]]
     }
     return(arg_list);
 }
