@@ -1320,13 +1320,9 @@ place_args <- function(all_names, placing_vals, arg_list){
         place_name <- placing_names[i];
         if(place_name %in% all_names){
             place_pos <- which(all_names == place_name);
-            if(place_name=="old_list") {
-                arg_eval  <- eval(placing_vals[[i]], envir = parent.frame(3))
-            } else {
-                arg_eval  <- eval(placing_vals[[i]]);    
-            }
+            arg_eval  <- eval(placing_vals[[i]], envir=sys.frame(1));
             if(is.null(arg_eval) == FALSE){
-                arg_list[[place_pos]] <- arg_eval;
+                arg_list[[place_pos]] <- eval(placing_vals[[i]], envir=sys.frame(1));
             }
         }
     }
