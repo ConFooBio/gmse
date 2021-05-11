@@ -135,3 +135,21 @@ GMSE_PARAS = list(land_dim_2 = 111)
 m = f10(gmse_paras = GMSE_PARAS)
 m$land_dim_2
 # OK
+
+rm(list=ls())
+
+alt_res <- function(X, K = 2000, rate = 1){
+    X_1 <- X + rate*X*(1 - X/K);
+    return(X_1);
+}
+
+w = function(ALT_RES, stakeholders) {
+    Y = 1111
+    gmse_apply(get_res = "Full", res_mod = ALT_RES, X = Y, stakeholders = stakeholders, my_way_or_the_highway = TRUE)
+}
+
+w(ALT_RES = alt_res, stakeholders = 5)
+
+
+stakeholders = 5
+gmse_apply(get_res = "Full", res_mod = alt_res, X = 1000, stakeholders = stakeholders, my_way_or_the_highway = TRUE)
