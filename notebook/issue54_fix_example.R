@@ -64,8 +64,6 @@ lapply(m6, function(x) x$stakeholders) # OK
 lapply(m6, function(x) x$land_ownership) # OK
 lapply(m6, function(x) x$land_dim_1) # OK
 
-
-
 ### Multiple wrappers:
 
 ## Two:
@@ -112,7 +110,6 @@ M = f1(3)
 lapply(M, function(x) x$stakeholders)
 # OK
 
-
 ### Does it work when paras are in lists?
 rm(list=ls())
 
@@ -136,20 +133,52 @@ m = f10(gmse_paras = GMSE_PARAS)
 m$land_dim_2
 # OK
 
+
+### Does passing custom model functions work as expected?
 rm(list=ls())
 
+### Custom resource function specified in "global" environment
 alt_res <- function(X, K = 2000, rate = 1){
     X_1 <- X + rate*X*(1 - X/K);
     return(X_1);
 }
 
-w = function(ALT_RES, stakeholders) {
-    Y = 1111
-    gmse_apply(get_res = "Full", res_mod = ALT_RES, X = Y, stakeholders = stakeholders, my_way_or_the_highway = TRUE)
+### Wrapper function, one argument of which includes the alternate resource model function, as well as parameter X for that function:
+w = function(resource_function, stakeholders, x) {
+    # Note the call to gmse_apply includes the given resource function, as well as parameter X for that function:
+    gmse_apply(get_res = "Full", res_mod = resource_function, X = x)
 }
+w(resource_function = alt_res, x = 1111)
+# OK
 
-w(ALT_RES = alt_res, stakeholders = 5)
-
+### Note that if we re-specify the wrapper with X named as X we get the my_way_or_the_highway warning, which shows the latter works really well!
+w = function(resource_function, stakeholders, X) {
+    # Note the call to gmse_apply includes the given resource function, as well as parameter X for that function:
+    gmse_apply(get_res = "Full", res_mod = resource_function, X = X)
+}
+w(resource_function = alt_res, X = 1234)
 
 stakeholders = 5
 gmse_apply(get_res = "Full", res_mod = alt_res, X = 1000, stakeholders = stakeholders, my_way_or_the_highway = TRUE)
+
+### It is very interesting though that this proposed fix also appears to circumvent the problems caused by re-using variable names 
+###  (i.e. the reason why the my_way_or_the_highway safety catch was put in place)!
+### Examples:
+
+### This causes the warning, as expected:
+another_wrapper = function(stakeholders = 5) {
+    gmse_apply(get_res = "Full", stakeholders = stakeholders)
+}
+another_wrapper()
+
+### Whereas this does not, nor does it cause a crash:
+yet_another_wrapper = function(stakeholders = 5) {
+    gmse_apply(get_res = "Full", stakeholders = stakeholders, my_way_or_the_highway = TRUE)
+}
+yet_another_wrapper()
+### If the last wrapper is run using the current `master` version of GMSE, it does cause serious problems (bomb!)
+### So, perhaps the memory-related issues caused by re-using parameter names is circumvented by the proposed fix?
+### Another example that would crash R using the current CRAN version, but seems to behave OK when using this fix:
+rm(list=ls())
+stakeholders = 5
+gmse_apply(stakeholders = stakeholders, my_way_or_the_highway = TRUE)
