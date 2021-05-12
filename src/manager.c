@@ -460,9 +460,9 @@ void apply_budget_bonus(double **agent_array, double *paras){
     cost_decrease  = (int) paras[133];    /* Have the cost decreased last time step */
        
     if (bonus_reset == 1) {
-      if(a_t > 0 && recent_update == 0){ /* If action threshold is being used */
+      if(a_t > 0 && recent_update == 0){ /* If action threshold is being used and policy was not updated last time step*/
           for(agent = 0; agent < N_agents; agent++){
-              if(agent_array[agent][1] == 0){
+              if(agent_array[agent][1] == 0){ /* if the agent is a manager */
                   calc_budget_bonus(agent_array, paras, agent);
               } 
           }
@@ -474,14 +474,14 @@ void apply_budget_bonus(double **agent_array, double *paras){
           }
       }
     } else {
-      if(a_t > 0 && recent_update == 0){ /* If action threshold is being used */
+      if(a_t > 0 && recent_update == 0){ /* If action threshold is being used and polcy was not updated last ts */
         for(agent = 0; agent < N_agents; agent++){
           if(agent_array[agent][1] == 0){
             calc_budget_bonus(agent_array, paras, agent);
           } 
         }
-      }else{
-        if (cost_decrease == 0) {
+      }else{ 
+        if (cost_decrease == 0) { /* bonus is reset only if the cost were decreased */
           for(agent = 0; agent < N_agents; agent++){
             if(agent_array[agent][1] == 0){
               agent_array[agent][bonus_col] = 0.0;
@@ -535,6 +535,36 @@ void man_budget_from_yield(double **agent_array, double *paras){
 }
 
 /* =============================================================================
+ * This computes a prediction of population trajectory as a linear extrapolation
+ *      paras:       A vector of parameters needed 
+ * ========================================================================== */
+void traj_pred_lin_extrap(double *paras){
+  
+  int t_s;
+  double res_abund, prv_est, var, pred;
+
+  res_abund = paras[99]; /* Est. of res type 1 from the observation model */
+  prv_est   = paras[129]; /* Previous time step population estimation */
+  t_s       = paras[0]; /* What is the current time step? */
+    
+  if (t_s > 1) {
+    var = res_abund - prv_est; /* variation from previous time step */
+    
+    pred = res_abund + var; /* manager's prediction for next time step population size based on variation */
+    /* Could be interesting to make the manager_sense inteviene here */
+  
+    paras[135] = pred; /* store prediction in paras */
+    
+    paras[129] = res_abund; /* update this time step estimation */
+  
+  } else {
+    paras[129] = res_abund; /* update this time step estimation */
+    paras[135] = res_abund; /* Avoid pb at the first time step */
+  
+  }
+}
+
+/* =============================================================================
  * MAIN OBSERVATION FUNCTION:
  * ===========================================================================*/
 
@@ -584,6 +614,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     int update_policy;       /* If managers act */
     int observe_type;        /* Type of observation being performed */
     int bonus_reset;         /* reset budget bonus to zero when cost decreased ? */
+    int trj_prd;             /* Make decision based on prediction? */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
@@ -597,6 +628,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     double bb;               /* Budget bonus */
     double prv_cost;         /* Culling cost before calling GA */
     double new_cost;         /* Culling cost after calling GA */
+    double save;             /* Variable to save a value */
     double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
     double *paras_ptr;       /* Pointer to PARAMETERS (interface R and C) */
@@ -834,8 +866,9 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     
     observe_type   = (int) paras[8];
     man_yld_budget = (double) paras[126];
-    bb = (double) paras[110];
+    bb             = (double) paras[110];
     bonus_reset    = (int) paras[132];    /* Reset budget bonus when cost decreased? */
+    trj_prd        = (int) paras[134];    /* Make decision based on prediction? */
     
     /* get the costs from last time step */
     if (bb > 0 && bonus_reset == 0) {
@@ -857,8 +890,17 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     update_policy = paras[106];             /* Will managers act? */
     
     if(update_policy > 0){
+      if (trj_prd == 0) {
         ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
            lookup, paras, 0, 1);
+      } else {
+        traj_pred_lin_extrap(paras);
+        save = paras[99]; /* save the abundance estimation */
+        paras[99] = paras[135]; /* replace the value by the prediction */
+        ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
+           lookup, paras, 0, 1); /* call GA using the prediction */
+        paras[99] = save; /* reset the variable to its initial value */
+      }
     }
     
     set_action_costs(actions, costs, paras, agent_array);
