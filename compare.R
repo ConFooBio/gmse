@@ -12,6 +12,6 @@ pred$paras[,100]
 # Check previous time step estimation (Should be the same as pred$paras[,100])
 pred$paras[,130]
 
-# Check predicion (Should be a linear extrapolation of pred$paras[t-1,100] and pred$paras[t,100])
+# Check predicion (Should be pred$paras[1,100] at the first time step and a linear extrapolation of pred$paras[t-1,100] and pred$paras[t,100] onward)
 pred$paras[,136]
 # on my computer it's the same as abundances, I don't understant why still
