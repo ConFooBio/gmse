@@ -19,7 +19,7 @@ Summarise gmse_apply() output
 }
 \examples{
 \dontrun{
-sim_summary <- sim_old <- gmse_apply(get_res = "Full", scaring = FALSE, land_ownership = T);
+sim_old <- gmse_apply(get_res = "Full", scaring = FALSE, land_ownership = TRUE);
 gmse_apply_summary(data = sim_old, include = c("res","obs","culls","yield"))
 }
 }

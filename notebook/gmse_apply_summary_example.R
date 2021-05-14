@@ -22,7 +22,7 @@ gmse_apply_summary(data = sim_old)
 
 K <- 10 # Number of iterations
 sim_old <- gmse_apply(get_res = "Full", scaring = TRUE, culling = TRUE, land_ownership = TRUE)
-output <- gmse_apply_summary(data = sim_old, include = c("res","obs","culls","scares"))
+output  <- gmse_apply_summary(data = sim_old, include = c("res","obs","culls","scares"))
 
 for(i in 2:K) {
     sim_new = gmse_apply(get_res = "Full", old_list=sim_old)
