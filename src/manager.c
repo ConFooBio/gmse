@@ -543,9 +543,9 @@ void traj_pred_lin_extrap(double *paras){
   int t_s;
   double res_abund, prv_est, var, pred;
 
-  res_abund = paras[99]; /* Est. of res type 1 from the observation model */
+  res_abund = paras[99];  /* Est. of res type 1 from the observation model */
   prv_est   = paras[129]; /* Previous time step population estimation */
-  t_s       = paras[0]; /* What is the current time step? */
+  t_s       = paras[0];   /* What is the current time step? */
     
   if (t_s > 1) {
     var = res_abund - prv_est; /* variation from previous time step */
@@ -559,7 +559,7 @@ void traj_pred_lin_extrap(double *paras){
   
   } else {
     paras[129] = res_abund; /* update this time step estimation */
-    paras[135] = res_abund; /* Avoid pb at the first time step */
+    paras[135] = res_abund; /* prediction is current estimation to avoid pbs at the first time step */
   
   }
 }
@@ -910,9 +910,9 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
      new_cost = costs[0][8][1]; 
      if (prv_cost - new_cost > 0) {
        paras[133] = 1;
-       } else {
-         paras[133] = 0;
-       }
+     } else {
+       paras[133] = 0;
+     }
     }
 
     free(marg_util);
