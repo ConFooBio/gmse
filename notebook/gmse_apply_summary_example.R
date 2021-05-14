@@ -20,7 +20,7 @@ gmse_apply_summary(data = sim_old)
 ### When doing this, it is not needed to specify values for `include` over subsequent calls to gmse_apply_summary(); 
 ### in such cases, only the output columns already present in `output` are appended.
 
-K <- 10 # Number of iterations
+K <- 3 # Number of iterations
 sim_old <- gmse_apply(get_res = "Full", scaring = TRUE, culling = TRUE, land_ownership = TRUE)
 output  <- gmse_apply_summary(data = sim_old, include = c("res","obs","culls","scares"))
 

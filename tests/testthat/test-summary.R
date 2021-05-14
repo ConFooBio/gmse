@@ -49,3 +49,14 @@ test_that("Dimensions of gmse_tab output are correct", {
     gmse_tab <- gmse_table(gmse_sim);
     expect_equal(dim(gmse_tab), c(3,8));
 })
+
+test_that("Length of gmse_apply_summary is correct", {
+    skip_on_cran();
+    sim_old <- gmse_apply(get_res = "Full", scaring = TRUE, culling = TRUE, 
+                          land_ownership = TRUE);
+    output  <- gmse_apply_summary(data = sim_old, 
+                                  include = c("res","obs","culls","scares"));
+    expect_equal(length(output), 4);
+})
+
+
