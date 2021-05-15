@@ -61,8 +61,13 @@ void is_correct_type(int res_number, double **resources, int type1, int type2,
  * Find the descending order of positions in an array of length 'length'
  * ========================================================================== */
 void find_descending_order(int *order_array, double *by_array, int length){
-    int i, k, max_index;
+    int i, k, max_index, *sarray;
     double max_val, min_val;
+    
+    sarray  = malloc(length * sizeof(int));
+    for(i = 0; i < length; i++){
+        sarray[i] = order_array[i];
+    }
     
     k = 0;
     min_val = 0;
@@ -81,10 +86,13 @@ void find_descending_order(int *order_array, double *by_array, int length){
             }
         }
         by_array[max_index] = min_val - 1;
-        order_array[k]      = order_array[max_index]; 
+        order_array[k]      = sarray[max_index]; 
         k++;   
     }
+
+    free(sarray);
 }
+
 
 /* =============================================================================
  * Swap pointers to rewrite ARRAY_B into ARRAY_A for a an array of any dimension
