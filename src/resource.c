@@ -287,10 +287,10 @@ void res_remove(double **res_removing, double *paras){
             break;
     }
     for(resource = 0; resource < resource_number; resource++){
-        if(res_removing[resource][age_col] > max_age){
+        if(res_removing[resource][age_col] > max_age & type >= 0){
             res_removing[resource][rm_col] = -1;
         }
-        if(res_removing[resource][cons_col] < csr){
+        if(res_removing[resource][cons_col] < csr & type >= 0){
             res_removing[resource][rm_col] = -1;
         }
     }
