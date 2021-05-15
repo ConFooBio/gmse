@@ -52,7 +52,8 @@ sidebar <-   dashboardSidebar(
                 
                 div(align="center"),
                 
-                actionButton("go", "Run Simulation Now", icon = icon("play"), style="color: #ffffff; background-color: #006400; border-color: #084908"),
+                actionButton("go", "Run Simulation Now", icon = icon("play"), 
+                             style="color: #ffffff; background-color: #006400; border-color: #084908"),
                 
                 uiOutput("sim_output"),
                 
