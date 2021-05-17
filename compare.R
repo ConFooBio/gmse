@@ -15,3 +15,9 @@ pred$paras[,130]
 # Check predicion (Should be pred$paras[1,100] at the first time step and a linear extrapolation of pred$paras[t-1,100] and pred$paras[t,100] onward)
 pred$paras[,136]
 # on my computer it's the same as abundances, I don't understant why still
+
+## possible reasons
+# assigning estimation of abundance to paras[135]
+# var is always 0 :
+#   prv_est = abundance estimation before entering the loop
+#   abun_est is not updated before calling traj_pred

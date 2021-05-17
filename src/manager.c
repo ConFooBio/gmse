@@ -266,25 +266,63 @@ void estimate_abundances(double **obs_array, double *paras, int **lookup,
 }
 
 /* =============================================================================
+ * This computes a prediction of population trajectory as a linear extrapolation
+ *      paras:       A vector of parameters needed 
+ * ========================================================================== */
+void traj_pred_lin_extrap(double *paras){
+  
+  int t_s;
+  double res_abund, prv_est, var, pred;
+  
+  res_abund = paras[99];  /* Est. of res type 1 from the observation model */
+  prv_est   = paras[129]; /* Previous time step population estimation */
+  t_s       = paras[0];   /* What is the current time step? */
+  
+  if (t_s > 1) {
+    var = res_abund - prv_est; /* variation from previous time step */
+  
+    pred = res_abund + var; /* manager's prediction for next time step population size based on variation */
+    /* Could be interesting to make the manager_sense inteviene here */
+    
+    paras[135] = pred; /* store prediction in paras */
+    
+    paras[129] = res_abund; /* update memory previous of previous time step estimation */
+    
+  } else {
+    paras[129] = res_abund; /* update memory previous of previous time step estimation */
+    
+    paras[135] = res_abund; /* prediction is current estimation to avoid pbs at the first time step */
+  }
+}
+
+/* =============================================================================
  * This function updates the marginal abundances
  *     actions:        The array of the action of agents
  *     abun_est:       Vector where abundance estimates for each type are held
  *     temp_util:      Temporary utilities pulled from actions
  *     marg_util:      The marginal utility of each resource
+ *     paras:          A vector of parameter needed
  *     int_d0:         The length of the abun_est, temp_util, & marg_util arrays
  *     a_x:            Number of rows in the actions array
  * ========================================================================== */
 void update_marg_util(double ***actions, double *abun_est, double *temp_util, 
-                      double *marg_util, int int_d0, int a_x){
+                      double *marg_util, double *paras, int int_d0, int a_x){
     
-    int row, i;
+    int row, i, trj_prd;
+    
+    trj_prd = (int) paras[134]; /* make policy based on prediction rather than on latest observation */
     
     for(row = 0; row < int_d0; row++){
         temp_util[row] = 0;
         marg_util[row] = 0;
         if(actions[row][0][0] < 0){
             temp_util[row] = actions[row][4][0];
-            marg_util[row] = temp_util[row] - abun_est[row];
+            if (trj_prd == 0){
+              marg_util[row] = temp_util[row] - abun_est[row];
+            } else {
+              traj_pred_lin_extrap(paras);
+              marg_util[row] = temp_util[row] - paras[135]; /* WILL ONLY WORK WITH TYPE1 RESOURCE */
+            }
         }
     }
     i = 0;
@@ -361,7 +399,7 @@ void set_action_costs(double ***ACTION, double ***COST, double *paras,
  * ========================================================================== */
 void check_action_threshold(double ***ACTION, double *paras){
     
-    int m_lyr, act_row, targ_row, t_s, mem; /* over_threshold, */
+    int m_lyr, act_row, targ_row, t_s, mem;
     double res_abund, target, dev, a_t, prv_est, var, pred, up_bound, lo_bound;
     
     m_lyr     = 0; /* Layer of the manager */ 
@@ -371,11 +409,10 @@ void check_action_threshold(double ***ACTION, double *paras){
     a_t       = paras[105]; /* Dev est pop from manager target trigger */
     t_s       = (int) paras[0]; /* What is the current time step? */
     prv_est   = paras[129]; /* Previous time step population estimation */
-    mem = (int) paras[130]; /* Do manager memorize the previous pop size estimation? */
-    
-    target = ACTION[act_row][targ_row][m_lyr]; /* Manager's target */
+    mem       = (int) paras[130]; /* Do manager memorize the previous pop size estimation? */
+    target    = ACTION[act_row][targ_row][m_lyr]; /* Manager's target */
 
-    dev    = (res_abund / target) - 1; /* Deviation from manager's target */
+    dev = (res_abund / target) - 1; /* Deviation from manager's target */
     if(dev < 0){ /* Get the absolute value */
         dev = -1 * dev;
     }
@@ -391,11 +428,11 @@ void check_action_threshold(double ***ACTION, double *paras){
             paras[107] += 1; /* One more time step since the last policy update */
         }
         
-    }else{
+    } else {
         
         var = res_abund - prv_est; /* variation from previous time step */
 
-        pred = res_abund + var; /* manager's prediction for next time step population size based on variation */
+        pred = res_abund + var;    /* manager's prediction for next time step population size based on variation */
         /* Could be interesting to make the manager_sense inteviene here */
         /* And use the absolute value to make the following if statement lighter */
 
@@ -412,7 +449,7 @@ void check_action_threshold(double ***ACTION, double *paras){
             paras[107] += 1; /* One more time step since the last policy update */
         }
 
-        paras[129] = res_abund; /* update this time step estimation */
+        paras[129] = res_abund; /* update memory of previous time step estimation */
     }
 }
     
@@ -532,36 +569,6 @@ void man_budget_from_yield(double **agent_array, double *paras){
             agent_array[agent][y_bonus_col] = floor(mean_yield * yield_budget);
         }
     }
-}
-
-/* =============================================================================
- * This computes a prediction of population trajectory as a linear extrapolation
- *      paras:       A vector of parameters needed 
- * ========================================================================== */
-void traj_pred_lin_extrap(double *paras){
-  
-  int t_s;
-  double res_abund, prv_est, var, pred;
-
-  res_abund = paras[99];  /* Est. of res type 1 from the observation model */
-  prv_est   = paras[129]; /* Previous time step population estimation */
-  t_s       = paras[0];   /* What is the current time step? */
-    
-  if (t_s > 1) {
-    var = res_abund - prv_est; /* variation from previous time step */
-    
-    pred = res_abund + var; /* manager's prediction for next time step population size based on variation */
-    /* Could be interesting to make the manager_sense inteviene here */
-  
-    paras[135] = pred; /* store prediction in paras */
-    
-    paras[129] = res_abund; /* update this time step estimation */
-  
-  } else {
-    paras[129] = res_abund; /* update this time step estimation */
-    paras[135] = res_abund; /* prediction is current estimation to avoid pbs at the first time step */
-  
-  }
 }
 
 /* =============================================================================
@@ -868,7 +875,6 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     man_yld_budget = (double) paras[126];
     bb             = (double) paras[110];
     bonus_reset    = (int) paras[132];    /* Reset budget bonus when cost decreased? */
-    trj_prd        = (int) paras[134];    /* Make decision based on prediction? */
     
     /* get the costs from last time step */
     if (bb > 0 && bonus_reset == 0) {
@@ -884,23 +890,14 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
         
     if(observe_type >= 0){ /* If less than zero, the above already in actions */
         estimate_abundances(obs_array, paras, lookup, agent_array, abun_est);
-        update_marg_util(actions, abun_est, temp_util, marg_util, int_d0, a_x);
+        update_marg_util(actions, abun_est, temp_util, marg_util, paras, int_d0, a_x);
     }
     check_action_threshold(actions, paras); /* Check whether to act */
     update_policy = paras[106];             /* Will managers act? */
     
     if(update_policy > 0){
-      if (trj_prd == 0) {
         ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
            lookup, paras, 0, 1);
-      } else {
-        traj_pred_lin_extrap(paras);
-        save = paras[99]; /* save the abundance estimation */
-        paras[99] = paras[135]; /* replace the value by the prediction */
-        ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
-           lookup, paras, 0, 1); /* call GA using the prediction */
-        paras[99] = save; /* reset the variable to its initial value */
-      }
     }
     
     set_action_costs(actions, costs, paras, agent_array);
