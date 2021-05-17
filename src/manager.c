@@ -318,13 +318,18 @@ void update_marg_util(double ***actions, double *abun_est, double *temp_util,
         if(actions[row][0][0] < 0){
             temp_util[row] = actions[row][4][0];
             if (trj_prd == 0){
+              printf("ts= %f\t marg_util=%f\t abun_est=%f\t prv_est=%f\t prediction = %f\n", paras[0], marg_util[row], paras[99], paras[129], paras[135]);
               marg_util[row] = temp_util[row] - abun_est[row];
+              printf("ts= %f\t marg_util=%f\t abun_est=%f\t prv_est=%f\t prediction = %f\n", paras[0], marg_util[row], paras[99], paras[129], paras[135]);
             } else {
+              printf("ts= %f\t marg_util=%f\t abun_est=%f\t prv_est=%f\t prediction = %f\n", paras[0], marg_util[row], paras[99], paras[129], paras[135]);
               traj_pred_lin_extrap(paras);
               marg_util[row] = temp_util[row] - paras[135]; /* WILL ONLY WORK WITH TYPE1 RESOURCE */
+              printf("ts= %f\t marg_util=%f\t abun_est=%f\t prv_est=%f\t prediction = %f\n", paras[0], marg_util[row], paras[99], paras[129], paras[135]);
             }
         }
     }
+    
     i = 0;
     for(row = 0; row < a_x; row++){
         if(actions[row][0][0] == 1){

@@ -1,10 +1,10 @@
 library(GMSE)
 
-# regular <- gmse_replicates(replicates = 10, time_max = 10, mem_prv_observ = FALSE, traj_pred = FALSE, plotting = FALSE, land_ownership = TRUE, stakeholders = 20)
+regular <- gmse(time_max = 5, mem_prv_observ = FALSE, traj_pred = FALSE, plotting = FALSE, land_ownership = TRUE, stakeholders = 5)
 # regular
 
 #pred <- gmse_replicates(replicates = 10, time_max = 10, mem_prv_observ = TRUE, traj_pred = TRUE, plotting = FALSE, land_ownership = TRUE, stakeholders = 20)
-pred <- gmse(time_max = 10, mem_prv_observ = TRUE, traj_pred = TRUE, plotting = FALSE, land_ownership = TRUE, stakeholders = 20)
+pred <- gmse(time_max = 5, mem_prv_observ = TRUE, traj_pred = TRUE, plotting = FALSE, land_ownership = TRUE, stakeholders = 5, scaring = FALSE)
 
 # Check abundance estimations
 pred$paras[,100]
