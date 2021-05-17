@@ -278,9 +278,14 @@ void traj_pred_lin_extrap(double *paras){
   prv_est   = paras[129]; /* Previous time step population estimation */
   t_s       = paras[0];   /* What is the current time step? */
   
-  if (t_s > 1) {
+  if (t_s <= 1) {
+    paras[129] = res_abund; /* initiate memory previous of previous time step estimation */
+    
+    paras[135] = res_abund; /* prediction is current estimation to avoid pbs at the first time step */
+    
+  } else {
     var = res_abund - prv_est; /* variation from previous time step */
-  
+
     pred = res_abund + var; /* manager's prediction for next time step population size based on variation */
     /* Could be interesting to make the manager_sense inteviene here */
     
@@ -288,12 +293,7 @@ void traj_pred_lin_extrap(double *paras){
     
     paras[135] = pred; /* store prediction in paras */
     
-    /* paras[129] = res_abund; update memory previous of previous time step estimation */
-    
-  } else {
     paras[129] = res_abund; /* update memory previous of previous time step estimation */
-    
-    paras[135] = res_abund; /* prediction is current estimation to avoid pbs at the first time step */
   }
 }
 
@@ -313,6 +313,11 @@ void update_marg_util(double ***actions, double *abun_est, double *temp_util,
     int row, i, trj_prd;
     
     trj_prd = (int) paras[134]; /* make policy based on prediction rather than on latest observation */
+
+    printf("ts= %f\t marg_util=%f\t abun_est=%f\t prv_est=%f\t prediction = %f\n", paras[0], marg_util[row], paras[99], paras[129], paras[135]);
+    if (trj_prd == 1) {
+      traj_pred_lin_extrap(paras);
+    }
     
     for(row = 0; row < int_d0; row++){
         temp_util[row] = 0;
@@ -322,15 +327,11 @@ void update_marg_util(double ***actions, double *abun_est, double *temp_util,
             if (trj_prd == 0){
               marg_util[row] = temp_util[row] - abun_est[row];
             } else {
-              /* printf("ts= %f\t marg_util=%f\t abun_est=%f\t prv_est=%f\t prediction = %f\n", paras[0], marg_util[row], paras[99], paras[129], paras[135]); */
-              traj_pred_lin_extrap(paras);
               marg_util[row] = temp_util[row] - paras[135]; /* WILL ONLY WORK WITH TYPE1 RESOURCE */
-              /* printf("ts= %f\t marg_util=%f\t abun_est=%f\t prv_est=%f\t prediction = %f\n", paras[0], marg_util[row], paras[99], paras[129], paras[135]); */
+              printf("ts= %f\t marg_util=%f\t abun_est=%f\t prv_est=%f\t prediction = %f\n", paras[0], marg_util[row], paras[99], paras[129], paras[135]);
             }
         }
     }
-    
-    if (trj_prd == 1) {paras[129] = abun_est[0];} /* update memory previous of previous time step estimation */
     
     i = 0;
     for(row = 0; row < a_x; row++){
