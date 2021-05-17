@@ -284,9 +284,11 @@ void traj_pred_lin_extrap(double *paras){
     pred = res_abund + var; /* manager's prediction for next time step population size based on variation */
     /* Could be interesting to make the manager_sense inteviene here */
     
+    if (pred < 0) {pred = 0;} /* the prediction cannot be negative */
+    
     paras[135] = pred; /* store prediction in paras */
     
-    paras[129] = res_abund; /* update memory previous of previous time step estimation */
+    /* paras[129] = res_abund; update memory previous of previous time step estimation */
     
   } else {
     paras[129] = res_abund; /* update memory previous of previous time step estimation */
@@ -312,22 +314,23 @@ void update_marg_util(double ***actions, double *abun_est, double *temp_util,
     
     trj_prd = (int) paras[134]; /* make policy based on prediction rather than on latest observation */
     
-    printf("=========================\n");
     for(row = 0; row < int_d0; row++){
         temp_util[row] = 0;
         marg_util[row] = 0;
-        if(actions[row][0][0] < 0){
+        if(actions[row][0][0] < 0 ){
             temp_util[row] = actions[row][4][0];
             if (trj_prd == 0){
               marg_util[row] = temp_util[row] - abun_est[row];
             } else {
-              printf("ts= %f\t marg_util=%f\t abun_est=%f\t prv_est=%f\t prediction = %f\n", paras[0], marg_util[row], paras[99], paras[129], paras[135]);
+              /* printf("ts= %f\t marg_util=%f\t abun_est=%f\t prv_est=%f\t prediction = %f\n", paras[0], marg_util[row], paras[99], paras[129], paras[135]); */
               traj_pred_lin_extrap(paras);
               marg_util[row] = temp_util[row] - paras[135]; /* WILL ONLY WORK WITH TYPE1 RESOURCE */
-              printf("ts= %f\t marg_util=%f\t abun_est=%f\t prv_est=%f\t prediction = %f\n", paras[0], marg_util[row], paras[99], paras[129], paras[135]);
+              /* printf("ts= %f\t marg_util=%f\t abun_est=%f\t prv_est=%f\t prediction = %f\n", paras[0], marg_util[row], paras[99], paras[129], paras[135]); */
             }
         }
     }
+    
+    if (trj_prd == 1) {paras[129] = abun_est[0];} /* update memory previous of previous time step estimation */
     
     i = 0;
     for(row = 0; row < a_x; row++){
@@ -439,6 +442,8 @@ void check_action_threshold(double ***ACTION, double *paras){
         pred = res_abund + var;    /* manager's prediction for next time step population size based on variation */
         /* Could be interesting to make the manager_sense inteviene here */
         /* And use the absolute value to make the following if statement lighter */
+        
+        if (pred < 0) {pred = 0;} /* the prediction should not be negative, even if it does not matter here */
 
         up_bound = (1 + a_t) * target; /* upper bound of the non-updating band */
 
