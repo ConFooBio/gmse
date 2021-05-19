@@ -10,8 +10,10 @@
 #'@param include A character vector listing which gmse_apply values should be
 #'  reported/summarised. Currently allowable values are
 #'  "res","obs","culls","scares","castrations","feeds","helps","tend_crops",
-#'  "kill_crops","yield". Note that for all actions and yield, the statistic
-#'  returned is the sum across users. Can be NULL; if so, if `output` is also
+#'  "kill_crops","cull_cost","scare_cost", and "yield". Note that for all 
+#'  actions and yield, the statistic returned is the sum across users; for 
+#'  cull_cost and scare_cost the returned values are the mean costs across 
+#'  users. Can be NULL; if so, if `output` is also
 #'  NULL, all possible values are returned. If `output` is not NULL, only the
 #'  values already present in `ouput` are returned, in the same column order.
 #'@return A matrix of gmse_apply values, summarised.
@@ -25,8 +27,10 @@
 gmse_apply_summary <- function(data, output = NULL, include = NULL) {
     
     valid_includes <- c("res", "obs", "culls", "scares", "castrations", "feeds",
-                        "helps", "tend_crops", "kill_crops", "yield")
-
+                        "helps", "tend_crops", "kill_crops", "yield",
+                        "cull_cost", "scare_cost"
+                        )
+    
     if(is.null(output)) {
         if(is.null(include)) {
             include <- valid_includes
@@ -80,10 +84,13 @@ gmse_apply_summary <- function(data, output = NULL, include = NULL) {
                       na.rm = TRUE)
     kill_crops <- sum(data$basic_output$user_results[,"kill_crops"], 
                       na.rm = TRUE)
+    cull_cost <- mean(data$COST[1,9,2:dim(data$COST)[3]])
+    scare_cost <- mean(data$COST[1,8,2:dim(data$COST)[3]])
     yield <- sum(data$AGENTS[,16], na.rm = TRUE)
     
     outcols <- cbind(res, obs, culls, scares, castrations, 
-                     feeds, helps, tend_crops,kill_crops, yield)[,include]
+                     feeds, helps, tend_crops,kill_crops, cull_cost, 
+                     scare_cost, yield)[,include]
     output  <- rbind(output, outcols )
     
     ### Removes any lines that are all NA from output (typically only the 
