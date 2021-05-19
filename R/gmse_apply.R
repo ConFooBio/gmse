@@ -1129,7 +1129,7 @@ paras_errors <- function(input_list){
     if(input_list[13] > 2 | input_list[13] < 0){
         stop("ERROR: Only res_birth_type == 0, 1, 2 allowed by GMSE");
     }
-    if(input_list[14] < 0 | input_list[14] > 3){
+    if(input_list[14] < -1 | input_list[14] > 3){
         stop("ERROR: Unrecognised GMSE res_death_type");
     }
     if(input_list[15]  <  0 | input_list[15] > 3){

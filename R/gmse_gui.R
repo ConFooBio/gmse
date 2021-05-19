@@ -17,10 +17,12 @@
 #'@importFrom shiny div p icon headerPanel column hr sliderInput selectInput
 #'@importFrom shiny radioButtons actionButton plotOutput eventReactive runApp
 #'@importFrom shiny shinyApp renderPlot uiOutput renderTable tableOutput
-#'@importFrom shiny fluidPage tags br
+#'@importFrom shiny fluidPage tags br getDefaultReactiveDomain observeEvent 
 #'@importFrom shinydashboard dashboardSidebar sidebarMenu menuItem dashboardBody
 #'@importFrom shinydashboard tabItems tabItem dashboardHeader dashboardPage
+#'@importFrom shinydashboard updateTabItems
 #'@importFrom shinyjs useShinyjs
+#'@importFrom shinycssloaders withSpinner
 #'@export
 gmse_gui <- function(){ 
 
@@ -68,8 +70,8 @@ gmse_gui <- function(){
                     
                     div(align="center"),
                     
-                    menuItem("Run simulation", tabName = "run", 
-                             icon = icon("play", class=menuIconClass)),
+                    actionButton("go", "Run Simulation Now", icon = icon("play"), 
+                                 style="color: #ffffff; background-color: #006400; border-color: #084908"),
                     
                     uiOutput("sim_output"),
                     
@@ -653,18 +655,7 @@ gmse_gui <- function(){
                         )
                 ),
                 
-                tabItem("run",
-                        
-                        headerPanel(title = "Run a simulation"),
-                        
-                        column(width = 6, offset = 0, style='padding:0px;',
-                               
-                               hr(),
-                               
-                               actionButton("go", "Run Simulation Now")
-                               
-                        )
-                ),
+
                 
                 tabItem("plotting",
                         
@@ -672,7 +663,9 @@ gmse_gui <- function(){
                         
                         hr(),
                         
-                        plotOutput("plot1", height = 900, width = 700)
+                        withSpinner(type = 5, color.background = "#ecf0f5",
+                                    plotOutput("plot1", height = 900, width = 700)
+                        )
                 ),
                 
                 tabItem("plot_effort",
@@ -681,7 +674,9 @@ gmse_gui <- function(){
                         
                         hr(),
                         
-                        plotOutput("plot2", height = 900, width = 700)
+                        withSpinner(type = 5, color.background = "#ecf0f5",
+                                    plotOutput("plot2", height = 900, width = 700)
+                        )
                 ),
                 
                 tabItem("resource_tab",
@@ -690,7 +685,9 @@ gmse_gui <- function(){
                         
                         hr(),
                         
-                        tableOutput("table1")
+                        withSpinner(type = 5, color.background = "#ecf0f5",
+                                    tableOutput("table1")
+                        )
                 ),
                 
                 tabItem("cost_tab",
@@ -699,7 +696,9 @@ gmse_gui <- function(){
                         
                         hr(),
                         
-                        tableOutput("table2")
+                        withSpinner(type = 5, color.background = "#ecf0f5",
+                                    tableOutput("table2")
+                        )
                 ),
                 
                 tabItem("action_tab",
@@ -708,7 +707,9 @@ gmse_gui <- function(){
                         
                         hr(),
                         
-                        tableOutput("table3")
+                        withSpinner(type = 5, color.background = "#ecf0f5",
+                                    tableOutput("table3")
+                        )
                 ),
                 
                 tabItem("help",
@@ -832,6 +833,10 @@ gmse_gui <- function(){
                  times_feeding  = input$times_feeding,
                  ownership_var  = input$ownership_var
             );
+        })
+        
+        observeEvent(input$go, {
+            updateTabItems(session = getDefaultReactiveDomain(), "tab", "plotting")
         })
         
         output$plot1 <- renderPlot({

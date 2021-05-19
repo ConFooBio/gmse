@@ -7,9 +7,20 @@
 gmse_apply_summary(data, output = NULL, include = NULL)
 }
 \arguments{
-\item{data}{A character vector listing which gmse_apply values should be reported/summarised. Currently allowable values are "res","obs","culls","scares","castrations","feeds","helps","tend_crops","kill_crops","yield". Note that for all actions and yield, the statistic returned is the sum across users. Can be NULL; if so, if `output` is also NULL, all possible values are returned. If `output` is not NULL, only the values already present in `ouput` are returned, in the same column order.}
+\item{data}{The full list as returned by the gmse function.}
 
-\item{output}{An existing gmse_apply_summary output structure to append to. This should be a matrix with number of columns equal to the length of `include`. If NULL, a matrix with a single row with just the summary of given `data` gmse_apply() output is returned.}
+\item{output}{An existing gmse_apply_summary output structure to append to.
+This should be a matrix with number of columns equal to the length of
+`include`. If NULL, a matrix with a single row with just the summary of
+given `data` gmse_apply() output is returned.}
+
+\item{include}{A character vector listing which gmse_apply values should be
+reported/summarised. Currently allowable values are
+"res","obs","culls","scares","castrations","feeds","helps","tend_crops",
+"kill_crops","yield". Note that for all actions and yield, the statistic
+returned is the sum across users. Can be NULL; if so, if `output` is also
+NULL, all possible values are returned. If `output` is not NULL, only the
+values already present in `ouput` are returned, in the same column order.}
 }
 \value{
 A matrix of gmse_apply values, summarised.
@@ -19,7 +30,8 @@ Summarise gmse_apply() output
 }
 \examples{
 \dontrun{
-sim_summary <- sim_old <- gmse_apply(get_res = "Full", scaring = FALSE, land_ownership = T);
+sim_old <- gmse_apply(get_res = "Full", scaring = FALSE, 
+land_ownership = TRUE);
 gmse_apply_summary(data = sim_old, include = c("res","obs","culls","yield"))
 }
 }

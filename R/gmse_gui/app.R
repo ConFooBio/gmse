@@ -2,6 +2,7 @@ library(shiny)
 library(shinydashboard)
 library(shinyjs)
 library(GMSE)
+library(shinycssloaders)
 
 ################################################################################
 # Note: This code is for uploading to the shiny server, the gui called from the
@@ -51,8 +52,8 @@ sidebar <-   dashboardSidebar(
                 
                 div(align="center"),
                 
-                menuItem("Run simulation", tabName = "run", 
-                         icon = icon("play", class=menuIconClass)),
+                actionButton("go", "Run Simulation Now", icon = icon("play"), 
+                             style="color: #ffffff; background-color: #006400; border-color: #084908"),
                 
                 uiOutput("sim_output"),
                 
@@ -635,27 +636,16 @@ body <- dashboardBody(
                            
                     )
             ),
-            
-            tabItem("run",
-                    
-                    headerPanel(title = "Run a simulation"),
-                    
-                    column(width = 6, offset = 0, style='padding:0px;',
-                           
-                           hr(),
-                           
-                           actionButton("go", "Run Simulation Now")
-                           
-                    )
-            ),
-            
+
             tabItem("plotting",
                     
                     headerPanel(title = "Simulation output (please be patient)"),
                     
                     hr(),
                     
-                    plotOutput("plot1", height = 900, width = 700)
+                    withSpinner(type = 5, color.background = "#ecf0f5",
+                        plotOutput("plot1", height = 900, width = 700)
+                    )
             ),
             
             tabItem("plot_effort",
@@ -664,7 +654,10 @@ body <- dashboardBody(
                     
                     hr(),
                     
-                    plotOutput("plot2", height = 900, width = 700)
+                    withSpinner(type = 5, color.background = "#ecf0f5",
+                        plotOutput("plot2", height = 900, width = 700)
+                    )
+                    
             ),
             
             tabItem("resource_tab",
@@ -673,7 +666,9 @@ body <- dashboardBody(
                     
                     hr(),
                     
-                    tableOutput("table1")
+                    withSpinner(type = 5, color.background = "#ecf0f5",
+                        tableOutput("table1")
+                    )
             ),
             
             tabItem("cost_tab",
@@ -682,7 +677,10 @@ body <- dashboardBody(
                     
                     hr(),
                     
-                    tableOutput("table2")
+                    withSpinner(type = 5, color.background = "#ecf0f5",
+                        tableOutput("table2")
+                    )
+
             ),
             
             tabItem("action_tab",
@@ -691,7 +689,10 @@ body <- dashboardBody(
                     
                     hr(),
                     
-                    tableOutput("table3")
+                    withSpinner(type = 5, color.background = "#ecf0f5",
+                        tableOutput("table3")
+                    )
+                                
             ),
             
             tabItem("help",
@@ -815,6 +816,10 @@ server <- function(input, output){
              times_feeding  = input$times_feeding,
              ownership_var  = input$ownership_var
         );
+    })
+    
+    observeEvent(input$go, {
+        updateTabItems(session = getDefaultReactiveDomain(), "tab", "plotting")
     })
     
     output$plot1 <- renderPlot({
