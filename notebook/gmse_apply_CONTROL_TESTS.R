@@ -143,8 +143,17 @@ yields = init_steps$prev_yield
 plot_pop(output, track_range = FALSE, yield_dat = yields)
 #plot_land_res(prev$LAND, prev$RESOURCES)
 
+### Attempt at translating from BUDGET allocated to costs set:
+budget_as_input = list(culling = 750, scaring = 750)
+
+budget2cost = function(budgetAllocated, minimum_cost) {
+  return(budgetAllocated/10 + minimum_cost)
+}
+
 ### User input
-costs_as_input = list(culling = 110, scaring = 110)
+costs_as_input = list(culling = budgetAllocated_to_cost(budget_as_input$culling, minimum_cost = 10), 
+                      scaring = budgetAllocated_to_cost(budget_as_input$culling, minimum_cost = 10))
+
 prev = set_man_costs(prev, newcost = costs_as_input)
 
 ### Run next time step:

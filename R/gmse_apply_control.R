@@ -47,7 +47,6 @@ gmse_apply_INTERIM = function(res_mod  = resource,
     
     if(is.null(old_list) == FALSE){
         arg_vals <- apply_old_gmse(arg_vals, old_list, ...);
-        #arg_vals <- apply_old_gmse(arg_vals, old_list);  # removed ellipsis to mimic function call
     }
     
     # ------ RESOURCE MODEL ----------------------------------------------------
@@ -91,7 +90,7 @@ gmse_apply_INTERIM = function(res_mod  = resource,
     arg_vals    <- translate_results(arg_list = arg_vals, output = man_results);
     arg_vals    <- update_para_vec(arg_list   = arg_vals);
     
-    # ------ USER MODEL --------------------------------------------------------
+    # ------ USER MODEL = BYPASSED --------------------
     #usr_args    <- prep_usr(arg_list = arg_vals, usr_mod = use_mod);
     #check_args(arg_list = usr_args, the_fun = use_mod);
     #usr_results <- do.call(what = use_mod, args = usr_args);
@@ -102,14 +101,8 @@ gmse_apply_INTERIM = function(res_mod  = resource,
                        COST = arg_vals$COST,
                        PARAS = arg_vals$PARAS
                        )
-    
-    # usr_results$RESOURCES == arg_vals$RESOURCES
-    # usr_results$AGENTS == arg_vals$AGENTS
-    # usr_results$LAND == arg_vals$LAND
-    # usr_results$ACTION == arg_vals$ACTION
-    # usr_results$COST == arg_vals$COST
-    # usr_results$PARAS == arg_vals$PARAS
-    ### Adapt COST, possibly RESOURCES (culls?)
+
+    ### Reset any actions taken an make sure no effects recorded on RESOURCES
     usr_results$ACTION[1,8:12,2:dim(usr_results$ACTION)[3]] = 0  ########## RESETS ALL ACTIONS TO ZERO
     usr_results$RESOURCES[,17] = 0      ########## ENSURES no actions on resources were taken across (culls)
     usr_results$RESOURCES[,16] = 0      ########## ENSURES no actions on resources were taken across (scares)
@@ -165,10 +158,8 @@ gmse_apply_UROM = function(res_mod  = resource,
     }
     
     std_paras           <- pass_paras(old_list, ...);
-    #std_paras           <- pass_paras(old_list);       # removed ellipsis to mimic function call
     all_args            <- as.list(sys.call());
-    #all_args = as.list(call_bogus_for_debug(get_res = "Full", old_list = sim_old))  # replicates arguments recall
-    
+
     check_the_var_names(all_args);
     
     all_args[["PARAS"]] <- std_paras[["gmse_para_vect"]]; 
@@ -183,7 +174,6 @@ gmse_apply_UROM = function(res_mod  = resource,
     
     if(is.null(old_list) == FALSE){
         arg_vals <- apply_old_gmse(arg_vals, old_list, ...);
-        #arg_vals <- apply_old_gmse(arg_vals, old_list);  # removed ellipsis to mimic function call
     }
     
     # ------ USER MODEL --------------------------------------------------------
@@ -252,7 +242,6 @@ gmse_apply_UROM = function(res_mod  = resource,
     return(res);
     
 }
-#rm(all_args, arg_vals, man_args, man_results, needed_args, obs_args, obs_results, old_list, res, res_args, res_results, std_paras, usr_args, usr_results, arg_name)
 
 #' observed_suggested
 #'
