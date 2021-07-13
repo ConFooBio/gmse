@@ -120,12 +120,19 @@ GMSE_PARAS = list(LAND_OWNERSHIP = TRUE,
                   MANAGER_BUDGET = 1000,
                   LAND_DIM_1 = 100,
                   LAND_DIM_2 = 100,
-                  RESOURCE_INI = 1000
+                  RESOURCE_INI = 1000,
+                  OWNERSHIP_VAR = 0.5,
+                  PUBLIC_LAND = 0,
+                  USR_BUDGET_RNG = 0
 )
  
 ### Initial time steps:
 init_steps = init_man_control(K = 5, gmse_paras = GMSE_PARAS)
+# No. stakeholderS:
 lapply(init_steps$gmse_list, function(x) x$stakeholders) # Test para extraction 
+# Land ownership check:
+table(init_steps$gmse_list[[1]]$LAND[,,3])
+lapply(init_steps$gmse_list, function(x) table(x$LAND[,,3]))
 
 # Appends output:
 output = init_steps$summary 
@@ -143,25 +150,26 @@ yields = init_steps$prev_yield
 plot_pop(output, track_range = FALSE, yield_dat = yields)
 #plot_land_res(prev$LAND, prev$RESOURCES)
 
-### Attempt at translating from BUDGET allocated to costs set:
-budget_as_input = list(culling = 750, scaring = 750)
+budget_as_input = list(culling = 50, scaring = 50)
+# ### Attempt at translating from BUDGET allocated to costs set:
+# budget_as_input = list(culling = 50, scaring = 50)
+# 
+# budget2cost = function(budgetAllocated, minimum_cost) {
+#   return(budgetAllocated/10 + minimum_cost)
+# }
+# 
+# ### User input
+# costs_as_input = list(culling = budgetAllocated_to_cost(budget_as_input$culling, minimum_cost = 10), 
+#                       scaring = budgetAllocated_to_cost(budget_as_input$culling, minimum_cost = 10))
 
-budget2cost = function(budgetAllocated, minimum_cost) {
-  return(budgetAllocated/10 + minimum_cost)
-}
-
-### User input
-costs_as_input = list(culling = budgetAllocated_to_cost(budget_as_input$culling, minimum_cost = 10), 
-                      scaring = budgetAllocated_to_cost(budget_as_input$culling, minimum_cost = 10))
-
-prev = set_man_costs(prev, newcost = costs_as_input)
+prev = set_man_costs(prev, newcost = budget_as_input)
 
 ### Run next time step:
 nxt = try({gmse_apply_UROM(get_res = "Full", old_list = prev)}, silent = TRUE)
 
 if(class(nxt)!="try-error") {
     # Add appropriate outputs.
-    output = append_UROM_output(dat = nxt, costs = costs_as_input, old_output = output)
+    output = append_UROM_output(dat = nxt, costs = budget_as_input, old_output = output)
     yields = rbind(yields, tapply(nxt$LAND[,,2], nxt$LAND[,,3], mean))
     
     # Reset time step

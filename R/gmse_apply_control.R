@@ -389,7 +389,10 @@ init_man_control = function(K = 5, gmse_paras) {
                          manager_budget = gmse_paras$MANAGER_BUDGET,
                          land_dim_1 = gmse_paras$LAND_DIM_1,
                          land_dim_2 = gmse_paras$LAND_DIM_2,
-                         RESOURCE_ini = gmse_paras$RESOURCE_INI
+                         RESOURCE_ini = gmse_paras$RESOURCE_INI,
+                         ownership_var = gmse_paras$OWNERSHIP_VAR,
+                         public_land = gmse_paras$PUBLIC_LAND,
+                         usr_budget_rng = gmse_paras$USR_BUDGET_RNG
     )
     
     output = gmse_apply_summary(sim_old, include = c("res","obs","culls","scares","tend_crops","cull_cost", "scare_cost","yield"))
