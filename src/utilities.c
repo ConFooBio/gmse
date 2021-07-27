@@ -4,7 +4,7 @@
 #include <Rmath.h>
 
 /* =============================================================================
- * This function checks to see if a resource is of the correct type combination
+ * This function samples a rand in with a min of 'from' and max of 'to - 1'
  * ========================================================================== */
 int get_rand_int(int from, int to){
     
@@ -12,13 +12,13 @@ int get_rand_int(int from, int to){
     
     do{
         rand_value = (int) floor( runif(from, to) );
-    }while(rand_value == to  );
+    }while(rand_value == to);
     
     return rand_value;
 }
 
 /* =============================================================================
- * This function checks to see if a resource is of the correct type combination
+ * This function checks to see if an agent is on the land that they own
  * ========================================================================== */
 void is_on_owner_land(int res_number, double **resources, int owner,
                       double ***land, int *ident_vector){
@@ -165,7 +165,7 @@ int unif_move(int max_move){
         rand_uni = runif(0, 1);
     } while(rand_uni == 1.0);
     
-    raw_move = rand_uni * max_move;
+    raw_move = rand_uni * (max_move + 1);
     move_len = (int) floor(raw_move);
     move_dir = (int) rand_dir();
     the_move = move_dir * move_len;
