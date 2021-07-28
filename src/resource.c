@@ -318,7 +318,7 @@ void res_remove(double **res_removing, double *paras){
 void res_landscape_interaction(double **resource_array, double ***landscape,
                                double *paras, int resource_number){
                               
-    int resource_type_col, resource_type, resource_effect;
+    int resource_type_col, resource_type, resource_effect, is_dead, res_type;
     int landscape_layer, resource, x_col, y_col, x_pos, y_pos, gadj, klld;
     double c_rate, esize_grow, esize_death, land_grow, land_die;
     
@@ -334,7 +334,9 @@ void res_landscape_interaction(double **resource_array, double ***landscape,
     esize_death       = paras[87];
     
     for(resource = 0; resource < resource_number; resource++){
-        if(resource_array[resource][resource_type_col] == resource_type){
+        res_type = (int) resource_array[resource][resource_type_col];
+        is_dead  = (int) resource_array[resource][klld];
+        if(res_type == resource_type && is_dead < 1){
             x_pos  = resource_array[resource][x_col];
             y_pos  = resource_array[resource][y_col];
             c_rate = resource_array[resource][resource_effect];
