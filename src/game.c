@@ -710,7 +710,7 @@ void tournament(double *fitnesses, int *winners, double *paras){
     sampleK  = (int) paras[24];
     chooseK  = (int) paras[25];
     
-    samples  = malloc(sampleK * sizeof(double));
+    samples  = malloc(sampleK * sizeof(int));
     samp_fit = malloc(sampleK * sizeof(double));
     placed   = 0;
     
