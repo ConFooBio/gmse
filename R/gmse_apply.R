@@ -2464,7 +2464,7 @@ get_manager_sum <- function(arg_list){
     }
     if(u_feeding == TRUE){
         rows       <- which(acts[,1,1] == -2);
-        feeding    <- costs[rows, 10, 2];
+        feeding    <- costs[rows, 11, 2];
     }
     u_help_offspring      <- arg_list[["help_offspring"]];
     if(is.null(u_help_offspring)){
@@ -2472,7 +2472,7 @@ get_manager_sum <- function(arg_list){
     }
     if(u_help_offspring == TRUE){
         rows           <- which(acts[, 1, 1] == -2);
-        help_offspring <- costs[rows, 10, 2];
+        help_offspring <- costs[rows, 12, 2];
     }
     all_costs <- c(scaring, culling, castrating, feeding, help_offspring);
     cost_mat  <- matrix(data = all_costs, nrow = res_types);
