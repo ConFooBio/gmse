@@ -748,24 +748,28 @@ pass_paras <- function( old_list = NULL, time_max = 40, land_dim_1 = 100,
               likely cause R to crash.");
     }
     
-    input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
-                    lambda, agent_view, agent_move, res_birth_K, res_death_K,
-                    edge_effect, res_move_type, res_birth_type, res_death_type,
-                    observe_type, fixed_mark, fixed_recapt, times_observe,
-                    obs_move_type, res_min_age, res_move_obs, Euclidean_dist, 
-                    plotting, hunt, start_hunting, res_consume, ga_popsize,
-                    ga_mingen, ga_seedrep, ga_sampleK, ga_chooseK, ga_mutation,
-                    ga_crossover, move_agents, max_ages, minimum_cost,
-                    user_budget, manager_budget, manage_target, RESOURCE_ini, 
-                    scaring, culling, castration, feeding, help_offspring, 
-                    tend_crops, tend_crop_yld, kill_crops, stakeholders, 
-                    manage_caution, land_ownership, manage_freq, converge_crit, 
-                    manager_sense, public_land, group_think, age_repr,
-                    usr_budget_rng, action_thres, budget_bonus, consume_surv,
-                    consume_repr, times_feeding, ownership_var, perceive_scare, 
-                    perceive_cull, perceive_cast, perceive_feed, perceive_help, 
-                    perceive_tend, perceive_kill, usr_yld_budget, 
-                    man_yld_budget); 
+    input_list <- cinput_check(time_max, land_dim_1, land_dim_2, res_movement, 
+                               remove_pr, lambda, agent_view, agent_move, 
+                               res_birth_K, res_death_K, edge_effect, 
+                               res_move_type, res_birth_type, res_death_type,
+                               observe_type, fixed_mark, fixed_recapt, 
+                               times_observe, obs_move_type, res_min_age, 
+                               res_move_obs, Euclidean_dist, plotting, hunt, 
+                               start_hunting, res_consume, ga_popsize, 
+                               ga_mingen, ga_seedrep, ga_sampleK, ga_chooseK, 
+                               ga_mutation, ga_crossover, move_agents, max_ages,
+                               minimum_cost, user_budget, manager_budget, 
+                               manage_target, RESOURCE_ini, scaring, culling, 
+                               castration, feeding, help_offspring, tend_crops, 
+                               tend_crop_yld, kill_crops, stakeholders, 
+                               manage_caution, land_ownership, manage_freq, 
+                               converge_crit, manager_sense, public_land, 
+                               group_think, age_repr, usr_budget_rng, 
+                               action_thres, budget_bonus, consume_surv,
+                               consume_repr, times_feeding, ownership_var, 
+                               perceive_scare, perceive_cull, perceive_cast, 
+                               perceive_feed, perceive_help, perceive_tend, 
+                               perceive_kill, usr_yld_budget, man_yld_budget); 
 
     paras_errors(input_list);
     
@@ -813,6 +817,271 @@ pass_paras <- function( old_list = NULL, time_max = 40, land_dim_1 = 100,
                  gmse_para_vect  = as.vector(paras))
     );
 }
+
+cinput_check <- function(time_max, land_dim_1, land_dim_2, res_movement, 
+                         remove_pr, lambda, agent_view, agent_move, res_birth_K, 
+                         res_death_K, edge_effect, res_move_type, 
+                         res_birth_type, res_death_type, observe_type, 
+                         fixed_mark, fixed_recapt, times_observe,
+                         obs_move_type, res_min_age, res_move_obs, 
+                         Euclidean_dist, plotting, hunt, start_hunting, 
+                         res_consume, ga_popsize, ga_mingen, ga_seedrep, 
+                         ga_sampleK, ga_chooseK, ga_mutation, ga_crossover, 
+                         move_agents, max_ages, minimum_cost, user_budget, 
+                         manager_budget, manage_target, RESOURCE_ini, 
+                         scaring, culling, castration, feeding, help_offspring, 
+                         tend_crops, tend_crop_yld, kill_crops, stakeholders, 
+                         manage_caution, land_ownership, manage_freq, 
+                         converge_crit, manager_sense, public_land, group_think, 
+                         age_repr, usr_budget_rng, action_thres, budget_bonus, 
+                         consume_surv, consume_repr, times_feeding, 
+                         ownership_var, perceive_scare, perceive_cull, 
+                         perceive_cast, perceive_feed, perceive_help, 
+                         perceive_tend, perceive_kill, usr_yld_budget, 
+                         man_yld_budget){
+
+    if(length(time_max) > 1 | is.numeric(time_max) == FALSE){
+        stop("ERROR: time_max should be a single numeric value.");
+    }
+    if(length(land_dim_1) > 1 | is.numeric(land_dim_1) == FALSE){
+        stop("ERROR: land_dim_1 should be a single numeric value.");
+    }
+    if(length(land_dim_2) > 1 | is.numeric(land_dim_2) == FALSE){
+        stop("ERROR: land_dim_2 should be a single numeric value.");
+    }
+    if(length(res_movement) > 1 | is.numeric(res_movement) == FALSE){
+        stop("ERROR: res_movement should be a single numeric value.");
+    }
+    if(length(remove_pr) > 1 | is.numeric(remove_pr) == FALSE){
+        stop("ERROR: remove_pr should be a single numeric value.");
+    }
+    if(length(lambda) > 1 | is.numeric(lambda) == FALSE){
+        stop("ERROR: lambda should be a single numeric value.");
+    }
+    if(length(agent_view) > 1 | is.numeric(agent_view) == FALSE){
+        stop("ERROR: agent_view should be a single numeric value.");
+    }
+    if(length(agent_move) > 1 | is.numeric(agent_move) == FALSE){
+        stop("ERROR: agent_move should be a single numeric value.");
+    }
+    if(length(res_birth_K) > 1 | is.numeric(res_birth_K) == FALSE){
+        stop("ERROR: res_birth_K should be a single numeric value.");
+    }
+    if(length(res_death_K) > 1 | is.numeric(res_death_K) == FALSE){
+        stop("ERROR: res_death_K should be a single numeric value.");
+    }
+    if(length(edge_effect) > 1 | is.numeric(edge_effect) == FALSE){
+        stop("ERROR: edge_effect should be a single numeric value.");
+    }
+    if(length(res_move_type) > 1 | is.numeric(res_move_type) == FALSE){
+        stop("ERROR: res_move_type should be a single numeric value.");
+    }
+    if(length(res_birth_type) > 1 | is.numeric(res_birth_type) == FALSE){
+        stop("ERROR: res_birth_type should be a single numeric value.");
+    }
+    if(length(res_death_type) > 1 | is.numeric(res_death_type) == FALSE){
+        stop("ERROR: res_death_type should be a single numeric value.");
+    }
+    if(length(observe_type) > 1 | is.numeric(observe_type) == FALSE){
+        stop("ERROR: observe_type should be a single numeric value.");
+    }
+    if(length(fixed_mark) > 1 | is.numeric(fixed_mark) == FALSE){
+        stop("ERROR: fixed_mark should be a single numeric value.");
+    }
+    if(length(fixed_recapt) > 1 | is.numeric(fixed_recapt) == FALSE){
+        stop("ERROR: fixed_recapt should be a single numeric value.");
+    }
+    if(length(times_observe) > 1 | is.numeric(times_observe) == FALSE){
+        stop("ERROR: times_observe should be a single numeric value.");
+    }
+    if(length(obs_move_type) > 1 | is.numeric(obs_move_type) == FALSE){
+        stop("ERROR: obs_move_type should be a single numeric value.");
+    }
+    if(length(res_min_age) > 1 | is.numeric(res_min_age) == FALSE){
+        stop("ERROR: res_min_age should be a single numeric value.");
+    }
+    if(length(res_move_obs) > 1){
+        stop("ERROR: res_move_obs should be a single TRUE/FALSE value.");
+    }
+    if(length(Euclidean_dist) > 1){
+        stop("ERROR: Euclidean_dist should be a single TRUE/FALSE value.");
+    }
+    if(length(plotting) > 1){
+        stop("ERROR: plotting should be a single TRUE/FALSE value.");
+    }
+    if(length(hunt) > 1){
+        stop("ERROR: hunt should be a single TRUE/FALSE value.");
+    }
+    if(length(start_hunting) > 1 | is.numeric(start_hunting) == FALSE){
+        stop("ERROR: start_hunting should be a single numeric value.");
+    }
+    if(length(res_consume) > 1 | is.numeric(res_consume) == FALSE){
+        stop("ERROR: res_consume should be a single numeric value.");
+    }
+    if(length(ga_popsize) > 1 | is.numeric(ga_popsize) == FALSE){
+        stop("ERROR: ga_popsize should be a single numeric value.");
+    }
+    if(length(ga_mingen) > 1 | is.numeric(ga_mingen) == FALSE){
+        stop("ERROR: ga_mingen should be a single numeric value.");
+    }
+    if(length(ga_seedrep) > 1 | is.numeric(ga_seedrep) == FALSE){
+        stop("ERROR: ga_seedrep should be a single numeric value.");
+    }
+    if(length(ga_sampleK) > 1 | is.numeric(ga_sampleK) == FALSE){
+        stop("ERROR: ga_sampleK should be a single numeric value.");
+    }
+    if(length(ga_chooseK) > 1 | is.numeric(ga_chooseK) == FALSE){
+        stop("ERROR: ga_chooseK should be a single numeric value.");
+    }
+    if(length(ga_mutation) > 1 | is.numeric(ga_mutation) == FALSE){
+        stop("ERROR: ga_mutation should be a single numeric value.");
+    }
+    if(length(ga_crossover) > 1 | is.numeric(ga_crossover) == FALSE){
+        stop("ERROR: ga_crossover should be a single numeric value.");
+    }
+    if(length(move_agents) > 1){
+        stop("ERROR: move_agents should be a single TRUE/FALSE value.");
+    }
+    if(length(max_ages) > 1 | is.numeric(max_ages) == FALSE){
+        stop("ERROR: max_ages should be a single numeric value.");
+    }
+    if(length(minimum_cost) > 1 | is.numeric(minimum_cost) == FALSE){
+        stop("ERROR: minimum_cost should be a single numeric value.");
+    }
+    if(length(user_budget) > 1 | is.numeric(user_budget) == FALSE){
+        stop("ERROR: user_budget should be a single numeric value.");
+    }
+    if(length(manager_budget) > 1 | is.numeric(manager_budget) == FALSE){
+        stop("ERROR: manager_budget should be a single numeric value.");
+    }
+    if(length(manage_target) > 1 | is.numeric(manage_target) == FALSE){
+        stop("ERROR: manage_target should be a single numeric value.");
+    }
+    if(length(RESOURCE_ini) > 1 | is.numeric(RESOURCE_ini) == FALSE){
+        stop("ERROR: RESOURCE_ini should be a single numeric value.");
+    }
+    if(length(scaring) > 1){
+        stop("ERROR: scaring should be a single TRUE/FALSE value.");
+    }
+    if(length(culling) > 1){
+        stop("ERROR: culling should be a single TRUE/FALSE value.");
+    }
+    if(length(castration) > 1){
+        stop("ERROR: castration should be a single TRUE/FALSE value.");
+    }
+    if(length(feeding) > 1){
+        stop("ERROR: feeding should be a single TRUE/FALSE value.");
+    }
+    if(length(help_offspring) > 1){
+        stop("ERROR: help_offspring should be a single TRUE/FALSE value.");
+    }
+    if(length(tend_crops) > 1){
+        stop("ERROR: tend_crops should be a single TRUE/FALSE value.");
+    }
+    if(length(tend_crop_yld) > 1 | is.numeric(tend_crop_yld) == FALSE){
+        stop("ERROR: tend_crop_yld should be a single numeric value.");
+    }
+    if(length(kill_crops) > 1){
+        stop("ERROR: kill_crops should be a single TRUE/FALSE value.");
+    }
+    if(length(stakeholders) > 1 | is.numeric(stakeholders) == FALSE){
+        stop("ERROR: stakeholders should be a single numeric value.");
+    }
+    if(length(manage_caution) > 1 | is.numeric(manage_caution) == FALSE){
+        stop("ERROR: manage_caution should be a single numeric value.");
+    }
+    if(length(land_ownership) > 1){
+        stop("ERROR: land_ownership should be a single TRUE/FALSE value.");
+    }
+    if(length(manage_freq) > 1 | is.numeric(manage_freq) == FALSE){
+        stop("ERROR: manage_freq should be a single numeric value.");
+    }
+    if(length(converge_crit) > 1 | is.numeric(converge_crit) == FALSE){
+        stop("ERROR: converge_crit should be a single numeric value.");
+    }
+    if(length(manager_sense) > 1 | is.numeric(manager_sense) == FALSE){
+        stop("ERROR: manager_sense should be a single numeric value.");
+    }
+    if(length(public_land) > 1 | is.numeric(public_land) == FALSE){
+        stop("ERROR: public_land should be a single numeric value.");
+    }
+    if(length(group_think) > 1){
+        stop("ERROR: group_think should be a single TRUE/FALSE value.");
+    }
+    if(length(age_repr) > 1 | is.numeric(age_repr) == FALSE){
+        stop("ERROR: age_repr should be a single numeric value.");
+    }
+    if(length(usr_budget_rng) > 1 | is.numeric(usr_budget_rng) == FALSE){
+        stop("ERROR: usr_budget_rng should be a single numeric value.");
+    }
+    if(length(action_thres) > 1 | is.numeric(action_thres) == FALSE){
+        stop("ERROR: action_thres should be a single numeric value.");
+    }
+    if(length(budget_bonus) > 1 | is.numeric(budget_bonus) == FALSE){
+        stop("ERROR: budget_bonus should be a single numeric value.");
+    }
+    if(length(consume_surv) > 1 | is.numeric(consume_surv) == FALSE){
+        stop("ERROR: consume_surv should be a single numeric value.");
+    }
+    if(length(consume_repr) > 1 | is.numeric(consume_repr) == FALSE){
+        stop("ERROR: consume_repr should be a single numeric value.");
+    }
+    if(length(times_feeding) > 1 | is.numeric(times_feeding) == FALSE){
+        stop("ERROR: times_feeding should be a single numeric value.");
+    }
+    if(length(ownership_var) > 1 | is.numeric(ownership_var) == FALSE){
+        stop("ERROR: ownership_var should be a single numeric value.");
+    }
+    if(length(perceive_scare) > 1){
+        stop("ERROR: perceive_scare should be a single numeric value.");
+    }
+    if(length(perceive_cull) > 1){
+        stop("ERROR: perceive_cull should be a single numeric value.");
+    }
+    if(length(perceive_cast) > 1){
+        stop("ERROR: perceive_cast should be a single numeric value.");
+    }
+    if(length(perceive_feed) > 1){
+        stop("ERROR: perceive_feed should be a single numeric value.");
+    }
+    if(length(perceive_help) > 1){
+        stop("ERROR: perceive_help should be a single numeric value.");
+    }
+    if(length(perceive_tend) > 1){
+        stop("ERROR: perceive_tend should be a single numeric value.");
+    }
+    if(length(perceive_kill) > 1){
+        stop("ERROR: perceive_kill should be a single numeric value.");
+    }
+    if(length(usr_yld_budget) > 1 | is.numeric(usr_yld_budget) == FALSE){
+        stop("ERROR: usr_yld_budget should be a single numeric value.");
+    }
+    if(length(man_yld_budget) > 1 | is.numeric(man_yld_budget) == FALSE){
+        stop("ERROR: man_yld_budget should be a single numeric value.");
+    }
+    
+    il <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
+            lambda, agent_view, agent_move, res_birth_K, res_death_K,
+            edge_effect, res_move_type, res_birth_type, res_death_type,
+            observe_type, fixed_mark, fixed_recapt, times_observe,
+            obs_move_type, res_min_age, res_move_obs, Euclidean_dist, 
+            plotting, hunt, start_hunting, res_consume, ga_popsize,
+            ga_mingen, ga_seedrep, ga_sampleK, ga_chooseK, ga_mutation,
+            ga_crossover, move_agents, max_ages, minimum_cost,
+            user_budget, manager_budget, manage_target, RESOURCE_ini, 
+            scaring, culling, castration, feeding, help_offspring, 
+            tend_crops, tend_crop_yld, kill_crops, stakeholders, 
+            manage_caution, land_ownership, manage_freq, converge_crit, 
+            manager_sense, public_land, group_think, age_repr,
+            usr_budget_rng, action_thres, budget_bonus, consume_surv,
+            consume_repr, times_feeding, ownership_var, perceive_scare, 
+            perceive_cull, perceive_cast, perceive_feed, perceive_help, 
+            perceive_tend, perceive_kill, usr_yld_budget, 
+            man_yld_budget); 
+    
+    return(il);
+}
+
 
 old_list_errors <- function(old_list = NULL, RESOURCES = NULL, ACTION = NULL,
                             resource_array = NULL, LAND = NULL, COST = NULL,
