@@ -26,6 +26,10 @@
 #'@export
 gmse_apply_summary <- function(data, output = NULL, include = NULL) {
     
+    if(length(data) == 4){
+        stop("ERROR: Need the entire get_res = 'Full' gmse_apply output");
+    }
+    
     valid_includes <- c("res", "obs", "culls", "scares", "castrations", "feeds",
                         "helps", "tend_crops", "kill_crops", "yield",
                         "cull_cost", "scare_cost"

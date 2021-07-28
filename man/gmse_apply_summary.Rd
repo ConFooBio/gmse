@@ -17,8 +17,10 @@ given `data` gmse_apply() output is returned.}
 \item{include}{A character vector listing which gmse_apply values should be
 reported/summarised. Currently allowable values are
 "res","obs","culls","scares","castrations","feeds","helps","tend_crops",
-"kill_crops","yield". Note that for all actions and yield, the statistic
-returned is the sum across users. Can be NULL; if so, if `output` is also
+"kill_crops","cull_cost","scare_cost", and "yield". Note that for all 
+actions and yield, the statistic returned is the sum across users; for 
+cull_cost and scare_cost the returned values are the mean costs across 
+users. Can be NULL; if so, if `output` is also
 NULL, all possible values are returned. If `output` is not NULL, only the
 values already present in `ouput` are returned, in the same column order.}
 }
