@@ -37,7 +37,7 @@ test_that("Dimensions of observation arrays in manager model are correct", {
                17, 18, 19, 20, 21, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
                1, 1, 1, 1, 10, 1000, 100, 100, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0, 0,
                1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1, 0, 0, 
-               24, 25);
+               24, 25, 0, 0, 0, 0, 0, 0, 0);
     
     agents  <-  make_agents(model        = "IBM",
                             agent_number = 2,
@@ -126,7 +126,7 @@ test_that("Manager sets costs of acting on resources", {
                17, 18, 19, 20, 21, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
                1, 1, 1, 1, 10, 1000, 100, 100, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0, 0,
                1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1, 0, 0, 
-               24, 25);
+               24, 25, 0, 0, 0, 0, 0, 0, 0);
 
     agents  <-  make_agents(model        = "IBM",
                             agent_number = 2,
@@ -187,7 +187,7 @@ test_that("Manager budget bonus compounds over time", {
                 budget_bonus = 1, agent_view = 100, stakeholders = 1,
                 plotting = FALSE);
     
-    expect_equal(sim[["agents"]][[9]][1,25], 63000);
+    expect_equal(sim[["agents"]][[9]][1,25], 6000);
 })
 
 test_that("Manager budget is incremented by user yield", {
