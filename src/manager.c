@@ -266,27 +266,75 @@ void estimate_abundances(double **obs_array, double *paras, int **lookup,
 }
 
 /* =============================================================================
+ * This computes a prediction of population trajectory as a linear extrapolation
+ *      paras:       A vector of parameters needed 
+ * ========================================================================== */
+void traj_pred_lin_extrap(double *paras){
+  
+  int t_s;
+  double res_abund, prv_est, var, pred;
+  
+  res_abund = paras[99];  /* Est. of res type 1 from the observation model */
+  prv_est   = paras[129]; /* Previous time step population estimation */
+  t_s       = paras[0];   /* What is the current time step? */
+  
+  if(t_s <= 1){
+      /* initiate memory previous of previous time step estimation */
+      paras[129] = res_abund; 
+      /* prediction is current estimation to avoid pbs at the first time step */
+      paras[135] = res_abund; 
+    
+  }else{
+      var = res_abund - prv_est; /* variation from previous time step */
+      /* manager's pred. for next time step pop size based on variation */
+      pred = res_abund + var; 
+      /* Could be interesting to make the manager_sense inteviene here */
+    
+      if(pred < 0){
+          pred = 0;
+      } /* the prediction cannot be negative */
+    
+      paras[135] = pred; /* store prediction in paras */
+      /* update memory previous of previous time step estimation */
+      paras[129] = res_abund; 
+  }
+}
+
+/* =============================================================================
  * This function updates the marginal abundances
  *     actions:        The array of the action of agents
  *     abun_est:       Vector where abundance estimates for each type are held
  *     temp_util:      Temporary utilities pulled from actions
  *     marg_util:      The marginal utility of each resource
+ *     paras:          A vector of parameter needed
  *     int_d0:         The length of the abun_est, temp_util, & marg_util arrays
  *     a_x:            Number of rows in the actions array
  * ========================================================================== */
 void update_marg_util(double ***actions, double *abun_est, double *temp_util, 
-                      double *marg_util, int int_d0, int a_x){
+                      double *marg_util, double *paras, int int_d0, int a_x){
     
-    int row, i;
+    int row, i, trj_prd;
+    
+    /* make policy based on prediction rather than on latest observation */
+    trj_prd = (int) paras[134]; 
+
+    if (trj_prd == 1) {
+        traj_pred_lin_extrap(paras);
+    }
     
     for(row = 0; row < int_d0; row++){
         temp_util[row] = 0;
         marg_util[row] = 0;
-        if(actions[row][0][0] < 0){
+        if(actions[row][0][0] < 0 ){
             temp_util[row] = actions[row][4][0];
-            marg_util[row] = temp_util[row] - abun_est[row];
+            if(trj_prd == 0){
+              marg_util[row] = temp_util[row] - abun_est[row];
+            }else{ /* WILL ONLY WORK WITH TYPE1 RESOURCE */
+              marg_util[row] = temp_util[row] - paras[135]; 
+            }
         }
     }
+    
     i = 0;
     for(row = 0; row < a_x; row++){
         if(actions[row][0][0] == 1){
@@ -361,8 +409,8 @@ void set_action_costs(double ***ACTION, double ***COST, double *paras,
  * ========================================================================== */
 void check_action_threshold(double ***ACTION, double *paras){
     
-    int m_lyr, act_row, targ_row, t_s;
-    double res_abund, target, dev, a_t;
+    int m_lyr, act_row, targ_row, t_s, mem;
+    double res_abund, target, dev, a_t, prv_est, var, pred, up_bound, lo_bound;
     
     m_lyr     = 0; /* Layer of the manager */ 
     act_row   = 0; /* Row where the actions are */
@@ -370,23 +418,52 @@ void check_action_threshold(double ***ACTION, double *paras){
     res_abund = paras[99]; /* Est. of res type 1 from the observation model */
     a_t       = paras[105]; /* Dev est pop from manager target trigger */
     t_s       = (int) paras[0]; /* What is the current time step? */
-    
-    target = ACTION[act_row][targ_row][m_lyr]; /* Manager's target */
+    prv_est   = paras[129]; /* Previous time step population estimation */
+    mem       = (int) paras[130]; 
+    target    = ACTION[act_row][targ_row][m_lyr]; /* Manager's target */
 
-    dev    = (res_abund / target) - 1; /* Deviation from manager's target */
+    dev = (res_abund / target) - 1; /* Deviation from manager's target */
     if(dev < 0){ /* Get the absolute value */
-        dev = -1 * dev;
+        dev *= -1;
     }
-    /* If the population deviation has hit the threshold, and time step */
-    if(dev >= a_t || t_s < 3){ 
-        paras[106]  = 1; /* Policy is going to be updated now */
-        paras[107]  = 0; /* Zero time steps since last policy update */
+    
+    if(mem == FALSE){
+        /* If the population deviation has hit the threshold, and time step, */
+        /* and that prediction is outside the non-updating band */
+        if(dev >= a_t || t_s < 3){ 
+            paras[106]  = 1; /* Policy is going to be updated now */
+            paras[107]  = 0; /* Zero time steps since last policy update */
+        }else{
+            paras[106]  = 0; /* Policy is not going to be updated now */
+            paras[107] += 1; /* 1 more time step since last policy update */
+        }
     }else{
-        paras[106]  = 0; /* Policy is not going to be updated now */
-        paras[107] += 1; /* One more time step since the last policy update */
+        var  = res_abund - prv_est; /* variation from previous time step */
+        pred = res_abund + var;    /* manager's prediction for next time step */
+        /* Could be interesting to make the manager_sense inteviene here */
+        /* And use the abs value to make the following if statement lighter */
+        
+        if(pred < 0){
+            pred = 0;
+        } /* prediction not negative, even if it does not matter here */
+
+        up_bound = (1 + a_t) * target; /* upper bound of non-updating band */
+        lo_bound = (1 - a_t) * target; /* lower bound of non-updating band */
+    
+        /* If the population deviation has hit the threshold, and time step, */
+        /* and that prediction is outside the non-updating band */
+        if(dev >= a_t || t_s < 3 || pred > up_bound || pred < lo_bound){ 
+            paras[106]  = 1; /* Policy is going to be updated now */
+            paras[107]  = 0; /* Zero time steps since last policy update */
+        }else{
+            paras[106]  = 0; /* Policy is not going to be updated now */
+            paras[107] += 1; /* 1 more time step since last policy update */
+        }
+
+        paras[129] = res_abund; /* update memory of previous time step est. */
     }
 }
-
+    
 /* =============================================================================
  * This function calculates what the budget bonus should be (Adrian Bach)
  *      agent_array: Agent array, including managers (agent type 0)
@@ -403,7 +480,7 @@ void calc_budget_bonus(double **agent_array, double *paras, int agent){
     bonus_col    = (int) paras[127];    /* Column where budget bonus is */
 
     /* The recalculation of the baseline allows the bonus to be cumulative */
-    baseline  = agent_array[agent][budget_col] + agent_array[agent][bonus_col];
+    baseline  = agent_array[agent][budget_col]; 
     new_bonus = baseline * budget_bonus;
 
     if( (baseline + new_bonus) < 100000.00 ){
@@ -418,27 +495,53 @@ void calc_budget_bonus(double **agent_array, double *paras, int agent){
  * ========================================================================== */
 void apply_budget_bonus(double **agent_array, double *paras){
     
-    int recent_update, N_agents, agent, bonus_col;
-    double a_t;
+    int recent_update, N_agents, agent, bonus_col, budget_col, bonus_reset;
+    int cost_decrease;
+    double a_t, b_b;
     
     N_agents       = (int) paras[54];     /* Total number of agents */
     a_t            = (double) paras[105]; /* Dev est pop target trigger */
+    b_b            = (double) paras[110]; /* budget bonus */
     recent_update  = (int) paras[106];    /* Policy recently updated */
+    budget_col     = (int) paras[112];    /* Column where budget is recorded */
     bonus_col      = (int) paras[127];    /* Column where budget bonus is */
-
-    if(a_t > 0 && recent_update == 0){ /* If action threshold is being used */
-        for(agent = 0; agent < N_agents; agent++){
-            if(agent_array[agent][1] == 0){
-                calc_budget_bonus(agent_array, paras, agent);
-            } 
+    bonus_reset    = (int) paras[132];    /* Reset budget bonus  */
+    cost_decrease  = (int) paras[133];    /* Cost decreased last time step? */
+       
+    if(bonus_reset == 1){
+      /* If action threshold is used & policy was not updated last time step */
+        if(a_t > 0 && recent_update == 0){ 
+             for(agent = 0; agent < N_agents; agent++){
+                 if(agent_array[agent][1] == 0){ /* if the agent is a manager */
+                     calc_budget_bonus(agent_array, paras, agent);
+                 } 
+             }
+        }else{
+            for(agent = 0; agent < N_agents; agent++){
+                if(agent_array[agent][1] == 0){
+                    agent_array[agent][bonus_col] = 0.0;
+                } 
+            }
         }
-    }else{
-        for(agent = 0; agent < N_agents; agent++){
-            if(agent_array[agent][1] == 0){
-                agent_array[agent][bonus_col] = 0.0;
-            } 
+    }else{ /* If action threshold used and polcy was not updated last ts */
+        if(a_t > 0 && recent_update == 0){ 
+            for(agent = 0; agent < N_agents; agent++){
+                if(agent_array[agent][1] == 0){
+                    calc_budget_bonus(agent_array, paras, agent);
+                } 
+            }
+        }else{ /* bonus is reset only if the cost were decreased */
+            if(cost_decrease == 0){ 
+                for(agent = 0; agent < N_agents; agent++){
+                    if(agent_array[agent][1] == 0){
+                        agent_array[agent][bonus_col] = 0.0;
+                    } 
+                }
+            }
         }
     }
+    /* store managers budget in paras */
+    paras[131] = agent_array[0][budget_col] + agent_array[0][bonus_col];
 }
 
 /* =============================================================================
@@ -529,6 +632,8 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     int len_PARAMETERS;      /* Length of the parameters vector */
     int update_policy;       /* If managers act */
     int observe_type;        /* Type of observation being performed */
+    int bonus_reset;         /* reset budget bonus to 0 when cost decreased? */
+    int trj_prd;             /* Make decision based on prediction? */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
@@ -539,6 +644,10 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     int *dim_OBSERVATION;    /* Dimensions of the OBSERVATION array incoming */
     int **lookup;            /* Lookup table for resource & land interactions */
     double man_yld_budget;   /* Link from mean user yield to manager budget */
+    double bb;               /* Budget bonus */
+    double prv_cost;         /* Culling cost before calling GA */
+    double new_cost;         /* Culling cost after calling GA */
+    double save;             /* Variable to save a value */
     double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
     double *paras_ptr;       /* Pointer to PARAMETERS (interface R and C) */
@@ -697,7 +806,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
                 vec_pos++;
             }
         }
-    } /* ACTION is now stored as costs */
+    } /* ACTION is now stored as actions */
     
     /* Code below remakes the AGENT matrix for easier use */
     agent_number        = dim_AGENT[0];
@@ -761,7 +870,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     
     /* Code below copies the paras vector into C */
     paras   = malloc(len_PARAMETERS * sizeof(double *));
-    vec_pos   = 0;
+    vec_pos = 0;
     for(xloc = 0; xloc < len_PARAMETERS; xloc++){
         paras[xloc] = paras_ptr[vec_pos];
         vec_pos++;
@@ -776,6 +885,13 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     
     observe_type   = (int) paras[8];
     man_yld_budget = (double) paras[126];
+    bb             = (double) paras[110];
+    bonus_reset    = (int) paras[132];   /* Reset bonus when cost decreased? */
+    
+    /* get the costs from last time step */
+    if(bb > 0 && bonus_reset == 0){
+        prv_cost = costs[0][8][1];
+    }
     
     apply_budget_bonus(agent_array, paras);
     
@@ -786,7 +902,8 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
         
     if(observe_type >= 0){ /* If less than zero, the above already in actions */
         estimate_abundances(obs_array, paras, lookup, agent_array, abun_est);
-        update_marg_util(actions, abun_est, temp_util, marg_util, int_d0, a_x);
+        update_marg_util(actions, abun_est, temp_util, marg_util, paras, int_d0,
+                         a_x);
     }
     check_action_threshold(actions, paras); /* Check whether to act */
     update_policy = paras[106];             /* Will managers act? */
@@ -797,6 +914,16 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     }
     
     set_action_costs(actions, costs, paras, agent_array);
+    
+    /* get the costs after the update */
+    if (bb > 0 && bonus_reset == 0) {
+     new_cost = costs[0][8][1]; 
+     if (prv_cost - new_cost > 0) {
+       paras[133] = 1;
+     } else {
+       paras[133] = 0;
+     }
+    }
 
     free(marg_util);
     free(temp_util);

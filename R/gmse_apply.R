@@ -653,6 +653,25 @@ update_old_gmse <- function(arg_vals, ol, list_add){
             ol[["PARAS"]][127] <- list_add[["man_yld_budget"]];
         }
     }
+    if("mem_prv_observ" %in% names_add){
+        ol[["mem_prv_observ"]]     <- list_add[["mem_prv_observ"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][131] <- list_add[["mem_prv_observ"]];
+        }
+    }
+    if("bgt_bonus_reset" %in% names_add){
+        ol[["bgt_bonus_reset"]]     <- list_add[["bgt_bonus_reset"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][133] <- list_add[["bgt_bonus_reset"]];
+        }
+    }
+    if("traj_pred" %in% names_add){
+        ol[["traj_pred"]]     <- list_add[["traj_pred"]];
+        if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
+            ol[["PARAS"]][135] <- list_add[["traj_pred"]];
+        }
+    }
+    
     return(ol);
 }
 
@@ -740,7 +759,8 @@ pass_paras <- function( old_list = NULL, time_max = 40, land_dim_1 = 100,
                         perceive_feed = NA, perceive_help = NA, 
                         perceive_tend = NA, perceive_kill  = NA, 
                         usr_yld_budget = 0, man_yld_budget = 0, 
-                        PARAS = NULL, ...
+                        mem_prv_observ = FALSE, bgt_bonus_reset = TRUE,
+                        traj_pred = FALSE, PARAS = NULL, ...
 ){
     
     if(is.null(PARAS) == FALSE){
@@ -769,7 +789,8 @@ pass_paras <- function( old_list = NULL, time_max = 40, land_dim_1 = 100,
                                consume_repr, times_feeding, ownership_var, 
                                perceive_scare, perceive_cull, perceive_cast, 
                                perceive_feed, perceive_help, perceive_tend, 
-                               perceive_kill, usr_yld_budget, man_yld_budget); 
+                               perceive_kill, usr_yld_budget, man_yld_budget,
+                               mem_prv_observ, bgt_bonus_reset, traj_pred); 
 
     paras_errors(input_list);
     
@@ -810,7 +831,8 @@ pass_paras <- function( old_list = NULL, time_max = 40, land_dim_1 = 100,
                land_ownership, public_land, action_thres, 1, 0, 0, 0,
                budget_bonus, age_repr, 16, manager_budget, 10, 20, consume_surv, 
                consume_repr, 21, 0, 13, res_consume, 22, 23, times_feeding, 
-               usr_yld_budget, man_yld_budget, 24, 25
+               usr_yld_budget, man_yld_budget, 24, 25, 0, mem_prv_observ, 0,
+               bgt_bonus_reset, 0, traj_pred, 0
     );
 
     return( list(gmse_user_input = as.vector(input_list), 
@@ -838,7 +860,8 @@ cinput_check <- function(time_max, land_dim_1, land_dim_2, res_movement,
                          ownership_var, perceive_scare, perceive_cull, 
                          perceive_cast, perceive_feed, perceive_help, 
                          perceive_tend, perceive_kill, usr_yld_budget, 
-                         man_yld_budget){
+                         man_yld_budget, mem_prv_observ, bgt_bonus_reset,
+                         traj_pred){
 
     if(length(time_max) > 1 | is.numeric(time_max) == FALSE){
         stop("ERROR: time_max should be a single numeric value.");
@@ -1059,6 +1082,15 @@ cinput_check <- function(time_max, land_dim_1, land_dim_2, res_movement,
     if(length(man_yld_budget) > 1 | is.numeric(man_yld_budget) == FALSE){
         stop("ERROR: man_yld_budget should be a single numeric value.");
     }
+    if(length(mem_prv_observ) > 1){
+        stop("ERROR: mem_prv_observ should be a single TRUE/FALSE value.");
+    }
+    if(length(bgt_bonus_reset) > 1){
+        stop("ERROR: bgt_bonus_reset should be a single TRUE/FALSE value.");
+    }
+    if(length(traj_pred) > 1){
+        stop("ERROR: traj_pred should be a single TRUE/FALSE value.");
+    }
     
     il <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
             lambda, agent_view, agent_move, res_birth_K, res_death_K,
@@ -1077,7 +1109,7 @@ cinput_check <- function(time_max, land_dim_1, land_dim_2, res_movement,
             consume_repr, times_feeding, ownership_var, perceive_scare, 
             perceive_cull, perceive_cast, perceive_feed, perceive_help, 
             perceive_tend, perceive_kill, usr_yld_budget, 
-            man_yld_budget); 
+            man_yld_budget, mem_prv_observ, bgt_bonus_reset, traj_pred); 
     
     return(il);
 }
@@ -1523,6 +1555,15 @@ paras_errors <- function(input_list){
     if(is.numeric(input_list[72]) == FALSE){
         stop("ERROR: man_yld_budget needs to be numeric")
     }
+    if(is.numeric(input_list[73])  <  0 | is.numeric(input_list[73]) > 1){
+        stop("ERROR: mem_prv_observ must be TRUE/FALSE");
+    }
+    if(is.numeric(input_list[74])  <  0 | is.numeric(input_list[74]) > 1){
+        stop("ERROR: bgt_bonus_reset must be TRUE/FALSE");
+    }
+    if(is.numeric(input_list[75])  <  0 | is.numeric(input_list[75]) > 1){
+        stop("ERROR: traj_pred must be TRUE/FALSE");
+    }
 }
 
 argument_list <- function(res_mod, obs_mod, man_mod, use_mod, oth_vals){
@@ -1576,9 +1617,16 @@ place_args <- function(all_names, placing_vals, arg_list){
         place_name <- placing_names[i];
         if(place_name %in% all_names){
             place_pos <- which(all_names == place_name);
-            arg_eval  <- eval(placing_vals[[i]], envir = sys.frame(grep("gmse_apply", sys.calls())-1));
+            arg_eval  <- eval(placing_vals[[i]], 
+                              envir = sys.frame(grep("gmse_apply", 
+                                                     sys.calls())-1)
+                              );
             if(is.null(arg_eval) == FALSE){
-                arg_list[[place_pos]] <-eval(placing_vals[[i]], envir = sys.frame(grep("gmse_apply", sys.calls())-1));
+                arg_list[[place_pos]] <- eval(placing_vals[[i]], 
+                                              envir = sys.frame(
+                                                  grep("gmse_apply", 
+                                                       sys.calls() ) -1 )
+                                              );
             }
         }
     }

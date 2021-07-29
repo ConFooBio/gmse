@@ -78,7 +78,10 @@
 #'@param perceive_tend For a focal user, the perceived effect of tending to crops on one cell of owned landscape the user's total crop yield (e.g., if 1, then the user perceives tending crop to increase crop yield on one of their landscape cells by 1; NA by default, and calculated from other argument inputs).
 #'@param perceive_kill For a focal user, the perceived effect of destroying the crops on one cell of owned landscape on the user's total crop yield (e.g., if -1, then the user perceives killing crop to reduce their total crop yield on a landscape cell by 1; unlike other perceived actions, this is not additive. The value defines that absolute effect on crop yield predicted at a single cell, so -1 assumes a 100 per cent loss of yield. This is NA by default).
 #'@param usr_yld_budget An increase in user budget caused by yield on their owned cells. The value of this parameter is multiplied by the user's total yield to get the user's budget increment (default 0). This argument can take any real value, but user budgets are always restricted to being between 1 and 100000. Where yield adjustments result in budgets < 1, the actual budget is set to 1. And where yield adjustments result in budgets > 100000, the actual budget is set to 100000. 
-#'@param man_yld_budget An increase in manager budget caused by mean yield on user owned cells. The value of this parameter is multiplied by the users' mean total yield to get the manager's budget increment (default 0). This argument can take any real value, but manager budgets are always restricted to being between 1 and 100000. Where yield adjustments result in budgets < 1, the actual budget is set to 1. And where yield adjustments result in budgets > 100000, the actual budget is set to 100000. 
+#'@param man_yld_budget An increase in manager budget caused by mean yield on user owned cells. The value of this parameter is multiplied by the users' mean total yield to get the manager's budget increment (default 0). This argument can take any real value, but manager budgets are always restricted to being between 1 and 100000. Where yield adjustments result in budgets < 1, the actual budget is set to 1. And where yield adjustments result in budgets > 100000, the actual budget is set to 100000.
+#'@param mem_prv_observ A boolean parameter triggering the memorization of last time step's population size observation
+#'@param bgt_bonus_reset A boolean parameter. Default TRUE: bonus is reset to zero after a time step of policy update. FALSE: reset to zero only when the costs decreased last time step. 
+#'@param traj_pred A boolean parameter. Determines if the manager feeds the evolutionary algorithm with a prediction of population trajectory (TRUE) or the regular latest observation (FALSE). Default FALSE.
 #'@return A large list is returned that includes detailed simulation histories for the resource, observation, management, and user models. This list includes eight elements, most of which are themselves complex lists of arrays: (1) A list of length `time_max` in which each element is an array of resources as they exist at the end of each time step. Resource arrays include all resources and their attributes (e.g., locations, growth rates, offspring, how they are affected by stakeholders, etc.). (2) A list of length `time_max` in which each element is an array of resource observations from the observation model. Observation arrays are similar to resource arrays, except that they can have a smaller number of rows if not all resources are observed, and they have additional columns that show the history of each resource being observed over the course of `times_observe` observations in the observation model. (3) A 2D array showing parameter values at each time step (unique rows); most of these values are static but some (e.g., resource number) change over time steps. (4) A list of length `time_max` in which each element is an array of the landscape that identifies proportion of crop production per cell. This allows for looking at where crop production is increased or decreased over time steps as a consequence of resource and stakeholder actions. (5) The total time the simulation took to run (not counting plotting time). (6) A 2D array of agents and their traits. (7) A list of length `time_max` in which each element is a 3D array of the costs of performing each action for managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in costs of particular actions can therefore be be examined over time. (8) A list of length `time_max` in which each element is a 3D array of the actions performed by managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in actions of agents can therefore be examined over time. Because the above lists cannot possibly be interpreted by eye all at once in the simulation output, it is highly recommended that the contents of a simulation be stored and interprted individually if need be; alternativley, simulations can more easily be interpreted through plots when `plotting = TRUE`.
 #'@examples
 #'\dontrun{
@@ -89,79 +92,82 @@
 #'@importFrom graphics abline axis image mtext par plot points polygon
 #'@importFrom stats rnorm rpois runif
 #'@export
-gmse <- function( time_max       = 40,    # Max number of time steps in sim
-                  land_dim_1     = 100,   # x dimension of the landscape
-                  land_dim_2     = 100,   # y dimension of the landscape
-                  res_movement   = 20,    # How far do resources move
-                  remove_pr      = 0.0,   # Density independent resource death
-                  lambda         = 0.30,  # Resource growth rate
-                  agent_view     = 10,    # Number cells agent view around them
-                  agent_move     = 50,    # Number cells agent can move
-                  res_birth_K    = 100000,# Carrying capacity applied to birth
-                  res_death_K    = 2000,  # Carrying capacity applied to death
-                  edge_effect    = 1,     # What type of edge on the landscape
-                  res_move_type  = 1,     # What type of movement for resources
-                  res_birth_type = 2,     # What type of birth for resources
-                  res_death_type = 2,     # What type of death for resources
-                  observe_type   = 0,     # Type of observation used
-                  fixed_mark     = 100,   # How many marked (if obs type = 1)
-                  fixed_recapt   = 500,   # How many recaptured (if type = 1)
-                  times_observe  = 1,     # How many times obs (if type = 0)
-                  obs_move_type  = 1,     # Type of movement for agents
-                  res_min_age    = 0,     # Minimum age recorded and observed
-                  res_move_obs   = FALSE, # Move resources while observing
-                  Euclidean_dist = FALSE, # Use Euclidean distance in view
-                  plotting       = TRUE,  # Plot the results
-                  hunt           = FALSE, # Does the user hunt resources?
-                  start_hunting  = 95,    # What generation hunting starts
-                  res_consume    = 0.5,   # Pr. landscape cell consumed by res
-                  ga_popsize     = 100,   # Pop size in genetic algorithm
-                  ga_mingen      = 40,    # Minimum generations in a ga run
-                  ga_seedrep     = 20,    # How many copies to seed a ga with
-                  ga_sampleK     = 20,    # Random sample size in ga tournament
-                  ga_chooseK     = 2,     # Select from sample in ga tournament
-                  ga_mutation    = 0.1,   # Mutation rate in genetic algorithm
-                  ga_crossover   = 0.1,   # Crossover rate in genetic algorithm
-                  move_agents    = TRUE,  # Move agents once per time step
-                  max_ages       = 5,     # Maximum age of any resource(s)
-                  minimum_cost   = 10,    # Minimum cost value
-                  user_budget    = 1000,  # What is the budget of a user
-                  manager_budget = 1000,  # The budget of a manager
-                  manage_target  = 1000,  # The target resource abundance
-                  RESOURCE_ini   = 1000,  # Number of initial resources
-                  scaring        = FALSE, # Scaring allowed in simulations
-                  culling        = TRUE,  # Culling/hunting allowed
-                  castration     = FALSE, # Castration allowed
-                  feeding        = FALSE, # Feeding resources allowed
-                  help_offspring = FALSE, # Helping offspring allowed
-                  tend_crops     = FALSE, # Tending crops allowed
-                  tend_crop_yld  = 0.2,   # Additional yield from tending crops
-                  kill_crops     = FALSE, # Killing crops allowed
-                  stakeholders   = 4,     # Number of stake-holders
-                  manage_caution = 1,     # Caution rate of the manager
-                  land_ownership = FALSE, # Do stake-holders act on their land?
-                  manage_freq    = 1,     # Frequency that management enacted
-                  converge_crit  = 0.1,   # Convergence criteria
-                  manager_sense  = 0.9,   # Manager sensitivity
-                  public_land    = 0,     # Proportion of landscape public
-                  group_think    = FALSE, # All users behave identically
-                  age_repr       = 1,     # Age at which resources can reproduce
-                  usr_budget_rng = 0,     # Uniform range of users budgets
-                  action_thres   = 0,     # Managers' policy updating threshold
-                  budget_bonus   = 0,     # Budget saved by not acting
-                  consume_surv   = 0,     # Required consumption for survival
-                  consume_repr   = 0,     # Required consumption to reproduce
-                  times_feeding  = 1,     # Number of searches to feed on land
-                  ownership_var  = 0,     # Does distr. land vary among users?
-                  perceive_scare = NA,    # Users' perception of scaring
-                  perceive_cull  = NA,    # Users' perception of culling
-                  perceive_cast  = NA,    # Users' perception of castration
-                  perceive_feed  = NA,    # Users' perception of feeding
-                  perceive_help  = NA,    # Users' perception of helping offspr.
-                  perceive_tend  = NA,    # Users' perception of tending crops
-                  perceive_kill  = NA,    # Users' perception of killing crops
-                  usr_yld_budget = 0,     # Prop. yield added to user budget
-                  man_yld_budget = 0      # Prop. yield added to man budget
+gmse <- function( time_max        = 40,    # Max number of time steps in sim
+                  land_dim_1      = 100,   # x dimension of the landscape
+                  land_dim_2      = 100,   # y dimension of the landscape
+                  res_movement    = 20,    # How far do resources move
+                  remove_pr       = 0.0,   # Density independent resource death
+                  lambda          = 0.30,  # Resource growth rate
+                  agent_view      = 10,    # Number cells agent view around them
+                  agent_move      = 50,    # Number cells agent can move
+                  res_birth_K     = 100000,# Carrying capacity applied to birth
+                  res_death_K     = 2000,  # Carrying capacity applied to death
+                  edge_effect     = 1,     # What type of edge on the landscape
+                  res_move_type   = 1,     # What type of movement for resources
+                  res_birth_type  = 2,     # What type of birth for resources
+                  res_death_type  = 2,     # What type of death for resources
+                  observe_type    = 0,     # Type of observation used
+                  fixed_mark      = 100,   # How many marked (if obs type = 1)
+                  fixed_recapt    = 500,   # How many recaptured (if type = 1)
+                  times_observe   = 1,     # How many times obs (if type = 0)
+                  obs_move_type   = 1,     # Type of movement for agents
+                  res_min_age     = 0,     # Minimum age recorded and observed
+                  res_move_obs    = FALSE, # Move resources while observing
+                  Euclidean_dist  = FALSE, # Use Euclidean distance in view
+                  plotting        = TRUE,  # Plot the results
+                  hunt            = FALSE, # Does the user hunt resources?
+                  start_hunting   = 95,    # What generation hunting starts
+                  res_consume     = 0.5,   # Pr. landscape cell consumed by res
+                  ga_popsize      = 100,   # Pop size in genetic algorithm
+                  ga_mingen       = 40,    # Minimum generations in a ga run
+                  ga_seedrep      = 20,    # How many copies to seed a ga with
+                  ga_sampleK      = 20,    # Random sample size in ga tournament
+                  ga_chooseK      = 2,     # Select from sample in ga tournament
+                  ga_mutation     = 0.1,   # Mutation rate in genetic algorithm
+                  ga_crossover    = 0.1,   # Crossover rate in genetic algorithm
+                  move_agents     = TRUE,  # Move agents once per time step
+                  max_ages        = 5,     # Maximum age of any resource(s)
+                  minimum_cost    = 10,    # Minimum cost value
+                  user_budget     = 1000,  # What is the budget of a user
+                  manager_budget  = 1000,  # The budget of a manager
+                  manage_target   = 1000,  # The target resource abundance
+                  RESOURCE_ini    = 1000,  # Number of initial resources
+                  scaring         = FALSE, # Scaring allowed in simulations
+                  culling         = TRUE,  # Culling/hunting allowed
+                  castration      = FALSE, # Castration allowed
+                  feeding         = FALSE, # Feeding resources allowed
+                  help_offspring  = FALSE, # Helping offspring allowed
+                  tend_crops      = FALSE, # Tending crops allowed
+                  tend_crop_yld   = 0.2,   # Additional yield from tending crops
+                  kill_crops      = FALSE, # Killing crops allowed
+                  stakeholders    = 4,     # Number of stake-holders
+                  manage_caution  = 1,     # Caution rate of the manager
+                  land_ownership  = FALSE, # Do stake-holders act on their land?
+                  manage_freq     = 1,     # Frequency that management enacted
+                  converge_crit   = 0.1,   # Convergence criteria
+                  manager_sense   = 0.9,   # Manager sensitivity
+                  public_land     = 0,     # Proportion of landscape public
+                  group_think     = FALSE, # All users behave identically
+                  age_repr        = 1,     # Age when resources can reproduce
+                  usr_budget_rng  = 0,     # Uniform range of users budgets
+                  action_thres    = 0,     # Managers' policy updating threshold
+                  budget_bonus    = 0,     # Budget saved by not acting
+                  consume_surv    = 0,     # Required consumption for survival
+                  consume_repr    = 0,     # Required consumption to reproduce
+                  times_feeding   = 1,     # Number of searches to feed on land
+                  ownership_var   = 0,     # Does distr. land vary among users?
+                  perceive_scare  = NA,    # Users' perception of scaring
+                  perceive_cull   = NA,    # Users' perception of culling
+                  perceive_cast   = NA,    # Users' perception of castration
+                  perceive_feed   = NA,    # Users' perception of feeding
+                  perceive_help   = NA,    # Users' perception of helping offspr
+                  perceive_tend   = NA,    # Users' perception of tending crops
+                  perceive_kill   = NA,    # Users' perception of killing crops
+                  usr_yld_budget  = 0,     # Prop. yield added to user budget
+                  man_yld_budget  = 0,     # Prop. yield added to man budget
+                  mem_prv_observ  = FALSE, # Prev time step pop size estimation
+                  bgt_bonus_reset = TRUE,  # Bonus reset after policy updating
+                  traj_pred       = FALSE  # Prediction, not latest observation
 ){
     
     time_max <- time_max + 1; # Add to avoid confusion (see loop below)
@@ -343,6 +349,9 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
     tfe <- times_feeding;
     ytb <- usr_yld_budget;
     myb <- man_yld_budget;
+    pve <- mem_prv_observ;
+    bbr <- bgt_bonus_reset;
+    tjp <- traj_pred;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -472,7 +481,14 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
                ytb,     # 125. Yield to budget parameter for users
                myb,     # 126. Yield to budget parameter for managers
                24,      # 127. Column in the agents array where budget bonus is
-               25       # 128. Column in the agents array where yield bonus is
+               25,      # 128. Column in the agents array where yield bonus is
+               0,       # 129. Population estimation at previous time step
+               pve,     # 130. Memory of previous pop size observation
+               0,       # 131. Final budget of managers after applying bonuses
+               bbr,     # 132. Bonus resetting
+               0,       # 133. Have the costs decreased last time step?
+               tjp,     # 134. Always use trajectory prediction
+               0        # 135. Manager's prediction
     );
     
     input_list <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
@@ -490,7 +506,7 @@ gmse <- function( time_max       = 40,    # Max number of time steps in sim
                     manager_sense, public_land, group_think, age_repr,
                     usr_budget_rng, action_thres, budget_bonus, consume_surv,
                     consume_repr, times_feeding, ownership_var, usr_yld_budget, 
-                    man_yld_budget); 
+                    man_yld_budget, mem_prv_observ, bgt_bonus_reset, traj_pred); 
    
     paras_errors(input_list);
     
