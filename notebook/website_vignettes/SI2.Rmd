@@ -260,6 +260,47 @@ print(sim_sum_4);
 
 This is the recommended way to loop custom functions in `gmse_apply`. Note that elements of `old_list` will over-ride custom arguments to `gmse_apply` so **specifying custom arguments that are already present in `old_list` will not work**. 
 
+Replenishing crops after consumption
+================================================================================
 
+Unlike with the `gmse` function, `gmse_apply` does not automatically assume that crop production should be replenished after a single time step. The second layer of [the landscape](https://confoobio.github.io/gmse/articles/SI7.html#6-land) holds crop production on a cell. This will be depleted if resources consume crops on the landscape.
+
+```{r}
+sim_consume <- gmse_apply(land_dim_1 = 8, land_dim_2 = 8, 
+                          res_consume = 0.02, get_res = "Full");
+print(round(sim$LAND[,,2], digits = 2));
+```
+
+If we run this for five time steps using a loop in `gmse_apply`, then resources will continue to deplete crops on the landscape.
+
+```{r, eval = TRUE}
+sim_old     <- gmse_apply(land_dim_1 = 8, land_dim_2 = 8, 
+                          res_consume = 0.02, get_res = "Full");
+for(time_step in 1:5){
+    sim_new                 <- gmse_apply(get_res = "Full", old_list = sim_old);
+    sim_sum_4[time_step, 1] <- time_step;
+    sim_old                 <- sim_new;
+}
+print(round(sim$LAND[,,2], digits = 2));
+```
+
+Notice that the amount of crops on each cell has decreased substantially after five time steps. To replenish the crops after every `repl` time step, we can use the following code.
+
+```{r, eval = TRUE}
+sim_old     <- gmse_apply(land_dim_1 = 8, land_dim_2 = 8, 
+                          res_consume = 0.02, get_res = "Full");
+repl        <- 1;
+for(time_step in 1:5){
+    sim_new                 <- gmse_apply(get_res = "Full", old_list = sim_old);
+    sim_sum_4[time_step, 1] <- time_step;
+    if(time_step %% repl == 0){ # If remainder of time_step / repl is zero
+        sim_old$LAND[,,2] <- 1;
+    }
+    sim_old                 <- sim_new;
+}
+print(round(sim$LAND[,,2], digits = 2));
+```
+
+Now with the crop on the landscape replenishing every time step, consumption after five time steps comparable to consumption after a single time step. This is likely to be critical if simulating resources that must consume a certain amount to survive (`consume_surv > 0`) or reproduce (`consume_repr > 0`), and `gmse_apply` thereby provides some flexibility in terms of how frequently (and how much) landscape values change from one time step to the next.
 
 
