@@ -277,7 +277,7 @@ Conclusions
 
 We have focused on the data structures [`AGENTS`](#agents), [`resource_array`](#resources), [`observation_array`](#observation), [`manager_array`](#cost), [`user_array`](#action), and [`LAND`](#land) because these are the data structures that can be most readily manipulated to customise GMSE simulations. An example of how to do this within a loop using `gmse_apply` can be found in [Advanced case study options](SI4.pdf). While other data structures exist within GMSE (e.g., see the output of `gmse_apply` when `get_res = "Full"`), we do not recommend manipulating these structures for custom simulations.
 
-Many data structures contain elements that are unused in GMSE v0.6, and in all cases this is designed for ease of ongoing development of new GMSE features. Requests for new features can be made on GitHub using the [GMSE Wiki](https://github.com/bradduthie/gmse/wiki) or the [GMSE Issues](https://github.com/bradduthie/gmse/issues) page.
+Many data structures contain elements that are unused in GMSE v0.6+, and in all cases this is designed for ease of ongoing development of new GMSE features. Requests for new features can be made on GitHub using the [GMSE Wiki](https://github.com/bradduthie/gmse/wiki) or the [GMSE Issues](https://github.com/bradduthie/gmse/issues) page.
 
 
 Reference
