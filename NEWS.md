@@ -1,3 +1,23 @@
+# GMSE VERSIOU 0.7.0.0
+
+## MAJOR CHANGES
+
+* When survival or feeding is dependent upon consumption for resources, or when resources feed more than once, resources now only move once, not twice, at the end of a time step.
+
+## NEW FEATURES
+
+* A proportion of landscape yield can now be added to user and manager budgets with the new arguments `usr_yld_budget` and `man_yld_budget`.
+
+* The manager action threshold (which determines whether intervention is warranted based on the observed population condition) can now be based on population trajectory rather than current observed density. New arguments include `traj_pred`, `bgt_bonus_reset`, and `mem_prv_observ`.
+
+* An improved GUI with `gmse_gui`.
+
+## BUG FIXES
+
+* Error catches have been added to check the structure of inputs in the `gmse` and `gmse_apply` functions.
+
+* Rare cases of dead resources feeding in the subsequent time step have been fixed.
+
 # GMSE VERSION 0.6.0.0
 
 ## MAJOR CHANGES
