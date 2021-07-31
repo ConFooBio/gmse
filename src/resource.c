@@ -320,7 +320,8 @@ void res_landscape_interaction(double **resource_array, double ***landscape,
                               
     int resource_type_col, resource_type, resource_effect, is_dead, res_type;
     int landscape_layer, resource, x_col, y_col, x_pos, y_pos, gadj, klld;
-    double c_rate, esize_grow, esize_death, land_grow, land_die;
+    int cons_col;
+    double c_rate, esize_grow, esize_death, land_grow, land_die, fd_st, fd_ed;
     
     x_col             = (int) paras[33];
     y_col             = (int) paras[34];
@@ -330,6 +331,7 @@ void res_landscape_interaction(double **resource_array, double ***landscape,
     resource_type     = (int) paras[45];
     resource_effect   = (int) paras[47];
     landscape_layer   = (int) paras[48];
+    cons_col          = (int) paras[115]; /* col in res_removing of consump */
     esize_grow        = paras[86];
     esize_death       = paras[87];
     
@@ -340,11 +342,14 @@ void res_landscape_interaction(double **resource_array, double ***landscape,
             x_pos  = resource_array[resource][x_col];
             y_pos  = resource_array[resource][y_col];
             c_rate = resource_array[resource][resource_effect];
-            landscape[x_pos][y_pos][landscape_layer] *= (1 - c_rate);
+            fd_st  = landscape[x_pos][y_pos][landscape_layer];
+            fd_ed  = landscape[x_pos][y_pos][landscape_layer] * (1 - c_rate);
+            landscape[x_pos][y_pos][landscape_layer] = fd_ed;
             land_grow = (c_rate * esize_grow)  * resource_array[resource][9];
             land_die  = (c_rate * esize_death) * resource_array[resource][10];
-            resource_array[resource][gadj] += land_grow;
-            resource_array[resource][klld] += land_die;
+            resource_array[resource][cons_col] += (fd_st - fd_ed);
+            resource_array[resource][gadj]     += land_grow;
+            resource_array[resource][klld]     += land_die;
         } 
     }
 }
