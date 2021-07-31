@@ -182,8 +182,8 @@ for(time_step in 1:20){
     sim_sum_3[time_step, 4] <- sim_new$basic_output$manager_results[3];
     sim_sum_3[time_step, 5] <- sum(sim_new$basic_output$user_results[,3]);
     sim_sum_3[time_step, 6] <- ub;
-    sim_old               <- sim_new;
-    ub                    <- ub + 100;
+    sim_old                 <- sim_new;
+    ub                      <- ub + 100;
 }
 colnames(sim_sum_3) <- c("Time", "Pop_size", "Pop_est", "Cull_cost", "Cull_count",
                          "User_budget");
@@ -217,7 +217,7 @@ sim_4 <- gmse_apply(res_mod = alt_res, X = 1000, get_res = "Full");
 print(sim_4$basic_output);
 ```
 
-Note that in the above output, the resource abundance has increased and is now `sim_4$basic_output$resource_results`. But if we look at `sim_4$X`, the value is still `r sim_4$X`.
+Note that in the above output, the resource abundance has increased and is now `r sim_4$basic_output$resource_results`. But if we look at `sim_4$X`, the value is still `r sim_4$X`.
 
 ```{r, eval = TRUE}
 print(sim_4$X);

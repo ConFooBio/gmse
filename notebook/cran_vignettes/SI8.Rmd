@@ -14,7 +14,6 @@ output:
     reference_docx: docx_template.docx
 header-includes:
 - \usepackage{lineno}
-- \linenumbers
 linestretch: 1
 bibliography: gmse.bib
 biblio-style: apalike
@@ -50,7 +49,7 @@ sim.fli <- gmse(plotting = FALSE);
 plot_gmse_results(sim.fli);
 ```
 
-And here the same simulation, exept managers update policy only when they observe the population to be plus or minus the target by 20%, and receive a bonus of 30% of their initial budget when they do not.
+And here the same simulation, except managers update policy only when they observe the population to be plus or minus the target by 20%, and receive a bonus of 30% of their initial budget when they do not.
 
 ```{r, echo = TRUE, eval = FALSE}
 sim.ati <- gmse(action_thres = 0.2, budget_bonus = 0.3);
@@ -61,5 +60,5 @@ sim.ati <- gmse(action_thres = 0.2, budget_bonus = 0.3, plotting = FALSE);
 plot_gmse_results(sim.ati);
 ```
 
-Note how the costs plateau (lower left panel) when the population monitored (blue line in the upper left panel) is in between the two green dotted lines. Leaving the policy unchanged in these cases allowed managers to set the costs higher than the default maximum of 110 budget units. It also affects the number of cullings performed by users (lower right panel), which is more stable than when managers update policy every time step.
+Note how the costs plateau (lower left panel) when the population monitored (blue line, upper left panel) is in between the two green dotted lines. Leaving the policy unchanged in these cases allowed managers to set the costs higher than the default maximum of 110 budget units. It also affects the number of cullings performed by users (lower right panel), which is more stable than when managers update policy every time step.
 

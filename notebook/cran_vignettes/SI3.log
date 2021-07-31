@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.8.7)  30 JUL 2021 18:56
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.8.7)  31 JUL 2021 16:59
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1108,23 +1108,23 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <5> on input line 887.
 [7] [8 <./SI3_files/figure-latex/unnamed-chunk-8-1.pdf>] [9 <./SI3_files/figure
 -latex/unnamed-chunk-9-1.pdf>] [10] [11] (./SI3.bbl [12])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1124.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1143.
 [13]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1124.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1143.
 (./SI3.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1124.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1124.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1143.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1143.
 
 Package rerunfilecheck Info: File `SI3.out' has not changed.
 (rerunfilecheck)             Checksum: B9CBDA9D48A09F25129D316D2A147CD3;1356.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1124.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1143.
  ) 
 Here is how much of TeX's memory you used:
- 14311 strings out of 494923
- 204419 string characters out of 6180743
+ 14315 strings out of 494923
+ 204467 string characters out of 6180743
  337542 words of memory out of 5000000
  17224 multiletter control sequences out of 15000+600000
- 64161 words of font info for 124 fonts, out of 8000000 for 9000
+ 64421 words of font info for 126 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  32i,6n,38p,1393b,451s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/share/texmf/fonts/en
@@ -1138,7 +1138,7 @@ r/share/texmf/fonts/type1/public/lm/lmr9.pfb></usr/share/texmf/fonts/type1/publ
 ic/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share
 /texmf/fonts/type1/public/lm/lmtk10.pfb></usr/share/texmf/fonts/type1/public/lm
 /lmtt10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtti10.pfb>
-Output written on SI3.pdf (13 pages, 467011 bytes).
+Output written on SI3.pdf (13 pages, 468984 bytes).
 PDF statistics:
  282 PDF objects out of 1000 (max. 8388607)
  240 compressed objects within 3 object streams
