@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.0.0</span>
       </span>
     </div>
 
@@ -136,14 +136,14 @@
 <p>Here is a default simulation where managers update every time step.</p>
 <div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="no">sim.fli</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse.html">gmse</a></span>();</pre></body></html></div>
 <pre><code>## [1] "Initialising simulations ... "
-## [1] "Generation  21 of  40"</code></pre>
+## [1] "Generation  30 of  40"</code></pre>
 <p><img src="SI8_files/figure-html/unnamed-chunk-3-1.png" width="576"></p>
-<p>And here the same simulation, exept managers update policy only when they observe the population to be plus or minus the target by 20%, and receive a bonus of 30% of their initial budget when they do not.</p>
+<p>And here the same simulation, except managers update policy only when they observe the population to be plus or minus the target by 20%, and receive a bonus of 30% of their initial budget when they do not.</p>
 <div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">sim.ati</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse.html">gmse</a></span>(<span class="kw">action_thres</span> <span class="kw">=</span> <span class="fl">0.2</span>, <span class="kw">budget_bonus</span> <span class="kw">=</span> <span class="fl">0.3</span>);</pre></body></html></div>
 <pre><code>## [1] "Initialising simulations ... "
-## [1] "Generation  29 of  40"</code></pre>
+## [1] "Generation  35 of  40"</code></pre>
 <p><img src="SI8_files/figure-html/unnamed-chunk-5-1.png" width="576"></p>
-<p>Note how the costs plateau (lower left panel) when the population monitored (blue line in the upper left panel) is in between the two green dotted lines. Leaving the policy unchanged in these cases allowed managers to set the costs higher than the default maximum of 110 budget units. It also affects the number of cullings performed by users (lower right panel), which is more stable than when managers update policy every time step.</p>
+<p>Note how the costs plateau (lower left panel) when the population monitored (blue line, upper left panel) is in between the two green dotted lines. Leaving the policy unchanged in these cases allowed managers to set the costs higher than the default maximum of 110 budget units. It also affects the number of cullings performed by users (lower right panel), which is more stable than when managers update policy every time step.</p>
 </div>
   </div>
 
@@ -158,7 +158,7 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by A. Bradley Duthie, Nils Bunnefeld.</p>
+  <p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman.</p>
 </div>
 
 <div class="pkgdown">

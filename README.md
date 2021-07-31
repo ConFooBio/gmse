@@ -92,19 +92,19 @@ For additional help in getting started with GMSE, the following vignettes are av
 
 Descriptions of individual GMSE functions are provided in the [GMSE documentation](https://cran.r-project.org/package=GMSE/GMSE.pdf) available on CRAN.
 
-## GMSE Reference
+## GMSE References
 
-Duthie, A. B., Cusack, J. J., Jones, I. L., Nilsen, E. B., Pozo, R. A., Rakotonarivo, O. S., Moorter, B. Van, \& Bunnefeld, N. (2018). GMSE: an R package for generalised management strategy evaluation. *Methods in Ecology and Evolution*, 9, 2396-2401. https://doi.org/10.1101/221432
+Duthie, A. B., Cusack, J. J., Jones, I. L., Nilsen, E. B., Pozo, R. A., Rakotonarivo, O. S., Moorter, B. Van, & Bunnefeld, N. (2018). GMSE: an R package for generalised management strategy evaluation. *Methods in Ecology and Evolution*, 9, 2396-2401. https://doi.org/10.1101/221432
 
-Duthie, A. B., A. Bach, \& J. Minderman (2021). GMSE: Generalised Management Strategy Evaluation Simulator. R package version 0.7.0.0. https://confoobio.github.io/gmse/
+Duthie, A. B., A. Bach, & J. Minderman (2021). GMSE: Generalised Management Strategy Evaluation Simulator. R package version 0.7.0.0. https://confoobio.github.io/gmse/
 
 ## Publications using GMSE
 
-Nilsson, L., Bunnefeld, N., Jeroen, M., \& Duthie, A. B. (2021). Effects of stakeholder empowerment on crane population and agricultural population. *Ecological Modelling*, 440, 109396. https://doi.org/10.1016/j.ecolmodel.2020.109396
+Nilsson, L., Bunnefeld, N., Jeroen, M., & Duthie, A. B. (2021). Effects of stakeholder empowerment on crane population and agricultural population. *Ecological Modelling*, 440, 109396. https://doi.org/10.1016/j.ecolmodel.2020.109396
 
-Cusack, J. J., Duthie, A. B., Minderman, J., Jones, I. L., Rakotonarivo, O. S., \& Bunnefeld, N. (2020). Integrating conflict, lobbying, and compliance to predict the sustainability of natural resource use. Ecology and Society, 25(2), 13.
+Cusack, J. J., Duthie, A. B., Minderman, J., Jones, I. L., Rakotonarivo, O. S., & Bunnefeld, N. (2020). Integrating conflict, lobbying, and compliance to predict the sustainability of natural resource use. Ecology and Society, 25(2), 13.
 
-Bunnefeld, N., Pozo, R.A., Cusack, J.J., Duthie, A.B. \& Minderman, J. 2020. Development of 
+Bunnefeld, N., Pozo, R.A., Cusack, J.J., Duthie, A.B. & Minderman, J. 2020. Development of 
 a population model tool to predict shooting levels of Greenland barnacle geese on Islay.  
 *Scottish Natural Heritage Research Report No. 1039.*
 

@@ -75,7 +75,7 @@ own, gmse() is really all that is needed to run a simulation." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.0.0</span>
       </span>
     </div>
 
@@ -238,7 +238,10 @@ own, gmse() is really all that is needed to run a simulation.</p>
   <span class='kw'>perceive_tend</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
   <span class='kw'>perceive_kill</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
   <span class='kw'>usr_yld_budget</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>man_yld_budget</span> <span class='kw'>=</span> <span class='fl'>0</span>
+  <span class='kw'>man_yld_budget</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>mem_prv_observ</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>bgt_bonus_reset</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>traj_pred</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -536,6 +539,18 @@ own, gmse() is really all that is needed to run a simulation.</p>
       <th>man_yld_budget</th>
       <td><p>An increase in manager budget caused by mean yield on user owned cells. The value of this parameter is multiplied by the users' mean total yield to get the manager's budget increment (default 0). This argument can take any real value, but manager budgets are always restricted to being between 1 and 100000. Where yield adjustments result in budgets &lt; 1, the actual budget is set to 1. And where yield adjustments result in budgets &gt; 100000, the actual budget is set to 100000.</p></td>
     </tr>
+    <tr>
+      <th>mem_prv_observ</th>
+      <td><p>A boolean parameter triggering the memorization of last time step's population size observation</p></td>
+    </tr>
+    <tr>
+      <th>bgt_bonus_reset</th>
+      <td><p>A boolean parameter. Default TRUE: bonus is reset to zero after a time step of policy update. FALSE: reset to zero only when the costs decreased last time step.</p></td>
+    </tr>
+    <tr>
+      <th>traj_pred</th>
+      <td><p>A boolean parameter. Determines if the manager feeds the evolutionary algorithm with a prediction of population trajectory (TRUE) or the regular latest observation (FALSE). Default FALSE.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -557,7 +572,7 @@ own, gmse() is really all that is needed to run a simulation.</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by A. Bradley Duthie, Nils Bunnefeld.</p>
+  <p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman.</p>
 </div>
 
 <div class="pkgdown">

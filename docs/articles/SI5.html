@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.0.0</span>
       </span>
     </div>
 
@@ -228,7 +228,7 @@ Output of the FLR plot function for an example Ricker model of stock recruitment
 <span class="no">new_rec</span> <span class="kw">&lt;-</span> <span class="fu">predict_recruitment</span>(<span class="kw">rec_m</span> <span class="kw">=</span> <span class="no">rec.m</span>, <span class="kw">ssb_m</span> <span class="kw">=</span> <span class="no">ssb.m</span>, <span class="kw">years</span> <span class="kw">=</span> <span class="fl">1960</span>:<span class="fl">2004</span>,
                                <span class="kw">new_ssb</span> <span class="kw">=</span> <span class="no">ssb_ini</span>);
 <span class="no">obs_rec</span> <span class="kw">&lt;-</span> <span class="fu">obs_ssb</span>(<span class="no">new_rec</span>);</pre></body></html></div>
-<p>An initial run of these models gives values of 3835.21 for <code>new_rec</code> and 4020.49 for <code>obs_rec</code>. We are now ready to use the built-in manager and user sub-models in <code>gmse_apply</code>. We will assume that managers attempt to keep a recruitment of 5000, and that there are 10 independent fishers who attempt to maximise their catch. We assign a user budget of <code>manager_budget = 10000</code>, and all other values are set to GMSE defaults. In the built-in GMSE functions, the manager will use the estimate of recruitment based on <code>obs_rec</code> and use it to set the cost of harvesting (<code>culling</code> in GMSE).</p>
+<p>An initial run of these models gives values of 3835.21 for <code>new_rec</code> and 3791.47 for <code>obs_rec</code>. We are now ready to use the built-in manager and user sub-models in <code>gmse_apply</code>. We will assume that managers attempt to keep a recruitment of 5000, and that there are 10 independent fishers who attempt to maximise their catch. We assign a user budget of <code>manager_budget = 10000</code>, and all other values are set to GMSE defaults. In the built-in GMSE functions, the manager will use the estimate of recruitment based on <code>obs_rec</code> and use it to set the cost of harvesting (<code>culling</code> in GMSE).</p>
 <div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="no">yrspan</span>       <span class="kw">&lt;-</span> <span class="fl">1960</span>:<span class="fl">2004</span>;
 <span class="no">rec.m</span>        <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="no">rec.n</span>);
 <span class="no">ssb.m</span>        <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="no">ssb.n</span>);
@@ -242,11 +242,11 @@ Output of the FLR plot function for an example Ricker model of stock recruitment
 ## [1] 3835
 ## 
 ## $observation_results
-## [1] 3886.971
+## [1] 3868.729
 ## 
 ## $manager_results
 ##          resource_type scaring culling castration feeding help_offspring
-## policy_1             1      NA     453         NA      NA             NA
+## policy_1             1      NA     461         NA      NA             NA
 ## 
 ## $user_results
 ##         resource_type scaring culling castration feeding help_offspring
@@ -318,26 +318,26 @@ Output of the FLR plot function for an example Ricker model of stock recruitment
                          <span class="st">"Harvested"</span>, <span class="st">"SSB"</span>);
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">sim_sum</span>);</pre></body></html></div>
 <pre><code>##       Year Recruitment Recruit_estim Harvest_cost Harvested      SSB
-##  [1,] 2005        2347     2310.6059          785        20  24.8673
-##  [2,] 2006        4387     4204.3735          205        10 145.9025
-##  [3,] 2007         554      659.6451          655        40   4.8673
-##  [4,] 2008        4328     4301.0689          222        10  70.7603
-##  [5,] 2009        4627     4671.1936          212        40 115.9025
-##  [6,] 2010        1427     1324.6964          678        40  13.5966
-##  [7,] 2011        4629     4687.5698          222        10 115.2627
-##  [8,] 2012        4390     4547.2532          211        40 145.5799
-##  [9,] 2013         554      472.7954          688        40   4.8673
-## [10,] 2014        3988     4011.7570          231        10 175.5799
-## [11,] 2015        3310     3294.8872          688        40  40.7603
-## [12,] 2016        2994     2941.6388          857        10  34.8673
-## [13,] 2017        4208     4369.2453          192        10 160.1926
-## [14,] 2018          72      129.0235          703        50   0.6133
-## [15,] 2019        4387     4522.0707          214        10 145.9025
-## [16,] 2020        2739     2632.4290          684        40  30.6639
-## [17,] 2021        4629     4714.5180          232        10 115.2627
-## [18,] 2022        1427     1486.8846          694        40  13.5966
-## [19,] 2023        4208     4236.4955          217        10 160.1926
-## [20,] 2024        3339     3357.3200          690        40  41.3340</code></pre>
+##  [1,] 2005        4647     4639.4488          212        20 105.2627
+##  [2,] 2006        1427     1436.8383          681        40  13.5966
+##  [3,] 2007        4082     4173.0041          224        10  60.6639
+##  [4,] 2008         633      625.4025          668        40   5.5913
+##  [5,] 2009        4328     4283.2266          214        10  70.7603
+##  [6,] 2010        2739     2689.9777          677        40  30.6639
+##  [7,] 2011        4208     4293.4236          218        10 160.1926
+##  [8,] 2012        4390     4208.5732          223        40 145.5799
+##  [9,] 2013         633      663.1328          683        40   5.5913
+## [10,] 2014        3447     3399.0326          912        10  43.5966
+## [11,] 2015        2994     3036.0187          960        10  34.8673
+## [12,] 2016        2994     2965.3647          985        10  34.8673
+## [13,] 2017        3035     3083.6350         1004        10  35.5913
+## [14,] 2018        4067     4174.9320          294         0 170.1926
+## [15,] 2019        4269     4299.0759          217        30 155.5799
+## [16,] 2020        3310     3302.0381          697        40  40.7603
+## [17,] 2021        3988     4143.8591          224        10 175.5799
+## [18,] 2022        4390     4404.6211          242        40 145.5799
+## [19,] 2023        3339     3445.8512          696        40  41.3340
+## [20,] 2024        3303     3215.9619          877        10  40.6133</code></pre>
 <p>The above output from <code>sim_sum</code> reports the recruitment (resource or operational model), recruitment estimate (observation error model), management set harvest cost (harvest control model), user harvested numbers (implementation model) and spawning stock biomass (SSB) simulation results. This example simulation demonstrates the ability of GMSE to integrate with fisheries libraries such as <a href="http://www.flr-project.org/">FLR</a> through <code>gmse_apply</code>. In addition to being a useful wrapping function for MSE sub-models, <code>gmse_apply</code> can therefore be used to take advantage of the genetic algorithm in the GMSE default manager and user models. This flexibility will be retained in future versions of <code>gmse_apply</code>, allowing custom resource and observation models that are built for specific systems to be integrated with an increasingly complex genetic algorithm simulating various aspects of human decision-making.</p>
 </div>
 <div id="conclusions" class="section level1">
@@ -345,6 +345,10 @@ Output of the FLR plot function for an example Ricker model of stock recruitment
 <a href="#conclusions" class="anchor"></a>Conclusions</h1>
 <p>GMSE is a general, flexible, tool for simulating the management of resources under situations of uncertainty and conflict. Management Strategy Evaluation <span class="citation">(Bunnefeld, Hoshino, and Milner-Gulland <a href="#ref-Bunnefeld2011">2011</a>; Punt et al. <a href="#ref-Punt2016">2016</a>)</span>, the framework upon which GMSE is based, had its origin in fisheries management <span class="citation">(Polacheck et al. <a href="#ref-Polacheck1999">1999</a>; Smith, Sainsbury, and Stevens <a href="#ref-Smith1999">1999</a>; Sainsbury, Punt, and Smith <a href="#ref-Sainsbury2000">2000</a>)</span>, and here we showed one example of how GMSE could be integrated with the core package of the <a href="http://www.flr-project.org/">Fisheries Library in R</a>.</p>
 <p>Future versions of GMSE will continue to be open-source and developed to avoid unecessary dependencies (GMSE requires only base R, plus three shiny packages for running <code>gmse_gui</code>). Key goals including (1) providing highly general and useful default <code>resource</code>, <code>observation</code>, <code>manager</code>, and <code>user</code> sub-models for a variety of MSE modelling tasks, (2) keeping these sub-models highly modular so that they can be developed in isolation given standardised data structures, and (3) allowing these modular sub-models to be integrated with custom defined sub-models as flexibly as possible using <code>gmse_apply</code>. Contributions in line with these goals, and suggestions for new features, can be made on <a href="https://github.com/bradduthie/gmse">GitHub</a>.</p>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1 class="hasAnchor">
+<a href="#references" class="anchor"></a>References</h1>
 <div id="refs" class="references">
 <div id="ref-Bunnefeld2011">
 <p>Bunnefeld, Nils, Eriko Hoshino, and Eleanor J Milner-Gulland. 2011. “Management strategy evaluation: A powerful tool for conservation?” <em>Trends in Ecology and Evolution</em> 26 (9): 441–47. <a href="https://doi.org/10.1016/j.tree.2011.05.003">https://doi.org/10.1016/j.tree.2011.05.003</a>.</p>
@@ -400,7 +404,7 @@ Output of the FLR plot function for an example Ricker model of stock recruitment
 
 
       <footer><div class="copyright">
-  <p>Developed by A. Bradley Duthie, Nils Bunnefeld.</p>
+  <p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman.</p>
 </div>
 
 <div class="pkgdown">

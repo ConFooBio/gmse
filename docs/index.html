@@ -41,7 +41,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.0.0</span>
       </span>
     </div>
 
@@ -148,8 +148,7 @@ library(devtools)</a></code></pre>
 <p>To run a simulation, use the gmse() function.</p>
 <pre><code>sim &lt;- gmse();</code></pre>
 <p>Optional arguments taken by gmse() are used to specify simulation parameter values. Simulation results will be plotted automatically given the default <code>plotting = TRUE</code>, but can be plotted again using the <code>plot_gmse_results</code> function.</p>
-<pre><code><a href="reference/plot_gmse_results.html">plot_gmse_results(res = sim$resource, obs = sim$observation, land = sim$land, 
-agents = sim$agents, paras = sim$paras, ACTION = sim$action, COST = sim$cost)</a></code></pre>
+<pre><code><a href="reference/plot_gmse_results.html">plot_gmse_results(sim);</a></code></pre>
 <p>Simulations can also be run from a browser-based graphical user interface by running the <code><a href="reference/gmse_gui.html">gmse_gui()</a></code> function.</p>
 <pre><code><a href="reference/gmse_gui.html">gmse_gui();</a></code></pre>
 <p>This function is also available as a <a href="https://bradduthie.shinyapps.io/gmse_gui">standalone application</a> in shiny.</p>
@@ -184,13 +183,23 @@ sim &lt;- gmse_apply(res_mod = alt_res, X = 1000, stakeholders = 6); </code></pr
 <strong>Replicate simulations</strong>: Introduction to the use of replicate simulatoins for model inference, with an example of how this can be done in GMSE.</li>
 <li>
 <strong>GMSE data structures</strong>: Detailed explanation of key data structures used in GMSE.</li>
+<li>
+<strong>Adaptive timing of investment strategy</strong>: Example in which managers intervene adaptively based on the deviation of a population from its target.</li>
 </ul>
 <p>Descriptions of individual GMSE functions are provided in the <a href="https://cran.r-project.org/package=GMSE/GMSE.pdf">GMSE documentation</a> available on CRAN.</p>
 </div>
-<div id="reference" class="section level2">
+<div id="gmse-references" class="section level2">
 <h2 class="hasAnchor">
-<a href="#reference" class="anchor"></a>Reference</h2>
-<p>Duthie, A. B., Cusack, J. J., Jones, I. L., Nilsen, E. B., Pozo, R. A., Rakotonarivo, O. S., Van Moorter, B, and Bunnefeld, N. (2018). GMSE: an R package for generalised management strategy evaluation. <em>Methods in Ecology and Evolution</em>. <a href="https://doi.org/10.1101/221432" class="uri">https://doi.org/10.1101/221432</a></p>
+<a href="#gmse-references" class="anchor"></a>GMSE References</h2>
+<p>Duthie, A. B., Cusack, J. J., Jones, I. L., Nilsen, E. B., Pozo, R. A., Rakotonarivo, O. S., Moorter, B. Van, &amp; Bunnefeld, N. (2018). GMSE: an R package for generalised management strategy evaluation. <em>Methods in Ecology and Evolution</em>, 9, 2396-2401. <a href="https://doi.org/10.1101/221432" class="uri">https://doi.org/10.1101/221432</a></p>
+<p>Duthie, A. B., A. Bach, &amp; J. Minderman (2021). GMSE: Generalised Management Strategy Evaluation Simulator. R package version 0.7.0.0. <a href="https://confoobio.github.io/gmse/" class="uri">https://confoobio.github.io/gmse/</a></p>
+</div>
+<div id="publications-using-gmse" class="section level2">
+<h2 class="hasAnchor">
+<a href="#publications-using-gmse" class="anchor"></a>Publications using GMSE</h2>
+<p>Nilsson, L., Bunnefeld, N., Jeroen, M., &amp; Duthie, A. B. (2021). Effects of stakeholder empowerment on crane population and agricultural population. <em>Ecological Modelling</em>, 440, 109396. <a href="https://doi.org/10.1016/j.ecolmodel.2020.109396" class="uri">https://doi.org/10.1016/j.ecolmodel.2020.109396</a></p>
+<p>Cusack, J. J., Duthie, A. B., Minderman, J., Jones, I. L., Rakotonarivo, O. S., &amp; Bunnefeld, N. (2020). Integrating conflict, lobbying, and compliance to predict the sustainability of natural resource use. Ecology and Society, 25(2), 13.</p>
+<p>Bunnefeld, N., Pozo, R.A., Cusack, J.J., Duthie, A.B. &amp; Minderman, J. 2020. Development of a population model tool to predict shooting levels of Greenland barnacle geese on Islay.<br><em>Scottish Natural Heritage Research Report No. 1039.</em></p>
 </div>
 
   </div>
@@ -217,7 +226,9 @@ sim &lt;- gmse_apply(res_mod = alt_res, X = 1000, stakeholders = 6); </code></pr
 <h2>Developers</h2>
 <ul class="list-unstyled">
 <li>A. Bradley Duthie <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-8343-4995" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Adrian Bach <br><small class="roles"> Author </small>  </li>
 <li>Nils Bunnefeld <br><small class="roles"> Contributor, funder </small> <a href="https://orcid.org/0000-0002-1349-4463" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Jeroen Minderman <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-8451-5540" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li><a href="authors.html">All authors...</a></li>
 </ul>
 </div>
@@ -227,7 +238,7 @@ sim &lt;- gmse_apply(res_mod = alt_res, X = 1000, stakeholders = 6); </code></pr
 
 
       <footer><div class="copyright">
-  <p>Developed by A. Bradley Duthie, Nils Bunnefeld.</p>
+  <p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman.</p>
 </div>
 
 <div class="pkgdown">

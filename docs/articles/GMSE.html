@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.0.0</span>
       </span>
     </div>
 
@@ -173,8 +173,7 @@ Description of one time step of the generalised management strategy evaluation f
             <span class="kw">user_budget</span> <span class="kw">=</span> <span class="fl">1000</span>, <span class="kw">manager_budget</span> <span class="kw">=</span> <span class="fl">1000</span>, <span class="kw">res_consume</span> <span class="kw">=</span> <span class="fl">1</span>,
             <span class="kw">scaring</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">plotting</span> <span class="kw">=</span> <span class="fl">FALSE</span>);</pre></body></html></div>
 <pre><code>## [1] "Initialising simulations ... "
-## [1] "Generation  13 of  40"
-## [1] "Generation  32 of  40"</code></pre>
+## [1] "Generation  24 of  40"</code></pre>
 <p>Parameters in <a href="../reference/gmse.html"><code>gmse</code></a> not listed are set to default values. By plotting the output with <a href="../reference/plot_gmse_results.html"><code>plot_gmse_results</code></a>, simulation results can be interpreted visually (manager and user decisions can also be interpreted using the <a href="../reference/plot_gmse_effort.html"><code>plot_gmse_effort</code></a> function, see <a href="SI3.html">Example case study in GMSE</a> and <a href="SI4.html">Advanced case study options</a> for an expanded example).</p>
 <hr>
 <div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="fu"><a href="../reference/plot_gmse_results.html">plot_gmse_results</a></span>(<span class="kw">sim_results</span> <span class="kw">=</span> <span class="no">sim</span>);</pre></body></html></div>
@@ -190,7 +189,7 @@ Results of an example simulation illustrating the management of a protected reso
 <div id="graphical-user-interface-gui" class="section level1">
 <h1 class="hasAnchor">
 <a href="#graphical-user-interface-gui" class="anchor"></a>Graphical User Interface (GUI)</h1>
-<p>The function <a href="../reference/gmse_gui.html"><code>gmse_gui</code></a> opens GMSE in a browser and allows simulations to be run for most <a href="../reference/gmse.html"><code>gmse</code></a> parameter options using the package ‘shiny’ <span class="citation">(Chang et al. <a href="#ref-Chang2017">2017</a>)</span>. Figures from <a href="../reference/plot_gmse_results.html"><code>plot_gmse_results</code></a> and <a href="../reference/plot_gmse_effort.html"><code>plot_gmse_effort</code></a>, and tables from <a href="../reference/gmse_summary"><code>gmse_summary</code></a> are provided as GUI output.</p>
+<p>The function <a href="../reference/gmse_gui.html"><code>gmse_gui</code></a> opens GMSE in a browser and allows simulations to be run for most <a href="../reference/gmse.html"><code>gmse</code></a> parameter options using the package ‘shiny’ <span class="citation">(Chang et al. <a href="#ref-Chang2017">2017</a>)</span>. Figures from <a href="../reference/plot_gmse_results"><code>plot_gmse_results</code></a> and <a href="../reference/plot_gmse_effort"><code>plot_gmse_effort</code></a>, and tables from <a href="../reference/gmse_summary"><code>gmse_summary</code></a> are provided as GUI output.</p>
 </div>
 <div id="custom-defined-sub-models" class="section level1">
 <h1 class="hasAnchor">
@@ -336,7 +335,7 @@ Results of an example simulation illustrating the management of a protected reso
 
 
       <footer><div class="copyright">
-  <p>Developed by A. Bradley Duthie, Nils Bunnefeld.</p>
+  <p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman.</p>
 </div>
 
 <div class="pkgdown">
