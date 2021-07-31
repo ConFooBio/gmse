@@ -423,7 +423,9 @@ void resource_feeding(double **resource_array, double ***landscape,
                     
         resource_feeds(resource_array, landscape, paras, resource);
         
-        move_a_resource(resource_array, landscape, paras, resource);
+        if(fed[resource] > 1){
+            move_a_resource(resource_array, landscape, paras, resource);
+        }
         
         fed[resource]--;
         tot_fed--;
