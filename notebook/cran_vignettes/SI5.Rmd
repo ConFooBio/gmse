@@ -310,5 +310,5 @@ GMSE is a general, flexible, tool for simulating the management of resources und
 
 Future versions of GMSE will continue to be open-source and developed to avoid unecessary dependencies (GMSE requires only base R, plus three shiny packages for running `gmse_gui`). Key goals including (1) providing highly general and useful default `resource`, `observation`, `manager`, and `user` sub-models for a variety of MSE modelling tasks, (2) keeping these sub-models highly modular so that they can be developed in isolation given standardised data structures, and (3) allowing these modular sub-models to be integrated with custom defined sub-models as flexibly as possible using `gmse_apply`. Contributions in line with these goals, and suggestions for new features, can be made on [GitHub](https://github.com/bradduthie/gmse).
 
-
-
+References
+================================================================================
