@@ -276,7 +276,7 @@ void traj_pred_lin_extrap(double *paras){
   
   res_abund = paras[99];  /* Est. of res type 1 from the observation model */
   prv_est   = paras[129]; /* Previous time step population estimation */
-  t_s       = paras[0];   /* What is the current time step? */
+  t_s       = (int) paras[0];   /* What is the current time step? */
   
   if(t_s <= 1){
       /* initiate memory previous of previous time step estimation */
@@ -318,7 +318,7 @@ void update_marg_util(double ***actions, double *abun_est, double *temp_util,
     /* make policy based on prediction rather than on latest observation */
     trj_prd = (int) paras[134]; 
 
-    if (trj_prd == 1) {
+    if(trj_prd == 1){
         traj_pred_lin_extrap(paras);
     }
     
@@ -440,7 +440,7 @@ void check_action_threshold(double ***ACTION, double *paras){
     }else{
         var  = res_abund - prv_est; /* variation from previous time step */
         pred = res_abund + var;    /* manager's prediction for next time step */
-        /* Could be interesting to make the manager_sense inteviene here */
+        /* Could be interesting to make the manager_sense intervene here */
         /* And use the abs value to make the following if statement lighter */
         
         if(pred < 0){
@@ -497,11 +497,10 @@ void apply_budget_bonus(double **agent_array, double *paras){
     
     int recent_update, N_agents, agent, bonus_col, budget_col, bonus_reset;
     int cost_decrease;
-    double a_t, b_b;
+    double a_t;
     
     N_agents       = (int) paras[54];     /* Total number of agents */
     a_t            = (double) paras[105]; /* Dev est pop target trigger */
-    b_b            = (double) paras[110]; /* budget bonus */
     recent_update  = (int) paras[106];    /* Policy recently updated */
     budget_col     = (int) paras[112];    /* Column where budget is recorded */
     bonus_col      = (int) paras[127];    /* Column where budget bonus is */
@@ -633,7 +632,6 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     int update_policy;       /* If managers act */
     int observe_type;        /* Type of observation being performed */
     int bonus_reset;         /* reset budget bonus to 0 when cost decreased? */
-    int trj_prd;             /* Make decision based on prediction? */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
@@ -647,7 +645,6 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     double bb;               /* Budget bonus */
     double prv_cost;         /* Culling cost before calling GA */
     double new_cost;         /* Culling cost after calling GA */
-    double save;             /* Variable to save a value */
     double *R_ptr;           /* Pointer to RESOURCE (interface R and C) */
     double *land_ptr;        /* Pointer to LANDSCAPE (interface R and C) */
     double *paras_ptr;       /* Pointer to PARAMETERS (interface R and C) */
@@ -889,6 +886,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     bonus_reset    = (int) paras[132];   /* Reset bonus when cost decreased? */
     
     /* get the costs from last time step */
+    prv_cost = 0;
     if(bb > 0 && bonus_reset == 0){
         prv_cost = costs[0][8][1];
     }
@@ -916,13 +914,13 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     set_action_costs(actions, costs, paras, agent_array);
     
     /* get the costs after the update */
-    if (bb > 0 && bonus_reset == 0) {
-     new_cost = costs[0][8][1]; 
-     if (prv_cost - new_cost > 0) {
-       paras[133] = 1;
-     } else {
-       paras[133] = 0;
-     }
+    if(bb > 0 && bonus_reset == 0) {
+       new_cost = costs[0][8][1]; 
+       if(prv_cost - new_cost > 0){
+           paras[133] = 1;
+       }else{
+           paras[133] = 0;
+       }
     }
 
     free(marg_util);

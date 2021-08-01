@@ -296,10 +296,10 @@ void res_remove(double **res_removing, double *paras){
             break;
     }
     for(resource = 0; resource < resource_number; resource++){
-        if(res_removing[resource][age_col] > max_age & type > 0){
+        if(res_removing[resource][age_col] > max_age && type > 0){
             res_removing[resource][rm_col] = -1;
         }
-        if(res_removing[resource][cons_col] < csr & type > 0){
+        if(res_removing[resource][cons_col] < csr && type > 0){
             res_removing[resource][rm_col] = -1;
         }
     }
@@ -413,7 +413,8 @@ void resource_feeding(double **resource_array, double ***landscape,
 
     fed = (int *) malloc(resource_number * sizeof(int));
     for(resource = 0; resource < resource_number; resource++){
-        is_dead = resource_array[resource][rm_row];
+        fed[resource] = 0;
+        is_dead       = resource_array[resource][rm_row];
         if(is_dead < 1){
             fed[resource]  = resource_array[resource][fed_col];
             tot_fed       += fed[resource];
@@ -435,6 +436,8 @@ void resource_feeding(double **resource_array, double ***landscape,
         fed[resource]--;
         tot_fed--;
     }
+    
+    free(fed);
 }
 
 
