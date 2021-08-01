@@ -3,6 +3,7 @@ library("GMSE");
 context("Landscape initialisation");
 
 test_that("Landscape dimensions are initialised accurately", {
+    skip_on_cran();
     land  <-  make_landscape(model        = "IBM", 
                              rows         = 10, 
                              cols         = 10, 
@@ -20,6 +21,7 @@ test_that("Landscape dimensions are initialised accurately", {
 })
 
 test_that("Landscape values are initialised accurately", {
+    skip_on_cran();
     land  <-  make_landscape(model        = "IBM", 
                              rows         = 10, 
                              cols         = 10, 
@@ -38,6 +40,7 @@ test_that("Landscape values are initialised accurately", {
 })
 
 test_that("Landscape values are reset when needed", {
+    skip_on_cran();
     land  <-  make_landscape(model        = "IBM", 
                              rows         = 10, 
                              cols         = 10, 
@@ -56,6 +59,7 @@ test_that("Landscape values are reset when needed", {
 
 
 test_that("All users are given land evenly distributed", {
+    skip_on_cran();
     land  <-  make_landscape(model        = "IBM", 
                              rows         = 64, 
                              cols         = 64, 
@@ -73,6 +77,7 @@ test_that("All users are given land evenly distributed", {
 })
 
 test_that("All users are given land when unequal", {
+    skip_on_cran();
     land  <-  make_landscape(model        = "IBM", 
                              rows         = 10, 
                              cols         = 10, 
@@ -91,6 +96,7 @@ test_that("All users are given land when unequal", {
 
 
 test_that("Public land is added appropriately", {
+    skip_on_cran();
     land  <-  make_landscape(model        = "IBM", 
                              rows         = 10, 
                              cols         = 10, 
