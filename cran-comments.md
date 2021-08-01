@@ -1,12 +1,9 @@
 ## Test environments
-* ubuntu 18.04, R 3.6.3
+* ubuntu 18.04, R 4.1.0
 * win-builder (devel)
 
 ## R CMD check results
-There were no ERRORs, WARNINGs. One NOTE recognises the
-non-standard files/directories '_pkgdown.ml' and 'docs',
-which are used to produce the website associated with
-this R package on GitHub.
+There were no ERRORs, WARNINGs, or NOTEs.
 
 ## dontrun wraps
 As with previous CRAN  submissions of
