@@ -1,7 +1,7 @@
 ![](https://raw.githubusercontent.com/bradduthie/gmse/1727ea37f32f0f40df8ee6e8277d0d1723c88639/notebook/images/GMSE_logo_name.png)
 
-[![](http://www.r-pkg.org/badges/version/GMSE?color=yellowgreen)](https://cran.r-project.org/package=GMSE) [![](http://cranlogs.r-pkg.org/badges/grand-total/GMSE?color=yellowgreen)](http://cranlogs.r-pkg.org/badges/grand-total/GMSE)
-[![](http://cranlogs.r-pkg.org/badges/last-month/GMSE?color=yellowgreen)](http://cranlogs.r-pkg.org/badges/last-month/GMSE)
+[![](http://www.r-pkg.org/badges/version/GMSE?color=yellowgreen)](https://cran.r-project.org/package=GMSE) [![](https://cranlogs.r-pkg.org:443/badges/grand-total/GMSE?color=yellowgreen)](https://cranlogs.r-pkg.org:443/badges/grand-total/GMSE)
+[![](https://cranlogs.r-pkg.org:443/badges/last-month/GMSE?color=yellowgreen)](https://cranlogs.r-pkg.org:443/badges/last-month/GMSE)
 
 
 Generalised Management Strategy Evaluation
@@ -11,7 +11,7 @@ Generalised Management Strategy Evaluation
 
 --------------------------------------------------------------------------------
 
-*This project has received funding from the [European Union's Horizon 2020 research and innovation programme](http://ec.europa.eu/programmes/horizon2020/) under grant agreement No 679651 to [Nils Bunnefeld](https://sti-cs.org/nils-bunnefeld/). Package maintainer [Brad Duthie](https://bradduthie.github.io/) is currently funded by a [Leverhulme Trust](https://www.leverhulme.ac.uk/) [ECF](https://www.leverhulme.ac.uk/funding/grant-schemes/early-career-fellowships).*
+*This project has received funding from the [European Union's Horizon 2020 research and innovation programme](https://ec.europa.eu/programmes/horizon2020/) under grant agreement No 679651 to [Nils Bunnefeld](https://sti-cs.org/nils-bunnefeld/). Package maintainer [Brad Duthie](https://bradduthie.github.io/) has been funded by a [Leverhulme Trust](https://www.leverhulme.ac.uk/) [ECF](https://www.leverhulme.ac.uk/early-career-fellowships).*
 
 --------------------------------------------------------------------------------
 
@@ -85,7 +85,7 @@ For additional help in getting started with GMSE, the following vignettes are av
 - **Use of gmse_apply**: An extended introduction to the `gmse_apply` function, and how to use it to further customise simulations.
 - **Example case study**: An example case study illustrating how `gmse` or `gmse_gui` could be used to simulate a scenario of conflict between farmers and waterfowl conservation.
 - **Advanced options**: Example use of `gmse_apply` in the farmer and waterfowl case study demonstrating advanced customisation that is possible in GMSE.
-- **Fisheries integration**: Introduction to how GMSE could be linked to other packages such as the [Fisheries Library in R](http://www.flr-project.org/) (FLR) using `gmse_apply`.
+- **Fisheries integration**: Introduction to how GMSE could be linked to other packages such as the [Fisheries Library in R](https://flr-project.org/) (FLR) using `gmse_apply`.
 - **Replicate simulations**: Introduction to the use of replicate simulatoins for model inference, with an example of how this can be done in GMSE.
 - **GMSE data structures**: Detailed explanation of key data structures used in GMSE.
 - **Adaptive timing of investment strategy**: Example in which managers intervene adaptively based on the deviation of a population from its target.
