@@ -39,7 +39,7 @@ Description: Integrates game theory and ecological theory to construct
     gmse_gui() functions.
 URL: https://confoobio.github.io/gmse/
 BugReports: https://github.com/confoobio/gmse/issues
-Depends: R (>= 3.4.0)
+Depends: R (>= 4.0.0)
 License: GPL (>=2)
 LazyData: TRUE
 Encoding: UTF-8
