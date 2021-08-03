@@ -50,6 +50,10 @@ library(rhandsontable)
 
 [Project updates](#updates)
 
+ - **2021**
+
+     - **AUG** [21](#u-03-AUG-2021)
+
  - **2020**
 
      - **MAY** [21](#u-21-MAY-2020), [18](#u-18-MAY-2020), [17](#u-17-MAY-2020), [15](#u-15-MAY-2020), [12](#u-12-MAY-2020), [11](#u-11-MAY-2020), [10](#u-10-MAY-2020), [8](#u-8-MAY-2020), [6](#u-6-MAY-2020)
@@ -93,6 +97,30 @@ library(rhandsontable)
 
 <a name="updates">Project updates:</a>
 ================================================================================
+
+> <a name="u-03-AUG-2021">Update: 03 AUG 2021</a>
+
+A new version of GMSE 0.7.0.0 has been released [on CRAN](https://cran.r-project.org/package=GMSE) now. The [changelog](https://confoobio.github.io/gmse/news/index.html) provides a summary of the changes and bug fixes. One new feature was written by Adrian Bach, and now GMSE includes the ability to use trajectory-based prediction to determine whether or not intervention on the part of the manager. The new feature will be used in a manuscript in preparation (note that on [the GMSE website](https://confoobio.github.io/gmse/index.html), I have now included a list of publications that use GMSE). This includes three new arguments:
+
+- `traj_pred` is an argument that takes a `TRUE` or `FALSE` value that determines whether or not the trajectory of a population should be used when a manager is deciding to intervene. This argument applies only when `action_thres > 0` (i.e., when there is a range around the target population density within which a manager will not intervene by updating policy). When `traj_pred = TRUE` (default is `FALSE`), the manager will use a simple linear extrapolation from the density of the population in the previous time step and the current population density to predict what the population density will be in the next time step. If the predict density is outside of the acceptable range specified by `action_thres`, then the manager will intervene.
+
+- `bgt_bonus_rest` is an argument that takes a `TRUE` or `FALSE` value and determines whether (`TRUE`) or not (`FALSE`) the manager's budget bonus for inaction will be reset to zero following a time step of policy update. If `FALSE`, then budget is only reset when costs of culling has been decreased in the previous time step. We will probably want to generalise this to the cost of all actions later, which will involve doing a bit of work to [this block](https://github.com/ConFooBio/gmse/blob/master/src/manager.c#L917) of code. Else we might consider renaming the argument to indicating culling somehow?
+
+- `mem_prv_observ` This parameter is an argument that takes a `TRUE` or `FALSE` value. When `TRUE`, it allows the manager to remember the population size from the previous time step. It should be used with the `traj_pred` option.
+
+Regarding the last bullet, I've made an update to GitHub v0.7.0.1, which fixes a minor bug that I just noticed this morning that unfortunately made its way into the CRAN version. I don't think that it will actually affect any simulations though, so I don't see a need to immediately update on CRAN. See [Issue #76](https://github.com/ConFooBio/gmse/issues/76) for more details.
+
+There are new options introduced by Jeroen for incrementing user and manager budgets using yield from the landscape.
+
+- `usr_yld_budget` takes a numeric value that acts as a multiplier on the user's total yield. The value of the argument is multiplied by the user's total yield to get the user's budget increment. If, for example, we wanted to simulate a situation in which users' budgets were entirely based on their yield, we could set `user_budget = 0` and `user_yld_budget = 1`. Note that regardless of yield, user budget can never be less than 1 or greater than 100000.
+
+- `man_yld_budget` is the equivalent to `usr_yld_budget`, but for the manager. Manager's yield is accumulated on public land, so if `public_land = 0`, then there will be no increment to the manager's budget.
+
+Improvements to the `gmse_gui` have also been made by Jeroen, which can be accessed online [here](https://bradduthie.shinyapps.io/gmse_gui/). Note that I have not yet included the trajectory strategy options that Adrian developed into the GUI.
+
+After [some conversation](https://github.com/ConFooBio/gmse/issues/64), I decided to change the movement operations when resources feed more than once (`times_feeding > 1`) or require a threshold amount of food for survival (`consume_surv > 0`) or reproduction (`consume_repr > 0`). Previously, resources would feed, then move `times_feeding` times. After this moving and feeding, resources would move again at the end of the time step. Somewhat confusingly and arbitrarily, resources would therefore get two moves in a row under these conditions before the timestep ends. In GMSE v0.7, resources now only move once after feeding.
+
+The new GMSE version also fixes some minor bugs, most notably getting rid of the rare cases in which resources were able to feed once on the landscape after dying. There are also new error catches for `gmse` and `gmse_apply` functions to make sure that arguments are structured correctly (e.g., quickly flags when a list or vector is used instead of a scalar value).
 
 > <a name="u-21-MAY-2020">Update: 21 MAY 2020</a>
 
