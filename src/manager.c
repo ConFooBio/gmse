@@ -427,7 +427,7 @@ void check_action_threshold(double ***ACTION, double *paras){
         dev *= -1;
     }
     
-    if(mem == FALSE){
+    if(mem == 0){
         /* If the population deviation has hit the threshold, and time step, */
         /* and that prediction is outside the non-updating band */
         if(dev >= a_t || t_s < 3){ 
