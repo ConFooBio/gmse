@@ -632,6 +632,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     int update_policy;       /* If managers act */
     int observe_type;        /* Type of observation being performed */
     int bonus_reset;         /* reset budget bonus to 0 when cost decreased? */
+    int sim_annealing;       /* Should simulated annealing be used to think */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
     int *dim_LANDSCAPE;      /* Dimensions of the LANDSCAPE array incoming */
     int *dim_AGENT;          /* Dimensions of the AGENT array incoming */
@@ -884,6 +885,7 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     man_yld_budget = (double) paras[126];
     bb             = (double) paras[110];
     bonus_reset    = (int) paras[132];   /* Reset bonus when cost decreased? */
+    sim_annealing  = (int) paras[137];
     
     /* get the costs from last time step */
     prv_cost = 0;
@@ -907,8 +909,13 @@ SEXP manager(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     update_policy = paras[106];             /* Will managers act? */
     
     if(update_policy > 0){
+      if(sim_annealing > 0){
+        sa(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
+           lookup, paras, 0, 1);
+      }else{
         ga(actions, costs, agent_array, resource_array, land, Jacobian_mat, 
            lookup, paras, 0, 1);
+      }
     }
     
     set_action_costs(actions, costs, paras, agent_array);

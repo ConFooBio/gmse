@@ -18,10 +18,13 @@ void strategy_fitness(double *fitnesses, double ***population, int pop_size,
                  double **resources, double **agent_array, int land_x,
                  int land_y);
 
-void manager_fitness(double *fitnesses, double ***population, int pop_size, 
-                int ROWS, double **agent_array, double **jaco,
-                int **interact_table, int interest_num, int agentID,
-                double ***COST, double ***ACTION, int COLS, int layers);
+void policy_to_counts(double ***population, double **merged_acts, int agent,
+                      double **merged_costs, double **act_change, 
+                      int action_row, int manager_row, double *paras);
+
+void manager_fitness(double *fitnesses, double ***population, double **jaco,
+                     double **agent_array, int **interact_table, int agentID, 
+                     double ***COST, double ***ACTION, double *paras);
 
 void tournament(double *fitnesses, int *winners, int pop_size, 
                 int sampleK, int chooseK);

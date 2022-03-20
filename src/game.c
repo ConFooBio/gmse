@@ -152,7 +152,7 @@ void crossover(double ***population, double *paras, int agentID){
 void mutation(double ***population, double *paras, int agentID){
     
     int agent, row, col, start_col, col_check, pop_size, ROWS, COLS;
-    int col_start_other, col_start_self, mu_magnitude;
+    int col_start_other, col_start_self, mu_magnitude, start_row;
     double do_mutation, half_pr, pr;
 
     pop_size        = (int) paras[21];
@@ -161,11 +161,12 @@ void mutation(double ***population, double *paras, int agentID){
     COLS            = (int) paras[69];
     col_start_other = (int) paras[70];
     col_start_self  = (int) paras[71];
+    start_row       = (int) paras[138];
 
     half_pr = 0.5 * pr;
     
     for(agent = 0; agent < pop_size; agent++){
-        for(row = 0; row < ROWS; row++){
+        for(row = start_row; row < ROWS; row++){
             start_col = col_start_self;
             col_check = population[row][0][agent];
             if(col_check > 0 && col_check != agentID){
@@ -499,7 +500,7 @@ int new_action(double old_cost, double new_cost, double old_act){
  * ========================================================================== */
 void policy_to_counts(double ***population, double **merged_acts, int agent,
                       double **merged_costs, double **act_change, 
-                      int action_row, int manager_row, double *paras, int gen){
+                      int action_row, int manager_row, double *paras){
     
     int col, COLS;
     double old_cost, new_cost, old_act, new_act;
@@ -539,10 +540,11 @@ void policy_to_counts(double ***population, double **merged_acts, int agent,
  * ========================================================================== */
 void manager_fitness(double *fitnesses, double ***population, double **jaco,
                      double **agent_array, int **interact_table, int agentID, 
-                     double ***COST, double ***ACTION, double *paras, int gen){
+                     double ***COST, double ***ACTION, double *paras){
     
     int agent, i, j, m_lyr, action_row, manager_row, type1, type2, type3;
     int pop_size, int_num, ROWS, COLS, psc, pcu, pca, pfe, phe, n_agents;
+    int sim_ann;
     double *count_change, foc_effect, change_dev, max_dev;
     double *dev_from_util, *utils, **merged_acts, **merged_costs, **act_change;
     
@@ -556,6 +558,7 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
     pca      = (int) paras[76];
     pfe      = (int) paras[77];
     phe      = (int) paras[78];
+    sim_ann  = (int) paras[137];
     
     count_change  = malloc(int_num * sizeof(double));
     utils         = malloc(int_num * sizeof(double));
@@ -604,7 +607,7 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
                 manager_row++;
             }
             policy_to_counts(population, merged_acts, agent, merged_costs, 
-                             act_change, action_row, manager_row, paras, gen);
+                             act_change, action_row, manager_row, paras);
             foc_effect   = 0.0;
             foc_effect  += agent_array[m_lyr][psc] * act_change[action_row][7]; 
             foc_effect  += agent_array[m_lyr][pcu] * act_change[action_row][8]; 
@@ -626,7 +629,11 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
         dev_from_util[agent] = change_dev;
     }
     for(agent = 0; agent < pop_size; agent++){
-        fitnesses[agent] = max_dev - dev_from_util[agent];
+      if(sim_ann > 0){
+        fitnesses[agent] = 10000000 - dev_from_util[agent];
+      }else{
+        fitnesses[agent] = max_dev - dev_from_util[agent]; 
+      }
     }
     
     for(i = 0; i < ROWS; i++){
@@ -872,7 +879,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         if(managing == 1){
             apply_min_costs(POPULATION, paras, agentID);
             manager_fitness(fitnesses, POPULATION, JACOBIAN, AGENT, lookup, 
-                            agentID, COST, ACTION, paras, gen);
+                            agentID, COST, ACTION, paras);
         }else{
             strategy_fitness(AGENT, POPULATION, paras, fitnesses, JACOBIAN, 
                              lookup, agentID); 
@@ -927,21 +934,28 @@ void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double **JACOBIAN, int **lookup, double *paras, 
         int agent, int managing){
   
-  
-  int kmax, k, temp, agentID, gen, xdim, ydim, row, col;
+  int kmax, k, temp, agentID, xdim, ydim, row, col;
   double budget, pr_jump, rand_pr, save_popsize, save_copies, save_ROWS; 
-  double*fitnesses, *fitnesses_n, ***ACTION_temp;
+  double save_st_row, save_mu, *fitnesses, *fitnesses_n, ***ACTION_temp;
   
   agentID      = (int) AGENT[agent][0];
   save_popsize = paras[21];
   save_copies  = paras[23];
+  save_mu      = paras[26];
   save_ROWS    = paras[68];
+  save_st_row  = paras[138];
   xdim         = (int) paras[68];
   ydim         = (int) paras[69];
   paras[21]    = 1.0;
   paras[23]    = 0.0;
-  paras[68]    = 2.0;
-  
+  paras[26]    = 1.0;
+  if(managing == FALSE){
+    paras[68] = 2.0;
+  }else{
+    paras[68]  = 3.0;
+    paras[138] = 2.0;
+  }
+
   fitnesses   = malloc(sizeof(double));  
   fitnesses_n = malloc(sizeof(double));  
   
@@ -964,9 +978,9 @@ void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
   }
   
   initialise_pop(ACTION, COST, paras, agent, budget, ACTION_temp, agentID);
-
+  
   k    = 0;
-  kmax = 10000;
+  kmax = (int) paras[139];
   while(k < kmax){
     temp = 1 - ((1 + k) / kmax);
     
@@ -975,7 +989,7 @@ void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     if(managing == 1){
       apply_min_costs(ACTION_temp, paras, agentID);
       manager_fitness(fitnesses, ACTION_temp, JACOBIAN, AGENT, lookup, 
-                      agentID, COST, ACTION, paras, gen);
+                      agentID, COST, ACTION, paras);
     }else{
       strategy_fitness(AGENT, ACTION_temp, paras, fitnesses, JACOBIAN, 
                        lookup, agentID); 
@@ -988,12 +1002,12 @@ void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     if(managing == 1){
       apply_min_costs(ACTION_temp, paras, agentID);
       manager_fitness(fitnesses_n, ACTION_temp, JACOBIAN, AGENT, lookup, 
-                      agentID, COST, ACTION, paras, gen);
+                      agentID, COST, ACTION, paras);
     }else{
       strategy_fitness(AGENT, ACTION_temp, paras, fitnesses_n, JACOBIAN, 
                        lookup, agentID); 
     }
-
+    
     if(fitnesses_n[0] < fitnesses[0]){
       pr_jump = exp(-(fitnesses[0] - fitnesses_n[0]) / temp); 
       rand_pr = runif(0, 1);
@@ -1020,10 +1034,11 @@ void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     k++;
   }
 
-  
-  paras[21] = save_popsize;
-  paras[23] = save_copies;
-  paras[68] = save_ROWS;
+  paras[21]  = save_popsize;
+  paras[23]  = save_copies;
+  paras[26]  = save_mu;
+  paras[68]  = save_ROWS;
+  paras[138] = save_st_row;
   
   for(row = 0; row < xdim; row++){
     for(col = 0; col < ydim; col++){

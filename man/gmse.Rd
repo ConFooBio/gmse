@@ -81,7 +81,9 @@ gmse(
   mem_prv_observ = FALSE,
   bgt_bonus_reset = TRUE,
   traj_pred = FALSE,
-  sim_annealing = FALSE
+  user_annealing = FALSE,
+  mana_annealing = FALSE,
+  kmax_annealing = 1000
 )
 }
 \arguments{
@@ -237,7 +239,11 @@ gmse(
 
 \item{traj_pred}{A boolean parameter. Determines if the manager feeds the evolutionary algorithm with a prediction of population trajectory (TRUE) or the regular latest observation (FALSE). Default FALSE.}
 
-\item{sim_annealing}{Determines whether simulated annealing should be used in place of the genetic algorithm for agent decision-making. If TRUE, then simulated annealing is used for agents. If FALSE, then the genetic algorithm is used.}
+\item{user_annealing}{Determines whether simulated annealing should be used in place of the genetic algorithm for agent decision-making. If TRUE, then simulated annealing is used for users. If FALSE, then the genetic algorithm is used.}
+
+\item{mana_annealing}{Determines whether simulated annealing should be used in place of the genetic algorithm for agent decision-making. If TRUE, then simulated annealing is used for managers If FALSE, then the genetic algorithm is used.}
+
+\item{kmax_annealing}{Sets the maximum value of iterations for the simulated annealing algorithm}
 }
 \value{
 A large list is returned that includes detailed simulation histories for the resource, observation, management, and user models. This list includes eight elements, most of which are themselves complex lists of arrays: (1) A list of length `time_max` in which each element is an array of resources as they exist at the end of each time step. Resource arrays include all resources and their attributes (e.g., locations, growth rates, offspring, how they are affected by stakeholders, etc.). (2) A list of length `time_max` in which each element is an array of resource observations from the observation model. Observation arrays are similar to resource arrays, except that they can have a smaller number of rows if not all resources are observed, and they have additional columns that show the history of each resource being observed over the course of `times_observe` observations in the observation model. (3) A 2D array showing parameter values at each time step (unique rows); most of these values are static but some (e.g., resource number) change over time steps. (4) A list of length `time_max` in which each element is an array of the landscape that identifies proportion of crop production per cell. This allows for looking at where crop production is increased or decreased over time steps as a consequence of resource and stakeholder actions. (5) The total time the simulation took to run (not counting plotting time). (6) A 2D array of agents and their traits. (7) A list of length `time_max` in which each element is a 3D array of the costs of performing each action for managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in costs of particular actions can therefore be be examined over time. (8) A list of length `time_max` in which each element is a 3D array of the actions performed by managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in actions of agents can therefore be examined over time. Because the above lists cannot possibly be interpreted by eye all at once in the simulation output, it is highly recommended that the contents of a simulation be stored and interprted individually if need be; alternativley, simulations can more easily be interpreted through plots when `plotting = TRUE`.

@@ -760,7 +760,8 @@ pass_paras <- function( old_list = NULL, time_max = 40, land_dim_1 = 100,
                         perceive_tend = NA, perceive_kill  = NA, 
                         usr_yld_budget = 0, man_yld_budget = 0, 
                         mem_prv_observ = FALSE, bgt_bonus_reset = TRUE,
-                        traj_pred = FALSE, sim_annealing = FALSE,
+                        traj_pred = FALSE, user_annealing = FALSE,
+                        mana_annealing = FALSE, kmax_annealing = 1000, 
                         PARAS = NULL, ...
 ){
     
@@ -792,7 +793,7 @@ pass_paras <- function( old_list = NULL, time_max = 40, land_dim_1 = 100,
                                perceive_feed, perceive_help, perceive_tend, 
                                perceive_kill, usr_yld_budget, man_yld_budget,
                                mem_prv_observ, bgt_bonus_reset, traj_pred,
-                               sim_annealing); 
+                               user_annealing, mana_annealing, kmax_annealing); 
 
     paras_errors(input_list);
     
@@ -834,7 +835,8 @@ pass_paras <- function( old_list = NULL, time_max = 40, land_dim_1 = 100,
                budget_bonus, age_repr, 16, manager_budget, 10, 20, consume_surv, 
                consume_repr, 21, 0, 13, res_consume, 22, 23, times_feeding, 
                usr_yld_budget, man_yld_budget, 24, 25, 0, mem_prv_observ, 0,
-               bgt_bonus_reset, 0, traj_pred, 0, sim_annealing
+               bgt_bonus_reset, 0, traj_pred, 0, user_annealing, mana_annealing,
+               0, kmax_annealing
     );
 
     return( list(gmse_user_input = as.vector(input_list), 
@@ -863,7 +865,8 @@ cinput_check <- function(time_max, land_dim_1, land_dim_2, res_movement,
                          perceive_cast, perceive_feed, perceive_help, 
                          perceive_tend, perceive_kill, usr_yld_budget, 
                          man_yld_budget, mem_prv_observ, bgt_bonus_reset,
-                         traj_pred, sim_anneal){
+                         traj_pred, user_annealing, mana_annealing,
+                         kmax_annealing){
 
     if(length(time_max) > 1 | is.numeric(time_max) == FALSE){
         stop("ERROR: time_max should be a single numeric value.");
@@ -1093,8 +1096,14 @@ cinput_check <- function(time_max, land_dim_1, land_dim_2, res_movement,
     if(length(traj_pred) > 1){
         stop("ERROR: traj_pred should be a single TRUE/FALSE value.");
     }
-    if(length(sim_anneal) > 1 | sim_anneal < 0 | sim_anneal > 1){
-        stop("ERROR: traj_pred should be a single TRUE/FALSE value.");
+    if(length(user_annealing) > 1 | user_annealing < 0 | user_annealing > 1){
+        stop("ERROR: user_annealing should be a single TRUE/FALSE value.");
+    }
+    if(length(mana_annealing) > 1 | mana_annealing < 0 | mana_annealing > 1){
+        stop("ERROR: mana_annealing should be a single TRUE/FALSE value.");
+    }
+    if(kmax_annealing < 0 | is.numeric(kmax_annealing) == FALSE){
+        stop("ERROR: kmax_annealing should be an integer > 0.");
     }
     
     il <- c(time_max, land_dim_1, land_dim_2, res_movement, remove_pr,
@@ -1115,7 +1124,7 @@ cinput_check <- function(time_max, land_dim_1, land_dim_2, res_movement,
             perceive_cull, perceive_cast, perceive_feed, perceive_help, 
             perceive_tend, perceive_kill, usr_yld_budget, 
             man_yld_budget, mem_prv_observ, bgt_bonus_reset, traj_pred,
-            sim_anneal); 
+            user_annealing, mana_annealing, kmax_annealing); 
     
     return(il);
 }
