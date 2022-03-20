@@ -82,6 +82,7 @@
 #'@param mem_prv_observ A boolean parameter triggering the memorization of last time step's population size observation
 #'@param bgt_bonus_reset A boolean parameter. Default TRUE: bonus is reset to zero after a time step of policy update. FALSE: reset to zero only when the costs decreased last time step. 
 #'@param traj_pred A boolean parameter. Determines if the manager feeds the evolutionary algorithm with a prediction of population trajectory (TRUE) or the regular latest observation (FALSE). Default FALSE.
+#'@param sim_annealing Determines whether simulated annealing should be used in place of the genetic algorithm for agent decision-making. If TRUE, then simulated annealing is used for agents. If FALSE, then the genetic algorithm is used.
 #'@return A large list is returned that includes detailed simulation histories for the resource, observation, management, and user models. This list includes eight elements, most of which are themselves complex lists of arrays: (1) A list of length `time_max` in which each element is an array of resources as they exist at the end of each time step. Resource arrays include all resources and their attributes (e.g., locations, growth rates, offspring, how they are affected by stakeholders, etc.). (2) A list of length `time_max` in which each element is an array of resource observations from the observation model. Observation arrays are similar to resource arrays, except that they can have a smaller number of rows if not all resources are observed, and they have additional columns that show the history of each resource being observed over the course of `times_observe` observations in the observation model. (3) A 2D array showing parameter values at each time step (unique rows); most of these values are static but some (e.g., resource number) change over time steps. (4) A list of length `time_max` in which each element is an array of the landscape that identifies proportion of crop production per cell. This allows for looking at where crop production is increased or decreased over time steps as a consequence of resource and stakeholder actions. (5) The total time the simulation took to run (not counting plotting time). (6) A 2D array of agents and their traits. (7) A list of length `time_max` in which each element is a 3D array of the costs of performing each action for managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in costs of particular actions can therefore be be examined over time. (8) A list of length `time_max` in which each element is a 3D array of the actions performed by managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in actions of agents can therefore be examined over time. Because the above lists cannot possibly be interpreted by eye all at once in the simulation output, it is highly recommended that the contents of a simulation be stored and interprted individually if need be; alternativley, simulations can more easily be interpreted through plots when `plotting = TRUE`.
 #'@examples
 #'\dontrun{
@@ -167,7 +168,8 @@ gmse <- function( time_max        = 40,    # Max number of time steps in sim
                   man_yld_budget  = 0,     # Prop. yield added to man budget
                   mem_prv_observ  = FALSE, # Prev time step pop size estimation
                   bgt_bonus_reset = TRUE,  # Bonus reset after policy updating
-                  traj_pred       = FALSE  # Prediction, not latest observation
+                  traj_pred       = FALSE, # Prediction, not latest observation
+                  sim_annealing   = FALSE  # Use sim annealing instead of GA
 ){
     
     time_max <- time_max + 1; # Add to avoid confusion (see loop below)
@@ -352,6 +354,7 @@ gmse <- function( time_max        = 40,    # Max number of time steps in sim
     pve <- mem_prv_observ;
     bbr <- bgt_bonus_reset;
     tjp <- traj_pred;
+    san <- sim_annealing;
 
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -488,7 +491,8 @@ gmse <- function( time_max        = 40,    # Max number of time steps in sim
                bbr,     # 132. Bonus resetting
                0,       # 133. Have the costs decreased last time step?
                tjp,     # 134. Always use trajectory prediction
-               0        # 135. Manager's prediction
+               0,       # 135. Manager's prediction
+               san      # 136. Use simulated annealing?
     );
     
     input_list <- cinput_check(time_max, land_dim_1, land_dim_2, res_movement, 
@@ -513,7 +517,8 @@ gmse <- function( time_max        = 40,    # Max number of time steps in sim
                                perceive_scare, perceive_cull, perceive_cast, 
                                perceive_feed, perceive_help, perceive_tend, 
                                perceive_kill, usr_yld_budget, man_yld_budget,
-                               mem_prv_observ, bgt_bonus_reset, traj_pred); 
+                               mem_prv_observ, bgt_bonus_reset, traj_pred, 
+                               sim_annealing); 
    
     paras_errors(input_list);
     

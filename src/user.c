@@ -438,6 +438,7 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     int protected_n;         /* Number of protected R objects */
     int vec_pos;             /* Vector position for making arrays */
     int group_think;         /* Should one user do the thinking for all */
+    int sim_annealing;       /* Should simulated annealing be used to think */
     double yield_budget;     
     int len_PARAMETERS;      /* Length of the parameters vector */
     int *dim_RESOURCE;       /* Dimensions of the RESOURCE array incoming */
@@ -654,8 +655,9 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     /* Do the biology here now */
     /* ====================================================================== */
     
-    group_think  = (int) paras[101];
-    yield_budget = (double) paras[125];
+    group_think    = (int) paras[101];
+    yield_budget   = (double) paras[125];
+    sim_annealing  = (int) paras[136];
     
     send_agents_home(agent_array, land, paras);
     
@@ -667,16 +669,23 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
         yield_to_budget(agent_array, paras);
     }
     
-    if(group_think > 0 && agent_number > 2){
-        ga(actions, costs, agent_array, resource_array, land, Jacobian_mat,
-           lookup, paras, 1, 0);
-        for(agent = 2; agent < agent_number; agent++){
-            copycat(actions, 1, agent, paras);
+    if(sim_annealing > 0){
+        for(agent = 1; agent < agent_number; agent++){ 
+            sa(actions, costs, agent_array, resource_array, land, 
+               Jacobian_mat, lookup, paras, agent, 0);
         }
     }else{
-        for(agent = 1; agent < agent_number; agent++){ 
+        if(group_think > 0 && agent_number > 2){
             ga(actions, costs, agent_array, resource_array, land, Jacobian_mat,
-               lookup, paras, agent, 0);
+               lookup, paras, 1, 0);
+            for(agent = 2; agent < agent_number; agent++){
+                copycat(actions, 1, agent, paras);
+           }
+        }else{
+            for(agent = 1; agent < agent_number; agent++){ 
+                ga(actions, costs, agent_array, resource_array, land, 
+                   Jacobian_mat, lookup, paras, agent, 0);
+            }
         }
     }
     

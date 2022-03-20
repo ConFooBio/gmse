@@ -30,5 +30,11 @@ void place_winners(double ****population, int *winners, int pop_size, int ROWS,
                    int COLS);
 
 void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
-        double ***LANDSCAPE, double **JACOBIAN, int **interact_table, 
-        double *paras, int agent, int managing);
+        double ***LANDSCAPE, double **JACOBIAN, int **lookup, double *paras, 
+        int agent, int managing);
+
+void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
+        double ***LANDSCAPE, double **JACOBIAN, int **lookup, double *paras,  
+        int agent, int managing);
+
+

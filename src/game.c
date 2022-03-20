@@ -815,7 +815,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     generations    = (int) paras[22];
     xdim           = (int) paras[68];
     ydim           = (int) paras[69];
-    converge_crit  = (double)paras[98];
+    converge_crit  = (double) paras[98];
     agentID        = (int) AGENT[agent][0];
     
     most_fit       = 0;
@@ -909,4 +909,130 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     free(POPULATION);
 }
 
+/* =============================================================================
+ * This function uses simulated annealing for agents to make decisions
+ *  Inputs include:
+ *      ACTION:    An array of the action of agents
+ *      COST:      An array of the cost of actions for each agent
+ *      AGENT:     An array of *row agents and *col traits for each agent
+ *      RESOURCES: An array of *row resources & *col traits for each resource
+ *      LANDSCAPE: An array of *row by *col size that makes up the landscape
+ *      JACOBIAN:  A Jacobian matrix of resource type and landscape effects
+ *      lookup:    A table indexing types with rows of interaction array
+ *      paras:     Parameters read into the function for population processes
+ *      agent:     The row of the agent undergoing a genetic algorithm
+ *      managing:  Whether or not the agent is managing a population
+ * ========================================================================== */
+void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
+        double ***LANDSCAPE, double **JACOBIAN, int **lookup, double *paras, 
+        int agent, int managing){
+  
+  
+  int kmax, k, temp, agentID, gen, xdim, ydim, row, col;
+  double budget, pr_jump, rand_pr, save_popsize, save_copies, save_ROWS; 
+  double*fitnesses, *fitnesses_n, ***ACTION_temp;
+  
+  agentID      = (int) AGENT[agent][0];
+  save_popsize = paras[21];
+  save_copies  = paras[23];
+  save_ROWS    = paras[68];
+  xdim         = (int) paras[68];
+  ydim         = (int) paras[69];
+  paras[21]    = 1.0;
+  paras[23]    = 0.0;
+  paras[68]    = 2.0;
+  
+  fitnesses   = malloc(sizeof(double));  
+  fitnesses_n = malloc(sizeof(double));  
+  
+  fitnesses[0]   = 0.0;
+  fitnesses_n[0] = 0.0;
+  
+  budget         = AGENT[agent][16] + AGENT[agent][24] + AGENT[agent][25];
+  
+  ACTION_temp = malloc(xdim * sizeof(double *));
+  for(row = 0; row < xdim; row++){
+    ACTION_temp[row] = malloc(ydim * sizeof(double *));
+    for(col = 0; col < ydim; col++){
+      ACTION_temp[row][col] = malloc(sizeof(double));
+    }
+  }
+  for(col = 0; col < ydim; col++){
+    for(row = 0; row < xdim; row++){
+      ACTION_temp[row][col][0] = 0;
+    }
+  }
+  
+  initialise_pop(ACTION, COST, paras, agent, budget, ACTION_temp, agentID);
+
+  k    = 0;
+  kmax = 10000;
+  while(k < kmax){
+    temp = 1 - ((1 + k) / kmax);
+    
+    constrain_costs(ACTION_temp, COST, paras, agent, budget, agentID);
+    
+    if(managing == 1){
+      apply_min_costs(ACTION_temp, paras, agentID);
+      manager_fitness(fitnesses, ACTION_temp, JACOBIAN, AGENT, lookup, 
+                      agentID, COST, ACTION, paras, gen);
+    }else{
+      strategy_fitness(AGENT, ACTION_temp, paras, fitnesses, JACOBIAN, 
+                       lookup, agentID); 
+    }
+    
+    mutation(ACTION_temp, paras, agentID); 
+    
+    constrain_costs(ACTION_temp, COST, paras, agent, budget, agentID);
+    
+    if(managing == 1){
+      apply_min_costs(ACTION_temp, paras, agentID);
+      manager_fitness(fitnesses_n, ACTION_temp, JACOBIAN, AGENT, lookup, 
+                      agentID, COST, ACTION, paras, gen);
+    }else{
+      strategy_fitness(AGENT, ACTION_temp, paras, fitnesses_n, JACOBIAN, 
+                       lookup, agentID); 
+    }
+
+    if(fitnesses_n[0] < fitnesses[0]){
+      pr_jump = exp(-(fitnesses[0] - fitnesses_n[0]) / temp); 
+      rand_pr = runif(0, 1);
+      if(pr_jump > rand_pr){
+        for(col = 0; col < ydim; col++){
+          for(row = 0; row < xdim; row++){
+            ACTION[row][col][agent] = ACTION_temp[row][col][0];
+          }
+        } 
+      }
+    }else{
+      for(col = 0; col < ydim; col++){
+        for(row = 0; row < xdim; row++){
+          ACTION[row][col][agent] = ACTION_temp[row][col][0];
+        }
+      } 
+    }
+
+    for(col = 0; col < ydim; col++){
+      for(row = 0; row < xdim; row++){
+        ACTION_temp[row][col][0] = ACTION[row][col][agent];
+      }
+    } 
+    k++;
+  }
+
+  
+  paras[21] = save_popsize;
+  paras[23] = save_copies;
+  paras[68] = save_ROWS;
+  
+  for(row = 0; row < xdim; row++){
+    for(col = 0; col < ydim; col++){
+      free(ACTION_temp[row][col]);   
+    }
+    free(ACTION_temp[row]); 
+  }
+  free(ACTION_temp);
+  free(fitnesses_n);
+  free(fitnesses);
+}
 
