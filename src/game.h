@@ -39,5 +39,3 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
 void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double **JACOBIAN, int **lookup, double *paras,  
         int agent, int managing);
-
-

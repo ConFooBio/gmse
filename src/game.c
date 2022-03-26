@@ -545,6 +545,7 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
     int agent, i, j, m_lyr, action_row, manager_row, type1, type2, type3;
     int pop_size, int_num, ROWS, COLS, psc, pcu, pca, pfe, phe, n_agents;
     int sim_ann;
+    
     double *count_change, foc_effect, change_dev, max_dev;
     double *dev_from_util, *utils, **merged_acts, **merged_costs, **act_change;
     
