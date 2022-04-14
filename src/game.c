@@ -881,9 +881,11 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
             apply_min_costs(POPULATION, paras, agentID);
             manager_fitness(fitnesses, POPULATION, JACOBIAN, AGENT, lookup, 
                             agentID, COST, ACTION, paras);
+            paras[140] += popsize;
         }else{
             strategy_fitness(AGENT, POPULATION, paras, fitnesses, JACOBIAN, 
                              lookup, agentID); 
+            paras[140] += popsize;
         }
   
         tournament(fitnesses, winners, paras);
@@ -1004,9 +1006,11 @@ void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
       apply_min_costs(ACTION_temp, paras, agentID);
       manager_fitness(fitnesses_n, ACTION_temp, JACOBIAN, AGENT, lookup, 
                       agentID, COST, ACTION, paras);
+      paras[141]++;
     }else{
       strategy_fitness(AGENT, ACTION_temp, paras, fitnesses_n, JACOBIAN, 
                        lookup, agentID); 
+      paras[141]++;
     }
     
     if(fitnesses_n[0] < fitnesses[0]){

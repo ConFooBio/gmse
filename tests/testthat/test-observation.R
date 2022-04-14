@@ -37,7 +37,7 @@ test_that("Dimensions of observation arrays in returned list are correct", {
                17, 18, 19, 20, 21, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
                1, 1, 1, 1, 10, 1000, 100, 100, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0, 0,
                1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1, 0, 0, 
-               24, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+               24, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     
     agents  <-  make_agents(model        = "IBM",
                             agent_number = 2,
@@ -66,7 +66,7 @@ test_that("Dimensions of observation arrays in returned list are correct", {
     
     expect_equal(dim(obs[[1]]), c(100, 43));
     expect_equal(dim(obs[[2]]), c(2, 27));
-    expect_equal(length(obs[[3]]), 140);
+    expect_equal(length(obs[[3]]), 142);
 })
 
 test_that("Observation model updates new parameters", {
@@ -104,7 +104,7 @@ test_that("Observation model updates new parameters", {
                17, 18, 19, 20, 21, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
                1, 1, 1, 1, 10, 1000, 100, 100, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0, 0,
                1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1, 0, 0, 
-               24, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+               24, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     
     agents  <-  make_agents(model        = "IBM",
                             agent_number = 2,
@@ -173,7 +173,7 @@ test_that("Resources are marked correctly", {
                17, 18, 19, 20, 21, 0.5, 1, 2, 15, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
                1, 1, 1, 1, 10, 1000, 100, 100, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0, 0,
                1, 16, 1000, 10, 20, 0, 0, 21, 0, 13, 1, 22, 23, 1, 1, 0, 0, 
-               24, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+               24, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     
     agents  <-  make_agents(model        = "IBM",
                             agent_number = 2,

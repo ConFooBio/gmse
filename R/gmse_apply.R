@@ -836,7 +836,7 @@ pass_paras <- function( old_list = NULL, time_max = 40, land_dim_1 = 100,
                consume_repr, 21, 0, 13, res_consume, 22, 23, times_feeding, 
                usr_yld_budget, man_yld_budget, 24, 25, 0, mem_prv_observ, 0,
                bgt_bonus_reset, 0, traj_pred, 0, user_annealing, mana_annealing,
-               0, kmax_annealing
+               0, kmax_annealing, 0, 0
     );
 
     return( list(gmse_user_input = as.vector(input_list), 

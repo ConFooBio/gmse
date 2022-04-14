@@ -501,7 +501,9 @@ gmse <- function( time_max        = 40,    # Max number of time steps in sim
                san,     # 136. Use simulated annealing for users?
                msa,     # 137. Use simulated annealing for managers?
                0,       # 138. Which row to start on in simulated annealing
-               kmx      # 139. What is the max iterations for sim annealing
+               kmx,     # 139. What is the max iterations for sim annealing
+               0,       # 140. Calls to genetic algorithm fitness function
+               0        # 141. Calls to simulated annealing fitness function
     );
     
     input_list <- cinput_check(time_max, land_dim_1, land_dim_2, res_movement, 
