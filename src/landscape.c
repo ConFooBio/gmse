@@ -131,7 +131,7 @@ SEXP build_ownership(SEXP PARAMETERS){
     len_P = GET_LENGTH(PARAMETERS);
     
     /* Code below copies the paras vector into C */
-    build_paras = malloc(len_P * sizeof(double *));
+    build_paras = (double *) malloc(len_P * sizeof(double));
     vec_pos     = 0;
     for(xloc = 0; xloc < len_P; xloc++){
         build_paras[xloc] = paras_ptr[vec_pos];
@@ -146,11 +146,11 @@ SEXP build_ownership(SEXP PARAMETERS){
     
     /* Do the biology here now */
     /* ====================================================================== */
-    bin    = malloc(1 * sizeof(int));
-    count  = malloc(1 * sizeof(int));
-    land   = malloc(dim_x * sizeof(double *));
+    bin    = (int *) malloc(1 * sizeof(int));
+    count  = (int *) malloc(1 * sizeof(int));
+    land   = (double **) malloc(dim_x * sizeof(double *));
     for(xloc = 0; xloc < dim_x; xloc++){
-        land[xloc] = malloc(dim_y * sizeof(double));   
+        land[xloc] = (double *) malloc(dim_y * sizeof(double));   
     } 
     
     (*bin)   = 0;

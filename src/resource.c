@@ -517,9 +517,9 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     /* Code below remakes the RESOURCE matrix for easier use */
     res_number        = dim_RESOURCE[0];
     trait_number      = dim_RESOURCE[1];
-    res_old   = malloc(res_number * sizeof(double *));
+    res_old   = (double **) malloc(res_number * sizeof(double *));
     for(resource = 0; resource < res_number; resource++){
-        res_old[resource] = malloc(trait_number * sizeof(double));   
+        res_old[resource] = (double *) malloc(trait_number * sizeof(double));   
     } 
     vec_pos = 0;
     for(trait = 0; trait < trait_number; trait++){
@@ -534,11 +534,11 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     land_z = dim_LANDSCAPE[2];
     land_y = dim_LANDSCAPE[1];
     land_x = dim_LANDSCAPE[0];
-    land   = malloc(land_x * sizeof(double *));
+    land   = (double ***) malloc(land_x * sizeof(double **));
     for(xloc = 0; xloc < land_x; xloc++){
-        land[xloc] = malloc(land_y * sizeof(double *));
+        land[xloc] = (double **) malloc(land_y * sizeof(double *));
         for(yloc = 0; yloc < land_y; yloc++){
-            land[xloc][yloc] = malloc(land_z * sizeof(double));   
+            land[xloc][yloc] = (double *) malloc(land_z * sizeof(double));   
         }
     } 
     vec_pos = 0;
@@ -552,7 +552,7 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     }  /* LANDSCAPE is now stored as land */    
     
     /* Code below copies the paras vector into C */
-    paras   = malloc(len_PARAMETERS * sizeof(double *));
+    paras   = (double *) malloc(len_PARAMETERS * sizeof(double));
     vec_pos   = 0;
     for(xloc = 0; xloc < len_PARAMETERS; xloc++){
         paras[xloc] = paras_ptr[vec_pos];
@@ -584,9 +584,9 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     for(resource = 0; resource < res_number; resource++){
         res_nums_added += res_old[resource][off_col];
     }
-    res_make = malloc(res_nums_added * sizeof(double *));
+    res_make = (double **) malloc(res_nums_added * sizeof(double *));
     for(resource = 0; resource < res_nums_added; resource++){
-        res_make[resource] = malloc(trait_number * sizeof(double));   
+        res_make[resource] = (double *) malloc(trait_number * sizeof(double));   
     }
     
     res_place(res_make, res_old, paras, res_nums_added);
@@ -604,9 +604,9 @@ SEXP resource(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS){
     paras[32]     = (double) res_num_total;
     
     /* Below makes a new array for new RESOURCE, then adds it */
-    res_new = malloc(res_num_total * sizeof(double *));
+    res_new = (double **) malloc(res_num_total * sizeof(double *));
     for(resource = 0; resource < res_num_total; resource++){
-        res_new[resource] = malloc(trait_number * sizeof(double));   
+        res_new[resource] = (double *) malloc(trait_number * sizeof(double));   
     }    
     
     /* Below pastes surviving old and new resources into the new array */

@@ -184,7 +184,7 @@ int find_a_resource(double **resource_array, double ***land, double *paras,
     type3 = (int) action_array[action_row][res_t3][agent];
     u_loc = (int) action_array[action_row][5][agent];
     
-    can_act = malloc(resource_number * sizeof(int));
+    can_act = (int *) malloc(resource_number * sizeof(int));
     
     agentID   = agent + 1;
     available = 0;
@@ -299,11 +299,11 @@ void do_acts(double ***action_array, double **resource_array, double *paras,
     COLS            = (int) paras[69];
     start_col       = (int) paras[71];
     
-    action_clone = malloc(ROWS * sizeof(double *));
+    action_clone = (double ***) malloc(ROWS * sizeof(double **));
     for(row = 0; row < ROWS; row++){
-        action_clone[row] = malloc(COLS * sizeof(double *));
+        action_clone[row] = (double **) malloc(COLS * sizeof(double *));
         for(col = 0; col < COLS; col++){
-            action_clone[row][col] = malloc(layers * sizeof(double));
+            action_clone[row][col] = (double *) malloc(layers * sizeof(double));
         }
     }
     
@@ -523,9 +523,10 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     /* Code below remakes the RESOURCE matrix, with extra columns for obs */
     res_number        = dim_RESOURCE[0];
     trait_number      = dim_RESOURCE[1]; 
-    resource_array    = malloc(res_number * sizeof(double *));
+    resource_array    = (double **) malloc(res_number * sizeof(double *));
     for(resource = 0; resource < res_number; resource++){
-        resource_array[resource] = malloc(trait_number * sizeof(double));   
+        resource_array[resource] = (double *) 
+                                   malloc(trait_number * sizeof(double));   
     } 
     vec_pos = 0;
     for(res_trait = 0; res_trait < trait_number; res_trait++){
@@ -540,11 +541,11 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     land_z = dim_LANDSCAPE[2];
     land_y = dim_LANDSCAPE[1];
     land_x = dim_LANDSCAPE[0];
-    land   = malloc(land_x * sizeof(double *));
+    land   = (double ***) malloc(land_x * sizeof(double **));
     for(xloc = 0; xloc < land_x; xloc++){
-        land[xloc] = malloc(land_y * sizeof(double *));
+        land[xloc] = (double **) malloc(land_y * sizeof(double *));
         for(yloc = 0; yloc < land_y; yloc++){
-            land[xloc][yloc] = malloc(land_z * sizeof(double));   
+            land[xloc][yloc] = (double *) malloc(land_z * sizeof(double));   
         }
     } 
     vec_pos = 0;
@@ -561,11 +562,11 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     c_z   = dim_COST[2];
     c_y   = dim_COST[1];
     c_x   = dim_COST[0];
-    costs = malloc(c_x * sizeof(double *));
+    costs = (double ***) malloc(c_x * sizeof(double **));
     for(row = 0; row < c_x; row++){
-        costs[row] = malloc(c_y * sizeof(double *));
+        costs[row] = (double **) malloc(c_y * sizeof(double *));
         for(col = 0; col < c_y; col++){
-            costs[row][col] = malloc(c_z * sizeof(double));
+            costs[row][col] = (double *) malloc(c_z * sizeof(double));
         }
     }
     vec_pos = 0;
@@ -582,11 +583,11 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     a_z     = dim_ACTION[2];
     a_y     = dim_ACTION[1];
     a_x     = dim_ACTION[0];
-    actions = malloc(a_x * sizeof(double *));
+    actions = (double ***) malloc(a_x * sizeof(double **));
     for(row = 0; row < a_x; row++){
-        actions[row] = malloc(a_y * sizeof(double *));
+        actions[row] = (double **) malloc(a_y * sizeof(double *));
         for(col = 0; col < a_y; col++){
-            actions[row][col] = malloc(a_z * sizeof(double));
+            actions[row][col] = (double *) malloc(a_z * sizeof(double));
         }
     }
     vec_pos = 0;
@@ -602,9 +603,9 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     /* Code below remakes the AGENT matrix for easier use */
     agent_number        = dim_AGENT[0];
     agent_traits        = dim_AGENT[1];
-    agent_array         = malloc(agent_number * sizeof(double *));
+    agent_array         = (double **) malloc(agent_number * sizeof(double *));
     for(agent = 0; agent < agent_number; agent++){
-        agent_array[agent] = malloc(agent_traits * sizeof(double));   
+        agent_array[agent] = (double *) malloc(agent_traits * sizeof(double));   
     } 
     vec_pos = 0;
     for(agent_trait = 0; agent_trait < agent_traits; agent_trait++){
@@ -617,9 +618,9 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
 
     /* Code below remakes the JACOBIAN matrix for easier use */
     jacobian_dim  = dim_JACOBIAN[0];
-    Jacobian_mat  = malloc(jacobian_dim * sizeof(double *));
+    Jacobian_mat  = (double **) malloc(jacobian_dim * sizeof(double *));
     for(row = 0; row < jacobian_dim; row++){
-        Jacobian_mat[row] = malloc(jacobian_dim * sizeof(double));
+        Jacobian_mat[row] = (double *) malloc(jacobian_dim * sizeof(double));
     }
     vec_pos = 0;
     for(col = 0; col < jacobian_dim; col++){
@@ -632,9 +633,9 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     /* Code below remakes the INTERACT table for easier use */
     int_d0  = dim_INTERACT[0];
     int_d1  = dim_INTERACT[1];
-    lookup  = malloc(int_d0 * sizeof(int *));
+    lookup  = (int **) malloc(int_d0 * sizeof(int *));
     for(row = 0; row < int_d0; row++){
-        lookup[row] = malloc(int_d1 * sizeof(int));
+        lookup[row] = (int *) malloc(int_d1 * sizeof(int));
     }
     vec_pos = 0;
     for(col = 0; col < int_d1; col++){
@@ -645,8 +646,8 @@ SEXP user(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT, SEXP COST,
     }
     
     /* Code below copies the paras vector into C */
-    paras   = malloc(len_PARAMETERS * sizeof(double *));
-    vec_pos   = 0;
+    paras   = malloc(len_PARAMETERS * sizeof(double));
+    vec_pos = 0;
     for(xloc = 0; xloc < len_PARAMETERS; xloc++){
         paras[xloc] = paras_ptr[vec_pos];
         vec_pos++;

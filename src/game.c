@@ -368,8 +368,8 @@ void strategy_fitness(double **agent_array, double ***population, double *paras,
       a_row++;
     }
     
-    count_change = malloc(int_num * sizeof(double));
-    utilities    = malloc(int_num * sizeof(double));
+    count_change = (double *) malloc(int_num * sizeof(double));
+    utilities    = (double *) malloc(int_num * sizeof(double));
     
     for(agent = 0; agent < pop_size; agent++){
         for(i = 0; i < int_num; i++){
@@ -561,18 +561,18 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
     phe      = (int) paras[78];
     sim_ann  = (int) paras[137];
     
-    count_change  = malloc(int_num * sizeof(double));
-    utils         = malloc(int_num * sizeof(double));
-    dev_from_util = malloc(pop_size * sizeof(double));
-    merged_acts   = malloc(ROWS * sizeof(double *));
+    count_change  = (double *) malloc(int_num * sizeof(double));
+    utils         = (double *) malloc(int_num * sizeof(double));
+    dev_from_util = (double *) malloc(pop_size * sizeof(double));
+    merged_acts   = (double **) malloc(ROWS * sizeof(double *));
     for(i = 0; i < ROWS; i++){
         merged_acts[i] = malloc(COLS * sizeof(double));
     }
-    merged_costs = malloc(ROWS * sizeof(double *));
+    merged_costs = (double **) malloc(ROWS * sizeof(double *));
     for(i = 0; i < ROWS; i++){
         merged_costs[i] = malloc(COLS * sizeof(double));
     }
-    act_change = malloc(ROWS * sizeof(double *));
+    act_change = (double **) malloc(ROWS * sizeof(double *));
     for(i = 0; i < ROWS; i++){
         act_change[i] = malloc(COLS * sizeof(double));
     }
@@ -718,8 +718,8 @@ void tournament(double *fitnesses, int *winners, double *paras){
     sampleK  = (int) paras[24];
     chooseK  = (int) paras[25];
     
-    samples  = malloc(sampleK * sizeof(int));
-    samp_fit = malloc(sampleK * sizeof(double));
+    samples  = (int *) malloc(sampleK * sizeof(int));
+    samp_fit = (double *) malloc(sampleK * sizeof(double));
     placed   = 0;
     
     if(chooseK > sampleK){
@@ -767,11 +767,11 @@ void place_winners(double ****population, int *winners, double *paras){
     ROWS     = (int) paras[68];
     COLS     = (int) paras[69];
     
-    NEW_POP    = malloc(ROWS * sizeof(double *));
+    NEW_POP    = (double ***) malloc(ROWS * sizeof(double **));
     for(row = 0; row < ROWS; row++){
-        NEW_POP[row]    = malloc(COLS * sizeof(double *));
+        NEW_POP[row]    = (double **) malloc(COLS * sizeof(double *));
         for(col = 0; col < COLS; col++){
-            NEW_POP[row][col]    = malloc(pop_size * sizeof(double));
+            NEW_POP[row][col] = (double *) malloc(pop_size * sizeof(double));
         }
     }
     
@@ -841,11 +841,11 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         paras[131] = budget;
     }
     
-    POPULATION = malloc(xdim * sizeof(double *));
+    POPULATION = (double ***) malloc(xdim * sizeof(double **));
     for(row = 0; row < xdim; row++){
-        POPULATION[row] = malloc(ydim * sizeof(double *));
+        POPULATION[row] = (double **) malloc(ydim * sizeof(double *));
         for(col = 0; col < ydim; col++){
-            POPULATION[row][col] = malloc(popsize * sizeof(double));
+            POPULATION[row][col] = (double *) malloc(popsize * sizeof(double));
         }
     }
     for(layer = 0; layer < popsize; layer++){
@@ -856,8 +856,8 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         }
     }  
     
-    fitnesses = malloc(popsize * sizeof(double));
-    winners   = malloc(popsize * sizeof(int));
+    fitnesses = (double *) malloc(popsize * sizeof(double));
+    winners   = (int *) malloc(popsize * sizeof(int));
     
     for(row = 0; row < popsize; row++){ /* Need to initialise to some values */
         fitnesses[row] = 0;
@@ -959,19 +959,19 @@ void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     paras[138] = 2.0;
   }
 
-  fitnesses   = malloc(sizeof(double));  
-  fitnesses_n = malloc(sizeof(double));  
+  fitnesses   = (double *) malloc(sizeof(double));  
+  fitnesses_n = (double *) malloc(sizeof(double));  
   
   fitnesses[0]   = 0.0;
   fitnesses_n[0] = 0.0;
   
   budget         = AGENT[agent][16] + AGENT[agent][24] + AGENT[agent][25];
   
-  ACTION_temp = malloc(xdim * sizeof(double *));
+  ACTION_temp = (double ***) malloc(xdim * sizeof(double **));
   for(row = 0; row < xdim; row++){
-    ACTION_temp[row] = malloc(ydim * sizeof(double *));
+    ACTION_temp[row] = (double **) malloc(ydim * sizeof(double *));
     for(col = 0; col < ydim; col++){
-      ACTION_temp[row][col] = malloc(sizeof(double));
+      ACTION_temp[row][col] = (double *) malloc(sizeof(double));
     }
   }
   for(col = 0; col < ydim; col++){

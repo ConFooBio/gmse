@@ -596,7 +596,7 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     /* ====================================================================== */
 
     /* Code below copies the paras vector into C */
-    paras   = malloc(len_PARAMETERS * sizeof(double *));
+    paras   = (double *) malloc(len_PARAMETERS * sizeof(double));
     vec_pos = 0;
     for(xloc = 0; xloc < len_PARAMETERS; xloc++){
         paras[xloc] = paras_ptr[vec_pos];
@@ -613,9 +613,10 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     if(method < 2){ /* If method 0, make column for each time observing */
         obs_columns += times_obs;
     }
-    resource_array    = malloc(res_number * sizeof(double *));
+    resource_array    = (double **) malloc(res_number * sizeof(double *));
     for(resource = 0; resource < res_number; resource++){
-        resource_array[resource] = malloc(obs_columns * sizeof(double));   
+        resource_array[resource] = (double *) 
+                                   malloc(obs_columns * sizeof(double));   
     } 
     vec_pos = 0;
     for(res_trait = 0; res_trait < trait_number; res_trait++){
@@ -635,11 +636,11 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     land_z = dim_LANDSCAPE[2];
     land_y = dim_LANDSCAPE[1];
     land_x = dim_LANDSCAPE[0];
-    land   = malloc(land_x * sizeof(double *));
+    land   = (double ***) malloc(land_x * sizeof(double **));
     for(xloc = 0; xloc < land_x; xloc++){
-        land[xloc] = malloc(land_y * sizeof(double *));
+        land[xloc] = (double **) malloc(land_y * sizeof(double *));
         for(yloc = 0; yloc < land_y; yloc++){
-            land[xloc][yloc] = malloc(land_z * sizeof(double));   
+            land[xloc][yloc] = (double *) malloc(land_z * sizeof(double));   
         }
     } 
     vec_pos = 0;
@@ -655,9 +656,9 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     /* Code below remakes the AGENT matrix for easier use */
     agent_number        = dim_AGENT[0];
     agent_traits        = dim_AGENT[1];
-    agent_array         = malloc(agent_number * sizeof(double *));
+    agent_array         = (double**) malloc(agent_number * sizeof(double *));
     for(agent = 0; agent < agent_number; agent++){
-        agent_array[agent] = malloc(agent_traits * sizeof(double));   
+        agent_array[agent] = (double *) malloc(agent_traits * sizeof(double));   
     } 
     vec_pos = 0;
     for(agent_trait = 0; agent_trait < agent_traits; agent_trait++){
@@ -671,9 +672,9 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     /* Code below remakes the INTERACT table for easier use */
     int_d0  = dim_INTERACT[0];
     int_d1  = dim_INTERACT[1];
-    lookup  = malloc(int_d0 * sizeof(int *));
+    lookup  = (int **) malloc(int_d0 * sizeof(int *));
     for(row = 0; row < int_d0; row++){
-        lookup[row] = malloc(int_d1 * sizeof(int));
+        lookup[row] = (int *) malloc(int_d1 * sizeof(int));
     }
     vec_pos = 0;
     for(col = 0; col < int_d1; col++){
@@ -800,9 +801,9 @@ SEXP observation(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT,
     }
 
     /* Build an array with the appropriate number of resources observed */
-    obs_array = malloc(new_obs * sizeof(double *));
+    obs_array = (double **) malloc(new_obs * sizeof(double *));
     for(resource = 0; resource < new_obs; resource++){
-        obs_array[resource] = malloc(obs_columns * sizeof(double));
+        obs_array[resource] = (double *) malloc(obs_columns * sizeof(double));
     }
 
     /* Fill the new array with the resources observed */
@@ -998,9 +999,10 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     /* Code below remakes the RESOURCE matrix */
     res_number        = dim_RESOURCE[0];
     trait_number      = dim_RESOURCE[1]; 
-    resource_array    = malloc(res_number * sizeof(double *));
+    resource_array    = (double **) malloc(res_number * sizeof(double *));
     for(resource = 0; resource < res_number; resource++){
-        resource_array[resource] = malloc(trait_number * sizeof(double));   
+        resource_array[resource] = (double *) 
+                                   malloc(trait_number * sizeof(double));   
     } 
     vec_pos = 0;
     for(res_trait = 0; res_trait < trait_number; res_trait++){
@@ -1015,20 +1017,20 @@ SEXP anecdotal(SEXP RESOURCE, SEXP LANDSCAPE, SEXP PARAMETERS, SEXP AGENT){
     land_z = dim_LANDSCAPE[2];
     land_y = dim_LANDSCAPE[1];
     land_x = dim_LANDSCAPE[0];
-    land   = malloc(land_x * sizeof(double *));
+    land   = (double ***) malloc(land_x * sizeof(double **));
     for(xloc = 0; xloc < land_x; xloc++){
-        land[xloc] = malloc(land_y * sizeof(double *));
+        land[xloc] = (double **) malloc(land_y * sizeof(double *));
         for(yloc = 0; yloc < land_y; yloc++){
-            land[xloc][yloc] = malloc(land_z * sizeof(double));   
+            land[xloc][yloc] = (double *) malloc(land_z * sizeof(double));   
         }
     } 
     
     /* Code below remakes the AGENT matrix for easier use */
     agent_number        = dim_AGENT[0];
     agent_traits        = dim_AGENT[1];
-    agent_array         = malloc(agent_number * sizeof(double *));
+    agent_array         = (double **) malloc(agent_number * sizeof(double *));
     for(agent = 0; agent < agent_number; agent++){
-        agent_array[agent] = malloc(agent_traits * sizeof(double));   
+        agent_array[agent] = (double *) malloc(agent_traits * sizeof(double));   
     } 
     vec_pos = 0;
     for(agent_trait = 0; agent_trait < agent_traits; agent_trait++){

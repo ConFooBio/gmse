@@ -64,7 +64,7 @@ void find_descending_order(int *order_array, double *by_array, int length){
     int i, k, max_index, *sarray;
     double max_val, min_val;
     
-    sarray  = malloc(length * sizeof(int));
+    sarray  = (int *) malloc(length * sizeof(int));
     for(i = 0; i < length; i++){
         sarray[i] = order_array[i];
     }
