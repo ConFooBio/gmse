@@ -814,11 +814,14 @@ void place_winners(double ****population, int *winners, double *paras){
 void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double **JACOBIAN, int **lookup, double *paras, 
         int agent, int managing){
+  
+    FILE *gaptr;
     
-    int row, col, gen, layer, most_fit, popsize, new_fitness;
-    int generations, xdim, ydim, agentID, old_fitness, *winners;
+    int row, col, gen, layer, most_fit, popsize;
+    int generations, xdim, ydim, agentID, *winners;
+    double new_fitness, old_fitness;
     double budget, converge_crit, fit_change, ***POPULATION, *fitnesses;
-
+    
     popsize        = (int) paras[21];
     generations    = (int) paras[22];
     xdim           = (int) paras[68];
@@ -896,6 +899,12 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         new_fitness = fitnesses[most_fit];
         
         fit_change  = get_fitness_change(new_fitness, old_fitness, managing);
+        
+        if(gen > 0){
+          gaptr = fopen("ga_fitness.txt", "a+");
+          fprintf(gaptr, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%d\t%f\t%f\t%f\n", agent, paras[88],paras[89],paras[90],paras[91],paras[92],paras[93],paras[94], paras[0], gen, old_fitness, new_fitness, fit_change);
+          fclose(gaptr);
+        }      
         
         old_fitness = new_fitness;
 

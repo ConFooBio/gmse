@@ -124,7 +124,22 @@ count <- count + 1;
 
 
 
+################################################################################
+# Side-by-side fair comparison
+################################################################################
+sim <- gmse(time_max = 40, land_ownership = TRUE, scaring = TRUE, 
+            culling = TRUE, castration = TRUE, help_offspring = TRUE, 
+            tend_crops = TRUE, kill_crops = TRUE, plotting = FALSE,
+            ga_seedrep = 0);
 
+
+
+
+
+end_time <- Sys.time();
+tot_time <- end_time - st_time;
+gal_fcal <- sum(sim_sum_1[,6]);
+GA_stats <- c(time_steps, tot_time, gal_fcal, mean(sim_sum_1[101:200,5]));
 
 
 
