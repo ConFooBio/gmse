@@ -133,7 +133,11 @@ sim <- gmse(time_max = 40, land_ownership = TRUE, scaring = TRUE,
             ga_seedrep = 0);
 
 
-
+sim <- gmse(time_max = 40, land_ownership = TRUE, scaring = TRUE, 
+            culling = TRUE, castration = TRUE, help_offspring = TRUE, 
+            tend_crops = TRUE, kill_crops = TRUE, plotting = FALSE,
+            ga_seedrep = 0, user_annealing = TRUE, mana_annealing = TRUE,
+            kmax_annealing = 100);
 
 
 end_time <- Sys.time();

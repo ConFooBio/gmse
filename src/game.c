@@ -815,8 +815,6 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double **JACOBIAN, int **lookup, double *paras, 
         int agent, int managing){
   
-    FILE *gaptr;
-    
     int row, col, gen, layer, most_fit, popsize;
     int generations, xdim, ydim, agentID, *winners;
     double new_fitness, old_fitness;
@@ -897,15 +895,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         
         most_fit    = find_most_fit(fitnesses, popsize);
         new_fitness = fitnesses[most_fit];
-        
         fit_change  = get_fitness_change(new_fitness, old_fitness, managing);
-        
-        if(gen > 0){
-          gaptr = fopen("ga_fitness.txt", "a+");
-          fprintf(gaptr, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%d\t%f\t%f\t%f\n", agent, paras[88],paras[89],paras[90],paras[91],paras[92],paras[93],paras[94], paras[0], gen, old_fitness, new_fitness, fit_change);
-          fclose(gaptr);
-        }      
-        
         old_fitness = new_fitness;
 
         gen++;
@@ -946,6 +936,9 @@ void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double **JACOBIAN, int **lookup, double *paras, 
         int agent, int managing){
   
+  FILE *saptr;
+  double fchng;
+
   int kmax, k, temp, agentID, xdim, ydim, row, col;
   double budget, pr_jump, rand_pr, save_popsize, save_copies, save_ROWS; 
   double save_st_row, save_mu, *fitnesses, *fitnesses_n, ***ACTION_temp;
@@ -1021,6 +1014,17 @@ void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
                        lookup, agentID); 
       paras[141]++;
     }
+    
+    if(k > 0){
+      if(agent > 0){
+        fchng = get_fitness_change(fitnesses_n[k], fitnesses_n[k-1], 0);
+      }else{
+        fchng = get_fitness_change(fitnesses_n[k], fitnesses_n[k-1], 1);
+      }
+      saptr = fopen("sa_fitness.txt", "a+");
+      fprintf(saptr, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%d\t%f\t%f\t%f\n", agent, paras[88],paras[89],paras[90],paras[91],paras[92],paras[93],paras[94], paras[0], k, fitnesses_n[k-1], fitnesses_n[k], fchng);
+      fclose(saptr);
+    }   
     
     if(fitnesses_n[0] < fitnesses[0]){
       pr_jump = exp(-(fitnesses[0] - fitnesses_n[0]) / temp); 
