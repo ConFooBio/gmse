@@ -936,9 +936,6 @@ void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double **JACOBIAN, int **lookup, double *paras, 
         int agent, int managing){
 
-  FILE *saptr;
-  double fchng;
-  
   int kmax, k, temp, agentID, xdim, ydim, row, col;
   double budget, pr_jump, rand_pr, save_popsize, save_copies, save_ROWS; 
   double save_st_row, save_mu, *fitnesses, *fitnesses_n, ***ACTION_temp;
@@ -1015,19 +1012,6 @@ void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
       paras[141]++;
     }
 
-    
-    if(k > 0){
-      if(agent > 0){
-        fchng = get_fitness_change(fitnesses_n[0], fitnesses[0], 0);
-      }else{
-        fchng = get_fitness_change(fitnesses_n[0], fitnesses[0], 1);
-      }
-      saptr = fopen("sa_fitness.txt", "a+");
-      fprintf(saptr, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%d\t%f\t%f\t%f\n", agent, paras[88],paras[89],paras[90],paras[91],paras[92],paras[93],paras[94], paras[0], k, fitnesses_n[0], fitnesses[0], fchng);
-      fclose(saptr);
-    }  
-    
-    
     if(fitnesses_n[0] < fitnesses[0]){
       pr_jump = exp(-(fitnesses[0] - fitnesses_n[0]) / temp); 
       rand_pr = runif(0, 1);
