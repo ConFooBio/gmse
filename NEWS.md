@@ -1,3 +1,14 @@
+# GMSE VERSION 1.0.0.0
+
+## NEW FEATURES
+
+* A simulated annealing algorithm is now an option in place of a genetic algorithm for agent decision-making.
+
+## BUG FIXES
+
+* Memory management issues have been fixed in compiled code to avoid issues for some systems.
+
+
 # GMSE VERSION 0.7.0.0
 
 ## MAJOR CHANGES
