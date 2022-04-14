@@ -29,7 +29,7 @@ library(GMSE);
 Adaptive timing of investment strategy
 ================================================================================
 
-In the context of adaptive management of conservation conflict, managers tend to invest their ressources in updating the conservation policy as soon as possible. But leaving the policy unchanged when the population is close enough to the target could actually save money, time, and energy, and enpower managers for the next iteration. 
+In the context of adaptive management of conservation conflict, managers tend to invest their resources in updating the conservation policy as soon as possible. But leaving the policy unchanged when the population is close enough to the target could actually save money, time, and energy, and enpower managers for the next iteration. 
 
 In this GMSE option, the notion of 'close enough to the target' is represented by the `action_thres` parameter (i.e., 'action threshold', which can take values between 0 and 1). The parameter is a fraction of the manager target (`manage_target`) added up and down the target value, defining a band around it. When managers observe the population size to be within this band, they assume that the current policy is satisfactory, so the genetic algorithm is not called and the policy is kept unchanged. For example, with `action_thres = 0.1` and `manage_target = 1000`, the manager will update the policy only if the population is under 900, or above 1100 individuals.
 

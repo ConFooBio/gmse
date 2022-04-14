@@ -1,0 +1,45 @@
+---
+title: 'The simulated annealing algorithm of GMSE'
+subtitle: 'GMSE: an R package for generalised management strategy evaluation (New function vignette)'
+author: | 
+        | Brad Duthie&#xb9; &#xb2;, Gabriela Ochoa&#xb9;
+date: "[1] Biological and Environmental Sciences, University of Stirling, Stirling, UK [2] alexander.duthieh@stir.ac.uk"
+output:
+  pdf_document:
+    citation_package: natbib
+    fig_caption: yes
+  html_document: default
+  word_document:
+    fig_caption: yes
+    reference_docx: docx_template.docx
+header-includes:
+- \usepackage{lineno}
+linestretch: 1
+bibliography: gmse.bib
+biblio-style: apalike
+link-citations: true
+linkcolor: blue
+---
+
+```{r, echo = FALSE}
+library(GMSE);
+# sim <- gmse(action_thres = 0.1, budget_bonus = 0.5, plotting = FALSE);
+```
+
+Overview of simulated annealing
+================================================================================
+
+The primary algorithm used in GMSE to model manager and user decision-making is the [genetic algorithm](SI1.pdf). As of version 1.0, GMSE also allows for the use of a simulated annealing algorithm [@Kirkpatrick1983; @Cerny1985; @Rutenbar1989]. Simulated annealing searches a space of potential solutions (in GMSE, decisions made by agents to maximise their own utility) in an iterative way. Unlike the [genetic algorithm](SI1.pdf), it is not a population focused approach. 
+
+Example use of simulated annealing
+================================================================================
+
+
+Performance of simulated annealing
+================================================================================
+
+
+
+References
+================================================================================
+
