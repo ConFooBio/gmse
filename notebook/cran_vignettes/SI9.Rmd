@@ -1,14 +1,14 @@
 ---
 title: 'The simulated annealing algorithm of GMSE'
-subtitle: 'GMSE: an R package for generalised management strategy evaluation (New function vignette)'
+subtitle: 'GMSE: an R package for generalised management strategy evaluation'
 author: | 
         | Brad Duthie&#xb9; &#xb2;, Gabriela Ochoa&#xb9;
 date: "[1] Biological and Environmental Sciences, University of Stirling, Stirling, UK [2] alexander.duthieh@stir.ac.uk"
 output:
+  html_document: default
   pdf_document:
     citation_package: natbib
     fig_caption: yes
-  html_document: default
   word_document:
     fig_caption: yes
     reference_docx: docx_template.docx
@@ -29,15 +29,185 @@ library(GMSE);
 Overview of simulated annealing
 ================================================================================
 
-The primary algorithm used in GMSE to model manager and user decision-making is the [genetic algorithm](SI1.pdf). As of version 1.0, GMSE also allows for the use of a simulated annealing algorithm [@Kirkpatrick1983; @Cerny1985; @Rutenbar1989]. Simulated annealing searches a space of potential solutions (in GMSE, decisions made by agents to maximise their own utility) in an iterative way. Unlike the [genetic algorithm](SI1.pdf), it is not a population focused approach. 
+The primary algorithm used in GMSE to model manager and user decision-making is the [genetic algorithm](SI1.pdf). As of version 1.0, GMSE also allows for the use of a simulated annealing algorithm [@Kirkpatrick1983; @Cerny1985; @Rutenbar1989]. Simulated annealing searches a space of potential solutions (in GMSE, decisions made by agents to maximise their own utility) in an iterative way. Unlike the [genetic algorithm](SI1.pdf), it is not a population focused approach. The simulated annealing algorithm of GMSE instead iterates from an initial $k = 0$ to a maximum $k_{max}$. For each iteration, a single solution (agent decision) exists, then a new potential solution is considered; under some conditions, the new solution is adopted and the old discarded.
+
+More specifically, the simulated annealing algorithm of GMSE first initialises a random agent decision at $k = 0$ (i.e., either a set of user actions or manager policy choices, depending on the agent). The initialisation is the same as in the [genetic algorithm](SI1.pdf). In each iteration from $k = 0$ to $k_{max}$, the agent decision is first checked to ensure that it is not over the agent's budget using the same cost constraint procedure as in the [genetic algorithm](SI1.pdf). If over budget, then an actions are randomly removed until the decision is again within budget. Next, the fitness of the current agent decision is assessed (again using the same fitness function as in the [genetic algorithm](SI1.pdf)). 
+
+After checking the fitness of the current agent decision, the mutation function of the [genetic algorithm](SI1.pdf) is used to explore a new potential agent decision. The potential agent decision is checked and constrained to be within budget if necessary, then the fitness of the potential agent decision is compared with the fitness of the current agent decision. If the fitness of the potential agent decision is higher, then it replaces the current agent decision. If the fitness of the current agent decision is higher, then the potential agent decision replaces it with a probability of,
+
+$$\Pr(replace) = exp\left(\frac{- \left(W_{current} - W_{potential} \right)}{1 - \frac{(1 + k)}{ k_{max}}}\right).$$
+In the above, $W_{current}$ is the fitness of the current strategy, and $W_{potential}$ is the fitness of the potential strategy. Note that as $k \to k_{max}$, the probability of the potential strategy replacing the current strategy decreases when the latter has higher fitness.
+
+Overall, the simulated annealing approach has the potential to be faster than the [genetic algorithm](SI1.pdf) approach because it does not require a full population of evolving agent decisions. Below, we show how to use the simulated annealing algorithm in place of the genetic algorithm for users and managers, then we compare the performance of the two approaches.
+
 
 Example use of simulated annealing
 ================================================================================
+
+Here we use the same example of resource management as was used in the [main introduction](ms.pdf) to the GMSE package. This example considers a population of waterfowl that feed off of farmland, causing conservation conflict with farmers [e.g., @Fox2017a; @Mason2017; @Tulloch2017], while managers attempt to maintain waterfowl density at a target level. To replicate the example from the [main introduction](ms.pdf) using simulated annealing, we can set arguments in the `gmse` function (or `gmse_apply`) for `user_annealing` and `mana_annealing` (`TRUE` or `FALSE` whether simulated annealing is used in place of the genetic algorithm for users and managers, respectively). An additional parameter `kmax_annealing` sets the value for $k_{max}$. Additional relevant parameters (e.g., mutation rate) are set using the same arguments as used in the genetic algorithm. The code below runs the example using simulated annealing for agent decision-making
+
+
+```{r, echo = TRUE}
+sim <- gmse(land_ownership = TRUE, stakeholders = 5, observe_type = 0, 
+            res_death_K = 2000, manage_target = 1000, RESOURCE_ini = 1000, 
+            user_budget = 1000, manager_budget = 1000, res_consume = 1, 
+            scaring = TRUE, plotting = FALSE, user_annealing = TRUE,
+            mana_annealing = TRUE, kmax_annealing = 100);
+```
+
+All other `gmse` parameters are set to default values. Figure 1 shows the output, which can be compared with the [same output](ms.pdf) from using the genetic algorithm.
+
+```{r, echo = FALSE, fig.width = 6, fig.height = 6, fig.align = 'center', fig.cap = "Example GMSE simulation in which a natural resource is managed on the land of five farmers. The upper left panel shows locations of the resource (black dots) on the landscape. The upper right panel shows each farmers land (different colours). The middle left panel shows the abundance of the resource (black line) and its estimate from the perspective of the manager (blue line with 95 per cent confidence itnervals). The middle right planel shows farmer agricultural yield by colour. The lower left panel shows manager policy (costs of farmer actions) over time, and the lower right panel shows farmer actions chosen over time."}
+plot_gmse_results(sim);
+```
+
+Note that the output is the same as is produced the the genetic algorithm, and any combination of simulated annealing and the genetic algorithm can be used between managers and users with the `user_annealing` and `mana_annealing` arguments (but all users must use the same algorithm for decision-making). Overall, simulated annealing can give faster simulation results, but usually tends to perform worse in terms of agent decision-making, except when used for users in very simple decision-making models (e.g., farmers when the only option is culling). Details of the performance are described in the next section.
 
 
 Performance of simulated annealing
 ================================================================================
 
+Here we show the results of some simulations to compare the performance of the GMSE genetic algorithm and simulated annealing algorithm. The purpose here is to provide some guidance as to when the simulated annealing algorithm might be preferred. The best choice will likely be a trade-off between simulation time and the decision-making ability of GMSE agents. And because agents are, [by design](ms.pdf), not intended to be perfectly rational, what constitutes desirable 'decision-making ability' might also vary with simulation objectives. In other words, there might be situations in which it is desirable for agents to make decisions that are very closely aligned with their goals, and other situations in which it might desirable to have agents make fast but sub-optimal decisions.
+
+Performance in terms of real computation time
+--------------------------------------------------------------------------------
+
+First, we show the results of test runs from a highly simplified example in which a single user is modelled (i.e., a lone farmer). In these test runs, the resource, observation, and manager model are simplified to run as quickly possible using the alternative functions introduced for demonstrating [the gmse_apply function](SI2.pdf). 
+
+```{r}
+# Alternative resource sub-model
+alt_res <- function(X, K = 2000, rate = 1){
+    X_1 <- X + rate*X*(1 - X/K);
+    return(X_1);
+}
+# Alternative observation sub-model
+alt_obs <- function(resource_vector){
+    X_obs <- resource_vector - 0.1 * resource_vector;
+    return(X_obs);
+}
+
+# Alternative manager sub-model
+alt_man <- function(observation_vector){
+    policy <- observation_vector - 1000;
+    if(policy < 0){
+        policy <- 0;
+    }
+    return(policy);
+}
+```
+
+The default user sub-model is then used with a single stakeholder. 
+
+```{r, eval = FALSE}
+sim_old   <- gmse_apply(res_mod = alt_res, obs_mod = alt_obs, man_mod = alt_man,
+                        get_res = "Full", stakeholders = 1, X = 10000,
+                        ga_seedrep = 0, ga_mingen = ga_min, 
+                        user_annealing = FALSE, mana_annealing = FALSE, 
+                        kmax_annealing = kmx, user_budget = 10000);
+```
+
+
+The `gmse_apply` function is then looped for 40 time steps across different values of `ga_min` (number of generations for the genetic algorithm) and `kmx` (number of iterations for simulated annealing). Higher `ga_min` and `kmx` result in longer computation times, but also potentially better user decision-making. The decision-making scenario is highly simplified; resources are initialised to be super-abundant and managed to maintain this abundance (i.e., there are a lot of resources and managers consistently try to keep it that way). The best decision for the user is therefore clear. The user should simply apply their budget to culling as much as possible. Hence, the number of resources that the user culls can be used as a metric of decision-making performance. We can therefore investigate the trade-off between computation time and performance in for the genetic algorithm and simulated annealing. The results show simulations from a PC running Xubuntu 18.04 LTS with a Intel(R) Xeon(R) W-2295 CPU (3.00 GHz) processor, 18 dual threaded cores, and 32 GB RAM.
+
+```{r, echo = FALSE, fig.width = 6, fig.height = 6, fig.cap = "Comparison of stakeholder culls (a metric of decision-making performance) across different simulation times when running a genetic algorithm versus a simulated annealing algorithm in GMSE. Each point represents a unique simulation of 40 time steps run at a specific number of genetic algorithm generations (ga_min) or simulated annealing iterations (kmx)."}
+ga_repl <- read.csv("data/SI9/genetic_algorithm_reps.csv");
+sa_repl <- read.csv("data/SI9/sim_annealing_reps.csv");
+GA_summ <- read.csv("data/SI9/GA_summary.csv");
+SA_summ <- read.csv("data/SI9/SA_summary.csv");
+gafit   <- read.csv("data/SI9/gafit.csv");
+safit   <- read.csv("data/SI9/safit.csv");
+plot(x = SA_summ[,2], SA_summ[,4], xlim = c(7, 19), ylim = c(0, 1000),
+     xlab = "Simulation time (sec)", ylab = "Stakeholder culls", cex = 1.5,
+     pch = 20, col = "red");
+points(x = GA_summ[,2], GA_summ[,4], cex = 1.5, pch = 20, col = "black");
+legend(x = 12, y = 200, fill = c("black", "red"), cex = 1.25,
+       legend = c("Genetic Algorithm", "Simulated Annealing"));
+```
+
+
+Results from Figure 2 show that given sufficient time, agents will decide to use all of their actions to cull the highest possible number of resources (1000). But the simulated annealing algorithm finds this solution in less time than the genetic algorithm, suggesting that it can be an effective tool when simulation time is limited (especially if many users need to be modelled within simulations). The situation of only culling is highly simplified. Users clearly benefit from each additional cull, with no other option to maximise their utility. Note that while this case of decision-making performance is straightforward, performance cannot be as easily measured when multiple actions are available to the user; nor can it be measured easily for the manager. 
+
+User fitness increase by iteration or generation
+--------------------------------------------------------------------------------
+
+We can compare the two algorithms in a slightly different way by looking at their 'fitness' in terms of utility within GMSE. This fitness is explained in detail in the overview of the [genetic algorithm](SI1.pdf). Since fitness is calculated the same way in both algorithms, we can compare how fitness increases in genetic algorithm generations versus how it increases with iterations of the simulated annealing algorithm (keeping in mind that generation and iteration times will vary in practice given other parameters specified in GMSE). For this, we now use the `gmse` function parameterised as below.
+
+```{r, eval = FALSE}
+sim <- gmse(time_max = 40, land_ownership = TRUE, scaring = FALSE, 
+            culling = TRUE, castration = FALSE, help_offspring = FALSE, 
+            tend_crops = FALSE, kill_crops = FALSE, plotting = FALSE,
+            ga_seedrep = 0, user_annealing = FALSE, mana_annealing = FALSE,
+            kmax_annealing = 40, ga_mingen = 40);
+```
+
+
+Note that land ownership has been turned on, but only culling is available (e.g., as modelling farmers attempting to cull waterfowl before they damage their agricultural yield). For simulations with simulated annealing, we instead set `user_annealing = TRUE` and `mana_annealing = TRUE` in the code above. Instead of recording an agent's decision after it has been made, we will now look at how each generation (genetic algorithm) or iteration (simulated annealing) increases user or manager fitness (see below) on average. Figure 3 shows how user fitness increases on average as the number of generations in the genetic algorithm or iterations of the simulated annealing algorithm increases (note that there are 5 users in these simulations, but Figure 3 only looks at the actions of a single user). 
+
+```{r, echo = FALSE, eval = TRUE, fig.cap = "Comparison of user fitness across different genetic algorithm generation numbers or simulated annealing iteration numbers in GMSE when users only have culling available as an action."}
+# Only culling
+plot(x = gafit[,1], y = gafit[,2], type = "l", lwd = 2, cex = 0.5,
+     col = "black", pch = 20, ylim = c(1800, 3600), 
+     xlab = "Generation / Iteration", ylab = "Scaled user fitness", xlim = c(1, 39));
+points(x = safit[,1], y = safit[,2], type = "l", lwd = 2, cex = 0.5,
+     col = "red", pch = 20);
+legend(x = 22, y = 2300, fill = c("black", "red"),
+       legend = c("Genetic Algorithm", "Simulated Annealing"));
+text(x = 30, y = 3500, labels = "Only Culling", cex = 1.25);
+```
+
+
+From Figure 3, we can see that expected user fitness increases for each algorithm, but the genetic algorithm requires fewer generations than the simulated annealing requires iterations to maximise user fitness. This is still, however, a highly simplified case in which culling is the only action available to users. We can compare this with the opposite extreme, in which all seven possible actions are available to users to maximise their fitness. Figure 4 shows fitness increases for each algorithm under these more complex conditions.
+
+```{r, echo = FALSE, eval = TRUE, fig.cap = "Comparison of user fitness across different genetic algorithm generation numbers or simulated annealing iteration numbers in GMSE when users have all actions available to them."}
+plot(x = gafit[,1], y = gafit[,3], type = "l", lwd = 2, cex = 0.5,
+     col = "black", pch = 20, ylim = c(1200, 4800), 
+     xlab = "Generation / Iteration", ylab = "Scaled user fitness", xlim = c(1, 39));
+points(x = safit[,1], y = safit[,3], type = "l", lwd = 2, cex = 0.5,
+     col = "red", pch = 20);
+legend(x = 0, y = 4900, fill = c("black", "red"),
+       legend = c("Genetic Algorithm", "Simulated Anealing"));
+text(x = 25, y = 1600, labels = "All possible user actions", cex = 1.5);
+```
+
+Under the more complex conditions in which all actions are possible, the genetic algorithm more rapidly asymptotes toward a high fitness solution than the simulated annealing algorithm, which suggests that the algorithm might be preferable under complex decision-making situations. 
+
+
+Manager fitness increase by iteration or generation
+--------------------------------------------------------------------------------
+
+We can now look at the same scenarios of only culling versus all actions from the perspective of the manager. Figure 5 shows the fitness increase for each algorithm when the manager is attempting to maintain natural resources at a target level and culling is the only policy option that they have to use.
+
+```{r, echo = FALSE, eval = TRUE, fig.cap = "Comparison of manager fitness across different genetic algorithm generation numbers or simulated annealing iteration numbers in GMSE when managers only have culling available as a policy option."}
+# Only culling
+plot(x = gafit[,1], y = gafit[,4], type = "l", lwd = 2, cex = 0.5,
+     col = "black", pch = 20, ylim = c(0, 74000), 
+     xlab = "Generation / Iteration", ylab = "Scaled user fitness", xlim = c(1, 39));
+points(x = safit[,1], y = safit[,4], type = "l", lwd = 2, cex = 0.5,
+     col = "red", pch = 20);
+legend(x = 22, y = 20000, fill = c("black", "red"),
+       legend = c("Genetic Algorithm", "Simulated Annealing"));
+text(x = 10, y = 3500, labels = "Only Culling", cex = 1.25);
+```
+
+Figure 5 shows that while the genetic algorithm can quickly identify the policy option that maximises fitness after about 15 generations, more iterations of the simulated annealing algorithm are needed to perform with equivalent fitness. The difference becomes even clearer when managers have all policy options at their disposal (Figure 6).
+
+```{r, echo = FALSE, eval = TRUE, fig.cap = "Comparison of manager fitness across different genetic algorithm generation numbers or simulated annealing iteration numbers in GMSE when managers have all policy options available to them."}
+plot(x = gafit[,1], y = gafit[,5], type = "l", lwd = 2, cex = 0.5,
+     col = "black", pch = 20, ylim = c(300000, 2000000), 
+     xlab = "Generation / Iteration", ylab = "Scaled user fitness", xlim = c(1, 39));
+points(x = safit[,1], y = safit[,5], type = "l", lwd = 2, cex = 0.5,
+     col = "red", pch = 20);
+legend(x = 0, y = 1300000, fill = c("black", "red"),
+       legend = c("Genetic Algorithm", "Simulated Anealing"));
+text(x = 28, y = 1000000, labels = "All possible user actions", cex = 1.5);
+```
+
+Given the highly complex situation in which managers must choose from a range of policy options, the genetic algorithm appears to perform more strongly in terms of maximising the utility of the manager.
+
+Conclusion
+================================================================================
+
+Simulated annealing can be useful for modelling simple user decision-making. When user decision-making includes many potential actions, the genetic algorithm is likely to perform better. For managers, simulated annealing should be used very cautiously, and only when the number of potential policy options that the manager needs to consider is low. Overall, simulated annealing is perhaps best restricted to users for simulations where the simple decisions of a lot of users need to be modelled simultaneously.
 
 
 References
