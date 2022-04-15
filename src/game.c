@@ -633,7 +633,7 @@ void manager_fitness(double *fitnesses, double ***population, double **jaco,
       if(sim_ann > 0){
         fitnesses[agent] = 10000000 - dev_from_util[agent];
       }else{
-        fitnesses[agent] = max_dev - dev_from_util[agent]; 
+        fitnesses[agent] = 10000000 - dev_from_util[agent]; 
       }
     }
     
@@ -1011,7 +1011,7 @@ void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
                        lookup, agentID); 
       paras[141]++;
     }
-
+    
     if(fitnesses_n[0] < fitnesses[0]){
       pr_jump = exp(-(fitnesses[0] - fitnesses_n[0]) / temp); 
       rand_pr = runif(0, 1);
