@@ -815,6 +815,8 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double **JACOBIAN, int **lookup, double *paras, 
         int agent, int managing){
 
+    FILE *gaptr;
+  
     int row, col, gen, layer, most_fit, popsize;
     int generations, xdim, ydim, agentID, *winners;
     double new_fitness, old_fitness;
@@ -870,6 +872,7 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
     gen          = 0;
     old_fitness  = -10000.0;
     fit_change   = 10000;
+    paras[140]   = 0;
     while(gen < generations || fit_change > converge_crit){
         
         crossover(POPULATION, paras, agentID); 
@@ -897,6 +900,12 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         new_fitness = fitnesses[most_fit];
         fit_change  = get_fitness_change(new_fitness, old_fitness, managing);
         old_fitness = new_fitness;
+        
+        if(agent == 0 & paras[0] == 40){
+          gaptr = fopen("ga_fitness.txt", "a+");
+          fprintf(gaptr, "%f\t%d\t%f\t%f\t%f\n", paras[0], gen, fitnesses[0], paras[140], fitnesses[0] / paras[140]);
+          fclose(gaptr);
+        }
 
         gen++;
     }
@@ -936,6 +945,8 @@ void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double **JACOBIAN, int **lookup, double *paras, 
         int agent, int managing){
 
+  FILE *saptr;
+  
   int kmax, k, temp, agentID, xdim, ydim, row, col;
   double budget, pr_jump, rand_pr, save_popsize, save_copies, save_ROWS; 
   double save_st_row, save_mu, *fitnesses, *fitnesses_n, ***ACTION_temp;
@@ -983,6 +994,7 @@ void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
   
   k    = 0;
   kmax = (int) paras[139];
+  paras[141]   = 0;
   while(k < kmax){
     temp = 1 - ((1 + k) / kmax);
     
@@ -992,9 +1004,11 @@ void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
       apply_min_costs(ACTION_temp, paras, agentID);
       manager_fitness(fitnesses, ACTION_temp, JACOBIAN, AGENT, lookup, 
                       agentID, COST, ACTION, paras);
+      paras[141]++;
     }else{
       strategy_fitness(AGENT, ACTION_temp, paras, fitnesses, JACOBIAN, 
                        lookup, agentID); 
+      paras[141]++;
     }
     
     mutation(ACTION_temp, paras, agentID); 
@@ -1012,6 +1026,12 @@ void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
       paras[141]++;
     }
     
+    if(agent == 0 & paras[0] == 40){
+      saptr = fopen("sa_fitness.txt", "a+");
+      fprintf(saptr, "%f\t%d\t%f\t%f\t%f\n", paras[0], k, fitnesses[0], paras[141], fitnesses[0] / paras[141]);
+      fclose(saptr);
+    }
+
     if(fitnesses_n[0] < fitnesses[0]){
       pr_jump = exp(-(fitnesses[0] - fitnesses_n[0]) / temp); 
       rand_pr = runif(0, 1);
