@@ -116,6 +116,14 @@ GA_summ <- read.csv("data/SI9/GA_summary.csv");
 SA_summ <- read.csv("data/SI9/SA_summary.csv");
 gafit   <- read.csv("data/SI9/gafit.csv");
 safit   <- read.csv("data/SI9/safit.csv");
+ga_fitness_user_cull <- read.csv("data/SI9/ga_fitness_user_cull.csv");
+ga_fitness_user_all  <- read.csv("data/SI9/ga_fitness_user_all.csv");
+ga_fitness_mana_cull <- read.csv("data/SI9/ga_fitness_mana_cull.csv");
+ga_fitness_mana_all  <- read.csv("data/SI9/ga_fitness_mana_all.csv");
+sa_fitness_user_cull <- read.csv("data/SI9/sa_fitness_user_cull.csv");
+sa_fitness_user_all  <- read.csv("data/SI9/sa_fitness_user_all.csv");
+sa_fitness_mana_cull <- read.csv("data/SI9/sa_fitness_mana_cull.csv");
+sa_fitness_mana_all  <- read.csv("data/SI9/sa_fitness_mana_all.csv");
 plot(x = SA_summ[,2], SA_summ[,4], xlim = c(7, 19), ylim = c(0, 1000),
      xlab = "Simulation time (sec)", ylab = "Stakeholder culls", cex = 1.5,
      pch = 20, col = "red");
@@ -127,7 +135,7 @@ legend(x = 12, y = 200, fill = c("black", "red"), cex = 1.25,
 
 Results from Figure 2 show that given sufficient time, agents will decide to use all of their actions to cull the highest possible number of resources (1000). But the simulated annealing algorithm finds this solution in less time than the genetic algorithm, suggesting that it can be an effective tool when simulation time is limited (especially if many users need to be modelled within simulations). The situation of only culling is highly simplified. Users clearly benefit from each additional cull, with no other option to maximise their utility. Note that while this case of decision-making performance is straightforward, performance cannot be as easily measured when multiple actions are available to the user; nor can it be measured easily for the manager. 
 
-User fitness increase by iteration or generation
+User fitness increase fitness function call
 --------------------------------------------------------------------------------
 
 We can compare the two algorithms in a slightly different way by looking at their 'fitness' in terms of utility within GMSE. This fitness is explained in detail in the overview of the [genetic algorithm](SI1.pdf). Since fitness is calculated the same way in both algorithms, we can compare how fitness increases in genetic algorithm generations versus how it increases with iterations of the simulated annealing algorithm (keeping in mind that generation and iteration times will vary in practice given other parameters specified in GMSE). For this, we now use the `gmse` function parameterised as below.
@@ -135,9 +143,9 @@ We can compare the two algorithms in a slightly different way by looking at thei
 ```{r, eval = FALSE}
 sim <- gmse(time_max = 40, land_ownership = TRUE, scaring = FALSE, 
             culling = TRUE, castration = FALSE, help_offspring = FALSE, 
-            tend_crops = FALSE, kill_crops = FALSE, plotting = FALSE,
-            ga_seedrep = 0, user_annealing = FALSE, mana_annealing = FALSE,
-            kmax_annealing = 40, ga_mingen = 40);
+            feeding = FALSE, tend_crops = FALSE, kill_crops = FALSE, 
+            plotting = FALSE, ga_seedrep = 0, user_annealing = FALSE, 
+            mana_annealing = FALSE, kmax_annealing = 40, ga_mingen = 40);
 ```
 
 
@@ -145,28 +153,30 @@ Note that land ownership has been turned on, but only culling is available (e.g.
 
 ```{r, echo = FALSE, eval = TRUE, fig.cap = "Comparison of user fitness across different genetic algorithm generation numbers or simulated annealing iteration numbers in GMSE when users only have culling available as an action."}
 # Only culling
-plot(x = gafit[,1], y = gafit[,2], type = "l", lwd = 2, cex = 0.5,
-     col = "black", pch = 20, ylim = c(1800, 3600), 
-     xlab = "Generation / Iteration", ylab = "Scaled user fitness", xlim = c(1, 39));
-points(x = safit[,1], y = safit[,2], type = "l", lwd = 2, cex = 0.5,
-     col = "red", pch = 20);
-legend(x = 22, y = 2300, fill = c("black", "red"),
+plot(x = ga_fitness_user_cull[,1], y = ga_fitness_user_cull[,2], type = "l", 
+     lwd = 2, cex = 0.5, col = "black", pch = 20, ylim = c(1000, 4000), 
+     xlab = "Calls to fitness function", ylab = "Scaled user fitness", 
+     xlim = c(0, 4000));
+points(x = sa_fitness_user_cull[,1], y = sa_fitness_user_cull[,2], 
+       type = "l", lwd = 2, cex = 0.5, col = "red", pch = 20);
+legend(x = 2500, y = 1700, fill = c("black", "red"),
        legend = c("Genetic Algorithm", "Simulated Annealing"));
-text(x = 30, y = 3500, labels = "Only Culling", cex = 1.25);
+text(x = 2000, y = 3900, labels = "Only Culling", cex = 1.25);
 ```
 
 
 From Figure 3, we can see that expected user fitness increases for each algorithm, but the genetic algorithm requires fewer generations than the simulated annealing requires iterations to maximise user fitness. This is still, however, a highly simplified case in which culling is the only action available to users. We can compare this with the opposite extreme, in which all seven possible actions are available to users to maximise their fitness. Figure 4 shows fitness increases for each algorithm under these more complex conditions.
 
 ```{r, echo = FALSE, eval = TRUE, fig.cap = "Comparison of user fitness across different genetic algorithm generation numbers or simulated annealing iteration numbers in GMSE when users have all actions available to them."}
-plot(x = gafit[,1], y = gafit[,3], type = "l", lwd = 2, cex = 0.5,
-     col = "black", pch = 20, ylim = c(1200, 4800), 
-     xlab = "Generation / Iteration", ylab = "Scaled user fitness", xlim = c(1, 39));
-points(x = safit[,1], y = safit[,3], type = "l", lwd = 2, cex = 0.5,
-     col = "red", pch = 20);
-legend(x = 0, y = 4900, fill = c("black", "red"),
-       legend = c("Genetic Algorithm", "Simulated Anealing"));
-text(x = 25, y = 1600, labels = "All possible user actions", cex = 1.5);
+# All options
+plot(x = ga_fitness_user_all[1:40,1], y = ga_fitness_user_all[1:40,2], type = "l", 
+     lwd = 2, cex = 0.5, col = "black", pch = 20, ylim = c(0, 5000), 
+     xlab = "Calls to fitness function", ylab = "Scaled user fitness", xlim = c(0, 4000));
+points(x = sa_fitness_user_all[,1], y = sa_fitness_user_cull[,2], 
+       type = "l", lwd = 2, cex = 0.5, col = "red", pch = 20);
+legend(x = 0, y = 5000, fill = c("black", "red"),
+       legend = c("Genetic Algorithm", "Simulated Annealing"));
+text(x = 2500, y = 5000, labels = "All actions", cex = 1.25);
 ```
 
 Under the more complex conditions in which all actions are possible, the genetic algorithm more rapidly asymptotes toward a high fitness solution than the simulated annealing algorithm, which suggests that the algorithm might be preferable under complex decision-making situations. 
@@ -179,27 +189,32 @@ We can now look at the same scenarios of only culling versus all actions from th
 
 ```{r, echo = FALSE, eval = TRUE, fig.cap = "Comparison of manager fitness across different genetic algorithm generation numbers or simulated annealing iteration numbers in GMSE when managers only have culling available as a policy option."}
 # Only culling
-plot(x = gafit[,1], y = gafit[,4], type = "l", lwd = 2, cex = 0.5,
-     col = "black", pch = 20, ylim = c(0, 74000), 
-     xlab = "Generation / Iteration", ylab = "Scaled user fitness", xlim = c(1, 39));
-points(x = safit[,1], y = safit[,4], type = "l", lwd = 2, cex = 0.5,
-     col = "red", pch = 20);
-legend(x = 22, y = 20000, fill = c("black", "red"),
+ofst <- 9726594;
+plot(x = ga_fitness_mana_cull[,1], y = ga_fitness_mana_cull[,2] - ofst, 
+     type = "l",  lwd = 2, cex = 0.5, col = "black", pch = 20, 
+     ylim = c(50000, 170000), xlab = "Calls to fitness function", 
+     ylab = "Scaled manager fitness", xlim = c(0, 4000));
+points(x = sa_fitness_mana_cull[,1], y = sa_fitness_mana_cull[,2] - ofst,
+       type = "l", lwd = 2, cex = 0.5, col = "red", pch = 20);
+legend(x = 2500, y = 80000, fill = c("black", "red"),
        legend = c("Genetic Algorithm", "Simulated Annealing"));
-text(x = 10, y = 3500, labels = "Only Culling", cex = 1.25);
+text(x = 500, y = 165000, labels = "Only Culling", cex = 1.25);
 ```
 
 Figure 5 shows that while the genetic algorithm can quickly identify the policy option that maximises fitness after about 15 generations, more iterations of the simulated annealing algorithm are needed to perform with equivalent fitness. The difference becomes even clearer when managers have all policy options at their disposal (Figure 6).
 
 ```{r, echo = FALSE, eval = TRUE, fig.cap = "Comparison of manager fitness across different genetic algorithm generation numbers or simulated annealing iteration numbers in GMSE when managers have all policy options available to them."}
-plot(x = gafit[,1], y = gafit[,5], type = "l", lwd = 2, cex = 0.5,
-     col = "black", pch = 20, ylim = c(300000, 2000000), 
-     xlab = "Generation / Iteration", ylab = "Scaled user fitness", xlim = c(1, 39));
-points(x = safit[,1], y = safit[,5], type = "l", lwd = 2, cex = 0.5,
-     col = "red", pch = 20);
-legend(x = 0, y = 1300000, fill = c("black", "red"),
-       legend = c("Genetic Algorithm", "Simulated Anealing"));
-text(x = 28, y = 1000000, labels = "All possible user actions", cex = 1.5);
+# All
+ofst <- 9035476;
+plot(x = ga_fitness_mana_all[,1], y = ga_fitness_mana_all[,2] - ofst, 
+     type = "l",  lwd = 2, cex = 0.5, col = "black", pch = 20, 
+     ylim = c(500000, 900000), xlab = "Calls to fitness function", 
+     ylab = "Scaled manager fitness", xlim = c(0, 4000));
+points(x = sa_fitness_mana_all[,1], y = sa_fitness_mana_all[,2] - ofst,
+       type = "l", lwd = 2, cex = 0.5, col = "red", pch = 20);
+legend(x = 0, y = 750000, fill = c("black", "red"),
+       legend = c("Genetic Algorithm", "Simulated Annealing"));
+text(x = 2000, y = 900000, labels = "All actions", cex = 1.25);
 ```
 
 Given the highly complex situation in which managers must choose from a range of policy options, the genetic algorithm appears to perform more strongly in terms of maximising the utility of the manager.

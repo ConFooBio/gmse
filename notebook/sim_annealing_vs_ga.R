@@ -1,13 +1,16 @@
 
+
+## REDO WITH A GA POPULATION SIZE OF 100
+
 ################################################################################
 count      <- 1;
 AN_summary <- NULL;
 GA_summary <- NULL;
-while(count < 125){
+while(count < 200){
 
 time_steps <- 40;
-ga_min     <- 10 * count;
-kmx        <- 10 * count;
+ga_min     <- 1 * count;
+kmx        <- 100 * count;
 
 alt_res <- function(X, K = 10000, rate = 1){
     X_1 <- X + rate*X*(1 - X/K);
@@ -130,17 +133,17 @@ print(count);
 ################################################################################
 # Side-by-side fair comparison
 ################################################################################
-sim <- gmse(time_max = 40, land_ownership = TRUE, scaring = TRUE, 
-            culling = TRUE, castration = TRUE, help_offspring = TRUE, 
-            tend_crops = TRUE, kill_crops = TRUE, plotting = FALSE,
-            ga_seedrep = 0);
+sim <- gmse(time_max = 40, land_ownership = TRUE, scaring = FALSE, 
+            culling = TRUE, castration = FALSE, help_offspring = FALSE, 
+            tend_crops = FALSE, kill_crops = FALSE, feeding = FALSE, 
+            plotting = FALSE, ga_seedrep = 0);
 
 
-sim <- gmse(time_max = 40, land_ownership = TRUE, scaring = TRUE, 
-            culling = TRUE, castration = TRUE, help_offspring = TRUE, 
-            tend_crops = TRUE, kill_crops = TRUE, plotting = FALSE,
-            ga_seedrep = 0, user_annealing = TRUE, mana_annealing = TRUE,
-            kmax_annealing = 40);
+sim <- gmse(time_max = 40, land_ownership = TRUE, scaring = FALSE, 
+            culling = TRUE, castration = FALSE, help_offspring = FALSE, 
+            tend_crops = FALSE, kill_crops = FALSE, feeding = FALSE,
+            plotting = FALSE, ga_seedrep = 0, user_annealing = TRUE, 
+            mana_annealing = FALSE, kmax_annealing = 2000);
 
 
 end_time <- Sys.time();
@@ -289,9 +292,177 @@ legend(x = 14, y = 90, fill = c("black", "red"), cex = 1.25,
 
 
 
+calls_GA <- rep(x = NA, times = dim(GA_summ)[1]);
+for(i in 1:dim(GA_summ)[1]){
+    calls_GA[i] <- GA_summ[i, 3] / i;
+}
+
+calls_SA <- rep(x = NA, times = dim(SA_summ)[1]);
+for(i in 1:dim(SA_summ)[1]){
+    calls_SA[i] <- SA_summ[i, 3] / i;
+}
 
 
 
+
+
+
+dat <- read.csv("ga_fitness_mana_all.txt", sep = "\t", header = FALSE);
+smr <- tapply(X = dat[,12], INDEX = dat[,10], FUN = mean);
+
+
+reps <- 100;
+while(reps > 0){
+    sim <- gmse(land_ownership = TRUE, kmax_annealing = 2000, 
+                user_annealing = FALSE, ga_seedrep = 0, plotting = FALSE,
+                scaring = TRUE, culling = TRUE, castration = TRUE,
+                feeding = TRUE, help_offspring = TRUE, tend_crops = TRUE,
+                kill_crops = TRUE, mana_annealing = FALSE);
+    reps <- reps - 1;
+    print(reps);
+}
+
+simpleboot <- function(freqs,repli=1000,alpha=0.05){                           
+    vals  <- NULL;                                                              
+    i     <- 0;                                                             
+    while(i < repli){                                                      
+        boot  <- sample(x=freqs,size=length(freqs),replace=TRUE);           
+        strap <- mean(boot);                                              
+        vals  <- c(vals,strap);                                          
+        i     <- i + 1;                                                    
+    }                                                                      
+    vals   <- sort(x=vals,decreasing=FALSE);                               
+    lowCI  <- vals[round((alpha*0.5)*repli)];                               
+    highCI <- vals[round((1-(alpha*0.5))*repli)];                         
+    CIs    <- c(lowCI,highCI);                                             
+    return(CIs);                                                            
+} 
+
+
+########################################
+
+## GA User cull
+ga_fitness_user_cull    <- read.csv("ga_fitness_user_cull.txt", sep = "\t",
+                                    header = FALSE);
+fitcalls <- unique(ga_fitness_user_cull[,4]);
+FIT_data <- NULL;
+for(i in fitcalls){
+    calls    <- ga_fitness_user_cull[ga_fitness_user_cull[,4] == i,];
+    callmn   <- mean(calls[,3]);
+    callCI   <- simpleboot(freqs = calls[,3]);
+    crow     <- c(i, callmn, callCI);
+    FIT_data <- rbind(FIT_data, crow);
+}
+colnames(FIT_data) <- c("Fitness_calls", "Mean_Fitness", "LCI", "UCI");
+write.csv(FIT_data, file = "ga_fitness_user_cull.csv", row.names = FALSE);
+
+
+## SA User cull
+sa_fitness_user_cull    <- read.csv("sa_fitness_user_cull.txt", sep = "\t",
+                                    header = FALSE);
+fitcalls <- unique(sa_fitness_user_cull[,4]);
+FIT_data <- NULL;
+for(i in fitcalls){
+    calls    <- sa_fitness_user_cull[sa_fitness_user_cull[,4] == i,];
+    callmn   <- mean(calls[,3]);
+    callCI   <- simpleboot(freqs = calls[,3]);
+    crow     <- c(i, callmn, callCI);
+    FIT_data <- rbind(FIT_data, crow);
+}
+colnames(FIT_data) <- c("Fitness_calls", "Mean_Fitness", "LCI", "UCI");
+write.csv(FIT_data, file = "sa_fitness_user_cull.csv", row.names = FALSE);
+
+## GA User all
+ga_fitness_user_all    <- read.csv("ga_fitness_user_all.txt", sep = "\t",
+                                    header = FALSE);
+fitcalls <- unique(ga_fitness_user_all[,4]);
+FIT_data <- NULL;
+for(i in fitcalls){
+    calls    <- ga_fitness_user_all[ga_fitness_user_all[,4] == i,];
+    callmn   <- mean(calls[,3]);
+    callCI   <- simpleboot(freqs = calls[,3]);
+    crow     <- c(i, callmn, callCI);
+    FIT_data <- rbind(FIT_data, crow);
+}
+colnames(FIT_data) <- c("Fitness_calls", "Mean_Fitness", "LCI", "UCI");
+write.csv(FIT_data, file = "ga_fitness_user_all.csv", row.names = FALSE);
+
+## SA User all
+sa_fitness_user_all    <- read.csv("sa_fitness_user_all.txt", sep = "\t",
+                                    header = FALSE);
+fitcalls <- unique(sa_fitness_user_all[,4]);
+FIT_data <- NULL;
+for(i in fitcalls){
+    calls    <- sa_fitness_user_all[sa_fitness_user_all[,4] == i,];
+    callmn   <- mean(calls[,3]);
+    callCI   <- simpleboot(freqs = calls[,3]);
+    crow     <- c(i, callmn, callCI);
+    FIT_data <- rbind(FIT_data, crow);
+}
+colnames(FIT_data) <- c("Fitness_calls", "Mean_Fitness", "LCI", "UCI");
+write.csv(FIT_data, file = "sa_fitness_user_all.csv", row.names = FALSE);
+
+
+## GA Mana cull
+ga_fitness_mana_cull    <- read.csv("ga_fitness_mana_cull.txt", sep = "\t",
+                                    header = FALSE);
+fitcalls <- unique(ga_fitness_mana_cull[,4]);
+FIT_data <- NULL;
+for(i in fitcalls){
+    calls    <- ga_fitness_mana_cull[ga_fitness_mana_cull[,4] == i,];
+    callmn   <- mean(calls[,3]);
+    callCI   <- simpleboot(freqs = calls[,3]);
+    crow     <- c(i, callmn, callCI);
+    FIT_data <- rbind(FIT_data, crow);
+}
+colnames(FIT_data) <- c("Fitness_calls", "Mean_Fitness", "LCI", "UCI");
+write.csv(FIT_data, file = "ga_fitness_mana_cull.csv", row.names = FALSE);
+
+
+## SA Mana cull
+sa_fitness_mana_cull    <- read.csv("sa_fitness_mana_cull.txt", sep = "\t",
+                                    header = FALSE);
+fitcalls <- unique(sa_fitness_mana_cull[,4]);
+FIT_data <- NULL;
+for(i in fitcalls){
+    calls    <- sa_fitness_mana_cull[sa_fitness_mana_cull[,4] == i,];
+    callmn   <- mean(calls[,3]);
+    callCI   <- simpleboot(freqs = calls[,3]);
+    crow     <- c(i, callmn, callCI);
+    FIT_data <- rbind(FIT_data, crow);
+}
+colnames(FIT_data) <- c("Fitness_calls", "Mean_Fitness", "LCI", "UCI");
+write.csv(FIT_data, file = "sa_fitness_mana_cull.csv", row.names = FALSE);
+
+## GA Mana all
+ga_fitness_mana_all    <- read.csv("ga_fitness_mana_all.txt", sep = "\t",
+                                   header = FALSE);
+fitcalls <- unique(ga_fitness_mana_all[,4]);
+FIT_data <- NULL;
+for(i in fitcalls){
+    calls    <- ga_fitness_mana_all[ga_fitness_mana_all[,4] == i,];
+    callmn   <- mean(calls[,3]);
+    callCI   <- simpleboot(freqs = calls[,3]);
+    crow     <- c(i, callmn, callCI);
+    FIT_data <- rbind(FIT_data, crow);
+}
+colnames(FIT_data) <- c("Fitness_calls", "Mean_Fitness", "LCI", "UCI");
+write.csv(FIT_data, file = "ga_fitness_mana_all.csv", row.names = FALSE);
+
+## SA Mana all
+sa_fitness_mana_all    <- read.csv("sa_fitness_mana_all.txt", sep = "\t",
+                                   header = FALSE);
+fitcalls <- unique(sa_fitness_mana_all[,4]);
+FIT_data <- NULL;
+for(i in fitcalls){
+    calls    <- sa_fitness_mana_all[sa_fitness_mana_all[,4] == i,];
+    callmn   <- mean(calls[,3]);
+    callCI   <- simpleboot(freqs = calls[,3]);
+    crow     <- c(i, callmn, callCI);
+    FIT_data <- rbind(FIT_data, crow);
+}
+colnames(FIT_data) <- c("Fitness_calls", "Mean_Fitness", "LCI", "UCI");
+write.csv(FIT_data, file = "sa_fitness_mana_all.csv", row.names = FALSE);
 
 
 
