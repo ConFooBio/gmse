@@ -1,5 +1,5 @@
 ## Test environments
-* ubuntu 18.04, R 4.1.0
+* ubuntu 18.04, R 4.2.0
 * win-builder (devel)
 
 ## R CMD check results

@@ -2,7 +2,9 @@
 
 ## NEW FEATURES
 
-* A simulated annealing algorithm is now an option in place of a genetic algorithm for agent decision-making.
+* A simulated annealing algorithm is now an option in place of a genetic algorithm for agent decision-making. A new vignette and new documentation explains how and when to use simulated annealing in GMSE
+
+* A new argument permits adjustment to the mutation magnitude in the genetic algorithm and simulated annealing algorithm.
 
 ## BUG FIXES
 
