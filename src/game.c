@@ -152,7 +152,7 @@ void crossover(double ***population, double *paras, int agentID){
 void mutation(double ***population, double *paras, int agentID){
     
     int agent, row, col, start_col, col_check, pop_size, ROWS, COLS;
-    int col_start_other, col_start_self, mu_magnitude, start_row;
+    int col_start_other, col_start_self, mu_magnitude, start_row, mu_max;
     double do_mutation, half_pr, pr;
 
     pop_size        = (int) paras[21];
@@ -162,7 +162,8 @@ void mutation(double ***population, double *paras, int agentID){
     col_start_other = (int) paras[70];
     col_start_self  = (int) paras[71];
     start_row       = (int) paras[138];
-
+    mu_max          = (int) paras[142];
+    
     half_pr = 0.5 * pr;
     
     for(agent = 0; agent < pop_size; agent++){
@@ -175,11 +176,19 @@ void mutation(double ***population, double *paras, int agentID){
             for(col = start_col; col < COLS; col++){
                 do_mutation = runif(0,1);
                 if( do_mutation < half_pr){
-                    mu_magnitude                 = get_rand_int(1, 10);
+                    if(mu_max == 1){
+                        mu_magnitude = 1;
+                    }else{
+                        mu_magnitude = get_rand_int(1, mu_max);   
+                    }
                     population[row][col][agent] -= mu_magnitude;
                 }
                 if( do_mutation > (1 - half_pr) ){
-                    mu_magnitude                 = get_rand_int(1, 10);
+                    if(mu_max == 1){
+                        mu_magnitude = 1;
+                    }else{
+                        mu_magnitude = get_rand_int(1, mu_max);
+                    }
                     population[row][col][agent] += mu_magnitude;
                 }
                 if( population[row][col][agent] < 0 ){
@@ -935,12 +944,14 @@ void ga(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
 void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
         double ***LANDSCAPE, double **JACOBIAN, int **lookup, double *paras, 
         int agent, int managing){
-
-  int kmax, k, temp, agentID, xdim, ydim, row, col;
-  double budget, pr_jump, rand_pr, save_popsize, save_copies, save_ROWS; 
-  double save_st_row, save_mu, *fitnesses, *fitnesses_n, ***ACTION_temp;
+    
+  int kmax, k, temp, agentID, xdim, ydim, row, col, popsize, layer, sa_init;
+  double budget, pr_jump, rand_pr, save_copies, save_ROWS, save_popsize; 
+  double save_st_row, save_mu, *fitnesses, *fitnesses_n, *fit_init;
+  double ***ACTION_init, ***ACTION_temp;
   
   agentID      = (int) AGENT[agent][0];
+  popsize      = (int) paras[21];
   save_popsize = paras[21];
   save_copies  = paras[23];
   save_mu      = paras[26];
@@ -948,7 +959,6 @@ void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
   save_st_row  = paras[138];
   xdim         = (int) paras[68];
   ydim         = (int) paras[69];
-  paras[21]    = 1.0;
   paras[23]    = 0.0;
   paras[26]    = 1.0;
   if(managing == FALSE){
@@ -960,26 +970,59 @@ void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
 
   fitnesses   = (double *) malloc(sizeof(double));  
   fitnesses_n = (double *) malloc(sizeof(double));  
+  fit_init    = (double *) malloc(popsize * sizeof(double));
   
   fitnesses[0]   = 0.0;
   fitnesses_n[0] = 0.0;
   
   budget         = AGENT[agent][16] + AGENT[agent][24] + AGENT[agent][25];
   
-  ACTION_temp = (double ***) malloc(xdim * sizeof(double **));
+  ACTION_init = (double ***) malloc(xdim * sizeof(double **));
   for(row = 0; row < xdim; row++){
-    ACTION_temp[row] = (double **) malloc(ydim * sizeof(double *));
+      ACTION_init[row] = (double **) malloc(ydim * sizeof(double *));
     for(col = 0; col < ydim; col++){
-      ACTION_temp[row][col] = (double *) malloc(sizeof(double));
+        ACTION_init[row][col] = (double *) malloc(popsize * sizeof(double));
     }
   }
   for(col = 0; col < ydim; col++){
     for(row = 0; row < xdim; row++){
-      ACTION_temp[row][col][0] = 0;
+        for(layer = 0; layer < popsize; layer++){
+            ACTION_init[row][col][layer] = 0;
+        }
     }
   }
   
-  initialise_pop(ACTION, COST, paras, agent, budget, ACTION_temp, agentID);
+  initialise_pop(ACTION, COST, paras, agent, budget, ACTION_init, agentID);
+  constrain_costs(ACTION_init, COST, paras, agent, budget, agentID);
+  
+  paras[141]   = 0;
+  
+  if(managing == 1){
+      apply_min_costs(ACTION_init, paras, agentID);
+      manager_fitness(fit_init, ACTION_init, JACOBIAN, AGENT, lookup, 
+                      agentID, COST, ACTION, paras);
+      paras[141]++;
+  }else{
+      strategy_fitness(AGENT, ACTION_init, paras, fit_init, JACOBIAN, 
+                       lookup, agentID); 
+      paras[141]++;
+  }
+  
+  sa_init   = find_most_fit(fit_init, popsize);
+  paras[21] = 1.0;
+  
+  ACTION_temp = (double ***) malloc(xdim * sizeof(double **));
+  for(row = 0; row < xdim; row++){
+      ACTION_temp[row] = (double **) malloc(ydim * sizeof(double *));
+      for(col = 0; col < ydim; col++){
+          ACTION_temp[row][col] = (double *) malloc(sizeof(double));
+      }
+  }
+  for(col = 0; col < ydim; col++){
+      for(row = 0; row < xdim; row++){
+          ACTION_temp[row][col][0] =  ACTION_init[row][col][sa_init];
+      }
+  }
   
   k    = 0;
   kmax = (int) paras[139];
@@ -999,7 +1042,7 @@ void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
       paras[141]++;
     }
     
-    mutation(ACTION_temp, paras, agentID); 
+    mutation(ACTION_temp, paras, agentID);
     
     constrain_costs(ACTION_temp, COST, paras, agent, budget, agentID);
     
@@ -1048,11 +1091,12 @@ void sa(double ***ACTION, double ***COST, double **AGENT, double **RESOURCES,
   
   for(row = 0; row < xdim; row++){
     for(col = 0; col < ydim; col++){
-      free(ACTION_temp[row][col]);   
+      free(ACTION_init[row][col]);   
     }
-    free(ACTION_temp[row]); 
+    free(ACTION_init[row]); 
   }
-  free(ACTION_temp);
+  free(ACTION_init);
+  free(fit_init);
   free(fitnesses_n);
   free(fitnesses);
 }
