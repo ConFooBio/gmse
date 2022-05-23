@@ -85,6 +85,7 @@
 #'@param user_annealing Determines whether simulated annealing should be used in place of the genetic algorithm for agent decision-making. If TRUE, then simulated annealing is used for users. If FALSE, then the genetic algorithm is used.
 #'@param mana_annealing Determines whether simulated annealing should be used in place of the genetic algorithm for agent decision-making. If TRUE, then simulated annealing is used for managers If FALSE, then the genetic algorithm is used.
 #'@param kmax_annealing Sets the maximum value of iterations for the simulated annealing algorithm
+#'@param mu_magnitude Sets the magnitude of the maximum mutation in the genetic algorithm in terms of how many actions that an agent tries increases or decreases (e.g., mutation causes 1 to mu_magnitude more or fewer culling actions)
 #'@return A large list is returned that includes detailed simulation histories for the resource, observation, management, and user models. This list includes eight elements, most of which are themselves complex lists of arrays: (1) A list of length `time_max` in which each element is an array of resources as they exist at the end of each time step. Resource arrays include all resources and their attributes (e.g., locations, growth rates, offspring, how they are affected by stakeholders, etc.). (2) A list of length `time_max` in which each element is an array of resource observations from the observation model. Observation arrays are similar to resource arrays, except that they can have a smaller number of rows if not all resources are observed, and they have additional columns that show the history of each resource being observed over the course of `times_observe` observations in the observation model. (3) A 2D array showing parameter values at each time step (unique rows); most of these values are static but some (e.g., resource number) change over time steps. (4) A list of length `time_max` in which each element is an array of the landscape that identifies proportion of crop production per cell. This allows for looking at where crop production is increased or decreased over time steps as a consequence of resource and stakeholder actions. (5) The total time the simulation took to run (not counting plotting time). (6) A 2D array of agents and their traits. (7) A list of length `time_max` in which each element is a 3D array of the costs of performing each action for managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in costs of particular actions can therefore be be examined over time. (8) A list of length `time_max` in which each element is a 3D array of the actions performed by managers and stakeholders (each agent gets its own array layer with an identical number of rows and columns); the change in actions of agents can therefore be examined over time. Because the above lists cannot possibly be interpreted by eye all at once in the simulation output, it is highly recommended that the contents of a simulation be stored and interprted individually if need be; alternativley, simulations can more easily be interpreted through plots when `plotting = TRUE`.
 #'@examples
 #'\dontrun{
@@ -173,7 +174,8 @@ gmse <- function( time_max        = 40,    # Max number of time steps in sim
                   traj_pred       = FALSE, # Prediction, not latest observation
                   user_annealing  = FALSE, # User sim annealing instead of GA
                   mana_annealing  = FALSE, # Manager sim annealing instead of GA
-                  kmax_annealing  = 1000   # Annealing kmax value
+                  kmax_annealing  = 1000,  # Annealing kmax value
+                  mu_magnitude    = 10     # Mutation magnitude
 ){
     
     time_max <- time_max + 1; # Add to avoid confusion (see loop below)
@@ -361,6 +363,7 @@ gmse <- function( time_max        = 40,    # Max number of time steps in sim
     san <- user_annealing;
     msa <- mana_annealing;
     kmx <- kmax_annealing;
+    mum <- mu_magnitude;
     
     paras <- c(time,    # 0. The dynamic time step for each function to use 
                edg,     # 1. The edge effect (0: nothing, 1: torus)
@@ -503,7 +506,8 @@ gmse <- function( time_max        = 40,    # Max number of time steps in sim
                0,       # 138. Which row to start on in simulated annealing
                kmx,     # 139. What is the max iterations for sim annealing
                0,       # 140. Calls to genetic algorithm fitness function
-               0        # 141. Calls to simulated annealing fitness function
+               0,       # 141. Calls to simulated annealing fitness function
+               mum      # 142. Mutation magnitude in genetic algorithm
     );
     
     input_list <- cinput_check(time_max, land_dim_1, land_dim_2, res_movement, 
@@ -529,7 +533,8 @@ gmse <- function( time_max        = 40,    # Max number of time steps in sim
                                perceive_feed, perceive_help, perceive_tend, 
                                perceive_kill, usr_yld_budget, man_yld_budget,
                                mem_prv_observ, bgt_bonus_reset, traj_pred, 
-                               user_annealing, mana_annealing, kmax_annealing); 
+                               user_annealing, mana_annealing, kmax_annealing,
+                               mu_magnitude); 
    
     paras_errors(input_list);
     
