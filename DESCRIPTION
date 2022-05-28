@@ -1,7 +1,7 @@
 Package: GMSE
 Type: Package
 Title: Generalised Management Strategy Evaluation Simulator
-Version: 1.0.0.0
+Version: 1.0.0.1
 Imports: grDevices (>= 4.0.0), graphics (>= 4.0.0), stats(>= 4.0.0), 
     shiny, shinydashboard, shinyjs, shinycssloaders
 Authors@R: c(person("A. Bradley", "Duthie", email = "brad.duthie@gmail.com",

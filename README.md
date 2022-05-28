@@ -11,7 +11,7 @@ Generalised Management Strategy Evaluation
 
 --------------------------------------------------------------------------------
 
-*This project has received funding from the [European Union's Horizon 2020 research and innovation programme](https://ec.europa.eu/programmes/horizon2020/) under grant agreement No 679651 to [Nils Bunnefeld](https://sti-cs.org/nils-bunnefeld/). Package maintainer [Brad Duthie](https://bradduthie.github.io/) has been funded by a [Leverhulme Trust](https://www.leverhulme.ac.uk/) [ECF](https://www.leverhulme.ac.uk/early-career-fellowships).*
+*This project has received funding from the [European Union's Horizon 2020 research and innovation programme](https://ec.europa.eu/info/research-and-innovation/funding/funding-opportunities/funding-programmes-and-open-calls/horizon-2020_en) under grant agreement No 679651 to [Nils Bunnefeld](https://sti-cs.org/nils-bunnefeld/). Package maintainer [Brad Duthie](https://bradduthie.github.io/) has been funded by a [Leverhulme Trust](https://www.leverhulme.ac.uk/) [ECF](https://www.leverhulme.ac.uk/early-career-fellowships).*
 
 --------------------------------------------------------------------------------
 
