@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.1</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../articles/GMSE.html">Get started</a>
 </li>
@@ -50,7 +46,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -80,6 +76,9 @@
     <li>
       <a href="../articles/SI8.html">Adaptive timing of investment strategy</a>
     </li>
+    <li>
+      <a href="../articles/SI9.html">The simulated annealing algorithm of GMSE</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -88,10 +87,10 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://confoobio.github.io/gmse/notebook/gmse_notes.html">Lab notebook</a>
+  <a href="https://confoobio.github.io/gmse/notebook/gmse_notes.html" class="external-link">Lab notebook</a>
 </li>
 <li>
-  <a href="https://github.com/confoobio/GMSE">
+  <a href="https://github.com/confoobio/GMSE" class="external-link">
     <span class="fa fa-github"></span>
      
   </a>
@@ -110,274 +109,413 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Management frequency and extinction risk</h1>
-            <h3 class="subtitle">GMSE: an R package for generalised management strategy evaluation (Supporting Information 6)</h3>
-                        <h4 class="author"><div class="line-block">A. Bradley Duthie¹³, Jeremy J. Cusack¹, Isabel L. Jones¹, Jeroen Minderman¹,<br>
+            <h3 data-toc-skip class="subtitle">GMSE: an R package for
+generalised management strategy evaluation (Supporting Information
+6)</h3>
+                        <h4 data-toc-skip class="author"><div class="line-block">A. Bradley Duthie¹³, Jeremy J. Cusack¹, Isabel L.
+Jones¹, Jeroen Minderman¹,<br>
 Erlend B. Nilsen², Rocío A. Pozo¹, O. Sarobidy Rakotonarivo¹,<br>
 Bram Van Moorter², and Nils Bunnefeld¹</div></h4>
             
-            <h4 class="date">[1] Biological and Environmental Sciences, University of Stirling, Stirling, UK [2] Norwegian Institute for Nature Research, Trondheim, Norway [3] <a href="mailto:alexander.duthie@stir.ac.uk" class="email">alexander.duthie@stir.ac.uk</a>
+            <h4 data-toc-skip class="date">[1] Biological and
+Environmental Sciences, University of Stirling, Stirling, UK [2]
+Norwegian Institute for Nature Research, Trondheim, Norway [3] <a href="mailto:alexander.duthie@stir.ac.uk" class="email">alexander.duthie@stir.ac.uk</a>
 </h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/confoobio/gmse/blob/master/vignettes/SI6.Rmd"><code>vignettes/SI6.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/confoobio/gmse/blob/HEAD/vignettes/SI6.Rmd" class="external-link"><code>vignettes/SI6.Rmd</code></a></small>
       <div class="hidden name"><code>SI6.Rmd</code></div>
 
     </div>
 
     
     
-<div id="the-individual-based-approach-of-default-gmse-sub-models" class="section level1">
-<h1 class="hasAnchor">
-<a href="#the-individual-based-approach-of-default-gmse-sub-models" class="anchor"></a>The individual-based approach of default GMSE sub-models</h1>
-<p>The default sub-models of GMSE (<code>resource</code>, <code>observation</code>, <code>manager</code>, <code>user</code>) are individual-based (also called ‘agent-based’), meaning that they model discrete individuals (resources or agents), which in GMSE are represented by individual table rows (as in <code>RESOURCES</code>, <code>AGENTS</code>, and <code>OBSERVATION</code>) or layers of three-dimensional arrays (as in <code>COST</code> and <code>ACTION</code>). Individual-based models (IBMs) have been a useful approach in ecology for decades <span class="citation">(Uchmański and Grimm <a href="#ref-Uchmanski1996">1996</a>; Grimm <a href="#ref-Grimm1999">1999</a>)</span>, providing both a pragmatic tool for the mechanistic modelling of complex populations and a powerful technique for theoretical investigation. A key advantage of the individual-based modelling approach is the discrete nature of individuals, which allows for detailed trait variation and complex interactions among individuals. In GMSE, some of the most important traits for resources include types, ages, demographic parameter values, locations, etc., and for agents (manager and users), traits include different types, utilities, budgets, etc. The traits that resources and managers have can potentially affect their interactions, and default GMSE sub-models take advantage of this by simulating interactions explicitly on a landscape (see <a href="SI7.html">Default GMSE data structures</a> for an introduction to GMSE default data structures).</p>
+<div class="section level2">
+<h2 id="the-individual-based-approach-of-default-gmse-sub-models">The individual-based approach of default GMSE sub-models<a class="anchor" aria-label="anchor" href="#the-individual-based-approach-of-default-gmse-sub-models"></a>
+</h2>
+<p>The default sub-models of GMSE (<code>resource</code>,
+<code>observation</code>, <code>manager</code>, <code>user</code>) are
+individual-based (also called ‘agent-based’), meaning that they model
+discrete individuals (resources or agents), which in GMSE are
+represented by individual table rows (as in <code>RESOURCES</code>,
+<code>AGENTS</code>, and <code>OBSERVATION</code>) or layers of
+three-dimensional arrays (as in <code>COST</code> and
+<code>ACTION</code>). Individual-based models (IBMs) have been a useful
+approach in ecology for decades <span class="citation">(<a href="#ref-Uchmanski1996" role="doc-biblioref">Uchmański and Grimm
+1996</a>; <a href="#ref-Grimm1999" role="doc-biblioref">Grimm
+1999</a>)</span>, providing both a pragmatic tool for the mechanistic
+modelling of complex populations and a powerful technique for
+theoretical investigation. A key advantage of the individual-based
+modelling approach is the discrete nature of individuals, which allows
+for detailed trait variation and complex interactions among individuals.
+In GMSE, some of the most important traits for resources include types,
+ages, demographic parameter values, locations, etc., and for agents
+(manager and users), traits include different types, utilities, budgets,
+etc. The traits that resources and managers have can potentially affect
+their interactions, and default GMSE sub-models take advantage of this
+by simulating interactions explicitly on a landscape (see <a href="SI7.html">Default GMSE data structures</a> for an introduction to
+GMSE default data structures).</p>
 </div>
-<div id="replicate-simulations-as-a-tool-for-model-inference" class="section level1">
-<h1 class="hasAnchor">
-<a href="#replicate-simulations-as-a-tool-for-model-inference" class="anchor"></a>Replicate simulations as a tool for model inference</h1>
-<p>Mechanistically modelling complex interactions among discrete individuals typically causes some degree of stochasticity in IBMs (in the code, this is caused by the sampling of random values, which determine probabilistically whether or not events such as birth or death occur for individuals), reflecting the uncertainty that is inherent to complex systems. We can see a simple example of this by calling <code>gmse_apply</code> under the same default conditions twice.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="no">rand_eg_1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>();
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">rand_eg_1</span>);</pre></body></html></div>
-<pre><code>## $resource_results
-## [1] 1089
-## 
-## $observation_results
-## [1] 1179.138
-## 
-## $manager_results
-##          resource_type scaring culling castration feeding help_offspring
-## policy_1             1      NA      75         NA      NA             NA
-## 
-## $user_results
-##         resource_type scaring culling castration feeding help_offspring
-## Manager             1      NA       0         NA      NA             NA
-## user_1              1      NA      13         NA      NA             NA
-## user_2              1      NA      13         NA      NA             NA
-## user_3              1      NA      13         NA      NA             NA
-## user_4              1      NA      13         NA      NA             NA
-##         tend_crops kill_crops
-## Manager         NA         NA
-## user_1          NA         NA
-## user_2          NA         NA
-## user_3          NA         NA
-## user_4          NA         NA</code></pre>
-<p>Although a second call of <code>gmse_apply</code> has identical initial conditions, because resource demographics (e.g., birth and death) and agent decision making (e.g., policy generation and user actions) is not deterministic, a slightly different result is obtained below.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">rand_eg_2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>();
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">rand_eg_2</span>);</pre></body></html></div>
-<pre><code>## $resource_results
-## [1] 1115
-## 
-## $observation_results
-## [1] 975.0567
-## 
-## $manager_results
-##          resource_type scaring culling castration feeding help_offspring
-## policy_1             1      NA      58         NA      NA             NA
-## 
-## $user_results
-##         resource_type scaring culling castration feeding help_offspring
-## Manager             1      NA       0         NA      NA             NA
-## user_1              1      NA      17         NA      NA             NA
-## user_2              1      NA      17         NA      NA             NA
-## user_3              1      NA      17         NA      NA             NA
-## user_4              1      NA      17         NA      NA             NA
-##         tend_crops kill_crops
-## Manager         NA         NA
-## user_1          NA         NA
-## user_2          NA         NA
-## user_3          NA         NA
-## user_4          NA         NA</code></pre>
-<p>To make meaningful model inferences, it is often necessary to replicate simulations under the same initial conditions to understand the range of predicted outcomes for a particular set of parameter values. This can be computationally intense, but it can also lead to a more robust understanding of the range of dynamics that might be expected within a system. Additionally, when parameter values are unknown but believed to be important, replicate simulations can be applied across a range of values to understand how a particular parameter might affect system dynamics. Below, we show how to use the <code>gmse_replicates</code> function to simulate a simple example of a managed population that is hunted by users. This function calls <code>gmse</code> multiple times and aggregates the results from replicate simulations into a single table.</p>
-<p>For a single simulation, the <code>gmse_table</code> function prints out key information from a <code>gmse</code> simulation result. The example provided in the <a href="https://cran.r-project.org/package=GMSE">GMSE documentation</a> is below.</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">gmse_sim</span>  <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse.html">gmse</a></span>(<span class="kw">time_max</span> <span class="kw">=</span> <span class="fl">10</span>, <span class="kw">plotting</span> <span class="kw">=</span> <span class="fl">FALSE</span>);</pre></body></html></div>
-<pre><code>## [1] "Initialising simulations ... "</code></pre>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">sim_table</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_table.html">gmse_table</a></span>(<span class="kw">gmse_sim</span> <span class="kw">=</span> <span class="no">gmse_sim</span>);
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">sim_table</span>);</pre></body></html></div>
-<pre><code>##       time_step resources estimate cost_culling cost_unused act_culling
-##  [1,]         1      1123 1383.220           60          50          64
-##  [2,]         2      1221 1043.084          106           4          36
-##  [3,]         3      1328 1451.247           10         100         400
-##  [4,]         4      1083 1043.084          110           0          36
-##  [5,]         5      1226 1292.517           16          94         248
-##  [6,]         6      1271 1315.193           15          95         264
-##  [7,]         7      1195  952.381          110           0          36
-##  [8,]         8      1382 1269.841           18          92         220
-##  [9,]         9      1389 1292.517           15          95         264
-## [10,]        10      1347 1020.408          110           0          36
-##       act_unused harvested
-##  [1,]          8        64
-##  [2,]          4        36
-##  [3,]          0       400
-##  [4,]          3        36
-##  [5,]          0       248
-##  [6,]          1       264
-##  [7,]          3        36
-##  [8,]          3       220
-##  [9,]          1       264
-## [10,]          1        36</code></pre>
-<p>The above table can be saved as a CSV file using the <code>write.csv</code> function.</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html">write.csv</a></span>(<span class="kw">x</span><span class="kw">=</span> <span class="no">sim_table</span>, <span class="kw">file</span> <span class="kw">=</span> <span class="st">"file_path/gmse_table_name.csv"</span>);</pre></body></html></div>
-<p>Instead of recording all time steps in the simulation, we can instead record only the last time step in <code>gmse_table</code> using the <code>all_time</code> argument.</p>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="no">sim_table_last</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_table.html">gmse_table</a></span>(<span class="kw">gmse_sim</span> <span class="kw">=</span> <span class="no">gmse_sim</span>, <span class="kw">all_time</span> <span class="kw">=</span> <span class="fl">FALSE</span>);
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">sim_table_last</span>)</pre></body></html></div>
-<pre><code>##    time_step    resources     estimate cost_culling  cost_unused  act_culling 
-##       10.000     1347.000     1020.408      110.000        0.000       36.000 
-##   act_unused    harvested 
-##        1.000       36.000</code></pre>
-<p>The <code>gmse_replicates</code> function replicates multiple simulations <code>replicates</code> times under the same initial conditions, then returns a table showing the values of all simulations. This can be useful, for example, for testing how frequently a population is expected to go to extinction or carrying capacity under a given set of parameter values. First, we demonstrate the <code>gmse_replicates</code> function for simulations of up to 20 time steps. The <code>gmse_replicates</code> function accepts all arguments used in <code>gmse</code>, and also all arguments of <code>gmse_table</code> (<code>all_time</code> and <code>hide_unused_options</code>) to summarise multiple <code>gmse</code> results. Here we use default <code>gmse</code> values in replicate simulations, except <code>plotting</code>, which we set to <code>FALSE</code> to avoid plotting each simulation result. We run 10 replicates below.</p>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">gmse_reps1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_replicates.html">gmse_replicates</a></span>(<span class="kw">replicates</span> <span class="kw">=</span> <span class="fl">10</span>, <span class="kw">time_max</span> <span class="kw">=</span> <span class="fl">20</span>, <span class="kw">plotting</span> <span class="kw">=</span> <span class="fl">FALSE</span>);
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">gmse_reps1</span>);</pre></body></html></div>
-<pre><code>##       time_step resources  estimate cost_culling cost_unused act_culling
-##  [1,]        20      1365 1269.8413           17          93         232
-##  [2,]        20      1029 1020.4082          110           0          36
-##  [3,]        20      1264 1133.7868           35          75         112
-##  [4,]        20      1478 1383.2200           13          97         304
-##  [5,]        20      1298 1405.8957           10         100         400
-##  [6,]        20      1295 1473.9229           10         100         400
-##  [7,]        20      1257 1156.4626           30          80         132
-##  [8,]        20      1035  793.6508          108           0          36
-##  [9,]        20      1093 1201.8141           23          87         172
-## [10,]        20      1255 1179.1383           26          84         152
-##       act_unused harvested
-##  [1,]          3       232
-##  [2,]          1        36
-##  [3,]          2       112
-##  [4,]          3       304
-##  [5,]          0       400
-##  [6,]          0       400
-##  [7,]          2       132
-##  [8,]          2        36
-##  [9,]          0       172
-## [10,]          1       152</code></pre>
-<p>Note from the results above that resources in all simulations persisted for 20 time steps, which means that extinction never occurred. We can also see that the population in all simulations never terminated at a density near the default carrying capacity of <code>res_death_K = 2000</code>, and was instead consistently near the target population size of <code>manage_target = 1000</code>. If we wish to define management success as having a population density near target levels after 20 time steps (perhaps interpreted as 20 years), then we might assess this population as successfully managed under the conditions of the simulation. We can then see what happens if managers only respond to changes in the social-ecological system with a change in policy once every two years, perhaps as a consequence of reduced funding for management or increasing demands for management attention elsewhere. This can be done by changing the default <code>manage_freq = 1</code> to <code>manage_freq = 2</code>.</p>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">gmse_reps2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_replicates.html">gmse_replicates</a></span>(<span class="kw">replicates</span>  <span class="kw">=</span> <span class="fl">10</span>, <span class="kw">time_max</span> <span class="kw">=</span> <span class="fl">20</span>, <span class="kw">plotting</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
-                              <span class="kw">manage_freq</span> <span class="kw">=</span> <span class="fl">2</span>);
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">gmse_reps2</span>);</pre></body></html></div>
-<pre><code>##       time_step resources  estimate cost_culling cost_unused act_culling
-##  [1,]        20       701  657.5964          110           0          36
-##  [2,]        20       747  816.3265          110           0          36
-##  [3,]        20      1738 2448.9796           10         100         400
-##  [4,]        20      1314 1156.4626           30          80         132
-##  [5,]        20      1236 1065.7596           72          38          52
-##  [6,]        20      1036 1519.2744           10         100         400
-##  [7,]        20      1065 1360.5442           13          97         304
-##  [8,]        20      1240 1632.6531           10         100         400
-##  [9,]        20      1510 1564.6259           10         100         400
-## [10,]        20      1363 1337.8685           14          96         284
-##       act_unused harvested
-##  [1,]          2        36
-##  [2,]          2        36
-##  [3,]          0       400
-##  [4,]          3       132
-##  [5,]          8        52
-##  [6,]          0       400
-##  [7,]          0       304
-##  [8,]          0       400
-##  [9,]          0       400
-## [10,]          0       284</code></pre>
-<p>Note that while extinction still does not occur in these simulations, when populations are managed less frequently, they tend to be less close to the target size of 1000 after 20 generations. The median population size of <code>gmse_reps1</code> (management in every time step) was 1260.5, with a maximum of 1478 and minimum of 1029. The median population size of the newly simulated <code>gmse_reps2</code> (management every two time steps) is 1238, with a maximum of 1738 and minimum of 701. We can now see what happens when management occurs only once in every three time steps.</p>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">gmse_reps3</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_replicates.html">gmse_replicates</a></span>(<span class="kw">replicates</span> <span class="kw">=</span> <span class="fl">10</span>, <span class="kw">time_max</span> <span class="kw">=</span> <span class="fl">20</span>, <span class="kw">plotting</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
-                             <span class="kw">manage_freq</span> <span class="kw">=</span> <span class="fl">3</span>);
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">gmse_reps3</span>);</pre></body></html></div>
-<pre><code>##       time_step resources   estimate cost_culling cost_unused act_culling
-##  [1,]        20      1213 1496.59864           10          99         400
-##  [2,]        20      1246 1655.32880           10         100         400
-##  [3,]        20       878 1564.62585           10         100         400
-##  [4,]        14         0   22.67574          108           2          36
-##  [5,]        20       855  861.67800          108           2          36
-##  [6,]        20      1199 1337.86848           14          96         284
-##  [7,]        20      1043 1224.48980           21          89         188
-##  [8,]        20      1139 1768.70748           10         100         400
-##  [9,]        12         0    0.00000          109           1          36
-## [10,]        20       905 1496.59864           10         100         400
-##       act_unused harvested
-##  [1,]          0       400
-##  [2,]          0       400
-##  [3,]          0       400
-##  [4,]          4         0
-##  [5,]          5        36
-##  [6,]          0       284
-##  [7,]          1       188
-##  [8,]          0       400
-##  [9,]          1         0
-## [10,]          0       400</code></pre>
-<p>Given a management frequency of once every three time steps, the median population size of <code>gmse_reps3</code> (management in every time step) is 974, with a maximum of 1246 and minimum of 0. The number of extinctions observed in these replicate populations was 2. Below we change the management frequency to once every four time steps.</p>
-<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="no">gmse_reps4</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_replicates.html">gmse_replicates</a></span>(<span class="kw">replicates</span> <span class="kw">=</span> <span class="fl">10</span>, <span class="kw">time_max</span> <span class="kw">=</span> <span class="fl">20</span>, <span class="kw">plotting</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
-                             <span class="kw">manage_freq</span> <span class="kw">=</span> <span class="fl">4</span>);
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">gmse_reps4</span>);</pre></body></html></div>
-<pre><code>##       time_step resources   estimate cost_culling cost_unused act_culling
-##  [1,]        20      1220 1428.57143           11          99         360
-##  [2,]        17         4   68.02721          108           2          36
-##  [3,]        20      1329 1587.30159           10         100         400
-##  [4,]         9         9   45.35147          110           0          36
-##  [5,]        10         0   45.35147          110           0          36
-##  [6,]        20      2027 2176.87075           10         100         400
-##  [7,]        20       746  839.00227          110           0          36
-##  [8,]        20      2549 2675.73696           10         100         400
-##  [9,]         6         0   22.67574          110           0          36
-## [10,]        20      1255 1383.21995           13          97         304
-##       act_unused harvested
-##  [1,]          2       360
-##  [2,]          4         4
-##  [3,]          0       400
-##  [4,]          2         9
-##  [5,]          2         0
-##  [6,]          0       400
-##  [7,]          1        36
-##  [8,]          0       400
-##  [9,]          0         0
-## [10,]          2       304</code></pre>
-<p>Now note from the first column of <code>gmse_reps4</code> above that 4 populations did not persist to the 20th time step; i.e., 4 populations went to extinction (note that GMSE has a minimum resource population size of 5). This has occured because managers cannot respond quickly enough to changes in the population density, and therefore cannot increase the cost of culling to maintain target resource levels if population size starts to decrease. We can see the extinction risk increase even further if management only occurs once every 5 time steps.</p>
-<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="no">gmse_reps5</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_replicates.html">gmse_replicates</a></span>(<span class="kw">replicates</span> <span class="kw">=</span> <span class="fl">10</span>, <span class="kw">time_max</span> <span class="kw">=</span> <span class="fl">20</span>, <span class="kw">plotting</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
-                             <span class="kw">manage_freq</span> <span class="kw">=</span> <span class="fl">5</span>);
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">gmse_reps5</span>);</pre></body></html></div>
-<pre><code>##       time_step resources estimate cost_culling cost_unused act_culling
-##  [1,]         5         0        0          110           0          36
-##  [2,]         5         0        0          110           0          36
-##  [3,]         5         0        0          110           0          36
-##  [4,]         5         0        0          110           0          36
-##  [5,]         5         0        0          110           0          36
-##  [6,]         5         0        0          110           0          36
-##  [7,]         5         0        0          110           0          36
-##  [8,]         5         0        0          110           0          36
-##  [9,]         5         0        0          109           1          36
-## [10,]         5         0        0          109           1          36
-##       act_unused harvested
-##  [1,]          1         0
-##  [2,]          2         0
-##  [3,]          1         0
-##  [4,]          0         0
-##  [5,]          0         0
-##  [6,]          3         0
-##  [7,]          1         0
-##  [8,]          1         0
-##  [9,]          2         0
-## [10,]          1         0</code></pre>
-<p>When a manager can only make policy decisions once every five time steps, extinction occurs in 10 out of 10 simulated populations before year 20. If we wanted to summarise these results, we could plot how extinction risk changes with increasing <code>manage_freq</code>.</p>
-<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="no">ext_risk1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">gmse_reps1</span>[,<span class="fl">2</span>] <span class="kw">&lt;</span> <span class="fl">20</span>);
-<span class="no">ext_risk2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">gmse_reps2</span>[,<span class="fl">2</span>] <span class="kw">&lt;</span> <span class="fl">20</span>);
-<span class="no">ext_risk3</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">gmse_reps3</span>[,<span class="fl">2</span>] <span class="kw">&lt;</span> <span class="fl">20</span>);
-<span class="no">ext_risk4</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">gmse_reps4</span>[,<span class="fl">2</span>] <span class="kw">&lt;</span> <span class="fl">20</span>);
-<span class="no">ext_risk5</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">gmse_reps5</span>[,<span class="fl">2</span>] <span class="kw">&lt;</span> <span class="fl">20</span>);
-<span class="no">y_var</span>     <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">ext_risk1</span>, <span class="no">ext_risk2</span>, <span class="no">ext_risk3</span>, <span class="no">ext_risk4</span>, <span class="no">ext_risk5</span>);
-<span class="no">x_var</span>     <span class="kw">&lt;-</span> <span class="fl">1</span>:<span class="fl">5</span>;
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">x_var</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">y_var</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"b"</span>, <span class="kw">pch</span> <span class="kw">=</span> <span class="fl">20</span>, <span class="kw">lwd</span> <span class="kw">=</span> <span class="fl">2</span>, <span class="kw">cex</span> <span class="kw">=</span> <span class="fl">1.5</span>,
-     <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">"Management every N time steps (manage_freq)"</span>,
-     <span class="kw">ylab</span> <span class="kw">=</span> <span class="st">"Freq. of population extinction"</span>, <span class="kw">cex.lab</span> <span class="kw">=</span> <span class="fl">1.25</span>)</pre></body></html></div>
+<div class="section level2">
+<h2 id="replicate-simulations-as-a-tool-for-model-inference">Replicate simulations as a tool for model inference<a class="anchor" aria-label="anchor" href="#replicate-simulations-as-a-tool-for-model-inference"></a>
+</h2>
+<p>Mechanistically modelling complex interactions among discrete
+individuals typically causes some degree of stochasticity in IBMs (in
+the code, this is caused by the sampling of random values, which
+determine probabilistically whether or not events such as birth or death
+occur for individuals), reflecting the uncertainty that is inherent to
+complex systems. We can see a simple example of this by calling
+<code>gmse_apply</code> under the same default conditions twice.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">rand_eg_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span><span class="op">(</span><span class="op">)</span>;
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">rand_eg_1</span><span class="op">)</span>;</code></pre></div>
+<pre><code><span class="co">## $resource_results</span>
+<span class="co">## [1] 1095</span>
+<span class="co">## </span>
+<span class="co">## $observation_results</span>
+<span class="co">## [1] 839.0023</span>
+<span class="co">## </span>
+<span class="co">## $manager_results</span>
+<span class="co">##          resource_type scaring culling castration feeding help_offspring</span>
+<span class="co">## policy_1             1      NA      85         NA      NA             NA</span>
+<span class="co">## </span>
+<span class="co">## $user_results</span>
+<span class="co">##         resource_type scaring culling castration feeding help_offspring</span>
+<span class="co">## Manager             1      NA       0         NA      NA             NA</span>
+<span class="co">## user_1              1      NA      11         NA      NA             NA</span>
+<span class="co">## user_2              1      NA      11         NA      NA             NA</span>
+<span class="co">## user_3              1      NA      11         NA      NA             NA</span>
+<span class="co">## user_4              1      NA      11         NA      NA             NA</span>
+<span class="co">##         tend_crops kill_crops</span>
+<span class="co">## Manager         NA         NA</span>
+<span class="co">## user_1          NA         NA</span>
+<span class="co">## user_2          NA         NA</span>
+<span class="co">## user_3          NA         NA</span>
+<span class="co">## user_4          NA         NA</span></code></pre>
+<p>Although a second call of <code>gmse_apply</code> has identical
+initial conditions, because resource demographics (e.g., birth and
+death) and agent decision making (e.g., policy generation and user
+actions) is not deterministic, a slightly different result is obtained
+below.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">rand_eg_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span><span class="op">(</span><span class="op">)</span>;
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">rand_eg_2</span><span class="op">)</span>;</code></pre></div>
+<pre><code><span class="co">## $resource_results</span>
+<span class="co">## [1] 1101</span>
+<span class="co">## </span>
+<span class="co">## $observation_results</span>
+<span class="co">## [1] 1292.517</span>
+<span class="co">## </span>
+<span class="co">## $manager_results</span>
+<span class="co">##          resource_type scaring culling castration feeding help_offspring</span>
+<span class="co">## policy_1             1      NA      71         NA      NA             NA</span>
+<span class="co">## </span>
+<span class="co">## $user_results</span>
+<span class="co">##         resource_type scaring culling castration feeding help_offspring</span>
+<span class="co">## Manager             1      NA       0         NA      NA             NA</span>
+<span class="co">## user_1              1      NA      14         NA      NA             NA</span>
+<span class="co">## user_2              1      NA      14         NA      NA             NA</span>
+<span class="co">## user_3              1      NA      14         NA      NA             NA</span>
+<span class="co">## user_4              1      NA      14         NA      NA             NA</span>
+<span class="co">##         tend_crops kill_crops</span>
+<span class="co">## Manager         NA         NA</span>
+<span class="co">## user_1          NA         NA</span>
+<span class="co">## user_2          NA         NA</span>
+<span class="co">## user_3          NA         NA</span>
+<span class="co">## user_4          NA         NA</span></code></pre>
+<p>To make meaningful model inferences, it is often necessary to
+replicate simulations under the same initial conditions to understand
+the range of predicted outcomes for a particular set of parameter
+values. This can be computationally intense, but it can also lead to a
+more robust understanding of the range of dynamics that might be
+expected within a system. Additionally, when parameter values are
+unknown but believed to be important, replicate simulations can be
+applied across a range of values to understand how a particular
+parameter might affect system dynamics. Below, we show how to use the
+<code>gmse_replicates</code> function to simulate a simple example of a
+managed population that is hunted by users. This function calls
+<code>gmse</code> multiple times and aggregates the results from
+replicate simulations into a single table.</p>
+<p>For a single simulation, the <code>gmse_table</code> function prints
+out key information from a <code>gmse</code> simulation result. The
+example provided in the <a href="https://cran.r-project.org/package=GMSE" class="external-link">GMSE documentation</a> is
+below.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gmse_sim</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse.html">gmse</a></span><span class="op">(</span>time_max <span class="op">=</span> <span class="fl">10</span>, plotting <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>;</code></pre></div>
+<pre><code><span class="co">## [1] "Initialising simulations ... "</span></code></pre>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sim_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_table.html">gmse_table</a></span><span class="op">(</span>gmse_sim <span class="op">=</span> <span class="va">gmse_sim</span><span class="op">)</span>;
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sim_table</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##       time_step resources  estimate cost_culling cost_unused act_culling</span>
+<span class="co">##  [1,]         1      1111 1201.8141           80          30          48</span>
+<span class="co">##  [2,]         2      1200 1201.8141           23          87         172</span>
+<span class="co">##  [3,]         3      1178 1201.8141           23          87         172</span>
+<span class="co">##  [4,]         4      1168  907.0295          110           0          36</span>
+<span class="co">##  [5,]         5      1347 1700.6803           10         100         400</span>
+<span class="co">##  [6,]         6      1234 1315.1927           14          96         284</span>
+<span class="co">##  [7,]         7      1121 1292.5170           16          94         248</span>
+<span class="co">##  [8,]         8      1047 1179.1383           26          84         152</span>
+<span class="co">##  [9,]         9      1078 1065.7596           71          39          56</span>
+<span class="co">## [10,]        10      1229 1269.8413           18          92         220</span>
+<span class="co">##       act_unused harvested</span>
+<span class="co">##  [1,]          9        48</span>
+<span class="co">##  [2,]          1       172</span>
+<span class="co">##  [3,]          0       172</span>
+<span class="co">##  [4,]          1        36</span>
+<span class="co">##  [5,]          0       400</span>
+<span class="co">##  [6,]          0       284</span>
+<span class="co">##  [7,]          0       248</span>
+<span class="co">##  [8,]          1       152</span>
+<span class="co">##  [9,]          0        56</span>
+<span class="co">## [10,]          0       220</span></code></pre>
+<p>The above table can be saved as a CSV file using the
+<code>write.csv</code> function.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span>x<span class="op">=</span> <span class="va">sim_table</span>, file <span class="op">=</span> <span class="st">"file_path/gmse_table_name.csv"</span><span class="op">)</span>;</code></pre></div>
+<p>Instead of recording all time steps in the simulation, we can instead
+record only the last time step in <code>gmse_table</code> using the
+<code>all_time</code> argument.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sim_table_last</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_table.html">gmse_table</a></span><span class="op">(</span>gmse_sim <span class="op">=</span> <span class="va">gmse_sim</span>, all_time <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>;
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sim_table_last</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##    time_step    resources     estimate cost_culling  cost_unused  act_culling </span>
+<span class="co">##       10.000     1229.000     1269.841       18.000       92.000      220.000 </span>
+<span class="co">##   act_unused    harvested </span>
+<span class="co">##        0.000      220.000</span></code></pre>
+<p>The <code>gmse_replicates</code> function replicates multiple
+simulations <code>replicates</code> times under the same initial
+conditions, then returns a table showing the values of all simulations.
+This can be useful, for example, for testing how frequently a population
+is expected to go to extinction or carrying capacity under a given set
+of parameter values. First, we demonstrate the
+<code>gmse_replicates</code> function for simulations of up to 20 time
+steps. The <code>gmse_replicates</code> function accepts all arguments
+used in <code>gmse</code>, and also all arguments of
+<code>gmse_table</code> (<code>all_time</code> and
+<code>hide_unused_options</code>) to summarise multiple
+<code>gmse</code> results. Here we use default <code>gmse</code> values
+in replicate simulations, except <code>plotting</code>, which we set to
+<code>FALSE</code> to avoid plotting each simulation result. We run 10
+replicates below.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gmse_reps1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_replicates.html">gmse_replicates</a></span><span class="op">(</span>replicates <span class="op">=</span> <span class="fl">10</span>, time_max <span class="op">=</span> <span class="fl">20</span>, plotting <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>;
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">gmse_reps1</span><span class="op">)</span>;</code></pre></div>
+<pre><code><span class="co">##       time_step resources  estimate cost_culling cost_unused act_culling</span>
+<span class="co">##  [1,]        20      1246 1065.7596           71          39          56</span>
+<span class="co">##  [2,]        20      1349 1247.1655           18          92         220</span>
+<span class="co">##  [3,]        20      1417 1428.5714           11          99         360</span>
+<span class="co">##  [4,]        20      1215 1201.8141           24          86         164</span>
+<span class="co">##  [5,]        20      1470 1564.6259           10         100         400</span>
+<span class="co">##  [6,]        20      1074 1043.0839          110           0          36</span>
+<span class="co">##  [7,]        20      1197 1292.5170           16          94         248</span>
+<span class="co">##  [8,]        20      1280 1337.8685           14          96         284</span>
+<span class="co">##  [9,]        20      1155  907.0295          110           0          36</span>
+<span class="co">## [10,]        20      1402 1065.7596           70          40          56</span>
+<span class="co">##       act_unused harvested</span>
+<span class="co">##  [1,]          0        56</span>
+<span class="co">##  [2,]          2       220</span>
+<span class="co">##  [3,]          1       360</span>
+<span class="co">##  [4,]          3       164</span>
+<span class="co">##  [5,]          0       400</span>
+<span class="co">##  [6,]          3        36</span>
+<span class="co">##  [7,]          0       248</span>
+<span class="co">##  [8,]          0       284</span>
+<span class="co">##  [9,]          3        36</span>
+<span class="co">## [10,]          0        56</span></code></pre>
+<p>Note from the results above that resources in all simulations
+persisted for 20 time steps, which means that extinction never occurred.
+We can also see that the population in all simulations never terminated
+at a density near the default carrying capacity of
+<code>res_death_K = 2000</code>, and was instead consistently near the
+target population size of <code>manage_target = 1000</code>. If we wish
+to define management success as having a population density near target
+levels after 20 time steps (perhaps interpreted as 20 years), then we
+might assess this population as successfully managed under the
+conditions of the simulation. We can then see what happens if managers
+only respond to changes in the social-ecological system with a change in
+policy once every two years, perhaps as a consequence of reduced funding
+for management or increasing demands for management attention elsewhere.
+This can be done by changing the default <code>manage_freq = 1</code> to
+<code>manage_freq = 2</code>.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gmse_reps2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_replicates.html">gmse_replicates</a></span><span class="op">(</span>replicates  <span class="op">=</span> <span class="fl">10</span>, time_max <span class="op">=</span> <span class="fl">20</span>, plotting <span class="op">=</span> <span class="cn">FALSE</span>, 
+                              manage_freq <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>;
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">gmse_reps2</span><span class="op">)</span>;</code></pre></div>
+<pre><code><span class="co">##       time_step resources  estimate cost_culling cost_unused act_culling</span>
+<span class="co">##  [1,]        20      1648 1564.6259           10         100         400</span>
+<span class="co">##  [2,]        20       913  929.7052          110           0          36</span>
+<span class="co">##  [3,]        20      1670 1632.6531           10         100         400</span>
+<span class="co">##  [4,]        20       988 1111.1111           42          68          92</span>
+<span class="co">##  [5,]        20       871  997.7324          110           0          36</span>
+<span class="co">##  [6,]        20      1591 1496.5986           10         100         400</span>
+<span class="co">##  [7,]        20      1119 1224.4898           21          89         188</span>
+<span class="co">##  [8,]        20      1324 1383.2200           12          98         332</span>
+<span class="co">##  [9,]        20       969  884.3537          110           0          36</span>
+<span class="co">## [10,]        20      1124 1088.4354           54          56          72</span>
+<span class="co">##       act_unused harvested</span>
+<span class="co">##  [1,]          0       400</span>
+<span class="co">##  [2,]          3        36</span>
+<span class="co">##  [3,]          0       400</span>
+<span class="co">##  [4,]          9        92</span>
+<span class="co">##  [5,]          1        36</span>
+<span class="co">##  [6,]          0       400</span>
+<span class="co">##  [7,]          3       188</span>
+<span class="co">##  [8,]          0       332</span>
+<span class="co">##  [9,]          0        36</span>
+<span class="co">## [10,]          5        72</span></code></pre>
+<p>Note that while extinction still does not occur in these simulations,
+when populations are managed less frequently, they tend to be less close
+to the target size of 1000 after 20 generations. The median population
+size of <code>gmse_reps1</code> (management in every time step) was
+1263, with a maximum of 1470 and minimum of 1074. The median population
+size of the newly simulated <code>gmse_reps2</code> (management every
+two time steps) is 1121.5, with a maximum of 1670 and minimum of 871. We
+can now see what happens when management occurs only once in every three
+time steps.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gmse_reps3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_replicates.html">gmse_replicates</a></span><span class="op">(</span>replicates <span class="op">=</span> <span class="fl">10</span>, time_max <span class="op">=</span> <span class="fl">20</span>, plotting <span class="op">=</span> <span class="cn">FALSE</span>, 
+                             manage_freq <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>;
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">gmse_reps3</span><span class="op">)</span>;</code></pre></div>
+<pre><code><span class="co">##       time_step resources  estimate cost_culling cost_unused act_culling</span>
+<span class="co">##  [1,]        20      1463 1065.7596           71          39          56</span>
+<span class="co">##  [2,]        20      1914 1247.1655           20          90         200</span>
+<span class="co">##  [3,]        20       710 1609.9773           10         100         400</span>
+<span class="co">##  [4,]        20       787 1405.8957           12          98         332</span>
+<span class="co">##  [5,]        20       979 1247.1655           19          91         208</span>
+<span class="co">##  [6,]        20      1804  884.3537          110           0          36</span>
+<span class="co">##  [7,]        20      1259 1315.1927           15          95         264</span>
+<span class="co">##  [8,]        20       849 1451.2472           10         100         400</span>
+<span class="co">##  [9,]        20      1492 1020.4082          110           0          36</span>
+<span class="co">## [10,]        20      1066 1292.5170           16          94         248</span>
+<span class="co">##       act_unused harvested</span>
+<span class="co">##  [1,]          0        56</span>
+<span class="co">##  [2,]          0       200</span>
+<span class="co">##  [3,]          0       400</span>
+<span class="co">##  [4,]          0       332</span>
+<span class="co">##  [5,]          3       208</span>
+<span class="co">##  [6,]          0        36</span>
+<span class="co">##  [7,]          1       264</span>
+<span class="co">##  [8,]          0       400</span>
+<span class="co">##  [9,]          0        36</span>
+<span class="co">## [10,]          0       248</span></code></pre>
+<p>Given a management frequency of once every three time steps, the
+median population size of <code>gmse_reps3</code> (management in every
+time step) is 1162.5, with a maximum of 1914 and minimum of 710. The
+number of extinctions observed in these replicate populations was 0.
+Below we change the management frequency to once every four time
+steps.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gmse_reps4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_replicates.html">gmse_replicates</a></span><span class="op">(</span>replicates <span class="op">=</span> <span class="fl">10</span>, time_max <span class="op">=</span> <span class="fl">20</span>, plotting <span class="op">=</span> <span class="cn">FALSE</span>, 
+                             manage_freq <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>;
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">gmse_reps4</span><span class="op">)</span>;</code></pre></div>
+<pre><code><span class="co">##       time_step resources   estimate cost_culling cost_unused act_culling</span>
+<span class="co">##  [1,]         6         0    0.00000          110           0          36</span>
+<span class="co">##  [2,]         4         0    0.00000          110           0          36</span>
+<span class="co">##  [3,]         4         6    0.00000          110           0          36</span>
+<span class="co">##  [4,]         4         0    0.00000          110           0          36</span>
+<span class="co">##  [5,]         7         0   22.67574          110           0          36</span>
+<span class="co">##  [6,]        13         0   22.67574          109           1          36</span>
+<span class="co">##  [7,]         4         0    0.00000          110           0          36</span>
+<span class="co">##  [8,]         6         0   22.67574          110           0          36</span>
+<span class="co">##  [9,]         4         0    0.00000          110           0          36</span>
+<span class="co">## [10,]        20      1161 1247.16553           19          91         208</span>
+<span class="co">##       act_unused harvested</span>
+<span class="co">##  [1,]          1         0</span>
+<span class="co">##  [2,]          0         0</span>
+<span class="co">##  [3,]          1         6</span>
+<span class="co">##  [4,]          2         0</span>
+<span class="co">##  [5,]          1         0</span>
+<span class="co">##  [6,]          1         0</span>
+<span class="co">##  [7,]          1         0</span>
+<span class="co">##  [8,]          3         0</span>
+<span class="co">##  [9,]          2         0</span>
+<span class="co">## [10,]          2       208</span></code></pre>
+<p>Now note from the first column of <code>gmse_reps4</code> above that
+9 populations did not persist to the 20th time step; i.e., 9 populations
+went to extinction (note that GMSE has a minimum resource population
+size of 5). This has occured because managers cannot respond quickly
+enough to changes in the population density, and therefore cannot
+increase the cost of culling to maintain target resource levels if
+population size starts to decrease. We can see the extinction risk
+increase even further if management only occurs once every 5 time
+steps.</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gmse_reps5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_replicates.html">gmse_replicates</a></span><span class="op">(</span>replicates <span class="op">=</span> <span class="fl">10</span>, time_max <span class="op">=</span> <span class="fl">20</span>, plotting <span class="op">=</span> <span class="cn">FALSE</span>, 
+                             manage_freq <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>;
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">gmse_reps5</span><span class="op">)</span>;</code></pre></div>
+<pre><code><span class="co">##       time_step resources estimate cost_culling cost_unused act_culling</span>
+<span class="co">##  [1,]         5         0        0          110           0          36</span>
+<span class="co">##  [2,]         5         0        0          110           0          36</span>
+<span class="co">##  [3,]         5         0        0          110           0          36</span>
+<span class="co">##  [4,]         5         0        0          110           0          36</span>
+<span class="co">##  [5,]         5         0        0          109           1          36</span>
+<span class="co">##  [6,]         5         0        0          110           0          36</span>
+<span class="co">##  [7,]         4         0     1000            0         -10         400</span>
+<span class="co">##  [8,]         4         0     1000            0         -10         400</span>
+<span class="co">##  [9,]         4         0     1000            0         -10         400</span>
+<span class="co">## [10,]         5         0        0          110           0          36</span>
+<span class="co">##       act_unused harvested</span>
+<span class="co">##  [1,]          1         0</span>
+<span class="co">##  [2,]          2         0</span>
+<span class="co">##  [3,]          1         0</span>
+<span class="co">##  [4,]          2         0</span>
+<span class="co">##  [5,]          0         0</span>
+<span class="co">##  [6,]          0         0</span>
+<span class="co">##  [7,]          0         0</span>
+<span class="co">##  [8,]          0         0</span>
+<span class="co">##  [9,]          0         0</span>
+<span class="co">## [10,]          1         0</span></code></pre>
+<p>When a manager can only make policy decisions once every five time
+steps, extinction occurs in 10 out of 10 simulated populations before
+year 20. If we wanted to summarise these results, we could plot how
+extinction risk changes with increasing <code>manage_freq</code>.</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ext_risk1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">gmse_reps1</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span> <span class="op">&lt;</span> <span class="fl">20</span><span class="op">)</span>;
+<span class="va">ext_risk2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">gmse_reps2</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span> <span class="op">&lt;</span> <span class="fl">20</span><span class="op">)</span>;
+<span class="va">ext_risk3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">gmse_reps3</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span> <span class="op">&lt;</span> <span class="fl">20</span><span class="op">)</span>;
+<span class="va">ext_risk4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">gmse_reps4</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span> <span class="op">&lt;</span> <span class="fl">20</span><span class="op">)</span>;
+<span class="va">ext_risk5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">gmse_reps5</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span> <span class="op">&lt;</span> <span class="fl">20</span><span class="op">)</span>;
+<span class="va">y_var</span>     <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">ext_risk1</span>, <span class="va">ext_risk2</span>, <span class="va">ext_risk3</span>, <span class="va">ext_risk4</span>, <span class="va">ext_risk5</span><span class="op">)</span>;
+<span class="va">x_var</span>     <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>;
+<span class="fu"><a href="http://flr-project.org/FLCore/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x_var</span>, y <span class="op">=</span> <span class="va">y_var</span>, type <span class="op">=</span> <span class="st">"b"</span>, pch <span class="op">=</span> <span class="fl">20</span>, lwd <span class="op">=</span> <span class="fl">2</span>, cex <span class="op">=</span> <span class="fl">1.5</span>,
+     xlab <span class="op">=</span> <span class="st">"Management every N time steps (manage_freq)"</span>,
+     ylab <span class="op">=</span> <span class="st">"Freq. of population extinction"</span>, cex.lab <span class="op">=</span> <span class="fl">1.25</span><span class="op">)</span></code></pre></div>
 <div class="figure">
 <img src="SI6_files/figure-html/unnamed-chunk-22-1.png" alt="Extinction risk given an increasing number of time steps between updating policy decisions for culling costs in a simulated population. Higher values on the x-axis correspond to more time passing before a new policy is set. For each point, a total of 10 replicate simulations were run." width="700"><p class="caption">
-Extinction risk given an increasing number of time steps between updating policy decisions for culling costs in a simulated population. Higher values on the x-axis correspond to more time passing before a new policy is set. For each point, a total of 10 replicate simulations were run.
+Extinction risk given an increasing number of time steps between
+updating policy decisions for culling costs in a simulated population.
+Higher values on the x-axis correspond to more time passing before a new
+policy is set. For each point, a total of 10 replicate simulations were
+run.
 </p>
 </div>
-<p>The above plot and the simulations from which it was derived illustrates a greatly simplified example of how GMSE might be used to assess the risk of extinction in a managed population. A comprehensive analysis would need more than 10 replicate simulations to accurately infer extinction risk, and would require careful pararmeterisation of all sub-models and a sensitivity analysis where such parameters are unknown. A benefit of this approach is that it allows for the simulation of multiple different scenarios under conditions of uncertainty and stochasticity, modelling the range of outcomes that might occur within and among scenarios and facilitating the development of social-ecological theory. Future expansion on the complexity of individual-based default sub-models of GMSE will further increase the realism of targeted case studies.</p>
+<p>The above plot and the simulations from which it was derived
+illustrates a greatly simplified example of how GMSE might be used to
+assess the risk of extinction in a managed population. A comprehensive
+analysis would need more than 10 replicate simulations to accurately
+infer extinction risk, and would require careful pararmeterisation of
+all sub-models and a sensitivity analysis where such parameters are
+unknown. A benefit of this approach is that it allows for the simulation
+of multiple different scenarios under conditions of uncertainty and
+stochasticity, modelling the range of outcomes that might occur within
+and among scenarios and facilitating the development of
+social-ecological theory. Future expansion on the complexity of
+individual-based default sub-models of GMSE will further increase the
+realism of targeted case studies.</p>
 </div>
-<div id="references" class="section level1 unnumbered">
-<h1 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h1>
-<div id="refs" class="references">
-<div id="ref-Grimm1999">
-<p>Grimm, Volker. 1999. “Ten years of individual-based modelling in ecology: what have we learned and what could we learn in the future?” <em>Ecological Modelling</em> 115 (2-3): 129–48. <a href="https://doi.org/10.1016/S0304-3800(98)00188-4">https://doi.org/10.1016/S0304-3800(98)00188-4</a>.</p>
+<div class="section level2">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Grimm1999" class="csl-entry">
+Grimm, Volker. 1999. <span>“<span class="nocase">Ten years of
+individual-based modelling in ecology: what have we learned and what
+could we learn in the future?</span>”</span> <em>Ecological
+Modelling</em> 115 (2-3): 129–48. <a href="https://doi.org/10.1016/S0304-3800(98)00188-4" class="external-link">https://doi.org/10.1016/S0304-3800(98)00188-4</a>.
 </div>
-<div id="ref-Uchmanski1996">
-<p>Uchmański, J, and Volker Grimm. 1996. “Individual-based modelling in ecology: what makes the difference?” <em>Trends in Ecology &amp; Evolution</em> 11 (10): 437–41. <a href="http://www.sciencedirect.com/science/article/pii/0169534796200916">http://www.sciencedirect.com/science/article/pii/0169534796200916</a>.</p>
+<div id="ref-Uchmanski1996" class="csl-entry">
+Uchmański, J, and Volker Grimm. 1996. <span>“<span class="nocase">Individual-based modelling in ecology: what makes the
+difference?</span>”</span> <em>Trends in Ecology <span>&amp;</span>
+Evolution</em> 11 (10): 437–41. <a href="http://www.sciencedirect.com/science/article/pii/0169534796200916" class="external-link">http://www.sciencedirect.com/science/article/pii/0169534796200916</a>.
 </div>
 </div>
 </div>
@@ -394,11 +532,13 @@ Extinction risk given an increasing number of time steps between updating policy
 
 
       <footer><div class="copyright">
-  <p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman.</p>
+  <p></p>
+<p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman, Ochoa Gabriela.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>
@@ -406,6 +546,8 @@ Extinction risk given an increasing number of time steps between updating policy
 
   
 
+
+  
 
   </body>
 </html>

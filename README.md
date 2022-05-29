@@ -89,6 +89,7 @@ For additional help in getting started with GMSE, the following vignettes are av
 - **Replicate simulations**: Introduction to the use of replicate simulatoins for model inference, with an example of how this can be done in GMSE.
 - **GMSE data structures**: Detailed explanation of key data structures used in GMSE.
 - **Adaptive timing of investment strategy**: Example in which managers intervene adaptively based on the deviation of a population from its target.
+- **The simulated annealing algorithm of GMSE**: Explanation of the simulated annealing algorithm, which functions as an alternative to the genetic algorithm for agent decision-making in GMSE.
 
 Descriptions of individual GMSE functions are provided in the [GMSE documentation](https://cran.r-project.org/package=GMSE/GMSE.pdf) available on CRAN.
 
@@ -99,6 +100,8 @@ Duthie, A. B., Cusack, J. J., Jones, I. L., Nilsen, E. B., Pozo, R. A., Rakotona
 Duthie, A. B., A. Bach, & J. Minderman (2021). GMSE: Generalised Management Strategy Evaluation Simulator. R package version 0.7.0.0. https://confoobio.github.io/gmse/
 
 ## Publications using GMSE
+
+Bach, A., J. Minderman, N. Bunnefeld, A. Mill, A. B. Duthie. (2022). Intervene or wait? Modelling the timing of intervention in conservation conflicts adaptive management under uncertainty. Ecology and Society. *In press*.
 
 Nilsson, L., Bunnefeld, N., Jeroen, M., & Duthie, A. B. (2021). Effects of stakeholder empowerment on crane population and agricultural population. *Ecological Modelling*, 440, 109396. https://doi.org/10.1016/j.ecolmodel.2020.109396
 

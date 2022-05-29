@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.1</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../articles/GMSE.html">Get started</a>
 </li>
@@ -50,7 +46,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -80,6 +76,9 @@
     <li>
       <a href="../articles/SI8.html">Adaptive timing of investment strategy</a>
     </li>
+    <li>
+      <a href="../articles/SI9.html">The simulated annealing algorithm of GMSE</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -88,10 +87,10 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://confoobio.github.io/gmse/notebook/gmse_notes.html">Lab notebook</a>
+  <a href="https://confoobio.github.io/gmse/notebook/gmse_notes.html" class="external-link">Lab notebook</a>
 </li>
 <li>
-  <a href="https://github.com/confoobio/GMSE">
+  <a href="https://github.com/confoobio/GMSE" class="external-link">
     <span class="fa fa-github"></span>
      
   </a>
@@ -110,30 +109,60 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Advanced case study options</h1>
-            <h3 class="subtitle">GMSE: an R package for generalised management strategy evaluation (Supporting Information 4)</h3>
-                        <h4 class="author"><div class="line-block">A. Bradley Duthie¹³, Jeremy J. Cusack¹, Isabel L. Jones¹, Jeroen Minderman¹,<br>
+            <h3 data-toc-skip class="subtitle">GMSE: an R package for
+generalised management strategy evaluation (Supporting Information
+4)</h3>
+                        <h4 data-toc-skip class="author"><div class="line-block">A. Bradley Duthie¹³, Jeremy J. Cusack¹, Isabel L.
+Jones¹, Jeroen Minderman¹,<br>
 Erlend B. Nilsen², Rocío A. Pozo¹, O. Sarobidy Rakotonarivo¹,<br>
 Bram Van Moorter², and Nils Bunnefeld¹</div></h4>
             
-            <h4 class="date">[1] Biological and Environmental Sciences, University of Stirling, Stirling, UK [2] Norwegian Institute for Nature Research, Trondheim, Norway [3] <a href="mailto:alexander.duthie@stir.ac.uk" class="email">alexander.duthie@stir.ac.uk</a>
+            <h4 data-toc-skip class="date">[1] Biological and
+Environmental Sciences, University of Stirling, Stirling, UK [2]
+Norwegian Institute for Nature Research, Trondheim, Norway [3] <a href="mailto:alexander.duthie@stir.ac.uk" class="email">alexander.duthie@stir.ac.uk</a>
 </h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/confoobio/gmse/blob/master/vignettes/SI4.Rmd"><code>vignettes/SI4.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/confoobio/gmse/blob/HEAD/vignettes/SI4.Rmd" class="external-link"><code>vignettes/SI4.Rmd</code></a></small>
       <div class="hidden name"><code>SI4.Rmd</code></div>
 
     </div>
 
     
     
-<div id="fine-tuning-simulation-conditions-using-gmse_apply" class="section level1">
-<h1 class="hasAnchor">
-<a href="#fine-tuning-simulation-conditions-using-gmse_apply" class="anchor"></a>Fine-tuning simulation conditions using <code>gmse_apply</code>
-</h1>
-<p>Here we demonstrate how simulations in GMSE can be more fine-tuned to specific empirical situations through the use of <code>gmse_apply</code>. To do this, we use the same scenario described in <a href="SI3.html">Example case study in GMSE</a>; we first recreate the basic scenario run in <code>gmse</code> using <code>gmse_apply</code>, and then build in additional modelling details including (1) <a href="#land">custom placement of user land</a>, (2) <a href="#budgets">parameterisation of individual user budgets</a>, and (3) <a href="#movement">density-dependent movement of resources</a>. We emphasise that these simulations are provided only to demonstrate the use of GMSE, and specifically to show the flexibility of the <code>gmse_apply</code> function, not to accurately recreate the dynamics of a specific system or make management recommendations.</p>
-<p>We reconsider the case of a protected waterfowl population that exploits agricultural land <span class="citation">(e.g., Fox and Madsen <a href="#ref-Fox2017a">2017</a>; Mason et al. <a href="#ref-Mason2017">2017</a>; Tulloch, Nicol, and Bunnefeld <a href="#ref-Tulloch2017">2017</a>; Cusack et al. <a href="#ref-Cusack2018">2018</a>)</span>. The manager attempts to keep the watefowl at a target abundance, while users (farmers) attempt to maximise agricultural yield on the land that they own. We again parameterise our model using demographic information from the Taiga Bean Goose (<em>Anser fabalis fabalis</em>), as reported by <span class="citation">Johnson et al. (<a href="#ref-Johnson2018">2018</a>)</span> and <span class="citation">AEWA (<a href="#ref-AEWA2016">2016</a>)</span>. Relevant parameter values are listed in the table below.</p>
+<div class="section level2">
+<h2 id="fine-tuning-simulation-conditions-using-gmse_apply">Fine-tuning simulation conditions using <code>gmse_apply</code><a class="anchor" aria-label="anchor" href="#fine-tuning-simulation-conditions-using-gmse_apply"></a>
+</h2>
+<p>Here we demonstrate how simulations in GMSE can be more fine-tuned to
+specific empirical situations through the use of
+<code>gmse_apply</code>. To do this, we use the same scenario described
+in <a href="SI3.html">Example case study in GMSE</a>; we first recreate
+the basic scenario run in <code>gmse</code> using
+<code>gmse_apply</code>, and then build in additional modelling details
+including (1) <a href="#land">custom placement of user land</a>, (2) <a href="#budgets">parameterisation of individual user budgets</a>, and (3)
+<a href="#movement">density-dependent movement of resources</a>. We
+emphasise that these simulations are provided only to demonstrate the
+use of GMSE, and specifically to show the flexibility of the
+<code>gmse_apply</code> function, not to accurately recreate the
+dynamics of a specific system or make management recommendations.</p>
+<p>We reconsider the case of a protected waterfowl population that
+exploits agricultural land <span class="citation">(e.g., <a href="#ref-Fox2017a" role="doc-biblioref">Fox and Madsen 2017</a>; <a href="#ref-Mason2017" role="doc-biblioref">Mason et al. 2017</a>; <a href="#ref-Tulloch2017" role="doc-biblioref">Tulloch, Nicol, and
+Bunnefeld 2017</a>; <a href="#ref-Cusack2018" role="doc-biblioref">Cusack et al. 2018</a>)</span>. The manager
+attempts to keep the watefowl at a target abundance, while users
+(farmers) attempt to maximise agricultural yield on the land that they
+own. We again parameterise our model using demographic information from
+the Taiga Bean Goose (<em>Anser fabalis fabalis</em>), as reported by
+<span class="citation">Johnson et al. (<a href="#ref-Johnson2018" role="doc-biblioref">2018</a>)</span> and <span class="citation">AEWA
+(<a href="#ref-AEWA2016" role="doc-biblioref">2016</a>)</span>. Relevant
+parameter values are listed in the table below.</p>
 <table class="table">
-<caption>GMSE simulation parameter values inspired by <span class="citation">Johnson et al. (<a href="#ref-Johnson2018">2018</a>)</span> and <span class="citation">AEWA (<a href="#ref-AEWA2016">2016</a>)</span>
+<caption>GMSE simulation parameter values inspired by <span class="citation">Johnson et al. (<a href="#ref-Johnson2018" role="doc-biblioref">2018</a>)</span> and <span class="citation">AEWA
+(<a href="#ref-AEWA2016" role="doc-biblioref">2016</a>)</span>
 </caption>
+<colgroup>
+<col width="23%">
+<col width="12%">
+<col width="64%">
+</colgroup>
 <thead><tr class="header">
 <th>Parameter</th>
 <th>Value</th>
@@ -172,9 +201,19 @@ Bram Van Moorter², and Nils Bunnefeld¹</div></h4>
 </tr>
 </tbody>
 </table>
-<p>Additionally, we continue to use the following values for consistency, except in the case of <code>stakeholders</code>, where we reduce the number of farmers to <code>stakeholders = 8</code>. This is done to for two reasons. First, it speeds up simulations for the purpose of demonstration; second, it makes the presentation of our custom landscape ownership easier to visualise (see below).</p>
+<p>Additionally, we continue to use the following values for
+consistency, except in the case of <code>stakeholders</code>, where we
+reduce the number of farmers to <code>stakeholders = 8</code>. This is
+done to for two reasons. First, it speeds up simulations for the purpose
+of demonstration; second, it makes the presentation of our custom
+landscape ownership easier to visualise (see below).</p>
 <table class="table">
 <caption>Non-default GMSE parameter values chosen by authors</caption>
+<colgroup>
+<col width="24%">
+<col width="12%">
+<col width="63%">
+</colgroup>
 <thead><tr class="header">
 <th>Parameter</th>
 <th>Value</th>
@@ -223,163 +262,267 @@ Bram Van Moorter², and Nils Bunnefeld¹</div></h4>
 </tr>
 </tbody>
 </table>
-<p>All other values are set to GMSE defaults, except where specifically noted otherwise.</p>
+<p>All other values are set to GMSE defaults, except where specifically
+noted otherwise.</p>
 </div>
-<div id="re-creating-gmse-simulations-using-gmse_apply" class="section level1">
-<h1 class="hasAnchor">
-<a href="#re-creating-gmse-simulations-using-gmse_apply" class="anchor"></a>Re-creating <code>gmse</code> simulations using <code>gmse_apply</code>
-</h1>
-<p>We now recreate the simulations in <a href="SI3.html">Example case study in GMSE</a>, which were run using the <code>gmse</code> function, in <code>gmse_apply</code>. Doing so requires us to first initialise simulations using one call of <code>gmse_apply</code>, then loop through multiple time steps that again call <code>gmse_apply</code>; results of interest are recorded in a data frame (<code>sim_sum_1</code>). Following the protocol introduced in <a href="SI2.html">Use of the gmse_apply function</a>, we can call the initialising simulation <code>sim_old</code>, and use the code below to read in the relevant parameter values.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="no">sim_old</span>  <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">get_res</span> <span class="kw">=</span> <span class="st">"Full"</span>, <span class="kw">remove_pr</span> <span class="kw">=</span> <span class="fl">0.122</span>, <span class="kw">lambda</span> <span class="kw">=</span> <span class="fl">0.275</span>,
-                       <span class="kw">res_death_K</span> <span class="kw">=</span> <span class="fl">93870</span>, <span class="kw">RESOURCE_ini</span> <span class="kw">=</span> <span class="fl">35000</span>,
-                       <span class="kw">manage_target</span> <span class="kw">=</span> <span class="fl">70000</span>, <span class="kw">res_death_type</span> <span class="kw">=</span> <span class="fl">3</span>,
-                       <span class="kw">manager_budget</span> <span class="kw">=</span> <span class="fl">10000</span>, <span class="kw">user_budget</span> <span class="kw">=</span> <span class="fl">100000</span>,
-                       <span class="kw">public_land</span> <span class="kw">=</span> <span class="fl">0.4</span>, <span class="kw">stakeholders</span> <span class="kw">=</span> <span class="fl">8</span>, <span class="kw">res_consume</span> <span class="kw">=</span> <span class="fl">0.02</span>,
-                       <span class="kw">res_birth_K</span> <span class="kw">=</span> <span class="fl">200000</span>, <span class="kw">land_ownership</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
-                       <span class="kw">observe_type</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">agent_view</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">converge_crit</span> <span class="kw">=</span> <span class="fl">0.01</span>,
-                       <span class="kw">ga_mingen</span> <span class="kw">=</span> <span class="fl">200</span>);</pre></body></html></div>
-<p>Note that the argument <code>get_res = "Full"</code> causes <code>sim_old</code> to retain all of the relevant data structures for simulating a new time step and recording simulation results. This includes the key simulation output, which is located in <code>sim_old$basic_output</code>, which is printed below.</p>
-<pre><code>## $resource_results
-## [1] 34273
-## 
-## $observation_results
-## [1] 34273
-## 
-## $manager_results
-##          resource_type scaring culling castration feeding help_offspring
-## policy_1             1      NA     518         NA      NA             NA
-## 
-## $user_results
-##         resource_type scaring culling castration feeding help_offspring
-## Manager             1      NA       0         NA      NA             NA
-## user_1              1      NA     193         NA      NA             NA
-## user_2              1      NA     193         NA      NA             NA
-## user_3              1      NA     193         NA      NA             NA
-## user_4              1      NA     193         NA      NA             NA
-## user_5              1      NA     193         NA      NA             NA
-## user_6              1      NA     193         NA      NA             NA
-## user_7              1      NA     193         NA      NA             NA
-## user_8              1      NA     193         NA      NA             NA
-##         tend_crops kill_crops
-## Manager         NA         NA
-## user_1          NA         NA
-## user_2          NA         NA
-## user_3          NA         NA
-## user_4          NA         NA
-## user_5          NA         NA
-## user_6          NA         NA
-## user_7          NA         NA
-## user_8          NA         NA</code></pre>
-<p>We can then loop over 30 time steps to recreate the simulations from <a href="SI3.html">Example case study in GMSE</a>. In these simulations, we are specifically interested in the resource and observation outputs, as well as the manager policy and user actions for culling, which we record below in the data frame <code>sim_sum_1</code>. The inclusion of the argument <code>old_list</code> tells <code>gmse_apply</code> to use parameters and values from the list <code>sim_old</code> in the new time step.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">sim_sum_1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw">data</span> <span class="kw">=</span> <span class="fl">NA</span>, <span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">30</span>, <span class="kw">ncol</span> <span class="kw">=</span> <span class="fl">5</span>);
-<span class="kw">for</span>(<span class="no">time_step</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="fl">30</span>){
-    <span class="no">sim_new</span>                 <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">get_res</span> <span class="kw">=</span> <span class="st">"Full"</span>, <span class="kw">old_list</span> <span class="kw">=</span> <span class="no">sim_old</span>);
-    <span class="no">sim_sum_1</span>[<span class="no">time_step</span>, <span class="fl">1</span>] <span class="kw">&lt;-</span> <span class="no">time_step</span>;
-    <span class="no">sim_sum_1</span>[<span class="no">time_step</span>, <span class="fl">2</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">resource_results</span>[<span class="fl">1</span>];
-    <span class="no">sim_sum_1</span>[<span class="no">time_step</span>, <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">observation_results</span>[<span class="fl">1</span>];
-    <span class="no">sim_sum_1</span>[<span class="no">time_step</span>, <span class="fl">4</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">manager_results</span>[<span class="fl">3</span>];
-    <span class="no">sim_sum_1</span>[<span class="no">time_step</span>, <span class="fl">5</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">user_results</span>[,<span class="fl">3</span>]);
-    <span class="no">sim_old</span>                 <span class="kw">&lt;-</span> <span class="no">sim_new</span>;
-}
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">sim_sum_1</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Time"</span>, <span class="st">"Pop_size"</span>, <span class="st">"Pop_est"</span>, <span class="st">"Cull_cost"</span>,
-                         <span class="st">"Cull_count"</span>);
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">sim_sum_1</span>);</pre></body></html></div>
-<pre><code>##       Time Pop_size Pop_est Cull_cost Cull_count
-##  [1,]    1    32622   32622      1010        792
-##  [2,]    2    32064   32064      1009        792
-##  [3,]    3    32083   32083      1010        791
-##  [4,]    4    32979   32979      1010        792
-##  [5,]    5    37242   37242      1010        792
-##  [6,]    6    38177   38177      1010        792
-##  [7,]    7    39685   39685      1009        792
-##  [8,]    8    41589   41589      1010        792
-##  [9,]    9    43465   43465      1010        792
-## [10,]   10    45739   45739      1010        792
-## [11,]   11    48295   48295      1010        791
-## [12,]   12    50799   50799      1010        792
-## [13,]   13    53730   53730      1010        792
-## [14,]   14    56584   56584      1010        792
-## [15,]   15    59486   59486      1010        791
-## [16,]   16    62508   62508      1010        792
-## [17,]   17    65922   65922      1010        792
-## [18,]   18    69553   69553      1009        792
-## [19,]   19    73337   73337       275       2904
-## [20,]   20    75212   75212       176       4544
-## [21,]   21    75644   75644       163       4904
-## [22,]   22    75640   75640       163       4904
-## [23,]   23    75738   75738       159       5024
-## [24,]   24    75649   75649       162       4936
-## [25,]   25    75427   75427       169       4728
-## [26,]   26    75419   75419       169       4728
-## [27,]   27    75533   75533       166       4816
-## [28,]   28    75297   75297       174       4592
-## [29,]   29    75498   75498       167       4784
-## [30,]   30    75704   75704       161       4968</code></pre>
-<p>The above output from <code>sim_sum_1</code> shows the data frame that holds the information we were interested in pulling out of our simulation results. All of this information was available under the list element <code>sim_new$basic_output</code>, but other list elements of <code>sim_new</code> might also be useful to record. It is important to remember that this example of <code>gmse_apply</code> is using the default resource, observation, manager, and user sub-models. Custom sub-models could produce different outputs in <code>sim_new</code> (see <a href="SI2.html">Use of the gmse_apply function</a> for examples). For default sub-models, there are some list elements that might be especially useful. These elements can potentially be edited <em>within the above loop</em> to dynamically adjust simulations. For more explanation of built-in GMSE data arrays, see <a href="SI7.html">Default GMSE data structures</a>.</p>
+<div class="section level2">
+<h2 id="re-creating-gmse-simulations-using-gmse_apply">Re-creating <code>gmse</code> simulations using
+<code>gmse_apply</code><a class="anchor" aria-label="anchor" href="#re-creating-gmse-simulations-using-gmse_apply"></a>
+</h2>
+<p>We now recreate the simulations in <a href="SI3.html">Example case
+study in GMSE</a>, which were run using the <code>gmse</code> function,
+in <code>gmse_apply</code>. Doing so requires us to first initialise
+simulations using one call of <code>gmse_apply</code>, then loop through
+multiple time steps that again call <code>gmse_apply</code>; results of
+interest are recorded in a data frame (<code>sim_sum_1</code>).
+Following the protocol introduced in <a href="SI2.html">Use of the
+gmse_apply function</a>, we can call the initialising simulation
+<code>sim_old</code>, and use the code below to read in the relevant
+parameter values.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sim_old</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span><span class="op">(</span>get_res <span class="op">=</span> <span class="st">"Full"</span>, remove_pr <span class="op">=</span> <span class="fl">0.122</span>, lambda <span class="op">=</span> <span class="fl">0.275</span>,
+                       res_death_K <span class="op">=</span> <span class="fl">93870</span>, RESOURCE_ini <span class="op">=</span> <span class="fl">35000</span>, 
+                       manage_target <span class="op">=</span> <span class="fl">70000</span>, res_death_type <span class="op">=</span> <span class="fl">3</span>,
+                       manager_budget <span class="op">=</span> <span class="fl">10000</span>, user_budget <span class="op">=</span> <span class="fl">100000</span>,
+                       public_land <span class="op">=</span> <span class="fl">0.4</span>, stakeholders <span class="op">=</span> <span class="fl">8</span>, res_consume <span class="op">=</span> <span class="fl">0.02</span>, 
+                       res_birth_K <span class="op">=</span> <span class="fl">200000</span>, land_ownership <span class="op">=</span> <span class="cn">TRUE</span>,
+                       observe_type <span class="op">=</span> <span class="fl">3</span>, agent_view <span class="op">=</span> <span class="fl">1</span>, converge_crit <span class="op">=</span> <span class="fl">0.01</span>,
+                       ga_mingen <span class="op">=</span> <span class="fl">200</span><span class="op">)</span>;</code></pre></div>
+<p>Note that the argument <code>get_res = "Full"</code> causes
+<code>sim_old</code> to retain all of the relevant data structures for
+simulating a new time step and recording simulation results. This
+includes the key simulation output, which is located in
+<code>sim_old$basic_output</code>, which is printed below.</p>
+<pre><code><span class="co">## $resource_results</span>
+<span class="co">## [1] 34352</span>
+<span class="co">## </span>
+<span class="co">## $observation_results</span>
+<span class="co">## [1] 34352</span>
+<span class="co">## </span>
+<span class="co">## $manager_results</span>
+<span class="co">##          resource_type scaring culling castration feeding help_offspring</span>
+<span class="co">## policy_1             1      NA     524         NA      NA             NA</span>
+<span class="co">## </span>
+<span class="co">## $user_results</span>
+<span class="co">##         resource_type scaring culling castration feeding help_offspring</span>
+<span class="co">## Manager             1      NA       0         NA      NA             NA</span>
+<span class="co">## user_1              1      NA     190         NA      NA             NA</span>
+<span class="co">## user_2              1      NA     190         NA      NA             NA</span>
+<span class="co">## user_3              1      NA     190         NA      NA             NA</span>
+<span class="co">## user_4              1      NA     190         NA      NA             NA</span>
+<span class="co">## user_5              1      NA     190         NA      NA             NA</span>
+<span class="co">## user_6              1      NA     190         NA      NA             NA</span>
+<span class="co">## user_7              1      NA     190         NA      NA             NA</span>
+<span class="co">## user_8              1      NA     190         NA      NA             NA</span>
+<span class="co">##         tend_crops kill_crops</span>
+<span class="co">## Manager         NA         NA</span>
+<span class="co">## user_1          NA         NA</span>
+<span class="co">## user_2          NA         NA</span>
+<span class="co">## user_3          NA         NA</span>
+<span class="co">## user_4          NA         NA</span>
+<span class="co">## user_5          NA         NA</span>
+<span class="co">## user_6          NA         NA</span>
+<span class="co">## user_7          NA         NA</span>
+<span class="co">## user_8          NA         NA</span></code></pre>
+<p>We can then loop over 30 time steps to recreate the simulations from
+<a href="SI3.html">Example case study in GMSE</a>. In these simulations,
+we are specifically interested in the resource and observation outputs,
+as well as the manager policy and user actions for culling, which we
+record below in the data frame <code>sim_sum_1</code>. The inclusion of
+the argument <code>old_list</code> tells <code>gmse_apply</code> to use
+parameters and values from the list <code>sim_old</code> in the new time
+step.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sim_sum_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="cn">NA</span>, nrow <span class="op">=</span> <span class="fl">30</span>, ncol <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>;
+<span class="kw">for</span><span class="op">(</span><span class="va">time_step</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">30</span><span class="op">)</span><span class="op">{</span>
+    <span class="va">sim_new</span>                 <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span><span class="op">(</span>get_res <span class="op">=</span> <span class="st">"Full"</span>, old_list <span class="op">=</span> <span class="va">sim_old</span><span class="op">)</span>;
+    <span class="va">sim_sum_1</span><span class="op">[</span><span class="va">time_step</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">time_step</span>;
+    <span class="va">sim_sum_1</span><span class="op">[</span><span class="va">time_step</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">sim_new</span><span class="op">$</span><span class="va">basic_output</span><span class="op">$</span><span class="va">resource_results</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>;
+    <span class="va">sim_sum_1</span><span class="op">[</span><span class="va">time_step</span>, <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">sim_new</span><span class="op">$</span><span class="va">basic_output</span><span class="op">$</span><span class="va">observation_results</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>;
+    <span class="va">sim_sum_1</span><span class="op">[</span><span class="va">time_step</span>, <span class="fl">4</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">sim_new</span><span class="op">$</span><span class="va">basic_output</span><span class="op">$</span><span class="va">manager_results</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>;
+    <span class="va">sim_sum_1</span><span class="op">[</span><span class="va">time_step</span>, <span class="fl">5</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">sim_new</span><span class="op">$</span><span class="va">basic_output</span><span class="op">$</span><span class="va">user_results</span><span class="op">[</span>,<span class="fl">3</span><span class="op">]</span><span class="op">)</span>;
+    <span class="va">sim_old</span>                 <span class="op">&lt;-</span> <span class="va">sim_new</span>;
+<span class="op">}</span>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">sim_sum_1</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span>, <span class="st">"Pop_size"</span>, <span class="st">"Pop_est"</span>, <span class="st">"Cull_cost"</span>, 
+                         <span class="st">"Cull_count"</span><span class="op">)</span>;
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sim_sum_1</span><span class="op">)</span>;</code></pre></div>
+<pre><code><span class="co">##       Time Pop_size Pop_est Cull_cost Cull_count</span>
+<span class="co">##  [1,]    1    32723   32723      1010        792</span>
+<span class="co">##  [2,]    2    32606   32606      1010        791</span>
+<span class="co">##  [3,]    3    32878   32878      1010        792</span>
+<span class="co">##  [4,]    4    33855   33855      1010        791</span>
+<span class="co">##  [5,]    5    38056   38056      1010        792</span>
+<span class="co">##  [6,]    6    39209   39209      1010        792</span>
+<span class="co">##  [7,]    7    40516   40516      1010        791</span>
+<span class="co">##  [8,]    8    42243   42243      1010        792</span>
+<span class="co">##  [9,]    9    44197   44197      1010        792</span>
+<span class="co">## [10,]   10    46331   46331      1010        792</span>
+<span class="co">## [11,]   11    48856   48856      1009        792</span>
+<span class="co">## [12,]   12    51395   51395      1010        791</span>
+<span class="co">## [13,]   13    53999   53999      1009        792</span>
+<span class="co">## [14,]   14    57012   57012      1010        791</span>
+<span class="co">## [15,]   15    60225   60225      1009        792</span>
+<span class="co">## [16,]   16    63617   63617      1010        792</span>
+<span class="co">## [17,]   17    67179   67179      1010        792</span>
+<span class="co">## [18,]   18    71039   71039       885        896</span>
+<span class="co">## [19,]   19    74883   74883       187       4272</span>
+<span class="co">## [20,]   20    75586   75586       164       4872</span>
+<span class="co">## [21,]   21    75348   75348       172       4648</span>
+<span class="co">## [22,]   22    75609   75609       164       4872</span>
+<span class="co">## [23,]   23    75349   75349       171       4672</span>
+<span class="co">## [24,]   24    75311   75311       173       4624</span>
+<span class="co">## [25,]   25    75606   75606       164       4872</span>
+<span class="co">## [26,]   26    75446   75446       168       4760</span>
+<span class="co">## [27,]   27    75700   75700       161       4968</span>
+<span class="co">## [28,]   28    75445   75445       168       4760</span>
+<span class="co">## [29,]   29    75471   75471       168       4760</span>
+<span class="co">## [30,]   30    75696   75696       162       4936</span></code></pre>
+<p>The above output from <code>sim_sum_1</code> shows the data frame
+that holds the information we were interested in pulling out of our
+simulation results. All of this information was available under the list
+element <code>sim_new$basic_output</code>, but other list elements of
+<code>sim_new</code> might also be useful to record. It is important to
+remember that this example of <code>gmse_apply</code> is using the
+default resource, observation, manager, and user sub-models. Custom
+sub-models could produce different outputs in <code>sim_new</code> (see
+<a href="SI2.html">Use of the gmse_apply function</a> for examples). For
+default sub-models, there are some list elements that might be
+especially useful. These elements can potentially be edited <em>within
+the above loop</em> to dynamically adjust simulations. For more
+explanation of built-in GMSE data arrays, see <a href="SI7.html">Default
+GMSE data structures</a>.</p>
 <ul>
 <li>
-<a href="SI7.html#resources"><code>sim_new$resource_array</code></a>: A table holding all information on resources. Rows correspond to discrete resources, and columns correspond to resource properties: (1) ID, (2-4) types (not currently in use), (5) x-location, (6) y-location, (7) movement parameter, (8) time, (9) density independent mortality parameter (<code>remove_pr</code>), (10) reproduction parameter (<code>lambda</code>), (11) offspring number, (12) age, (13-14) observation columns, (15) consumption rate (<code>res_consume</code>), (16-20) recorded experiences of user actions (e.g., was the resource culled or scared?), (21) how much yield has the resource consumed, and (22) how many times the resource can consume yield in one time step.</li>
+<a href="SI7.html#resources"><code>sim_new$resource_array</code></a>: A
+table holding all information on resources. Rows correspond to discrete
+resources, and columns correspond to resource properties: (1) ID, (2-4)
+types (not currently in use), (5) x-location, (6) y-location, (7)
+movement parameter, (8) time, (9) density independent mortality
+parameter (<code>remove_pr</code>), (10) reproduction parameter
+(<code>lambda</code>), (11) offspring number, (12) age, (13-14)
+observation columns, (15) consumption rate (<code>res_consume</code>),
+(16-20) recorded experiences of user actions (e.g., was the resource
+culled or scared?), (21) how much yield has the resource consumed, and
+(22) how many times the resource can consume yield in one time
+step.</li>
 <li>
-<a href="SI7.html#agents"><code>sim_new$AGENTS</code></a>: A table holding basic information on agents (manager and users). Rows correspond to a unique agent, and columns correspond to agent properties: (1) ID, (2) type (0 for the manager, 1 for users), (3-4) additional type options not currently in use, (5-6), x and y locations (usually ignored), (7) movement parameter (usually ignored), (8) time, (9) agent’s viewing ability in cells (<code>agent_view</code>), (10) error parameter, (11-12) values for holding marks and tallies of resources, (13-15) values for holding observations, (16) yield from landscape cells, (17) baseline budget (<code>manager_budget</code> and <code>user_budget</code>), (18-24) agent’s perception of the efficacy of scaring, culling, castrating, feeding, helping, tending crops, and killing crops, (25-26) increments to budget, (27) unused.</li>
+<a href="SI7.html#agents"><code>sim_new$AGENTS</code></a>: A table
+holding basic information on agents (manager and users). Rows correspond
+to a unique agent, and columns correspond to agent properties: (1) ID,
+(2) type (0 for the manager, 1 for users), (3-4) additional type options
+not currently in use, (5-6), x and y locations (usually ignored), (7)
+movement parameter (usually ignored), (8) time, (9) agent’s viewing
+ability in cells (<code>agent_view</code>), (10) error parameter,
+(11-12) values for holding marks and tallies of resources, (13-15)
+values for holding observations, (16) yield from landscape cells, (17)
+baseline budget (<code>manager_budget</code> and
+<code>user_budget</code>), (18-24) agent’s perception of the efficacy of
+scaring, culling, castrating, feeding, helping, tending crops, and
+killing crops, (25-26) increments to budget, (27) unused.</li>
 <li>
-<code>sim_new$observation_vector</code>: Estimate of total resource number from the observation model (<a href="SI7.html#observation"><code>observation_array</code></a> also holds this information in a different way depending on <code>observe_type</code>)</li>
+<code>sim_new$observation_vector</code>: Estimate of total resource
+number from the observation model (<a href="SI7.html#observation"><code>observation_array</code></a> also
+holds this information in a different way depending on
+<code>observe_type</code>)</li>
 <li>
-<a href="SI7.html#land"><code>sim_new$LAND</code></a>: The landscape on which interactions occur, which is stored as a 3D array with <code>land_dim_1</code> rows, <code>land_dim_2</code> columns, and 3 layers. Layer 1 (<code>sim_new$LAND[,,1]</code>) is not currently used in default sub-models, but could be used to store values that affect resources and agents. Layer 2 (<code>sim_new$LAND[,,2]</code>) stores crop yield from a cell, and layer 3 (<code>sim_new$LAND[,,3]</code>) stores the owner of the cell (value corresponds to the agent’s ID).</li>
+<a href="SI7.html#land"><code>sim_new$LAND</code></a>: The landscape
+on which interactions occur, which is stored as a 3D array with
+<code>land_dim_1</code> rows, <code>land_dim_2</code> columns, and 3
+layers. Layer 1 (<code>sim_new$LAND[,,1]</code>) is not currently used
+in default sub-models, but could be used to store values that affect
+resources and agents. Layer 2 (<code>sim_new$LAND[,,2]</code>) stores
+crop yield from a cell, and layer 3 (<code>sim_new$LAND[,,3]</code>)
+stores the owner of the cell (value corresponds to the agent’s ID).</li>
 <li>
-<code>sim_new$manage_vector</code>: The cost of each action as set by the manager. For even more fine-tuning, individual costs for the actions of each agent can be set for each user in <a href="SI7.html#cost"><code>sim_new$manager_array</code></a>.</li>
+<code>sim_new$manage_vector</code>: The cost of each action as set
+by the manager. For even more fine-tuning, individual costs for the
+actions of each agent can be set for each user in <a href="SI7.html#cost"><code>sim_new$manager_array</code></a>.</li>
 <li>
-<code>sim_new$user_vector</code>: The total number of actions performed by each user. A more detailed breakdown of actions by individual users is held in <a href="SI7.html#action"><code>sim_new$user_array</code></a>.</li>
+<code>sim_new$user_vector</code>: The total number of actions
+performed by each user. A more detailed breakdown of actions by
+individual users is held in <a href="SI7.html#action"><code>sim_new$user_array</code></a>.</li>
 </ul>
-<p>Next, we show how to adjust the landscape to manually set land ownership in <code>gmse_apply</code>.</p>
+<p>Next, we show how to adjust the landscape to manually set land
+ownership in <code>gmse_apply</code>.</p>
 </div>
-<div id="custom-placement-of-user-land" class="section level1">
-<h1 class="hasAnchor">
-<a href="#custom-placement-of-user-land" class="anchor"></a>1. <a name="land">Custom placement of user land</a>
-</h1>
-<p>By default, all farmers in GMSE are allocated roughly the same number of landscape cells, which are placed on the landscape using a shortest-splitline algorithm that makes similar size rectangles. In the <code>LAND</code> array, ownership is designated by the agent’s ID. Public land is produced by placing landscape cells that are technically owned by the manager, and therefore have landscape cell values of 1. The image below shows this landscape for the eight farmers from <code>sim_old</code>.</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/image.html">image</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">sim_old</span>$<span class="no">LAND</span>[,,<span class="fl">3</span>], <span class="kw">col</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html">topo.colors</a></span>(<span class="fl">9</span>), <span class="kw">xaxt</span> <span class="kw">=</span> <span class="st">"n"</span>, <span class="kw">yaxt</span> <span class="kw">=</span> <span class="st">"n"</span>);</pre></body></html></div>
+<div class="section level2">
+<h2 id="custom-placement-of-user-land">1. <a name="land">Custom placement of user land</a><a class="anchor" aria-label="anchor" href="#custom-placement-of-user-land"></a>
+</h2>
+<p>By default, all farmers in GMSE are allocated roughly the same number
+of landscape cells, which are placed on the landscape using a
+shortest-splitline algorithm that makes similar size rectangles. In the
+<code>LAND</code> array, ownership is designated by the agent’s ID.
+Public land is produced by placing landscape cells that are technically
+owned by the manager, and therefore have landscape cell values of 1. The
+image below shows this landscape for the eight farmers from
+<code>sim_old</code>.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/image.html" class="external-link">image</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span>,,<span class="fl">3</span><span class="op">]</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">topo.colors</a></span><span class="op">(</span><span class="fl">9</span><span class="op">)</span>, xaxt <span class="op">=</span> <span class="st">"n"</span>, yaxt <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span>;</code></pre></div>
 <div class="figure">
 <img src="SI4_files/figure-html/unnamed-chunk-5-1.png" alt="Default position of land ownership by farmers." width="576"><p class="caption">
 Default position of land ownership by farmers.
 </p>
 </div>
-<p>We can change the ownership of cells by manipulating <code>sim_old$LAND[,,3]</code>. First we initialise a new <code>sim_old</code> below.</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">sim_old</span>  <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">get_res</span> <span class="kw">=</span> <span class="st">"Full"</span>, <span class="kw">remove_pr</span> <span class="kw">=</span> <span class="fl">0.122</span>, <span class="kw">lambda</span> <span class="kw">=</span> <span class="fl">0.275</span>,
-                       <span class="kw">res_death_K</span> <span class="kw">=</span> <span class="fl">93870</span>, <span class="kw">RESOURCE_ini</span> <span class="kw">=</span> <span class="fl">35000</span>,
-                       <span class="kw">manage_target</span> <span class="kw">=</span> <span class="fl">70000</span>, <span class="kw">res_death_type</span> <span class="kw">=</span> <span class="fl">3</span>,
-                       <span class="kw">manager_budget</span> <span class="kw">=</span> <span class="fl">10000</span>, <span class="kw">user_budget</span> <span class="kw">=</span> <span class="fl">10000</span>,
-                       <span class="kw">public_land</span> <span class="kw">=</span> <span class="fl">0.4</span>, <span class="kw">stakeholders</span> <span class="kw">=</span> <span class="fl">8</span>, <span class="kw">res_consume</span> <span class="kw">=</span> <span class="fl">0.02</span>,
-                       <span class="kw">res_birth_K</span> <span class="kw">=</span> <span class="fl">200000</span>, <span class="kw">land_ownership</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
-                       <span class="kw">observe_type</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">agent_view</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">converge_crit</span> <span class="kw">=</span> <span class="fl">0.01</span>,
-                       <span class="kw">ga_mingen</span> <span class="kw">=</span> <span class="fl">200</span>);</pre></body></html></div>
-<p>Because we have not specified landscape dimensions in the above, the landscape reverts to the default size of 100 by 100 cells. We can then manually assign landscape cells to the eight farmers, whose IDs range from 2-9 (ID value 1 is the manager). Below we do this to make eight different sized farms.</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">sim_old</span>$<span class="no">LAND</span>[<span class="fl">1</span>:<span class="fl">20</span>,   <span class="fl">1</span>:<span class="fl">20</span>,  <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="fl">2</span>;
-<span class="no">sim_old</span>$<span class="no">LAND</span>[<span class="fl">1</span>:<span class="fl">20</span>,  <span class="fl">21</span>:<span class="fl">40</span>,  <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="fl">3</span>;
-<span class="no">sim_old</span>$<span class="no">LAND</span>[<span class="fl">1</span>:<span class="fl">20</span>,  <span class="fl">41</span>:<span class="fl">60</span>,  <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="fl">4</span>;
-<span class="no">sim_old</span>$<span class="no">LAND</span>[<span class="fl">1</span>:<span class="fl">20</span>,  <span class="fl">61</span>:<span class="fl">80</span>,  <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="fl">5</span>;
-<span class="no">sim_old</span>$<span class="no">LAND</span>[<span class="fl">1</span>:<span class="fl">20</span>,  <span class="fl">81</span>:<span class="fl">100</span>, <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="fl">6</span>;
-<span class="no">sim_old</span>$<span class="no">LAND</span>[<span class="fl">21</span>:<span class="fl">40</span>,  <span class="fl">1</span>:<span class="fl">50</span>,  <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="fl">7</span>;
-<span class="no">sim_old</span>$<span class="no">LAND</span>[<span class="fl">21</span>:<span class="fl">40</span>, <span class="fl">51</span>:<span class="fl">100</span>, <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="fl">8</span>;
-<span class="no">sim_old</span>$<span class="no">LAND</span>[<span class="fl">41</span>:<span class="fl">60</span>,  <span class="fl">1</span>:<span class="fl">100</span>, <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="fl">9</span>;
-<span class="no">sim_old</span>$<span class="no">LAND</span>[<span class="fl">61</span>:<span class="fl">100</span>, <span class="fl">1</span>:<span class="fl">100</span>, <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="fl">1</span>; <span class="co"># Public land</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/image.html">image</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">sim_old</span>$<span class="no">LAND</span>[,,<span class="fl">3</span>], <span class="kw">col</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html">topo.colors</a></span>(<span class="fl">9</span>), <span class="kw">xaxt</span> <span class="kw">=</span> <span class="st">"n"</span>, <span class="kw">yaxt</span> <span class="kw">=</span> <span class="st">"n"</span>);</pre></body></html></div>
+<p>We can change the ownership of cells by manipulating
+<code>sim_old$LAND[,,3]</code>. First we initialise a new
+<code>sim_old</code> below.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sim_old</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span><span class="op">(</span>get_res <span class="op">=</span> <span class="st">"Full"</span>, remove_pr <span class="op">=</span> <span class="fl">0.122</span>, lambda <span class="op">=</span> <span class="fl">0.275</span>,
+                       res_death_K <span class="op">=</span> <span class="fl">93870</span>, RESOURCE_ini <span class="op">=</span> <span class="fl">35000</span>, 
+                       manage_target <span class="op">=</span> <span class="fl">70000</span>, res_death_type <span class="op">=</span> <span class="fl">3</span>,
+                       manager_budget <span class="op">=</span> <span class="fl">10000</span>, user_budget <span class="op">=</span> <span class="fl">10000</span>,
+                       public_land <span class="op">=</span> <span class="fl">0.4</span>, stakeholders <span class="op">=</span> <span class="fl">8</span>, res_consume <span class="op">=</span> <span class="fl">0.02</span>, 
+                       res_birth_K <span class="op">=</span> <span class="fl">200000</span>, land_ownership <span class="op">=</span> <span class="cn">TRUE</span>,
+                       observe_type <span class="op">=</span> <span class="fl">3</span>, agent_view <span class="op">=</span> <span class="fl">1</span>, converge_crit <span class="op">=</span> <span class="fl">0.01</span>,
+                       ga_mingen <span class="op">=</span> <span class="fl">200</span><span class="op">)</span>;</code></pre></div>
+<p>Because we have not specified landscape dimensions in the above, the
+landscape reverts to the default size of 100 by 100 cells. We can then
+manually assign landscape cells to the eight farmers, whose IDs range
+from 2-9 (ID value 1 is the manager). Below we do this to make eight
+different sized farms.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>,   <span class="fl">1</span><span class="op">:</span><span class="fl">20</span>,  <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">2</span>; 
+<span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>,  <span class="fl">21</span><span class="op">:</span><span class="fl">40</span>,  <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">3</span>;
+<span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>,  <span class="fl">41</span><span class="op">:</span><span class="fl">60</span>,  <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">4</span>;
+<span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>,  <span class="fl">61</span><span class="op">:</span><span class="fl">80</span>,  <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">5</span>;
+<span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>,  <span class="fl">81</span><span class="op">:</span><span class="fl">100</span>, <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">6</span>;
+<span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span><span class="fl">21</span><span class="op">:</span><span class="fl">40</span>,  <span class="fl">1</span><span class="op">:</span><span class="fl">50</span>,  <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">7</span>;
+<span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span><span class="fl">21</span><span class="op">:</span><span class="fl">40</span>, <span class="fl">51</span><span class="op">:</span><span class="fl">100</span>, <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">8</span>;
+<span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span><span class="fl">41</span><span class="op">:</span><span class="fl">60</span>,  <span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">9</span>;
+<span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span><span class="fl">61</span><span class="op">:</span><span class="fl">100</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span>; <span class="co"># Public land</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/image.html" class="external-link">image</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span>,,<span class="fl">3</span><span class="op">]</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">topo.colors</a></span><span class="op">(</span><span class="fl">9</span><span class="op">)</span>, xaxt <span class="op">=</span> <span class="st">"n"</span>, yaxt <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span>;</code></pre></div>
 <div class="figure">
 <img src="SI4_files/figure-html/unnamed-chunk-7-1.png" alt="Land ownership by farmers as customised in gmse_apply." width="576"><p class="caption">
 Land ownership by farmers as customised in gmse_apply.
 </p>
 </div>
-<p>The above image shows the modified landscape stored in <code>sim_old</code>, which can now be incorporated into simulations using <code>gmse_apply</code>. We can think of all the plots on the left side of the landscape as farms of various sizes, while the blue area of the landscape on the right is public land.</p>
+<p>The above image shows the modified landscape stored in
+<code>sim_old</code>, which can now be incorporated into simulations
+using <code>gmse_apply</code>. We can think of all the plots on the left
+side of the landscape as farms of various sizes, while the blue area of
+the landscape on the right is public land.</p>
 </div>
-<div id="parameterisation-of-individual-user-budgets" class="section level1">
-<h1 class="hasAnchor">
-<a href="#parameterisation-of-individual-user-budgets" class="anchor"></a>2. <a name="budgets">Parameterisation of individual user budgets</a>
-</h1>
-<p>Perhaps we want to assume that farmers have different baseline budgets, which are correlated in some way to the number of landscape cells that they own. Custom user baseline budgets can be set by manipulating <code>sim_old$AGENTS</code>, column 17 of which holds the budget for each user. Agent IDs (as stored on the landscape above) correspond to rows of <code>sim_old$AGENTS</code>, so individual baseline budgets can be directly input as desired. We can do this manually (e.g., <code>sim_old$AGENTS[2, 17] &lt;- 4000</code>), or, alternatively, if farmer budget positively correlates to landscape owned, we can use a loop to input values as below.</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="kw">for</span>(<span class="no">ID</span> <span class="kw">in</span> <span class="fl">2</span>:<span class="fl">9</span>){
-    <span class="no">cells_owned</span>            <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">sim_old</span>$<span class="no">LAND</span>[,,<span class="fl">3</span>] <span class="kw">==</span> <span class="no">ID</span>);
-    <span class="no">sim_old</span>$<span class="no">AGENTS</span>[<span class="no">ID</span>, <span class="fl">17</span>] <span class="kw">&lt;-</span> <span class="fl">10</span> * <span class="no">cells_owned</span>;
-}</pre></body></html></div>
-<p>The number of cells owned by the manager (1) and each farmer (2-8) is therefore listed in the table below.</p>
+<div class="section level2">
+<h2 id="parameterisation-of-individual-user-budgets">2. <a name="budgets">Parameterisation of individual user
+budgets</a><a class="anchor" aria-label="anchor" href="#parameterisation-of-individual-user-budgets"></a>
+</h2>
+<p>Perhaps we want to assume that farmers have different baseline
+budgets, which are correlated in some way to the number of landscape
+cells that they own. Custom user baseline budgets can be set by
+manipulating <code>sim_old$AGENTS</code>, column 17 of which holds the
+budget for each user. Agent IDs (as stored on the landscape above)
+correspond to rows of <code>sim_old$AGENTS</code>, so individual
+baseline budgets can be directly input as desired. We can do this
+manually (e.g., <code>sim_old$AGENTS[2, 17] &lt;- 4000</code>), or,
+alternatively, if farmer budget positively correlates to landscape
+owned, we can use a loop to input values as below.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw">for</span><span class="op">(</span><span class="va">ID</span> <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span><span class="fl">9</span><span class="op">)</span><span class="op">{</span>
+    <span class="va">cells_owned</span>            <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span>,,<span class="fl">3</span><span class="op">]</span> <span class="op">==</span> <span class="va">ID</span><span class="op">)</span>;
+    <span class="va">sim_old</span><span class="op">$</span><span class="va">AGENTS</span><span class="op">[</span><span class="va">ID</span>, <span class="fl">17</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">10</span> <span class="op">*</span> <span class="va">cells_owned</span>;
+<span class="op">}</span></code></pre></div>
+<p>The number of cells owned by the manager (1) and each farmer (2-8) is
+therefore listed in the table below.</p>
 <table class="table">
 <colgroup>
 <col width="16%">
@@ -420,150 +563,199 @@ Land ownership by farmers as customised in gmse_apply.
 </tr>
 </tbody>
 </table>
-<p>As with <code>sim_old$LAND</code> values, changes to <code>sim_old$AGENTS</code> will be retained in simulations looped through <code>gmse_apply</code>.</p>
+<p>As with <code>sim_old$LAND</code> values, changes to
+<code>sim_old$AGENTS</code> will be retained in simulations looped
+through <code>gmse_apply</code>.</p>
 </div>
-<div id="density-dependent-movement-of-resources" class="section level1">
-<h1 class="hasAnchor">
-<a href="#density-dependent-movement-of-resources" class="anchor"></a>3. <a name="movement">Density-dependent movement of resources</a>
-</h1>
-<p>Lastly, we consider a more nuanced change to simulations, in which the rules for movement of resources are modified to account for density-dependence. Assume that geese tend to avoid aggregating, such that if a goose is located on the same cell as too many other geese, then it will move at the start of a time step. Programming this movement rule can be accomplished by creating a new function to apply to the resource data array <code>sim_old$resource_array</code>. Below, a custom function is defined that causes a goose to move up to 5 cells in any direction if it finds itself on a cell with more than 10 other geese. As with default GMSE simulations, movement is based on a torus landscape (where no landscape edge exists, so that if resources move off of one side of the landscape they appear on the opposite side). We will use this custom function to modify <code>sim_old$resource_array</code> prior to running <code>gmse_apply</code>, thereby modelling a custom-built process affecting resource distribution that is integrated into GMSE.</p>
-
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">avoid_aggregation</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">sim_resource_array</span>, <span class="no">land_dim_1</span> <span class="kw">=</span> <span class="fl">100</span>,
-                              <span class="no">land_dim_2</span> <span class="kw">=</span> <span class="fl">100</span>){
-    <span class="no">goose_number</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">sim_resource_array</span>)[<span class="fl">1</span>]  <span class="co"># How many geese are there?</span>
-    <span class="kw">for</span>(<span class="no">goose</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="no">goose_number</span>){               <span class="co"># Loop through all rows of geese</span>
-        <span class="no">x_loc</span>  <span class="kw">&lt;-</span> <span class="no">sim_resource_array</span>[<span class="no">goose</span>, <span class="fl">5</span>];
-        <span class="no">y_loc</span>  <span class="kw">&lt;-</span> <span class="no">sim_resource_array</span>[<span class="no">goose</span>, <span class="fl">6</span>];
-        <span class="no">shared</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>( <span class="no">sim_resource_array</span>[,<span class="fl">5</span>] <span class="kw">==</span> <span class="no">x_loc</span> <span class="kw">&amp;</span>
-                       <span class="no">sim_resource_array</span>[,<span class="fl">6</span>] <span class="kw">==</span> <span class="no">y_loc</span>);
-        <span class="kw">if</span>(<span class="no">shared</span> <span class="kw">&gt;</span> <span class="fl">10</span>){
-            <span class="no">new_x</span> <span class="kw">&lt;-</span> <span class="no">x_loc</span> + <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span>(<span class="kw">x</span> <span class="kw">=</span> -<span class="fl">5</span>:<span class="fl">5</span>, <span class="kw">size</span> <span class="kw">=</span> <span class="fl">1</span>);
-            <span class="no">new_y</span> <span class="kw">&lt;-</span> <span class="no">y_loc</span> + <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span>(<span class="kw">x</span> <span class="kw">=</span> -<span class="fl">5</span>:<span class="fl">5</span>, <span class="kw">size</span> <span class="kw">=</span> <span class="fl">1</span>);
-            <span class="kw">if</span>(<span class="no">new_x</span> <span class="kw">&lt;</span> <span class="fl">0</span>){ <span class="co"># The 'if' statements below apply the torus</span>
-                <span class="no">new_x</span> <span class="kw">&lt;-</span> <span class="no">land_dim_1</span> + <span class="no">new_x</span>;
-            }
-            <span class="kw">if</span>(<span class="no">new_x</span> <span class="kw">&gt;=</span> <span class="no">land_dim_1</span>){
-                <span class="no">new_x</span> <span class="kw">&lt;-</span> <span class="no">new_x</span> - <span class="no">land_dim_1</span>;
-            }
-            <span class="kw">if</span>(<span class="no">new_y</span> <span class="kw">&lt;</span> <span class="fl">0</span>){
-                <span class="no">new_y</span> <span class="kw">&lt;-</span> <span class="no">land_dim_2</span> + <span class="no">new_x</span>;
-            }
-            <span class="kw">if</span>(<span class="no">new_y</span> <span class="kw">&gt;=</span> <span class="no">land_dim_2</span>){
-                <span class="no">new_y</span> <span class="kw">&lt;-</span> <span class="no">new_y</span> - <span class="no">land_dim_2</span>;
-            }
-            <span class="no">sim_resource_array</span>[<span class="no">goose</span>, <span class="fl">5</span>] <span class="kw">&lt;-</span> <span class="no">new_x</span>;
-            <span class="no">sim_resource_array</span>[<span class="no">goose</span>, <span class="fl">6</span>] <span class="kw">&lt;-</span> <span class="no">new_y</span>;
-        }
-    }
-    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="no">sim_resource_array</span>);
-}</pre></body></html></div>
-<p>With the above function written, we can apply the new movement rule along with our <a href="#land">custom farm placement</a> and <a href="#budgets">custom farmer budgets</a> to the simulation of goose population dynamics.</p>
+<div class="section level2">
+<h2 id="density-dependent-movement-of-resources">3. <a name="movement">Density-dependent movement of
+resources</a><a class="anchor" aria-label="anchor" href="#density-dependent-movement-of-resources"></a>
+</h2>
+<p>Lastly, we consider a more nuanced change to simulations, in which
+the rules for movement of resources are modified to account for
+density-dependence. Assume that geese tend to avoid aggregating, such
+that if a goose is located on the same cell as too many other geese,
+then it will move at the start of a time step. Programming this movement
+rule can be accomplished by creating a new function to apply to the
+resource data array <code>sim_old$resource_array</code>. Below, a custom
+function is defined that causes a goose to move up to 5 cells in any
+direction if it finds itself on a cell with more than 10 other geese. As
+with default GMSE simulations, movement is based on a torus landscape
+(where no landscape edge exists, so that if resources move off of one
+side of the landscape they appear on the opposite side). We will use
+this custom function to modify <code>sim_old$resource_array</code> prior
+to running <code>gmse_apply</code>, thereby modelling a custom-built
+process affecting resource distribution that is integrated into
+GMSE.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">avoid_aggregation</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">sim_resource_array</span>, <span class="va">land_dim_1</span> <span class="op">=</span> <span class="fl">100</span>, 
+                              <span class="va">land_dim_2</span> <span class="op">=</span> <span class="fl">100</span><span class="op">)</span><span class="op">{</span>
+    <span class="va">goose_number</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">sim_resource_array</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>  <span class="co"># How many geese are there?</span>
+    <span class="kw">for</span><span class="op">(</span><span class="va">goose</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">goose_number</span><span class="op">)</span><span class="op">{</span>               <span class="co"># Loop through all rows of geese</span>
+        <span class="va">x_loc</span>  <span class="op">&lt;-</span> <span class="va">sim_resource_array</span><span class="op">[</span><span class="va">goose</span>, <span class="fl">5</span><span class="op">]</span>;
+        <span class="va">y_loc</span>  <span class="op">&lt;-</span> <span class="va">sim_resource_array</span><span class="op">[</span><span class="va">goose</span>, <span class="fl">6</span><span class="op">]</span>;
+        <span class="va">shared</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span> <span class="va">sim_resource_array</span><span class="op">[</span>,<span class="fl">5</span><span class="op">]</span> <span class="op">==</span> <span class="va">x_loc</span> <span class="op">&amp;</span> 
+                       <span class="va">sim_resource_array</span><span class="op">[</span>,<span class="fl">6</span><span class="op">]</span> <span class="op">==</span> <span class="va">y_loc</span><span class="op">)</span>;
+        <span class="kw">if</span><span class="op">(</span><span class="va">shared</span> <span class="op">&gt;</span> <span class="fl">10</span><span class="op">)</span><span class="op">{</span>
+            <span class="va">new_x</span> <span class="op">&lt;-</span> <span class="va">x_loc</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span>x <span class="op">=</span> <span class="op">-</span><span class="fl">5</span><span class="op">:</span><span class="fl">5</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>;
+            <span class="va">new_y</span> <span class="op">&lt;-</span> <span class="va">y_loc</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span>x <span class="op">=</span> <span class="op">-</span><span class="fl">5</span><span class="op">:</span><span class="fl">5</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>;
+            <span class="kw">if</span><span class="op">(</span><span class="va">new_x</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span><span class="op">{</span> <span class="co"># The 'if' statements below apply the torus</span>
+                <span class="va">new_x</span> <span class="op">&lt;-</span> <span class="va">land_dim_1</span> <span class="op">+</span> <span class="va">new_x</span>;
+            <span class="op">}</span>
+            <span class="kw">if</span><span class="op">(</span><span class="va">new_x</span> <span class="op">&gt;=</span> <span class="va">land_dim_1</span><span class="op">)</span><span class="op">{</span>
+                <span class="va">new_x</span> <span class="op">&lt;-</span> <span class="va">new_x</span> <span class="op">-</span> <span class="va">land_dim_1</span>;
+            <span class="op">}</span>
+            <span class="kw">if</span><span class="op">(</span><span class="va">new_y</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span><span class="op">{</span>
+                <span class="va">new_y</span> <span class="op">&lt;-</span> <span class="va">land_dim_2</span> <span class="op">+</span> <span class="va">new_x</span>;
+            <span class="op">}</span>
+            <span class="kw">if</span><span class="op">(</span><span class="va">new_y</span> <span class="op">&gt;=</span> <span class="va">land_dim_2</span><span class="op">)</span><span class="op">{</span>
+                <span class="va">new_y</span> <span class="op">&lt;-</span> <span class="va">new_y</span> <span class="op">-</span> <span class="va">land_dim_2</span>;
+            <span class="op">}</span>
+            <span class="va">sim_resource_array</span><span class="op">[</span><span class="va">goose</span>, <span class="fl">5</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">new_x</span>;
+            <span class="va">sim_resource_array</span><span class="op">[</span><span class="va">goose</span>, <span class="fl">6</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">new_y</span>;
+        <span class="op">}</span>
+    <span class="op">}</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">sim_resource_array</span><span class="op">)</span>;
+<span class="op">}</span></code></pre></div>
+<p>With the above function written, we can apply the new movement rule
+along with our <a href="#land">custom farm placement</a> and <a href="#budgets">custom farmer budgets</a> to the simulation of goose
+population dynamics.</p>
 </div>
-<div id="simulation-with-custom-farms-budgets-and-goose-movement" class="section level1">
-<h1 class="hasAnchor">
-<a href="#simulation-with-custom-farms-budgets-and-goose-movement" class="anchor"></a>Simulation with custom farms, budgets, and goose movement</h1>
-<p>Below shows an example of <code>gmse_apply</code> with custom landscapes, farmer budgets, and density-dependent goose movement rules.</p>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="co"># First initialise a simulation</span>
-<span class="no">sim_old</span>  <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">get_res</span> <span class="kw">=</span> <span class="st">"Full"</span>, <span class="kw">remove_pr</span> <span class="kw">=</span> <span class="fl">0.122</span>, <span class="kw">lambda</span> <span class="kw">=</span> <span class="fl">0.275</span>,
-                       <span class="kw">res_death_K</span> <span class="kw">=</span> <span class="fl">93870</span>, <span class="kw">RESOURCE_ini</span> <span class="kw">=</span> <span class="fl">35000</span>,
-                       <span class="kw">manage_target</span> <span class="kw">=</span> <span class="fl">70000</span>, <span class="kw">res_death_type</span> <span class="kw">=</span> <span class="fl">3</span>,
-                       <span class="kw">manager_budget</span> <span class="kw">=</span> <span class="fl">10000</span>, <span class="kw">user_budget</span> <span class="kw">=</span> <span class="fl">10000</span>,
-                       <span class="kw">public_land</span> <span class="kw">=</span> <span class="fl">0.4</span>, <span class="kw">stakeholders</span> <span class="kw">=</span> <span class="fl">8</span>, <span class="kw">res_consume</span> <span class="kw">=</span> <span class="fl">0.02</span>,
-                       <span class="kw">res_birth_K</span> <span class="kw">=</span> <span class="fl">200000</span>, <span class="kw">land_ownership</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
-                       <span class="kw">observe_type</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">agent_view</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">converge_crit</span> <span class="kw">=</span> <span class="fl">0.01</span>,
-                       <span class="kw">ga_mingen</span> <span class="kw">=</span> <span class="fl">200</span>, <span class="kw">res_move_type</span> <span class="kw">=</span> <span class="fl">0</span>);
+<div class="section level2">
+<h2 id="simulation-with-custom-farms-budgets-and-goose-movement">Simulation with custom farms, budgets, and goose movement<a class="anchor" aria-label="anchor" href="#simulation-with-custom-farms-budgets-and-goose-movement"></a>
+</h2>
+<p>Below shows an example of <code>gmse_apply</code> with custom
+landscapes, farmer budgets, and density-dependent goose movement
+rules.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># First initialise a simulation</span>
+<span class="va">sim_old</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span><span class="op">(</span>get_res <span class="op">=</span> <span class="st">"Full"</span>, remove_pr <span class="op">=</span> <span class="fl">0.122</span>, lambda <span class="op">=</span> <span class="fl">0.275</span>,
+                       res_death_K <span class="op">=</span> <span class="fl">93870</span>, RESOURCE_ini <span class="op">=</span> <span class="fl">35000</span>, 
+                       manage_target <span class="op">=</span> <span class="fl">70000</span>, res_death_type <span class="op">=</span> <span class="fl">3</span>,
+                       manager_budget <span class="op">=</span> <span class="fl">10000</span>, user_budget <span class="op">=</span> <span class="fl">10000</span>,
+                       public_land <span class="op">=</span> <span class="fl">0.4</span>, stakeholders <span class="op">=</span> <span class="fl">8</span>, res_consume <span class="op">=</span> <span class="fl">0.02</span>, 
+                       res_birth_K <span class="op">=</span> <span class="fl">200000</span>, land_ownership <span class="op">=</span> <span class="cn">TRUE</span>,
+                       observe_type <span class="op">=</span> <span class="fl">3</span>, agent_view <span class="op">=</span> <span class="fl">1</span>, converge_crit <span class="op">=</span> <span class="fl">0.01</span>,
+                       ga_mingen <span class="op">=</span> <span class="fl">200</span>, res_move_type <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>;
 <span class="co"># By setting `res_move_type = 0`, no resource movement will occur in gmse_apply</span>
 <span class="co"># Adjust the landscape ownership below</span>
-<span class="no">sim_old</span>$<span class="no">LAND</span>[<span class="fl">1</span>:<span class="fl">20</span>,   <span class="fl">1</span>:<span class="fl">20</span>,  <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="fl">2</span>;
-<span class="no">sim_old</span>$<span class="no">LAND</span>[<span class="fl">1</span>:<span class="fl">20</span>,  <span class="fl">21</span>:<span class="fl">40</span>,  <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="fl">3</span>;
-<span class="no">sim_old</span>$<span class="no">LAND</span>[<span class="fl">1</span>:<span class="fl">20</span>,  <span class="fl">41</span>:<span class="fl">60</span>,  <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="fl">4</span>;
-<span class="no">sim_old</span>$<span class="no">LAND</span>[<span class="fl">1</span>:<span class="fl">20</span>,  <span class="fl">61</span>:<span class="fl">80</span>,  <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="fl">5</span>;
-<span class="no">sim_old</span>$<span class="no">LAND</span>[<span class="fl">1</span>:<span class="fl">20</span>,  <span class="fl">81</span>:<span class="fl">100</span>, <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="fl">6</span>;
-<span class="no">sim_old</span>$<span class="no">LAND</span>[<span class="fl">21</span>:<span class="fl">40</span>,  <span class="fl">1</span>:<span class="fl">50</span>,  <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="fl">7</span>;
-<span class="no">sim_old</span>$<span class="no">LAND</span>[<span class="fl">21</span>:<span class="fl">40</span>, <span class="fl">51</span>:<span class="fl">100</span>, <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="fl">8</span>;
-<span class="no">sim_old</span>$<span class="no">LAND</span>[<span class="fl">41</span>:<span class="fl">60</span>,  <span class="fl">1</span>:<span class="fl">100</span>, <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="fl">9</span>;
-<span class="no">sim_old</span>$<span class="no">LAND</span>[<span class="fl">61</span>:<span class="fl">100</span>, <span class="fl">1</span>:<span class="fl">100</span>, <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="fl">1</span>;
+<span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>,   <span class="fl">1</span><span class="op">:</span><span class="fl">20</span>,  <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">2</span>; 
+<span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>,  <span class="fl">21</span><span class="op">:</span><span class="fl">40</span>,  <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">3</span>;
+<span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>,  <span class="fl">41</span><span class="op">:</span><span class="fl">60</span>,  <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">4</span>;
+<span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>,  <span class="fl">61</span><span class="op">:</span><span class="fl">80</span>,  <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">5</span>;
+<span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>,  <span class="fl">81</span><span class="op">:</span><span class="fl">100</span>, <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">6</span>;
+<span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span><span class="fl">21</span><span class="op">:</span><span class="fl">40</span>,  <span class="fl">1</span><span class="op">:</span><span class="fl">50</span>,  <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">7</span>;
+<span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span><span class="fl">21</span><span class="op">:</span><span class="fl">40</span>, <span class="fl">51</span><span class="op">:</span><span class="fl">100</span>, <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">8</span>;
+<span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span><span class="fl">41</span><span class="op">:</span><span class="fl">60</span>,  <span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">9</span>;
+<span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span><span class="fl">61</span><span class="op">:</span><span class="fl">100</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span>;
 <span class="co"># Change the budgets of each farmer based on the land they own</span>
-<span class="kw">for</span>(<span class="no">ID</span> <span class="kw">in</span> <span class="fl">2</span>:<span class="fl">9</span>){
-    <span class="no">cells_owned</span>            <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">sim_old</span>$<span class="no">LAND</span>[,,<span class="fl">3</span>] <span class="kw">==</span> <span class="no">ID</span>);
-    <span class="no">sim_old</span>$<span class="no">AGENTS</span>[<span class="no">ID</span>, <span class="fl">17</span>] <span class="kw">&lt;-</span> <span class="fl">10</span> * <span class="no">cells_owned</span>;
-}
+<span class="kw">for</span><span class="op">(</span><span class="va">ID</span> <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span><span class="fl">9</span><span class="op">)</span><span class="op">{</span>
+    <span class="va">cells_owned</span>            <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span>,,<span class="fl">3</span><span class="op">]</span> <span class="op">==</span> <span class="va">ID</span><span class="op">)</span>;
+    <span class="va">sim_old</span><span class="op">$</span><span class="va">AGENTS</span><span class="op">[</span><span class="va">ID</span>, <span class="fl">17</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">10</span> <span class="op">*</span> <span class="va">cells_owned</span>;
+<span class="op">}</span>
 <span class="co"># Begin simulating time steps for the system</span>
-<span class="no">sim_sum_2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw">data</span> <span class="kw">=</span> <span class="fl">NA</span>, <span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">30</span>, <span class="kw">ncol</span> <span class="kw">=</span> <span class="fl">5</span>);
-<span class="kw">for</span>(<span class="no">time_step</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="fl">30</span>){
+<span class="va">sim_sum_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="cn">NA</span>, nrow <span class="op">=</span> <span class="fl">30</span>, ncol <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>;
+<span class="kw">for</span><span class="op">(</span><span class="va">time_step</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">30</span><span class="op">)</span><span class="op">{</span>
     <span class="co"># Apply the new movement rules at the beginning of the loop</span>
-    <span class="no">sim_old</span>$<span class="no">resource_array</span>  <span class="kw">&lt;-</span> <span class="fu">avoid_aggregation</span>(<span class="kw">sim_resource_array</span> <span class="kw">=</span>
-                                                     <span class="no">sim_old</span>$<span class="no">resource_array</span>);
+    <span class="va">sim_old</span><span class="op">$</span><span class="va">resource_array</span>  <span class="op">&lt;-</span> <span class="fu">avoid_aggregation</span><span class="op">(</span>sim_resource_array <span class="op">=</span> 
+                                                     <span class="va">sim_old</span><span class="op">$</span><span class="va">resource_array</span><span class="op">)</span>;
     <span class="co"># Next, move on to simulate (old_list remembers that res_move_type = 0)</span>
-    <span class="no">sim_new</span>                 <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">get_res</span> <span class="kw">=</span> <span class="st">"Full"</span>, <span class="kw">old_list</span> <span class="kw">=</span> <span class="no">sim_old</span>);
-    <span class="no">sim_sum_2</span>[<span class="no">time_step</span>, <span class="fl">1</span>] <span class="kw">&lt;-</span> <span class="no">time_step</span>;
-    <span class="no">sim_sum_2</span>[<span class="no">time_step</span>, <span class="fl">2</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">resource_results</span>[<span class="fl">1</span>];
-    <span class="no">sim_sum_2</span>[<span class="no">time_step</span>, <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">observation_results</span>[<span class="fl">1</span>];
-    <span class="no">sim_sum_2</span>[<span class="no">time_step</span>, <span class="fl">4</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">manager_results</span>[<span class="fl">3</span>];
-    <span class="no">sim_sum_2</span>[<span class="no">time_step</span>, <span class="fl">5</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">user_results</span>[,<span class="fl">3</span>]);
-    <span class="no">sim_old</span>                 <span class="kw">&lt;-</span> <span class="no">sim_new</span>;
-}
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">sim_sum_2</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Time"</span>, <span class="st">"Pop_size"</span>, <span class="st">"Pop_est"</span>, <span class="st">"Cull_cost"</span>,
-                         <span class="st">"Cull_count"</span>);
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">sim_sum_2</span>);</pre></body></html></div>
-<pre><code>##       Time Pop_size Pop_est Cull_cost Cull_count
-##  [1,]    1    34417   34417      1009         52
-##  [2,]    2    35077   35077      1010         52
-##  [3,]    3    36493   36493       999         60
-##  [4,]    4    38442   38442      1004         52
-##  [5,]    5    44346   44346      1008         52
-##  [6,]    6    46714   46714      1010         52
-##  [7,]    7    49529   49529      1006         52
-##  [8,]    8    52669   52669      1009         52
-##  [9,]    9    56125   56125      1010         52
-## [10,]   10    60069   60069       998         60
-## [11,]   11    64510   64510      1010         52
-## [12,]   12    68839   68839      1004         52
-## [13,]   13    73541   73541        17       3511
-## [14,]   14    74572   74572        15       3896
-## [15,]   15    75477   75477        12       4680
-## [16,]   16    75476   75476        12       4708
-## [17,]   17    75602   75602        11       4978
-## [18,]   18    75778   75778        11       5057
-## [19,]   19    75665   75665        11       5012
-## [20,]   20    75496   75496        12       4655
-## [21,]   21    75541   75541        11       5047
-## [22,]   22    75502   75502        12       4701
-## [23,]   23    75685   75685        11       5023
-## [24,]   24    75533   75533        12       4650
-## [25,]   25    75961   75961        11       5023
-## [26,]   26    75709   75709        11       5033
-## [27,]   27    75873   75873        11       5028
-## [28,]   28    77480   77480        10       5424
-## [29,]   29    79642   79642        10       5410
-## [30,]   30    82130   82130        10       5442</code></pre>
+    <span class="va">sim_new</span>                 <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span><span class="op">(</span>get_res <span class="op">=</span> <span class="st">"Full"</span>, old_list <span class="op">=</span> <span class="va">sim_old</span><span class="op">)</span>;
+    <span class="va">sim_sum_2</span><span class="op">[</span><span class="va">time_step</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">time_step</span>;
+    <span class="va">sim_sum_2</span><span class="op">[</span><span class="va">time_step</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">sim_new</span><span class="op">$</span><span class="va">basic_output</span><span class="op">$</span><span class="va">resource_results</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>;
+    <span class="va">sim_sum_2</span><span class="op">[</span><span class="va">time_step</span>, <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">sim_new</span><span class="op">$</span><span class="va">basic_output</span><span class="op">$</span><span class="va">observation_results</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>;
+    <span class="va">sim_sum_2</span><span class="op">[</span><span class="va">time_step</span>, <span class="fl">4</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">sim_new</span><span class="op">$</span><span class="va">basic_output</span><span class="op">$</span><span class="va">manager_results</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>;
+    <span class="va">sim_sum_2</span><span class="op">[</span><span class="va">time_step</span>, <span class="fl">5</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">sim_new</span><span class="op">$</span><span class="va">basic_output</span><span class="op">$</span><span class="va">user_results</span><span class="op">[</span>,<span class="fl">3</span><span class="op">]</span><span class="op">)</span>;
+    <span class="va">sim_old</span>                 <span class="op">&lt;-</span> <span class="va">sim_new</span>;
+<span class="op">}</span>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">sim_sum_2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span>, <span class="st">"Pop_size"</span>, <span class="st">"Pop_est"</span>, <span class="st">"Cull_cost"</span>, 
+                         <span class="st">"Cull_count"</span><span class="op">)</span>;
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sim_sum_2</span><span class="op">)</span>;</code></pre></div>
+<pre><code><span class="co">##       Time Pop_size Pop_est Cull_cost Cull_count</span>
+<span class="co">##  [1,]    1    33851   33851      1006         52</span>
+<span class="co">##  [2,]    2    34179   34179      1010         52</span>
+<span class="co">##  [3,]    3    35212   35212       999         60</span>
+<span class="co">##  [4,]    4    36810   36810      1003         52</span>
+<span class="co">##  [5,]    5    42297   42297      1007         52</span>
+<span class="co">##  [6,]    6    44344   44344      1010         52</span>
+<span class="co">##  [7,]    7    46685   46685      1004         52</span>
+<span class="co">##  [8,]    8    49632   49632      1008         52</span>
+<span class="co">##  [9,]    9    52916   52916      1010         52</span>
+<span class="co">## [10,]   10    56460   56460      1002         52</span>
+<span class="co">## [11,]   11    60131   60131      1008         52</span>
+<span class="co">## [12,]   12    63856   63856      1010         52</span>
+<span class="co">## [13,]   13    68098   68098      1010         52</span>
+<span class="co">## [14,]   14    72819   72819        22       2722</span>
+<span class="co">## [15,]   15    74716   74716        15       3903</span>
+<span class="co">## [16,]   16    75538   75538        12       4649</span>
+<span class="co">## [17,]   17    75603   75603        12       4682</span>
+<span class="co">## [18,]   18    75485   75485        12       4647</span>
+<span class="co">## [19,]   19    75605   75605        11       4975</span>
+<span class="co">## [20,]   20    75343   75343        12       4648</span>
+<span class="co">## [21,]   21    75630   75630        11       4960</span>
+<span class="co">## [22,]   22    75727   75727        11       5007</span>
+<span class="co">## [23,]   23    75499   75499        12       4649</span>
+<span class="co">## [24,]   24    75729   75729        11       5042</span>
+<span class="co">## [25,]   25    75662   75662        11       4984</span>
+<span class="co">## [26,]   26    75550   75550        11       5011</span>
+<span class="co">## [27,]   27    76546   76546        10       5405</span>
+<span class="co">## [28,]   28    77515   77515        10       5429</span>
+<span class="co">## [29,]   29    79218   79218        10       5407</span>
+<span class="co">## [30,]   30    80863   80863        10       5392</span></code></pre>
 </div>
-<div id="conclusions" class="section level1">
-<h1 class="hasAnchor">
-<a href="#conclusions" class="anchor"></a>Conclusions</h1>
-<p>In this example, we showed how the built-in resource, observation, manager, and user sub-models can be customised by manipulating the data within the data structures that they use. The goal was to show how software users can work with these existing sub-models and data structures to customise GMSE simulations. Readers seeking even greater flexibility (e.g., replacing an entire built-in sub-model with a custom sub-model) should refer to <a href="SI2.html">Use of the gmse_apply function</a> that introduces <code>gmse_apply</code> more generally. Future versions of GMSE are likely to expand on the built-in options available for simulation; requests for such expansions, or contributions, can be submitted to <a href="https://github.com/bradduthie/gmse/issues">GitHub</a>.</p>
+<div class="section level2">
+<h2 id="conclusions">Conclusions<a class="anchor" aria-label="anchor" href="#conclusions"></a>
+</h2>
+<p>In this example, we showed how the built-in resource, observation,
+manager, and user sub-models can be customised by manipulating the data
+within the data structures that they use. The goal was to show how
+software users can work with these existing sub-models and data
+structures to customise GMSE simulations. Readers seeking even greater
+flexibility (e.g., replacing an entire built-in sub-model with a custom
+sub-model) should refer to <a href="SI2.html">Use of the gmse_apply
+function</a> that introduces <code>gmse_apply</code> more generally.
+Future versions of GMSE are likely to expand on the built-in options
+available for simulation; requests for such expansions, or
+contributions, can be submitted to <a href="https://github.com/bradduthie/gmse/issues" class="external-link">GitHub</a>.</p>
 </div>
-<div id="references" class="section level1 unnumbered">
-<h1 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h1>
-<div id="refs" class="references">
-<div id="ref-AEWA2016">
-<p>AEWA. 2016. “International single species action plan for the conservation of the Taiga Bean Goose (Anser fabalis fabalis).” <a href="http://www.unep-aewa.org/sites/default/files/document/aewa%7B%5C_%7Degmp%7B%5C_%7Dinf%7B%5C_%7D2%7B%5C_%7Dissap%7B%5C_%7Dtbg.pdf">http://www.unep-aewa.org/sites/default/files/document/aewa{\_}egmp{\_}inf{\_}2{\_}issap{\_}tbg.pdf</a>.</p>
+<div class="section level2">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-AEWA2016" class="csl-entry">
+AEWA. 2016. <span>“<span class="nocase">International single species
+action plan for the conservation of the Taiga Bean Goose (Anser fabalis
+fabalis)</span>.”</span> <a href="http://www.unep-aewa.org/sites/default/files/document/aewa%7B%5C_%7Degmp%7B%5C_%7Dinf%7B%5C_%7D2%7B%5C_%7Dissap%7B%5C_%7Dtbg.pdf" class="external-link">http://www.unep-aewa.org/sites/default/files/document/aewa{\_}egmp{\_}inf{\_}2{\_}issap{\_}tbg.pdf</a>.
 </div>
-<div id="ref-Cusack2018">
-<p>Cusack, Jeremy J, A Bradley Duthie, Sarobidy Rakotonarivo, Rocío A Pozo, Tom H E Mason, Johan Månsson, Lovisa Nilsson, et al. 2018. “Time series analysis reveals synchrony and asynchrony between conflict management effort and increasing large grazing bird populations in northern Europe.” <em>Conservation Letters</em>, e12450. <a href="https://doi.org/10.1111/conl.12450">https://doi.org/10.1111/conl.12450</a>.</p>
+<div id="ref-Cusack2018" class="csl-entry">
+Cusack, Jeremy J, A Bradley Duthie, Sarobidy Rakotonarivo, Rocío A Pozo,
+Tom H E Mason, Johan Månsson, Lovisa Nilsson, et al. 2018. <span>“<span class="nocase">Time series analysis reveals synchrony and asynchrony
+between conflict management effort and increasing large grazing bird
+populations in northern Europe</span>.”</span> <em>Conservation
+Letters</em>, e12450. <a href="https://doi.org/10.1111/conl.12450" class="external-link">https://doi.org/10.1111/conl.12450</a>.
 </div>
-<div id="ref-Fox2017a">
-<p>Fox, Anthony D, and Jesper Madsen. 2017. “Threatened species to super-abundance: The unexpected international implications of successful goose conservation.” <em>Ambio</em> 46 (s2). Springer Netherlands: 179–87. <a href="https://doi.org/10.1007/s13280-016-0878-2">https://doi.org/10.1007/s13280-016-0878-2</a>.</p>
+<div id="ref-Fox2017a" class="csl-entry">
+Fox, Anthony D, and Jesper Madsen. 2017. <span>“<span class="nocase">Threatened species to super-abundance: The unexpected
+international implications of successful goose
+conservation</span>.”</span> <em>Ambio</em> 46 (s2): 179–87. <a href="https://doi.org/10.1007/s13280-016-0878-2" class="external-link">https://doi.org/10.1007/s13280-016-0878-2</a>.
 </div>
-<div id="ref-Johnson2018">
-<p>Johnson, Fred A, Mikko Alhainen, Anthony D Fox, Jesper Madsen, and Matthieu Guillemain. 2018. “Making do with less: Must sparse data preclude informed harvest strategies for European waterbirds.” <em>Ecological Applications</em> 28 (2): 427–41. <a href="https://doi.org/10.1002/eap.1659">https://doi.org/10.1002/eap.1659</a>.</p>
+<div id="ref-Johnson2018" class="csl-entry">
+Johnson, Fred A, Mikko Alhainen, Anthony D Fox, Jesper Madsen, and
+Matthieu Guillemain. 2018. <span>“<span class="nocase">Making do with
+less: Must sparse data preclude informed harvest strategies for European
+waterbirds</span>.”</span> <em>Ecological Applications</em> 28 (2):
+427–41. <a href="https://doi.org/10.1002/eap.1659" class="external-link">https://doi.org/10.1002/eap.1659</a>.
 </div>
-<div id="ref-Mason2017">
-<p>Mason, Tom H.E, Aidan Keane, Stephen M Redpath, and Nils Bunnefeld. 2017. “The changing environment of conservation conflict: geese and farming in Scotland.” <em>Journal of Applied Ecology</em>, 1–12. <a href="https://doi.org/10.1111/1365-2664.12969">https://doi.org/10.1111/1365-2664.12969</a>.</p>
+<div id="ref-Mason2017" class="csl-entry">
+Mason, Tom H. E, Aidan Keane, Stephen M Redpath, and Nils Bunnefeld.
+2017. <span>“<span class="nocase">The changing environment of
+conservation conflict: geese and farming in Scotland</span>.”</span>
+<em>Journal of Applied Ecology</em>, 1–12. <a href="https://doi.org/10.1111/1365-2664.12969" class="external-link">https://doi.org/10.1111/1365-2664.12969</a>.
 </div>
-<div id="ref-Tulloch2017">
-<p>Tulloch, Ayesha I T, Sam Nicol, and Nils Bunnefeld. 2017. “Quantifying the expected value of uncertain management choices for over-abundant Greylag Geese.” <em>Biological Conservation</em> 214. Elsevier: 147–55. <a href="https://doi.org/10.1016/j.biocon.2017.08.013">https://doi.org/10.1016/j.biocon.2017.08.013</a>.</p>
+<div id="ref-Tulloch2017" class="csl-entry">
+Tulloch, Ayesha I T, Sam Nicol, and Nils Bunnefeld. 2017. <span>“<span class="nocase">Quantifying the expected value of uncertain management
+choices for over-abundant Greylag Geese</span>.”</span> <em>Biological
+Conservation</em> 214: 147–55. <a href="https://doi.org/10.1016/j.biocon.2017.08.013" class="external-link">https://doi.org/10.1016/j.biocon.2017.08.013</a>.
 </div>
 </div>
 </div>
@@ -580,11 +772,13 @@ Land ownership by farmers as customised in gmse_apply.
 
 
       <footer><div class="copyright">
-  <p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman.</p>
+  <p></p>
+<p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman, Ochoa Gabriela.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>
@@ -592,6 +786,8 @@ Land ownership by farmers as customised in gmse_apply.
 
   
 
+
+  
 
   </body>
 </html>

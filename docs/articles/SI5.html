@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.1</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../articles/GMSE.html">Get started</a>
 </li>
@@ -50,7 +46,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -80,6 +76,9 @@
     <li>
       <a href="../articles/SI8.html">Adaptive timing of investment strategy</a>
     </li>
+    <li>
+      <a href="../articles/SI9.html">The simulated annealing algorithm of GMSE</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -88,10 +87,10 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://confoobio.github.io/gmse/notebook/gmse_notes.html">Lab notebook</a>
+  <a href="https://confoobio.github.io/gmse/notebook/gmse_notes.html" class="external-link">Lab notebook</a>
 </li>
 <li>
-  <a href="https://github.com/confoobio/GMSE">
+  <a href="https://github.com/confoobio/GMSE" class="external-link">
     <span class="fa fa-github"></span>
      
   </a>
@@ -110,284 +109,521 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Fisheries example integrating FLR</h1>
-            <h3 class="subtitle">GMSE: an R package for generalised management strategy evaluation (Supporting Information 5)</h3>
-                        <h4 class="author"><div class="line-block">A. Bradley Duthie¹³, Jeremy J. Cusack¹, Isabel L. Jones¹, Jeroen Minderman¹,<br>
+            <h3 data-toc-skip class="subtitle">GMSE: an R package for
+generalised management strategy evaluation (Supporting Information
+5)</h3>
+                        <h4 data-toc-skip class="author"><div class="line-block">A. Bradley Duthie¹³, Jeremy J. Cusack¹, Isabel L.
+Jones¹, Jeroen Minderman¹,<br>
 Erlend B. Nilsen², Rocío A. Pozo¹, O. Sarobidy Rakotonarivo¹,<br>
 Bram Van Moorter², and Nils Bunnefeld¹</div></h4>
             
-            <h4 class="date">[1] Biological and Environmental Sciences, University of Stirling, Stirling, UK [2] Norwegian Institute for Nature Research, Trondheim, Norway [3] <a href="mailto:alexander.duthie@stir.ac.uk" class="email">alexander.duthie@stir.ac.uk</a>
+            <h4 data-toc-skip class="date">[1] Biological and
+Environmental Sciences, University of Stirling, Stirling, UK [2]
+Norwegian Institute for Nature Research, Trondheim, Norway [3] <a href="mailto:alexander.duthie@stir.ac.uk" class="email">alexander.duthie@stir.ac.uk</a>
 </h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/confoobio/gmse/blob/master/vignettes/SI5.Rmd"><code>vignettes/SI5.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/confoobio/gmse/blob/HEAD/vignettes/SI5.Rmd" class="external-link"><code>vignettes/SI5.Rmd</code></a></small>
       <div class="hidden name"><code>SI5.Rmd</code></div>
 
     </div>
 
     
     
-<div id="integration-and-simulation-with-fisheries" class="section level1">
-<h1 class="hasAnchor">
-<a href="#integration-and-simulation-with-fisheries" class="anchor"></a>Integration and simulation with fisheries</h1>
-<p>Early development of management strategy evaluation (MSE) models originated in fisheries <span class="citation">(Polacheck et al. <a href="#ref-Polacheck1999">1999</a>; Smith, Sainsbury, and Stevens <a href="#ref-Smith1999">1999</a>; Sainsbury, Punt, and Smith <a href="#ref-Sainsbury2000">2000</a>)</span>. Consequently, fisheries-focused software for MSE has been extensively developed, including R libraries that focus on the management of species of exceptional interest, such as the Atlantic Bluefin Tuna (<em>Thunnus thynnus</em>) <span class="citation">(<a href="https://github.com/ICCAT/abft-mse/tree/master/R_package/ABTMSE">ABFTMSE</a>; Carruthers and Butterworth <a href="#ref-Carruthers2018a">2018</a><a href="#ref-Carruthers2018a">a</a>, <a href="#ref-Carruthers2018">2018</a><a href="#ref-Carruthers2018">b</a>)</span>, and Indian Ocean Bigeye (<em>T. obesus</em>) and Yellowfin (<em>T. albacares</em>) Tuna <span class="citation">(<a href="https://github.com/pjumppanen/MSE-IO-BET-YFT">MSE-IO-BET-YFT</a>; Kolody and Jumppanen <a href="#ref-Kolody2016">2016</a>)</span>. The largest of all such libraries is the Fisheries Library in R (<a href="http://www.flr-project.org/">FLR</a>), which includes an extensive collection of tools targeted for fisheries science. The FLR library has been used in over a hundred <a href="http://www.flr-project.org/#publications">publications</a> <span class="citation">(recent publications include Jardim et al. <a href="#ref-Jardim2018">2018</a>; Mackinson et al. <a href="#ref-Mackinson2018">2018</a>; Utizi et al. <a href="#ref-Utizi2018">2018</a>)</span>, and includes <a href="http://www.flr-project.org/doc/An_introduction_to_MSE_using_FLR.html">an MSE framework</a> for evaluating different harvest control rules.</p>
-<p>As part of the <a href="https://sti-cs.org/confoobio/">ConFooBio</a> project, a central focus of GMSE is on simulating the management of animal populations of conservation interest, with a particular emphasis on understanding conservation conflict; further development of GMSE is expected to continue with this as a priority, further building upon the decision-making algorithms of managers and users to better understand how conflict arises and can be managed and mitigated. Hence, GMSE is not intended as a substitute for packages such as <a href="http://www.flr-project.org/">FLR</a>, but the integration of these packages with GMSE could make use of GSME’s current and future simulation capabilities, and particularly the <a href="SI1.pdf">genetic algorithm</a>. Such integration might be possible using the <code>gmse_apply</code> function, which allows for <a href="SI2.pdf">custom defined sub-models</a> to be used within the GMSE framework, and with default GMSE sub-models. Hence, GMSE might be especially useful for modelling the management of fisheries under conditions of increasing competing stakeholder demands and conflicts. We do not attempt such an ambitious project here, but instead show how such a project could be developed through integration of <a href="http://www.flr-project.org/">FLR</a> and <code>gmse_apply</code>.</p>
-<p>Here we follow a <a href="http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html">Modelling Stock-Recruitment with FLSR</a> example, then integrate this example with <code>gmse_apply</code> to explore the behaviour of a number of simulated fishers who are goal-driven to maximise their own harvest and a manager that aims to keep the fish stocks at a predefined target level. The core concept in GMSE is that manager can only incentivise fishers to harvest less or more by varying the cost of fishing (through e.g. taxes) given a set manager budget; please note that the manager cannot force the fisher to follow any policy. Based on the cost of fishing, the fisher can then given their own budget decide whether to invest in fishing or keep the budget. This concepts represents a nartural resource managmeent and conservation conflict, where one party aims to maximise their livelihood (fisher) and the other aims to keep a population at a sustainable level and prevent it from going extinct. Importantly, the manager does not have full control over fishers but can set policies to incentivise sustainable behaviour. We emphasise that this example is provided only as demonstration of how GMSE can potentially be integrated with already developed fisheries models, and is not intended to make recommendations for management in any population.</p>
+<div class="section level2">
+<h2 id="integration-and-simulation-with-fisheries">Integration and simulation with fisheries<a class="anchor" aria-label="anchor" href="#integration-and-simulation-with-fisheries"></a>
+</h2>
+<p>Early development of management strategy evaluation (MSE) models
+originated in fisheries <span class="citation">(<a href="#ref-Polacheck1999" role="doc-biblioref">Polacheck et al.
+1999</a>; <a href="#ref-Smith1999" role="doc-biblioref">Smith,
+Sainsbury, and Stevens 1999</a>; <a href="#ref-Sainsbury2000" role="doc-biblioref">Sainsbury, Punt, and Smith 2000</a>)</span>.
+Consequently, fisheries-focused software for MSE has been extensively
+developed, including R libraries that focus on the management of species
+of exceptional interest, such as the Atlantic Bluefin Tuna (<em>Thunnus
+thynnus</em>) [<a href="https://github.com/ICCAT/abft-mse/tree/master/R_package/ABTMSE" class="external-link">ABFTMSE</a>;
+<span class="citation">Carruthers and Butterworth (<a href="#ref-Carruthers2018a" role="doc-biblioref">2018a</a>)</span>;
+<span class="citation">Carruthers and Butterworth (<a href="#ref-Carruthers2018" role="doc-biblioref">2018b</a>)</span>], and
+Indian Ocean Bigeye (<em>T. obesus</em>) and Yellowfin (<em>T.
+albacares</em>) Tuna [<a href="https://github.com/pjumppanen/MSE-IO-BET-YFT" class="external-link">MSE-IO-BET-YFT</a>;
+<span class="citation">Kolody and Jumppanen (<a href="#ref-Kolody2016" role="doc-biblioref">2016</a>)</span>]. The largest of all such
+libraries is the Fisheries Library in R (<a href="http://www.flr-project.org/" class="external-link">FLR</a>), which includes an extensive
+collection of tools targeted for fisheries science. The FLR library has
+been used in over a hundred <a href="http://www.flr-project.org/#publications" class="external-link">publications</a> <span class="citation">(recent publications include <a href="#ref-Jardim2018" role="doc-biblioref">Jardim et al. 2018</a>; <a href="#ref-Mackinson2018" role="doc-biblioref">Mackinson et al.
+2018</a>; <a href="#ref-Utizi2018" role="doc-biblioref">Utizi et al.
+2018</a>)</span>, and includes <a href="http://www.flr-project.org/doc/An_introduction_to_MSE_using_FLR.html" class="external-link">an
+MSE framework</a> for evaluating different harvest control rules.</p>
+<p>As part of the <a href="https://sti-cs.org/confoobio/" class="external-link">ConFooBio</a>
+project, a central focus of GMSE is on simulating the management of
+animal populations of conservation interest, with a particular emphasis
+on understanding conservation conflict; further development of GMSE is
+expected to continue with this as a priority, further building upon the
+decision-making algorithms of managers and users to better understand
+how conflict arises and can be managed and mitigated. Hence, GMSE is not
+intended as a substitute for packages such as <a href="http://www.flr-project.org/" class="external-link">FLR</a>, but the integration of these
+packages with GMSE could make use of GSME’s current and future
+simulation capabilities, and particularly the <a href="SI1.pdf">genetic
+algorithm</a>. Such integration might be possible using the
+<code>gmse_apply</code> function, which allows for <a href="SI2.pdf">custom defined sub-models</a> to be used within the GMSE
+framework, and with default GMSE sub-models. Hence, GMSE might be
+especially useful for modelling the management of fisheries under
+conditions of increasing competing stakeholder demands and conflicts. We
+do not attempt such an ambitious project here, but instead show how such
+a project could be developed through integration of <a href="http://www.flr-project.org/" class="external-link">FLR</a> and
+<code>gmse_apply</code>.</p>
+<p>Here we follow a <a href="http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html" class="external-link">Modelling
+Stock-Recruitment with FLSR</a> example, then integrate this example
+with <code>gmse_apply</code> to explore the behaviour of a number of
+simulated fishers who are goal-driven to maximise their own harvest and
+a manager that aims to keep the fish stocks at a predefined target
+level. The core concept in GMSE is that manager can only incentivise
+fishers to harvest less or more by varying the cost of fishing (through
+e.g. taxes) given a set manager budget; please note that the manager
+cannot force the fisher to follow any policy. Based on the cost of
+fishing, the fisher can then given their own budget decide whether to
+invest in fishing or keep the budget. This concepts represents a
+nartural resource managmeent and conservation conflict, where one party
+aims to maximise their livelihood (fisher) and the other aims to keep a
+population at a sustainable level and prevent it from going extinct.
+Importantly, the manager does not have full control over fishers but can
+set policies to incentivise sustainable behaviour. We emphasise that
+this example is provided only as demonstration of how GMSE can
+potentially be integrated with already developed fisheries models, and
+is not intended to make recommendations for management in any
+population.</p>
 </div>
-<div id="integrating-with-the-fisheries-library-in-r-flr" class="section level1">
-<h1 class="hasAnchor">
-<a href="#integrating-with-the-fisheries-library-in-r-flr" class="anchor"></a>Integrating with the Fisheries Library in R (<a href="http://www.flr-project.org/">FLR</a>)</h1>
-<p>The FLR toolset includes <a href="http://www.flr-project.org/#packages">a series of packages</a>, with several <a href="http://www.flr-project.org/doc/index.html">tutorials</a> for using them. For simplicity, we focus on <a href="http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html">a model of stock recruitment</a> to be used as the population model in <code>gmse_apply</code>. This population model will use sample data and one of the many available stock-recruitment models available in FLR, and a custom function will be written to return a single value for stock recruitment. Currently, <code>gmse_apply</code> requires that sub-models return subfunction results either as scalar values or data frames that are structured <a href="SI7.pdf">in the same way</a> as GMSE sub-models. But interpretation of scalar values is left up to the user (e.g., population model results could be interpreted as abundance or biomass; manager policy could be interpreted as cost of harvesting or as total allowable catch). For simplicity, the observation (i.e., estimation) model will be the stock reported from the population model with error. The manager and user models, however, will employ the full power of the default GMSE functions to simulate management and user actions. We first show how a custom function can be made that applies the FLR toolset to a population model.</p>
+<div class="section level2">
+<h2 id="integrating-with-the-fisheries-library-in-r-flr">Integrating with the Fisheries Library in R (<a href="http://www.flr-project.org/" class="external-link">FLR</a>)<a class="anchor" aria-label="anchor" href="#integrating-with-the-fisheries-library-in-r-flr"></a>
+</h2>
+<p>The FLR toolset includes <a href="http://www.flr-project.org/#packages" class="external-link">a series of packages</a>,
+with several <a href="http://www.flr-project.org/doc/index.html" class="external-link">tutorials</a> for using
+them. For simplicity, we focus on <a href="http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html" class="external-link">a
+model of stock recruitment</a> to be used as the population model in
+<code>gmse_apply</code>. This population model will use sample data and
+one of the many available stock-recruitment models available in FLR, and
+a custom function will be written to return a single value for stock
+recruitment. Currently, <code>gmse_apply</code> requires that sub-models
+return subfunction results either as scalar values or data frames that
+are structured <a href="SI7.pdf">in the same way</a> as GMSE sub-models.
+But interpretation of scalar values is left up to the user (e.g.,
+population model results could be interpreted as abundance or biomass;
+manager policy could be interpreted as cost of harvesting or as total
+allowable catch). For simplicity, the observation (i.e., estimation)
+model will be the stock reported from the population model with error.
+The manager and user models, however, will employ the full power of the
+default GMSE functions to simulate management and user actions. We first
+show how a custom function can be made that applies the FLR toolset to a
+population model.</p>
 </div>
-<div id="modelling-stock-recruitment-for-the-population-model" class="section level1">
-<h1 class="hasAnchor">
-<a href="#modelling-stock-recruitment-for-the-population-model" class="anchor"></a>Modelling stock-recruitment for the population model</h1>
-<p>Here we closely follow <a href="http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html">a tutorial from the FLR project</a>. To build the stock-recruitment model, the <code>FLCore</code> package is needed <span class="citation">(Kell et al. <a href="#ref-Kell2007">2007</a>)</span>. We also include the <code>ggplotFL</code> package for plotting.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"FLCore"</span>, <span class="kw">repos</span><span class="kw">=</span><span class="st">"http://flr-project.org/R"</span>);
-<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"ggplotFL"</span>, <span class="kw">repos</span><span class="kw">=</span><span class="st">"http://flr-project.org/R"</span>)</pre></body></html></div>
-<p>To start, we need to read in the <code>FLCore</code>, <code>ggplotFL</code> and <code>GMSE</code> libraries.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">FLCore</span>);</pre></body></html></div>
-<pre><code>## Loading required package: lattice</code></pre>
-<pre><code>## Loading required package: iterators</code></pre>
-<pre><code>## FLCore (Version 2.6.14, packaged: 2019-11-18 21:54:10 UTC)</code></pre>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ggplotFL</span>);</pre></body></html></div>
-<pre><code>## Loading required package: ggplot2</code></pre>
-<pre><code>## 
-## Attaching package: 'ggplot2'</code></pre>
-<pre><code>## The following object is masked from 'package:FLCore':
-## 
-##     %+%</code></pre>
-<pre><code>## Warning: replacing previous import 'ggplot2::%+%' by 'FLCore::%+%' when loading
-## 'ggplotFL'</code></pre>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">GMSE</span>);</pre></body></html></div>
-<p>For a simplified example in GMSE, we will simulate the process of stock recruitment over multiple time steps using an example stock-recruitment model. The stock-recruitment model describes the relationship between stock-recruitment and spawning stock biomass. The sample that we will work from is a recreation of the North Sea Herring (<code>nsher</code>) dataset available in the <code>FLCore</code> package <span class="citation">(Kell et al. <a href="#ref-Kell2007">2007</a>)</span>. This data set includes recruitment and spawning stock biomass data between 1960 and 2004. First, we initialise an empty <code>FLSR</code> object and read in the recreated herring data files from GMSE, which contains recruitment (<code>rec.n</code>) and spawning stock biomass (<code>ssb.n</code>)</p>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">newFL</span>   <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/FLCore/man/FLSR.html">FLSR</a></span>(); <span class="co"># Initialises the empty FLSR object</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">nsher_data</span>);  <span class="co"># Called from GMSE library (not from FLCore)</span></pre></body></html></div>
-<p>The recruitment (<code>rec.n</code>) and spawning stock biomass (<code>ssb.n</code>) data need to be in the form of a vector, array, matrix to use them with <code>FLQuant</code>. We will convert <code>rec.n</code> and <code>ssb.n</code> into matrices.</p>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">rec.m</span>        <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="no">rec.n</span>);
-<span class="no">ssb.m</span>        <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="no">ssb.n</span>);</pre></body></html></div>
-<p>We can then construct two <code>FLQuant</code> objects, specifying the relevant years and units.</p>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">Frec.m</span>       <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/FLCore/man/FLQuant.html">FLQuant</a></span>(<span class="no">rec.m</span>, <span class="kw">dimnames</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">age</span><span class="kw">=</span><span class="fl">1</span>, <span class="kw">year</span> <span class="kw">=</span> <span class="fl">1960</span>:<span class="fl">2004</span>));
-<span class="no">Fssb.m</span>       <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/FLCore/man/FLQuant.html">FLQuant</a></span>(<span class="no">ssb.m</span>, <span class="kw">dimnames</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">age</span><span class="kw">=</span><span class="fl">1</span>, <span class="kw">year</span> <span class="kw">=</span> <span class="fl">1960</span>:<span class="fl">2004</span>));
-<span class="no">Frec.m</span>@<span class="kw">units</span> <span class="kw">&lt;-</span> <span class="st">"10^3"</span>;
-<span class="no">Fssb.m</span>@<span class="kw">units</span> <span class="kw">&lt;-</span> <span class="st">"t*10^3"</span>;</pre></body></html></div>
-<p>We then place the recruitment and spawning stock biomass data into the <code>FLSR</code> object that we created.</p>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/FLCore/man/accessors.html">rec</a></span>(<span class="no">newFL</span>)    <span class="kw">&lt;-</span> <span class="no">Frec.m</span>;
-<span class="fu"><a href="https://rdrr.io/pkg/FLCore/man/ssb.html">ssb</a></span>(<span class="no">newFL</span>)    <span class="kw">&lt;-</span> <span class="no">Fssb.m</span>;
-<span class="fu"><a href="https://rdrr.io/r/base/range.html">range</a></span>(<span class="no">newFL</span>)  <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">1960</span>, <span class="fl">0</span>, <span class="fl">2004</span>);</pre></body></html></div>
-<p>The <code>FLCore</code> package offers several stock-recruitment models. Here we use a Ricker model of stock recruitment <span class="citation">(Ricker <a href="#ref-Ricker1954">1954</a>)</span>, and insert this model into the <code>FLSR</code> object below.</p>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/FLCore/man/accessors.html">model</a></span>(<span class="no">newFL</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/FLCore/man/SRModels.html">ricker</a></span>();</pre></body></html></div>
-<p>Parameters for the Ricker stock-recruitment model can be estimated with maximum likelihood.</p>
-<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="no">newFL</span> <span class="kw">&lt;-</span> <span class="fu">fmle</span>(<span class="no">newFL</span>);</pre></body></html></div>
-<p>Diagnostic plots, identical to those of the <a href="http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html">modelling stock-recruitment tutorial</a> for the <code>nsher_ri</code> example, are shown below in Figure 1. We note that these plots are made using the <code>FLCore</code> and <code>ggplotFL</code> packages, and are not produced by, nor available in, the <code>GMSE</code> package.</p>
-<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/FLCore/man/plot.html">plot</a></span>(<span class="no">newFL</span>, <span class="kw">cex</span> <span class="kw">=</span> <span class="fl">0.7</span>);</pre></body></html></div>
-<pre><code>## `geom_smooth()` using formula 'y ~ x'
-## `geom_smooth()` using formula 'y ~ x'
-## `geom_smooth()` using formula 'y ~ x'
-## `geom_smooth()` using formula 'y ~ x'
-## `geom_smooth()` using formula 'y ~ x'</code></pre>
+<div class="section level2">
+<h2 id="modelling-stock-recruitment-for-the-population-model">Modelling stock-recruitment for the population model<a class="anchor" aria-label="anchor" href="#modelling-stock-recruitment-for-the-population-model"></a>
+</h2>
+<p>Here we closely follow <a href="http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html" class="external-link">a
+tutorial from the FLR project</a>. To build the stock-recruitment model,
+the <code>FLCore</code> package is needed <span class="citation">(<a href="#ref-Kell2007" role="doc-biblioref">Kell et al. 2007</a>)</span>.
+We also include the <code>ggplotFL</code> package for plotting.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"FLCore"</span>, repos<span class="op">=</span><span class="st">"http://flr-project.org/R"</span><span class="op">)</span>;
+<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"ggplotFL"</span>, repos<span class="op">=</span><span class="st">"http://flr-project.org/R"</span><span class="op">)</span></code></pre></div>
+<p>To start, we need to read in the <code>FLCore</code>,
+<code>ggplotFL</code> and <code>GMSE</code> libraries.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://flr-project.org/FLCore" class="external-link">FLCore</a></span><span class="op">)</span>;</code></pre></div>
+<pre><code><span class="co">## Loading required package: lattice</span></code></pre>
+<pre><code><span class="co">## Loading required package: iterators</span></code></pre>
+<pre><code><span class="co">## FLCore (Version 2.6.18, packaged: 2021-10-28 15:07:14 UTC)</span></code></pre>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://flr-project.org/ggplotFL" class="external-link">ggplotFL</a></span><span class="op">)</span>;</code></pre></div>
+<pre><code><span class="co">## Loading required package: ggplot2</span></code></pre>
+<pre><code><span class="co">## </span>
+<span class="co">## Attaching package: 'ggplot2'</span></code></pre>
+<pre><code><span class="co">## The following object is masked from 'package:FLCore':</span>
+<span class="co">## </span>
+<span class="co">##     %+%</span></code></pre>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://confoobio.github.io/gmse/" class="external-link">GMSE</a></span><span class="op">)</span>;</code></pre></div>
+<p>For a simplified example in GMSE, we will simulate the process of
+stock recruitment over multiple time steps using an example
+stock-recruitment model. The stock-recruitment model describes the
+relationship between stock-recruitment and spawning stock biomass. The
+sample that we will work from is a recreation of the North Sea Herring
+(<code>nsher</code>) dataset available in the <code>FLCore</code>
+package <span class="citation">(<a href="#ref-Kell2007" role="doc-biblioref">Kell et al. 2007</a>)</span>. This data set
+includes recruitment and spawning stock biomass data between 1960 and
+2004. First, we initialise an empty <code>FLSR</code> object and read in
+the recreated herring data files from GMSE, which contains recruitment
+(<code>rec.n</code>) and spawning stock biomass (<code>ssb.n</code>)</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">newFL</span>   <span class="op">&lt;-</span> <span class="fu"><a href="http://flr-project.org/FLCore/reference/FLSR.html" class="external-link">FLSR</a></span><span class="op">(</span><span class="op">)</span>; <span class="co"># Initialises the empty FLSR object</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">nsher_data</span><span class="op">)</span>;  <span class="co"># Called from GMSE library (not from FLCore)</span></code></pre></div>
+<p>The recruitment (<code>rec.n</code>) and spawning stock biomass
+(<code>ssb.n</code>) data need to be in the form of a vector, array,
+matrix to use them with <code>FLQuant</code>. We will convert
+<code>rec.n</code> and <code>ssb.n</code> into matrices.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">rec.m</span>        <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">rec.n</span><span class="op">)</span>;
+<span class="va">ssb.m</span>        <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">ssb.n</span><span class="op">)</span>;</code></pre></div>
+<p>We can then construct two <code>FLQuant</code> objects, specifying
+the relevant years and units.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">Frec.m</span>       <span class="op">&lt;-</span> <span class="fu"><a href="http://flr-project.org/FLCore/reference/FLQuant.html" class="external-link">FLQuant</a></span><span class="op">(</span><span class="va">rec.m</span>, dimnames<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>age<span class="op">=</span><span class="fl">1</span>, year <span class="op">=</span> <span class="fl">1960</span><span class="op">:</span><span class="fl">2004</span><span class="op">)</span><span class="op">)</span>;
+<span class="va">Fssb.m</span>       <span class="op">&lt;-</span> <span class="fu"><a href="http://flr-project.org/FLCore/reference/FLQuant.html" class="external-link">FLQuant</a></span><span class="op">(</span><span class="va">ssb.m</span>, dimnames<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>age<span class="op">=</span><span class="fl">1</span>, year <span class="op">=</span> <span class="fl">1960</span><span class="op">:</span><span class="fl">2004</span><span class="op">)</span><span class="op">)</span>;
+<span class="va">Frec.m</span><span class="op">@</span><span class="va">units</span> <span class="op">&lt;-</span> <span class="st">"10^3"</span>;
+<span class="va">Fssb.m</span><span class="op">@</span><span class="va">units</span> <span class="op">&lt;-</span> <span class="st">"t*10^3"</span>;</code></pre></div>
+<p>We then place the recruitment and spawning stock biomass data into
+the <code>FLSR</code> object that we created.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="http://flr-project.org/FLCore/reference/accessors.html" class="external-link">rec</a></span><span class="op">(</span><span class="va">newFL</span><span class="op">)</span>    <span class="op">&lt;-</span> <span class="va">Frec.m</span>;
+<span class="fu"><a href="http://flr-project.org/FLCore/reference/ssb.html" class="external-link">ssb</a></span><span class="op">(</span><span class="va">newFL</span><span class="op">)</span>    <span class="op">&lt;-</span> <span class="va">Fssb.m</span>;
+<span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">newFL</span><span class="op">)</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1960</span>, <span class="fl">0</span>, <span class="fl">2004</span><span class="op">)</span>;</code></pre></div>
+<p>The <code>FLCore</code> package offers several stock-recruitment
+models. Here we use a Ricker model of stock recruitment <span class="citation">(<a href="#ref-Ricker1954" role="doc-biblioref">Ricker
+1954</a>)</span>, and insert this model into the <code>FLSR</code>
+object below.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="http://flr-project.org/FLCore/reference/accessors.html" class="external-link">model</a></span><span class="op">(</span><span class="va">newFL</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://flr-project.org/FLCore/reference/SRModels.html" class="external-link">ricker</a></span><span class="op">(</span><span class="op">)</span>;</code></pre></div>
+<p>Parameters for the Ricker stock-recruitment model can be estimated
+with maximum likelihood.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">newFL</span> <span class="op">&lt;-</span> <span class="fu">fmle</span><span class="op">(</span><span class="va">newFL</span><span class="op">)</span>;</code></pre></div>
+<p>Diagnostic plots, identical to those of the <a href="http://www.flr-project.org/doc/Modelling_stock_recruitment_with_FLSR.html" class="external-link">modelling
+stock-recruitment tutorial</a> for the <code>nsher_ri</code> example,
+are shown below in Figure 1. We note that these plots are made using the
+<code>FLCore</code> and <code>ggplotFL</code> packages, and are not
+produced by, nor available in, the <code>GMSE</code> package.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="http://flr-project.org/FLCore/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">newFL</span>, cex <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>;</code></pre></div>
 <div class="figure">
 <img src="SI5_files/figure-html/unnamed-chunk-11-1.png" alt="Output of the FLR plot function for an example Ricker model of stock recruitment on North Sea Herring data." width="700"><p class="caption">
-Output of the FLR plot function for an example Ricker model of stock recruitment on North Sea Herring data.
+Output of the FLR plot function for an example Ricker model of stock
+recruitment on North Sea Herring data.
 </p>
 </div>
-<p>We now have a working example of a stock-recruitment model, but for our integration with <code>gmse_apply</code>, we will want a function that automates the above to simulate the process of updating the stock-recruitment model. We do this using the custom function created below.</p>
-<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="no">update_SR_model</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">rec_m</span>, <span class="no">ssb_m</span>, <span class="no">years</span>){
-    <span class="no">Frec_m</span>       <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/FLCore/man/FLQuant.html">FLQuant</a></span>(<span class="no">rec_m</span>, <span class="kw">dimnames</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">age</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">year</span> <span class="kw">=</span> <span class="no">years</span>));
-    <span class="no">Fssb_m</span>       <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/FLCore/man/FLQuant.html">FLQuant</a></span>(<span class="no">ssb_m</span>, <span class="kw">dimnames</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">age</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">year</span> <span class="kw">=</span> <span class="no">years</span>));
-    <span class="no">Frec_m</span>@<span class="kw">units</span> <span class="kw">&lt;-</span> <span class="st">"10^3"</span>;
-    <span class="no">Fssb_m</span>@<span class="kw">units</span> <span class="kw">&lt;-</span> <span class="st">"t*10^3"</span>;
-    <span class="fu"><a href="https://rdrr.io/pkg/FLCore/man/accessors.html">rec</a></span>(<span class="no">newFL</span>)   <span class="kw">&lt;-</span> <span class="no">Frec.m</span>;
-    <span class="fu"><a href="https://rdrr.io/pkg/FLCore/man/ssb.html">ssb</a></span>(<span class="no">newFL</span>)   <span class="kw">&lt;-</span> <span class="no">Fssb.m</span>;
-    <span class="fu"><a href="https://rdrr.io/r/base/range.html">range</a></span>(<span class="no">newFL</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="no">years</span>[<span class="fl">1</span>], <span class="fl">0</span>, <span class="no">years</span>[<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">years</span>)]);
-    <span class="fu"><a href="https://rdrr.io/pkg/FLCore/man/accessors.html">model</a></span>(<span class="no">newFL</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/FLCore/man/SRModels.html">ricker</a></span>();
-    <span class="no">newFL</span>        <span class="kw">&lt;-</span> <span class="fu">fmle</span>(<span class="no">newFL</span>);
-    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="no">newFL</span>);
-}</pre></body></html></div>
-<p>The above function will be used within another custom function to predict the next time step of recruitment.</p>
-<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="no">predict_recruitment</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">rec_m</span>, <span class="no">ssb_m</span>, <span class="no">years</span>, <span class="no">new_ssb</span>){
-    <span class="no">newFL</span> <span class="kw">&lt;-</span> <span class="fu">update_SR_model</span>(<span class="no">rec_m</span>, <span class="no">ssb_m</span>, <span class="no">years</span>);
-    <span class="no">a</span>     <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/FLCore/man/accessors.html">params</a></span>(<span class="no">newFL</span>)<span class="kw">[[</span><span class="fl">1</span>]] <span class="co"># Extract 'a' parameter of the Ricker model</span>
-    <span class="no">b</span>     <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/FLCore/man/accessors.html">params</a></span>(<span class="no">newFL</span>)<span class="kw">[[</span><span class="fl">2</span>]] <span class="co"># Extract 'b' parameter of the Ricker model</span>
-    <span class="no">rec</span>   <span class="kw">&lt;-</span> <span class="no">a</span> * <span class="no">new_ssb</span> * <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(-<span class="no">b</span> * <span class="no">new_ssb</span>); <span class="co"># Predict the new recruitment</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="no">rec</span>)
-}</pre></body></html></div>
-<p>In <code>gmse_apply</code>, we will use the <code>predict_recruitment</code> function above as the resource (i.e., operational) model. The <code>new_ssb</code> reads in the new spawning stock biomass, which will be calculated from the built-in GMSE <code>user</code> model.</p>
+<p>We now have a working example of a stock-recruitment model, but for
+our integration with <code>gmse_apply</code>, we will want a function
+that automates the above to simulate the process of updating the
+stock-recruitment model. We do this using the custom function created
+below.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">update_SR_model</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">rec_m</span>, <span class="va">ssb_m</span>, <span class="va">years</span><span class="op">)</span><span class="op">{</span>
+    <span class="va">Frec_m</span>       <span class="op">&lt;-</span> <span class="fu"><a href="http://flr-project.org/FLCore/reference/FLQuant.html" class="external-link">FLQuant</a></span><span class="op">(</span><span class="va">rec_m</span>, dimnames<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>age <span class="op">=</span> <span class="fl">1</span>, year <span class="op">=</span> <span class="va">years</span><span class="op">)</span><span class="op">)</span>;
+    <span class="va">Fssb_m</span>       <span class="op">&lt;-</span> <span class="fu"><a href="http://flr-project.org/FLCore/reference/FLQuant.html" class="external-link">FLQuant</a></span><span class="op">(</span><span class="va">ssb_m</span>, dimnames<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>age <span class="op">=</span> <span class="fl">1</span>, year <span class="op">=</span> <span class="va">years</span><span class="op">)</span><span class="op">)</span>;
+    <span class="va">Frec_m</span><span class="op">@</span><span class="va">units</span> <span class="op">&lt;-</span> <span class="st">"10^3"</span>;
+    <span class="va">Fssb_m</span><span class="op">@</span><span class="va">units</span> <span class="op">&lt;-</span> <span class="st">"t*10^3"</span>;
+    <span class="fu"><a href="http://flr-project.org/FLCore/reference/accessors.html" class="external-link">rec</a></span><span class="op">(</span><span class="va">newFL</span><span class="op">)</span>   <span class="op">&lt;-</span> <span class="va">Frec.m</span>;
+    <span class="fu"><a href="http://flr-project.org/FLCore/reference/ssb.html" class="external-link">ssb</a></span><span class="op">(</span><span class="va">newFL</span><span class="op">)</span>   <span class="op">&lt;-</span> <span class="va">Fssb.m</span>;
+    <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">newFL</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">years</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="fl">0</span>, <span class="va">years</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">years</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>;
+    <span class="fu"><a href="http://flr-project.org/FLCore/reference/accessors.html" class="external-link">model</a></span><span class="op">(</span><span class="va">newFL</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://flr-project.org/FLCore/reference/SRModels.html" class="external-link">ricker</a></span><span class="op">(</span><span class="op">)</span>;
+    <span class="va">newFL</span>        <span class="op">&lt;-</span> <span class="fu">fmle</span><span class="op">(</span><span class="va">newFL</span><span class="op">)</span>;
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">newFL</span><span class="op">)</span>;
+<span class="op">}</span></code></pre></div>
+<p>The above function will be used within another custom function to
+predict the next time step of recruitment.</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">predict_recruitment</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">rec_m</span>, <span class="va">ssb_m</span>, <span class="va">years</span>, <span class="va">new_ssb</span><span class="op">)</span><span class="op">{</span>
+    <span class="va">newFL</span> <span class="op">&lt;-</span> <span class="fu">update_SR_model</span><span class="op">(</span><span class="va">rec_m</span>, <span class="va">ssb_m</span>, <span class="va">years</span><span class="op">)</span>;
+    <span class="va">a</span>     <span class="op">&lt;-</span> <span class="fu"><a href="http://flr-project.org/FLCore/reference/accessors.html" class="external-link">params</a></span><span class="op">(</span><span class="va">newFL</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="co"># Extract 'a' parameter of the Ricker model</span>
+    <span class="va">b</span>     <span class="op">&lt;-</span> <span class="fu"><a href="http://flr-project.org/FLCore/reference/accessors.html" class="external-link">params</a></span><span class="op">(</span><span class="va">newFL</span><span class="op">)</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="co"># Extract 'b' parameter of the Ricker model</span>
+    <span class="va">rec</span>   <span class="op">&lt;-</span> <span class="va">a</span> <span class="op">*</span> <span class="va">new_ssb</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">b</span> <span class="op">*</span> <span class="va">new_ssb</span><span class="op">)</span>; <span class="co"># Predict the new recruitment</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span>
+<span class="op">}</span></code></pre></div>
+<p>In <code>gmse_apply</code>, we will use the
+<code>predict_recruitment</code> function above as the resource (i.e.,
+operational) model. The <code>new_ssb</code> reads in the new spawning
+stock biomass, which will be calculated from the built-in GMSE
+<code>user</code> model.</p>
 </div>
-<div id="integrating-predict_recruitment-with-gmse_apply" class="section level1">
-<h1 class="hasAnchor">
-<a href="#integrating-predict_recruitment-with-gmse_apply" class="anchor"></a>Integrating <code>predict_recruitment</code> with <code>gmse_apply</code>
-</h1>
-<p>The <a href="http://www.flr-project.org/">FLR project</a> includes libraries that can be used to <a href="http://www.flr-project.org/doc/An_introduction_to_MSE_using_FLR.html">perform a management strategy evaluation</a> (MSE) under fisheries-focused observation, manager, and user models. We will not recreate <a href="http://www.flr-project.org/doc/An_introduction_to_MSE_using_FLR.html">this approach</a>, or integrate any other sub-models into GMSE as was done for the population model above, although such integration of sub-models should be possible using similar techniques. Our goal here is to instead show how the <code>predict_recruitment</code> model created above can be integrated with <code>gmse_apply</code>, which can then make use of the genetic algorithm to predict the fishers’ behaviour.</p>
-<p>We will use a custom observation model, which will simply estimate recruitment with some fixed error.</p>
-<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="no">obs_ssb</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">resource_vector</span>){
-    <span class="no">obs_err</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="kw">n</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">mean</span> <span class="kw">=</span> <span class="fl">0</span>, <span class="kw">sd</span> <span class="kw">=</span> <span class="fl">100</span>);
-    <span class="no">the_obs</span> <span class="kw">&lt;-</span> <span class="no">resource_vector</span> + <span class="no">obs_err</span>;
-    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="no">the_obs</span>);
-}</pre></body></html></div>
-<p>Hence, we can now feed the data from <code>rec.m</code> and <code>ssb.m</code> through <code>predict_recruitment</code>, which will return a value for new recruitment, and this new value can in turn be fed into <code>obs_ssb</code> to predict recruitment with some error. We also need a new spawning stock biomass <code>new_ssb</code>, which we can just initialise with the biomass from the last year in <code>ssb.m</code></p>
-<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="no">ssb_ini</span> <span class="kw">&lt;-</span> <span class="no">ssb.m</span>[<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">ssb.m</span>)];
-<span class="no">new_rec</span> <span class="kw">&lt;-</span> <span class="fu">predict_recruitment</span>(<span class="kw">rec_m</span> <span class="kw">=</span> <span class="no">rec.m</span>, <span class="kw">ssb_m</span> <span class="kw">=</span> <span class="no">ssb.m</span>, <span class="kw">years</span> <span class="kw">=</span> <span class="fl">1960</span>:<span class="fl">2004</span>,
-                               <span class="kw">new_ssb</span> <span class="kw">=</span> <span class="no">ssb_ini</span>);
-<span class="no">obs_rec</span> <span class="kw">&lt;-</span> <span class="fu">obs_ssb</span>(<span class="no">new_rec</span>);</pre></body></html></div>
-<p>An initial run of these models gives values of 3835.21 for <code>new_rec</code> and 3791.47 for <code>obs_rec</code>. We are now ready to use the built-in manager and user sub-models in <code>gmse_apply</code>. We will assume that managers attempt to keep a recruitment of 5000, and that there are 10 independent fishers who attempt to maximise their catch. We assign a user budget of <code>manager_budget = 10000</code>, and all other values are set to GMSE defaults. In the built-in GMSE functions, the manager will use the estimate of recruitment based on <code>obs_rec</code> and use it to set the cost of harvesting (<code>culling</code> in GMSE).</p>
-<div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="no">yrspan</span>       <span class="kw">&lt;-</span> <span class="fl">1960</span>:<span class="fl">2004</span>;
-<span class="no">rec.m</span>        <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="no">rec.n</span>);
-<span class="no">ssb.m</span>        <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="no">ssb.n</span>);
+<div class="section level2">
+<h2 id="integrating-predict_recruitment-with-gmse_apply">Integrating <code>predict_recruitment</code> with
+<code>gmse_apply</code><a class="anchor" aria-label="anchor" href="#integrating-predict_recruitment-with-gmse_apply"></a>
+</h2>
+<p>The <a href="http://www.flr-project.org/" class="external-link">FLR project</a> includes
+libraries that can be used to <a href="http://www.flr-project.org/doc/An_introduction_to_MSE_using_FLR.html" class="external-link">perform
+a management strategy evaluation</a> (MSE) under fisheries-focused
+observation, manager, and user models. We will not recreate <a href="http://www.flr-project.org/doc/An_introduction_to_MSE_using_FLR.html" class="external-link">this
+approach</a>, or integrate any other sub-models into GMSE as was done
+for the population model above, although such integration of sub-models
+should be possible using similar techniques. Our goal here is to instead
+show how the <code>predict_recruitment</code> model created above can be
+integrated with <code>gmse_apply</code>, which can then make use of the
+genetic algorithm to predict the fishers’ behaviour.</p>
+<p>We will use a custom observation model, which will simply estimate
+recruitment with some fixed error.</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">obs_ssb</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">resource_vector</span><span class="op">)</span><span class="op">{</span>
+    <span class="va">obs_err</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>;
+    <span class="va">the_obs</span> <span class="op">&lt;-</span> <span class="va">resource_vector</span> <span class="op">+</span> <span class="va">obs_err</span>;
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">the_obs</span><span class="op">)</span>;
+<span class="op">}</span></code></pre></div>
+<p>Hence, we can now feed the data from <code>rec.m</code> and
+<code>ssb.m</code> through <code>predict_recruitment</code>, which will
+return a value for new recruitment, and this new value can in turn be
+fed into <code>obs_ssb</code> to predict recruitment with some error. We
+also need a new spawning stock biomass <code>new_ssb</code>, which we
+can just initialise with the biomass from the last year in
+<code>ssb.m</code></p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ssb_ini</span> <span class="op">&lt;-</span> <span class="va">ssb.m</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">ssb.m</span><span class="op">)</span><span class="op">]</span>;
+<span class="va">new_rec</span> <span class="op">&lt;-</span> <span class="fu">predict_recruitment</span><span class="op">(</span>rec_m <span class="op">=</span> <span class="va">rec.m</span>, ssb_m <span class="op">=</span> <span class="va">ssb.m</span>, years <span class="op">=</span> <span class="fl">1960</span><span class="op">:</span><span class="fl">2004</span>,
+                               new_ssb <span class="op">=</span> <span class="va">ssb_ini</span><span class="op">)</span>;
+<span class="va">obs_rec</span> <span class="op">&lt;-</span> <span class="fu">obs_ssb</span><span class="op">(</span><span class="va">new_rec</span><span class="op">)</span>;</code></pre></div>
+<p>An initial run of these models gives values of 3835.21 for
+<code>new_rec</code> and 3958.72 for <code>obs_rec</code>. We are now
+ready to use the built-in manager and user sub-models in
+<code>gmse_apply</code>. We will assume that managers attempt to keep a
+recruitment of 5000, and that there are 10 independent fishers who
+attempt to maximise their catch. We assign a user budget of
+<code>manager_budget = 10000</code>, and all other values are set to
+GMSE defaults. In the built-in GMSE functions, the manager will use the
+estimate of recruitment based on <code>obs_rec</code> and use it to set
+the cost of harvesting (<code>culling</code> in GMSE).</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">yrspan</span>       <span class="op">&lt;-</span> <span class="fl">1960</span><span class="op">:</span><span class="fl">2004</span>;
+<span class="va">rec.m</span>        <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">rec.n</span><span class="op">)</span>;
+<span class="va">ssb.m</span>        <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">ssb.n</span><span class="op">)</span>;
 
-<span class="no">sim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">res_mod</span> <span class="kw">=</span> <span class="no">predict_recruitment</span>, <span class="kw">obs_mod</span> <span class="kw">=</span> <span class="no">obs_ssb</span>,
-                  <span class="kw">rec_m</span> <span class="kw">=</span> <span class="no">rec.m</span>, <span class="kw">ssb_m</span> <span class="kw">=</span> <span class="no">ssb.m</span>, <span class="kw">years</span> <span class="kw">=</span> <span class="no">yrspan</span>,
-                  <span class="kw">new_ssb</span> <span class="kw">=</span> <span class="no">ssb_ini</span>, <span class="kw">manage_target</span> <span class="kw">=</span> <span class="fl">5000</span>, <span class="kw">stakeholders</span> <span class="kw">=</span> <span class="fl">10</span>,
-                  <span class="kw">manager_budget</span> <span class="kw">=</span> <span class="fl">10000</span>);
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">sim</span>);</pre></body></html></div>
-<pre><code>## $resource_results
-## [1] 3835
-## 
-## $observation_results
-## [1] 3868.729
-## 
-## $manager_results
-##          resource_type scaring culling castration feeding help_offspring
-## policy_1             1      NA     461         NA      NA             NA
-## 
-## $user_results
-##         resource_type scaring culling castration feeding help_offspring
-## Manager             1      NA       0         NA      NA             NA
-## user_1              1      NA       2         NA      NA             NA
-## user_2              1      NA       2         NA      NA             NA
-## user_3              1      NA       2         NA      NA             NA
-## user_4              1      NA       2         NA      NA             NA
-## user_5              1      NA       2         NA      NA             NA
-## user_6              1      NA       2         NA      NA             NA
-## user_7              1      NA       2         NA      NA             NA
-## user_8              1      NA       2         NA      NA             NA
-## user_9              1      NA       2         NA      NA             NA
-## user_10             1      NA       2         NA      NA             NA
-##         tend_crops kill_crops
-## Manager         NA         NA
-## user_1          NA         NA
-## user_2          NA         NA
-## user_3          NA         NA
-## user_4          NA         NA
-## user_5          NA         NA
-## user_6          NA         NA
-## user_7          NA         NA
-## user_8          NA         NA
-## user_9          NA         NA
-## user_10         NA         NA</code></pre>
-<p>The resource and observation results above are interpreted in terms of recruitment, while the manager results are interpreted in terms of the cost of harvesting a unit of spawning stock biomass and the user results are interpreted in terms of how much biomass was harvested. Note in the run of <code>gmse_apply</code> that the arguments for our custom resource and observation models (<code>predict_recruitment</code> and <code>obs_ssb</code>, respectively) are read directly in as arguments of <code>gmse_apply</code> itself. The <code>gmse_apply</code> function will figure out which subfunctions custom arguments should go to, then update these arguments as needed over the course of a single run of <code>gmse_apply</code>.</p>
+<span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span><span class="op">(</span>res_mod <span class="op">=</span> <span class="va">predict_recruitment</span>, obs_mod <span class="op">=</span> <span class="va">obs_ssb</span>,
+                  rec_m <span class="op">=</span> <span class="va">rec.m</span>, ssb_m <span class="op">=</span> <span class="va">ssb.m</span>, years <span class="op">=</span> <span class="va">yrspan</span>, 
+                  new_ssb <span class="op">=</span> <span class="va">ssb_ini</span>, manage_target <span class="op">=</span> <span class="fl">5000</span>, stakeholders <span class="op">=</span> <span class="fl">10</span>,
+                  manager_budget <span class="op">=</span> <span class="fl">10000</span><span class="op">)</span>;
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span>;</code></pre></div>
+<pre><code><span class="co">## $resource_results</span>
+<span class="co">## [1] 3835</span>
+<span class="co">## </span>
+<span class="co">## $observation_results</span>
+<span class="co">## [1] 3901.907</span>
+<span class="co">## </span>
+<span class="co">## $manager_results</span>
+<span class="co">##          resource_type scaring culling castration feeding help_offspring</span>
+<span class="co">## policy_1             1      NA     454         NA      NA             NA</span>
+<span class="co">## </span>
+<span class="co">## $user_results</span>
+<span class="co">##         resource_type scaring culling castration feeding help_offspring</span>
+<span class="co">## Manager             1      NA       0         NA      NA             NA</span>
+<span class="co">## user_1              1      NA       2         NA      NA             NA</span>
+<span class="co">## user_2              1      NA       2         NA      NA             NA</span>
+<span class="co">## user_3              1      NA       2         NA      NA             NA</span>
+<span class="co">## user_4              1      NA       2         NA      NA             NA</span>
+<span class="co">## user_5              1      NA       2         NA      NA             NA</span>
+<span class="co">## user_6              1      NA       2         NA      NA             NA</span>
+<span class="co">## user_7              1      NA       2         NA      NA             NA</span>
+<span class="co">## user_8              1      NA       2         NA      NA             NA</span>
+<span class="co">## user_9              1      NA       2         NA      NA             NA</span>
+<span class="co">## user_10             1      NA       2         NA      NA             NA</span>
+<span class="co">##         tend_crops kill_crops</span>
+<span class="co">## Manager         NA         NA</span>
+<span class="co">## user_1          NA         NA</span>
+<span class="co">## user_2          NA         NA</span>
+<span class="co">## user_3          NA         NA</span>
+<span class="co">## user_4          NA         NA</span>
+<span class="co">## user_5          NA         NA</span>
+<span class="co">## user_6          NA         NA</span>
+<span class="co">## user_7          NA         NA</span>
+<span class="co">## user_8          NA         NA</span>
+<span class="co">## user_9          NA         NA</span>
+<span class="co">## user_10         NA         NA</span></code></pre>
+<p>The resource and observation results above are interpreted in terms
+of recruitment, while the manager results are interpreted in terms of
+the cost of harvesting a unit of spawning stock biomass and the user
+results are interpreted in terms of how much biomass was harvested. Note
+in the run of <code>gmse_apply</code> that the arguments for our custom
+resource and observation models (<code>predict_recruitment</code> and
+<code>obs_ssb</code>, respectively) are read directly in as arguments of
+<code>gmse_apply</code> itself. The <code>gmse_apply</code> function
+will figure out which subfunctions custom arguments should go to, then
+update these arguments as needed over the course of a single run of
+<code>gmse_apply</code>.</p>
 </div>
-<div id="simulation-with-gmse_apply-over-multiple-time-steps" class="section level1">
-<h1 class="hasAnchor">
-<a href="#simulation-with-gmse_apply-over-multiple-time-steps" class="anchor"></a>Simulation with <code>gmse_apply</code> over multiple time steps</h1>
-<p>We are now ready to loop the <code>gmse_apply</code> function over multiple time steps. To do this, we will update the <code>rec.m</code> and <code>ssb.m</code> matrices after each time step, simulating 20 years into the future. The population model <code>predict_recruitment</code> will use these data to dynamically update parameters of the Ricker model, as might occur in an empirical fishery that is being monitored. We will use the results from the observation model to update recruitment for the new year in <code>rec.m</code>. For simplicity, spawning stock biomass prior to harvest will be randomly sampled from a value in the last 10 years (i.e., from <code>ssb.m</code> between 1994 and 2004), but more realistic models could relate this spawning stock biomass to recruitment and environmental variables from a previous year; spawning stock biomass will be decreased after harvest based on user actions. The GMSE initialisation and simulation is below.</p>
-<div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="co"># This code initialises the simulation -----------------------------------------</span>
-<span class="no">yrspan</span>       <span class="kw">&lt;-</span> <span class="fl">1960</span>:<span class="fl">2004</span>;
-<span class="no">rec.m</span>        <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="no">rec.n</span>);
-<span class="no">ssb.m</span>        <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="no">ssb.n</span>);
-<span class="no">ssb_ini</span>      <span class="kw">&lt;-</span> <span class="no">ssb.m</span>[<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">ssb.m</span>)];
-<span class="no">sim_old</span>      <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">res_mod</span> <span class="kw">=</span> <span class="no">predict_recruitment</span>, <span class="kw">obs_mod</span> <span class="kw">=</span> <span class="no">obs_ssb</span>,
-                           <span class="kw">rec_m</span> <span class="kw">=</span> <span class="no">rec.m</span>, <span class="kw">ssb_m</span> <span class="kw">=</span> <span class="no">ssb.m</span>, <span class="kw">years</span> <span class="kw">=</span> <span class="no">yrspan</span>,
-                           <span class="kw">new_ssb</span> <span class="kw">=</span> <span class="no">ssb_ini</span>, <span class="kw">manage_target</span> <span class="kw">=</span> <span class="fl">3500</span>,
-                           <span class="kw">stakeholders</span> <span class="kw">=</span> <span class="fl">10</span>, <span class="kw">manager_budget</span> <span class="kw">=</span> <span class="fl">10000</span>,
-                           <span class="kw">get_res</span> <span class="kw">=</span> <span class="st">"Full"</span>);
+<div class="section level2">
+<h2 id="simulation-with-gmse_apply-over-multiple-time-steps">Simulation with <code>gmse_apply</code> over multiple time
+steps<a class="anchor" aria-label="anchor" href="#simulation-with-gmse_apply-over-multiple-time-steps"></a>
+</h2>
+<p>We are now ready to loop the <code>gmse_apply</code> function over
+multiple time steps. To do this, we will update the <code>rec.m</code>
+and <code>ssb.m</code> matrices after each time step, simulating 20
+years into the future. The population model
+<code>predict_recruitment</code> will use these data to dynamically
+update parameters of the Ricker model, as might occur in an empirical
+fishery that is being monitored. We will use the results from the
+observation model to update recruitment for the new year in
+<code>rec.m</code>. For simplicity, spawning stock biomass prior to
+harvest will be randomly sampled from a value in the last 10 years
+(i.e., from <code>ssb.m</code> between 1994 and 2004), but more
+realistic models could relate this spawning stock biomass to recruitment
+and environmental variables from a previous year; spawning stock biomass
+will be decreased after harvest based on user actions. The GMSE
+initialisation and simulation is below.</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># This code initialises the simulation -----------------------------------------</span>
+<span class="va">yrspan</span>       <span class="op">&lt;-</span> <span class="fl">1960</span><span class="op">:</span><span class="fl">2004</span>;
+<span class="va">rec.m</span>        <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">rec.n</span><span class="op">)</span>;
+<span class="va">ssb.m</span>        <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">ssb.n</span><span class="op">)</span>;
+<span class="va">ssb_ini</span>      <span class="op">&lt;-</span> <span class="va">ssb.m</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">ssb.m</span><span class="op">)</span><span class="op">]</span>;
+<span class="va">sim_old</span>      <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span><span class="op">(</span>res_mod <span class="op">=</span> <span class="va">predict_recruitment</span>, obs_mod <span class="op">=</span> <span class="va">obs_ssb</span>,
+                           rec_m <span class="op">=</span> <span class="va">rec.m</span>, ssb_m <span class="op">=</span> <span class="va">ssb.m</span>, years <span class="op">=</span> <span class="va">yrspan</span>, 
+                           new_ssb <span class="op">=</span> <span class="va">ssb_ini</span>, manage_target <span class="op">=</span> <span class="fl">3500</span>, 
+                           stakeholders <span class="op">=</span> <span class="fl">10</span>, manager_budget <span class="op">=</span> <span class="fl">10000</span>, 
+                           get_res <span class="op">=</span> <span class="st">"Full"</span><span class="op">)</span>;
 <span class="co"># The code below simulates 20 time steps ---------------------------------------</span>
-<span class="no">sim_sum</span>  <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw">data</span> <span class="kw">=</span> <span class="fl">NA</span>, <span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">20</span>, <span class="kw">ncol</span> <span class="kw">=</span> <span class="fl">6</span>); <span class="co"># Hold results here</span>
-<span class="kw">for</span>(<span class="no">time_step</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="fl">20</span>){
+<span class="va">sim_sum</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="cn">NA</span>, nrow <span class="op">=</span> <span class="fl">20</span>, ncol <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>; <span class="co"># Hold results here</span>
+<span class="kw">for</span><span class="op">(</span><span class="va">time_step</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span><span class="op">)</span><span class="op">{</span>
     <span class="co"># Update the relevant parameter values as necessary -----------------------</span>
-    <span class="no">rand_ssb</span>        <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">ssb.m</span>[<span class="fl">35</span>:<span class="fl">45</span>], <span class="kw">size</span> <span class="kw">=</span> <span class="fl">1</span>);
-    <span class="no">harvest</span>         <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">sim_old</span>$<span class="no">basic_output</span>$<span class="no">user_results</span>[,<span class="fl">3</span>]);
-    <span class="no">new_rec_m</span>       <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">sim_old</span>$<span class="no">rec_m</span>, <span class="no">sim_old</span>$<span class="no">observation_vector</span>);
-    <span class="no">new_ssb_m</span>       <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">sim_old</span>$<span class="no">ssb_m</span>, <span class="no">rand_ssb</span> - <span class="no">harvest</span>);
-    <span class="no">sim_old</span>$<span class="no">rec_m</span>   <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw">data</span> <span class="kw">=</span> <span class="no">new_rec_m</span>, <span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">1</span>);
-    <span class="no">sim_old</span>$<span class="no">ssb_m</span>   <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw">data</span> <span class="kw">=</span> <span class="no">new_ssb_m</span>, <span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">1</span>);
-    <span class="no">sim_old</span>$<span class="no">years</span>   <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">sim_old</span>$<span class="no">years</span>, <span class="no">time_step</span> + <span class="fl">2004</span>);
-    <span class="no">sim_old</span>$<span class="no">new_ssb</span> <span class="kw">&lt;-</span> <span class="no">sim_old</span>$<span class="no">ssb_m</span>[<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">sim_old</span>$<span class="no">ssb_m</span>)];
+    <span class="va">rand_ssb</span>        <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">ssb.m</span><span class="op">[</span><span class="fl">35</span><span class="op">:</span><span class="fl">45</span><span class="op">]</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>;
+    <span class="va">harvest</span>         <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">sim_old</span><span class="op">$</span><span class="va">basic_output</span><span class="op">$</span><span class="va">user_results</span><span class="op">[</span>,<span class="fl">3</span><span class="op">]</span><span class="op">)</span>;
+    <span class="va">new_rec_m</span>       <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">sim_old</span><span class="op">$</span><span class="va">rec_m</span>, <span class="va">sim_old</span><span class="op">$</span><span class="va">observation_vector</span><span class="op">)</span>;
+    <span class="va">new_ssb_m</span>       <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">sim_old</span><span class="op">$</span><span class="va">ssb_m</span>, <span class="va">rand_ssb</span> <span class="op">-</span> <span class="va">harvest</span><span class="op">)</span>;
+    <span class="va">sim_old</span><span class="op">$</span><span class="va">rec_m</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">new_rec_m</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>;
+    <span class="va">sim_old</span><span class="op">$</span><span class="va">ssb_m</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">new_ssb_m</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>;
+    <span class="va">sim_old</span><span class="op">$</span><span class="va">years</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">sim_old</span><span class="op">$</span><span class="va">years</span>, <span class="va">time_step</span> <span class="op">+</span> <span class="fl">2004</span><span class="op">)</span>;
+    <span class="va">sim_old</span><span class="op">$</span><span class="va">new_ssb</span> <span class="op">&lt;-</span> <span class="va">sim_old</span><span class="op">$</span><span class="va">ssb_m</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">sim_old</span><span class="op">$</span><span class="va">ssb_m</span><span class="op">)</span><span class="op">]</span>;
     <span class="co"># Run a new simulation in the loop: custom functions are always specified -</span>
-    <span class="no">sim_new</span>  <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">get_res</span> <span class="kw">=</span> <span class="st">"Full"</span>, <span class="kw">old_list</span> <span class="kw">=</span> <span class="no">sim_old</span>,
-                           <span class="kw">res_mod</span> <span class="kw">=</span> <span class="no">predict_recruitment</span>, <span class="kw">obs_mod</span> <span class="kw">=</span> <span class="no">obs_ssb</span>);
+    <span class="va">sim_new</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span><span class="op">(</span>get_res <span class="op">=</span> <span class="st">"Full"</span>, old_list <span class="op">=</span> <span class="va">sim_old</span>,
+                           res_mod <span class="op">=</span> <span class="va">predict_recruitment</span>, obs_mod <span class="op">=</span> <span class="va">obs_ssb</span><span class="op">)</span>;
     <span class="co"># Record the results in sim_sum -------------------------------------------</span>
-    <span class="no">sim_sum</span>[<span class="no">time_step</span>, <span class="fl">1</span>] <span class="kw">&lt;-</span> <span class="no">time_step</span> + <span class="fl">2004</span>;
-    <span class="no">sim_sum</span>[<span class="no">time_step</span>, <span class="fl">2</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">resource_results</span>[<span class="fl">1</span>];
-    <span class="no">sim_sum</span>[<span class="no">time_step</span>, <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">observation_results</span>[<span class="fl">1</span>];
-    <span class="no">sim_sum</span>[<span class="no">time_step</span>, <span class="fl">4</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">basic_output</span>$<span class="no">manager_results</span>[<span class="fl">3</span>];
-    <span class="no">sim_sum</span>[<span class="no">time_step</span>, <span class="fl">5</span>] <span class="kw">&lt;-</span> <span class="no">harvest</span>;
-    <span class="no">sim_sum</span>[<span class="no">time_step</span>, <span class="fl">6</span>] <span class="kw">&lt;-</span> <span class="no">sim_new</span>$<span class="no">new_ssb</span>;
+    <span class="va">sim_sum</span><span class="op">[</span><span class="va">time_step</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">time_step</span> <span class="op">+</span> <span class="fl">2004</span>;
+    <span class="va">sim_sum</span><span class="op">[</span><span class="va">time_step</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">sim_new</span><span class="op">$</span><span class="va">basic_output</span><span class="op">$</span><span class="va">resource_results</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>;
+    <span class="va">sim_sum</span><span class="op">[</span><span class="va">time_step</span>, <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">sim_new</span><span class="op">$</span><span class="va">basic_output</span><span class="op">$</span><span class="va">observation_results</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>;
+    <span class="va">sim_sum</span><span class="op">[</span><span class="va">time_step</span>, <span class="fl">4</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">sim_new</span><span class="op">$</span><span class="va">basic_output</span><span class="op">$</span><span class="va">manager_results</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>;
+    <span class="va">sim_sum</span><span class="op">[</span><span class="va">time_step</span>, <span class="fl">5</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">harvest</span>;
+    <span class="va">sim_sum</span><span class="op">[</span><span class="va">time_step</span>, <span class="fl">6</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">sim_new</span><span class="op">$</span><span class="va">new_ssb</span>;
     <span class="co"># Redefine the old list --------------------------------------------------</span>
-    <span class="no">sim_old</span>               <span class="kw">&lt;-</span> <span class="no">sim_new</span>;
-}
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">sim_sum</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Year"</span>, <span class="st">"Recruitment"</span>, <span class="st">"Recruit_estim"</span>, <span class="st">"Harvest_cost"</span>,
-                         <span class="st">"Harvested"</span>, <span class="st">"SSB"</span>);
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">sim_sum</span>);</pre></body></html></div>
-<pre><code>##       Year Recruitment Recruit_estim Harvest_cost Harvested      SSB
-##  [1,] 2005        4647     4639.4488          212        20 105.2627
-##  [2,] 2006        1427     1436.8383          681        40  13.5966
-##  [3,] 2007        4082     4173.0041          224        10  60.6639
-##  [4,] 2008         633      625.4025          668        40   5.5913
-##  [5,] 2009        4328     4283.2266          214        10  70.7603
-##  [6,] 2010        2739     2689.9777          677        40  30.6639
-##  [7,] 2011        4208     4293.4236          218        10 160.1926
-##  [8,] 2012        4390     4208.5732          223        40 145.5799
-##  [9,] 2013         633      663.1328          683        40   5.5913
-## [10,] 2014        3447     3399.0326          912        10  43.5966
-## [11,] 2015        2994     3036.0187          960        10  34.8673
-## [12,] 2016        2994     2965.3647          985        10  34.8673
-## [13,] 2017        3035     3083.6350         1004        10  35.5913
-## [14,] 2018        4067     4174.9320          294         0 170.1926
-## [15,] 2019        4269     4299.0759          217        30 155.5799
-## [16,] 2020        3310     3302.0381          697        40  40.7603
-## [17,] 2021        3988     4143.8591          224        10 175.5799
-## [18,] 2022        4390     4404.6211          242        40 145.5799
-## [19,] 2023        3339     3445.8512          696        40  41.3340
-## [20,] 2024        3303     3215.9619          877        10  40.6133</code></pre>
-<p>The above output from <code>sim_sum</code> reports the recruitment (resource or operational model), recruitment estimate (observation error model), management set harvest cost (harvest control model), user harvested numbers (implementation model) and spawning stock biomass (SSB) simulation results. This example simulation demonstrates the ability of GMSE to integrate with fisheries libraries such as <a href="http://www.flr-project.org/">FLR</a> through <code>gmse_apply</code>. In addition to being a useful wrapping function for MSE sub-models, <code>gmse_apply</code> can therefore be used to take advantage of the genetic algorithm in the GMSE default manager and user models. This flexibility will be retained in future versions of <code>gmse_apply</code>, allowing custom resource and observation models that are built for specific systems to be integrated with an increasingly complex genetic algorithm simulating various aspects of human decision-making.</p>
+    <span class="va">sim_old</span>               <span class="op">&lt;-</span> <span class="va">sim_new</span>;
+<span class="op">}</span>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">sim_sum</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Year"</span>, <span class="st">"Recruitment"</span>, <span class="st">"Recruit_estim"</span>, <span class="st">"Harvest_cost"</span>, 
+                         <span class="st">"Harvested"</span>, <span class="st">"SSB"</span><span class="op">)</span>;
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sim_sum</span><span class="op">)</span>;</code></pre></div>
+<pre><code><span class="co">##       Year Recruitment Recruit_estim Harvest_cost Harvested      SSB</span>
+<span class="co">##  [1,] 2005        2919     2981.3479          796        20  33.5966</span>
+<span class="co">##  [2,] 2006        4339     4460.8071          199        10  71.3340</span>
+<span class="co">##  [3,] 2007        4647     4693.9712          215        50 105.9025</span>
+<span class="co">##  [4,] 2008        4390     4344.8215          225        40 145.5799</span>
+<span class="co">##  [5,] 2009        4390     4410.8122          220        40 145.5799</span>
+<span class="co">##  [6,] 2010         633      617.0522          699        40   5.5913</span>
+<span class="co">##  [7,] 2011        4629     4751.3181          229        10 115.2627</span>
+<span class="co">##  [8,] 2012         633      730.5472          705        40   5.5913</span>
+<span class="co">##  [9,] 2013        3035     2942.3576          898        10  35.5913</span>
+<span class="co">## [10,] 2014        4082     4154.6769          222        10  60.6639</span>
+<span class="co">## [11,] 2015        4390     4497.1169          243        40 145.5799</span>
+<span class="co">## [12,] 2016         554      680.6826          717        40   4.8673</span>
+<span class="co">## [13,] 2017        3303     3388.3546          882        10  40.6133</span>
+<span class="co">## [14,] 2018        4328     4259.8193          217        10  70.7603</span>
+<span class="co">## [15,] 2019        4390     4417.0592          229        40 145.5799</span>
+<span class="co">## [16,] 2020        3339     3348.4197          685        40  41.3340</span>
+<span class="co">## [17,] 2021        3447     3562.4067          209        10  43.5966</span>
+<span class="co">## [18,] 2022        4547     4623.1526          231        40  85.2627</span>
+<span class="co">## [19,] 2023         633      476.1130          686        40   5.5913</span>
+<span class="co">## [20,] 2024        2994     2833.9769          869        10  34.8673</span></code></pre>
+<p>The above output from <code>sim_sum</code> reports the recruitment
+(resource or operational model), recruitment estimate (observation error
+model), management set harvest cost (harvest control model), user
+harvested numbers (implementation model) and spawning stock biomass
+(SSB) simulation results. This example simulation demonstrates the
+ability of GMSE to integrate with fisheries libraries such as <a href="http://www.flr-project.org/" class="external-link">FLR</a> through
+<code>gmse_apply</code>. In addition to being a useful wrapping function
+for MSE sub-models, <code>gmse_apply</code> can therefore be used to
+take advantage of the genetic algorithm in the GMSE default manager and
+user models. This flexibility will be retained in future versions of
+<code>gmse_apply</code>, allowing custom resource and observation models
+that are built for specific systems to be integrated with an
+increasingly complex genetic algorithm simulating various aspects of
+human decision-making.</p>
 </div>
-<div id="conclusions" class="section level1">
-<h1 class="hasAnchor">
-<a href="#conclusions" class="anchor"></a>Conclusions</h1>
-<p>GMSE is a general, flexible, tool for simulating the management of resources under situations of uncertainty and conflict. Management Strategy Evaluation <span class="citation">(Bunnefeld, Hoshino, and Milner-Gulland <a href="#ref-Bunnefeld2011">2011</a>; Punt et al. <a href="#ref-Punt2016">2016</a>)</span>, the framework upon which GMSE is based, had its origin in fisheries management <span class="citation">(Polacheck et al. <a href="#ref-Polacheck1999">1999</a>; Smith, Sainsbury, and Stevens <a href="#ref-Smith1999">1999</a>; Sainsbury, Punt, and Smith <a href="#ref-Sainsbury2000">2000</a>)</span>, and here we showed one example of how GMSE could be integrated with the core package of the <a href="http://www.flr-project.org/">Fisheries Library in R</a>.</p>
-<p>Future versions of GMSE will continue to be open-source and developed to avoid unecessary dependencies (GMSE requires only base R, plus three shiny packages for running <code>gmse_gui</code>). Key goals including (1) providing highly general and useful default <code>resource</code>, <code>observation</code>, <code>manager</code>, and <code>user</code> sub-models for a variety of MSE modelling tasks, (2) keeping these sub-models highly modular so that they can be developed in isolation given standardised data structures, and (3) allowing these modular sub-models to be integrated with custom defined sub-models as flexibly as possible using <code>gmse_apply</code>. Contributions in line with these goals, and suggestions for new features, can be made on <a href="https://github.com/bradduthie/gmse">GitHub</a>.</p>
+<div class="section level2">
+<h2 id="conclusions">Conclusions<a class="anchor" aria-label="anchor" href="#conclusions"></a>
+</h2>
+<p>GMSE is a general, flexible, tool for simulating the management of
+resources under situations of uncertainty and conflict. Management
+Strategy Evaluation <span class="citation">(<a href="#ref-Bunnefeld2011" role="doc-biblioref">Bunnefeld, Hoshino, and Milner-Gulland 2011</a>; <a href="#ref-Punt2016" role="doc-biblioref">Punt et al. 2016</a>)</span>,
+the framework upon which GMSE is based, had its origin in fisheries
+management <span class="citation">(<a href="#ref-Polacheck1999" role="doc-biblioref">Polacheck et al. 1999</a>; <a href="#ref-Smith1999" role="doc-biblioref">Smith, Sainsbury, and Stevens 1999</a>; <a href="#ref-Sainsbury2000" role="doc-biblioref">Sainsbury, Punt, and
+Smith 2000</a>)</span>, and here we showed one example of how GMSE could
+be integrated with the core package of the <a href="http://www.flr-project.org/" class="external-link">Fisheries Library in R</a>.</p>
+<p>Future versions of GMSE will continue to be open-source and developed
+to avoid unecessary dependencies (GMSE requires only base R, plus three
+shiny packages for running <code>gmse_gui</code>). Key goals including
+(1) providing highly general and useful default <code>resource</code>,
+<code>observation</code>, <code>manager</code>, and <code>user</code>
+sub-models for a variety of MSE modelling tasks, (2) keeping these
+sub-models highly modular so that they can be developed in isolation
+given standardised data structures, and (3) allowing these modular
+sub-models to be integrated with custom defined sub-models as flexibly
+as possible using <code>gmse_apply</code>. Contributions in line with
+these goals, and suggestions for new features, can be made on <a href="https://github.com/bradduthie/gmse" class="external-link">GitHub</a>.</p>
 </div>
-<div id="references" class="section level1 unnumbered">
-<h1 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h1>
-<div id="refs" class="references">
-<div id="ref-Bunnefeld2011">
-<p>Bunnefeld, Nils, Eriko Hoshino, and Eleanor J Milner-Gulland. 2011. “Management strategy evaluation: A powerful tool for conservation?” <em>Trends in Ecology and Evolution</em> 26 (9): 441–47. <a href="https://doi.org/10.1016/j.tree.2011.05.003">https://doi.org/10.1016/j.tree.2011.05.003</a>.</p>
+<div class="section level2">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Bunnefeld2011" class="csl-entry">
+Bunnefeld, Nils, Eriko Hoshino, and Eleanor J Milner-Gulland. 2011.
+<span>“<span class="nocase">Management strategy evaluation: A powerful
+tool for conservation?</span>”</span> <em>Trends in Ecology and
+Evolution</em> 26 (9): 441–47. <a href="https://doi.org/10.1016/j.tree.2011.05.003" class="external-link">https://doi.org/10.1016/j.tree.2011.05.003</a>.
 </div>
-<div id="ref-Carruthers2018a">
-<p>Carruthers, T, and D Butterworth. 2018a. “ABT-MSE : An R package for atlantic bluefin tuna management strategy evaluation.” <em>Collective Volume of Scientific Papers ICCAT</em> 74 (6): 3553–9.</p>
+<div id="ref-Carruthers2018a" class="csl-entry">
+Carruthers, T, and D Butterworth. 2018a. <span>“<span class="nocase">ABT-MSE : An R package for atlantic bluefin tuna
+management strategy evaluation</span>.”</span> <em>Collective Volume of
+Scientific Papers ICCAT</em> 74 (6): 3553–59.
 </div>
-<div id="ref-Carruthers2018">
-<p>———. 2018b. “Performance of example management procedures for atlantic bluefin tuna.” <em>Collective Volume of Scientific Papers ICCAT</em> 73 (6): 3542–52.</p>
+<div id="ref-Carruthers2018" class="csl-entry">
+———. 2018b. <span>“<span class="nocase">Performance of example
+management procedures for atlantic bluefin tuna</span>.”</span>
+<em>Collective Volume of Scientific Papers ICCAT</em> 73 (6): 3542–52.
 </div>
-<div id="ref-Jardim2018">
-<p>Jardim, Ernesto, Margit Eero, Alexandra Silva, Clara Ulrich, Lionel Pawlowski, Isabel Riveiro, Steven J Holmes, et al. 2018. “Testing spatial heterogeneity with stock assessment models.” <em>PLoS One</em> 13: e0190891. <a href="https://doi.org/10.1371/journal.pone.0190791">https://doi.org/10.1371/journal.pone.0190791</a>.</p>
+<div id="ref-Jardim2018" class="csl-entry">
+Jardim, Ernesto, Margit Eero, Alexandra Silva, Clara Ulrich, Lionel
+Pawlowski, Isabel Riveiro, Steven J Holmes, et al. 2018. <span>“<span class="nocase">Testing spatial heterogeneity with stock assessment
+models</span>.”</span> <em>PLoS One</em> 13: e0190891. <a href="https://doi.org/10.1371/journal.pone.0190791" class="external-link">https://doi.org/10.1371/journal.pone.0190791</a>.
 </div>
-<div id="ref-Kell2007">
-<p>Kell, L T, I Mosqueira, P Grosjean, Jean-Marc Fromentin, D Garcia, R Hillary, E Jardim, et al. 2007. “FLR: an open-source framework for the evaluation and development of management strategies.” <em>ICES Journal of Marine Science</em> 64 (4): 640–46. <a href="https://mail.google.com/mail/u/0/?ui=2%7B%5C&amp;%7Dpli=1%7B%5C%%7D5Cnpapers2://publication/doi/10.1093/icesjms/fsm012">https://mail.google.com/mail/u/0/?ui=2{\&amp;}pli=1{\%}5Cnpapers2://publication/doi/10.1093/icesjms/fsm012</a>.</p>
+<div id="ref-Kell2007" class="csl-entry">
+Kell, L T, I Mosqueira, P Grosjean, Jean-Marc Fromentin, D Garcia, R
+Hillary, E Jardim, et al. 2007. <span>“<span class="nocase">FLR: an
+open-source framework for the evaluation and development of management
+strategies</span>.”</span> <em>ICES Journal of Marine Science</em> 64
+(4): 640–46. <a href="https://mail.google.com/mail/u/0/?ui=2%7B%5C&amp;%7Dpli=1%7B%5C%%7D5Cnpapers2://publication/doi/10.1093/icesjms/fsm012" class="external-link">https://mail.google.com/mail/u/0/?ui=2{\&amp;}pli=1{\%}5Cnpapers2://publication/doi/10.1093/icesjms/fsm012</a>.
 </div>
-<div id="ref-Kolody2016">
-<p>Kolody, Dale, and Paavo Jumppanen. 2016. “IOTC Yellowfin and Bigeye Tuna Management Strategy Evaluation: Phase 1 Technical Support Project Final Report.” June. CSIRO: Oceans &amp; Atmosphere.</p>
+<div id="ref-Kolody2016" class="csl-entry">
+Kolody, Dale, and Paavo Jumppanen. 2016. <span>“<span class="nocase">IOTC Yellowfin and Bigeye Tuna Management Strategy
+Evaluation: Phase 1 Technical Support Project Final
+Report</span>.”</span> June. CSIRO: Oceans <span>&amp;</span>
+Atmosphere.
 </div>
-<div id="ref-Mackinson2018">
-<p>Mackinson, Steven, Mark Platts, Clement Garcia, and Christopher Lynam. 2018. “Evaluating the fishery and ecological consequences of the proposed North Sea multi-annual plan.” <em>PLoS One</em> 13: e0190015. <a href="https://doi.org/10.1371/journal.pone.0190015">https://doi.org/10.1371/journal.pone.0190015</a>.</p>
+<div id="ref-Mackinson2018" class="csl-entry">
+Mackinson, Steven, Mark Platts, Clement Garcia, and Christopher Lynam.
+2018. <span>“<span class="nocase">Evaluating the fishery and ecological
+consequences of the proposed North Sea multi-annual plan</span>.”</span>
+<em>PLoS One</em> 13: e0190015. <a href="https://doi.org/10.1371/journal.pone.0190015" class="external-link">https://doi.org/10.1371/journal.pone.0190015</a>.
 </div>
-<div id="ref-Polacheck1999">
-<p>Polacheck, T, N L Klaer, C Millar, and A L Preece. 1999. “An initial evalutaion of management strategies for the southern bluefin tuna fishery.” <em>ICES Journal of Marine Science</em> 56 (6): 811–26. <a href="https://doi.org/10.1006/jmsc.1999.0554">https://doi.org/10.1006/jmsc.1999.0554</a>.</p>
+<div id="ref-Polacheck1999" class="csl-entry">
+Polacheck, T, N L Klaer, C Millar, and A L Preece. 1999. <span>“<span class="nocase">An initial evalutaion of management strategies for the
+southern bluefin tuna fishery</span>.”</span> <em>ICES Journal of Marine
+Science</em> 56 (6): 811–26. <a href="https://doi.org/10.1006/jmsc.1999.0554" class="external-link">https://doi.org/10.1006/jmsc.1999.0554</a>.
 </div>
-<div id="ref-Punt2016">
-<p>Punt, André E, Doug S Butterworth, Carryn L de Moor, José A A De Oliveira, and Malcolm Haddon. 2016. “Management strategy evaluation: Best practices.” <em>Fish and Fisheries</em> 17 (2): 303–34. <a href="https://doi.org/10.1111/faf.12104">https://doi.org/10.1111/faf.12104</a>.</p>
+<div id="ref-Punt2016" class="csl-entry">
+Punt, André E, Doug S Butterworth, Carryn L de Moor, José A A De
+Oliveira, and Malcolm Haddon. 2016. <span>“<span class="nocase">Management strategy evaluation: Best
+practices</span>.”</span> <em>Fish and Fisheries</em> 17 (2): 303–34. <a href="https://doi.org/10.1111/faf.12104" class="external-link">https://doi.org/10.1111/faf.12104</a>.
 </div>
-<div id="ref-Ricker1954">
-<p>Ricker, W E. 1954. “Stock and recruitment.” <em>Journal of the Fisheries Board of Canada</em> 11 (5): 559–623.</p>
+<div id="ref-Ricker1954" class="csl-entry">
+Ricker, W E. 1954. <span>“<span class="nocase">Stock and
+recruitment</span>.”</span> <em>Journal of the Fisheries Board of
+Canada</em> 11 (5): 559–623.
 </div>
-<div id="ref-Sainsbury2000">
-<p>Sainsbury, Keith J, André E Punt, and Anthony DM Smith. 2000. “Design of operational management strategies for achieving fishery ecosystem objectives.” <em>ICES Journal of Marine Science</em> 57 (3): 731–41. <a href="https://doi.org/10.1006/jmsc.2000.0737">https://doi.org/10.1006/jmsc.2000.0737</a>.</p>
+<div id="ref-Sainsbury2000" class="csl-entry">
+Sainsbury, Keith J, André E Punt, and Anthony DM Smith. 2000.
+<span>“<span class="nocase">Design of operational management strategies
+for achieving fishery ecosystem objectives</span>.”</span> <em>ICES
+Journal of Marine Science</em> 57 (3): 731–41. <a href="https://doi.org/10.1006/jmsc.2000.0737" class="external-link">https://doi.org/10.1006/jmsc.2000.0737</a>.
 </div>
-<div id="ref-Smith1999">
-<p>Smith, A D M, K J Sainsbury, and R A Stevens. 1999. “Implementing effective fisheries-management systems – management strategy evaluation and the Australian partnership approach.” <em>ICES Journal of Marine Science</em> 56 (6): 967–79. <a href="https://doi.org/10.1006/jmsc.1999.0540">https://doi.org/10.1006/jmsc.1999.0540</a>.</p>
+<div id="ref-Smith1999" class="csl-entry">
+Smith, A D M, K J Sainsbury, and R A Stevens. 1999. <span>“<span class="nocase">Implementing effective fisheries-management systems –
+management strategy evaluation and the Australian partnership
+approach</span>.”</span> <em>ICES Journal of Marine Science</em> 56 (6):
+967–79. <a href="https://doi.org/10.1006/jmsc.1999.0540" class="external-link">https://doi.org/10.1006/jmsc.1999.0540</a>.
 </div>
-<div id="ref-Utizi2018">
-<p>Utizi, Kizzi, Emilio Notti, Antonello Sala, Alessandro Buzzi, Ilaria Rodella, Umberto Simeoni, and Corinne Corbau. 2018. “Impact assessment of EMFF measures on Good Environmental Status (GES) as defined by Italy.” <em>Marine Policy</em> 88. Elsevier Ltd: 248–60. <a href="https://doi.org/10.1016/j.marpol.2017.12.003">https://doi.org/10.1016/j.marpol.2017.12.003</a>.</p>
+<div id="ref-Utizi2018" class="csl-entry">
+Utizi, Kizzi, Emilio Notti, Antonello Sala, Alessandro Buzzi, Ilaria
+Rodella, Umberto Simeoni, and Corinne Corbau. 2018. <span>“<span class="nocase">Impact assessment of EMFF measures on Good Environmental
+Status (GES) as defined by Italy</span>.”</span> <em>Marine Policy</em>
+88: 248–60. <a href="https://doi.org/10.1016/j.marpol.2017.12.003" class="external-link">https://doi.org/10.1016/j.marpol.2017.12.003</a>.
 </div>
 </div>
 </div>
@@ -404,11 +640,13 @@ Output of the FLR plot function for an example Ricker model of stock recruitment
 
 
       <footer><div class="copyright">
-  <p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman.</p>
+  <p></p>
+<p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman, Ochoa Gabriela.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>
@@ -416,6 +654,8 @@ Output of the FLR plot function for an example Ricker model of stock recruitment
 
   
 
+
+  
 
   </body>
 </html>

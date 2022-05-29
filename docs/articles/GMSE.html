@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.1</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../articles/GMSE.html">Get started</a>
 </li>
@@ -50,7 +46,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -80,6 +76,9 @@
     <li>
       <a href="../articles/SI8.html">Adaptive timing of investment strategy</a>
     </li>
+    <li>
+      <a href="../articles/SI9.html">The simulated annealing algorithm of GMSE</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -88,10 +87,10 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://confoobio.github.io/gmse/notebook/gmse_notes.html">Lab notebook</a>
+  <a href="https://confoobio.github.io/gmse/notebook/gmse_notes.html" class="external-link">Lab notebook</a>
 </li>
 <li>
-  <a href="https://github.com/confoobio/GMSE">
+  <a href="https://github.com/confoobio/GMSE" class="external-link">
     <span class="fa fa-github"></span>
      
   </a>
@@ -109,14 +108,20 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>GMSE: an R package for generalised management strategy evaluation</h1>
-                        <h4 class="author"><div class="line-block">A. Bradley Duthie¹³, Jeremy J. Cusack¹, Isabel L. Jones¹, Jeroen Minderman¹,<br>
+      <h1 data-toc-skip>GMSE: an R package for generalised management
+strategy evaluation</h1>
+                        <h4 data-toc-skip class="author"><div class="line-block">A. Bradley Duthie¹³, Jeremy J. Cusack¹, Isabel L.
+Jones¹, Jeroen Minderman¹,<br>
 Erlend B. Nilsen², Rocío A. Pozo¹, O. Sarobidy Rakotonarivo¹,<br>
 Bram Van Moorter², and Nils Bunnefeld¹</div></h4>
             
-            <h4 class="date">[1] Biological and Environmental Sciences, University of Stirling, Stirling, UK [2] Norwegian Institute for Nature Research, Trondheim, Norway [3] <a href="mailto:alexander.duthie@stir.ac.uk" class="email">alexander.duthie@stir.ac.uk</a>, Biological and Environmental Sciences 3A149 University of Stirling Stirling, FK9 4LA, UK</h4>
+            <h4 data-toc-skip class="date">[1] Biological and
+Environmental Sciences, University of Stirling, Stirling, UK [2]
+Norwegian Institute for Nature Research, Trondheim, Norway [3] <a href="mailto:alexander.duthie@stir.ac.uk" class="email">alexander.duthie@stir.ac.uk</a>, Biological and
+Environmental Sciences 3A149 University of Stirling Stirling, FK9 4LA,
+UK</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/confoobio/gmse/blob/master/vignettes/GMSE.Rmd"><code>vignettes/GMSE.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/confoobio/gmse/blob/HEAD/vignettes/GMSE.Rmd" class="external-link"><code>vignettes/GMSE.Rmd</code></a></small>
       <div class="hidden name"><code>GMSE.Rmd</code></div>
 
     </div>
@@ -126,199 +131,563 @@ Bram Van Moorter², and Nils Bunnefeld¹</div></h4>
 <!--- 
 Word count is 3497, including figure legends and references.
 --->
-<div id="abstract" class="section level1">
-<h1 class="hasAnchor">
-<a href="#abstract" class="anchor"></a>Abstract</h1>
+<div class="section level2">
+<h2 id="abstract">Abstract<a class="anchor" aria-label="anchor" href="#abstract"></a>
+</h2>
 <ol style="list-style-type: decimal">
-<li>Management strategy evaluation (MSE) is a powerful tool for simulating all key aspects of natural resource management under conditions of uncertainty.</li>
-<li>We present the R package GMSE, which applies genetic algorithms to provide a generalised tool for simulating adaptive decision-making management scenarios between stakeholders with competing objectives under complex social-ecological interactions and uncertainty.</li>
-<li>GMSE models can be agent-based and spatially explicit, incorporating a high degree of realism through mechanistic modelling of links and feedbacks among stakeholders and with the ecosystem; additionally, user-defined sub-models can also be incorporated as functions into the broader GMSE framework.</li>
-<li>We show how GMSE simulates a social-ecological system using the example of an adaptively managed waterfowl population on an agricultural landscape; simulated waterfowl exploit agricultural land, causing conflict between conservation interests and the interest of food producers maximising their crop yield.</li>
-<li>The R package GMSE is open source under GNU Public License; source code and documents are freely available on GitHub.</li>
+<li>Management strategy evaluation (MSE) is a powerful tool for
+simulating all key aspects of natural resource management under
+conditions of uncertainty.</li>
+<li>We present the R package GMSE, which applies genetic algorithms to
+provide a generalised tool for simulating adaptive decision-making
+management scenarios between stakeholders with competing objectives
+under complex social-ecological interactions and uncertainty.</li>
+<li>GMSE models can be agent-based and spatially explicit, incorporating
+a high degree of realism through mechanistic modelling of links and
+feedbacks among stakeholders and with the ecosystem; additionally,
+user-defined sub-models can also be incorporated as functions into the
+broader GMSE framework.</li>
+<li>We show how GMSE simulates a social-ecological system using the
+example of an adaptively managed waterfowl population on an agricultural
+landscape; simulated waterfowl exploit agricultural land, causing
+conflict between conservation interests and the interest of food
+producers maximising their crop yield.</li>
+<li>The R package GMSE is open source under GNU Public License; source
+code and documents are freely available on GitHub.</li>
 </ol>
-<p><strong>Key words:</strong> <em>adaptive management, conservation conflict, ecological modelling, game theory, management strategy evaluation</em></p>
+<p><strong>Key words:</strong> <em>adaptive management, conservation
+conflict, ecological modelling, game theory, management strategy
+evaluation</em></p>
 </div>
-<div id="introduction" class="section level1">
-<h1 class="hasAnchor">
-<a href="#introduction" class="anchor"></a>Introduction</h1>
-<p>Many global natural resources, including the biodiversity on which critical ecosystem services depend, are in a state of severe decline <span class="citation">(Dirzo et al. <a href="#ref-Dirzo2014">2014</a>; Hautier et al. <a href="#ref-Hautier2015">2015</a>; Ceballos, Ehrlich, and Dirzo <a href="#ref-Ceballos2017a">2017</a>; O’Connell <a href="#ref-OConnell2017">2017</a>)</span>. Conservation of biodiversity can be complicated by the immediate need to use natural resources and land area for human livelihood, causing real or perceived conflicts between biodiversity conservation and agricultural production. This creates a challenging situation for the management of many natural resources <span class="citation">(Redpath et al. <a href="#ref-Redpath2015a">2015</a>)</span>. Given increasing human population size <span class="citation">(Crist, Mora, and Engelman <a href="#ref-Crist2017">2017</a>)</span>, the number and intensity of such conflicts are likely to increase into the twenty first century. Effective management tools are therefore needed for the long-term sustainable use of natural resources under the rising demand for food production <span class="citation">(Fischer et al. <a href="#ref-Fischer2017">2017</a>)</span>.</p>
-<p>To effectively manage natural resources, an adaptive approach allows managers to iteratively update their models and respond flexibly to changing conditions <span class="citation">(Keith et al. <a href="#ref-Keith2011">2011</a>)</span>. This approach is especially effective when considering multiple aspects of the social-ecological system being managed, including the dynamics of resources, monitoring, and the decision-making processes of stakeholders <span class="citation">(Bunnefeld, Hoshino, and Milner-Gulland <a href="#ref-Bunnefeld2011">2011</a>; Bunnefeld and Keane <a href="#ref-Bunnefeld2014">2014</a>)</span>. Management strategy evaluation (MSE) is a modelling framework, first developed in fisheries <span class="citation">(e.g., Sainsbury, Punt, and Smith <a href="#ref-Sainsbury2000">2000</a>; Polacheck et al. <a href="#ref-Polacheck1999">1999</a>; Smith, Sainsbury, and Stevens <a href="#ref-Smith1999">1999</a>; Moore et al. <a href="#ref-Moore2013">2013</a>)</span>, for simulating all of these aspects of resource management in a way that uniquely considers the uncertainties inherent to every stage of the management process <span class="citation">(Bunnefeld, Hoshino, and Milner-Gulland <a href="#ref-Bunnefeld2011">2011</a>; Punt et al. <a href="#ref-Punt2016">2016</a>)</span>. Nevertheless, MSE models developed hitherto have been limited in their ability to model human decision-making <span class="citation">(Fulton et al. <a href="#ref-Fulton2011">2011</a>; Dichmont and Fulton <a href="#ref-Dichmont2017">2017</a>)</span>; manager decisions are typically based on fixed rules, and user behaviour likewise remains fixed over time instead of dynamically responding to changing resource availability and management decisions <span class="citation">(Schlüter et al. <a href="#ref-Schluter2012">2012</a>; Melbourne-Thomas et al. <a href="#ref-Melbourne-Thomas2017">2017</a>)</span>. Here we introduce generalised management strategy evaluation (GMSE), which incorporates a game-theoretic perspective to model the goal-oriented, dynamic decision-making processes of stakeholders.</p>
-<p>The R package ‘GMSE’ is a flexible modelling tool to simulate key aspects of natural resource management. GMSE offers a range of parameters to simulate resource dynamics (primarily, but not necessarily biological populations) and management policy options, and includes genetic algorithms to dynamically model stakeholder (manager and user) decision-making. Genetic algorithms find adaptive solutions to any simulated conditions given stakeholder-specific goals (see <a href="SI1.html">The Genetic Algorithm of GMSE</a>), allowing GMSE to model scenarios of conservation conflict.</p>
-<p>GMSE allows researchers to address adaptive management questions <em>in silico</em> through simulation. Simulations can be parameterised with initial conditions derived from empirical populations of conservation interest to predict key social-ecological outcomes (e.g., resource extinction, agricultural yield) given uncertainty. The sensitivity of these outcomes to different management options (e.g., population target, policies available, observation methods, budget constraints, etc.) can thereby inform management decisions, even given competing management objectives caused by conservation conflict <span class="citation">(e.g., Strand et al. <a href="#ref-Strand2012">2012</a>; Redpath et al. <a href="#ref-Redpath2013">2013</a>; Sundt-Hansen et al. <a href="#ref-Sundt-Hansen2015">2015</a>; Pozo et al. <a href="#ref-Pozo2017">2017</a>; Fox and Madsen <a href="#ref-Fox2017a">2017</a>)</span>. Additionally, GMSE can be used to explore general questions concerning management theory such as the following: How is population persistence affected by management frequency or observation intensity? How does variation in user actions affect the distribution of resources or landscape properties? How do asymmetries in stakeholder influence (i.e., budgets) affect resource dynamics?</p>
+<div class="section level2">
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
+<p>Many global natural resources, including the biodiversity on which
+critical ecosystem services depend, are in a state of severe decline
+<span class="citation">(<a href="#ref-Dirzo2014" role="doc-biblioref">Dirzo et al. 2014</a>; <a href="#ref-Hautier2015" role="doc-biblioref">Hautier et al. 2015</a>; <a href="#ref-Ceballos2017a" role="doc-biblioref">Ceballos, Ehrlich, and
+Dirzo 2017</a>; <a href="#ref-OConnell2017" role="doc-biblioref">O’Connell 2017</a>)</span>. Conservation of
+biodiversity can be complicated by the immediate need to use natural
+resources and land area for human livelihood, causing real or perceived
+conflicts between biodiversity conservation and agricultural production.
+This creates a challenging situation for the management of many natural
+resources <span class="citation">(<a href="#ref-Redpath2015a" role="doc-biblioref">Redpath et al. 2015</a>)</span>. Given increasing
+human population size <span class="citation">(<a href="#ref-Crist2017" role="doc-biblioref">Crist, Mora, and Engelman 2017</a>)</span>, the
+number and intensity of such conflicts are likely to increase into the
+twenty first century. Effective management tools are therefore needed
+for the long-term sustainable use of natural resources under the rising
+demand for food production <span class="citation">(<a href="#ref-Fischer2017" role="doc-biblioref">Fischer et al.
+2017</a>)</span>.</p>
+<p>To effectively manage natural resources, an adaptive approach allows
+managers to iteratively update their models and respond flexibly to
+changing conditions <span class="citation">(<a href="#ref-Keith2011" role="doc-biblioref">Keith et al. 2011</a>)</span>. This approach is
+especially effective when considering multiple aspects of the
+social-ecological system being managed, including the dynamics of
+resources, monitoring, and the decision-making processes of stakeholders
+<span class="citation">(<a href="#ref-Bunnefeld2011" role="doc-biblioref">Bunnefeld, Hoshino, and Milner-Gulland 2011</a>; <a href="#ref-Bunnefeld2014" role="doc-biblioref">Bunnefeld and Keane
+2014</a>)</span>. Management strategy evaluation (MSE) is a modelling
+framework, first developed in fisheries <span class="citation">(e.g., <a href="#ref-Sainsbury2000" role="doc-biblioref">Sainsbury, Punt, and
+Smith 2000</a>; <a href="#ref-Polacheck1999" role="doc-biblioref">Polacheck et al. 1999</a>; <a href="#ref-Smith1999" role="doc-biblioref">Smith, Sainsbury, and Stevens 1999</a>; <a href="#ref-Moore2013" role="doc-biblioref">Moore et al.
+2013</a>)</span>, for simulating all of these aspects of resource
+management in a way that uniquely considers the uncertainties inherent
+to every stage of the management process <span class="citation">(<a href="#ref-Bunnefeld2011" role="doc-biblioref">Bunnefeld, Hoshino, and
+Milner-Gulland 2011</a>; <a href="#ref-Punt2016" role="doc-biblioref">Punt et al. 2016</a>)</span>. Nevertheless, MSE
+models developed hitherto have been limited in their ability to model
+human decision-making <span class="citation">(<a href="#ref-Fulton2011" role="doc-biblioref">Fulton et al. 2011</a>; <a href="#ref-Dichmont2017" role="doc-biblioref">Dichmont and Fulton 2017</a>)</span>; manager
+decisions are typically based on fixed rules, and user behaviour
+likewise remains fixed over time instead of dynamically responding to
+changing resource availability and management decisions <span class="citation">(<a href="#ref-Schluter2012" role="doc-biblioref">M.
+Schlüter et al. 2012</a>; <a href="#ref-Melbourne-Thomas2017" role="doc-biblioref">Melbourne-Thomas et al. 2017</a>)</span>. Here we
+introduce generalised management strategy evaluation (GMSE), which
+incorporates a game-theoretic perspective to model the goal-oriented,
+dynamic decision-making processes of stakeholders.</p>
+<p>The R package ‘GMSE’ is a flexible modelling tool to simulate key
+aspects of natural resource management. GMSE offers a range of
+parameters to simulate resource dynamics (primarily, but not necessarily
+biological populations) and management policy options, and includes
+genetic algorithms to dynamically model stakeholder (manager and user)
+decision-making. Genetic algorithms find adaptive solutions to any
+simulated conditions given stakeholder-specific goals (see <a href="SI1.html">The Genetic Algorithm of GMSE</a>), allowing GMSE to
+model scenarios of conservation conflict.</p>
+<p>GMSE allows researchers to address adaptive management questions
+<em>in silico</em> through simulation. Simulations can be parameterised
+with initial conditions derived from empirical populations of
+conservation interest to predict key social-ecological outcomes (e.g.,
+resource extinction, agricultural yield) given uncertainty. The
+sensitivity of these outcomes to different management options (e.g.,
+population target, policies available, observation methods, budget
+constraints, etc.) can thereby inform management decisions, even given
+competing management objectives caused by conservation conflict <span class="citation">(e.g., <a href="#ref-Strand2012" role="doc-biblioref">Strand et al. 2012</a>; <a href="#ref-Redpath2013" role="doc-biblioref">Redpath et al. 2013</a>; <a href="#ref-Sundt-Hansen2015" role="doc-biblioref">Sundt-Hansen et al.
+2015</a>; <a href="#ref-Pozo2017" role="doc-biblioref">Pozo et al.
+2017</a>; <a href="#ref-Fox2017a" role="doc-biblioref">Fox and Madsen
+2017</a>)</span>. Additionally, GMSE can be used to explore general
+questions concerning management theory such as the following: How is
+population persistence affected by management frequency or observation
+intensity? How does variation in user actions affect the distribution of
+resources or landscape properties? How do asymmetries in stakeholder
+influence (i.e., budgets) affect resource dynamics?</p>
 </div>
-<div id="gmse-model-structure" class="section level1">
-<h1 class="hasAnchor">
-<a href="#gmse-model-structure" class="anchor"></a>GMSE model structure</h1>
-<p>GMSE builds off of the MSE framework (Fig. 1). The function <a href="../reference/gmse.html"><code>gmse</code></a> runs simulations using four predefined individual-based submodels, which can be parameterised to fit various case studies; more tailored submodels can also be defined using the <a href="../reference/gmse_apply.html"><code>gmse_apply</code></a> function (see <a href="SI2.html">Use of the gmse_apply function</a>). By default, GMSE models (1) a population of discrete resources (e.g., a managed species) with individual traits (e.g., location, age) on a spatially-explicit landscape and simulates resource birth, individual movement between landscape cells, interaction with the landscape, and death; the discrete nature of resources causes demographic stochasticity, and therefore uncertainty. This sub-model is unique in not relying on other sub-models because ecological dynamics can be simulated in the absence of observation and management. (2) Observation is modelled in one of three ways: resource counting on a subset of landscape cells <span class="citation">(e.g., Nuno, Bunnefeld, and Milner-Gulland <a href="#ref-Nuno2013">2013</a>)</span>, marking and recapturing a fixed number of resources, or counting resources across the whole landscape one set of landscape cells at a time (during which resources might move). Sampling error from all observation types generates a range of uncertainties that depend on monitoring effort. (3) Managers analyse data collected from observations to estimate resource abundance, then compare this estimate with their pre-defined target abundance. Policy is developed by calling the genetic algorithm (see below), which works within a manager’s constraints to find costs for user actions on the resource (e.g., culling, scaring, etc.) that minimise deviation from the target abundance, as informed by the predicted consequences of each action on resource abundance and user action histories. After a suitable policy is found, (4) users perform actions that affect resources or landscape cells (e.g., culling, which causes immediate resource death). Users respond to policy individually, each calling the genetic algorithm to find actions that maximise their own utilities (e.g., maximise resource use or landscape yield) within their imposed constraints. Once each user has found an adaptive strategy, user actions affect resources and landscape cells, feeding back into the resource sub-model.</p>
+<div class="section level2">
+<h2 id="gmse-model-structure">GMSE model structure<a class="anchor" aria-label="anchor" href="#gmse-model-structure"></a>
+</h2>
+<p>GMSE builds off of the MSE framework (Fig. 1). The function <a href="../reference/gmse.html"><code>gmse</code></a> runs simulations
+using four predefined individual-based submodels, which can be
+parameterised to fit various case studies; more tailored submodels can
+also be defined using the <a href="../reference/gmse_apply.html"><code>gmse_apply</code></a> function
+(see <a href="SI2.html">Use of the gmse_apply function</a>). By default,
+GMSE models (1) a population of discrete resources (e.g., a managed
+species) with individual traits (e.g., location, age) on a
+spatially-explicit landscape and simulates resource birth, individual
+movement between landscape cells, interaction with the landscape, and
+death; the discrete nature of resources causes demographic
+stochasticity, and therefore uncertainty. This sub-model is unique in
+not relying on other sub-models because ecological dynamics can be
+simulated in the absence of observation and management. (2) Observation
+is modelled in one of three ways: resource counting on a subset of
+landscape cells <span class="citation">(e.g., <a href="#ref-Nuno2013" role="doc-biblioref">Nuno, Bunnefeld, and Milner-Gulland
+2013</a>)</span>, marking and recapturing a fixed number of resources,
+or counting resources across the whole landscape one set of landscape
+cells at a time (during which resources might move). Sampling error from
+all observation types generates a range of uncertainties that depend on
+monitoring effort. (3) Managers analyse data collected from observations
+to estimate resource abundance, then compare this estimate with their
+pre-defined target abundance. Policy is developed by calling the genetic
+algorithm (see below), which works within a manager’s constraints to
+find costs for user actions on the resource (e.g., culling, scaring,
+etc.) that minimise deviation from the target abundance, as informed by
+the predicted consequences of each action on resource abundance and user
+action histories. After a suitable policy is found, (4) users perform
+actions that affect resources or landscape cells (e.g., culling, which
+causes immediate resource death). Users respond to policy individually,
+each calling the genetic algorithm to find actions that maximise their
+own utilities (e.g., maximise resource use or landscape yield) within
+their imposed constraints. Once each user has found an adaptive
+strategy, user actions affect resources and landscape cells, feeding
+back into the resource sub-model.</p>
 <hr>
 <div class="figure" style="text-align: left">
 <img src="GMSE_files/figure-html/unnamed-chunk-2-1.png" alt="Description of one time step of the generalised management strategy evaluation framework, which is comprised of four separate sub-models." width="384"><p class="caption">
-Description of one time step of the generalised management strategy evaluation framework, which is comprised of four separate sub-models.
+Description of one time step of the generalised management strategy
+evaluation framework, which is comprised of four separate sub-models.
 </p>
 </div>
 <hr>
-<div id="genetic-algorithm" class="section level2">
-<h2 class="hasAnchor">
-<a href="#genetic-algorithm" class="anchor"></a>Genetic Algorithm</h2>
-<p>Consistent with the MSE approach <span class="citation">(Bunnefeld, Hoshino, and Milner-Gulland <a href="#ref-Bunnefeld2011">2011</a>)</span>, GMSE does not attempt to find optimal strategies or solutions for agents (stakeholders). Instead, a genetic algorithm is used to heuristically find strategies that reflect the individual objectives of each stakeholder in each time step (see <a href="SI1.html">The Genetic Algorithm of GMSE</a> for details). Critically, all stakeholders involved in resource conservation are constrained in their decision-making; managing and using resources takes effort (e.g., time or money), and effort expended in developing or enforcing one policy (for managers) or performing one action (for users) will be effort not expendable elsewhere <span class="citation">(Milner-Gulland <a href="#ref-Milner-Gulland2011">2011</a>; Müller-Hansen et al. <a href="#ref-Muller-Hansen2017">2017</a>; Schlüter et al. <a href="#ref-Schluter2017">2017</a>)</span>. In finding strategies, GMSE models this trade-off by setting a fixed budget for managers and users. Allocations from a manager’s budget can be used to increase the cost it takes a user to perform an action (i.e., ‘policy’), and allocations from a user’s budget can be used to perform the action at the cost set by the manager. Hence, stakeholders can have incomplete control over resource use and express competing management objectives, potentially resulting in conflict.</p>
-<p>A single call of the genetic algorithm simulates the process of thinking and decision-making for one manager or user. In each new call of the genetic algorithm, a unique population of temporary manager or user strategies is initialised. In each iteration of the genetic algorithm, these strategies crossover and mutate; when this results in strategies that are over-budget, expenditures are iteratively decreased at random until budget constraints are satisfied. A fitness function then evaluates each strategy in the population, and a tournament is used to select the next iteration of strategies <span class="citation">(Hamblin <a href="#ref-Hamblin2013">2013</a>)</span>. The genetic algorithm terminates when a minimum number of iterations has passed and the increase in the fitness of the fittest strategy between the current and previous iteration is below some threshold. The highest fitness strategy in the population then becomes the stakeholder’s new strategy.</p>
+<div class="section level3">
+<h3 id="genetic-algorithm">Genetic Algorithm<a class="anchor" aria-label="anchor" href="#genetic-algorithm"></a>
+</h3>
+<p>Consistent with the MSE approach <span class="citation">(<a href="#ref-Bunnefeld2011" role="doc-biblioref">Bunnefeld, Hoshino, and
+Milner-Gulland 2011</a>)</span>, GMSE does not attempt to find optimal
+strategies or solutions for agents (stakeholders). Instead, a genetic
+algorithm is used to heuristically find strategies that reflect the
+individual objectives of each stakeholder in each time step (see <a href="SI1.html">The Genetic Algorithm of GMSE</a> for details).
+Critically, all stakeholders involved in resource conservation are
+constrained in their decision-making; managing and using resources takes
+effort (e.g., time or money), and effort expended in developing or
+enforcing one policy (for managers) or performing one action (for users)
+will be effort not expendable elsewhere <span class="citation">(<a href="#ref-Milner-Gulland2011" role="doc-biblioref">Milner-Gulland
+2011</a>; <a href="#ref-Muller-Hansen2017" role="doc-biblioref">Müller-Hansen et al. 2017</a>; <a href="#ref-Schluter2017" role="doc-biblioref">Maja Schlüter et al.
+2017</a>)</span>. In finding strategies, GMSE models this trade-off by
+setting a fixed budget for managers and users. Allocations from a
+manager’s budget can be used to increase the cost it takes a user to
+perform an action (i.e., ‘policy’), and allocations from a user’s budget
+can be used to perform the action at the cost set by the manager. Hence,
+stakeholders can have incomplete control over resource use and express
+competing management objectives, potentially resulting in conflict.</p>
+<p>A single call of the genetic algorithm simulates the process of
+thinking and decision-making for one manager or user. In each new call
+of the genetic algorithm, a unique population of temporary manager or
+user strategies is initialised. In each iteration of the genetic
+algorithm, these strategies crossover and mutate; when this results in
+strategies that are over-budget, expenditures are iteratively decreased
+at random until budget constraints are satisfied. A fitness function
+then evaluates each strategy in the population, and a tournament is used
+to select the next iteration of strategies <span class="citation">(<a href="#ref-Hamblin2013" role="doc-biblioref">Hamblin 2013</a>)</span>.
+The genetic algorithm terminates when a minimum number of iterations has
+passed and the increase in the fitness of the fittest strategy between
+the current and previous iteration is below some threshold. The highest
+fitness strategy in the population then becomes the stakeholder’s new
+strategy.</p>
 </div>
 </div>
-<div id="an-example-of-resource-management" class="section level1">
-<h1 class="hasAnchor">
-<a href="#an-example-of-resource-management" class="anchor"></a>An example of resource management</h1>
-<p>Here we illustrate the usefulness of GMSE by considering the case study of a protected population of waterfowl that exploits agricultural land causing a conservation conflict with farmers <span class="citation">(e.g., Fox and Madsen <a href="#ref-Fox2017a">2017</a>; Mason et al. <a href="#ref-Mason2017">2017</a>; Tulloch, Nicol, and Bunnefeld <a href="#ref-Tulloch2017">2017</a>)</span>. Managers attempt to keep the abundance of waterfowl at a target level, while farmers attempt to minimise the damage inflicted on their crops <span class="citation">(e.g., Madsen et al. <a href="#ref-Madsen2017">2017</a>)</span>. Using GMSE, we can simulate waterfowl population dynamics, along with the continued monitoring and policy set by managers, and the actions that farmers take to protect their crop yields given the constraints of policy. We consider a population of waterfowl with an initial abundance and manager target abundance of 200, but whose carrying capacity is 2000. Waterfowl consume and destroy all crop yield upon arrival to a landscape cell. In each time step, waterfowl are observed on a random subset of cells, then managers extrapolate from density per cell to estimate total population size. Managers then use these estimates to set costs of culling and scaring waterfowl for five farmers (scaring is non-lethal, causing waterfowl to move to a random landscape cell). Farmers attempt to reduce the negative impact of waterfowl on the cropland that they own, working within the constraints of culling and scaring costs and their budget for performing these actions.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="no">sim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse.html">gmse</a></span>(<span class="kw">land_ownership</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">stakeholders</span> <span class="kw">=</span> <span class="fl">5</span>, <span class="kw">observe_type</span> <span class="kw">=</span> <span class="fl">0</span>,
-            <span class="kw">res_death_K</span> <span class="kw">=</span> <span class="fl">2000</span>, <span class="kw">manage_target</span> <span class="kw">=</span> <span class="fl">1000</span>, <span class="kw">RESOURCE_ini</span> <span class="kw">=</span> <span class="fl">200</span>,
-            <span class="kw">user_budget</span> <span class="kw">=</span> <span class="fl">1000</span>, <span class="kw">manager_budget</span> <span class="kw">=</span> <span class="fl">1000</span>, <span class="kw">res_consume</span> <span class="kw">=</span> <span class="fl">1</span>,
-            <span class="kw">scaring</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">plotting</span> <span class="kw">=</span> <span class="fl">FALSE</span>);</pre></body></html></div>
-<pre><code>## [1] "Initialising simulations ... "
-## [1] "Generation  24 of  40"</code></pre>
-<p>Parameters in <a href="../reference/gmse.html"><code>gmse</code></a> not listed are set to default values. By plotting the output with <a href="../reference/plot_gmse_results.html"><code>plot_gmse_results</code></a>, simulation results can be interpreted visually (manager and user decisions can also be interpreted using the <a href="../reference/plot_gmse_effort.html"><code>plot_gmse_effort</code></a> function, see <a href="SI3.html">Example case study in GMSE</a> and <a href="SI4.html">Advanced case study options</a> for an expanded example).</p>
+<div class="section level2">
+<h2 id="an-example-of-resource-management">An example of resource management<a class="anchor" aria-label="anchor" href="#an-example-of-resource-management"></a>
+</h2>
+<p>Here we illustrate the usefulness of GMSE by considering the case
+study of a protected population of waterfowl that exploits agricultural
+land causing a conservation conflict with farmers <span class="citation">(e.g., <a href="#ref-Fox2017a" role="doc-biblioref">Fox
+and Madsen 2017</a>; <a href="#ref-Mason2017" role="doc-biblioref">Mason
+et al. 2017</a>; <a href="#ref-Tulloch2017" role="doc-biblioref">Tulloch, Nicol, and Bunnefeld 2017</a>)</span>.
+Managers attempt to keep the abundance of waterfowl at a target level,
+while farmers attempt to minimise the damage inflicted on their crops
+<span class="citation">(e.g., <a href="#ref-Madsen2017" role="doc-biblioref">Madsen et al. 2017</a>)</span>. Using GMSE, we can
+simulate waterfowl population dynamics, along with the continued
+monitoring and policy set by managers, and the actions that farmers take
+to protect their crop yields given the constraints of policy. We
+consider a population of waterfowl with an initial abundance and manager
+target abundance of 200, but whose carrying capacity is 2000. Waterfowl
+consume and destroy all crop yield upon arrival to a landscape cell. In
+each time step, waterfowl are observed on a random subset of cells, then
+managers extrapolate from density per cell to estimate total population
+size. Managers then use these estimates to set costs of culling and
+scaring waterfowl for five farmers (scaring is non-lethal, causing
+waterfowl to move to a random landscape cell). Farmers attempt to reduce
+the negative impact of waterfowl on the cropland that they own, working
+within the constraints of culling and scaring costs and their budget for
+performing these actions.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse.html">gmse</a></span><span class="op">(</span>land_ownership <span class="op">=</span> <span class="cn">TRUE</span>, stakeholders <span class="op">=</span> <span class="fl">5</span>, observe_type <span class="op">=</span> <span class="fl">0</span>, 
+            res_death_K <span class="op">=</span> <span class="fl">2000</span>, manage_target <span class="op">=</span> <span class="fl">1000</span>, RESOURCE_ini <span class="op">=</span> <span class="fl">200</span>, 
+            user_budget <span class="op">=</span> <span class="fl">1000</span>, manager_budget <span class="op">=</span> <span class="fl">1000</span>, res_consume <span class="op">=</span> <span class="fl">1</span>, 
+            scaring <span class="op">=</span> <span class="cn">TRUE</span>, plotting <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>;</code></pre></div>
+<pre><code><span class="co">## [1] "Initialising simulations ... "</span>
+<span class="co">## [1] "Generation  20 of  40"</span>
+<span class="co">## [1] "Generation  39 of  40"</span></code></pre>
+<p>Parameters in <a href="../reference/gmse.html"><code>gmse</code></a>
+not listed are set to default values. By plotting the output with <a href="../reference/plot_gmse_results.html"><code>plot_gmse_results</code></a>,
+simulation results can be interpreted visually (manager and user
+decisions can also be interpreted using the <a href="../reference/plot_gmse_effort.html"><code>plot_gmse_effort</code></a>
+function, see <a href="SI3.html">Example case study in GMSE</a> and <a href="SI4.html">Advanced case study options</a> for an expanded
+example).</p>
 <hr>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="fu"><a href="../reference/plot_gmse_results.html">plot_gmse_results</a></span>(<span class="kw">sim_results</span> <span class="kw">=</span> <span class="no">sim</span>);</pre></body></html></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/plot_gmse_results.html">plot_gmse_results</a></span><span class="op">(</span>sim_results <span class="op">=</span> <span class="va">sim</span><span class="op">)</span>;</code></pre></div>
 <div class="figure" style="text-align: left">
 <img src="GMSE_files/figure-html/unnamed-chunk-5-1.png" alt="Results of an example simulation illustrating the management of a protected resource that exploits the land of five farmers. The upper left panel shows locations of resources (black dots) on the landscape in the final time step of the simulation (multiple resources can occur on the same landscape cell). The upper right panel shows the same landscape broken down into five differently coloured regions, which correspond to areas of land owned by each of the five farmers. The middle left panel shows the actual abundance of resources (black solid line; i.e., `natural resources' or `operating' model), and the abundance of resources as estimated by the manager (blue solid line; i.e., `observation' or `assessment' model; shading indicates 95 percent confidence intervals), over time. The horizontal dotted red and blue lines show the landscape-level resource carrying capacity enacted on adult mortality and the manager's target for resource abundance, respectively. The orange line shows the total percent yield of landscape cells. The middle right panel shows total percent yield of landscape cells for each individual farmer, differentiated by colour, where line colours correspond to areas of the landscape in the upper right panel. The lower left panel shows the cost of farmers performing actions over time, as set by the manager; the upper limit on cost of actions reflects the manager's limited budget for setting policy. The lower right panel shows the total number of actions attempted to be performed by all farmers over time (some actions might be unsuccessful if resources are not on a farmer's land to cull or scare, so, e.g., culling actions might be larger than resources actually culled)." width="576"><p class="caption">
-Results of an example simulation illustrating the management of a protected resource that exploits the land of five farmers. The upper left panel shows locations of resources (black dots) on the landscape in the final time step of the simulation (multiple resources can occur on the same landscape cell). The upper right panel shows the same landscape broken down into five differently coloured regions, which correspond to areas of land owned by each of the five farmers. The middle left panel shows the actual abundance of resources (black solid line; i.e., <code>natural resources' or</code>operating’ model), and the abundance of resources as estimated by the manager (blue solid line; i.e., <code>observation' or</code>assessment’ model; shading indicates 95 percent confidence intervals), over time. The horizontal dotted red and blue lines show the landscape-level resource carrying capacity enacted on adult mortality and the manager’s target for resource abundance, respectively. The orange line shows the total percent yield of landscape cells. The middle right panel shows total percent yield of landscape cells for each individual farmer, differentiated by colour, where line colours correspond to areas of the landscape in the upper right panel. The lower left panel shows the cost of farmers performing actions over time, as set by the manager; the upper limit on cost of actions reflects the manager’s limited budget for setting policy. The lower right panel shows the total number of actions attempted to be performed by all farmers over time (some actions might be unsuccessful if resources are not on a farmer’s land to cull or scare, so, e.g., culling actions might be larger than resources actually culled).
+Results of an example simulation illustrating the management of a
+protected resource that exploits the land of five farmers. The upper
+left panel shows locations of resources (black dots) on the landscape in
+the final time step of the simulation (multiple resources can occur on
+the same landscape cell). The upper right panel shows the same landscape
+broken down into five differently coloured regions, which correspond to
+areas of land owned by each of the five farmers. The middle left panel
+shows the actual abundance of resources (black solid line; i.e.,
+<code>natural resources' or</code>operating’ model), and the abundance
+of resources as estimated by the manager (blue solid line; i.e.,
+<code>observation' or</code>assessment’ model; shading indicates 95
+percent confidence intervals), over time. The horizontal dotted red and
+blue lines show the landscape-level resource carrying capacity enacted
+on adult mortality and the manager’s target for resource abundance,
+respectively. The orange line shows the total percent yield of landscape
+cells. The middle right panel shows total percent yield of landscape
+cells for each individual farmer, differentiated by colour, where line
+colours correspond to areas of the landscape in the upper right panel.
+The lower left panel shows the cost of farmers performing actions over
+time, as set by the manager; the upper limit on cost of actions reflects
+the manager’s limited budget for setting policy. The lower right panel
+shows the total number of actions attempted to be performed by all
+farmers over time (some actions might be unsuccessful if resources are
+not on a farmer’s land to cull or scare, so, e.g., culling actions might
+be larger than resources actually culled).
 </p>
 </div>
 <hr>
-<p>Fig. 2 shows the landscape broken down by resource position and farmer land ownership in the upper left and right hand panels, respectively. The waterfowl population fluctuates around the manager’s target size of 1000, but the manager’s estimate of population size deviates from its actual size due to observation uncertainty (compare black and blue lines in the middle left panel). Because the waterfowl have a direct negative effect on landscape yield, total landscape yield (orange line of the middle left panel), along with the yield of individual farmers (right middle panel), is low when waterfowl abundance is high, and vice versa.</p>
-<p>Only the estimates of population size from the observation model are available to the manager, so policy change at any time step is driven primarily by the deviation of the currently estimated population size from the manager’s target and the actions of farmers in the previous time step. Hence, when the population size is estimated to be below (above) the manager’s target, the manager increases (decreases) the cost of culling and decreases (increases) the cost of scaring. Because the manager does not know in advance how farmers will react to policy change, they assume a proportional response in total actions with respect to a change in cost (e.g., doubling the cost of culling will decrease stakeholder culling by <span class="math inline">\(1/2\)</span>). Farmers responding to policy are interested only in minimising waterfowl’s exploitation of their crops, so they will either cull or scare to remove the waterfowl from their land, depending on which option is more effective (i.e., cheaper). This is reflected in the bottom left versus right panels of Fig. 2; when managers decrease culling costs relative to scaring, farmers respond with more total culling, and vice versa. Farmer decisions then affect waterfowl distribution and abundance, impacting future crop yield and policy.</p>
+<p>Fig. 2 shows the landscape broken down by resource position and
+farmer land ownership in the upper left and right hand panels,
+respectively. The waterfowl population fluctuates around the manager’s
+target size of 1000, but the manager’s estimate of population size
+deviates from its actual size due to observation uncertainty (compare
+black and blue lines in the middle left panel). Because the waterfowl
+have a direct negative effect on landscape yield, total landscape yield
+(orange line of the middle left panel), along with the yield of
+individual farmers (right middle panel), is low when waterfowl abundance
+is high, and vice versa.</p>
+<p>Only the estimates of population size from the observation model are
+available to the manager, so policy change at any time step is driven
+primarily by the deviation of the currently estimated population size
+from the manager’s target and the actions of farmers in the previous
+time step. Hence, when the population size is estimated to be below
+(above) the manager’s target, the manager increases (decreases) the cost
+of culling and decreases (increases) the cost of scaring. Because the
+manager does not know in advance how farmers will react to policy
+change, they assume a proportional response in total actions with
+respect to a change in cost (e.g., doubling the cost of culling will
+decrease stakeholder culling by <span class="math inline">\(1/2\)</span>). Farmers responding to policy are
+interested only in minimising waterfowl’s exploitation of their crops,
+so they will either cull or scare to remove the waterfowl from their
+land, depending on which option is more effective (i.e., cheaper). This
+is reflected in the bottom left versus right panels of Fig. 2; when
+managers decrease culling costs relative to scaring, farmers respond
+with more total culling, and vice versa. Farmer decisions then affect
+waterfowl distribution and abundance, impacting future crop yield and
+policy.</p>
 </div>
-<div id="graphical-user-interface-gui" class="section level1">
-<h1 class="hasAnchor">
-<a href="#graphical-user-interface-gui" class="anchor"></a>Graphical User Interface (GUI)</h1>
-<p>The function <a href="../reference/gmse_gui.html"><code>gmse_gui</code></a> opens GMSE in a browser and allows simulations to be run for most <a href="../reference/gmse.html"><code>gmse</code></a> parameter options using the package ‘shiny’ <span class="citation">(Chang et al. <a href="#ref-Chang2017">2017</a>)</span>. Figures from <a href="../reference/plot_gmse_results"><code>plot_gmse_results</code></a> and <a href="../reference/plot_gmse_effort"><code>plot_gmse_effort</code></a>, and tables from <a href="../reference/gmse_summary"><code>gmse_summary</code></a> are provided as GUI output.</p>
+<div class="section level2">
+<h2 id="graphical-user-interface-gui">Graphical User Interface (GUI)<a class="anchor" aria-label="anchor" href="#graphical-user-interface-gui"></a>
+</h2>
+<p>The function <a href="../reference/gmse_gui.html"><code>gmse_gui</code></a> opens GMSE
+in a browser and allows simulations to be run for most <a href="../reference/gmse.html"><code>gmse</code></a> parameter options
+using the package ‘shiny’ <span class="citation">(<a href="#ref-Chang2017" role="doc-biblioref">Chang et al.
+2017</a>)</span>. Figures from <a href="../reference/plot_gmse_results"><code>plot_gmse_results</code></a>
+and <a href="../reference/plot_gmse_effort"><code>plot_gmse_effort</code></a>,
+and tables from <a href="../reference/gmse_summary"><code>gmse_summary</code></a> are
+provided as GUI output.</p>
 </div>
-<div id="custom-defined-sub-models" class="section level1">
-<h1 class="hasAnchor">
-<a href="#custom-defined-sub-models" class="anchor"></a>Custom defined sub-models</h1>
-<p>The function <a href="../reference/gmse_apply.html"><code>gmse_apply</code></a> allows custom resource, observation, manager, or user sub-models to be integrated into the GMSE framework (see <a href="SI2.html">Use of the gmse_apply function</a>, <a href="SI4.html">Advanced case study options</a>, and <a href="SI5.html">Fisheries example integrating FLR</a>). Any type of sub-model (e.g., numerical, individual-based) is permitted by defining a function with appropriately specified inputs and outputs; where custom functions are not provided, <a href="../reference/gmse_apply.html"><code>gmse_apply</code></a> runs default GMSE sub-models used in <a href="../reference/gmse.html"><code>gmse</code></a>. Any parameter options available in <a href="../reference/gmse.html"><code>gmse</code></a> or in custom functions can be passed directly to <a href="../reference/gmse_apply.html"><code>gmse_apply</code></a>, thereby allowing for high flexibility in model specification. For example, a simple logistic growth function can be integrated as a resource sub-model to replace the default <code>resource</code> function.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">logistic_res_mod</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">X_0</span>, <span class="no">K</span> <span class="kw">=</span> <span class="fl">2000</span>, <span class="no">gr</span> <span class="kw">=</span> <span class="fl">1</span>){
-    <span class="no">X_1</span> <span class="kw">&lt;-</span> <span class="no">X_0</span> + <span class="no">gr</span> * <span class="no">X_0</span> * ( <span class="fl">1</span> - <span class="no">X_0</span>/<span class="no">K</span> );
-    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="no">X_1</span>);
-}
-<span class="no">sim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span>(<span class="kw">res_mod</span> <span class="kw">=</span> <span class="no">logistic_res_mod</span>, <span class="kw">X_0</span> <span class="kw">=</span> <span class="fl">200</span>, <span class="kw">gr</span> <span class="kw">=</span> <span class="fl">0.3</span>, <span class="kw">stakeholders</span> <span class="kw">=</span> <span class="fl">5</span>);</pre></body></html></div>
-<p>The <a href="../reference/gmse_apply.html"><code>gmse_apply</code></a> function simulates a single GMSE time step, and therefore must be looped for simulations over multiple time steps. Within loops, GMSE arguments can be redefined to simulate changing conditions (e.g., change in policy availability or stakeholder budgets, see <a href="SI2.html">Use of the gmse_apply function</a> and <a href="SI4.html">Advanced case study options</a>), thereby allowing many management scenarios to be simulated <em>in silico</em>.</p>
+<div class="section level2">
+<h2 id="custom-defined-sub-models">Custom defined sub-models<a class="anchor" aria-label="anchor" href="#custom-defined-sub-models"></a>
+</h2>
+<p>The function <a href="../reference/gmse_apply.html"><code>gmse_apply</code></a> allows
+custom resource, observation, manager, or user sub-models to be
+integrated into the GMSE framework (see <a href="SI2.html">Use of the
+gmse_apply function</a>, <a href="SI4.html">Advanced case study
+options</a>, and <a href="SI5.html">Fisheries example integrating
+FLR</a>). Any type of sub-model (e.g., numerical, individual-based) is
+permitted by defining a function with appropriately specified inputs and
+outputs; where custom functions are not provided, <a href="../reference/gmse_apply.html"><code>gmse_apply</code></a> runs
+default GMSE sub-models used in <a href="../reference/gmse.html"><code>gmse</code></a>. Any parameter
+options available in <a href="../reference/gmse.html"><code>gmse</code></a> or in custom
+functions can be passed directly to <a href="../reference/gmse_apply.html"><code>gmse_apply</code></a>, thereby
+allowing for high flexibility in model specification. For example, a
+simple logistic growth function can be integrated as a resource
+sub-model to replace the default <code>resource</code> function.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">logistic_res_mod</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">X_0</span>, <span class="va">K</span> <span class="op">=</span> <span class="fl">2000</span>, <span class="va">gr</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">{</span>
+    <span class="va">X_1</span> <span class="op">&lt;-</span> <span class="va">X_0</span> <span class="op">+</span> <span class="va">gr</span> <span class="op">*</span> <span class="va">X_0</span> <span class="op">*</span> <span class="op">(</span> <span class="fl">1</span> <span class="op">-</span> <span class="va">X_0</span><span class="op">/</span><span class="va">K</span> <span class="op">)</span>;
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">X_1</span><span class="op">)</span>;
+<span class="op">}</span>
+<span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span><span class="op">(</span>res_mod <span class="op">=</span> <span class="va">logistic_res_mod</span>, X_0 <span class="op">=</span> <span class="fl">200</span>, gr <span class="op">=</span> <span class="fl">0.3</span>, stakeholders <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>;</code></pre></div>
+<p>The <a href="../reference/gmse_apply.html"><code>gmse_apply</code></a> function
+simulates a single GMSE time step, and therefore must be looped for
+simulations over multiple time steps. Within loops, GMSE arguments can
+be redefined to simulate changing conditions (e.g., change in policy
+availability or stakeholder budgets, see <a href="SI2.html">Use of the
+gmse_apply function</a> and <a href="SI4.html">Advanced case study
+options</a>), thereby allowing many management scenarios to be simulated
+<em>in silico</em>.</p>
 </div>
-<div id="availability" class="section level1">
-<h1 class="hasAnchor">
-<a href="#availability" class="anchor"></a>Availability</h1>
-<p>The GMSE package can be downloaded from CRAN (<a href="https://cran.r-project.org/package=GMSE" class="uri">https://cran.r-project.org/package=GMSE</a>) or GitHub (<a href="https://confoobio.github.io/gmse/" class="uri">https://confoobio.github.io/gmse/</a>). GMSE is open source under GNU Public License.</p>
+<div class="section level2">
+<h2 id="availability">Availability<a class="anchor" aria-label="anchor" href="#availability"></a>
+</h2>
+<p>The GMSE package can be downloaded from CRAN (<a href="https://cran.r-project.org/package=GMSE" class="external-link uri">https://cran.r-project.org/package=GMSE</a>) or GitHub (<a href="https://confoobio.github.io/gmse/" class="external-link uri">https://confoobio.github.io/gmse/</a>). GMSE is open source
+under GNU Public License.</p>
 </div>
-<div id="conclusions" class="section level1">
-<h1 class="hasAnchor">
-<a href="#conclusions" class="anchor"></a>Conclusions</h1>
-<p>Here we have introduced the R package GMSE, software for modelling social-ecological dynamics under scenarios of potential conflict. GMSE provides a powerful tool for individual-based modelling simulations while also allowing for extensive model customisation. GMSE vignettes provide additional examples for getting started with <a href="../reference/gmse.html"><code>gmse</code></a> or <a href="../reference/gmse_gui.html"><code>gmse_gui</code></a> for simulations using default resource, observation, manager, and user sub-models (<a href="SI3.html">Example case study in GMSE</a>, <a href="SI6.html">Management frequency and extinction risk</a>, and <a href="SI8.html">Adaptive timing of investment strategy</a>), and for using <a href="../reference/gmse_apply.html"><code>gmse_apply</code></a> for advanced model customisation (<a href="SI2.html">Use of the gmse_apply function</a>, <a href="SI4.html">Advanced case study options</a>, and <a href="SI7.html">Default GMSE data structures</a>) and integration with existing packages (e.g., Fisheries Library in R, see <a href="SI5.html">Fisheries example integrating FLR</a>). Future versions of GMSE will include additional features and improve upon the realism of social and ecological modelling components, while also maintaining a high degree of flexibility and modulatarity for model customisation.</p>
+<div class="section level2">
+<h2 id="conclusions">Conclusions<a class="anchor" aria-label="anchor" href="#conclusions"></a>
+</h2>
+<p>Here we have introduced the R package GMSE, software for modelling
+social-ecological dynamics under scenarios of potential conflict. GMSE
+provides a powerful tool for individual-based modelling simulations
+while also allowing for extensive model customisation. GMSE vignettes
+provide additional examples for getting started with <a href="../reference/gmse.html"><code>gmse</code></a> or <a href="../reference/gmse_gui.html"><code>gmse_gui</code></a> for
+simulations using default resource, observation, manager, and user
+sub-models (<a href="SI3.html">Example case study in GMSE</a>, <a href="SI6.html">Management frequency and extinction risk</a>, and <a href="SI8.html">Adaptive timing of investment strategy</a>), and for
+using <a href="../reference/gmse_apply.html"><code>gmse_apply</code></a>
+for advanced model customisation (<a href="SI2.html">Use of the
+gmse_apply function</a>, <a href="SI4.html">Advanced case study
+options</a>, and <a href="SI7.html">Default GMSE data structures</a>)
+and integration with existing packages (e.g., Fisheries Library in R,
+see <a href="SI5.html">Fisheries example integrating FLR</a>). Future
+versions of GMSE will include additional features and improve upon the
+realism of social and ecological modelling components, while also
+maintaining a high degree of flexibility and modulatarity for model
+customisation.</p>
 </div>
-<div id="acknowledgements" class="section level1">
-<h1 class="hasAnchor">
-<a href="#acknowledgements" class="anchor"></a>Acknowledgements</h1>
-<p>This project was funded by the European Research Council under the European Union’s H2020/ERC grant agreement no. 679651 (ConFooBio) to NB. ABD is funded by a Leverhulme Trust Early Career Fellowship. We thank two anonymous reviewers for helpful comments.</p>
+<div class="section level2">
+<h2 id="acknowledgements">Acknowledgements<a class="anchor" aria-label="anchor" href="#acknowledgements"></a>
+</h2>
+<p>This project was funded by the European Research Council under the
+European Union’s H2020/ERC grant agreement no. 679651 (ConFooBio) to NB.
+ABD is funded by a Leverhulme Trust Early Career Fellowship. We thank
+two anonymous reviewers for helpful comments.</p>
 </div>
-<div id="references" class="section level1 unnumbered">
-<h1 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h1>
-<div id="refs" class="references">
-<div id="ref-Bunnefeld2011">
-<p>Bunnefeld, Nils, Eriko Hoshino, and Eleanor J Milner-Gulland. 2011. “Management strategy evaluation: A powerful tool for conservation?” <em>Trends in Ecology and Evolution</em> 26 (9): 441–47. <a href="https://doi.org/10.1016/j.tree.2011.05.003">https://doi.org/10.1016/j.tree.2011.05.003</a>.</p>
+<div class="section level2">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Bunnefeld2011" class="csl-entry">
+Bunnefeld, Nils, Eriko Hoshino, and Eleanor J Milner-Gulland. 2011.
+<span>“<span class="nocase">Management strategy evaluation: A powerful
+tool for conservation?</span>”</span> <em>Trends in Ecology and
+Evolution</em> 26 (9): 441–47. <a href="https://doi.org/10.1016/j.tree.2011.05.003" class="external-link">https://doi.org/10.1016/j.tree.2011.05.003</a>.
 </div>
-<div id="ref-Bunnefeld2014">
-<p>Bunnefeld, Nils, and Aidan Keane. 2014. “Managing wildlife for ecological, socioeconomic, and evolutionary sustainability.” <em>Proceedings of the National Academy of Sciences</em> 111 (36): 12964–5. <a href="https://doi.org/10.1073/pnas.1413571111">https://doi.org/10.1073/pnas.1413571111</a>.</p>
+<div id="ref-Bunnefeld2014" class="csl-entry">
+Bunnefeld, Nils, and Aidan Keane. 2014. <span>“<span class="nocase">Managing wildlife for ecological, socioeconomic, and
+evolutionary sustainability</span>.”</span> <em>Proceedings of the
+National Academy of Sciences</em> 111 (36): 12964–65. <a href="https://doi.org/10.1073/pnas.1413571111" class="external-link">https://doi.org/10.1073/pnas.1413571111</a>.
 </div>
-<div id="ref-Ceballos2017a">
-<p>Ceballos, Gerardo, Paul R Ehrlich, and Rodolfo Dirzo. 2017. “Biological annihilation via the ongoing sixth mass extinction signaled by vertebrate population losses and declines.” <em>Proceedings of the National Academy of Sciences</em> 114 (30): E6089—–E609. <a href="https://doi.org/10.1073/pnas.1704949114">https://doi.org/10.1073/pnas.1704949114</a>.</p>
+<div id="ref-Ceballos2017a" class="csl-entry">
+Ceballos, Gerardo, Paul R Ehrlich, and Rodolfo Dirzo. 2017. <span>“<span class="nocase">Biological annihilation via the ongoing sixth mass
+extinction signaled by vertebrate population losses and
+declines</span>.”</span> <em>Proceedings of the National Academy of
+Sciences</em> 114 (30): E6089—–E609. <a href="https://doi.org/10.1073/pnas.1704949114" class="external-link">https://doi.org/10.1073/pnas.1704949114</a>.
 </div>
-<div id="ref-Chang2017">
-<p>Chang, Winston, Joe Cheng, JJ Allaire, Yihui Xie, and Jonathan McPherson. 2017. <em>Shiny: Web Application Framework for R</em>. <a href="https://CRAN.R-project.org/package=shiny">https://CRAN.R-project.org/package=shiny</a>.</p>
+<div id="ref-Chang2017" class="csl-entry">
+Chang, Winston, Joe Cheng, JJ Allaire, Yihui Xie, and Jonathan
+McPherson. 2017. <em>Shiny: Web Application Framework for r</em>. <a href="https://CRAN.R-project.org/package=shiny" class="external-link">https://CRAN.R-project.org/package=shiny</a>.
 </div>
-<div id="ref-Crist2017">
-<p>Crist, Eileen, Camilo Mora, and Robert Engelman. 2017. “The interaction of human population, food production, and biodiversity protection.” <em>Science</em> 356: 260–64.</p>
+<div id="ref-Crist2017" class="csl-entry">
+Crist, Eileen, Camilo Mora, and Robert Engelman. 2017. <span>“<span class="nocase">The interaction of human population, food production, and
+biodiversity protection</span>.”</span> <em>Science</em> 356: 260–64.
 </div>
-<div id="ref-Dichmont2017">
-<p>Dichmont, Catherine M, and Elizabeth A Fulton. 2017. “Fisheries science and participatory management strategy evaluation: eliciting objectives, visions and system models.” In <em>Decision-Making in Conservation and Natural Resource Management: Models for Interdisciplinary Approaches</em>, edited by Nils Bunnefeld, Emily Nicholson, and Eleanor J Milner-Gulland, 19–45. Cambridge: Cambridge University Press.</p>
+<div id="ref-Dichmont2017" class="csl-entry">
+Dichmont, Catherine M, and Elizabeth A Fulton. 2017. <span>“<span class="nocase">Fisheries science and participatory management strategy
+evaluation: eliciting objectives, visions and system
+models</span>.”</span> In <em>Decision-Making in Conservation and
+Natural Resource Management: Models for Interdisciplinary
+Approaches</em>, edited by Nils Bunnefeld, Emily Nicholson, and Eleanor
+J Milner-Gulland, 19–45. Cambridge: Cambridge University Press.
 </div>
-<div id="ref-Dirzo2014">
-<p>Dirzo, Rodolfo, H S Young, M Galetti, G Ceballos, Nick J B Isaac, and Ben Collen. 2014. “Defaunation in the Anthropocene.” <em>Science</em> 345 (6195): 401–6. <a href="https://doi.org/10.1126/science.1251817">https://doi.org/10.1126/science.1251817</a>.</p>
+<div id="ref-Dirzo2014" class="csl-entry">
+Dirzo, Rodolfo, H S Young, M Galetti, G Ceballos, Nick J B Isaac, and
+Ben Collen. 2014. <span>“<span class="nocase">Defaunation in the
+Anthropocene</span>.”</span> <em>Science</em> 345 (6195): 401–6. <a href="https://doi.org/10.1126/science.1251817" class="external-link">https://doi.org/10.1126/science.1251817</a>.
 </div>
-<div id="ref-Fischer2017">
-<p>Fischer, Joern, David J Abson, Arvid Bergsten, Neil French Collier, Ine Dorresteijn, Jan Hanspach, Kristoffer Hylander, Jannik Schultner, and Feyera Senbeta. 2017. “Reframing the food-biodiversity challenge.” <em>Trends in Ecology and Evolution</em> 32 (5). Elsevier Ltd: 335–45. <a href="https://doi.org/10.1016/j.tree.2017.02.009">https://doi.org/10.1016/j.tree.2017.02.009</a>.</p>
+<div id="ref-Fischer2017" class="csl-entry">
+Fischer, Joern, David J Abson, Arvid Bergsten, Neil French Collier, Ine
+Dorresteijn, Jan Hanspach, Kristoffer Hylander, Jannik Schultner, and
+Feyera Senbeta. 2017. <span>“<span class="nocase">Reframing the
+food-biodiversity challenge</span>.”</span> <em>Trends in Ecology and
+Evolution</em> 32 (5): 335–45. <a href="https://doi.org/10.1016/j.tree.2017.02.009" class="external-link">https://doi.org/10.1016/j.tree.2017.02.009</a>.
 </div>
-<div id="ref-Fox2017a">
-<p>Fox, Anthony D, and Jesper Madsen. 2017. “Threatened species to super-abundance: The unexpected international implications of successful goose conservation.” <em>Ambio</em> 46 (s2). Springer Netherlands: 179–87. <a href="https://doi.org/10.1007/s13280-016-0878-2">https://doi.org/10.1007/s13280-016-0878-2</a>.</p>
+<div id="ref-Fox2017a" class="csl-entry">
+Fox, Anthony D, and Jesper Madsen. 2017. <span>“<span class="nocase">Threatened species to super-abundance: The unexpected
+international implications of successful goose
+conservation</span>.”</span> <em>Ambio</em> 46 (s2): 179–87. <a href="https://doi.org/10.1007/s13280-016-0878-2" class="external-link">https://doi.org/10.1007/s13280-016-0878-2</a>.
 </div>
-<div id="ref-Fulton2011">
-<p>Fulton, Elizabeth A, Anthony D M Smith, David C Smith, and Ingrid E Van Putten. 2011. “Human behaviour: The key source of uncertainty in fisheries management.” <em>Fish and Fisheries</em> 12 (1): 2–17. <a href="https://doi.org/10.1111/j.1467-2979.2010.00371.x">https://doi.org/10.1111/j.1467-2979.2010.00371.x</a>.</p>
+<div id="ref-Fulton2011" class="csl-entry">
+Fulton, Elizabeth A, Anthony D M Smith, David C Smith, and Ingrid E Van
+Putten. 2011. <span>“<span class="nocase">Human behaviour: The key
+source of uncertainty in fisheries management</span>.”</span> <em>Fish
+and Fisheries</em> 12 (1): 2–17. <a href="https://doi.org/10.1111/j.1467-2979.2010.00371.x" class="external-link">https://doi.org/10.1111/j.1467-2979.2010.00371.x</a>.
 </div>
-<div id="ref-Hamblin2013">
-<p>Hamblin, Steven. 2013. “On the practical usage of genetic algorithms in ecology and evolution.” <em>Methods in Ecology and Evolution</em> 4 (2): 184–94. <a href="https://doi.org/10.1111/2041-210X.12000">https://doi.org/10.1111/2041-210X.12000</a>.</p>
+<div id="ref-Hamblin2013" class="csl-entry">
+Hamblin, Steven. 2013. <span>“<span class="nocase">On the practical
+usage of genetic algorithms in ecology and evolution</span>.”</span>
+<em>Methods in Ecology and Evolution</em> 4 (2): 184–94. <a href="https://doi.org/10.1111/2041-210X.12000" class="external-link">https://doi.org/10.1111/2041-210X.12000</a>.
 </div>
-<div id="ref-Hautier2015">
-<p>Hautier, Yann, David Tilman, Forest Isbell, Eric W Seabloom, Elizabet T Borer, and Peter B Reich. 2015. “Anthropogenic environmental changes affect ecosystem stability via biodiversity.” <em>Science</em> 348 (6232): 336–40.</p>
+<div id="ref-Hautier2015" class="csl-entry">
+Hautier, Yann, David Tilman, Forest Isbell, Eric W Seabloom, Elizabet T
+Borer, and Peter B Reich. 2015. <span>“<span class="nocase">Anthropogenic environmental changes affect ecosystem
+stability via biodiversity</span>.”</span> <em>Science</em> 348 (6232):
+336–40.
 </div>
-<div id="ref-Keith2011">
-<p>Keith, David A, Tara G Martin, Eve McDonald-Madden, and Carl Walters. 2011. “Uncertainty and adaptive management for biodiversity conservation.” <em>Biological Conservation</em> 144 (4). Elsevier Ltd: 1175–8. <a href="https://doi.org/10.1016/j.biocon.2010.11.022">https://doi.org/10.1016/j.biocon.2010.11.022</a>.</p>
+<div id="ref-Keith2011" class="csl-entry">
+Keith, David A, Tara G Martin, Eve McDonald-Madden, and Carl Walters.
+2011. <span>“<span class="nocase">Uncertainty and adaptive management
+for biodiversity conservation</span>.”</span> <em>Biological
+Conservation</em> 144 (4): 1175–78. <a href="https://doi.org/10.1016/j.biocon.2010.11.022" class="external-link">https://doi.org/10.1016/j.biocon.2010.11.022</a>.
 </div>
-<div id="ref-Madsen2017">
-<p>Madsen, Jesper, James Henty Williams, Fred A Johnson, Ingunn M Tombre, Sergey Dereliev, and Eckhart Kuijken. 2017. “Implementation of the first adaptive management plan for a European migratory waterbird population: The case of the Svalbard pink-footed goose Anser brachyrhynchus.” <em>Ambio</em> 46 (s2). Springer Netherlands: 275–89. <a href="https://doi.org/10.1007/s13280-016-0888-0">https://doi.org/10.1007/s13280-016-0888-0</a>.</p>
+<div id="ref-Madsen2017" class="csl-entry">
+Madsen, Jesper, James Henty Williams, Fred A Johnson, Ingunn M Tombre,
+Sergey Dereliev, and Eckhart Kuijken. 2017. <span>“<span class="nocase">Implementation of the first adaptive management plan for
+a European migratory waterbird population: The case of the Svalbard
+pink-footed goose Anser brachyrhynchus</span>.”</span> <em>Ambio</em> 46
+(s2): 275–89. <a href="https://doi.org/10.1007/s13280-016-0888-0" class="external-link">https://doi.org/10.1007/s13280-016-0888-0</a>.
 </div>
-<div id="ref-Mason2017">
-<p>Mason, Tom H.E, Aidan Keane, Stephen M Redpath, and Nils Bunnefeld. 2017. “The changing environment of conservation conflict: geese and farming in Scotland.” <em>Journal of Applied Ecology</em>, 1–12. <a href="https://doi.org/10.1111/1365-2664.12969">https://doi.org/10.1111/1365-2664.12969</a>.</p>
+<div id="ref-Mason2017" class="csl-entry">
+Mason, Tom H. E, Aidan Keane, Stephen M Redpath, and Nils Bunnefeld.
+2017. <span>“<span class="nocase">The changing environment of
+conservation conflict: geese and farming in Scotland</span>.”</span>
+<em>Journal of Applied Ecology</em>, 1–12. <a href="https://doi.org/10.1111/1365-2664.12969" class="external-link">https://doi.org/10.1111/1365-2664.12969</a>.
 </div>
-<div id="ref-Melbourne-Thomas2017">
-<p>Melbourne-Thomas, Jessica, Andrew J Constable, Elizabeth A Fulton, Stuart P Corney, Rowan Trebilco, Alistair J Hobday, Julia L Blanchard, et al. 2017. “Integrated modelling to support decision-making for marine social-ecological systems in Australia.” <em>ICES Journal of Marine Science</em> 32: 270–87. <a href="https://doi.org/10.1093/icesjms/fsx078">https://doi.org/10.1093/icesjms/fsx078</a>.</p>
+<div id="ref-Melbourne-Thomas2017" class="csl-entry">
+Melbourne-Thomas, Jessica, Andrew J Constable, Elizabeth A Fulton,
+Stuart P Corney, Rowan Trebilco, Alistair J Hobday, Julia L Blanchard,
+et al. 2017. <span>“<span class="nocase">Integrated modelling to support
+decision-making for marine social-ecological systems in
+Australia</span>.”</span> <em>ICES Journal of Marine Science</em> 32:
+270–87. <a href="https://doi.org/10.1093/icesjms/fsx078" class="external-link">https://doi.org/10.1093/icesjms/fsx078</a>.
 </div>
-<div id="ref-Milner-Gulland2011">
-<p>Milner-Gulland, E J. 2011. “Integrating fisheries approaches and household utility models for improved resource management.” <em>Proceedings of the National Academy of Sciences</em> 108 (4): 1741–6. <a href="https://doi.org/10.1073/pnas.1010533108">https://doi.org/10.1073/pnas.1010533108</a>.</p>
+<div id="ref-Milner-Gulland2011" class="csl-entry">
+Milner-Gulland, E J. 2011. <span>“<span class="nocase">Integrating
+fisheries approaches and household utility models for improved resource
+management</span>.”</span> <em>Proceedings of the National Academy of
+Sciences</em> 108 (4): 1741–46. <a href="https://doi.org/10.1073/pnas.1010533108" class="external-link">https://doi.org/10.1073/pnas.1010533108</a>.
 </div>
-<div id="ref-Moore2013">
-<p>Moore, J E, K A Curtis, R L Lewison, P W Dillingham, J M Cope, S V Fordham, S S Heppell, et al. 2013. “Evaluating sustainability of fisheries bycatch mortality for marine megafauna: A review of conservation reference points for data-limited populations.” <em>Environmental Conservation</em> 40 (4): 329–44. <a href="https://doi.org/10.1017/S037689291300012X">https://doi.org/10.1017/S037689291300012X</a>.</p>
+<div id="ref-Moore2013" class="csl-entry">
+Moore, J E, K A Curtis, R L Lewison, P W Dillingham, J M Cope, S V
+Fordham, S S Heppell, et al. 2013. <span>“<span class="nocase">Evaluating sustainability of fisheries bycatch mortality
+for marine megafauna: A review of conservation reference points for
+data-limited populations</span>.”</span> <em>Environmental
+Conservation</em> 40 (4): 329–44. <a href="https://doi.org/10.1017/S037689291300012X" class="external-link">https://doi.org/10.1017/S037689291300012X</a>.
 </div>
-<div id="ref-Muller-Hansen2017">
-<p>Müller-Hansen, Finn, Maja Schlüter, Michael Mäs, Rainer Hegselmann, Jonathan F Donges, Jakob J Kolb, Kirsten Thonicke, and Jobst Heitzig. 2017. “How to represent human behavior and decision making in Earth system models? A guide to techniques and approaches.” <em>Earth System Dynamics Discussions</em>, 1–53. <a href="https://doi.org/10.5194/esd-2017-18">https://doi.org/10.5194/esd-2017-18</a>.</p>
+<div id="ref-Muller-Hansen2017" class="csl-entry">
+Müller-Hansen, Finn, Maja Schlüter, Michael Mäs, Rainer Hegselmann,
+Jonathan F Donges, Jakob J Kolb, Kirsten Thonicke, and Jobst Heitzig.
+2017. <span>“<span class="nocase">How to represent human behavior and
+decision making in Earth system models? A guide to techniques and
+approaches</span>.”</span> <em>Earth System Dynamics Discussions</em>,
+1–53. <a href="https://doi.org/10.5194/esd-2017-18" class="external-link">https://doi.org/10.5194/esd-2017-18</a>.
 </div>
-<div id="ref-Nuno2013">
-<p>Nuno, Ana, Nils Bunnefeld, and E J Milner-Gulland. 2013. “Matching observations and reality: Using simulation models to improve monitoring under uncertainty in the Serengeti.” <em>Journal of Applied Ecology</em> 50 (2): 488–98. <a href="https://doi.org/10.1111/1365-2664.12051">https://doi.org/10.1111/1365-2664.12051</a>.</p>
+<div id="ref-Nuno2013" class="csl-entry">
+Nuno, Ana, Nils Bunnefeld, and E J Milner-Gulland. 2013. <span>“<span class="nocase">Matching observations and reality: Using simulation
+models to improve monitoring under uncertainty in the
+Serengeti</span>.”</span> <em>Journal of Applied Ecology</em> 50 (2):
+488–98. <a href="https://doi.org/10.1111/1365-2664.12051" class="external-link">https://doi.org/10.1111/1365-2664.12051</a>.
 </div>
-<div id="ref-OConnell2017">
-<p>O’Connell, Enda. 2017. “Towards adaptation of water resource Systems to climatic and socio-economic change.” <em>Water Resources Management</em> 31 (10). Water Resources Management: 2965–84. <a href="https://doi.org/10.1007/s11269-017-1734-2">https://doi.org/10.1007/s11269-017-1734-2</a>.</p>
+<div id="ref-OConnell2017" class="csl-entry">
+O’Connell, Enda. 2017. <span>“<span class="nocase">Towards adaptation of
+water resource Systems to climatic and socio-economic
+change</span>.”</span> <em>Water Resources Management</em> 31 (10):
+2965–84. <a href="https://doi.org/10.1007/s11269-017-1734-2" class="external-link">https://doi.org/10.1007/s11269-017-1734-2</a>.
 </div>
-<div id="ref-Polacheck1999">
-<p>Polacheck, T, N L Klaer, C Millar, and A L Preece. 1999. “An initial evalutaion of management strategies for the southern bluefin tuna fishery.” <em>ICES Journal of Marine Science</em> 56 (6): 811–26. <a href="https://doi.org/10.1006/jmsc.1999.0554">https://doi.org/10.1006/jmsc.1999.0554</a>.</p>
+<div id="ref-Polacheck1999" class="csl-entry">
+Polacheck, T, N L Klaer, C Millar, and A L Preece. 1999. <span>“<span class="nocase">An initial evalutaion of management strategies for the
+southern bluefin tuna fishery</span>.”</span> <em>ICES Journal of Marine
+Science</em> 56 (6): 811–26. <a href="https://doi.org/10.1006/jmsc.1999.0554" class="external-link">https://doi.org/10.1006/jmsc.1999.0554</a>.
 </div>
-<div id="ref-Pozo2017">
-<p>Pozo, A, Tim Coulson, Graham Mcculloch, and Amanda L Stronza. 2017. “Determining baselines for human-elephant conflict : A matter of time.” <em>PLoS One</em> 12 (6): e0178840.</p>
+<div id="ref-Pozo2017" class="csl-entry">
+Pozo, A, Tim Coulson, Graham Mcculloch, and Amanda L Stronza. 2017.
+<span>“<span class="nocase">Determining baselines for human-elephant
+conflict : A matter of time</span>.”</span> <em>PLoS One</em> 12 (6):
+e0178840.
 </div>
-<div id="ref-Punt2016">
-<p>Punt, André E, Doug S Butterworth, Carryn L de Moor, José A A De Oliveira, and Malcolm Haddon. 2016. “Management strategy evaluation: Best practices.” <em>Fish and Fisheries</em> 17 (2): 303–34. <a href="https://doi.org/10.1111/faf.12104">https://doi.org/10.1111/faf.12104</a>.</p>
+<div id="ref-Punt2016" class="csl-entry">
+Punt, André E, Doug S Butterworth, Carryn L de Moor, José A A De
+Oliveira, and Malcolm Haddon. 2016. <span>“<span class="nocase">Management strategy evaluation: Best
+practices</span>.”</span> <em>Fish and Fisheries</em> 17 (2): 303–34. <a href="https://doi.org/10.1111/faf.12104" class="external-link">https://doi.org/10.1111/faf.12104</a>.
 </div>
-<div id="ref-Redpath2015a">
-<p>Redpath, Steve M, R J Gutiérrez, A Wood, K, and Juliette C Young, eds. 2015. <em>Conflicts in conservation: navigating towards solutions</em>. Cambridge University Press.</p>
+<div id="ref-Redpath2015a" class="csl-entry">
+Redpath, Steve M, R J Gutiérrez, A Wood, K, and Juliette C Young, eds.
+2015. <em><span class="nocase">Conflicts in conservation: navigating
+towards solutions</span></em>. Cambridge University Press.
 </div>
-<div id="ref-Redpath2013">
-<p>Redpath, Steve M, Juliette Young, Anna Evely, William M Adams, William J Sutherland, Andrew Whitehouse, Arjun Amar, et al. 2013. “Understanding and managing conservation conflicts.” <em>Trends in Ecology &amp; Evolution</em> 28 (2): 100–109. <a href="https://doi.org/10.1016/j.tree.2012.08.021">https://doi.org/10.1016/j.tree.2012.08.021</a>.</p>
+<div id="ref-Redpath2013" class="csl-entry">
+Redpath, Steve M, Juliette Young, Anna Evely, William M Adams, William J
+Sutherland, Andrew Whitehouse, Arjun Amar, et al. 2013. <span>“<span class="nocase">Understanding and managing conservation
+conflicts</span>.”</span> <em>Trends in Ecology <span>&amp;</span>
+Evolution</em> 28 (2): 100–109. <a href="https://doi.org/10.1016/j.tree.2012.08.021" class="external-link">https://doi.org/10.1016/j.tree.2012.08.021</a>.
 </div>
-<div id="ref-Sainsbury2000">
-<p>Sainsbury, Keith J, André E Punt, and Anthony DM Smith. 2000. “Design of operational management strategies for achieving fishery ecosystem objectives.” <em>ICES Journal of Marine Science</em> 57 (3): 731–41. <a href="https://doi.org/10.1006/jmsc.2000.0737">https://doi.org/10.1006/jmsc.2000.0737</a>.</p>
+<div id="ref-Sainsbury2000" class="csl-entry">
+Sainsbury, Keith J, André E Punt, and Anthony DM Smith. 2000.
+<span>“<span class="nocase">Design of operational management strategies
+for achieving fishery ecosystem objectives</span>.”</span> <em>ICES
+Journal of Marine Science</em> 57 (3): 731–41. <a href="https://doi.org/10.1006/jmsc.2000.0737" class="external-link">https://doi.org/10.1006/jmsc.2000.0737</a>.
 </div>
-<div id="ref-Schluter2017">
-<p>Schlüter, Maja, Andres Baeza, Gunnar Dressler, Karin Frank, Jürgen Groeneveld, Wander Jager, Marco A Janssen, et al. 2017. “A framework for mapping and comparing behavioural theories in models of social-ecological systems.” <em>Ecological Economics</em> 131. Elsevier B.V.: 21–35. <a href="https://doi.org/10.1016/j.ecolecon.2016.08.008">https://doi.org/10.1016/j.ecolecon.2016.08.008</a>.</p>
+<div id="ref-Schluter2017" class="csl-entry">
+Schlüter, Maja, Andres Baeza, Gunnar Dressler, Karin Frank, Jürgen
+Groeneveld, Wander Jager, Marco A Janssen, et al. 2017. <span>“<span class="nocase">A framework for mapping and comparing behavioural
+theories in models of social-ecological systems</span>.”</span>
+<em>Ecological Economics</em> 131: 21–35. <a href="https://doi.org/10.1016/j.ecolecon.2016.08.008" class="external-link">https://doi.org/10.1016/j.ecolecon.2016.08.008</a>.
 </div>
-<div id="ref-Schluter2012">
-<p>Schlüter, M, R R J McAllister, R Arlinghaus, N Bunnefeld, K Eisenack, F Hölker, E J Milner-Gulland, et al. 2012. “New horizons for managing the environment: A review of coupled social-ecological systems modeling.” <em>Natural Resource Modeling</em> 25 (1): 219–72. <a href="https://doi.org/10.1111/j.1939-7445.2011.00108.x">https://doi.org/10.1111/j.1939-7445.2011.00108.x</a>.</p>
+<div id="ref-Schluter2012" class="csl-entry">
+Schlüter, M, R R J McAllister, R Arlinghaus, N Bunnefeld, K Eisenack, F
+Hölker, E J Milner-Gulland, et al. 2012. <span>“<span class="nocase">New
+horizons for managing the environment: A review of coupled
+social-ecological systems modeling</span>.”</span> <em>Natural Resource
+Modeling</em> 25 (1): 219–72. <a href="https://doi.org/10.1111/j.1939-7445.2011.00108.x" class="external-link">https://doi.org/10.1111/j.1939-7445.2011.00108.x</a>.
 </div>
-<div id="ref-Smith1999">
-<p>Smith, A D M, K J Sainsbury, and R A Stevens. 1999. “Implementing effective fisheries-management systems – management strategy evaluation and the Australian partnership approach.” <em>ICES Journal of Marine Science</em> 56 (6): 967–79. <a href="https://doi.org/10.1006/jmsc.1999.0540">https://doi.org/10.1006/jmsc.1999.0540</a>.</p>
+<div id="ref-Smith1999" class="csl-entry">
+Smith, A D M, K J Sainsbury, and R A Stevens. 1999. <span>“<span class="nocase">Implementing effective fisheries-management systems –
+management strategy evaluation and the Australian partnership
+approach</span>.”</span> <em>ICES Journal of Marine Science</em> 56 (6):
+967–79. <a href="https://doi.org/10.1006/jmsc.1999.0540" class="external-link">https://doi.org/10.1006/jmsc.1999.0540</a>.
 </div>
-<div id="ref-Strand2012">
-<p>Strand, O, E B Nilsen, E J Solberg, and J C D Linnell. 2012. “Can management regulate the population size of wild reindeer (Rangifer tarandus) through harvest?” <em>Canadian Journal of Zoology</em> 90: 163–71. <a href="https://doi.org/Doi%2010.1139/Z11-123">https://doi.org/Doi 10.1139/Z11-123</a>.</p>
+<div id="ref-Strand2012" class="csl-entry">
+Strand, O, E B Nilsen, E J Solberg, and J C D Linnell. 2012.
+<span>“<span class="nocase">Can management regulate the population size
+of wild reindeer (Rangifer tarandus) through harvest?</span>”</span>
+<em>Canadian Journal of Zoology</em> 90: 163–71. <a href="https://doi.org/Doi%2010.1139/Z11-123" class="external-link">https://doi.org/Doi
+10.1139/Z11-123</a>.
 </div>
-<div id="ref-Sundt-Hansen2015">
-<p>Sundt-Hansen, L, J Huisman, H Skoglund, and Kjetil Hindar. 2015. “Farmed Atlantic salmon Salmo salar L. parr may reduce early survival of wild fish.” <em>Journal of Fish Biology</em> 86 (6): 1699–1712. <a href="https://doi.org/10.1111/jfb.12677">https://doi.org/10.1111/jfb.12677</a>.</p>
+<div id="ref-Sundt-Hansen2015" class="csl-entry">
+Sundt-Hansen, L, J Huisman, H Skoglund, and Kjetil Hindar. 2015.
+<span>“<span class="nocase">Farmed Atlantic salmon Salmo salar L. parr
+may reduce early survival of wild fish</span>.”</span> <em>Journal of
+Fish Biology</em> 86 (6): 1699–1712. <a href="https://doi.org/10.1111/jfb.12677" class="external-link">https://doi.org/10.1111/jfb.12677</a>.
 </div>
-<div id="ref-Tulloch2017">
-<p>Tulloch, Ayesha I T, Sam Nicol, and Nils Bunnefeld. 2017. “Quantifying the expected value of uncertain management choices for over-abundant Greylag Geese.” <em>Biological Conservation</em> 214. Elsevier: 147–55. <a href="https://doi.org/10.1016/j.biocon.2017.08.013">https://doi.org/10.1016/j.biocon.2017.08.013</a>.</p>
+<div id="ref-Tulloch2017" class="csl-entry">
+Tulloch, Ayesha I T, Sam Nicol, and Nils Bunnefeld. 2017. <span>“<span class="nocase">Quantifying the expected value of uncertain management
+choices for over-abundant Greylag Geese</span>.”</span> <em>Biological
+Conservation</em> 214: 147–55. <a href="https://doi.org/10.1016/j.biocon.2017.08.013" class="external-link">https://doi.org/10.1016/j.biocon.2017.08.013</a>.
 </div>
 </div>
 </div>
@@ -335,11 +704,13 @@ Results of an example simulation illustrating the management of a protected reso
 
 
       <footer><div class="copyright">
-  <p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman.</p>
+  <p></p>
+<p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman, Ochoa Gabriela.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>
@@ -347,6 +718,8 @@ Results of an example simulation illustrating the management of a protected reso
 
   
 
+
+  
 
   </body>
 </html>

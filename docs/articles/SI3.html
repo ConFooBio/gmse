@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.1</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../articles/GMSE.html">Get started</a>
 </li>
@@ -50,7 +46,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -80,6 +76,9 @@
     <li>
       <a href="../articles/SI8.html">Adaptive timing of investment strategy</a>
     </li>
+    <li>
+      <a href="../articles/SI9.html">The simulated annealing algorithm of GMSE</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -88,10 +87,10 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://confoobio.github.io/gmse/notebook/gmse_notes.html">Lab notebook</a>
+  <a href="https://confoobio.github.io/gmse/notebook/gmse_notes.html" class="external-link">Lab notebook</a>
 </li>
 <li>
-  <a href="https://github.com/confoobio/GMSE">
+  <a href="https://github.com/confoobio/GMSE" class="external-link">
     <span class="fa fa-github"></span>
      
   </a>
@@ -110,33 +109,102 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Example case study in GMSE</h1>
-            <h3 class="subtitle">GMSE: an R package for generalised management strategy evaluation (Supporting Information 3)</h3>
-                        <h4 class="author"><div class="line-block">A. Bradley Duthie¹³, Jeremy J. Cusack¹, Isabel L. Jones¹, Jeroen Minderman¹,<br>
+            <h3 data-toc-skip class="subtitle">GMSE: an R package for
+generalised management strategy evaluation (Supporting Information
+3)</h3>
+                        <h4 data-toc-skip class="author"><div class="line-block">A. Bradley Duthie¹³, Jeremy J. Cusack¹, Isabel L.
+Jones¹, Jeroen Minderman¹,<br>
 Erlend B. Nilsen², Rocío A. Pozo¹, O. Sarobidy Rakotonarivo¹,<br>
 Bram Van Moorter², and Nils Bunnefeld¹</div></h4>
             
-            <h4 class="date">[1] Biological and Environmental Sciences, University of Stirling, Stirling, UK [2] Norwegian Institute for Nature Research, Trondheim, Norway [3] <a href="mailto:alexander.duthie@stir.ac.uk" class="email">alexander.duthie@stir.ac.uk</a>
+            <h4 data-toc-skip class="date">[1] Biological and
+Environmental Sciences, University of Stirling, Stirling, UK [2]
+Norwegian Institute for Nature Research, Trondheim, Norway [3] <a href="mailto:alexander.duthie@stir.ac.uk" class="email">alexander.duthie@stir.ac.uk</a>
 </h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/confoobio/gmse/blob/master/vignettes/SI3.Rmd"><code>vignettes/SI3.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/confoobio/gmse/blob/HEAD/vignettes/SI3.Rmd" class="external-link"><code>vignettes/SI3.Rmd</code></a></small>
       <div class="hidden name"><code>SI3.Rmd</code></div>
 
     </div>
 
     
     
-<div id="an-example-of-management-conflict-using-gmse" class="section level1">
-<h1 class="hasAnchor">
-<a href="#an-example-of-management-conflict-using-gmse" class="anchor"></a>An example of management conflict using GMSE</h1>
-<p>Agents in GMSE (managers and users) are goal-oriented, and their behaviour is therefore driven to maximise a particular utility of interest such as a target density of resources. For managers and users, this could include animals or trees of conservation interest. For users, it could additionally include a landscape harvest size such as bag size or timber. This model feature allows GMSE to evaluate the actions of agents in the context of their individual objectives, and to therefore quantify the degree to which those objectives are or are not achieved. When the actions of one party clashes with the objectives of another party, the objectives of one might be expressed at the expense of the other, causing conservation conflict <span class="citation">(Redpath et al. <a href="#ref-Redpath2013">2013</a>)</span>. Currently, there is no standard way to measure conservation conflict in a social-ecological system where both the natural resource (e.g., animals, plants, or non-biological resources) and the people (e.g., stakeholders, managers, etc.) are modelled in a single system, and previous modelling approaches have not meaningfully separated agent objectives from agent actions. We suggest that a starting point to developing a useful metric of conservation conflict is to quantify the deviation of an individual’s actions from their objectives (i.e., of actual actions from desired actions), the former of which is restricted by the actions of other individuals. Here we show how GMSE can be used to evaluate the amount of conflict in a simulated social-ecological system under different management options.</p>
-<p>To demonstrate how GMSE can be used to understand conflict in social-ecological systems, we build upon the <a href="GMSE.html#an-example-of-resource-management">example of resource management</a> in the main text. We consider a protected population of waterfowl that exploits and damages agricultural land and is therefore a source of conservation conflict between those that seek the conservation of waterfowl and those that are concerned with the loss of agriculture <span class="citation">(e.g., Fox and Madsen <a href="#ref-Fox2017a">2017</a>; Mason et al. <a href="#ref-Mason2017">2017</a>; Tulloch, Nicol, and Bunnefeld <a href="#ref-Tulloch2017">2017</a>; Cusack et al. <a href="#ref-Cusack2018">2018</a>)</span>. As in the main text example, the objective of the manager is to keep waterfowl at a target abundance that minimises extinction risks, while the objective of farmers is to maximise agricultural production on their landscape. Here we consider a more complex simulation, with a level of detail that more accurately reflects a scenario that might occur in a real social-ecological system where the manager sets policies that incentivise the user to act in a way that ensures the persistence of the resource. The policies are backed up by a manager budget that can be allocated to set costs of actions and thus incentivise users to perform the desired actions. The user also has a budget to carry out actions, and the cost of the user actions is affected by the manager policies and budget. Our objective is not to model the dynamics of a specific system, but to show how GMSE could be parameterised using demographic estimates from empirical studies. We therefore consider an example population in which such estimates are well-reported and readily available.</p>
-<p>We parameterise our model using demographic information from the Taiga Bean Goose (<em>Anser fabalis fabalis</em>), a managed population that is hunted for recreation in Fennoscandinavia <span class="citation">(Johnson et al. <a href="#ref-Johnson2018">2018</a>)</span>. Taiga Bean Geese can cause agricultural damage <span class="citation">(Johnson et al. <a href="#ref-Johnson2018">2018</a>)</span>, which could potentially lead to conflict between farming and management or conservation objectives.</p>
-<div id="using-demographic-parameters-in-simulations" class="section level2">
-<h2 class="hasAnchor">
-<a href="#using-demographic-parameters-in-simulations" class="anchor"></a>Using demographic parameters in simulations</h2>
-<p>Our goal is not to provide a detailed case study of the Taiga Bean Geese, but rather to demonstrate how such a case study would be possible in GMSE. For simplicity, here we assess conflict using only the <code>gmse</code> function to show how parameter values can be set to provide useful results. Novice R users may prefer to run all of the simulations below using the browser-based GMSE GUI by calling <code><a href="../reference/gmse_gui.html">gmse_gui()</a></code> from the R command line. Alternatively, experienced R users may prefer to simulate by <a href="SI2.html#running-gmse-simulations-by-looping-gmse_apply">looping time steps</a> through <code>gmse_apply</code>, which allows more flexibility for incorporating custom sub-models and dynamically adjusting parameter values.</p>
-<p>Simulations using the default GMSE sub-models described above are run using the <code>gmse</code> function, which offers a range of options for setting parameter values (see Table 1 for some select examples). Output of <code>gmse</code> is an exhaustive list that includes all resources and observations, all stakeholder decisions and actions, and all landscape properties in each time step of the simulation (see <a href="SI7.html">Default GMSE data structures</a> for a description of key data structures).</p>
-
+<div class="section level2">
+<h2 id="an-example-of-management-conflict-using-gmse">An example of management conflict using GMSE<a class="anchor" aria-label="anchor" href="#an-example-of-management-conflict-using-gmse"></a>
+</h2>
+<p>Agents in GMSE (managers and users) are goal-oriented, and their
+behaviour is therefore driven to maximise a particular utility of
+interest such as a target density of resources. For managers and users,
+this could include animals or trees of conservation interest. For users,
+it could additionally include a landscape harvest size such as bag size
+or timber. This model feature allows GMSE to evaluate the actions of
+agents in the context of their individual objectives, and to therefore
+quantify the degree to which those objectives are or are not achieved.
+When the actions of one party clashes with the objectives of another
+party, the objectives of one might be expressed at the expense of the
+other, causing conservation conflict <span class="citation">(<a href="#ref-Redpath2013" role="doc-biblioref">Redpath et al.
+2013</a>)</span>. Currently, there is no standard way to measure
+conservation conflict in a social-ecological system where both the
+natural resource (e.g., animals, plants, or non-biological resources)
+and the people (e.g., stakeholders, managers, etc.) are modelled in a
+single system, and previous modelling approaches have not meaningfully
+separated agent objectives from agent actions. We suggest that a
+starting point to developing a useful metric of conservation conflict is
+to quantify the deviation of an individual’s actions from their
+objectives (i.e., of actual actions from desired actions), the former of
+which is restricted by the actions of other individuals. Here we show
+how GMSE can be used to evaluate the amount of conflict in a simulated
+social-ecological system under different management options.</p>
+<p>To demonstrate how GMSE can be used to understand conflict in
+social-ecological systems, we build upon the <a href="GMSE.html#an-example-of-resource-management">example of resource
+management</a> in the main text. We consider a protected population of
+waterfowl that exploits and damages agricultural land and is therefore a
+source of conservation conflict between those that seek the conservation
+of waterfowl and those that are concerned with the loss of agriculture
+<span class="citation">(e.g., <a href="#ref-Fox2017a" role="doc-biblioref">Fox and Madsen 2017</a>; <a href="#ref-Mason2017" role="doc-biblioref">Mason et al. 2017</a>; <a href="#ref-Tulloch2017" role="doc-biblioref">Tulloch, Nicol, and Bunnefeld 2017</a>; <a href="#ref-Cusack2018" role="doc-biblioref">Cusack et al.
+2018</a>)</span>. As in the main text example, the objective of the
+manager is to keep waterfowl at a target abundance that minimises
+extinction risks, while the objective of farmers is to maximise
+agricultural production on their landscape. Here we consider a more
+complex simulation, with a level of detail that more accurately reflects
+a scenario that might occur in a real social-ecological system where the
+manager sets policies that incentivise the user to act in a way that
+ensures the persistence of the resource. The policies are backed up by a
+manager budget that can be allocated to set costs of actions and thus
+incentivise users to perform the desired actions. The user also has a
+budget to carry out actions, and the cost of the user actions is
+affected by the manager policies and budget. Our objective is not to
+model the dynamics of a specific system, but to show how GMSE could be
+parameterised using demographic estimates from empirical studies. We
+therefore consider an example population in which such estimates are
+well-reported and readily available.</p>
+<p>We parameterise our model using demographic information from the
+Taiga Bean Goose (<em>Anser fabalis fabalis</em>), a managed population
+that is hunted for recreation in Fennoscandinavia <span class="citation">(<a href="#ref-Johnson2018" role="doc-biblioref">Johnson et al. 2018</a>)</span>. Taiga Bean Geese
+can cause agricultural damage <span class="citation">(<a href="#ref-Johnson2018" role="doc-biblioref">Johnson et al.
+2018</a>)</span>, which could potentially lead to conflict between
+farming and management or conservation objectives.</p>
+<div class="section level3">
+<h3 id="using-demographic-parameters-in-simulations">Using demographic parameters in simulations<a class="anchor" aria-label="anchor" href="#using-demographic-parameters-in-simulations"></a>
+</h3>
+<p>Our goal is not to provide a detailed case study of the Taiga Bean
+Geese, but rather to demonstrate how such a case study would be possible
+in GMSE. For simplicity, here we assess conflict using only the
+<code>gmse</code> function to show how parameter values can be set to
+provide useful results. Novice R users may prefer to run all of the
+simulations below using the browser-based GMSE GUI by calling
+<code><a href="../reference/gmse_gui.html">gmse_gui()</a></code> from the R command line. Alternatively,
+experienced R users may prefer to simulate by <a href="SI2.html#running-gmse-simulations-by-looping-gmse_apply">looping
+time steps</a> through <code>gmse_apply</code>, which allows more
+flexibility for incorporating custom sub-models and dynamically
+adjusting parameter values.</p>
+<p>Simulations using the default GMSE sub-models described above are run
+using the <code>gmse</code> function, which offers a range of options
+for setting parameter values (see Table 1 for some select examples).
+Output of <code>gmse</code> is an exhaustive list that includes all
+resources and observations, all stakeholder decisions and actions, and
+all landscape properties in each time step of the simulation (see <a href="SI7.html">Default GMSE data structures</a> for a description of
+key data structures).</p>
 <table class="table">
 <colgroup>
 <col width="13%">
@@ -167,32 +235,38 @@ Bram Van Moorter², and Nils Bunnefeld¹</div></h4>
 <tr class="even">
 <td>res_movement</td>
 <td>20</td>
-<td>Distance (cells) a resource can move in any direction (see also res_move_type)</td>
+<td>Distance (cells) a resource can move in any direction (see also
+res_move_type)</td>
 </tr>
 <tr class="odd">
 <td>remove_pr</td>
 <td>0</td>
-<td>Density-independent probability of resource mortality during a time step</td>
+<td>Density-independent probability of resource mortality during a time
+step</td>
 </tr>
 <tr class="even">
 <td>lambda</td>
 <td>0.3</td>
-<td>Poisson rate parameter for resource offspring number produced during a time step</td>
+<td>Poisson rate parameter for resource offspring number produced during
+a time step</td>
 </tr>
 <tr class="odd">
 <td>agent_view</td>
 <td>10</td>
-<td>How far managers can see on the landscape for resource counting when observe_type = 0</td>
+<td>How far managers can see on the landscape for resource counting when
+observe_type = 0</td>
 </tr>
 <tr class="even">
 <td>res_birth_K</td>
 <td>100000</td>
-<td>Carrying capacity applied to the number of resources added during a time step</td>
+<td>Carrying capacity applied to the number of resources added during a
+time step</td>
 </tr>
 <tr class="odd">
 <td>res_death_K</td>
 <td>2000</td>
-<td>Carrying capacity applied to the number of resources removed during a time step</td>
+<td>Carrying capacity applied to the number of resources removed during
+a time step</td>
 </tr>
 <tr class="even">
 <td>res_death_type</td>
@@ -202,7 +276,8 @@ Bram Van Moorter², and Nils Bunnefeld¹</div></h4>
 <tr class="odd">
 <td>res_move_type</td>
 <td>1</td>
-<td>Type of resource movement (default moves uniformly in any direction; <a href="#nondefault">see below</a>)</td>
+<td>Type of resource movement (default moves uniformly in any direction;
+<a href="#nondefault">see below</a>)</td>
 </tr>
 <tr class="even">
 <td>observe_type</td>
@@ -217,27 +292,32 @@ Bram Van Moorter², and Nils Bunnefeld¹</div></h4>
 <tr class="even">
 <td>fixed_mark</td>
 <td>50</td>
-<td>For mark-recapture observation (observe_type = 1), number of marked resources</td>
+<td>For mark-recapture observation (observe_type = 1), number of marked
+resources</td>
 </tr>
 <tr class="odd">
 <td>fixed_recapt</td>
 <td>150</td>
-<td>For mark-recapture observation (observe_type = 1), number of recaptured resources</td>
+<td>For mark-recapture observation (observe_type = 1), number of
+recaptured resources</td>
 </tr>
 <tr class="even">
 <td>times_observe</td>
 <td>1</td>
-<td>For density-based observation (observe_type = 0), landscape subsets observed</td>
+<td>For density-based observation (observe_type = 0), landscape subsets
+observed</td>
 </tr>
 <tr class="odd">
 <td>res_consume</td>
 <td>0.5</td>
-<td>Pr. of a landscape cell’s value reduced by the presence of a resource in a time step</td>
+<td>Pr. of a landscape cell’s value reduced by the presence of a
+resource in a time step</td>
 </tr>
 <tr class="even">
 <td>max_ages</td>
 <td>5</td>
-<td>The maximum number of time steps a resource can persist before it is removed</td>
+<td>The maximum number of time steps a resource can persist before it is
+removed</td>
 </tr>
 <tr class="odd">
 <td>minimum_cost</td>
@@ -247,7 +327,8 @@ Bram Van Moorter², and Nils Bunnefeld¹</div></h4>
 <tr class="even">
 <td>user_budget</td>
 <td>1000</td>
-<td>A user’s budget per time step for performing any number of actions</td>
+<td>A user’s budget per time step for performing any number of
+actions</td>
 </tr>
 <tr class="odd">
 <td>manager_budget</td>
@@ -267,27 +348,32 @@ Bram Van Moorter², and Nils Bunnefeld¹</div></h4>
 <tr class="even">
 <td>scaring</td>
 <td>FALSE</td>
-<td>Resource scaring (moves a resource to a random landscape cell) is a policy option</td>
+<td>Resource scaring (moves a resource to a random landscape cell) is a
+policy option</td>
 </tr>
 <tr class="odd">
 <td>culling</td>
 <td>TRUE</td>
-<td>Resource culling (removes a resource entirely) is a policy option</td>
+<td>Resource culling (removes a resource entirely) is a policy
+option</td>
 </tr>
 <tr class="even">
 <td>castration</td>
 <td>FALSE</td>
-<td>Resource castration (sets a resource’s lambda to zero) is a policy option</td>
+<td>Resource castration (sets a resource’s lambda to zero) is a policy
+option</td>
 </tr>
 <tr class="odd">
 <td>feeding</td>
 <td>FALSE</td>
-<td>Resource feeding (increases a resource’s lambda) is a policy option</td>
+<td>Resource feeding (increases a resource’s lambda) is a policy
+option</td>
 </tr>
 <tr class="even">
 <td>help_offspring</td>
 <td>FALSE</td>
-<td>Resource helping (increases a resource’s offspring number) is a policy option</td>
+<td>Resource helping (increases a resource’s offspring number) is a
+policy option</td>
 </tr>
 <tr class="odd">
 <td>tend_crops</td>
@@ -312,17 +398,20 @@ Bram Van Moorter², and Nils Bunnefeld¹</div></h4>
 <tr class="odd">
 <td>land_ownership</td>
 <td>FALSE</td>
-<td>Users own land and increase utility indirectly from landscape instead of resource use</td>
+<td>Users own land and increase utility indirectly from landscape
+instead of resource use</td>
 </tr>
 <tr class="even">
 <td>manage_freq</td>
 <td>1</td>
-<td>Frequency (in time steps) with which managers revise and enact policy</td>
+<td>Frequency (in time steps) with which managers revise and enact
+policy</td>
 </tr>
 <tr class="odd">
 <td>public_land</td>
 <td>0</td>
-<td>Pr. of land that is public (un-owned by users) if land_ownership = TRUE</td>
+<td>Pr. of land that is public (un-owned by users) if land_ownership =
+TRUE</td>
 </tr>
 <tr class="even">
 <td>age_repr</td>
@@ -332,179 +421,631 @@ Bram Van Moorter², and Nils Bunnefeld¹</div></h4>
 <tr class="odd">
 <td>action_thres</td>
 <td>0</td>
-<td>Pr. Deviation of the estimated population from the manager target, above which policy is updated</td>
+<td>Pr. Deviation of the estimated population from the manager target,
+above which policy is updated</td>
 </tr>
 <tr class="even">
 <td>budget_bonus</td>
 <td>0</td>
-<td>Percentage of increase in budget a manager accrues by not updating policy in a time step</td>
+<td>Percentage of increase in budget a manager accrues by not updating
+policy in a time step</td>
 </tr>
 <tr class="odd">
 <td>consume_surv</td>
 <td>0</td>
-<td>Amount of yield a resource need to consume in a timestep to survive</td>
+<td>Amount of yield a resource need to consume in a timestep to
+survive</td>
 </tr>
 <tr class="even">
 <td>consume_repr</td>
 <td>0</td>
-<td>Amount of yield a resource need to consume in a timestep to produce one offspring</td>
+<td>Amount of yield a resource need to consume in a timestep to produce
+one offspring</td>
 </tr>
 <tr class="odd">
 <td>times_feeding</td>
 <td>1</td>
-<td>Number of searches that resources are allowed per time step for feeding on the landscape</td>
+<td>Number of searches that resources are allowed per time step for
+feeding on the landscape</td>
 </tr>
 </tbody>
 </table>
-<p>Table 1: Select parameter values for initialising generalised management strategy evaluation simulations. See <a href="#nondefault">below</a> for explanation of non-default values of resource death and resource observation processes.</p>
-<p>Results are most easily interpreted visually, so a summary of simulation dynamics is plotted by default (the plot can also be called using the <code>plot_gmse_results</code> function, and summaries of results can be obtained using <code>gmse_summary</code> and <code>gmse_table</code>). An example below shows how simulations are set and interpreted.</p>
-<p>Where available, we use estimated demographic parameter values from <span class="citation">Johnson et al. (<a href="#ref-Johnson2018">2018</a>)</span> and <span class="citation">AEWA (<a href="#ref-AEWA2016">2016</a>)</span>. Where GMSE parameter values are not available, we use reasonable values or GMSE defaults. To make model inferences for real case studies, we strongly recommend <a href="SI6.html">replicating simulations</a> and simulating across a range of parameter values when empirical estimates are unavailable, as social-ecological dynamics might be sensitive to these unknown values.</p>
-<p><span class="citation">Johnson et al. (<a href="#ref-Johnson2018">2018</a>)</span> recently estimated key demographic parameters of the Taiga Bean Geese from the Central Management Unit, which includes geese that breed in “Northern most Sweden, Northern Norway, Northern and Central Finland, and adjacent North-western parts of Russia, wintering mostly in Southern Sweden and South-east Denmark” <span class="citation">(AEWA <a href="#ref-AEWA2016">2016</a>)</span>. They estimated goose survival under ideal conditions to be ca 0.878; this can be interpreted in our model by setting mortality to <code>remove_pr = 1 - 0.878</code>. Similarly, <span class="citation">Johnson et al. (<a href="#ref-Johnson2018">2018</a>)</span> estimated mean reproductive rate and carrying capacity to be 0.55 and 93870, respectively, so we set <code>lambda = 0.275</code> (for simplicity, we simply use half the mean reproductive rate; GMSE does not currently distinguish female and male individuals) and <code>res_death_K = 93870</code>. The global abundance of Taiga Bean Geese in 2009 was ca 63000 <span class="citation">(Fox et al. <a href="#ref-Fox2010">2010</a>)</span>, with ca 35000 in the Central Management Unit <span class="citation">(AEWA <a href="#ref-AEWA2016">2016</a>)</span>, which we can take as a starting abundance for our simulations (<code>RESOURCE_ini = 35000</code>). The International Single Species Action Plan has a target population size of ca 70000 in the Central Management Unit <span class="citation">(AEWA <a href="#ref-AEWA2016">2016</a>)</span>, which we can use as a management target (<code>manage_target = 70000</code>). We simulate social-ecological dynamics over 30 time steps, which could be interpreted as years.</p>
-<p>The code below calls <code>gmse</code> using the empirically derived parameters for Taiga Bean Geese described above. We also set <code>manager_budget = 10000</code> and <code>user_budget = 10000</code>. Further, we consider the case of a region in which farmland makes up 60% of all land, with 40% of land being ‘public’ (<code>public_land = 0.4</code>; which might be interpreted as any land in which stakeholders are not, or cannot be, invested in goose presence), and divide the farmland amongst 80 individual farmers (<code>stakeholders = 80</code>; <code>land_ownership = TRUE</code>). Landscape size is set to default 100 by 100 cells, so each farmer owns about 75 cells, which might be interpreted as hectares of land (for instructions on how to more precisely control landscape ownership, see the <a href="SI4.html">advanced GMSE options</a> using <code>gmse_apply</code>). Because we need both density-dependent (<code>res_death_K = 93870</code>) and density-independent (<code>remove_pr = 0.122</code>) sources of mortality, we set <code>res_death_type = 3</code>. We assume that a single goose decreases agricultural production on a cell by 2% per time step (<code>res_consume = 0.02</code>). We further assume that the population is very well-monitored, with observers counting goose numbers on each cell of the landscape in every timestep (<code>observe_type = 3</code>) with the ability to observe one landscape cell in every direction (<code>agent_view = 1</code>). All other parameter values are set to GMSE defaults.</p>
+<p>Table 1: Select parameter values for initialising generalised
+management strategy evaluation simulations. See <a href="#nondefault">below</a> for explanation of non-default values of
+resource death and resource observation processes.</p>
+<p>Results are most easily interpreted visually, so a summary of
+simulation dynamics is plotted by default (the plot can also be called
+using the <code>plot_gmse_results</code> function, and summaries of
+results can be obtained using <code>gmse_summary</code> and
+<code>gmse_table</code>). An example below shows how simulations are set
+and interpreted.</p>
+<p>Where available, we use estimated demographic parameter values from
+<span class="citation">Johnson et al. (<a href="#ref-Johnson2018" role="doc-biblioref">2018</a>)</span> and <span class="citation">AEWA
+(<a href="#ref-AEWA2016" role="doc-biblioref">2016</a>)</span>. Where
+GMSE parameter values are not available, we use reasonable values or
+GMSE defaults. To make model inferences for real case studies, we
+strongly recommend <a href="SI6.html">replicating simulations</a> and
+simulating across a range of parameter values when empirical estimates
+are unavailable, as social-ecological dynamics might be sensitive to
+these unknown values.</p>
+<p><span class="citation">Johnson et al. (<a href="#ref-Johnson2018" role="doc-biblioref">2018</a>)</span> recently estimated key demographic
+parameters of the Taiga Bean Geese from the Central Management Unit,
+which includes geese that breed in “Northern most Sweden, Northern
+Norway, Northern and Central Finland, and adjacent North-western parts
+of Russia, wintering mostly in Southern Sweden and South-east Denmark”
+<span class="citation">(<a href="#ref-AEWA2016" role="doc-biblioref">AEWA 2016</a>)</span>. They estimated goose
+survival under ideal conditions to be ca 0.878; this can be interpreted
+in our model by setting mortality to <code>remove_pr = 1 - 0.878</code>.
+Similarly, <span class="citation">Johnson et al. (<a href="#ref-Johnson2018" role="doc-biblioref">2018</a>)</span> estimated
+mean reproductive rate and carrying capacity to be 0.55 and 93870,
+respectively, so we set <code>lambda = 0.275</code> (for simplicity, we
+simply use half the mean reproductive rate; GMSE does not currently
+distinguish female and male individuals) and
+<code>res_death_K = 93870</code>. The global abundance of Taiga Bean
+Geese in 2009 was ca 63000 <span class="citation">(<a href="#ref-Fox2010" role="doc-biblioref">Fox et al. 2010</a>)</span>,
+with ca 35000 in the Central Management Unit <span class="citation">(<a href="#ref-AEWA2016" role="doc-biblioref">AEWA 2016</a>)</span>, which
+we can take as a starting abundance for our simulations
+(<code>RESOURCE_ini = 35000</code>). The International Single Species
+Action Plan has a target population size of ca 70000 in the Central
+Management Unit <span class="citation">(<a href="#ref-AEWA2016" role="doc-biblioref">AEWA 2016</a>)</span>, which we can use as a
+management target (<code>manage_target = 70000</code>). We simulate
+social-ecological dynamics over 30 time steps, which could be
+interpreted as years.</p>
+<p>The code below calls <code>gmse</code> using the empirically derived
+parameters for Taiga Bean Geese described above. We also set
+<code>manager_budget = 10000</code> and
+<code>user_budget = 10000</code>. Further, we consider the case of a
+region in which farmland makes up 60% of all land, with 40% of land
+being ‘public’ (<code>public_land = 0.4</code>; which might be
+interpreted as any land in which stakeholders are not, or cannot be,
+invested in goose presence), and divide the farmland amongst 80
+individual farmers (<code>stakeholders = 80</code>;
+<code>land_ownership = TRUE</code>). Landscape size is set to default
+100 by 100 cells, so each farmer owns about 75 cells, which might be
+interpreted as hectares of land (for instructions on how to more
+precisely control landscape ownership, see the <a href="SI4.html">advanced GMSE options</a> using
+<code>gmse_apply</code>). Because we need both density-dependent
+(<code>res_death_K = 93870</code>) and density-independent
+(<code>remove_pr = 0.122</code>) sources of mortality, we set
+<code>res_death_type = 3</code>. We assume that a single goose decreases
+agricultural production on a cell by 2% per time step
+(<code>res_consume = 0.02</code>). We further assume that the population
+is very well-monitored, with observers counting goose numbers on each
+cell of the landscape in every timestep (<code>observe_type = 3</code>)
+with the ability to observe one landscape cell in every direction
+(<code>agent_view = 1</code>). All other parameter values are set to
+GMSE defaults.</p>
 </div>
-<div id="simulating-goose-management" class="section level2">
-<h2 class="hasAnchor">
-<a href="#simulating-goose-management" class="anchor"></a>Simulating goose management</h2>
-<p>Below, we first only allow culling as a policy option and plot the dynamics of the social-ecological system from a single simulation. Next, we run the same simulation but also allow scaring as a policy option; we then use the model to make inferences regarding how scaring as a management option might affect goose population dynamics, agricultural production, and conservation conflict in the system. We emphasise that the simulations below are intended only to demonstrate one use of GMSE on a species of conservation interest, not to make recommendations for management of Taiga Bean Geese.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="no">sim_1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse.html">gmse</a></span>(<span class="kw">manager_budget</span> <span class="kw">=</span> <span class="fl">10000</span>, <span class="kw">user_budget</span> <span class="kw">=</span> <span class="fl">10000</span>, <span class="kw">res_death_K</span> <span class="kw">=</span> <span class="fl">93870</span>,
-              <span class="kw">manage_target</span> <span class="kw">=</span> <span class="fl">70000</span>, <span class="kw">RESOURCE_ini</span> <span class="kw">=</span> <span class="fl">35000</span>, <span class="kw">plotting</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
-              <span class="kw">stakeholders</span> <span class="kw">=</span> <span class="fl">80</span>, <span class="kw">land_ownership</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">public_land</span> <span class="kw">=</span> <span class="fl">0.4</span>,
-              <span class="kw">scaring</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">lambda</span> <span class="kw">=</span> <span class="fl">0.275</span>, <span class="kw">remove_pr</span> <span class="kw">=</span> <span class="fl">0.122</span>, <span class="kw">time_max</span> <span class="kw">=</span> <span class="fl">30</span>,
-              <span class="kw">res_death_type</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">res_consume</span> <span class="kw">=</span> <span class="fl">0.02</span>, <span class="kw">res_birth_K</span> <span class="kw">=</span> <span class="fl">200000</span>,
-              <span class="kw">observe_type</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">agent_view</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">converge_crit</span> <span class="kw">=</span> <span class="fl">0.01</span>,
-              <span class="kw">ga_mingen</span> <span class="kw">=</span> <span class="fl">200</span>);</pre></body></html></div>
-<p>The results of the above simulation are plotted in Figure 1 below.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="../reference/plot_gmse_results.html">plot_gmse_results</a></span>(<span class="kw">sim_results</span> <span class="kw">=</span> <span class="no">sim_1</span>);</pre></body></html></div>
+<div class="section level3">
+<h3 id="simulating-goose-management">Simulating goose management<a class="anchor" aria-label="anchor" href="#simulating-goose-management"></a>
+</h3>
+<p>Below, we first only allow culling as a policy option and plot the
+dynamics of the social-ecological system from a single simulation. Next,
+we run the same simulation but also allow scaring as a policy option; we
+then use the model to make inferences regarding how scaring as a
+management option might affect goose population dynamics, agricultural
+production, and conservation conflict in the system. We emphasise that
+the simulations below are intended only to demonstrate one use of GMSE
+on a species of conservation interest, not to make recommendations for
+management of Taiga Bean Geese.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sim_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse.html">gmse</a></span><span class="op">(</span>manager_budget <span class="op">=</span> <span class="fl">10000</span>, user_budget <span class="op">=</span> <span class="fl">10000</span>, res_death_K <span class="op">=</span> <span class="fl">93870</span>, 
+              manage_target <span class="op">=</span> <span class="fl">70000</span>, RESOURCE_ini <span class="op">=</span> <span class="fl">35000</span>, plotting <span class="op">=</span> <span class="cn">FALSE</span>, 
+              stakeholders <span class="op">=</span> <span class="fl">80</span>, land_ownership <span class="op">=</span> <span class="cn">TRUE</span>, public_land <span class="op">=</span> <span class="fl">0.4</span>, 
+              scaring <span class="op">=</span> <span class="cn">FALSE</span>, lambda <span class="op">=</span> <span class="fl">0.275</span>, remove_pr <span class="op">=</span> <span class="fl">0.122</span>, time_max <span class="op">=</span> <span class="fl">30</span>, 
+              res_death_type <span class="op">=</span> <span class="fl">3</span>, res_consume <span class="op">=</span> <span class="fl">0.02</span>, res_birth_K <span class="op">=</span> <span class="fl">200000</span>, 
+              observe_type <span class="op">=</span> <span class="fl">3</span>, agent_view <span class="op">=</span> <span class="fl">1</span>, converge_crit <span class="op">=</span> <span class="fl">0.01</span>, 
+              ga_mingen <span class="op">=</span> <span class="fl">200</span><span class="op">)</span>;</code></pre></div>
+<p>The results of the above simulation are plotted in Figure 1
+below.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/plot_gmse_results.html">plot_gmse_results</a></span><span class="op">(</span>sim_results <span class="op">=</span> <span class="va">sim_1</span><span class="op">)</span>;</code></pre></div>
 <div class="figure">
 <img src="SI3_files/figure-html/unnamed-chunk-4-1.png" alt="Results of a GMSE simulation using parameters estimated for Taiga Been Geese Central Management Unit. This example includes 80 farmers whose objective is to maximise their agricultural output, and one manager whose objective is to keep geese at a target abundance, over 30 simulated time steps. Goose locations at the end of the simulation are shown in the upper left panel, while the upper right panel shows the same landscape broken down among the 80 farmers (upper 60% of the landscape in multiple colours), along with non-agricultural land (lower 40% of the landscape in blue). Actual goose abundance is shown in the middle left panel (black solid line), along with its estimate by the manager (blue solid line, hidden underneath the black line). The horizontal red and blue dotted lines show goose carrying capacity and the manager's target for goose abundance, respectively. The orange line shows the total percent of landscape cell (including non-farmed cells) yield, as decreased by geese. The middle right panel shows this yield for each farmer, and for the public land (lower line in blue). The lower left panel shows the cost of culling for farmers, as set by the manager, and the lower right panel shows the total number of culls attempted by farmers over time." width="700"><p class="caption">
-Results of a GMSE simulation using parameters estimated for Taiga Been Geese Central Management Unit. This example includes 80 farmers whose objective is to maximise their agricultural output, and one manager whose objective is to keep geese at a target abundance, over 30 simulated time steps. Goose locations at the end of the simulation are shown in the upper left panel, while the upper right panel shows the same landscape broken down among the 80 farmers (upper 60% of the landscape in multiple colours), along with non-agricultural land (lower 40% of the landscape in blue). Actual goose abundance is shown in the middle left panel (black solid line), along with its estimate by the manager (blue solid line, hidden underneath the black line). The horizontal red and blue dotted lines show goose carrying capacity and the manager’s target for goose abundance, respectively. The orange line shows the total percent of landscape cell (including non-farmed cells) yield, as decreased by geese. The middle right panel shows this yield for each farmer, and for the public land (lower line in blue). The lower left panel shows the cost of culling for farmers, as set by the manager, and the lower right panel shows the total number of culls attempted by farmers over time.
+Results of a GMSE simulation using parameters estimated for Taiga Been
+Geese Central Management Unit. This example includes 80 farmers whose
+objective is to maximise their agricultural output, and one manager
+whose objective is to keep geese at a target abundance, over 30
+simulated time steps. Goose locations at the end of the simulation are
+shown in the upper left panel, while the upper right panel shows the
+same landscape broken down among the 80 farmers (upper 60% of the
+landscape in multiple colours), along with non-agricultural land (lower
+40% of the landscape in blue). Actual goose abundance is shown in the
+middle left panel (black solid line), along with its estimate by the
+manager (blue solid line, hidden underneath the black line). The
+horizontal red and blue dotted lines show goose carrying capacity and
+the manager’s target for goose abundance, respectively. The orange line
+shows the total percent of landscape cell (including non-farmed cells)
+yield, as decreased by geese. The middle right panel shows this yield
+for each farmer, and for the public land (lower line in blue). The lower
+left panel shows the cost of culling for farmers, as set by the manager,
+and the lower right panel shows the total number of culls attempted by
+farmers over time.
 </p>
 </div>
-<p>Figure 1 shows the dynamics of goose abundance and agricultural yield, along with how managers react to change in abundance and farmers react to manager policy. In the case of the simulation above, managers quickly set a policy of high cost for culling, which leads to a rise in the goose population and a decrease in crop yield for farmers. After roughly 20 time steps, the goose population rises above the manager target, at which point the manager becomes more permissive of culling and the cost of culling for users therefore declines. In response, users begin to cull geese on their land, and the goose population begins to stabilise around the target of 7000 total geese. We can investigate the conflict between management policy and farmers more directly using the <code>plot_gmse_effort</code> function (Figure 2).</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="fu"><a href="../reference/plot_gmse_effort.html">plot_gmse_effort</a></span>(<span class="kw">sim_results</span> <span class="kw">=</span> <span class="no">sim_1</span>);</pre></body></html></div>
+<p>Figure 1 shows the dynamics of goose abundance and agricultural
+yield, along with how managers react to change in abundance and farmers
+react to manager policy. In the case of the simulation above, managers
+quickly set a policy of high cost for culling, which leads to a rise in
+the goose population and a decrease in crop yield for farmers. After
+roughly 20 time steps, the goose population rises above the manager
+target, at which point the manager becomes more permissive of culling
+and the cost of culling for users therefore declines. In response, users
+begin to cull geese on their land, and the goose population begins to
+stabilise around the target of 7000 total geese. We can investigate the
+conflict between management policy and farmers more directly using the
+<code>plot_gmse_effort</code> function (Figure 2).</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/plot_gmse_effort.html">plot_gmse_effort</a></span><span class="op">(</span>sim_results <span class="op">=</span> <span class="va">sim_1</span><span class="op">)</span>;</code></pre></div>
 <div class="figure">
 <img src="SI3_files/figure-html/unnamed-chunk-5-1.png" alt="Permissiveness that each manager exhibits for each farmer action (black lines) and the effort that each individual farmer puts into each action over time (coloured lines). Each panel row reports a different action (in decreasing order: scaring, culling, castration, feeding, and helping). The left axis shows the permissiveness that a manager has for the focal action (black line), which is calculated as 100 minus the percent of the manager's budget that is put into increasing the cost of the focal action. For example, if the manager puts all of their effort (total budget) into increasing the cost of culling, then permissiveness of culling is 0; if the manager puts no effort into increasing culling cost, then permissiveness of culling is 100. The right axis shows effort that farmers put into an action (coloured lines), which defined as the percentage of a farmer's budget put into a particular action (note, values might not add up to 100 because farmers are not forced to use their entire budget)." width="576"><p class="caption">
-Permissiveness that each manager exhibits for each farmer action (black lines) and the effort that each individual farmer puts into each action over time (coloured lines). Each panel row reports a different action (in decreasing order: scaring, culling, castration, feeding, and helping). The left axis shows the permissiveness that a manager has for the focal action (black line), which is calculated as 100 minus the percent of the manager’s budget that is put into increasing the cost of the focal action. For example, if the manager puts all of their effort (total budget) into increasing the cost of culling, then permissiveness of culling is 0; if the manager puts no effort into increasing culling cost, then permissiveness of culling is 100. The right axis shows effort that farmers put into an action (coloured lines), which defined as the percentage of a farmer’s budget put into a particular action (note, values might not add up to 100 because farmers are not forced to use their entire budget).
+Permissiveness that each manager exhibits for each farmer action (black
+lines) and the effort that each individual farmer puts into each action
+over time (coloured lines). Each panel row reports a different action
+(in decreasing order: scaring, culling, castration, feeding, and
+helping). The left axis shows the permissiveness that a manager has for
+the focal action (black line), which is calculated as 100 minus the
+percent of the manager’s budget that is put into increasing the cost of
+the focal action. For example, if the manager puts all of their effort
+(total budget) into increasing the cost of culling, then permissiveness
+of culling is 0; if the manager puts no effort into increasing culling
+cost, then permissiveness of culling is 100. The right axis shows effort
+that farmers put into an action (coloured lines), which defined as the
+percentage of a farmer’s budget put into a particular action (note,
+values might not add up to 100 because farmers are not forced to use
+their entire budget).
 </p>
 </div>
-<p>Black lines in Figure 2 indicate how permissive a manager is toward a particular action on a scale of 0 to 100, while coloured lines indicate how much effort farmers expend on a given action. When black lines are far below coloured lines, we can (cautiously) interpret this as a conflict between management of the goose population and farmer’s interest in agricultural production. These time periods represent instances in which the manager is not permissive of a particular action (in this case culling), but farmers continue to expend effort to do the action anyway. In the case of the above simulation of potential conflict between farmers and goose conservation, conflict is highest before time step 20, where the manager is not permissive of culling because the population is below the manager’s target. Once the goose population has increased above the manager’s target, conflict decreases because the desired culling is permitted by managers to keep the population at a target abundance. It is worth noting that, despite conflict as we define it decreasing, agricultural damage is still relatively high after the target goose population size is achieved (Figure 1). Hence, on a broader scale, conflict might persist around the appropriate target population size rather than what actions are permitted for farmers; currently, this potential aspect of conflict is not modelled, but future versions of GMSE may attempt to incorporate such additional complexity in conflict scenarios.</p>
-<p>We can model the consequences for goose population dynamics, agricultural production, and conservation conflict when scaring is a policy option available to the manager. The code below runs a simulation identical to the one just discussed, but with a scaring option included using the argument <code>scaring = TRUE</code>.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">sim_2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gmse.html">gmse</a></span>(<span class="kw">manager_budget</span> <span class="kw">=</span> <span class="fl">10000</span>, <span class="kw">user_budget</span> <span class="kw">=</span> <span class="fl">10000</span>, <span class="kw">res_death_K</span> <span class="kw">=</span> <span class="fl">93870</span>,
-             <span class="kw">manage_target</span> <span class="kw">=</span> <span class="fl">70000</span>, <span class="kw">RESOURCE_ini</span> <span class="kw">=</span> <span class="fl">35000</span>, <span class="kw">plotting</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
-             <span class="kw">stakeholders</span> <span class="kw">=</span> <span class="fl">80</span>, <span class="kw">land_ownership</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">public_land</span> <span class="kw">=</span> <span class="fl">0.4</span>,
-             <span class="kw">scaring</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">lambda</span> <span class="kw">=</span> <span class="fl">0.275</span>, <span class="kw">remove_pr</span> <span class="kw">=</span> <span class="fl">0.122</span>, <span class="kw">time_max</span> <span class="kw">=</span> <span class="fl">30</span>,
-             <span class="kw">res_death_type</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">res_consume</span> <span class="kw">=</span> <span class="fl">0.02</span>, <span class="kw">res_birth_K</span> <span class="kw">=</span> <span class="fl">200000</span>,
-             <span class="kw">observe_type</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">agent_view</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">converge_crit</span> <span class="kw">=</span> <span class="fl">0.01</span>,
-             <span class="kw">ga_mingen</span> <span class="kw">=</span> <span class="fl">200</span>);</pre></body></html></div>
+<p>Black lines in Figure 2 indicate how permissive a manager is toward a
+particular action on a scale of 0 to 100, while coloured lines indicate
+how much effort farmers expend on a given action. When black lines are
+far below coloured lines, we can (cautiously) interpret this as a
+conflict between management of the goose population and farmer’s
+interest in agricultural production. These time periods represent
+instances in which the manager is not permissive of a particular action
+(in this case culling), but farmers continue to expend effort to do the
+action anyway. In the case of the above simulation of potential conflict
+between farmers and goose conservation, conflict is highest before time
+step 20, where the manager is not permissive of culling because the
+population is below the manager’s target. Once the goose population has
+increased above the manager’s target, conflict decreases because the
+desired culling is permitted by managers to keep the population at a
+target abundance. It is worth noting that, despite conflict as we define
+it decreasing, agricultural damage is still relatively high after the
+target goose population size is achieved (Figure 1). Hence, on a broader
+scale, conflict might persist around the appropriate target population
+size rather than what actions are permitted for farmers; currently, this
+potential aspect of conflict is not modelled, but future versions of
+GMSE may attempt to incorporate such additional complexity in conflict
+scenarios.</p>
+<p>We can model the consequences for goose population dynamics,
+agricultural production, and conservation conflict when scaring is a
+policy option available to the manager. The code below runs a simulation
+identical to the one just discussed, but with a scaring option included
+using the argument <code>scaring = TRUE</code>.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sim_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse.html">gmse</a></span><span class="op">(</span>manager_budget <span class="op">=</span> <span class="fl">10000</span>, user_budget <span class="op">=</span> <span class="fl">10000</span>, res_death_K <span class="op">=</span> <span class="fl">93870</span>, 
+             manage_target <span class="op">=</span> <span class="fl">70000</span>, RESOURCE_ini <span class="op">=</span> <span class="fl">35000</span>, plotting <span class="op">=</span> <span class="cn">FALSE</span>, 
+             stakeholders <span class="op">=</span> <span class="fl">80</span>, land_ownership <span class="op">=</span> <span class="cn">TRUE</span>, public_land <span class="op">=</span> <span class="fl">0.4</span>, 
+             scaring <span class="op">=</span> <span class="cn">TRUE</span>, lambda <span class="op">=</span> <span class="fl">0.275</span>, remove_pr <span class="op">=</span> <span class="fl">0.122</span>, time_max <span class="op">=</span> <span class="fl">30</span>, 
+             res_death_type <span class="op">=</span> <span class="fl">3</span>, res_consume <span class="op">=</span> <span class="fl">0.02</span>, res_birth_K <span class="op">=</span> <span class="fl">200000</span>, 
+             observe_type <span class="op">=</span> <span class="fl">3</span>, agent_view <span class="op">=</span> <span class="fl">1</span>, converge_crit <span class="op">=</span> <span class="fl">0.01</span>, 
+             ga_mingen <span class="op">=</span> <span class="fl">200</span><span class="op">)</span>;</code></pre></div>
 <p>The results are plotted in Figure 3.</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="../reference/plot_gmse_results.html">plot_gmse_results</a></span>(<span class="kw">sim_results</span> <span class="kw">=</span> <span class="no">sim_2</span>);</pre></body></html></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/plot_gmse_results.html">plot_gmse_results</a></span><span class="op">(</span>sim_results <span class="op">=</span> <span class="va">sim_2</span><span class="op">)</span>;</code></pre></div>
 <div class="figure">
 <img src="SI3_files/figure-html/unnamed-chunk-8-1.png" alt="Results of a GMSE simulation using parameters estimated for Taiga Been Geese Central Management Unit in which scaring is permitted. Simulation output is interpreted as in Figure 1." width="700"><p class="caption">
-Results of a GMSE simulation using parameters estimated for Taiga Been Geese Central Management Unit in which scaring is permitted. Simulation output is interpreted as in Figure 1.
+Results of a GMSE simulation using parameters estimated for Taiga Been
+Geese Central Management Unit in which scaring is permitted. Simulation
+output is interpreted as in Figure 1.
 </p>
 </div>
-<p>When scaring is introduced to an otherwise identical simulation (compare Figure 3 to Figure 1), the goose population increases as before, but it achieves the manager’s target population size and stabilises 2-3 time steps earlier. The reason for this earlier stabilisation is due to the change in farmer’s actions as a consequence of the introduced scaring policy. At the start of the simulation, managers adjust policy by quickly increasing the cost of culling and decreasing the cost of scaring. In response, farmers turn to scaring rather than culling to remove geese from their land cells (Figure 3). This is in contrast to the simulation in which scaring was not an option, and farmers simply culled as much as possible despite the high costs (Figure 1). After the population has risen to slightly above the manager’s target, the cost of culling again decreases, with the manager balancing the incentivisation of culling and scaring. The consequence of scaring as an available policy also reveals some potentially unexpected outcomes, such as increased variance in among-farmer agricultural production, which arises as geese are scared from one area of the landscape to another.</p>
-<p>We can use the <code>plot_gmse_effort</code> function as before to investigate how the inclusion of scaring as a policy option might affect conservation conflict. Conflict results when scaring is included are plotted in Figure 4.</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="../reference/plot_gmse_effort.html">plot_gmse_effort</a></span>(<span class="kw">sim_results</span> <span class="kw">=</span> <span class="no">sim_2</span>);</pre></body></html></div>
+<p>When scaring is introduced to an otherwise identical simulation
+(compare Figure 3 to Figure 1), the goose population increases as
+before, but it achieves the manager’s target population size and
+stabilises 2-3 time steps earlier. The reason for this earlier
+stabilisation is due to the change in farmer’s actions as a consequence
+of the introduced scaring policy. At the start of the simulation,
+managers adjust policy by quickly increasing the cost of culling and
+decreasing the cost of scaring. In response, farmers turn to scaring
+rather than culling to remove geese from their land cells (Figure 3).
+This is in contrast to the simulation in which scaring was not an
+option, and farmers simply culled as much as possible despite the high
+costs (Figure 1). After the population has risen to slightly above the
+manager’s target, the cost of culling again decreases, with the manager
+balancing the incentivisation of culling and scaring. The consequence of
+scaring as an available policy also reveals some potentially unexpected
+outcomes, such as increased variance in among-farmer agricultural
+production, which arises as geese are scared from one area of the
+landscape to another.</p>
+<p>We can use the <code>plot_gmse_effort</code> function as before to
+investigate how the inclusion of scaring as a policy option might affect
+conservation conflict. Conflict results when scaring is included are
+plotted in Figure 4.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/plot_gmse_effort.html">plot_gmse_effort</a></span><span class="op">(</span>sim_results <span class="op">=</span> <span class="va">sim_2</span><span class="op">)</span>;</code></pre></div>
 <div class="figure">
 <img src="SI3_files/figure-html/unnamed-chunk-9-1.png" alt="Permissiveness that each manager exhibits for each farmer action (black lines) and the effort that each individual farmer puts into each action over time (coloured lines) given scaring as a possible policy option. Simulation output is intepreted as in Figure 2." width="672"><p class="caption">
-Permissiveness that each manager exhibits for each farmer action (black lines) and the effort that each individual farmer puts into each action over time (coloured lines) given scaring as a possible policy option. Simulation output is intepreted as in Figure 2.
+Permissiveness that each manager exhibits for each farmer action (black
+lines) and the effort that each individual farmer puts into each action
+over time (coloured lines) given scaring as a possible policy option.
+Simulation output is intepreted as in Figure 2.
 </p>
 </div>
-<p>Unlike the case in which culling was the only policy option (compare Figure 4 to Figure 2), the effort that farmers expended on a given action did not rise as highly above the manager’s permissiveness of the action. Hence, under the conditions of this model, the inclusion of scaring as a policy option has reduced conservation conflict in the social-ecological system. We again emphasise that the simulations presented here only serve as an example for how GMSE could be used as a tool for simulating social-ecological systems and understanding the potential for conflict; it is not intended to inform policy in Taiga Bean Geese or any other specific system.</p>
+<p>Unlike the case in which culling was the only policy option (compare
+Figure 4 to Figure 2), the effort that farmers expended on a given
+action did not rise as highly above the manager’s permissiveness of the
+action. Hence, under the conditions of this model, the inclusion of
+scaring as a policy option has reduced conservation conflict in the
+social-ecological system. We again emphasise that the simulations
+presented here only serve as an example for how GMSE could be used as a
+tool for simulating social-ecological systems and understanding the
+potential for conflict; it is not intended to inform policy in Taiga
+Bean Geese or any other specific system.</p>
 </div>
-<div id="nondefault" class="section level2">
-<h2 class="hasAnchor">
-<a href="#nondefault" class="anchor"></a>Default and non-default options in default GMSE sub-models</h2>
-<p>Within the default sub-models of GMSE, there are several non-default options that can be set using arguments to <code>gmse</code> and <code>gmse_apply</code>. Brief explanations of these non-default options appear in the <a href="https://cran.r-project.org/web/packages/GMSE/GMSE.pdf">GMSE documentation</a> (also <a href="https://confoobio.github.io/gmse/reference/gmse.html">listed</a> on the <a href="https://confoobio.github.io/gmse/">GMSE website</a>). Here we further explain some of the less obvious or less intuitive options available in GMSE, for which additional explanation beyond the GMSE documentation may be warranted for application to case studies such as the Taiga Bean Geese case study example demonstrated above. Future versions of GMSE are expected to expand upon these options.</p>
-<p><strong>res_move_type</strong>: Resources in default GMSE sub-models can move on the landscape in one of three ways. These different movement types are listed below, and are taken as arguments to <code>gmse</code> (e.g., <code><a href="../reference/gmse.html">gmse(res_move_type = 2)</a></code>).</p>
+<div class="section level3">
+<h3 id="nondefault">Default and non-default options in default GMSE sub-models<a class="anchor" aria-label="anchor" href="#nondefault"></a>
+</h3>
+<p>Within the default sub-models of GMSE, there are several non-default
+options that can be set using arguments to <code>gmse</code> and
+<code>gmse_apply</code>. Brief explanations of these non-default options
+appear in the <a href="https://cran.r-project.org/web/packages/GMSE/GMSE.pdf" class="external-link">GMSE
+documentation</a> (also <a href="https://confoobio.github.io/gmse/reference/gmse.html" class="external-link">listed</a>
+on the <a href="https://confoobio.github.io/gmse/" class="external-link">GMSE website</a>).
+Here we further explain some of the less obvious or less intuitive
+options available in GMSE, for which additional explanation beyond the
+GMSE documentation may be warranted for application to case studies such
+as the Taiga Bean Geese case study example demonstrated above. Future
+versions of GMSE are expected to expand upon these options.</p>
+<p><strong>res_move_type</strong>: Resources in default GMSE sub-models
+can move on the landscape in one of three ways. These different movement
+types are listed below, and are taken as arguments to <code>gmse</code>
+(e.g., <code>gmse(res_move_type = 2)</code>).</p>
 <ol start="0" style="list-style-type: decimal">
 <li>
-<em>No movement</em>. Given this option, resources do not move at all in the resource sub-model, and instead remain on the location at which they are initialised.</li>
+<em>No movement</em>. Given this option, resources do not move at
+all in the resource sub-model, and instead remain on the location at
+which they are initialised.</li>
 <li>
-<em>Uniform movement in any direction up to <code>res_movement</code> cells away from a resource’s original location</em> (default). In uniform movement, the resource moves to a new cell within some distance <code>res_movement</code> of its original location in each time step. Distance therefore includes diagonal movement, such that a resource capable of moving <code>res_movement = 1</code> cell away can go to any of the eight adjacent cells around its current location; it can also remain on its current cell. Similarly, a resource capable of moving <code>res_movement = 2</code> cells away can go to any of the 24 cells surrounding its current location, or remain on its current cell. The distance (in cells) moved in the x-direction (i.e., left to right) and y-direction (i.e., up and down), is sampled from a uniform distribution, meaning that all reachable cells (including the resource’s current cell) have equal probability of being selected as the resource’s new cell location.</li>
+<em>Uniform movement in any direction up to
+<code>res_movement</code> cells away from a resource’s original
+location</em> (default). In uniform movement, the resource moves to a
+new cell within some distance <code>res_movement</code> of its original
+location in each time step. Distance therefore includes diagonal
+movement, such that a resource capable of moving
+<code>res_movement = 1</code> cell away can go to any of the eight
+adjacent cells around its current location; it can also remain on its
+current cell. Similarly, a resource capable of moving
+<code>res_movement = 2</code> cells away can go to any of the 24 cells
+surrounding its current location, or remain on its current cell. The
+distance (in cells) moved in the x-direction (i.e., left to right) and
+y-direction (i.e., up and down), is sampled from a uniform distribution,
+meaning that all reachable cells (including the resource’s current cell)
+have equal probability of being selected as the resource’s new cell
+location.</li>
 <li>
-<em>Poisson selected movement distance and direction</em>. In this movement type, the distance (in cells) moved in the x-direction and the y-direction are sampled from a Poisson distribution using <code>res_movement</code> as the rate parameter (i.e., the mean movement distance in each direction). Using this movement type is not generally recommended because it is not likely to be biologically realistic (e.g., diagonal movement is rare because selection of both high x-direction and high y-direction values is unlikely).</li>
+<em>Poisson selected movement distance and direction</em>. In this
+movement type, the distance (in cells) moved in the x-direction and the
+y-direction are sampled from a Poisson distribution using
+<code>res_movement</code> as the rate parameter (i.e., the mean movement
+distance in each direction). Using this movement type is not generally
+recommended because it is not likely to be biologically realistic (e.g.,
+diagonal movement is rare because selection of both high x-direction and
+high y-direction values is unlikely).</li>
 <li>
-<em>Uniform movement in any direction up to <code>res_movement</code> cells away from a resource’s original location <code>res_movement</code> times.</em> Like option (1), when moving, resources can travel in any direction up to <code>res_movement</code> cells from their current location with equal probability. What is different about this option is that uniform movement in any direction occurs <span class="math inline">\(C =\)</span> Poisson(<code>res_movement</code>) times. In other words, when a resource moves, it first decides how many different cells it will visit (<span class="math inline">\(C\)</span>), as determined by sampling from a Poisson distribution with a rate parameter of <code>res_movement</code> (i.e., the mean number of visited cells will be <code>res_movement</code>). Upon leaving a cell, the resource will move in the same way as defined in option (1) above, by choosing a cell within <code>res_movement</code> distance (in cells) of its current cell. It continues moving in this way until <span class="math inline">\(C\)</span> cells have been visited. This type of movement has been used in some individual-based models of plant-pollinator interactions <span class="citation">(e.g., Duthie and Falcy <a href="#ref-Duthie2013">2013</a>; Wilson, Morris, and Bronstein <a href="#ref-Wilson2003">2003</a>)</span>.</li>
+<em>Uniform movement in any direction up to
+<code>res_movement</code> cells away from a resource’s original location
+<code>res_movement</code> times.</em> Like option (1), when moving,
+resources can travel in any direction up to <code>res_movement</code>
+cells from their current location with equal probability. What is
+different about this option is that uniform movement in any direction
+occurs <span class="math inline">\(C =\)</span>
+Poisson(<code>res_movement</code>) times. In other words, when a
+resource moves, it first decides how many different cells it will visit
+(<span class="math inline">\(C\)</span>), as determined by sampling from
+a Poisson distribution with a rate parameter of
+<code>res_movement</code> (i.e., the mean number of visited cells will
+be <code>res_movement</code>). Upon leaving a cell, the resource will
+move in the same way as defined in option (1) above, by choosing a cell
+within <code>res_movement</code> distance (in cells) of its current
+cell. It continues moving in this way until <span class="math inline">\(C\)</span> cells have been visited. This type of
+movement has been used in some individual-based models of
+plant-pollinator interactions <span class="citation">(e.g., <a href="#ref-Duthie2013" role="doc-biblioref">Duthie and Falcy 2013</a>;
+<a href="#ref-Wilson2003" role="doc-biblioref">Wilson, Morris, and
+Bronstein 2003</a>)</span>.</li>
 </ol>
-<p><strong>res_birth_type</strong>: Resources in GMSE can be added to the model in one of two ways within the default resource sub-model, thereby simulating resource birth. It is important to note that <code>res_birth_type</code> refers only to additions that occur within the resource sub-model; additions from user actions (e.g., the <code>help_offspring</code> option) occur within the user sub-model.</p>
+<p><strong>res_birth_type</strong>: Resources in GMSE can be added to
+the model in one of two ways within the default resource sub-model,
+thereby simulating resource birth. It is important to note that
+<code>res_birth_type</code> refers only to additions that occur within
+the resource sub-model; additions from user actions (e.g., the
+<code>help_offspring</code> option) occur within the user sub-model.</p>
 <ol start="0" style="list-style-type: decimal">
 <li>
-<em>No explicit resource addition</em>. This option causes no baseline resource additions, but resource birth is still possible if <code>consume_repr &gt; 0</code>. Under such conditions, landscape yield consumed by the resource will result in <code><a href="https://rdrr.io/r/base/Round.html">floor(yield_consumed / consume_repr)</a></code> offspring produced. The amount of yield a resource consumes will be affected by both <code>times_feeding</code> (how many times the resource moves and feeds on a new landscape cell during a time step) and <code>res_consume</code> (the proportion of yield on a cell that is consumed upon visit to the cell). Note that <code>consume_repr</code> can still be used when <code>res_birth_type &gt; 0</code> (below), resulting in multiple sources of resource addition.</li>
+<em>No explicit resource addition</em>. This option causes no
+baseline resource additions, but resource birth is still possible if
+<code>consume_repr &gt; 0</code>. Under such conditions, landscape yield
+consumed by the resource will result in
+<code>floor(yield_consumed / consume_repr)</code> offspring produced.
+The amount of yield a resource consumes will be affected by both
+<code>times_feeding</code> (how many times the resource moves and feeds
+on a new landscape cell during a time step) and <code>res_consume</code>
+(the proportion of yield on a cell that is consumed upon visit to the
+cell). Note that <code>consume_repr</code> can still be used when
+<code>res_birth_type &gt; 0</code> (below), resulting in multiple
+sources of resource addition.</li>
 <li>
-<em>Fixed number added per resource</em>. For this option, each resource produces <code>lambda</code> new resources in each time step.</li>
+<em>Fixed number added per resource</em>. For this option, each
+resource produces <code>lambda</code> new resources in each time
+step.</li>
 <li>
-<em>Poisson sampling</em>. For this option, each resource produces a number of offspring as determined by sampling from a Poisson distribution in which <code>lambda</code> is the rate parameter (i.e., each resource is expected to produce <code>lambda</code> offspring).</li>
+<em>Poisson sampling</em>. For this option, each resource produces a
+number of offspring as determined by sampling from a Poisson
+distribution in which <code>lambda</code> is the rate parameter (i.e.,
+each resource is expected to produce <code>lambda</code>
+offspring).</li>
 </ol>
-<p><strong>res_death_type</strong>: Resources in GMSE can be removed from the model in one of four ways within the default resource sub-model, thereby simulating resource death. It is important to note that <code>res_death_type</code> refers only to removal that occurs within the resource sub-model; removal from user actions (e.g., death from shooting) occurs within the user sub-model.</p>
+<p><strong>res_death_type</strong>: Resources in GMSE can be removed
+from the model in one of four ways within the default resource
+sub-model, thereby simulating resource death. It is important to note
+that <code>res_death_type</code> refers only to removal that occurs
+within the resource sub-model; removal from user actions (e.g., death
+from shooting) occurs within the user sub-model.</p>
 <ol start="0" style="list-style-type: decimal">
 <li>
-<em>No explicit density independent or dependent removal, and no old age</em>. Given this option, the only way in resources can be removed is if users remove them through their actions (i.e., culling). Resources cannot die due to lack of resource consumption, density independent or dependent effects, or old age.</li>
+<em>No explicit density independent or dependent removal, and no old
+age</em>. Given this option, the only way in resources can be removed is
+if users remove them through their actions (i.e., culling). Resources
+cannot die due to lack of resource consumption, density independent or
+dependent effects, or old age.</li>
 <li>
-<em>Density-independent removal</em>. Given this option, there is no explicit density-dependent removal of resources within the resource sub-model. Resources are simply removed with a fixed probability of <code>removal_pr</code> (its default value is 0) each time the sub-model is run. This option should be used with great care because in the absence of density-dependence, it is possible for the population of resources to increase without limit and thereby greatly slow down simulation times. Usually <code>res_death_type = 1</code> is most useful when combined with consumption limited survival (<code>consume_surv</code>) and reproduction (<code>consume_repr</code>); see below.</li>
+<em>Density-independent removal</em>. Given this option, there is no
+explicit density-dependent removal of resources within the resource
+sub-model. Resources are simply removed with a fixed probability of
+<code>removal_pr</code> (its default value is 0) each time the sub-model
+is run. This option should be used with great care because in the
+absence of density-dependence, it is possible for the population of
+resources to increase without limit and thereby greatly slow down
+simulation times. Usually <code>res_death_type = 1</code> is most useful
+when combined with consumption limited survival
+(<code>consume_surv</code>) and reproduction
+(<code>consume_repr</code>); see below.</li>
 <li>
-<em>Density-dependent removal</em> (default). Given this option, removal of resources within the resource sub-model is caused by density effects. The probability that a resource is removed is a function of the resource carrying capacity set using the <code>res_death_K</code> parameter. If the number of resources (<span class="math inline">\(N\)</span>) is greater than <code>res_death_K</code> (<span class="math inline">\(K\)</span>), then the probability that an individual resource is removed is defined by <span class="math inline">\((N - K) / N\)</span>. Removal then occurs independently for each resource based on this probability.</li>
+<em>Density-dependent removal</em> (default). Given this option,
+removal of resources within the resource sub-model is caused by density
+effects. The probability that a resource is removed is a function of the
+resource carrying capacity set using the <code>res_death_K</code>
+parameter. If the number of resources (<span class="math inline">\(N\)</span>) is greater than
+<code>res_death_K</code> (<span class="math inline">\(K\)</span>), then
+the probability that an individual resource is removed is defined by
+<span class="math inline">\((N - K) / N\)</span>. Removal then occurs
+independently for each resource based on this probability.</li>
 <li>
-<em>Density-independent and density-dependent removal</em>. This option allows a combination of both options (1) and (2), which affect removal independently. In other words, each resource is assigned a probability of removal <code>removal_pr</code> as in (1), and then independently assigned another probability of removal based on <code>res_death_K</code> as in (2). If removal occurs as a consequence of (1), (2), or both, then the resource is removed.</li>
+<em>Density-independent and density-dependent removal</em>. This
+option allows a combination of both options (1) and (2), which affect
+removal independently. In other words, each resource is assigned a
+probability of removal <code>removal_pr</code> as in (1), and then
+independently assigned another probability of removal based on
+<code>res_death_K</code> as in (2). If removal occurs as a consequence
+of (1), (2), or both, then the resource is removed.</li>
 </ol>
-<p>Note that for all <code>res_death_type &gt; 0</code>, removal can occur when the argument <code>consume_surv &gt; 0</code> (its default value is 0). In this case, survival of a resource in a time step depends on that resource consuming at least <code>consume_surv</code> in yield on the landscape. In such cases, a natural carrying capacity can be generated as more resources result in higher total consumption. The amount of yield that a resource consumes is further affected by both <code>times_feeding</code> (how many times the resource moves and feeds on a new landscape cell during a time step) and <code>res_consume</code> (the proportion of yield on a cell that is is consumed upon visit to the cell). To ensure that resource death is <em>only</em> limited by consumption and user actions, set <code>res_death_type = 1</code> and <code>removal_pr = 0</code>. Under this scenario, resources will only die if the do not consume enough, are culled by users, or are above the <code>max_age</code>.</p>
-<p><strong>observe_type</strong>: Observation of resources in default GMSE sub-models can occur in one of four ways. Each observation type mimics some process of resource observation, with potential error affected by observation intensity.</p>
+<p>Note that for all <code>res_death_type &gt; 0</code>, removal can
+occur when the argument <code>consume_surv &gt; 0</code> (its default
+value is 0). In this case, survival of a resource in a time step depends
+on that resource consuming at least <code>consume_surv</code> in yield
+on the landscape. In such cases, a natural carrying capacity can be
+generated as more resources result in higher total consumption. The
+amount of yield that a resource consumes is further affected by both
+<code>times_feeding</code> (how many times the resource moves and feeds
+on a new landscape cell during a time step) and <code>res_consume</code>
+(the proportion of yield on a cell that is is consumed upon visit to the
+cell). To ensure that resource death is <em>only</em> limited by
+consumption and user actions, set <code>res_death_type = 1</code> and
+<code>removal_pr = 0</code>. Under this scenario, resources will only
+die if the do not consume enough, are culled by users, or are above the
+<code>max_age</code>.</p>
+<p><strong>observe_type</strong>: Observation of resources in default
+GMSE sub-models can occur in one of four ways. Each observation type
+mimics some process of resource observation, with potential error
+affected by observation intensity.</p>
 <ol start="0" style="list-style-type: decimal">
 <li>
-<em>Density-based observation</em>. In this option, managers observe resources on a subset of the landscape; subset size is determined by the manager’s view as set using the <code>agent_view</code> parameter. In practice, this is done by having the manager count all of the resources within a distance (in any direction) of <code>agent_view</code> cells of their location. Managers then extrapolate the density of resources within this subset to estimate the total number of resources on the landscape. For example, if the manager has an <code>agent_view</code> of 1, then they are capable of seeing all of the resources on nine landscape cells (the cell on which they are located, and each adjacent cell). If they count that there are 90 resource on these nine cells, then they calculate a resource density of 10 per cell. They then multiply the density of 10 by the total number of landscape cells to estimate the number of resources on the landscape. The error of this estimate naturally decreases with increasing <code>agent_view</code>, such that when the manager is capable of viewing the entire landscape, observation error is zero. If desired, the <code>times_observe</code> (default equals 1) option can also be used to allow managers to sample more than one landscape subset in their estimate (e.g., if <code>times_observe = 2</code>, then density is estimated from two different locations, with the mean of individual estimates used for a combined estimate of population density). Note that if <code>times_observe = 1</code>, then manager estimates might be consistently biased if they are observing from a location with disproportionately many or few resources.</li>
+<em>Density-based observation</em>. In this option, managers observe
+resources on a subset of the landscape; subset size is determined by the
+manager’s view as set using the <code>agent_view</code> parameter. In
+practice, this is done by having the manager count all of the resources
+within a distance (in any direction) of <code>agent_view</code> cells of
+their location. Managers then extrapolate the density of resources
+within this subset to estimate the total number of resources on the
+landscape. For example, if the manager has an <code>agent_view</code> of
+1, then they are capable of seeing all of the resources on nine
+landscape cells (the cell on which they are located, and each adjacent
+cell). If they count that there are 90 resource on these nine cells,
+then they calculate a resource density of 10 per cell. They then
+multiply the density of 10 by the total number of landscape cells to
+estimate the number of resources on the landscape. The error of this
+estimate naturally decreases with increasing <code>agent_view</code>,
+such that when the manager is capable of viewing the entire landscape,
+observation error is zero. If desired, the <code>times_observe</code>
+(default equals 1) option can also be used to allow managers to sample
+more than one landscape subset in their estimate (e.g., if
+<code>times_observe = 2</code>, then density is estimated from two
+different locations, with the mean of individual estimates used for a
+combined estimate of population density). Note that if
+<code>times_observe = 1</code>, then manager estimates might be
+consistently biased if they are observing from a location with
+disproportionately many or few resources.</li>
 <li>
-<em>Mark-recapture observation</em>. This option simulates the process of a mark-recapture analysis. In this process, managers randomly sample <code>fixed_mark</code> resources in the population; sampling occurs without replacement and without any spatial bias, and if <code>fixed_mark</code> is greater than the total number of resources on the landscape, then managers sample all resources. The manager then randomly samples <code>fixed_recapt</code> resources, again without replacement or spatial bias. The sampled resources from <code>fixed_mark</code> and <code>fixed_recapt</code> are interpreted as marked and recaptured resources, respectively, and a Chapman estimate <span class="citation">(Pollock et al. <a href="#ref-Pollock2016">1990</a>)</span> is then used in the manager model to calculate estimated population size form these observation data. Error in this estimate can be naturally minimised if both <code>fixed_mark</code> and <code>fixed_recapt</code> are very high.</li>
+<em>Mark-recapture observation</em>. This option simulates the
+process of a mark-recapture analysis. In this process, managers randomly
+sample <code>fixed_mark</code> resources in the population; sampling
+occurs without replacement and without any spatial bias, and if
+<code>fixed_mark</code> is greater than the total number of resources on
+the landscape, then managers sample all resources. The manager then
+randomly samples <code>fixed_recapt</code> resources, again without
+replacement or spatial bias. The sampled resources from
+<code>fixed_mark</code> and <code>fixed_recapt</code> are interpreted as
+marked and recaptured resources, respectively, and a Chapman estimate
+<span class="citation">(<a href="#ref-Pollock2016" role="doc-biblioref">Pollock et al. 1990</a>)</span> is then used in the
+manager model to calculate estimated population size form these
+observation data. Error in this estimate can be naturally minimised if
+both <code>fixed_mark</code> and <code>fixed_recapt</code> are very
+high.</li>
 <li>
-<em>Sample linear transect</em>. This option simulates sampling from a linear transect of the landscape. The manager samples an entire set of cell rows on the landscape and counts the total resources on all cells; the manager then continues onto the next set of landscape rows until the entire landscape has been sampled. The number of rows observed in each sample is defined by <code>agent_view</code>. For example, if the landscape is of the dimensions <span class="math inline">\(100 \times 100\)</span> cells, and <code>agent_view = 2</code>, then the manager will first observe all resources in the upper 200 cells (first <span class="math inline">\(2 \times 100\)</span> cells in the upper two landscape cell rows), then move onto the next 200 cells, repeating the process 50 times until all rows have been sampled. This process of sampling will only generate observation error if <code>res_move_obs = TRUE</code>, which it is by default. In this case, resources can move on the landscape (according to the rules of <code>res_move_type</code> and distance of <code>res_movement</code>) in between transect observation, potentially causing some resources to escape observation and others to be observed more than once.</li>
+<em>Sample linear transect</em>. This option simulates sampling from
+a linear transect of the landscape. The manager samples an entire set of
+cell rows on the landscape and counts the total resources on all cells;
+the manager then continues onto the next set of landscape rows until the
+entire landscape has been sampled. The number of rows observed in each
+sample is defined by <code>agent_view</code>. For example, if the
+landscape is of the dimensions <span class="math inline">\(100 \times
+100\)</span> cells, and <code>agent_view = 2</code>, then the manager
+will first observe all resources in the upper 200 cells (first <span class="math inline">\(2 \times 100\)</span> cells in the upper two
+landscape cell rows), then move onto the next 200 cells, repeating the
+process 50 times until all rows have been sampled. This process of
+sampling will only generate observation error if
+<code>res_move_obs = TRUE</code>, which it is by default. In this case,
+resources can move on the landscape (according to the rules of
+<code>res_move_type</code> and distance of <code>res_movement</code>) in
+between transect observation, potentially causing some resources to
+escape observation and others to be observed more than once.</li>
 <li>
-<em>Sample block transect</em>. This option is identical to the <em>sample linear transect</em> option above, except that instead of sampling an entire row of a landscape, the manager samples one square block of the landscape at a time. The cell length of each block side equals <code>agent_view</code>, meaning that the manager can observe all of the resources on <code>agent_view * agent_view</code> cells at a time. The manager proceeds to observe the entire landscape, block by block, until all cells on the landscape have been covered. For example, if <code>agent_view = 25</code>, and the landscape is of the dimensions <span class="math inline">\(100 \times 100\)</span>, then the manager will sample four total blocks of the landscape, one at a time, and use the total number of resources observed as the estimate of resource density on the landscape. As with linear transect sampling, if <code>res_move_obs = TRUE</code> (which it is by default), then resources can move on the landscape between block samples, potentially causing observation error if some resources are missed due to movement, or counted multiple times.</li>
+<em>Sample block transect</em>. This option is identical to the
+<em>sample linear transect</em> option above, except that instead of
+sampling an entire row of a landscape, the manager samples one square
+block of the landscape at a time. The cell length of each block side
+equals <code>agent_view</code>, meaning that the manager can observe all
+of the resources on <code>agent_view * agent_view</code> cells at a
+time. The manager proceeds to observe the entire landscape, block by
+block, until all cells on the landscape have been covered. For example,
+if <code>agent_view = 25</code>, and the landscape is of the dimensions
+<span class="math inline">\(100 \times 100\)</span>, then the manager
+will sample four total blocks of the landscape, one at a time, and use
+the total number of resources observed as the estimate of resource
+density on the landscape. As with linear transect sampling, if
+<code>res_move_obs = TRUE</code> (which it is by default), then
+resources can move on the landscape between block samples, potentially
+causing observation error if some resources are missed due to movement,
+or counted multiple times.</li>
 </ol>
-<p><strong>obs_move_type</strong>: Observation of agents (manager and users) in default GMSE sub-models can occur in the same four ways as allowed in <code>res_move_type</code> (default <code>obs_move_type = 1</code>), with movement distance defined by the parameter <code>agent_move</code> (default 50). Currently, the only effect of this movement is to allow for spatially autocorrelated sampling of resources by the manager in the observation model. If the manager is using density-based sampling (<code>observe_type = 0</code>) and sampling more than one subset of the landscape (<code>times_observe &gt; 1</code>), then the manager’s movement between subsets is governed by <code>res_move_type</code> (movement rules) and <code>agent_move</code> (movement distance). Hence, to have the manager observe the population many times in one area of the landscape, the <code>times_observe</code> option should be increased above one and <code>agent_move</code> should be decreased to a low value.</p>
-<p><strong>times_feeding</strong>: By default, resources feed once at the start of each time step (<code>times_feeding = 1</code>), then move at the end the time step. Consequently, where they move to at the end of the time step will be where they feed at the start of the next time step, which gives users the opportunity to potentially cull or scare them prior to feeding. When <code>times_feeding &gt; 1</code>, at the start of each time step, resource feeding on their cell, then immediately move to a new cell on which to feed. This feeding and moving continues until the resource has fed <code>times_feeding</code> times, at which point on the cell at which they last fed, potentially reproduce, then move again at the end of the time step. Feeding and moving actions happen in a random order for resources so that one resource does not do all of its feeding before another resource has any chance to feed. For example, if there are 10 resources and <code>times_feeding = 4</code>, then the 40 total feeding and moving actions happen in a random order.</p>
+<p><strong>obs_move_type</strong>: Observation of agents (manager and
+users) in default GMSE sub-models can occur in the same four ways as
+allowed in <code>res_move_type</code> (default
+<code>obs_move_type = 1</code>), with movement distance defined by the
+parameter <code>agent_move</code> (default 50). Currently, the only
+effect of this movement is to allow for spatially autocorrelated
+sampling of resources by the manager in the observation model. If the
+manager is using density-based sampling (<code>observe_type = 0</code>)
+and sampling more than one subset of the landscape
+(<code>times_observe &gt; 1</code>), then the manager’s movement between
+subsets is governed by <code>res_move_type</code> (movement rules) and
+<code>agent_move</code> (movement distance). Hence, to have the manager
+observe the population many times in one area of the landscape, the
+<code>times_observe</code> option should be increased above one and
+<code>agent_move</code> should be decreased to a low value.</p>
+<p><strong>times_feeding</strong>: By default, resources feed once at
+the start of each time step (<code>times_feeding = 1</code>), then move
+at the end the time step. Consequently, where they move to at the end of
+the time step will be where they feed at the start of the next time
+step, which gives users the opportunity to potentially cull or scare
+them prior to feeding. When <code>times_feeding &gt; 1</code>, at the
+start of each time step, resource feeding on their cell, then
+immediately move to a new cell on which to feed. This feeding and moving
+continues until the resource has fed <code>times_feeding</code> times,
+at which point on the cell at which they last fed, potentially
+reproduce, then move again at the end of the time step. Feeding and
+moving actions happen in a random order for resources so that one
+resource does not do all of its feeding before another resource has any
+chance to feed. For example, if there are 10 resources and
+<code>times_feeding = 4</code>, then the 40 total feeding and moving
+actions happen in a random order.</p>
 </div>
-<div id="conclusions-and-future-development" class="section level2">
-<h2 class="hasAnchor">
-<a href="#conclusions-and-future-development" class="anchor"></a>Conclusions and future development</h2>
-<p>The GMSE function <code>gmse</code> and its graphical user interface counterpart <code>gmse_gui</code> offer wide a suite of options for parameterising simulations to fit empirical case studies of conservation interest using default GMSE natural resource, observation, manager, and user sub-models. Future development of these sub-models might usefully incorporate additional details relevant to specific case studies, such population structure, multiple natural resource and user types, or different manager policy and user action possibilities. <a href="https://github.com/bradduthie/gmse/issues">Requests for new features</a> and contributions to GMSE can be made through <a href="https://github.com/bradduthie/gmse">GitHub</a>. Additionally, where entirely different types of sub-models are required, the <code>gmse_apply</code> function <a href="SI2.html">can be used</a> to more flexibly simulate social-ecological systems. In <a href="SI4.html">Advanced case study options</a>, we show an example of this using the same Taiga Bean Geese case study that we did here.</p>
+<div class="section level3">
+<h3 id="conclusions-and-future-development">Conclusions and future development<a class="anchor" aria-label="anchor" href="#conclusions-and-future-development"></a>
+</h3>
+<p>The GMSE function <code>gmse</code> and its graphical user interface
+counterpart <code>gmse_gui</code> offer wide a suite of options for
+parameterising simulations to fit empirical case studies of conservation
+interest using default GMSE natural resource, observation, manager, and
+user sub-models. Future development of these sub-models might usefully
+incorporate additional details relevant to specific case studies, such
+population structure, multiple natural resource and user types, or
+different manager policy and user action possibilities. <a href="https://github.com/bradduthie/gmse/issues" class="external-link">Requests for new
+features</a> and contributions to GMSE can be made through <a href="https://github.com/bradduthie/gmse" class="external-link">GitHub</a>. Additionally,
+where entirely different types of sub-models are required, the
+<code>gmse_apply</code> function <a href="SI2.html">can be used</a> to
+more flexibly simulate social-ecological systems. In <a href="SI4.html">Advanced case study options</a>, we show an example of
+this using the same Taiga Bean Geese case study that we did here.</p>
 </div>
 </div>
-<div id="references" class="section level1 unnumbered">
-<h1 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h1>
-<div id="refs" class="references">
-<div id="ref-AEWA2016">
-<p>AEWA. 2016. “International single species action plan for the conservation of the Taiga Bean Goose (Anser fabalis fabalis).” <a href="http://www.unep-aewa.org/sites/default/files/document/aewa%7B%5C_%7Degmp%7B%5C_%7Dinf%7B%5C_%7D2%7B%5C_%7Dissap%7B%5C_%7Dtbg.pdf">http://www.unep-aewa.org/sites/default/files/document/aewa{\_}egmp{\_}inf{\_}2{\_}issap{\_}tbg.pdf</a>.</p>
+<div class="section level2">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-AEWA2016" class="csl-entry">
+AEWA. 2016. <span>“<span class="nocase">International single species
+action plan for the conservation of the Taiga Bean Goose (Anser fabalis
+fabalis)</span>.”</span> <a href="http://www.unep-aewa.org/sites/default/files/document/aewa%7B%5C_%7Degmp%7B%5C_%7Dinf%7B%5C_%7D2%7B%5C_%7Dissap%7B%5C_%7Dtbg.pdf" class="external-link">http://www.unep-aewa.org/sites/default/files/document/aewa{\_}egmp{\_}inf{\_}2{\_}issap{\_}tbg.pdf</a>.
 </div>
-<div id="ref-Cusack2018">
-<p>Cusack, Jeremy J, A Bradley Duthie, Sarobidy Rakotonarivo, Rocío A Pozo, Tom H E Mason, Johan Månsson, Lovisa Nilsson, et al. 2018. “Time series analysis reveals synchrony and asynchrony between conflict management effort and increasing large grazing bird populations in northern Europe.” <em>Conservation Letters</em>, e12450. <a href="https://doi.org/10.1111/conl.12450">https://doi.org/10.1111/conl.12450</a>.</p>
+<div id="ref-Cusack2018" class="csl-entry">
+Cusack, Jeremy J, A Bradley Duthie, Sarobidy Rakotonarivo, Rocío A Pozo,
+Tom H E Mason, Johan Månsson, Lovisa Nilsson, et al. 2018. <span>“<span class="nocase">Time series analysis reveals synchrony and asynchrony
+between conflict management effort and increasing large grazing bird
+populations in northern Europe</span>.”</span> <em>Conservation
+Letters</em>, e12450. <a href="https://doi.org/10.1111/conl.12450" class="external-link">https://doi.org/10.1111/conl.12450</a>.
 </div>
-<div id="ref-Duthie2013">
-<p>Duthie, A Bradley, and Matthew R Falcy. 2013. “The influence of habitat autocorrelation on plants and their seed-eating pollinators.” <em>Ecological Modelling</em> 251: 260–70. <a href="https://doi.org/10.1016/j.ecolmodel.2012.12.019">https://doi.org/10.1016/j.ecolmodel.2012.12.019</a>.</p>
+<div id="ref-Duthie2013" class="csl-entry">
+Duthie, A Bradley, and Matthew R Falcy. 2013. <span>“<span class="nocase">The influence of habitat autocorrelation on plants and
+their seed-eating pollinators</span>.”</span> <em>Ecological
+Modelling</em> 251: 260–70. <a href="https://doi.org/10.1016/j.ecolmodel.2012.12.019" class="external-link">https://doi.org/10.1016/j.ecolmodel.2012.12.019</a>.
 </div>
-<div id="ref-Fox2010">
-<p>Fox, Anthony D, Bart S Ebbinge, Carl Mitchell, Thomas Heinicke, Tomas Aarvak, Kendrew Colhoun, Preben Clausen, et al. 2010. “Current estimates of goose population sizes in western Europe, a gap analysis and an assessment of trends.” <em>Ornis Svecica</em> 20 (3-4): 115–27. <a href="https://doi.org/10.1111/j.1365-2486.2005.00941.x">https://doi.org/10.1111/j.1365-2486.2005.00941.x</a>.</p>
+<div id="ref-Fox2010" class="csl-entry">
+Fox, Anthony D, Bart S Ebbinge, Carl Mitchell, Thomas Heinicke, Tomas
+Aarvak, Kendrew Colhoun, Preben Clausen, et al. 2010. <span>“<span class="nocase">Current estimates of goose population sizes in western
+Europe, a gap analysis and an assessment of trends</span>.”</span>
+<em>Ornis Svecica</em> 20 (3-4): 115–27. <a href="https://doi.org/10.1111/j.1365-2486.2005.00941.x" class="external-link">https://doi.org/10.1111/j.1365-2486.2005.00941.x</a>.
 </div>
-<div id="ref-Fox2017a">
-<p>Fox, Anthony D, and Jesper Madsen. 2017. “Threatened species to super-abundance: The unexpected international implications of successful goose conservation.” <em>Ambio</em> 46 (s2). Springer Netherlands: 179–87. <a href="https://doi.org/10.1007/s13280-016-0878-2">https://doi.org/10.1007/s13280-016-0878-2</a>.</p>
+<div id="ref-Fox2017a" class="csl-entry">
+Fox, Anthony D, and Jesper Madsen. 2017. <span>“<span class="nocase">Threatened species to super-abundance: The unexpected
+international implications of successful goose
+conservation</span>.”</span> <em>Ambio</em> 46 (s2): 179–87. <a href="https://doi.org/10.1007/s13280-016-0878-2" class="external-link">https://doi.org/10.1007/s13280-016-0878-2</a>.
 </div>
-<div id="ref-Johnson2018">
-<p>Johnson, Fred A, Mikko Alhainen, Anthony D Fox, Jesper Madsen, and Matthieu Guillemain. 2018. “Making do with less: Must sparse data preclude informed harvest strategies for European waterbirds.” <em>Ecological Applications</em> 28 (2): 427–41. <a href="https://doi.org/10.1002/eap.1659">https://doi.org/10.1002/eap.1659</a>.</p>
+<div id="ref-Johnson2018" class="csl-entry">
+Johnson, Fred A, Mikko Alhainen, Anthony D Fox, Jesper Madsen, and
+Matthieu Guillemain. 2018. <span>“<span class="nocase">Making do with
+less: Must sparse data preclude informed harvest strategies for European
+waterbirds</span>.”</span> <em>Ecological Applications</em> 28 (2):
+427–41. <a href="https://doi.org/10.1002/eap.1659" class="external-link">https://doi.org/10.1002/eap.1659</a>.
 </div>
-<div id="ref-Mason2017">
-<p>Mason, Tom H.E, Aidan Keane, Stephen M Redpath, and Nils Bunnefeld. 2017. “The changing environment of conservation conflict: geese and farming in Scotland.” <em>Journal of Applied Ecology</em>, 1–12. <a href="https://doi.org/10.1111/1365-2664.12969">https://doi.org/10.1111/1365-2664.12969</a>.</p>
+<div id="ref-Mason2017" class="csl-entry">
+Mason, Tom H. E, Aidan Keane, Stephen M Redpath, and Nils Bunnefeld.
+2017. <span>“<span class="nocase">The changing environment of
+conservation conflict: geese and farming in Scotland</span>.”</span>
+<em>Journal of Applied Ecology</em>, 1–12. <a href="https://doi.org/10.1111/1365-2664.12969" class="external-link">https://doi.org/10.1111/1365-2664.12969</a>.
 </div>
-<div id="ref-Pollock2016">
-<p>Pollock, Kenneth H, James D Nichols, Cavell Brownie, and James E Hines. 1990. “Statistical inference for capture-recapture experiments.” <em>Wildlife Monographs</em> 27 (4): 938–42.</p>
+<div id="ref-Pollock2016" class="csl-entry">
+Pollock, Kenneth H, James D Nichols, Cavell Brownie, and James E Hines.
+1990. <span>“<span class="nocase">Statistical inference for
+capture-recapture experiments</span>.”</span> <em>Wildlife
+Monographs</em> 27 (4): 938–42.
 </div>
-<div id="ref-Redpath2013">
-<p>Redpath, Steve M, Juliette Young, Anna Evely, William M Adams, William J Sutherland, Andrew Whitehouse, Arjun Amar, et al. 2013. “Understanding and managing conservation conflicts.” <em>Trends in Ecology &amp; Evolution</em> 28 (2): 100–109. <a href="https://doi.org/10.1016/j.tree.2012.08.021">https://doi.org/10.1016/j.tree.2012.08.021</a>.</p>
+<div id="ref-Redpath2013" class="csl-entry">
+Redpath, Steve M, Juliette Young, Anna Evely, William M Adams, William J
+Sutherland, Andrew Whitehouse, Arjun Amar, et al. 2013. <span>“<span class="nocase">Understanding and managing conservation
+conflicts</span>.”</span> <em>Trends in Ecology <span>&amp;</span>
+Evolution</em> 28 (2): 100–109. <a href="https://doi.org/10.1016/j.tree.2012.08.021" class="external-link">https://doi.org/10.1016/j.tree.2012.08.021</a>.
 </div>
-<div id="ref-Tulloch2017">
-<p>Tulloch, Ayesha I T, Sam Nicol, and Nils Bunnefeld. 2017. “Quantifying the expected value of uncertain management choices for over-abundant Greylag Geese.” <em>Biological Conservation</em> 214. Elsevier: 147–55. <a href="https://doi.org/10.1016/j.biocon.2017.08.013">https://doi.org/10.1016/j.biocon.2017.08.013</a>.</p>
+<div id="ref-Tulloch2017" class="csl-entry">
+Tulloch, Ayesha I T, Sam Nicol, and Nils Bunnefeld. 2017. <span>“<span class="nocase">Quantifying the expected value of uncertain management
+choices for over-abundant Greylag Geese</span>.”</span> <em>Biological
+Conservation</em> 214: 147–55. <a href="https://doi.org/10.1016/j.biocon.2017.08.013" class="external-link">https://doi.org/10.1016/j.biocon.2017.08.013</a>.
 </div>
-<div id="ref-Wilson2003">
-<p>Wilson, William G, William F Morris, and Judith L Bronstein. 2003. “Coexistence of mutualists and exploiters on spatial landscapes.” <em>Ecological Monographs</em> 73 (3): 397–413.</p>
+<div id="ref-Wilson2003" class="csl-entry">
+Wilson, William G, William F Morris, and Judith L Bronstein. 2003.
+<span>“<span class="nocase">Coexistence of mutualists and exploiters on
+spatial landscapes</span>.”</span> <em>Ecological Monographs</em> 73
+(3): 397–413.
 </div>
 </div>
 </div>
@@ -521,11 +1062,13 @@ Permissiveness that each manager exhibits for each farmer action (black lines) a
 
 
       <footer><div class="copyright">
-  <p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman.</p>
+  <p></p>
+<p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman, Ochoa Gabriela.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>
@@ -533,6 +1076,8 @@ Permissiveness that each manager exhibits for each farmer action (black lines) a
 
   
 
+
+  
 
   </body>
 </html>

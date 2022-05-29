@@ -8,8 +8,6 @@ Authors@R: c(person("A. Bradley", "Duthie", email = "brad.duthie@gmail.com",
                   role = c("aut", "cre"),
                   comment = c(ORCID = "0000-0001-8343-4995")),
              person("Adrian", "Bach", role = c("aut")),
-             person("Nils", "Bunnefeld", role = c("aut", "fnd"),
-                    comment = c(ORCID = "0000-0002-1349-4463")),
              person("Jeremy", "Cusack", role = "ctb",
                     comment = c(ORCID = "0000-0003-3004-1586")),
              person("Isabel", "Jones", role = "ctb",
@@ -25,7 +23,9 @@ Authors@R: c(person("A. Bradley", "Duthie", email = "brad.duthie@gmail.com",
              person("Sarobidy", "Rakotonarivo", role = "ctb",
                     comment = c(ORCID = "0000-0002-8032-1431")),
              person("Bram", "Van Moorter", role = "ctb",
-                    comment = c(ORCID = "0000-0002-3196-1993"))
+                    comment = c(ORCID = "0000-0002-3196-1993")),
+              person("Nils", "Bunnefeld", role = c("aut", "fnd"),
+                    comment = c(ORCID = "0000-0002-1349-4463"))
              )
 Maintainer: A. Bradley Duthie <brad.duthie@gmail.com>
 Description: Integrates game theory and ecological theory to construct 

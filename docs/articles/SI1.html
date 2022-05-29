@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.1</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../articles/GMSE.html">Get started</a>
 </li>
@@ -50,7 +46,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -80,6 +76,9 @@
     <li>
       <a href="../articles/SI8.html">Adaptive timing of investment strategy</a>
     </li>
+    <li>
+      <a href="../articles/SI9.html">The simulated annealing algorithm of GMSE</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -88,10 +87,10 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://confoobio.github.io/gmse/notebook/gmse_notes.html">Lab notebook</a>
+  <a href="https://confoobio.github.io/gmse/notebook/gmse_notes.html" class="external-link">Lab notebook</a>
 </li>
 <li>
-  <a href="https://github.com/confoobio/GMSE">
+  <a href="https://github.com/confoobio/GMSE" class="external-link">
     <span class="fa fa-github"></span>
      
   </a>
@@ -110,194 +109,560 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>The Genetic Algorithm of GMSE</h1>
-            <h3 class="subtitle">GMSE: an R package for generalised management strategy evaluation (Supporting Information 1)</h3>
-                        <h4 class="author"><div class="line-block">A. Bradley Duthie¹³, Jeremy J. Cusack¹, Isabel L. Jones¹, Jeroen Minderman¹,<br>
+            <h3 data-toc-skip class="subtitle">GMSE: an R package for
+generalised management strategy evaluation (Supporting Information
+1)</h3>
+                        <h4 data-toc-skip class="author"><div class="line-block">A. Bradley Duthie¹³, Jeremy J. Cusack¹, Isabel L.
+Jones¹, Jeroen Minderman¹,<br>
 Erlend B. Nilsen², Rocío A. Pozo¹, O. Sarobidy Rakotonarivo¹,<br>
 Bram Van Moorter², and Nils Bunnefeld¹</div></h4>
             
-            <h4 class="date">[2] Norwegian Institute for Nature Research, Trondheim, Norway [3] <a href="mailto:alexander.duthie@stir.ac.uk" class="email">alexander.duthie@stir.ac.uk</a>
+            <h4 data-toc-skip class="date">[2] Norwegian Institute for
+Nature Research, Trondheim, Norway [3] <a href="mailto:alexander.duthie@stir.ac.uk" class="email">alexander.duthie@stir.ac.uk</a>
 </h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/confoobio/gmse/blob/master/vignettes/SI1.Rmd"><code>vignettes/SI1.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/confoobio/gmse/blob/HEAD/vignettes/SI1.Rmd" class="external-link"><code>vignettes/SI1.Rmd</code></a></small>
       <div class="hidden name"><code>SI1.Rmd</code></div>
 
     </div>
 
     
     
-<div id="extended-introduction-to-the-genetic-algorithm-applied-in-gmse" class="section level1">
-<h1 class="hasAnchor">
-<a href="#extended-introduction-to-the-genetic-algorithm-applied-in-gmse" class="anchor"></a>Extended introduction to the genetic algorithm applied in GMSE</h1>
-<p>Game theory is the formal study of strategic interactions, and can therefore be applied to modelling stakeholder actions and addressing issues of cooperation and conflict in conservation <span class="citation">(Lee <a href="#ref-Lee2012">2012</a>; Kark et al. <a href="#ref-Kark2015">2015</a>; Adami, Schossau, and Hintze <a href="#ref-Adami2016">2016</a>; Tilman, Watson, and Levin <a href="#ref-Tilman2016">2016</a>; Redpath et al. <a href="#ref-Redpath2018">2018</a>)</span>. In game-theoretic models, agents adopt strategies to make decisions that maximise some type of payoff (e.g., utility, biological fitness). Agents are constrained in their decision-making, and realised pay-offs depend on decisions made by other agents. In simple models, it is often useful to assume that agents are perfectly rational decision-makers, then find optimal solutions for pay-off maximisation mathematically. But models that permit even moderately complex decision-making strategies or pay-off structures often include more possible strategies than are mathematically tractable <span class="citation">(Hamblin <a href="#ref-Hamblin2013">2013</a>)</span>. In these models, genetic algorithms, which mimic the process of natural selection (mutation, recombination, selection, reproduction), can find adaptive (i.e., practical, but not necessarily optimal) solutions for game strategies <span class="citation">(e.g., Balmann and Happe <a href="#ref-Balmann2000">2000</a>; Tu, Wolff, and Lamersdorf <a href="#ref-Tu2000">2000</a>; Hamblin <a href="#ref-Hamblin2013">2013</a>)</span>.</p>
-<p>A genetic algorithm is called in the predefined GMSE manager and user models to simulate human decision making. As of GMSE version 0.6, this includes one independent call to the genetic algorithm for each decision-making agent in every GMSE time step. Therefore, one run of the genetic algorithm occurs to simulate the manager’s policy-setting decisions in each time step (unless otherwise defined through non-default <code>manage_freq</code> values greater than 1; e.g., see <a href="SI6.html">Management frequency and extinction risk</a>), and one run occurs to simulate each individual user’s action decisions in each time step (unless otherwise defined through non-default <code>group_think = TRUE</code>, in which case one user makes decisions that all other users copy). Each run of the genetic algorithm mimics the evolution by natural selection of a population of potential manager or user strategies over multiple iterations, with the highest fitness strategy in the terminal iteration being selected as the one that the manager or user decides to implement. For clarity, as in the main text, we use ‘time step’ to refer to a full GMSE cycle (in which multiple genetic algorithms may be run) and ‘iteration’ to refer to a single, non-overlapping, generation of potential strategies that evolve within a genetic algorithm (see Figure 1 of the <a href="ms.pdf">main text</a>). Below, we explain the genetic algorithm in detail, as it occurs in GMSE v0.6+ (future versions of GMSE might expand upon this framework, and we highlight some of these potential avenues for expansion). We first explain the <a href="#Key_data_structures_used">key data structures used</a>, then provide an overview of how a population of strategies is <a href="#initialised">initialised</a>, and the subsequent processes of <a href="#crossover">crossover</a>, <a href="#mutation">mutation</a>, <a href="#constraint">cost constraint</a>, <a href="#eval">fitness</a> evaluation, <a href="#tournament">tournament selection</a>, and <a href="#replacement">replacement</a>. We then explain the fitness functions of <a href="#manfit">managers</a> and <a href="#ufit">users</a> in more detail.</p>
+<div class="section level2">
+<h2 id="extended-introduction-to-the-genetic-algorithm-applied-in-gmse">Extended introduction to the genetic algorithm applied in GMSE<a class="anchor" aria-label="anchor" href="#extended-introduction-to-the-genetic-algorithm-applied-in-gmse"></a>
+</h2>
+<p>Game theory is the formal study of strategic interactions, and can
+therefore be applied to modelling stakeholder actions and addressing
+issues of cooperation and conflict in conservation <span class="citation">(<a href="#ref-Lee2012" role="doc-biblioref">Lee
+2012</a>; <a href="#ref-Kark2015" role="doc-biblioref">Kark et al.
+2015</a>; <a href="#ref-Adami2016" role="doc-biblioref">Adami, Schossau,
+and Hintze 2016</a>; <a href="#ref-Tilman2016" role="doc-biblioref">Tilman, Watson, and Levin 2016</a>; <a href="#ref-Redpath2018" role="doc-biblioref">Redpath et al.
+2018</a>)</span>. In game-theoretic models, agents adopt strategies to
+make decisions that maximise some type of payoff (e.g., utility,
+biological fitness). Agents are constrained in their decision-making,
+and realised pay-offs depend on decisions made by other agents. In
+simple models, it is often useful to assume that agents are perfectly
+rational decision-makers, then find optimal solutions for pay-off
+maximisation mathematically. But models that permit even moderately
+complex decision-making strategies or pay-off structures often include
+more possible strategies than are mathematically tractable <span class="citation">(<a href="#ref-Hamblin2013" role="doc-biblioref">Hamblin 2013</a>)</span>. In these models, genetic
+algorithms, which mimic the process of natural selection (mutation,
+recombination, selection, reproduction), can find adaptive (i.e.,
+practical, but not necessarily optimal) solutions for game strategies
+<span class="citation">(e.g., <a href="#ref-Balmann2000" role="doc-biblioref">Balmann and Happe 2000</a>; <a href="#ref-Tu2000" role="doc-biblioref">Tu, Wolff, and Lamersdorf 2000</a>; <a href="#ref-Hamblin2013" role="doc-biblioref">Hamblin
+2013</a>)</span>.</p>
+<p>A genetic algorithm is called in the predefined GMSE manager and user
+models to simulate human decision making. As of GMSE version 0.6, this
+includes one independent call to the genetic algorithm for each
+decision-making agent in every GMSE time step. Therefore, one run of the
+genetic algorithm occurs to simulate the manager’s policy-setting
+decisions in each time step (unless otherwise defined through
+non-default <code>manage_freq</code> values greater than 1; e.g., see <a href="SI6.html">Management frequency and extinction risk</a>), and one
+run occurs to simulate each individual user’s action decisions in each
+time step (unless otherwise defined through non-default
+<code>group_think = TRUE</code>, in which case one user makes decisions
+that all other users copy). Each run of the genetic algorithm mimics the
+evolution by natural selection of a population of potential manager or
+user strategies over multiple iterations, with the highest fitness
+strategy in the terminal iteration being selected as the one that the
+manager or user decides to implement. For clarity, as in the main text,
+we use ‘time step’ to refer to a full GMSE cycle (in which multiple
+genetic algorithms may be run) and ‘iteration’ to refer to a single,
+non-overlapping, generation of potential strategies that evolve within a
+genetic algorithm (see Figure 1 of the <a href="ms.pdf">main text</a>).
+Below, we explain the genetic algorithm in detail, as it occurs in GMSE
+v0.6+ (future versions of GMSE might expand upon this framework, and we
+highlight some of these potential avenues for expansion). We first
+explain the <a href="#Key_data_structures_used">key data structures
+used</a>, then provide an overview of how a population of strategies is
+<a href="#initialised">initialised</a>, and the subsequent processes of
+<a href="#crossover">crossover</a>, <a href="#mutation">mutation</a>, <a href="#constraint">cost constraint</a>, <a href="#eval">fitness</a>
+evaluation, <a href="#tournament">tournament selection</a>, and <a href="#replacement">replacement</a>. We then explain the fitness
+functions of <a href="#manfit">managers</a> and <a href="#ufit">users</a> in more detail.</p>
 </div>
-<div id="Key_data_structures_used" class="section level1">
-<h1 class="hasAnchor">
-<a href="#Key_data_structures_used" class="anchor"></a>Key data structures used</h1>
-<p>The focal data structure used for tracking manager and user decisions is a three dimensional array, which we will call <code>ACTION</code> (also returned as <code>user_array</code> by <code>gmse_apply</code>; see <a href="SI7.html">Default GMSE data structure</a>). Rows of <code>ACTION</code> correspond to the entities affected by actions (resources, landscape properties, or potentially other agents), and columns correspond either to properties of the affected entities, or to the actions potentially allocated to them. Each layer of <code>ACTION</code> corresponds to a unique agent, the first of which is the manager; additional layers correspond to users. Below shows an <code>ACTION</code> array for a GMSE model with one manager and two users.</p>
-<pre><code>## , , Manager_Actions
-## 
-##           Act Type_1 Type_2 Type_3     Util. U_land U_loc. Scare Cull Castrate
-## Resource   -2      1      0      0 1000.0000      0      0     0    0        0
-## Landscape  -1      1      0      0    0.0000      0      0     0    0        0
-## Res_cost    1      1      0      0 -179.1383      0      0    10   50       10
-## U1_cost     2      1      0      0    0.0000      0      0     0    0        0
-## U2_cost     3      1      0      0    0.0000      0      0     0    0        0
-##           Feed Help_off None
-## Resource     0        0    0
-## Landscape    0        0    0
-## Res_cost    10       10   70
-## U1_cost      0        0    0
-## U2_cost      0        0    0
-## 
-## , , User_1_Actions
-## 
-##           Act Type_1 Type_2 Type_3 Util. U_land U_loc. Scare Cull Castrate Feed
-## Resource   -2      1      0      0    -1      0      0     0   20        0    0
-## Landscape  -1      1      0      0     0      0      0     0    0        0    0
-## Res_cost    1      1      0      0     0      0      0     0    0        0    0
-## U1_cost     2      1      0      0     0      0      0     0    0        0    0
-## U2_cost     3      1      0      0     0      0      0     0    0        0    0
-##           Help_off None
-## Resource         0    0
-## Landscape        0    0
-## Res_cost         0    0
-## U1_cost          0    0
-## U2_cost          0    0
-## 
-## , , User_2_Actions
-## 
-##           Act Type_1 Type_2 Type_3 Util. U_land U_loc. Scare Cull Castrate Feed
-## Resource   -2      1      0      0    -1      0      0     0   20        0    0
-## Landscape  -1      1      0      0     0      0      0     0    0        0    0
-## Res_cost    1      1      0      0     0      0      0     0    0        0    0
-## U1_cost     2      1      0      0     0      0      0     0    0        0    0
-## U2_cost     3      1      0      0     0      0      0     0    0        0    0
-##           Help_off None
-## Resource         0    0
-## Landscape        0    0
-## Res_cost         0    0
-## U1_cost          0    0
-## U2_cost          0    0</code></pre>
-<p>The above array holds all of the information on manager and user actions. The first seven columns contain information about which entities are affected, and how they are affected. The first column <code>Act</code> identifies the type of action being performed; a value of -2 defines a direct action to a resource (e.g., culling of the resource), and a value of -1 defines direct action to a landscape (e.g., increasing yield). Positive values are currently only meaningful for <code>Manager_Actions</code>, where a value of 1 defines an action setting a uniform cost of users’ direct actions on resources (i.e., costs where <code>Act = -2</code> for <code>User_1_Actions</code> and <code>User_2_Actions</code>). All other values for <code>Act</code> are meaningless in GMSE 0.6, but might be expanded upon in future versions to allow for modification of specific user costs enacted by managers (i.e., managers having different policies for different users) or other users (e.g., users increasing the costs of other users’ actions due to conflict or cooperation). We will therefore focus only on rows 1-3 of <code>ACTION</code>.</p>
-<p>Columns 2-4 refer to resource or landscape types, but only <code>Type_1 = 1</code>, <code>Type_2 = 0</code>, and <code>Type_3 = 0</code> are allowed in predefined GMSE v0.6+ manager and user sub-models (i.e., only one type of resource is permitted). Future versions might allow for different resource types (e.g., <code>Type_1</code> might be used to designate species, and <code>Type_2</code> and <code>Type_3</code> could designate stage or sex). Column 5 <code>Util.</code> of <code>ACTION</code> defines the utility associated with the resource (where <code>Act = -2</code>) or landscape (where <code>Act = -1</code>). For managers, the target resource abundance set with the GMSE argument <code>manage_target</code> is found in row 1 (1000 in <code>ACTION</code> above); for users, the value in row 1 identifies whether resources are preferred to increase (if positive) or decrease (if negative). Values of column 5 in row 2 similarly identify whether landscape cell output is preferred by users to increase or decrease (managers do not currently have preferences for landscape output). Of special note is row 3 for <code>Manager_Actions</code>, which defines the <em>current</em> manager’s utility for resources; that is, the adjustment to resource abundance that the manager will attempt to make based on the <code>manage_target</code> and the most recent estimate of resource abundance produced by the observation model (in the case of the above, resource abundance is estimated at ca 1179.14, so the manager will set policy in attempt to change the population size by ca -179.14 resources). Column 6 <code>U_land</code> defines whether or not the utility attached to the resource or landscape output depends on it being on a landscape cell that is owned by the acting user. Related, column 7 <code>U_loc.</code> defines whether or not actions can be performed only on a landscape cell that is owned by the acting user. Hence values of columns 6 and 7 are binary, and affected by the <code>land_ownership</code> argument in <code>gmse</code> and <code>gmse_apply</code>. Finally, columns 8-13 correspond to specific actions, either direct (where <code>Act &lt; 0</code>) or indirect by setting policy (for row 3 of <code>Manager_Actions</code> where <code>Act = 1</code>). The last column 13 <code>None</code> corresponds with no actions. See <a href="https://cran.r-project.org/web/packages/GMSE/GMSE.pdf">GMSE documentation</a> for details about the effects of each action.</p>
-<p>Constraints on the values that elements in the <code>ACTION</code> array can take are defined by a <code>COST</code> array (also returned as <code>manager_array</code> by <code>gmse_apply</code>; see <a href="SI7.html">Default GMSE data structures</a>) of dimensions identical to <code>ACTION</code>. Elements of <code>COST</code> define how many units from the <code>manager_budget</code> or <code>user_budget</code> are needed to perform a single action; a <code>minimum_cost</code> for actions is defined as an argument in GMSE (10 by default). All values in <code>COST</code> columns 1-7 are set to 100001, one higher than the highest possible <code>manager_budget</code> or <code>user_budget</code>, so neither managers nor users can affect resource types or utilities. Columns 8-13 are also set to 100001, except where actions are allowed. Maximum values of 100000 are independent of any other parameter value specified in GMSE (e.g., landscape dimensions). Below shows the <code>COST</code> array that corresponds to the above <code>ACTION</code> array.</p>
-<pre><code>## , , Manager_Costs
-## 
-##              Act Type_1 Type_2 Type_3  Util. U_land U_loc.  Scare   Cull
-## Resource  100001 100001 100001 100001 100001 100001 100001 100001 100001
-## Landscape 100001 100001 100001 100001 100001 100001 100001 100001 100001
-## Res_cost  100001 100001 100001 100001 100001 100001 100001 100001     10
-## U1_cost   100001 100001 100001 100001 100001 100001 100001 100001 100001
-## U2_cost   100001 100001 100001 100001 100001 100001 100001 100001 100001
-##           Castrate   Feed Help_off   None
-## Resource    100001 100001   100001     10
-## Landscape   100001 100001   100001     10
-## Res_cost    100001 100001   100001     10
-## U1_cost     100001 100001   100001 100001
-## U2_cost     100001 100001   100001 100001
-## 
-## , , User_1_Costs
-## 
-##              Act Type_1 Type_2 Type_3  Util. U_land U_loc.  Scare   Cull
-## Resource  100001 100001 100001 100001 100001 100001 100001 100001     50
-## Landscape 100001 100001 100001 100001 100001 100001 100001 100001 100001
-## Res_cost  100001 100001 100001 100001 100001 100001 100001 100001 100001
-## U1_cost   100001 100001 100001 100001 100001 100001 100001 100001 100001
-## U2_cost   100001 100001 100001 100001 100001 100001 100001 100001 100001
-##           Castrate   Feed Help_off   None
-## Resource    100001 100001   100001     10
-## Landscape   100001 100001   100001     10
-## Res_cost    100001 100001   100001 100001
-## U1_cost     100001 100001   100001 100001
-## U2_cost     100001 100001   100001 100001
-## 
-## , , User_2_Costs
-## 
-##              Act Type_1 Type_2 Type_3  Util. U_land U_loc.  Scare   Cull
-## Resource  100001 100001 100001 100001 100001 100001 100001 100001     50
-## Landscape 100001 100001 100001 100001 100001 100001 100001 100001 100001
-## Res_cost  100001 100001 100001 100001 100001 100001 100001 100001 100001
-## U1_cost   100001 100001 100001 100001 100001 100001 100001 100001 100001
-## U2_cost   100001 100001 100001 100001 100001 100001 100001 100001 100001
-##           Castrate   Feed Help_off   None
-## Resource    100001 100001   100001     10
-## Landscape   100001 100001   100001     10
-## Res_cost    100001 100001   100001 100001
-## U1_cost     100001 100001   100001 100001
-## U2_cost     100001 100001   100001 100001</code></pre>
-<p>Note that in default GMSE parameters, <code>culling = TRUE</code>, but all other actions are set to <code>FALSE</code>. Hence, the <code>Cull</code> column 9 is the only column besides column 13 <code>None</code> in which cost is less than 100001. Manager’s actions in <code>ACTION</code> directly affect the cost of users performing one of the five possible actions on resources (columns 8-12). This can be verified in <code>ACTION</code> where the manager has set the cost of culling to 50 (row 3), and the corresponding <code>COST</code> of resource culling is 50 for both users (row 1). The cost of the manager affecting the cost of user actions is always set to the <code>minimum_cost</code>; here the default 10 is used. This <code>minimum_cost</code> also defines cost values for <code>None</code>, in which the user or manager does nothing, as might occur if the manager wants to permit culling and therefore does not want to invest any of their <code>manager_budget</code> to increasing the cost of culling. Both <code>ACTION</code> and <code>COST</code> are updated in each time step unless <code>manage_freq &gt; 1</code>, in which case <code>COST</code> and <code>Manager_Actions</code> in <code>ACTION</code> are updated at the frequency defined.</p>
+<div class="section level2">
+<h2 id="Key_data_structures_used">Key data structures used<a class="anchor" aria-label="anchor" href="#Key_data_structures_used"></a>
+</h2>
+<p>The focal data structure used for tracking manager and user decisions
+is a three dimensional array, which we will call <code>ACTION</code>
+(also returned as <code>user_array</code> by <code>gmse_apply</code>;
+see <a href="SI7.html">Default GMSE data structure</a>). Rows of
+<code>ACTION</code> correspond to the entities affected by actions
+(resources, landscape properties, or potentially other agents), and
+columns correspond either to properties of the affected entities, or to
+the actions potentially allocated to them. Each layer of
+<code>ACTION</code> corresponds to a unique agent, the first of which is
+the manager; additional layers correspond to users. Below shows an
+<code>ACTION</code> array for a GMSE model with one manager and two
+users.</p>
+<pre><code><span class="co">## , , Manager_Actions</span>
+<span class="co">## </span>
+<span class="co">##           Act Type_1 Type_2 Type_3     Util. U_land U_loc. Scare Cull Castrate</span>
+<span class="co">## Resource   -2      1      0      0 1000.0000      0      0     0    0        0</span>
+<span class="co">## Landscape  -1      1      0      0    0.0000      0      0     0    0        0</span>
+<span class="co">## Res_cost    1      1      0      0  206.3492      0      0    10   51       10</span>
+<span class="co">## U1_cost     2      1      0      0    0.0000      0      0     0    0        0</span>
+<span class="co">## U2_cost     3      1      0      0    0.0000      0      0     0    0        0</span>
+<span class="co">##           Feed Help_off None</span>
+<span class="co">## Resource     0        0    0</span>
+<span class="co">## Landscape    0        0    0</span>
+<span class="co">## Res_cost    10       10   69</span>
+<span class="co">## U1_cost      0        0    0</span>
+<span class="co">## U2_cost      0        0    0</span>
+<span class="co">## </span>
+<span class="co">## , , User_1_Actions</span>
+<span class="co">## </span>
+<span class="co">##           Act Type_1 Type_2 Type_3 Util. U_land U_loc. Scare Cull Castrate Feed</span>
+<span class="co">## Resource   -2      1      0      0    -1      0      0     0   19        0    0</span>
+<span class="co">## Landscape  -1      1      0      0     0      0      0     0    0        0    0</span>
+<span class="co">## Res_cost    1      1      0      0     0      0      0     0    0        0    0</span>
+<span class="co">## U1_cost     2      1      0      0     0      0      0     0    0        0    0</span>
+<span class="co">## U2_cost     3      1      0      0     0      0      0     0    0        0    0</span>
+<span class="co">##           Help_off None</span>
+<span class="co">## Resource         0    0</span>
+<span class="co">## Landscape        0    0</span>
+<span class="co">## Res_cost         0    0</span>
+<span class="co">## U1_cost          0    0</span>
+<span class="co">## U2_cost          0    0</span>
+<span class="co">## </span>
+<span class="co">## , , User_2_Actions</span>
+<span class="co">## </span>
+<span class="co">##           Act Type_1 Type_2 Type_3 Util. U_land U_loc. Scare Cull Castrate Feed</span>
+<span class="co">## Resource   -2      1      0      0    -1      0      0     0   19        0    0</span>
+<span class="co">## Landscape  -1      1      0      0     0      0      0     0    0        0    0</span>
+<span class="co">## Res_cost    1      1      0      0     0      0      0     0    0        0    0</span>
+<span class="co">## U1_cost     2      1      0      0     0      0      0     0    0        0    0</span>
+<span class="co">## U2_cost     3      1      0      0     0      0      0     0    0        0    0</span>
+<span class="co">##           Help_off None</span>
+<span class="co">## Resource         0    0</span>
+<span class="co">## Landscape        0    0</span>
+<span class="co">## Res_cost         0    0</span>
+<span class="co">## U1_cost          0    0</span>
+<span class="co">## U2_cost          0    0</span></code></pre>
+<p>The above array holds all of the information on manager and user
+actions. The first seven columns contain information about which
+entities are affected, and how they are affected. The first column
+<code>Act</code> identifies the type of action being performed; a value
+of -2 defines a direct action to a resource (e.g., culling of the
+resource), and a value of -1 defines direct action to a landscape (e.g.,
+increasing yield). Positive values are currently only meaningful for
+<code>Manager_Actions</code>, where a value of 1 defines an action
+setting a uniform cost of users’ direct actions on resources (i.e.,
+costs where <code>Act = -2</code> for <code>User_1_Actions</code> and
+<code>User_2_Actions</code>). All other values for <code>Act</code> are
+meaningless in GMSE 0.6, but might be expanded upon in future versions
+to allow for modification of specific user costs enacted by managers
+(i.e., managers having different policies for different users) or other
+users (e.g., users increasing the costs of other users’ actions due to
+conflict or cooperation). We will therefore focus only on rows 1-3 of
+<code>ACTION</code>.</p>
+<p>Columns 2-4 refer to resource or landscape types, but only
+<code>Type_1 = 1</code>, <code>Type_2 = 0</code>, and
+<code>Type_3 = 0</code> are allowed in predefined GMSE v0.6+ manager and
+user sub-models (i.e., only one type of resource is permitted). Future
+versions might allow for different resource types (e.g.,
+<code>Type_1</code> might be used to designate species, and
+<code>Type_2</code> and <code>Type_3</code> could designate stage or
+sex). Column 5 <code>Util.</code> of <code>ACTION</code> defines the
+utility associated with the resource (where <code>Act = -2</code>) or
+landscape (where <code>Act = -1</code>). For managers, the target
+resource abundance set with the GMSE argument <code>manage_target</code>
+is found in row 1 (1000 in <code>ACTION</code> above); for users, the
+value in row 1 identifies whether resources are preferred to increase
+(if positive) or decrease (if negative). Values of column 5 in row 2
+similarly identify whether landscape cell output is preferred by users
+to increase or decrease (managers do not currently have preferences for
+landscape output). Of special note is row 3 for
+<code>Manager_Actions</code>, which defines the <em>current</em>
+manager’s utility for resources; that is, the adjustment to resource
+abundance that the manager will attempt to make based on the
+<code>manage_target</code> and the most recent estimate of resource
+abundance produced by the observation model (in the case of the above,
+resource abundance is estimated at ca 793.65, so the manager will set
+policy in attempt to change the population size by ca 206.35 resources).
+Column 6 <code>U_land</code> defines whether or not the utility attached
+to the resource or landscape output depends on it being on a landscape
+cell that is owned by the acting user. Related, column 7
+<code>U_loc.</code> defines whether or not actions can be performed only
+on a landscape cell that is owned by the acting user. Hence values of
+columns 6 and 7 are binary, and affected by the
+<code>land_ownership</code> argument in <code>gmse</code> and
+<code>gmse_apply</code>. Finally, columns 8-13 correspond to specific
+actions, either direct (where <code>Act &lt; 0</code>) or indirect by
+setting policy (for row 3 of <code>Manager_Actions</code> where
+<code>Act = 1</code>). The last column 13 <code>None</code> corresponds
+with no actions. See <a href="https://cran.r-project.org/web/packages/GMSE/GMSE.pdf" class="external-link">GMSE
+documentation</a> for details about the effects of each action.</p>
+<p>Constraints on the values that elements in the <code>ACTION</code>
+array can take are defined by a <code>COST</code> array (also returned
+as <code>manager_array</code> by <code>gmse_apply</code>; see <a href="SI7.html">Default GMSE data structures</a>) of dimensions
+identical to <code>ACTION</code>. Elements of <code>COST</code> define
+how many units from the <code>manager_budget</code> or
+<code>user_budget</code> are needed to perform a single action; a
+<code>minimum_cost</code> for actions is defined as an argument in GMSE
+(10 by default). All values in <code>COST</code> columns 1-7 are set to
+100001, one higher than the highest possible <code>manager_budget</code>
+or <code>user_budget</code>, so neither managers nor users can affect
+resource types or utilities. Columns 8-13 are also set to 100001, except
+where actions are allowed. Maximum values of 100000 are independent of
+any other parameter value specified in GMSE (e.g., landscape
+dimensions). Below shows the <code>COST</code> array that corresponds to
+the above <code>ACTION</code> array.</p>
+<pre><code><span class="co">## , , Manager_Costs</span>
+<span class="co">## </span>
+<span class="co">##              Act Type_1 Type_2 Type_3  Util. U_land U_loc.  Scare   Cull</span>
+<span class="co">## Resource  100001 100001 100001 100001 100001 100001 100001 100001 100001</span>
+<span class="co">## Landscape 100001 100001 100001 100001 100001 100001 100001 100001 100001</span>
+<span class="co">## Res_cost  100001 100001 100001 100001 100001 100001 100001 100001     10</span>
+<span class="co">## U1_cost   100001 100001 100001 100001 100001 100001 100001 100001 100001</span>
+<span class="co">## U2_cost   100001 100001 100001 100001 100001 100001 100001 100001 100001</span>
+<span class="co">##           Castrate   Feed Help_off   None</span>
+<span class="co">## Resource    100001 100001   100001     10</span>
+<span class="co">## Landscape   100001 100001   100001     10</span>
+<span class="co">## Res_cost    100001 100001   100001     10</span>
+<span class="co">## U1_cost     100001 100001   100001 100001</span>
+<span class="co">## U2_cost     100001 100001   100001 100001</span>
+<span class="co">## </span>
+<span class="co">## , , User_1_Costs</span>
+<span class="co">## </span>
+<span class="co">##              Act Type_1 Type_2 Type_3  Util. U_land U_loc.  Scare   Cull</span>
+<span class="co">## Resource  100001 100001 100001 100001 100001 100001 100001 100001     51</span>
+<span class="co">## Landscape 100001 100001 100001 100001 100001 100001 100001 100001 100001</span>
+<span class="co">## Res_cost  100001 100001 100001 100001 100001 100001 100001 100001 100001</span>
+<span class="co">## U1_cost   100001 100001 100001 100001 100001 100001 100001 100001 100001</span>
+<span class="co">## U2_cost   100001 100001 100001 100001 100001 100001 100001 100001 100001</span>
+<span class="co">##           Castrate   Feed Help_off   None</span>
+<span class="co">## Resource    100001 100001   100001     10</span>
+<span class="co">## Landscape   100001 100001   100001     10</span>
+<span class="co">## Res_cost    100001 100001   100001 100001</span>
+<span class="co">## U1_cost     100001 100001   100001 100001</span>
+<span class="co">## U2_cost     100001 100001   100001 100001</span>
+<span class="co">## </span>
+<span class="co">## , , User_2_Costs</span>
+<span class="co">## </span>
+<span class="co">##              Act Type_1 Type_2 Type_3  Util. U_land U_loc.  Scare   Cull</span>
+<span class="co">## Resource  100001 100001 100001 100001 100001 100001 100001 100001     51</span>
+<span class="co">## Landscape 100001 100001 100001 100001 100001 100001 100001 100001 100001</span>
+<span class="co">## Res_cost  100001 100001 100001 100001 100001 100001 100001 100001 100001</span>
+<span class="co">## U1_cost   100001 100001 100001 100001 100001 100001 100001 100001 100001</span>
+<span class="co">## U2_cost   100001 100001 100001 100001 100001 100001 100001 100001 100001</span>
+<span class="co">##           Castrate   Feed Help_off   None</span>
+<span class="co">## Resource    100001 100001   100001     10</span>
+<span class="co">## Landscape   100001 100001   100001     10</span>
+<span class="co">## Res_cost    100001 100001   100001 100001</span>
+<span class="co">## U1_cost     100001 100001   100001 100001</span>
+<span class="co">## U2_cost     100001 100001   100001 100001</span></code></pre>
+<p>Note that in default GMSE parameters, <code>culling = TRUE</code>,
+but all other actions are set to <code>FALSE</code>. Hence, the
+<code>Cull</code> column 9 is the only column besides column 13
+<code>None</code> in which cost is less than 100001. Manager’s actions
+in <code>ACTION</code> directly affect the cost of users performing one
+of the five possible actions on resources (columns 8-12). This can be
+verified in <code>ACTION</code> where the manager has set the cost of
+culling to 51 (row 3), and the corresponding <code>COST</code> of
+resource culling is 51 for both users (row 1). The cost of the manager
+affecting the cost of user actions is always set to the
+<code>minimum_cost</code>; here the default 10 is used. This
+<code>minimum_cost</code> also defines cost values for
+<code>None</code>, in which the user or manager does nothing, as might
+occur if the manager wants to permit culling and therefore does not want
+to invest any of their <code>manager_budget</code> to increasing the
+cost of culling. Both <code>ACTION</code> and <code>COST</code> are
+updated in each time step unless <code>manage_freq &gt; 1</code>, in
+which case <code>COST</code> and <code>Manager_Actions</code> in
+<code>ACTION</code> are updated at the frequency defined.</p>
 </div>
-<div id="general-overview-of-key-aspects-of-the-genetic-algorithm" class="section level1">
-<h1 class="hasAnchor">
-<a href="#general-overview-of-key-aspects-of-the-genetic-algorithm" class="anchor"></a>General overview of key aspects of the genetic algorithm</h1>
-<p>The genetic algorithm updates a single layer of the <code>ACTION</code> array, which defines the decisions of a single agent (either the manager or a user). The corresponding layer of the <code>COST</code> array remains unchanged, and serves only to ensure that <code>ACTION</code> values do not exceed <code>manager_budget</code> or <code>user_budget</code> for managers and users, respectively. The genetic algorithm proceeds by first initialising a large (but temporary) population of new <code>ACTION</code> layers. In each iteration, these layers crossover and mutate, generating variation in potential agent decisions; costs constrain this variation from exceeding a maximum budget, then the fitness of each layer is evaluated based on how the layer is predicted to affect resources or landscape output to which the agent has assigned some utility. A tournament is used to select high fitness layers, and these selected layers become the new iteration of layers; iterations continue until a minimum number of iterations (<code>ga_mingen</code>) have passed and a convergence criteria is satisfied such that the increase in mean fitness from the previous iteration is below the threshold <code>converge_crit</code> (Figure 1 below).</p>
+<div class="section level2">
+<h2 id="general-overview-of-key-aspects-of-the-genetic-algorithm">General overview of key aspects of the genetic algorithm<a class="anchor" aria-label="anchor" href="#general-overview-of-key-aspects-of-the-genetic-algorithm"></a>
+</h2>
+<p>The genetic algorithm updates a single layer of the
+<code>ACTION</code> array, which defines the decisions of a single agent
+(either the manager or a user). The corresponding layer of the
+<code>COST</code> array remains unchanged, and serves only to ensure
+that <code>ACTION</code> values do not exceed
+<code>manager_budget</code> or <code>user_budget</code> for managers and
+users, respectively. The genetic algorithm proceeds by first
+initialising a large (but temporary) population of new
+<code>ACTION</code> layers. In each iteration, these layers crossover
+and mutate, generating variation in potential agent decisions; costs
+constrain this variation from exceeding a maximum budget, then the
+fitness of each layer is evaluated based on how the layer is predicted
+to affect resources or landscape output to which the agent has assigned
+some utility. A tournament is used to select high fitness layers, and
+these selected layers become the new iteration of layers; iterations
+continue until a minimum number of iterations (<code>ga_mingen</code>)
+have passed and a convergence criteria is satisfied such that the
+increase in mean fitness from the previous iteration is below the
+threshold <code>converge_crit</code> (Figure 1 below).</p>
 <div class="figure">
 <img src="SI1_files/figure-html/unnamed-chunk-4-1.png" alt="Conceptual overview of the GMSE genetic algorithm" width="576"><p class="caption">
 Conceptual overview of the GMSE genetic algorithm
 </p>
 </div>
-<div id="initialisation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#initialisation" class="anchor"></a>Initialisation</h2>
-<p>At the start of each genetic algorithm, a population of size <code>ga_popsize</code> is initialised (hereafter the <code>POPULATION</code> array). This population is held in a 3D array of <code>ga_popsize</code> layers. Each layer includes an identical number of rows and columns as in <code>ACTION</code>, and one layer defines a single ‘individual’ in the population. The first seven columns of <code>ACTION</code> are replicated exactly for all individuals, and remain unchanged throughout the genetic algorithm thereby preserving the information about which entities are affected by actions in a given row. The remaining columns are either also replicated exactly as in <code>ACTION</code> (i.e., initialised to be the same decisions as in a previous time step), or randomly seeded with values given the constraints of <code>manager_budget</code> or <code>user_budget</code> (i.e., initialised to random decision making). The number of exact replicates initialised is set using <code>ga_seedrep</code> (if <code>ga_seedrep</code> <span class="math inline">\(\geq\)</span> <code>ga_popsize</code>, then all individuals are seeded as replicates). After the <code>POPULATION</code> of <code>ga_popsize</code> individuals is initialised, a loop simulating the adaptive evolution of <code>POPULATION</code> in non-overlapping iterations begins (see Figure 1 above).</p>
+<div class="section level3">
+<h3 id="initialisation">Initialisation<a class="anchor" aria-label="anchor" href="#initialisation"></a>
+</h3>
+<p>At the start of each genetic algorithm, a population of size
+<code>ga_popsize</code> is initialised (hereafter the
+<code>POPULATION</code> array). This population is held in a 3D array of
+<code>ga_popsize</code> layers. Each layer includes an identical number
+of rows and columns as in <code>ACTION</code>, and one layer defines a
+single ‘individual’ in the population. The first seven columns of
+<code>ACTION</code> are replicated exactly for all individuals, and
+remain unchanged throughout the genetic algorithm thereby preserving the
+information about which entities are affected by actions in a given row.
+The remaining columns are either also replicated exactly as in
+<code>ACTION</code> (i.e., initialised to be the same decisions as in a
+previous time step), or randomly seeded with values given the
+constraints of <code>manager_budget</code> or <code>user_budget</code>
+(i.e., initialised to random decision making). The number of exact
+replicates initialised is set using <code>ga_seedrep</code> (if
+<code>ga_seedrep</code> <span class="math inline">\(\geq\)</span>
+<code>ga_popsize</code>, then all individuals are seeded as replicates).
+After the <code>POPULATION</code> of <code>ga_popsize</code> individuals
+is initialised, a loop simulating the adaptive evolution of
+<code>POPULATION</code> in non-overlapping iterations begins (see Figure
+1 above).</p>
 </div>
-<div id="crossover" class="section level2">
-<h2 class="hasAnchor">
-<a href="#crossover" class="anchor"></a>Crossover</h2>
-<p>A single iteration of the genetic algorithm begins with a uniform crossover <span class="citation">(Hamblin <a href="#ref-Hamblin2013">2013</a>)</span>, by which actions of individuals in <code>POPULATION</code> are randomly swapped with some probability. To implement crossover, each individual selects a partner, then exchanges corresponding array elements affecting agent actions (columns 8-13) with their partner at a fixed probability of <code>ga_crossover</code>.</p>
+<div class="section level3">
+<h3 id="crossover">Crossover<a class="anchor" aria-label="anchor" href="#crossover"></a>
+</h3>
+<p>A single iteration of the genetic algorithm begins with a uniform
+crossover <span class="citation">(<a href="#ref-Hamblin2013" role="doc-biblioref">Hamblin 2013</a>)</span>, by which actions of
+individuals in <code>POPULATION</code> are randomly swapped with some
+probability. To implement crossover, each individual selects a partner,
+then exchanges corresponding array elements affecting agent actions
+(columns 8-13) with their partner at a fixed probability of
+<code>ga_crossover</code>.</p>
 </div>
-<div id="mutation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#mutation" class="anchor"></a>Mutation</h2>
-<p>Following crossover, <code>POPULATION</code> array elements affecting agent actions (columns 8-13) mutate at a fixed probability of <code>ga_mutation</code>. For each array element, a random uniform number <span class="math inline">\(u \in [0, 1]\)</span> is sampled. If <span class="math inline">\(u\)</span> is greater than <code>1 - (0.5 * ga_mutation)</code>, then the value of the array element is increased by 1. If <span class="math inline">\(u\)</span> is less than <code>0.5 * ga_mutation</code>, then the value of the array element is decreased by 1; when this decrease results in a negative value, the mutated value is multiplied by -1 to be positive.</p>
+<div class="section level3">
+<h3 id="mutation">Mutation<a class="anchor" aria-label="anchor" href="#mutation"></a>
+</h3>
+<p>Following crossover, <code>POPULATION</code> array elements affecting
+agent actions (columns 8-13) mutate at a fixed probability of
+<code>ga_mutation</code>. For each array element, a random uniform
+number <span class="math inline">\(u \in [0, 1]\)</span> is sampled. If
+<span class="math inline">\(u\)</span> is greater than
+<code>1 - (0.5 * ga_mutation)</code>, then the value of the array
+element is increased by 1. If <span class="math inline">\(u\)</span> is
+less than <code>0.5 * ga_mutation</code>, then the value of the array
+element is decreased by 1; when this decrease results in a negative
+value, the mutated value is multiplied by -1 to be positive.</p>
 </div>
-<div id="constraint" class="section level2">
-<h2 class="hasAnchor">
-<a href="#constraint" class="anchor"></a>Cost constraint</h2>
-<p>Variation in manager or user actions generated by crossover and mutation might result in strategies that exceed <code>manager_budget</code> or <code>user_budget</code>, respectively. Left unchecked, this over-budgeting could lead to unnacceptably high fitness strategies, so strategies that are over budget following crossover and mutation need to be brought back within budgetary constraints. To do this, the genetic algorithm first checks to see if an individual in <code>POPULATION</code> is over budget. If so, then an action is randomly selected and removed, and budget use is reassessed; this random removal of an action and subsequent budget reassessment continues until the individual does not exceed their budget.</p>
+<div class="section level3">
+<h3 id="constraint">Cost constraint<a class="anchor" aria-label="anchor" href="#constraint"></a>
+</h3>
+<p>Variation in manager or user actions generated by crossover and
+mutation might result in strategies that exceed
+<code>manager_budget</code> or <code>user_budget</code>, respectively.
+Left unchecked, this over-budgeting could lead to unnacceptably high
+fitness strategies, so strategies that are over budget following
+crossover and mutation need to be brought back within budgetary
+constraints. To do this, the genetic algorithm first checks to see if an
+individual in <code>POPULATION</code> is over budget. If so, then an
+action is randomly selected and removed, and budget use is reassessed;
+this random removal of an action and subsequent budget reassessment
+continues until the individual does not exceed their budget.</p>
 </div>
-<div id="eval" class="section level2">
-<h2 class="hasAnchor">
-<a href="#eval" class="anchor"></a>Fitness evaluation</h2>
-<p>Once all individuals in <code>POPULATION</code> are within budget, the fitness of each individual is assessed. Fitness assessment works differently for managers versus users because managers need to consider the consequences of their decisions on user actions, and how those actions will affect resource abundance. In contrast, user actions need to consider the consequences of their decisions on resource abundance or landscape output. Individual fitness is defined by a real number that increases with the degree to which an individual’s actions are predicted to increase entities of positive utility and decrease entities of negative utility (recall that managers and users assign resources or landscape output a utility value). Details for how fitness is calculated are provided below.</p>
+<div class="section level3">
+<h3 id="eval">Fitness evaluation<a class="anchor" aria-label="anchor" href="#eval"></a>
+</h3>
+<p>Once all individuals in <code>POPULATION</code> are within budget,
+the fitness of each individual is assessed. Fitness assessment works
+differently for managers versus users because managers need to consider
+the consequences of their decisions on user actions, and how those
+actions will affect resource abundance. In contrast, user actions need
+to consider the consequences of their decisions on resource abundance or
+landscape output. Individual fitness is defined by a real number that
+increases with the degree to which an individual’s actions are predicted
+to increase entities of positive utility and decrease entities of
+negative utility (recall that managers and users assign resources or
+landscape output a utility value). Details for how fitness is calculated
+are provided below.</p>
 </div>
-<div id="tournament" class="section level2">
-<h2 class="hasAnchor">
-<a href="#tournament" class="anchor"></a>Tournament selection</h2>
-<p>After each individual in <code>POPULATION</code> is assigned a fitness, a tournament is used to select individuals. Tournament selection is an especially flexible, non-parametric method that samples a subset of individuals from the total population and chooses the fittest of the subset for replacement <span class="citation">(Hamblin <a href="#ref-Hamblin2013">2013</a>)</span>. In GMSE, tournament selection proceeds by randomly sampling <code>ga_sampleK</code> individuals from the total <code>POPULATION</code> with replacement. The fitnesses of the subset of <code>ga_sampleK</code> individuals are compared, and the <code>ga_chooseK</code> individuals of highest fitness are retained (if <code>ga_sampleK</code> <span class="math inline">\(\geq\)</span> <code>ga_chooseK</code>, then all <code>ga_sampleK</code> are chosen, but this will prevent adaptive evolution and is therefore not recommended). Tournaments selecting <code>ga_chooseK</code> individuals from random subsets of size <code>ga_sampleK</code> continue until a total of <code>ga_popsize</code> individuals are retained.</p>
+<div class="section level3">
+<h3 id="tournament">Tournament selection<a class="anchor" aria-label="anchor" href="#tournament"></a>
+</h3>
+<p>After each individual in <code>POPULATION</code> is assigned a
+fitness, a tournament is used to select individuals. Tournament
+selection is an especially flexible, non-parametric method that samples
+a subset of individuals from the total population and chooses the
+fittest of the subset for replacement <span class="citation">(<a href="#ref-Hamblin2013" role="doc-biblioref">Hamblin 2013</a>)</span>.
+In GMSE, tournament selection proceeds by randomly sampling
+<code>ga_sampleK</code> individuals from the total
+<code>POPULATION</code> with replacement. The fitnesses of the subset of
+<code>ga_sampleK</code> individuals are compared, and the
+<code>ga_chooseK</code> individuals of highest fitness are retained (if
+<code>ga_sampleK</code> <span class="math inline">\(\geq\)</span>
+<code>ga_chooseK</code>, then all <code>ga_sampleK</code> are chosen,
+but this will prevent adaptive evolution and is therefore not
+recommended). Tournaments selecting <code>ga_chooseK</code> individuals
+from random subsets of size <code>ga_sampleK</code> continue until a
+total of <code>ga_popsize</code> individuals are retained.</p>
 </div>
-<div id="replacement" class="section level2">
-<h2 class="hasAnchor">
-<a href="#replacement" class="anchor"></a>Replacement and termination</h2>
-<p>Once a new set of <code>ga_popsize</code> individuals is retained through tournament selection, these individuals replace the previous <code>POPULATION</code> array. The genetic algorithm terminates if and only if a minimum number of iterations has passed (<code>ga_mingen</code>) and a convergence criteria (<code>converge_crit</code>) is satisfied. The convergence criteria checks the difference between the mean fitness of individuals in the new iteration versus the previous iteration; if this difference is greater than <code>converge_crit</code>, then termination does not occur (this prevents termination from occuring while fitness is still increasing, though it is usually fine to use the default GMSE <code>converge_crit = 0.1</code> and <code>ga_mingen = 40</code>, which nearly always terminates the genetic algorithm after 40 iterations having identified adaptive manager or user strategies). Due to the way in which fitness is calculated (see below), in practice, <code>converge_crit</code> currently applies only to users. If termination conditions are not satisfied, then the <code>POPULATION</code> of individuals begins a new iteration of crossover, mutation, cost constraint, fitness evaluation, and tournament selection (Figure 1).</p>
+<div class="section level3">
+<h3 id="replacement">Replacement and termination<a class="anchor" aria-label="anchor" href="#replacement"></a>
+</h3>
+<p>Once a new set of <code>ga_popsize</code> individuals is retained
+through tournament selection, these individuals replace the previous
+<code>POPULATION</code> array. The genetic algorithm terminates if and
+only if a minimum number of iterations has passed
+(<code>ga_mingen</code>) and a convergence criteria
+(<code>converge_crit</code>) is satisfied. The convergence criteria
+checks the difference between the mean fitness of individuals in the new
+iteration versus the previous iteration; if this difference is greater
+than <code>converge_crit</code>, then termination does not occur (this
+prevents termination from occuring while fitness is still increasing,
+though it is usually fine to use the default GMSE
+<code>converge_crit = 0.1</code> and <code>ga_mingen = 40</code>, which
+nearly always terminates the genetic algorithm after 40 iterations
+having identified adaptive manager or user strategies). Due to the way
+in which fitness is calculated (see below), in practice,
+<code>converge_crit</code> currently applies only to users. If
+termination conditions are not satisfied, then the
+<code>POPULATION</code> of individuals begins a new iteration of
+crossover, mutation, cost constraint, fitness evaluation, and tournament
+selection (Figure 1).</p>
 </div>
 </div>
-<div id="detailed-explanation-of-manager-and-user-fitness-functions" class="section level1">
-<h1 class="hasAnchor">
-<a href="#detailed-explanation-of-manager-and-user-fitness-functions" class="anchor"></a>Detailed explanation of manager and user fitness functions</h1>
-<p>Here we explain how the fitnesses of candidate manager and user strategies in a <code>POPULATION</code> array (see above) are calculated. We emphasise that the fitness functions used in GMSE v0.6+ are intended to be heuristic tools for identifying reasonable manager and user behaviours. In practice, our fitness functions identify behaviours that are well-aligned with manager and user interests for harvesting or crop yield, but they are not intended to identify <em>optimal</em> decisions. This practical, metaheuristic approach is consistent with the objectives of management strategy evaluation <span class="citation">(Bunnefeld, Hoshino, and Milner-Gulland <a href="#ref-Bunnefeld2011">2011</a>)</span>, and is well-suited for the use of genetic algorithms <span class="citation">(Hamblin <a href="#ref-Hamblin2013">2013</a>)</span>. <span class="citation">Luke (<a href="#ref-Luke2009">2009</a>)</span> describes the metaheuristic approach more generally (original emphasis retained):</p>
+<div class="section level2">
+<h2 id="detailed-explanation-of-manager-and-user-fitness-functions">Detailed explanation of manager and user fitness functions<a class="anchor" aria-label="anchor" href="#detailed-explanation-of-manager-and-user-fitness-functions"></a>
+</h2>
+<p>Here we explain how the fitnesses of candidate manager and user
+strategies in a <code>POPULATION</code> array (see above) are
+calculated. We emphasise that the fitness functions used in GMSE v0.6+
+are intended to be heuristic tools for identifying reasonable manager
+and user behaviours. In practice, our fitness functions identify
+behaviours that are well-aligned with manager and user interests for
+harvesting or crop yield, but they are not intended to identify
+<em>optimal</em> decisions. This practical, metaheuristic approach is
+consistent with the objectives of management strategy evaluation <span class="citation">(<a href="#ref-Bunnefeld2011" role="doc-biblioref">Bunnefeld, Hoshino, and Milner-Gulland
+2011</a>)</span>, and is well-suited for the use of genetic algorithms
+<span class="citation">(<a href="#ref-Hamblin2013" role="doc-biblioref">Hamblin 2013</a>)</span>. <span class="citation">Luke (<a href="#ref-Luke2009" role="doc-biblioref">2009</a>)</span> describes the metaheuristic
+approach more generally (original emphasis retained):</p>
 <blockquote>
-<p>Metaheuristics are applied to <em>I know it when I see it</em> problems. They’re algorithms used to find answers to problems when you have very little to help you: you don’t know beforehand what the optimal solution looks like, you don’t know how to go about finding it in a principled way, you have very little heuristic information to go on, and brute-force search is out of the question because the space is too large. <em>But</em> if you’re given a candidate solution to your problem, you <em>can</em> test it and assess how good it is. That is, you know a good one when you see it.</p>
+<p>Metaheuristics are applied to <em>I know it when I see it</em>
+problems. They’re algorithms used to find answers to problems when you
+have very little to help you: you don’t know beforehand what the optimal
+solution looks like, you don’t know how to go about finding it in a
+principled way, you have very little heuristic information to go on, and
+brute-force search is out of the question because the space is too
+large. <em>But</em> if you’re given a candidate solution to your
+problem, you <em>can</em> test it and assess how good it is. That is,
+you know a good one when you see it.</p>
 </blockquote>
-<p>Given the complexity of adaptive management and socio-ecological interactions, the above conditions for applying the metaheuristic approach are clearly satisfied for manager and user decisions. With this in mind, we now explain the details of manager and user fitness functions; that is, how GMSE assesses whether or not a strategy is a good one.</p>
-<div id="manfit" class="section level2">
-<h2 class="hasAnchor">
-<a href="#manfit" class="anchor"></a>Fitness function for managers</h2>
-<p>Individual fitness as calculated for managers (<span class="math inline">\(F_{i}^{m}\)</span>) is affected by a manager’s utility for resources and the projected change in resource abundance caused by the individual’s policy (i.e., the contents of their <code>POPULATION</code> layer, specifically row 3; here again we use ‘individual’ to refer to one of <code>ga_popsize</code> discrete strategies in <code>POPULATION</code>, which may be selected and reproduce within the genetic algorithm). Manager utility for a resource (<span class="math inline">\(U^{m}_{res}\)</span>) is defined as the difference between <code>manage_target</code> and the estimation of population abundance as produced by the GMSE observation model (see “<a href="#Key_data_structures_used">Key data structures used</a>” above, and <a href="SI7.html#action">Default GMSE data structures</a> for more information). Manager utility can therefore change in each GMSE time step as estimated resource abundance changes; when the estimated resource abundance is greater than <code>manage_target</code>, <span class="math inline">\(U^{m}_{res}\)</span> is negative, and when the estimated resource abundance is less than <code>manage_target</code>, <span class="math inline">\(U^{m}_{res}\)</span> is positive. To get the fitness of individuals, first the change in resource abundance predicted by the individual’s policy (<span class="math inline">\(\Delta A_{i}\)</span>) is calculated, then the squared difference between <span class="math inline">\(\Delta A_{i}\)</span> and <span class="math inline">\(U^{m}_{res}\)</span> is calculated to obtain a utility deviation (<span class="math inline">\(D_{i}\)</span>) for the individual <span class="math inline">\(i\)</span>,</p>
-<p><span class="math display">\[ D_{i} = (\Delta A_{i} - U^{m}_{res})^2. \]</span></p>
-<p>The value of <span class="math inline">\(D_{i}\)</span> increases as <span class="math inline">\(\Delta A_{i}\)</span> gets further from <span class="math inline">\(U^{m}_{res}\)</span>; i.e, <span class="math inline">\(D_{i}\)</span> is high when <span class="math inline">\(i\)</span> sets a policy that is not predicted to get closer to the <code>manage_target</code> abundance. Fitness is defined by first finding the maximum <span class="math inline">\(D_{i}\)</span> value among all <code>ga_popsize</code> individuals (<span class="math inline">\(D_{max}\)</span>), then subtracting <span class="math inline">\(D_{i}\)</span> from this value for each individual,</p>
-<p><span class="math display">\[ F^{m}_{i} = D_{max} - D_{i}. \]</span></p>
-<p>We have explained how <span class="math inline">\(U^{m}_{res}\)</span> is calculated in the <a href="#Key_data_structures_used">above section on key data structures</a>. We now explain in more detail how individuals in the genetic algorithm calculate how their actions will affect <span class="math inline">\(\Delta A_{i}\)</span>.</p>
-<p>To predict change in resource abundance as a consequence of policy, an individual first needs to know the total number of actions of all types <span class="math inline">\(j\)</span> (e.g., scaring, culling, etc.) performed by users in the previous time step (<span class="math inline">\(X_{\bullet, j}\)</span>; note that this value includes the increment <code>manage_caution</code>, with a default of <code>manage_caution = 1</code>, to ensure that managers do not naïvely assume that users will not perform an action just because they did not perform it in the previous time step), and the cost of performing each action (<span class="math inline">\(C_{\bullet, j}\)</span>). This information is collected from <code>ACTION</code> and <code>COST</code> arrays. The individual <span class="math inline">\(i\)</span> then needs to predict how their policy (i.e., the costs that they set for users to perform an action) will affect the new total number of each action <span class="math inline">\(j\)</span> performed (<span class="math inline">\(X_{i,j}\)</span>). To do this, the individual assumes that total user actions performed under their policy will change in proportion to that of the old policy, while also recognising that users have a maximum above which higher costs set by the manager will have no effect. Interested readers might wish to examine the short <a href="https://github.com/bradduthie/gmse/blob/master/src/game.c#L452"><code>new_act</code></a> function, which is summarised mathematically below; this function is called by the <a href="https://github.com/bradduthie/gmse/blob/master/src/game.c#L482"><code>policy_to_counts</code></a> function in the <a href="https://github.com/bradduthie/gmse/blob/dev/src/game.c">genetic algorithm source file</a>.</p>
-<p>The manager first calculates how much total budget, as summed over all users, was devoted to an action by multiplying the old per action cost <span class="math inline">\(C_{\bullet, j}\)</span> by the total number of actions performed, <span class="math inline">\(X_{\bullet, j}\)</span>. The manager then divides this by the new cost <span class="math inline">\(C_{i, j}\)</span> per action to calculate the new predicted number of actions,</p>
-<p><span class="math display">\[X_{i, j} = \frac{X_{\bullet, j} \times C_{\bullet, j}}{C_{i, j}}.\]</span></p>
-<p>Note again that if <span class="math inline">\(C_{i, j} = C_{\bullet, j}\)</span>, then the total number of new predicted actions <span class="math inline">\(j\)</span> will remain unchanged. If <span class="math inline">\(C_{i, j} &gt; C_{\bullet, j}\)</span>, then the total number of new actions will decrease, and if <span class="math inline">\(C_{i, j} &lt; C_{\bullet, j}\)</span>, then the total number of new actions will increase.</p>
-<p>The predicted consequences of <span class="math inline">\(X_{i,j}\)</span> for resource abundance differ for each possible action. For each action, no consequence is predicted if the policy is not allowed by a simulation of GMSE (e.g., <code>culling = FALSE</code>). For allowed actions, the parameter <code>manager_sense</code> (<span class="math inline">\(\sigma\)</span>) modulates predicted consequences for abundance by some factor; this is useful because not all actions attempted by users will be realised, and a value of <span class="math inline">\(\sigma = 1\)</span> tends to slightly overestimate how much the actions attempted by users will actually translate to a change in resource abundance. In practice, the default <span class="math inline">\(\sigma = 0.9\)</span> usually performs well. Managers also have access to an estimate of the number of offspring that resources produce (<span class="math inline">\(E[offspring]\)</span>). For default settings in GMSE v0.6+, <span class="math inline">\(E[offspring] = \lambda\)</span>, where <span class="math inline">\(\lambda\)</span> is the GMSE argument <code>lambda</code> that defines the baseline population growth rate of resources. Given a non-default GMSE argument for <code>consume_repr</code> (where <code>consume_repr</code> is how much consumption of landscape yield is needed to increment offspring production by 1), <span class="math inline">\(E[offspring]\)</span> is further incremented by <code>( (times_feeding * res_consume) / consume_repr)</code> to account for reproduction enabled by feeding on the landscape (<code>res_consume</code> is the proportion of landscape yield that a resource consumes during feeding).</p>
-<p>Allowed actions are predicted by managers to have the following effects (again, we emphasise that whether or not these effects are realised will depend later on the user model, to which the manager – by design – does not have access):</p>
+<p>Given the complexity of adaptive management and socio-ecological
+interactions, the above conditions for applying the metaheuristic
+approach are clearly satisfied for manager and user decisions. With this
+in mind, we now explain the details of manager and user fitness
+functions; that is, how GMSE assesses whether or not a strategy is a
+good one.</p>
+<div class="section level3">
+<h3 id="manfit">Fitness function for managers<a class="anchor" aria-label="anchor" href="#manfit"></a>
+</h3>
+<p>Individual fitness as calculated for managers (<span class="math inline">\(F_{i}^{m}\)</span>) is affected by a manager’s
+utility for resources and the projected change in resource abundance
+caused by the individual’s policy (i.e., the contents of their
+<code>POPULATION</code> layer, specifically row 3; here again we use
+‘individual’ to refer to one of <code>ga_popsize</code> discrete
+strategies in <code>POPULATION</code>, which may be selected and
+reproduce within the genetic algorithm). Manager utility for a resource
+(<span class="math inline">\(U^{m}_{res}\)</span>) is defined as the
+difference between <code>manage_target</code> and the estimation of
+population abundance as produced by the GMSE observation model (see “<a href="#Key_data_structures_used">Key data structures used</a>” above,
+and <a href="SI7.html#action">Default GMSE data structures</a> for more
+information). Manager utility can therefore change in each GMSE time
+step as estimated resource abundance changes; when the estimated
+resource abundance is greater than <code>manage_target</code>, <span class="math inline">\(U^{m}_{res}\)</span> is negative, and when the
+estimated resource abundance is less than <code>manage_target</code>,
+<span class="math inline">\(U^{m}_{res}\)</span> is positive. To get the
+fitness of individuals, first the change in resource abundance predicted
+by the individual’s policy (<span class="math inline">\(\Delta
+A_{i}\)</span>) is calculated, then the squared difference between <span class="math inline">\(\Delta A_{i}\)</span> and <span class="math inline">\(U^{m}_{res}\)</span> is calculated to obtain a
+utility deviation (<span class="math inline">\(D_{i}\)</span>) for the
+individual <span class="math inline">\(i\)</span>,</p>
+<p><span class="math display">\[ D_{i} = (\Delta A_{i} - U^{m}_{res})^2.
+\]</span></p>
+<p>The value of <span class="math inline">\(D_{i}\)</span> increases as
+<span class="math inline">\(\Delta A_{i}\)</span> gets further from
+<span class="math inline">\(U^{m}_{res}\)</span>; i.e, <span class="math inline">\(D_{i}\)</span> is high when <span class="math inline">\(i\)</span> sets a policy that is not predicted to
+get closer to the <code>manage_target</code> abundance. Fitness is
+defined by first finding the maximum <span class="math inline">\(D_{i}\)</span> value among all
+<code>ga_popsize</code> individuals (<span class="math inline">\(D_{max}\)</span>), then subtracting <span class="math inline">\(D_{i}\)</span> from this value for each
+individual,</p>
+<p><span class="math display">\[ F^{m}_{i} = D_{max} - D_{i}.
+\]</span></p>
+<p>We have explained how <span class="math inline">\(U^{m}_{res}\)</span> is calculated in the <a href="#Key_data_structures_used">above section on key data
+structures</a>. We now explain in more detail how individuals in the
+genetic algorithm calculate how their actions will affect <span class="math inline">\(\Delta A_{i}\)</span>.</p>
+<p>To predict change in resource abundance as a consequence of policy,
+an individual first needs to know the total number of actions of all
+types <span class="math inline">\(j\)</span> (e.g., scaring, culling,
+etc.) performed by users in the previous time step (<span class="math inline">\(X_{\bullet, j}\)</span>; note that this value
+includes the increment <code>manage_caution</code>, with a default of
+<code>manage_caution = 1</code>, to ensure that managers do not naïvely
+assume that users will not perform an action just because they did not
+perform it in the previous time step), and the cost of performing each
+action (<span class="math inline">\(C_{\bullet, j}\)</span>). This
+information is collected from <code>ACTION</code> and <code>COST</code>
+arrays. The individual <span class="math inline">\(i\)</span> then needs
+to predict how their policy (i.e., the costs that they set for users to
+perform an action) will affect the new total number of each action <span class="math inline">\(j\)</span> performed (<span class="math inline">\(X_{i,j}\)</span>). To do this, the individual
+assumes that total user actions performed under their policy will change
+in proportion to that of the old policy, while also recognising that
+users have a maximum above which higher costs set by the manager will
+have no effect. Interested readers might wish to examine the short <a href="https://github.com/bradduthie/gmse/blob/master/src/game.c#L452" class="external-link"><code>new_act</code></a>
+function, which is summarised mathematically below; this function is
+called by the <a href="https://github.com/bradduthie/gmse/blob/master/src/game.c#L482" class="external-link"><code>policy_to_counts</code></a>
+function in the <a href="https://github.com/bradduthie/gmse/blob/dev/src/game.c" class="external-link">genetic
+algorithm source file</a>.</p>
+<p>The manager first calculates how much total budget, as summed over
+all users, was devoted to an action by multiplying the old per action
+cost <span class="math inline">\(C_{\bullet, j}\)</span> by the total
+number of actions performed, <span class="math inline">\(X_{\bullet,
+j}\)</span>. The manager then divides this by the new cost <span class="math inline">\(C_{i, j}\)</span> per action to calculate the new
+predicted number of actions,</p>
+<p><span class="math display">\[X_{i, j} = \frac{X_{\bullet, j} \times
+C_{\bullet, j}}{C_{i, j}}.\]</span></p>
+<p>Note again that if <span class="math inline">\(C_{i, j} = C_{\bullet,
+j}\)</span>, then the total number of new predicted actions <span class="math inline">\(j\)</span> will remain unchanged. If <span class="math inline">\(C_{i, j} &gt; C_{\bullet, j}\)</span>, then the
+total number of new actions will decrease, and if <span class="math inline">\(C_{i, j} &lt; C_{\bullet, j}\)</span>, then the
+total number of new actions will increase.</p>
+<p>The predicted consequences of <span class="math inline">\(X_{i,j}\)</span> for resource abundance differ for
+each possible action. For each action, no consequence is predicted if
+the policy is not allowed by a simulation of GMSE (e.g.,
+<code>culling = FALSE</code>). For allowed actions, the parameter
+<code>manager_sense</code> (<span class="math inline">\(\sigma\)</span>)
+modulates predicted consequences for abundance by some factor; this is
+useful because not all actions attempted by users will be realised, and
+a value of <span class="math inline">\(\sigma = 1\)</span> tends to
+slightly overestimate how much the actions attempted by users will
+actually translate to a change in resource abundance. In practice, the
+default <span class="math inline">\(\sigma = 0.9\)</span> usually
+performs well. Managers also have access to an estimate of the number of
+offspring that resources produce (<span class="math inline">\(E[offspring]\)</span>). For default settings in
+GMSE v0.6+, <span class="math inline">\(E[offspring] = \lambda\)</span>,
+where <span class="math inline">\(\lambda\)</span> is the GMSE argument
+<code>lambda</code> that defines the baseline population growth rate of
+resources. Given a non-default GMSE argument for
+<code>consume_repr</code> (where <code>consume_repr</code> is how much
+consumption of landscape yield is needed to increment offspring
+production by 1), <span class="math inline">\(E[offspring]\)</span> is
+further incremented by
+<code>( (times_feeding * res_consume) / consume_repr)</code> to account
+for reproduction enabled by feeding on the landscape
+(<code>res_consume</code> is the proportion of landscape yield that a
+resource consumes during feeding).</p>
+<p>Allowed actions are predicted by managers to have the following
+effects (again, we emphasise that whether or not these effects are
+realised will depend later on the user model, to which the manager – by
+design – does not have access):</p>
 <ul>
 <li>
-<code>scaring</code> is assumed to be nonlethal and therefore have no effect on resource number (resources are moved to a random cell on the landscape, as sampled from a uniform distribution such that movement to any given cell is equally probable).</li>
+<code>scaring</code> is assumed to be nonlethal and therefore have
+no effect on resource number (resources are moved to a random cell on
+the landscape, as sampled from a uniform distribution such that movement
+to any given cell is equally probable).</li>
 <li>
 <code>culling</code> decreases resource number by <span class="math inline">\(\sigma (1 + E[offspring])\)</span>.</li>
 <li>
@@ -307,46 +672,132 @@ Conceptual overview of the GMSE genetic algorithm
 <li>
 <code>help_offspring</code> increases resource number by <span class="math inline">\(\sigma\)</span>.</li>
 </ul>
-<p>Note that <span class="math inline">\(\sigma\)</span> is included in all of the predicted actions above as a modulator for how strongly the manager predicts users will respond to a change in manager policy (e.g., a value of 0 would predict no reaction on the part of users to a change in policy, while a value of 1 would predict that an action would increase in exact proportion to its decrease in cost).</p>
-<p>The above effects cannot be altered directly in <code>gmse</code> or <code>gmse_apply</code> (though parameter values can of course be changed using <code>manager_sense</code> and arguments affecting <span class="math inline">\(E[offspring]\)</span>), but future versions of GMSE might include different predicted effects to increase precision or allow for multiple resource types or different actions. The summation of <span class="math inline">\(X_{i,j}\)</span> for all actions defines the predicted change in resource abundance caused by the policy of an individual <span class="math inline">\(i\)</span>, <span class="math inline">\(\Delta A_{i}\)</span>.</p>
+<p>Note that <span class="math inline">\(\sigma\)</span> is included in
+all of the predicted actions above as a modulator for how strongly the
+manager predicts users will respond to a change in manager policy (e.g.,
+a value of 0 would predict no reaction on the part of users to a change
+in policy, while a value of 1 would predict that an action would
+increase in exact proportion to its decrease in cost).</p>
+<p>The above effects cannot be altered directly in <code>gmse</code> or
+<code>gmse_apply</code> (though parameter values can of course be
+changed using <code>manager_sense</code> and arguments affecting <span class="math inline">\(E[offspring]\)</span>), but future versions of
+GMSE might include different predicted effects to increase precision or
+allow for multiple resource types or different actions. The summation of
+<span class="math inline">\(X_{i,j}\)</span> for all actions defines the
+predicted change in resource abundance caused by the policy of an
+individual <span class="math inline">\(i\)</span>, <span class="math inline">\(\Delta A_{i}\)</span>.</p>
 </div>
-<div id="ufit" class="section level2">
-<h2 class="hasAnchor">
-<a href="#ufit" class="anchor"></a>Fitness function for users</h2>
-<p>The previous section described the fitness function applied when individual’s fitness was evaluated for managers; here we explain a separate fitness function that is applied when individuals are instead evaluated for users. Individual fitness as calculated for users (<span class="math inline">\(F_{i}^{u}\)</span>) is affected by a user’s utility for resources (<span class="math inline">\(U^{u}_{res}\)</span>) and landscape output (<span class="math inline">\(U^{u}_{land}\)</span>), and the predicted change in each caused by the user’s actions (<span class="math inline">\(\Delta A_{i}\)</span> and <span class="math inline">\(\Delta L_{i}\)</span> for predicted change in resource abundance and summed values of the landscape cells owned by <span class="math inline">\(i\)</span>, respectively). Individual fitness is defined for users below,</p>
-<p><span class="math display">\[F_{i}^{u} = \Delta A_{i} U^{u}_{res} + \Delta L_{i} U^{u}_{land}. \]</span></p>
-<p>Note that <span class="math inline">\(F_{i}^{u}\)</span> increases when <span class="math inline">\(\Delta A_{i}\)</span> and <span class="math inline">\(\Delta L_{i}\)</span> are of the same sign as <span class="math inline">\(U^{u}_{res}\)</span> and <span class="math inline">\(U^{u}_{land}\)</span>, respectively. Further, in GMSE v0.6+, only one term of the equation is nonzero. When <code>land_ownership = FALSE</code> (default, modelling users that harvest resources), <span class="math inline">\(U^{u}_{res} = -1\)</span> and <span class="math inline">\(U^{u}_{land} = 0\)</span>, and when <code>land_ownership = TRUE</code>, <span class="math inline">\(U^{u}_{res} = 0\)</span> and <span class="math inline">\(U^{u}_{land} = 100\)</span> (modelling farmers trying to increase crop yield). Hence users only have a single objective of either decreasing resource abundance or increasing landscape output, though landscape output might be increased indirectly by decreasing resource abundance if <code>res_consume &gt; 0</code>.</p>
-<p>Unlike the <a href="#manfit">manager fitness function</a>, the predicted effects of user actions can be defined directly in <code>gmse</code> and <code>gmse_apply</code>. Hence, it is possible to specify how effective a user believes, e.g., culling or scaring to be with respect to their own utility. Arguments to do this include <code>perceive_scare</code>, <code>perceive_cull</code>, <code>perceive_cast</code>, <code>perceive_feed</code>, <code>perceive_help</code>, <code>perceive_tend</code> and <code>perceive_kill</code>. Each of these arguments define how much a user believes one action will affect either the user or the landscape. For example, if <code>perceive_scare = -1</code>, then a user will perceiving scaring as decreasing the number of resources feeding on their landscape by 1. A value of <code>perceive_feed = 0.5</code> would correspond to a user perceiving feeding to increase the number of resources by one half. Landscape effects (<code>perceive_tend</code> and <code>perceive_kill</code>) refer to effects of actions on the landscape, such that <code>perceive_tend = 0.2</code> would mean that a single action of tending crops (i.e., action taken on a single landscape cell) is perceived to increase crop yield by 0.2, while <code>perceive_kill = -1</code> would mean that a single action of killing crops will remove all yield on the landscape cell.</p>
-<p>By default, arguments affecting how users perceive the efficacy of their own actions are set to <code>NA</code>. Default values are then calculated from other arguments specified in <code>gmse</code> or <code>gmse_apply</code>. Default user actions are predicted to affect resources in the following way (in the below <span class="math inline">\(E[offspring]\)</span> is calculated in the same way as in <a href="#manfit">the manager’s fitness function</a>):</p>
+<div class="section level3">
+<h3 id="ufit">Fitness function for users<a class="anchor" aria-label="anchor" href="#ufit"></a>
+</h3>
+<p>The previous section described the fitness function applied when
+individual’s fitness was evaluated for managers; here we explain a
+separate fitness function that is applied when individuals are instead
+evaluated for users. Individual fitness as calculated for users (<span class="math inline">\(F_{i}^{u}\)</span>) is affected by a user’s
+utility for resources (<span class="math inline">\(U^{u}_{res}\)</span>)
+and landscape output (<span class="math inline">\(U^{u}_{land}\)</span>), and the predicted change
+in each caused by the user’s actions (<span class="math inline">\(\Delta
+A_{i}\)</span> and <span class="math inline">\(\Delta L_{i}\)</span> for
+predicted change in resource abundance and summed values of the
+landscape cells owned by <span class="math inline">\(i\)</span>,
+respectively). Individual fitness is defined for users below,</p>
+<p><span class="math display">\[F_{i}^{u} = \Delta A_{i} U^{u}_{res} +
+\Delta L_{i} U^{u}_{land}. \]</span></p>
+<p>Note that <span class="math inline">\(F_{i}^{u}\)</span> increases
+when <span class="math inline">\(\Delta A_{i}\)</span> and <span class="math inline">\(\Delta L_{i}\)</span> are of the same sign as
+<span class="math inline">\(U^{u}_{res}\)</span> and <span class="math inline">\(U^{u}_{land}\)</span>, respectively. Further, in
+GMSE v0.6+, only one term of the equation is nonzero. When
+<code>land_ownership = FALSE</code> (default, modelling users that
+harvest resources), <span class="math inline">\(U^{u}_{res} =
+-1\)</span> and <span class="math inline">\(U^{u}_{land} = 0\)</span>,
+and when <code>land_ownership = TRUE</code>, <span class="math inline">\(U^{u}_{res} = 0\)</span> and <span class="math inline">\(U^{u}_{land} = 100\)</span> (modelling farmers
+trying to increase crop yield). Hence users only have a single objective
+of either decreasing resource abundance or increasing landscape output,
+though landscape output might be increased indirectly by decreasing
+resource abundance if <code>res_consume &gt; 0</code>.</p>
+<p>Unlike the <a href="#manfit">manager fitness function</a>, the
+predicted effects of user actions can be defined directly in
+<code>gmse</code> and <code>gmse_apply</code>. Hence, it is possible to
+specify how effective a user believes, e.g., culling or scaring to be
+with respect to their own utility. Arguments to do this include
+<code>perceive_scare</code>, <code>perceive_cull</code>,
+<code>perceive_cast</code>, <code>perceive_feed</code>,
+<code>perceive_help</code>, <code>perceive_tend</code> and
+<code>perceive_kill</code>. Each of these arguments define how much a
+user believes one action will affect either the user or the landscape.
+For example, if <code>perceive_scare = -1</code>, then a user will
+perceiving scaring as decreasing the number of resources feeding on
+their landscape by 1. A value of <code>perceive_feed = 0.5</code> would
+correspond to a user perceiving feeding to increase the number of
+resources by one half. Landscape effects (<code>perceive_tend</code> and
+<code>perceive_kill</code>) refer to effects of actions on the
+landscape, such that <code>perceive_tend = 0.2</code> would mean that a
+single action of tending crops (i.e., action taken on a single landscape
+cell) is perceived to increase crop yield by 0.2, while
+<code>perceive_kill = -1</code> would mean that a single action of
+killing crops will remove all yield on the landscape cell.</p>
+<p>By default, arguments affecting how users perceive the efficacy of
+their own actions are set to <code>NA</code>. Default values are then
+calculated from other arguments specified in <code>gmse</code> or
+<code>gmse_apply</code>. Default user actions are predicted to affect
+resources in the following way (in the below <span class="math inline">\(E[offspring]\)</span> is calculated in the same
+way as in <a href="#manfit">the manager’s fitness function</a>):</p>
 <ul>
 <li>
-<code>scaring</code> decreases resource number by <span class="math inline">\(1\)</span> times one minus the number of landscape cells that the user owns (i.e., <code>perceive_scare = -1 * (1 - pr_cells_owned)</code>). This accounts for the increasing probability that resource will be scared back to another landscape cell owned by the focal user. If a user owns no cells, then scaring is assumed to have no effect.</li>
+<code>scaring</code> decreases resource number by <span class="math inline">\(1\)</span> times one minus the number of landscape
+cells that the user owns (i.e.,
+<code>perceive_scare = -1 * (1 - pr_cells_owned)</code>). This accounts
+for the increasing probability that resource will be scared back to
+another landscape cell owned by the focal user. If a user owns no cells,
+then scaring is assumed to have no effect.</li>
 <li>
-<code>culling</code> decreases resource number by <span class="math inline">\(1 + E[offspring]\)</span> (i.e., <code>perceive_cull = -1 * (1 + E_off)</code>).</li>
+<code>culling</code> decreases resource number by <span class="math inline">\(1 + E[offspring]\)</span> (i.e.,
+<code>perceive_cull = -1 * (1 + E_off)</code>).</li>
 <li>
-<code>castration</code> decreases resource number by <span class="math inline">\(E[offspring]\)</span> (i.e., <code>perceive_cast = -1 * E_off</code>).</li>
+<code>castration</code> decreases resource number by <span class="math inline">\(E[offspring]\)</span> (i.e.,
+<code>perceive_cast = -1 * E_off</code>).</li>
 <li>
-<code>feeding</code> increases resource number by <span class="math inline">\(E[offspring]\)</span> (i.e., <code>perceive_feed = E_off</code>).</li>
+<code>feeding</code> increases resource number by <span class="math inline">\(E[offspring]\)</span> (i.e.,
+<code>perceive_feed = E_off</code>).</li>
 <li>
-<code>help_offspring</code> increases resource number by 1 (i.e., <code>perceive_help = 1</code>).</li>
+<code>help_offspring</code> increases resource number by 1 (i.e.,
+<code>perceive_help = 1</code>).</li>
 </ul>
-<p>The number of each action performed is multiplied by its effect, and the sum of all these products is the predicted <span class="math inline">\(\Delta A_{i}\)</span>,</p>
-<p><span class="math display">\[\Delta A_{i} = (\lambda) Feeds + Helps - Scares - (1 + \lambda)Culls - (\lambda) Castrations.\]</span></p>
-<p>There are only two possible actions that users can take to directly affect landscape output, tending crops (<code>tend_crops</code>) and killing crops (<code>kill_crops</code>). The increase in landscape output is modulated by the parameter <code>tend_crop_yld</code> (<span class="math inline">\(\phi\)</span>). User actions are therefore predicted to have the following effects for one landscape cell:</p>
+<p>The number of each action performed is multiplied by its effect, and
+the sum of all these products is the predicted <span class="math inline">\(\Delta A_{i}\)</span>,</p>
+<p><span class="math display">\[\Delta A_{i} = (\lambda) Feeds + Helps -
+Scares - (1 + \lambda)Culls - (\lambda) Castrations.\]</span></p>
+<p>There are only two possible actions that users can take to directly
+affect landscape output, tending crops (<code>tend_crops</code>) and
+killing crops (<code>kill_crops</code>). The increase in landscape
+output is modulated by the parameter <code>tend_crop_yld</code> (<span class="math inline">\(\phi\)</span>). User actions are therefore
+predicted to have the following effects for one landscape cell:</p>
 <ul>
 <li>
-<code>tend_crops</code> will increase landscape output by <span class="math inline">\(\phi\)</span> (i.e., <code>perceive_tend = tend_crop_yld</code>).</li>
+<code>tend_crops</code> will increase landscape output by <span class="math inline">\(\phi\)</span> (i.e.,
+<code>perceive_tend = tend_crop_yld</code>).</li>
 <li>
-<code>kill_crops</code> will decrease landscape output by 1 (since the output of a cell is 1 by default, this action removes all output on a landscape cell; i.e., <code>perceive_kill = -1</code>).</li>
+<code>kill_crops</code> will decrease landscape output by 1 (since
+the output of a cell is 1 by default, this action removes all output on
+a landscape cell; i.e., <code>perceive_kill = -1</code>).</li>
 </ul>
-<p>Actions on resources can also have indirect effects on <span class="math inline">\(\Delta L_{i}\)</span> when resources consume output on the landscape; we define the value <code>res_consume</code> as <span class="math inline">\(r\)</span>. The predicted <span class="math inline">\(\Delta L_{i}\)</span> is then,</p>
-<p><span class="math display">\[\Delta L_{i} = (\phi)Tends - Kills - r\Delta A_{i}.\]</span></p>
-<p>That is, the change in landscape output equals the increase in output from tending crops, minus the number of crops destroyed, minus the change in resource abundance times the effect that resource abundance has on landscape output (note that if user actions decrease resource abundance, then this last term will be positive, increasing landscape output).</p>
+<p>Actions on resources can also have indirect effects on <span class="math inline">\(\Delta L_{i}\)</span> when resources consume
+output on the landscape; we define the value <code>res_consume</code> as
+<span class="math inline">\(r\)</span>. The predicted <span class="math inline">\(\Delta L_{i}\)</span> is then,</p>
+<p><span class="math display">\[\Delta L_{i} = (\phi)Tends - Kills -
+r\Delta A_{i}.\]</span></p>
+<p>That is, the change in landscape output equals the increase in output
+from tending crops, minus the number of crops destroyed, minus the
+change in resource abundance times the effect that resource abundance
+has on landscape output (note that if user actions decrease resource
+abundance, then this last term will be positive, increasing landscape
+output).</p>
 </div>
-<div id="choosing-genetic-algorithm-parameter-values" class="section level2">
-<h2 class="hasAnchor">
-<a href="#choosing-genetic-algorithm-parameter-values" class="anchor"></a>Choosing genetic algorithm parameter values</h2>
-<p>Options for adjusting genetic algorithm parameter values in <code>gmse</code> and <code>gmse_apply</code> are shown below.</p>
+<div class="section level3">
+<h3 id="choosing-genetic-algorithm-parameter-values">Choosing genetic algorithm parameter values<a class="anchor" aria-label="anchor" href="#choosing-genetic-algorithm-parameter-values"></a>
+</h3>
+<p>Options for adjusting genetic algorithm parameter values in
+<code>gmse</code> and <code>gmse_apply</code> are shown below.</p>
 <table class="table">
 <colgroup>
 <col width="27%">
@@ -362,27 +813,36 @@ Conceptual overview of the GMSE genetic algorithm
 <tr class="odd">
 <td><code>ga_popsize</code></td>
 <td>100</td>
-<td>The number of individuals in the population temporarily simulated during a single run of the genetic algorithm.</td>
+<td>The number of individuals in the population temporarily simulated
+during a single run of the genetic algorithm.</td>
 </tr>
 <tr class="even">
 <td><code>ga_mingen</code></td>
 <td>40</td>
-<td>The minimum number of iterations that a genetic algorithm will run before settling on an agent’s strategy.</td>
+<td>The minimum number of iterations that a genetic algorithm will run
+before settling on an agent’s strategy.</td>
 </tr>
 <tr class="odd">
 <td><code>ga_seedrep</code></td>
 <td>20</td>
-<td>The number of individuas in the population to be initiaised with the current agent’s strategy (e.g., from a previous time step in the broader GMSE simulation), as opposed to being initialised with random strategies.</td>
+<td>The number of individuas in the population to be initiaised with the
+current agent’s strategy (e.g., from a previous time step in the broader
+GMSE simulation), as opposed to being initialised with random
+strategies.</td>
 </tr>
 <tr class="even">
 <td><code>ga_sampleK</code></td>
 <td>20</td>
-<td>For the tournament step of the genetic agorithm, how many strategies are selected at random from the larger population (with replacement) to be included a the tournament.</td>
+<td>For the tournament step of the genetic agorithm, how many strategies
+are selected at random from the larger population (with replacement) to
+be included a the tournament.</td>
 </tr>
 <tr class="odd">
 <td><code>ga_chooseK</code></td>
 <td>2</td>
-<td>Four the tournament step of the genetic agorithm, how many strategies are selected as winners of the tournament, to be included in the next iteration.</td>
+<td>Four the tournament step of the genetic agorithm, how many
+strategies are selected as winners of the tournament, to be included in
+the next iteration.</td>
 </tr>
 <tr class="even">
 <td><code>ga_mutation</code></td>
@@ -392,61 +852,122 @@ Conceptual overview of the GMSE genetic algorithm
 <tr class="odd">
 <td><code>ga_crossover</code></td>
 <td>0.1</td>
-<td>The crossover rate of any action in an agent’s strategy; crossover events occur with a different randomly selected strategy in the population.</td>
+<td>The crossover rate of any action in an agent’s strategy; crossover
+events occur with a different randomly selected strategy in the
+population.</td>
 </tr>
 <tr class="even">
 <td><code>ga_converge_crit</code></td>
 <td>0.1</td>
-<td>The percent increase in strategy fitness from one iteration to the next below which the convergence criteria is satisfied. Iterations wil continue as long as fitness increase is above this convergence criteria.</td>
+<td>The percent increase in strategy fitness from one iteration to the
+next below which the convergence criteria is satisfied. Iterations wil
+continue as long as fitness increase is above this convergence
+criteria.</td>
 </tr>
 <tr class="odd">
 <td><code>group_think</code></td>
 <td>FALSE</td>
-<td>Whether or not all users (i.e., not including the manager) have identical strategies. If TRUE, then one genetic algorithm will be run and applied to all users.</td>
+<td>Whether or not all users (i.e., not including the manager) have
+identical strategies. If TRUE, then one genetic algorithm will be run
+and applied to all users.</td>
 </tr>
 </tbody>
 </table>
-<p>Given the heuristic goals of the genetic algorithm to mimic the goal-oriented behaviour of agents, default parameters are typically sufficient for agent decision making. Key parameters can be adjusted if more precision in decision making is desired, but these adjustments will come at a cost of simulation efficiency. For example, increasing <code>ga_popsize</code> or <code>ga_mingen</code>, or decreasing <code>ga_converge_crit</code>, might fine tune strategies more effectively, but this will cause the genetic algorithm to take longer every time that it is run, ultimately slowing down GMSE simulations. Alternativey, setting <code>group_think = TRUE</code> will greatly speed up GMSE simulations when many users are being simulated, but this comes at the cost of among-user variation in decision making. Overall, we recommend first using default values in the genetic algorithm before exploring how other parameter value options affect simulation dynamics; for a more general discussion about selecting parameter values in genetic algorithms, see <span class="citation">Hamblin (<a href="#ref-Hamblin2013">2013</a>)</span>.</p>
+<p>Given the heuristic goals of the genetic algorithm to mimic the
+goal-oriented behaviour of agents, default parameters are typically
+sufficient for agent decision making. Key parameters can be adjusted if
+more precision in decision making is desired, but these adjustments will
+come at a cost of simulation efficiency. For example, increasing
+<code>ga_popsize</code> or <code>ga_mingen</code>, or decreasing
+<code>ga_converge_crit</code>, might fine tune strategies more
+effectively, but this will cause the genetic algorithm to take longer
+every time that it is run, ultimately slowing down GMSE simulations.
+Alternativey, setting <code>group_think = TRUE</code> will greatly speed
+up GMSE simulations when many users are being simulated, but this comes
+at the cost of among-user variation in decision making. Overall, we
+recommend first using default values in the genetic algorithm before
+exploring how other parameter value options affect simulation dynamics;
+for a more general discussion about selecting parameter values in
+genetic algorithms, see <span class="citation">Hamblin (<a href="#ref-Hamblin2013" role="doc-biblioref">2013</a>)</span>.</p>
 </div>
-<div id="future-development-of-fitness-functions" class="section level2">
-<h2 class="hasAnchor">
-<a href="#future-development-of-fitness-functions" class="anchor"></a>Future development of fitness functions</h2>
-<p>The fitness functions defined above are useful heuristics for simulating manager and user decision-making in a way that produces realistic, <em>I know it when I see it</em>, strategies. Future versions of GMSE might improve upon these heuristics to generate more accurate or more realistic models of human decision making. Such improvements could incorporate additional information such as memory of actions from multiple past time steps, or a continually updated estimate for how actions are predicted to affect resource abundance or landscape output in a simulation (e.g., through a dynamic <code>manager_sense</code>). Alternatively, future improvements could usefully incorporate knowledge of human decision making collected from empirical observation of human behaviour during conservation conflicts. While such possibilities could be useful for future GMSE modelling, repeated simulations demonstrate the ability of the current GMSE genetic algorithm to find adaptive strategies for managers attempting to keep resources at target abundance, and users attempting to maximise their harvests or crop yields. It is therefore useful as a tool for modelling manager and user decisions in a generalised management strategy evaluation framework.</p>
+<div class="section level3">
+<h3 id="future-development-of-fitness-functions">Future development of fitness functions<a class="anchor" aria-label="anchor" href="#future-development-of-fitness-functions"></a>
+</h3>
+<p>The fitness functions defined above are useful heuristics for
+simulating manager and user decision-making in a way that produces
+realistic, <em>I know it when I see it</em>, strategies. Future versions
+of GMSE might improve upon these heuristics to generate more accurate or
+more realistic models of human decision making. Such improvements could
+incorporate additional information such as memory of actions from
+multiple past time steps, or a continually updated estimate for how
+actions are predicted to affect resource abundance or landscape output
+in a simulation (e.g., through a dynamic <code>manager_sense</code>).
+Alternatively, future improvements could usefully incorporate knowledge
+of human decision making collected from empirical observation of human
+behaviour during conservation conflicts. While such possibilities could
+be useful for future GMSE modelling, repeated simulations demonstrate
+the ability of the current GMSE genetic algorithm to find adaptive
+strategies for managers attempting to keep resources at target
+abundance, and users attempting to maximise their harvests or crop
+yields. It is therefore useful as a tool for modelling manager and user
+decisions in a generalised management strategy evaluation framework.</p>
 </div>
 </div>
-<div id="references" class="section level1 unnumbered">
-<h1 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h1>
-<div id="refs" class="references">
-<div id="ref-Adami2016">
-<p>Adami, Christoph, Jory Schossau, and Arend Hintze. 2016. “Evolutionary game theory using agent-based methods.” <em>Physics of Life Reviews</em> 19. Elsevier B.V.: 1–26. <a href="https://doi.org/10.1016/j.plrev.2016.08.015">https://doi.org/10.1016/j.plrev.2016.08.015</a>.</p>
+<div class="section level2">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Adami2016" class="csl-entry">
+Adami, Christoph, Jory Schossau, and Arend Hintze. 2016. <span>“<span class="nocase">Evolutionary game theory using agent-based
+methods</span>.”</span> <em>Physics of Life Reviews</em> 19: 1–26. <a href="https://doi.org/10.1016/j.plrev.2016.08.015" class="external-link">https://doi.org/10.1016/j.plrev.2016.08.015</a>.
 </div>
-<div id="ref-Balmann2000">
-<p>Balmann, A, and K Happe. 2000. “Applying parallel genetic algorithms to economic problems: The case of agricultural land markets.” In <em>IIFET Conference “Microbehavior and Macroresults”. Proceedings.</em> Corvallis, Oregon, USA. <a href="http://oregonstate.edu/dept/IIFET/2000/papers/balmann2.pdf">http://oregonstate.edu/dept/IIFET/2000/papers/balmann2.pdf</a>.</p>
+<div id="ref-Balmann2000" class="csl-entry">
+Balmann, A, and K Happe. 2000. <span>“<span class="nocase">Applying
+parallel genetic algorithms to economic problems: The case of
+agricultural land markets</span>.”</span> In <em>IIFET Conference
+<span>“Microbehavior and Macroresults.”</span> Proceedings.</em>
+Corvallis, Oregon, USA. <a href="http://oregonstate.edu/dept/IIFET/2000/papers/balmann2.pdf" class="external-link">http://oregonstate.edu/dept/IIFET/2000/papers/balmann2.pdf</a>.
 </div>
-<div id="ref-Bunnefeld2011">
-<p>Bunnefeld, Nils, Eriko Hoshino, and Eleanor J Milner-Gulland. 2011. “Management strategy evaluation: A powerful tool for conservation?” <em>Trends in Ecology and Evolution</em> 26 (9): 441–47. <a href="https://doi.org/10.1016/j.tree.2011.05.003">https://doi.org/10.1016/j.tree.2011.05.003</a>.</p>
+<div id="ref-Bunnefeld2011" class="csl-entry">
+Bunnefeld, Nils, Eriko Hoshino, and Eleanor J Milner-Gulland. 2011.
+<span>“<span class="nocase">Management strategy evaluation: A powerful
+tool for conservation?</span>”</span> <em>Trends in Ecology and
+Evolution</em> 26 (9): 441–47. <a href="https://doi.org/10.1016/j.tree.2011.05.003" class="external-link">https://doi.org/10.1016/j.tree.2011.05.003</a>.
 </div>
-<div id="ref-Hamblin2013">
-<p>Hamblin, Steven. 2013. “On the practical usage of genetic algorithms in ecology and evolution.” <em>Methods in Ecology and Evolution</em> 4 (2): 184–94. <a href="https://doi.org/10.1111/2041-210X.12000">https://doi.org/10.1111/2041-210X.12000</a>.</p>
+<div id="ref-Hamblin2013" class="csl-entry">
+Hamblin, Steven. 2013. <span>“<span class="nocase">On the practical
+usage of genetic algorithms in ecology and evolution</span>.”</span>
+<em>Methods in Ecology and Evolution</em> 4 (2): 184–94. <a href="https://doi.org/10.1111/2041-210X.12000" class="external-link">https://doi.org/10.1111/2041-210X.12000</a>.
 </div>
-<div id="ref-Kark2015">
-<p>Kark, Salit, Ayesha Tulloch, Ascelin Gordon, Tessa Mazor, Nils Bunnefeld, and Noam Levin. 2015. “Cross-boundary collaboration: Key to the conservation puzzle.” <em>Current Opinion in Environmental Sustainability</em> 12. Elsevier B.V.: 12–24. <a href="https://doi.org/10.1016/j.cosust.2014.08.005">https://doi.org/10.1016/j.cosust.2014.08.005</a>.</p>
+<div id="ref-Kark2015" class="csl-entry">
+Kark, Salit, Ayesha Tulloch, Ascelin Gordon, Tessa Mazor, Nils
+Bunnefeld, and Noam Levin. 2015. <span>“<span class="nocase">Cross-boundary collaboration: Key to the conservation
+puzzle</span>.”</span> <em>Current Opinion in Environmental
+Sustainability</em> 12: 12–24. <a href="https://doi.org/10.1016/j.cosust.2014.08.005" class="external-link">https://doi.org/10.1016/j.cosust.2014.08.005</a>.
 </div>
-<div id="ref-Lee2012">
-<p>Lee, Chih Sheng. 2012. “Multi-objective game-theory models for conflict analysis in reservoir watershed management.” <em>Chemosphere</em> 87 (6). Elsevier Ltd: 608–13. <a href="https://doi.org/10.1016/j.chemosphere.2012.01.014">https://doi.org/10.1016/j.chemosphere.2012.01.014</a>.</p>
+<div id="ref-Lee2012" class="csl-entry">
+Lee, Chih Sheng. 2012. <span>“<span class="nocase">Multi-objective
+game-theory models for conflict analysis in reservoir watershed
+management</span>.”</span> <em>Chemosphere</em> 87 (6): 608–13. <a href="https://doi.org/10.1016/j.chemosphere.2012.01.014" class="external-link">https://doi.org/10.1016/j.chemosphere.2012.01.014</a>.
 </div>
-<div id="ref-Luke2009">
-<p>Luke, Sean. 2009. <em>Essentials of Metaheuristics</em>. Lulu.</p>
+<div id="ref-Luke2009" class="csl-entry">
+Luke, Sean. 2009. <em>Essentials of Metaheuristics</em>. Lulu.
 </div>
-<div id="ref-Redpath2018">
-<p>Redpath, Steve M, Aidan Keane, Henrik Andrén, Z Baynham-Herd, Nils Bunnefeld, A Bradley Duthie, J Frank, et al. 2018. “Games as Tools to Address Conservation Conflicts.” <em>Trends in Ecology and Evolution</em> 33 (6): 415–26. <a href="https://doi.org/10.1016/j.tree.2018.03.005">https://doi.org/10.1016/j.tree.2018.03.005</a>.</p>
+<div id="ref-Redpath2018" class="csl-entry">
+Redpath, Steve M, Aidan Keane, Henrik Andrén, Z Baynham-Herd, Nils
+Bunnefeld, A Bradley Duthie, J Frank, et al. 2018. <span>“<span class="nocase">Games as Tools to Address Conservation
+Conflicts</span>.”</span> <em>Trends in Ecology and Evolution</em> 33
+(6): 415–26. <a href="https://doi.org/10.1016/j.tree.2018.03.005" class="external-link">https://doi.org/10.1016/j.tree.2018.03.005</a>.
 </div>
-<div id="ref-Tilman2016">
-<p>Tilman, Andrew R., James R. Watson, and Simon Levin. 2016. “Maintaining cooperation in social-ecological systems:” <em>Theoretical Ecology</em>. Theoretical Ecology. <a href="https://doi.org/10.1007/s12080-016-0318-8">https://doi.org/10.1007/s12080-016-0318-8</a>.</p>
+<div id="ref-Tilman2016" class="csl-entry">
+Tilman, Andrew R., James R. Watson, and Simon Levin. 2016. <span>“<span class="nocase">Maintaining cooperation in social-ecological
+systems:</span>”</span> <em>Theoretical Ecology</em>. <a href="https://doi.org/10.1007/s12080-016-0318-8" class="external-link">https://doi.org/10.1007/s12080-016-0318-8</a>.
 </div>
-<div id="ref-Tu2000">
-<p>Tu, M Tuan, Eberhard Wolff, and Winfried Lamersdorf. 2000. “Genetic algorithms for automated negotiations: a FSM-based application approach.” <em>Proceedings 11th International Workshop on Database and Expert Systems Applications</em>, 1029–33. <a href="https://doi.org/10.1109/DEXA.2000.875153">https://doi.org/10.1109/DEXA.2000.875153</a>.</p>
+<div id="ref-Tu2000" class="csl-entry">
+Tu, M Tuan, Eberhard Wolff, and Winfried Lamersdorf. 2000. <span>“<span class="nocase">Genetic algorithms for automated negotiations: a
+FSM-based application approach</span>.”</span> <em>Proceedings 11th
+International Workshop on Database and Expert Systems Applications</em>,
+1029–33. <a href="https://doi.org/10.1109/DEXA.2000.875153" class="external-link">https://doi.org/10.1109/DEXA.2000.875153</a>.
 </div>
 </div>
 </div>
@@ -463,11 +984,13 @@ Conceptual overview of the GMSE genetic algorithm
 
 
       <footer><div class="copyright">
-  <p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman.</p>
+  <p></p>
+<p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman, Ochoa Gabriela.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>
@@ -475,6 +998,8 @@ Conceptual overview of the GMSE genetic algorithm
 
   
 
+
+  
 
   </body>
 </html>
