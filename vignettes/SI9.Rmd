@@ -2,7 +2,7 @@
 title: 'The simulated annealing algorithm of GMSE'
 subtitle: 'GMSE: an R package for generalised management strategy evaluation'
 author: | 
-        | A. Bradley Duthie&#xb9; &#xb2;, Gabriela Ochoa&#xb9;
+        | Brad Duthie&#xb9; &#xb2;, Gabriela Ochoa&#xb9;
 date: "[1] Biological and Environmental Sciences, University of Stirling, Stirling, UK [2] alexander.duthie@stir.ac.uk"
 output:
   pdf_document:
