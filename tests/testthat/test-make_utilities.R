@@ -3,6 +3,7 @@ library("GMSE");
 context("Action array initialisation");
 
 test_that("Dimensions of action array are correct", {
+    skip_on_cran();
     agents  <-  make_agents(model        = "IBM",
                             agent_number = 2,
                             type_counts  = c(1,1),
@@ -34,6 +35,7 @@ test_that("Dimensions of action array are correct", {
 })
 
 test_that("Values on the action array are accurate", {
+    skip_on_cran();
     agents  <-  make_agents(model        = "IBM",
                             agent_number = 2,
                             type_counts  = c(1,1),
@@ -65,6 +67,7 @@ test_that("Values on the action array are accurate", {
 })
 
 test_that("IDs on the action array are accurate", {
+    skip_on_cran();
     ID_vec <- c(-2, -2, -1, 1, 1, 2, 2);
     agents  <-  make_agents(model        = "IBM",
                             agent_number = 2,
