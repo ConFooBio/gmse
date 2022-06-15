@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.2</span>
       </span>
     </div>
 
@@ -111,7 +111,7 @@
       <h1 data-toc-skip>The simulated annealing algorithm of GMSE</h1>
             <h3 data-toc-skip class="subtitle">GMSE: an R package for
 generalised management strategy evaluation</h3>
-                        <h4 data-toc-skip class="author"><div class="line-block">A. Bradley Duthie¹ ², Gabriela Ochoa¹</div></h4>
+                        <h4 data-toc-skip class="author"><div class="line-block">Brad Duthie¹ ², Gabriela Ochoa¹</div></h4>
             
             <h4 data-toc-skip class="date">[1] Biological and
 Environmental Sciences, University of Stirling, Stirling, UK [2] <a href="mailto:alexander.duthie@stir.ac.uk" class="email">alexander.duthie@stir.ac.uk</a>
@@ -130,7 +130,7 @@ Environmental Sciences, University of Stirling, Stirling, UK [2] <a href="mailto
 <p>The primary algorithm used in GMSE to model manager and user
 decision-making is the <a href="SI1.pdf">genetic algorithm</a>. As of
 version 1.0, GMSE also allows for the use of a simulated annealing
-algorithm <span class="citation">(<a href="#ref-Kirkpatrick1983" role="doc-biblioref"><strong>Kirkpatrick1983?</strong></a>; <a href="#ref-Cerny1985" role="doc-biblioref"><strong>Cerny1985?</strong></a>; <a href="#ref-Rutenbar1989" role="doc-biblioref"><strong>Rutenbar1989?</strong></a>)</span>.
+algorithm <span class="citation">(<a href="#ref-Kirkpatrick1983" role="doc-biblioref">Kirkpatrick, Gelatt Jr, and Vecchi 1983</a>; <a href="#ref-Cerny1985" role="doc-biblioref">Černý 1985</a>; <a href="#ref-Rutenbar1989" role="doc-biblioref">Rutenbar 1989</a>)</span>.
 Simulated annealing searches a space of potential solutions (in GMSE,
 decisions made by agents to maximise their own utility) in an iterative
 way. Unlike the <a href="SI1.pdf">genetic algorithm</a>, it is not a
@@ -211,7 +211,7 @@ simulated annealing for agent decision-making.</p>
             scaring <span class="op">=</span> <span class="cn">TRUE</span>, plotting <span class="op">=</span> <span class="cn">FALSE</span>, user_annealing <span class="op">=</span> <span class="cn">TRUE</span>,
             mana_annealing <span class="op">=</span> <span class="cn">TRUE</span>, kmax_annealing <span class="op">=</span> <span class="fl">100</span>, mu_magnitude <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span>;</code></pre></div>
 <pre><code><span class="co">## [1] "Initialising simulations ... "</span>
-<span class="co">## [1] "Generation  21 of  40"</span></code></pre>
+<span class="co">## [1] "Generation  22 of  40"</span></code></pre>
 <p>All other <code>gmse</code> parameters are set to default values.
 Figure 1 shows the output, which can be compared with the <a href="ms.pdf">same output</a> from using the genetic algorithm.</p>
 <div class="figure" style="text-align: center">
@@ -575,16 +575,31 @@ and genetic algorithm used in Figure 2.</p>
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Cerny1985" class="csl-entry">
+Černý, V. 1985. <span>“<span class="nocase">Thermodynamical approach to
+the traveling salesman problem: An efficient simulation
+algorithm</span>.”</span> <em>Journal of Optimization Theory and
+Applications</em> 45 (1): 41–51. <a href="https://doi.org/10.1007/BF00940812" class="external-link">https://doi.org/10.1007/BF00940812</a>.
+</div>
 <div id="ref-Fox2017a" class="csl-entry">
 Fox, Anthony D, and Jesper Madsen. 2017. <span>“<span class="nocase">Threatened species to super-abundance: The unexpected
 international implications of successful goose
 conservation</span>.”</span> <em>Ambio</em> 46 (s2): 179–87. <a href="https://doi.org/10.1007/s13280-016-0878-2" class="external-link">https://doi.org/10.1007/s13280-016-0878-2</a>.
+</div>
+<div id="ref-Kirkpatrick1983" class="csl-entry">
+Kirkpatrick, S, C D Gelatt Jr, and M P Vecchi. 1983. <span>“<span class="nocase">Optimization by simulated annealing</span>.”</span>
+<em>Science</em> 220 (4598): 671–80.
 </div>
 <div id="ref-Mason2017" class="csl-entry">
 Mason, Tom H. E, Aidan Keane, Stephen M Redpath, and Nils Bunnefeld.
 2017. <span>“<span class="nocase">The changing environment of
 conservation conflict: geese and farming in Scotland</span>.”</span>
 <em>Journal of Applied Ecology</em>, 1–12. <a href="https://doi.org/10.1111/1365-2664.12969" class="external-link">https://doi.org/10.1111/1365-2664.12969</a>.
+</div>
+<div id="ref-Rutenbar1989" class="csl-entry">
+Rutenbar, Rob A. 1989. <span>“<span class="nocase">Simulated annealing
+algorithms: an overview</span>.”</span> <em>IEEE Circuits and Devices
+Magazine</em> 5: 19–26.
 </div>
 <div id="ref-Tulloch2017" class="csl-entry">
 Tulloch, Ayesha I T, Sam Nicol, and Nils Bunnefeld. 2017. <span>“<span class="nocase">Quantifying the expected value of uncertain management
@@ -607,7 +622,7 @@ Conservation</em> 214: 147–55. <a href="https://doi.org/10.1016/j.biocon.2017.
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman, Ochoa Gabriela.</p>
+<p>Developed by A. Bradley Duthie, Adrian Bach, Jeroen Minderman, Ochoa Gabriela, Nils Bunnefeld.</p>
 </div>
 
 <div class="pkgdown">

@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.2</span>
       </span>
     </div>
 
@@ -366,7 +366,7 @@ can just initialise with the biomass from the last year in
                                new_ssb <span class="op">=</span> <span class="va">ssb_ini</span><span class="op">)</span>;
 <span class="va">obs_rec</span> <span class="op">&lt;-</span> <span class="fu">obs_ssb</span><span class="op">(</span><span class="va">new_rec</span><span class="op">)</span>;</code></pre></div>
 <p>An initial run of these models gives values of 3835.21 for
-<code>new_rec</code> and 3958.72 for <code>obs_rec</code>. We are now
+<code>new_rec</code> and 3872.78 for <code>obs_rec</code>. We are now
 ready to use the built-in manager and user sub-models in
 <code>gmse_apply</code>. We will assume that managers attempt to keep a
 recruitment of 5000, and that there are 10 independent fishers who
@@ -389,11 +389,11 @@ the cost of harvesting (<code>culling</code> in GMSE).</p>
 <span class="co">## [1] 3835</span>
 <span class="co">## </span>
 <span class="co">## $observation_results</span>
-<span class="co">## [1] 3901.907</span>
+<span class="co">## [1] 3946.299</span>
 <span class="co">## </span>
 <span class="co">## $manager_results</span>
 <span class="co">##          resource_type scaring culling castration feeding help_offspring</span>
-<span class="co">## policy_1             1      NA     454         NA      NA             NA</span>
+<span class="co">## policy_1             1      NA     458         NA      NA             NA</span>
 <span class="co">## </span>
 <span class="co">## $user_results</span>
 <span class="co">##         resource_type scaring culling castration feeding help_offspring</span>
@@ -491,26 +491,26 @@ initialisation and simulation is below.</p>
                          <span class="st">"Harvested"</span>, <span class="st">"SSB"</span><span class="op">)</span>;
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sim_sum</span><span class="op">)</span>;</code></pre></div>
 <pre><code><span class="co">##       Year Recruitment Recruit_estim Harvest_cost Harvested      SSB</span>
-<span class="co">##  [1,] 2005        2919     2981.3479          796        20  33.5966</span>
-<span class="co">##  [2,] 2006        4339     4460.8071          199        10  71.3340</span>
-<span class="co">##  [3,] 2007        4647     4693.9712          215        50 105.9025</span>
-<span class="co">##  [4,] 2008        4390     4344.8215          225        40 145.5799</span>
-<span class="co">##  [5,] 2009        4390     4410.8122          220        40 145.5799</span>
-<span class="co">##  [6,] 2010         633      617.0522          699        40   5.5913</span>
-<span class="co">##  [7,] 2011        4629     4751.3181          229        10 115.2627</span>
-<span class="co">##  [8,] 2012         633      730.5472          705        40   5.5913</span>
-<span class="co">##  [9,] 2013        3035     2942.3576          898        10  35.5913</span>
-<span class="co">## [10,] 2014        4082     4154.6769          222        10  60.6639</span>
-<span class="co">## [11,] 2015        4390     4497.1169          243        40 145.5799</span>
-<span class="co">## [12,] 2016         554      680.6826          717        40   4.8673</span>
-<span class="co">## [13,] 2017        3303     3388.3546          882        10  40.6133</span>
-<span class="co">## [14,] 2018        4328     4259.8193          217        10  70.7603</span>
-<span class="co">## [15,] 2019        4390     4417.0592          229        40 145.5799</span>
-<span class="co">## [16,] 2020        3339     3348.4197          685        40  41.3340</span>
-<span class="co">## [17,] 2021        3447     3562.4067          209        10  43.5966</span>
-<span class="co">## [18,] 2022        4547     4623.1526          231        40  85.2627</span>
-<span class="co">## [19,] 2023         633      476.1130          686        40   5.5913</span>
-<span class="co">## [20,] 2024        2994     2833.9769          869        10  34.8673</span></code></pre>
+<span class="co">##  [1,] 2005        3747      3843.480          222        20  50.6639</span>
+<span class="co">##  [2,] 2006        4547      4465.442          230        40  85.2627</span>
+<span class="co">##  [3,] 2007        4390      4406.651          240        40 145.5799</span>
+<span class="co">##  [4,] 2008        1146      1136.166          693        40  10.6133</span>
+<span class="co">##  [5,] 2009        4082      4106.639          217        10  60.6639</span>
+<span class="co">##  [6,] 2010        4541      4568.789          221        40 130.1926</span>
+<span class="co">##  [7,] 2011        3310      3192.144          700        40  40.7603</span>
+<span class="co">##  [8,] 2012        4082      4086.803          217        10  60.6639</span>
+<span class="co">##  [9,] 2013        4390      4385.348          226        40 145.5799</span>
+<span class="co">## [10,] 2014        2739      2662.746          684        40  30.6639</span>
+<span class="co">## [11,] 2015        3303      3290.138          869        10  40.6133</span>
+<span class="co">## [12,] 2016        3035      3061.967          968        10  35.5913</span>
+<span class="co">## [13,] 2017        3303      3376.865         1008        10  40.6133</span>
+<span class="co">## [14,] 2018        3855      3798.617          250         0  53.5966</span>
+<span class="co">## [15,] 2019        4541      4635.799          231        40 130.1926</span>
+<span class="co">## [16,] 2020        3310      3318.888          689        40  40.7603</span>
+<span class="co">## [17,] 2021        4082      4092.835          235        10  60.6639</span>
+<span class="co">## [18,] 2022         633       614.248          692        40   5.5913</span>
+<span class="co">## [19,] 2023        3988      3745.669          235        10 175.5799</span>
+<span class="co">## [20,] 2024        4627      4666.104          228        40 115.9025</span></code></pre>
 <p>The above output from <code>sim_sum</code> reports the recruitment
 (resource or operational model), recruitment estimate (observation error
 model), management set harvest cost (harvest control model), user
@@ -531,9 +531,8 @@ human decision-making.</p>
 </h2>
 <p>GMSE is a general, flexible, tool for simulating the management of
 resources under situations of uncertainty and conflict. Management
-Strategy Evaluation <span class="citation">(<a href="#ref-Bunnefeld2011" role="doc-biblioref">Bunnefeld, Hoshino, and Milner-Gulland 2011</a>; <a href="#ref-Punt2016" role="doc-biblioref">Punt et al. 2016</a>)</span>,
-the framework upon which GMSE is based, had its origin in fisheries
-management <span class="citation">(<a href="#ref-Polacheck1999" role="doc-biblioref">Polacheck et al. 1999</a>; <a href="#ref-Smith1999" role="doc-biblioref">Smith, Sainsbury, and Stevens 1999</a>; <a href="#ref-Sainsbury2000" role="doc-biblioref">Sainsbury, Punt, and
+Strategy Evaluation <span class="citation">(<a href="#ref-Bunnefeld2011" role="doc-biblioref">Bunnefeld et al. 2011</a>; <a href="#ref-Punt2016" role="doc-biblioref">Punt et al. 2016</a>)</span>, the framework upon
+which GMSE is based, had its origin in fisheries management <span class="citation">(<a href="#ref-Polacheck1999" role="doc-biblioref">Polacheck et al. 1999</a>; <a href="#ref-Smith1999" role="doc-biblioref">Smith, Sainsbury, and Stevens 1999</a>; <a href="#ref-Sainsbury2000" role="doc-biblioref">Sainsbury, Punt, and
 Smith 2000</a>)</span>, and here we showed one example of how GMSE could
 be integrated with the core package of the <a href="http://www.flr-project.org/" class="external-link">Fisheries Library in R</a>.</p>
 <p>Future versions of GMSE will continue to be open-source and developed
@@ -553,10 +552,10 @@ these goals, and suggestions for new features, can be made on <a href="https://g
 </h2>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Bunnefeld2011" class="csl-entry">
-Bunnefeld, Nils, Eriko Hoshino, and Eleanor J Milner-Gulland. 2011.
-<span>“<span class="nocase">Management strategy evaluation: A powerful
-tool for conservation?</span>”</span> <em>Trends in Ecology and
-Evolution</em> 26 (9): 441–47. <a href="https://doi.org/10.1016/j.tree.2011.05.003" class="external-link">https://doi.org/10.1016/j.tree.2011.05.003</a>.
+Bunnefeld, Nils, Daniel C Reuman, David Baines, and E J Milner-Gulland.
+2011. <span>“<span class="nocase">Impact of unintentional selective
+harvesting on the population dynamics of red grouse</span>.”</span>
+<em>Journal of Animal Ecology</em> 80 (6): 1258–68. <a href="https://doi.org/10.1111/j.1365-2656.2011.01862.x" class="external-link">https://doi.org/10.1111/j.1365-2656.2011.01862.x</a>.
 </div>
 <div id="ref-Carruthers2018a" class="csl-entry">
 Carruthers, T, and D Butterworth. 2018a. <span>“<span class="nocase">ABT-MSE : An R package for atlantic bluefin tuna
@@ -578,13 +577,12 @@ Kell, L T, I Mosqueira, P Grosjean, Jean-Marc Fromentin, D Garcia, R
 Hillary, E Jardim, et al. 2007. <span>“<span class="nocase">FLR: an
 open-source framework for the evaluation and development of management
 strategies</span>.”</span> <em>ICES Journal of Marine Science</em> 64
-(4): 640–46. <a href="https://mail.google.com/mail/u/0/?ui=2%7B%5C&amp;%7Dpli=1%7B%5C%%7D5Cnpapers2://publication/doi/10.1093/icesjms/fsm012" class="external-link">https://mail.google.com/mail/u/0/?ui=2{\&amp;}pli=1{\%}5Cnpapers2://publication/doi/10.1093/icesjms/fsm012</a>.
+(4): 640–46. <a href="https://mail.google.com/mail/u/0/?ui=2&amp;pli=1%5Cnpapers2://publication/doi/10.1093/icesjms/fsm012" class="external-link">https://mail.google.com/mail/u/0/?ui=2&amp;pli=1%5Cnpapers2://publication/doi/10.1093/icesjms/fsm012</a>.
 </div>
 <div id="ref-Kolody2016" class="csl-entry">
 Kolody, Dale, and Paavo Jumppanen. 2016. <span>“<span class="nocase">IOTC Yellowfin and Bigeye Tuna Management Strategy
 Evaluation: Phase 1 Technical Support Project Final
-Report</span>.”</span> June. CSIRO: Oceans <span>&amp;</span>
-Atmosphere.
+Report</span>.”</span> June. CSIRO: Oceans &amp; Atmosphere.
 </div>
 <div id="ref-Mackinson2018" class="csl-entry">
 Mackinson, Steven, Mark Platts, Clement Garcia, and Christopher Lynam.
@@ -641,7 +639,7 @@ Status (GES) as defined by Italy</span>.”</span> <em>Marine Policy</em>
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman, Ochoa Gabriela.</p>
+<p>Developed by A. Bradley Duthie, Adrian Bach, Jeroen Minderman, Ochoa Gabriela, Nils Bunnefeld.</p>
 </div>
 
 <div class="pkgdown">

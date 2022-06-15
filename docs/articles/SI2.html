@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.2</span>
       </span>
     </div>
 
@@ -154,22 +154,22 @@ below, which summarise key values for all sub-models.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sim_1</span><span class="op">)</span>;</code></pre></div>
 <pre><code><span class="co">## $resource_results</span>
-<span class="co">## [1] 1139</span>
+<span class="co">## [1] 1075</span>
 <span class="co">## </span>
 <span class="co">## $observation_results</span>
-<span class="co">## [1] 1088.435</span>
+<span class="co">## [1] 997.7324</span>
 <span class="co">## </span>
 <span class="co">## $manager_results</span>
 <span class="co">##          resource_type scaring culling castration feeding help_offspring</span>
-<span class="co">## policy_1             1      NA      65         NA      NA             NA</span>
+<span class="co">## policy_1             1      NA      55         NA      NA             NA</span>
 <span class="co">## </span>
 <span class="co">## $user_results</span>
 <span class="co">##         resource_type scaring culling castration feeding help_offspring</span>
 <span class="co">## Manager             1      NA       0         NA      NA             NA</span>
-<span class="co">## user_1              1      NA      15         NA      NA             NA</span>
-<span class="co">## user_2              1      NA      15         NA      NA             NA</span>
-<span class="co">## user_3              1      NA      15         NA      NA             NA</span>
-<span class="co">## user_4              1      NA      15         NA      NA             NA</span>
+<span class="co">## user_1              1      NA      18         NA      NA             NA</span>
+<span class="co">## user_2              1      NA      18         NA      NA             NA</span>
+<span class="co">## user_3              1      NA      18         NA      NA             NA</span>
+<span class="co">## user_4              1      NA      18         NA      NA             NA</span>
 <span class="co">##         tend_crops kill_crops</span>
 <span class="co">## Manager         NA         NA</span>
 <span class="co">## user_1          NA         NA</span>
@@ -219,11 +219,11 @@ above <code>sim_2</code> are returned below.</p>
 <span class="co">## [1] 128</span>
 <span class="co">## </span>
 <span class="co">## $observation_results</span>
-<span class="co">## [1] 204.0816</span>
+<span class="co">## [1] 113.3787</span>
 <span class="co">## </span>
 <span class="co">## $manager_results</span>
 <span class="co">##          resource_type scaring culling castration feeding help_offspring</span>
-<span class="co">## policy_1             1      NA      59         NA      NA             NA</span>
+<span class="co">## policy_1             1      NA      61         NA      NA             NA</span>
 <span class="co">## </span>
 <span class="co">## $user_results</span>
 <span class="co">##         resource_type scaring culling castration feeding help_offspring</span>
@@ -326,13 +326,13 @@ added in at any point.</p>
 <span class="co">## [1] 1500</span>
 <span class="co">## </span>
 <span class="co">## $observation_results</span>
-<span class="co">## [1] 1746.032</span>
+<span class="co">## [1] 1678.005</span>
 <span class="co">## </span>
 <span class="co">## $manager_results</span>
-<span class="co">## [1] 746.0317</span>
+<span class="co">## [1] 678.0045</span>
 <span class="co">## </span>
 <span class="co">## $user_results</span>
-<span class="co">## [1] 820.6349</span></code></pre>
+<span class="co">## [1] 745.805</span></code></pre>
 <p>It is possible to, e.g., specify a simple resource and observation
 model, but then take advantage of the genetic algorithm to predict
 policy decisions and user actions (see <a href="SI5.html">Fisheries
@@ -350,15 +350,15 @@ explicitly, though this is not necessary).</p>
 <span class="co">## </span>
 <span class="co">## $manager_results</span>
 <span class="co">##          resource_type scaring culling castration feeding help_offspring</span>
-<span class="co">## policy_1             1      NA      77         NA      NA             NA</span>
+<span class="co">## policy_1             1      NA      73         NA      NA             NA</span>
 <span class="co">## </span>
 <span class="co">## $user_results</span>
 <span class="co">##         resource_type scaring culling castration feeding help_offspring</span>
 <span class="co">## Manager             1      NA       0         NA      NA             NA</span>
-<span class="co">## user_1              1      NA      12         NA      NA             NA</span>
-<span class="co">## user_2              1      NA      12         NA      NA             NA</span>
-<span class="co">## user_3              1      NA      12         NA      NA             NA</span>
-<span class="co">## user_4              1      NA      12         NA      NA             NA</span>
+<span class="co">## user_1              1      NA      13         NA      NA             NA</span>
+<span class="co">## user_2              1      NA      13         NA      NA             NA</span>
+<span class="co">## user_3              1      NA      13         NA      NA             NA</span>
+<span class="co">## user_4              1      NA      13         NA      NA             NA</span>
 <span class="co">##         tend_crops kill_crops</span>
 <span class="co">## Manager         NA         NA</span>
 <span class="co">## user_1          NA         NA</span>
@@ -405,26 +405,26 @@ below.</p>
                          <span class="st">"Cull_cost"</span>, <span class="st">"Scare_count"</span>, <span class="st">"Cull_count"</span><span class="op">)</span>;
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sim_sum_1</span><span class="op">)</span>;</code></pre></div>
 <pre><code><span class="co">##       Time Pop_size   Pop_est Scare_cost Cull_cost Scare_count Cull_count</span>
-<span class="co">##  [1,]    1     1075 1020.4082         NA       109          NA         54</span>
-<span class="co">##  [2,]    2     1162 1043.0839         NA       110          NA         54</span>
-<span class="co">##  [3,]    3     1287 1519.2744         NA        14          NA        426</span>
-<span class="co">##  [4,]    4     1003  884.3537         NA       109          NA         54</span>
-<span class="co">##  [5,]    5     1226 1179.1383         NA        39          NA        150</span>
-<span class="co">##  [6,]    6     1286 1383.2200         NA        18          NA        330</span>
-<span class="co">##  [7,]    7     1141 1088.4354         NA        79          NA         72</span>
-<span class="co">##  [8,]    8     1294 1360.5442         NA        19          NA        312</span>
-<span class="co">##  [9,]    9     1183 1133.7868         NA        52          NA        114</span>
-<span class="co">## [10,]   10     1308 1337.8685         NA        21          NA        282</span>
-<span class="co">## [11,]   11     1231 1088.4354         NA        79          NA         72</span>
-<span class="co">## [12,]   12     1382 1496.5986         NA        14          NA        426</span>
-<span class="co">## [13,]   13     1143 1133.7868         NA        52          NA        114</span>
-<span class="co">## [14,]   14     1264 1337.8685         NA        21          NA        282</span>
-<span class="co">## [15,]   15     1194 1201.8141         NA        34          NA        174</span>
-<span class="co">## [16,]   16     1225 1428.5714         NA        16          NA        372</span>
-<span class="co">## [17,]   17      998 1201.8141         NA        35          NA        168</span>
-<span class="co">## [18,]   18      967 1269.8413         NA        26          NA        228</span>
-<span class="co">## [19,]   19      899 1224.4898         NA        31          NA        192</span>
-<span class="co">## [20,]   20      836  861.6780         NA       110          NA         54</span></code></pre>
+<span class="co">##  [1,]    1     1148  929.7052         NA       110          NA         54</span>
+<span class="co">##  [2,]    2     1266 1224.4898         NA        32          NA        186</span>
+<span class="co">##  [3,]    3     1252 1111.1111         NA        63          NA         90</span>
+<span class="co">##  [4,]    4     1402 1405.8957         NA        17          NA        348</span>
+<span class="co">##  [5,]    5     1366 1179.1383         NA        39          NA        150</span>
+<span class="co">##  [6,]    6     1448 1541.9501         NA        13          NA        456</span>
+<span class="co">##  [7,]    7     1149 1337.8685         NA        21          NA        282</span>
+<span class="co">##  [8,]    8     1022  839.0023         NA       110          NA         54</span>
+<span class="co">##  [9,]    9     1154  952.3810         NA       110          NA         54</span>
+<span class="co">## [10,]   10     1359  884.3537         NA       110          NA         54</span>
+<span class="co">## [11,]   11     1576 1179.1383         NA        40          NA        150</span>
+<span class="co">## [12,]   12     1654 1496.5986         NA        14          NA        426</span>
+<span class="co">## [13,]   13     1495 1541.9501         NA        12          NA        498</span>
+<span class="co">## [14,]   14     1202 1292.5170         NA        24          NA        246</span>
+<span class="co">## [15,]   15     1169 1179.1383         NA        39          NA        150</span>
+<span class="co">## [16,]   16     1226 1201.8141         NA        34          NA        174</span>
+<span class="co">## [17,]   17     1245 1043.0839         NA       110          NA         54</span>
+<span class="co">## [18,]   18     1428 1405.8957         NA        17          NA        348</span>
+<span class="co">## [19,]   19     1262 1632.6531         NA        11          NA        540</span>
+<span class="co">## [20,]   20      857  748.2993         NA       109          NA         54</span></code></pre>
 <p>Note that one element of the full list <code>gmse_apply</code> output
 is the ‘basic_output’ itself, which is produced by default when
 <code>get_res = "basic"</code>. This is what is being used to store the
@@ -463,26 +463,26 @@ time step 10.</p>
                          <span class="st">"Cull_cost"</span>, <span class="st">"Scare_count"</span>, <span class="st">"Cull_count"</span><span class="op">)</span>;
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sim_sum_2</span><span class="op">)</span>;</code></pre></div>
 <pre><code><span class="co">##       Time Pop_size   Pop_est Scare_cost Cull_cost Scare_count Cull_count</span>
-<span class="co">##  [1,]    1     1150 1111.1111         NA        62          NA         96</span>
-<span class="co">##  [2,]    2     1182 1315.1927         NA        22          NA        270</span>
-<span class="co">##  [3,]    3     1051 1156.4626         NA        45          NA        132</span>
-<span class="co">##  [4,]    4     1053  907.0295         NA       110          NA         54</span>
-<span class="co">##  [5,]    5     1313 1360.5442         NA        20          NA        300</span>
-<span class="co">##  [6,]    6     1173 1247.1655         NA        29          NA        204</span>
-<span class="co">##  [7,]    7     1137 1133.7868         NA        52          NA        114</span>
-<span class="co">##  [8,]    8     1202 1179.1383         NA        39          NA        150</span>
-<span class="co">##  [9,]    9     1222 1065.7596         NA       105          NA         54</span>
-<span class="co">## [10,]   10     1417  952.3810         NA       110          NA         54</span>
-<span class="co">## [11,]   11     1677 1882.0862         52        10           0        600</span>
-<span class="co">## [12,]   12     1304 1247.1655         72        28           0        210</span>
-<span class="co">## [13,]   13     1316  997.7324         10       110           1         54</span>
-<span class="co">## [14,]   14     1506 1587.3016         56        12           0        498</span>
-<span class="co">## [15,]   15     1218  997.7324         10       109           0         54</span>
-<span class="co">## [16,]   16     1378 1315.1927         53        22           0        270</span>
-<span class="co">## [17,]   17     1290 1315.1927         90        22           0        270</span>
-<span class="co">## [18,]   18     1230 1405.8957         76        17           0        348</span>
-<span class="co">## [19,]   19     1087 1179.1383         43        39           0        150</span>
-<span class="co">## [20,]   20     1152 1088.4354         29        78           0         72</span></code></pre>
+<span class="co">##  [1,]    1     1142 1133.7868         NA        53          NA        108</span>
+<span class="co">##  [2,]    2     1187 1065.7596         NA       102          NA         54</span>
+<span class="co">##  [3,]    3     1341 1043.0839         NA       109          NA         54</span>
+<span class="co">##  [4,]    4     1536 1541.9501         NA        13          NA        456</span>
+<span class="co">##  [5,]    5     1400 1224.4898         NA        31          NA        192</span>
+<span class="co">##  [6,]    6     1399 1224.4898         NA        31          NA        192</span>
+<span class="co">##  [7,]    7     1442 1269.8413         NA        26          NA        228</span>
+<span class="co">##  [8,]    8     1448 1451.2472         NA        15          NA        396</span>
+<span class="co">##  [9,]    9     1285 1360.5442         NA        19          NA        312</span>
+<span class="co">## [10,]   10     1174 1428.5714         NA        16          NA        372</span>
+<span class="co">## [11,]   11      983  929.7052         10       109           0         54</span>
+<span class="co">## [12,]   12     1104  861.6780         10       110           1         54</span>
+<span class="co">## [13,]   13     1248 1337.8685         59        21           0        282</span>
+<span class="co">## [14,]   14     1166 1224.4898         71        31           0        192</span>
+<span class="co">## [15,]   15     1151 1428.5714         84        16           0        372</span>
+<span class="co">## [16,]   16      951  816.3265         10       110           1         54</span>
+<span class="co">## [17,]   17     1051 1156.4626         34        45           0        132</span>
+<span class="co">## [18,]   18     1142 1065.7596         10       106           2         54</span>
+<span class="co">## [19,]   19     1295 1201.8141         45        34           0        174</span>
+<span class="co">## [20,]   20     1356 1111.1111         38        63           0         90</span></code></pre>
 <p>Hence, in addition to the previously explained benefits of the
 flexible <code>gmse_apply</code> function, one particularly useful
 feature is that we can use it to study change in policy availability –
@@ -511,27 +511,27 @@ budget is higher rates of culling and decreased population size.</p>
 <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">sim_sum_3</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span>, <span class="st">"Pop_size"</span>, <span class="st">"Pop_est"</span>, <span class="st">"Cull_cost"</span>, <span class="st">"Cull_count"</span>,
                          <span class="st">"User_budget"</span><span class="op">)</span>;
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sim_sum_3</span><span class="op">)</span>;</code></pre></div>
-<pre><code><span class="co">##       Time Pop_size   Pop_est Cull_cost Cull_count User_budget</span>
-<span class="co">##  [1,]    1     1152 1179.1383        19        156         500</span>
-<span class="co">##  [2,]    2     1129 1088.4354        39         90         600</span>
-<span class="co">##  [3,]    3     1194 1133.7868        31        132         700</span>
-<span class="co">##  [4,]    4     1258  975.0567       110         42         800</span>
-<span class="co">##  [5,]    5     1530 1496.5986        11        486         900</span>
-<span class="co">##  [6,]    6     1225 1247.1655        25        240        1000</span>
-<span class="co">##  [7,]    7     1147 1383.2200        19        342        1100</span>
-<span class="co">##  [8,]    8      978  929.7052       109         66        1200</span>
-<span class="co">##  [9,]    9     1100 1133.7868        64        120        1300</span>
-<span class="co">## [10,]   10     1146 1224.4898        40        210        1400</span>
-<span class="co">## [11,]   11     1137 1201.8141        49        180        1500</span>
-<span class="co">## [12,]   12     1145  975.0567       110         84        1600</span>
-<span class="co">## [13,]   13     1303  997.7324       110         90        1700</span>
-<span class="co">## [14,]   14     1469 1496.5986        24        450        1800</span>
-<span class="co">## [15,]   15     1229 1020.4082       110        102        1900</span>
-<span class="co">## [16,]   16     1368 1609.9773        22        540        2000</span>
-<span class="co">## [17,]   17     1034  748.2993       110        114        2100</span>
-<span class="co">## [18,]   18     1129  793.6508       110        120        2200</span>
-<span class="co">## [19,]   19     1198  952.3810       110        120        2300</span>
-<span class="co">## [20,]   20     1298 1269.8413        57        252        2400</span></code></pre>
+<pre><code><span class="co">##       Time Pop_size  Pop_est Cull_cost Cull_count User_budget</span>
+<span class="co">##  [1,]    1     1169 1043.084        80         36         500</span>
+<span class="co">##  [2,]    2     1310 1156.463        23        156         600</span>
+<span class="co">##  [3,]    3     1332 1360.544        12        348         700</span>
+<span class="co">##  [4,]    4     1150 1065.760        74         60         800</span>
+<span class="co">##  [5,]    5     1410 1428.571        12        450         900</span>
+<span class="co">##  [6,]    6     1141 1111.111        57        102        1000</span>
+<span class="co">##  [7,]    7     1268 1360.544        19        342        1100</span>
+<span class="co">##  [8,]    8     1108 1043.084       110         60        1200</span>
+<span class="co">##  [9,]    9     1272  952.381       110         66        1300</span>
+<span class="co">## [10,]   10     1407 1405.896        21        396        1400</span>
+<span class="co">## [11,]   11     1206 1088.435       110         78        1500</span>
+<span class="co">## [12,]   12     1356 1133.787        76        126        1600</span>
+<span class="co">## [13,]   13     1499 1133.787        84        120        1700</span>
+<span class="co">## [14,]   14     1652 1746.032        16        672        1800</span>
+<span class="co">## [15,]   15     1174 1111.111       110        102        1900</span>
+<span class="co">## [16,]   16     1292 1020.408       110        108        2000</span>
+<span class="co">## [17,]   17     1452 1451.247        31        402        2100</span>
+<span class="co">## [18,]   18     1271 1133.787       109        120        2200</span>
+<span class="co">## [19,]   19     1381 1224.490        69        198        2300</span>
+<span class="co">## [20,]   20     1413 1292.517        55        258        2400</span></code></pre>
 <p>There is an important note to make about changing arguments to
 <code>gmse_apply</code> when <code>old_list</code> is being used: The
 function <code>gmse_apply</code> is trying to avoid a crash, so
@@ -585,19 +585,19 @@ meant to be the resource number and not some other parameter).</p>
 <span class="co">## [1] 1500</span>
 <span class="co">## </span>
 <span class="co">## $observation_results</span>
-<span class="co">## [1] 1836.735</span>
+<span class="co">## [1] 1609.977</span>
 <span class="co">## </span>
 <span class="co">## $manager_results</span>
 <span class="co">##          resource_type scaring culling castration feeding help_offspring</span>
-<span class="co">## policy_1             1      NA      70         NA      NA             NA</span>
+<span class="co">## policy_1             1      NA      77         NA      NA             NA</span>
 <span class="co">## </span>
 <span class="co">## $user_results</span>
 <span class="co">##         resource_type scaring culling castration feeding help_offspring</span>
 <span class="co">## Manager             1      NA       0         NA      NA             NA</span>
-<span class="co">## user_1              1      NA      14         NA      NA             NA</span>
-<span class="co">## user_2              1      NA      14         NA      NA             NA</span>
-<span class="co">## user_3              1      NA      14         NA      NA             NA</span>
-<span class="co">## user_4              1      NA      14         NA      NA             NA</span>
+<span class="co">## user_1              1      NA      12         NA      NA             NA</span>
+<span class="co">## user_2              1      NA      12         NA      NA             NA</span>
+<span class="co">## user_3              1      NA      12         NA      NA             NA</span>
+<span class="co">## user_4              1      NA      12         NA      NA             NA</span>
 <span class="co">##         tend_crops kill_crops</span>
 <span class="co">## Manager         NA         NA</span>
 <span class="co">## user_1          NA         NA</span>
@@ -652,11 +652,11 @@ using the same table structure explained above.</p>
                          <span class="st">"Cull_count"</span><span class="op">)</span>;
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sim_sum_4</span><span class="op">)</span>;</code></pre></div>
 <pre><code><span class="co">##      Time Pop_size  Pop_est Cull_cost Cull_count</span>
-<span class="co">## [1,]    1     1500 1836.735        10        400</span>
-<span class="co">## [2,]    2     1875 1859.410        10        400</span>
+<span class="co">## [1,]    1     1500 1768.707        10        400</span>
+<span class="co">## [2,]    2     1875 1882.086        10        400</span>
 <span class="co">## [3,]    3     1992 1859.410        10        400</span>
-<span class="co">## [4,]    4     1999 2108.844        10        400</span>
-<span class="co">## [5,]    5     1999 2018.141        10        400</span></code></pre>
+<span class="co">## [4,]    4     1999 2154.195        10        400</span>
+<span class="co">## [5,]    5     1999 2063.492        10        400</span></code></pre>
 <p>This is the recommended way to loop custom functions in
 <code>gmse_apply</code>. Note that elements of <code>old_list</code>
 will over-ride custom arguments to <code>gmse_apply</code> so
@@ -676,14 +676,14 @@ resources consume crops on the landscape.</p>
                           res_consume <span class="op">=</span> <span class="fl">0.02</span>, get_res <span class="op">=</span> <span class="st">"Full"</span><span class="op">)</span>;
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">sim_consume</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span>,,<span class="fl">2</span><span class="op">]</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span>;</code></pre></div>
 <pre><code><span class="co">##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]</span>
-<span class="co">## [1,] 0.64 0.68 0.77 0.71 0.78 0.68 0.85 0.67</span>
-<span class="co">## [2,] 0.71 0.80 0.87 0.78 0.72 0.72 0.75 0.75</span>
-<span class="co">## [3,] 0.65 0.74 0.85 0.78 0.72 0.75 0.71 0.75</span>
-<span class="co">## [4,] 0.70 0.71 0.70 0.68 0.71 0.75 0.74 0.75</span>
-<span class="co">## [5,] 0.68 0.70 0.67 0.70 0.82 0.72 0.68 0.74</span>
-<span class="co">## [6,] 0.75 0.75 0.74 0.75 0.67 0.75 0.67 0.70</span>
-<span class="co">## [7,] 0.83 0.67 0.78 0.83 0.87 0.67 0.70 0.72</span>
-<span class="co">## [8,] 0.70 0.72 0.72 0.71 0.65 0.71 0.74 0.68</span></code></pre>
+<span class="co">## [1,] 0.82 0.72 0.77 0.80 0.80 0.65 0.72 0.65</span>
+<span class="co">## [2,] 0.74 0.78 0.72 0.80 0.82 0.77 0.71 0.77</span>
+<span class="co">## [3,] 0.72 0.75 0.74 0.72 0.75 0.80 0.74 0.64</span>
+<span class="co">## [4,] 0.74 0.63 0.71 0.71 0.74 0.82 0.70 0.60</span>
+<span class="co">## [5,] 0.70 0.77 0.74 0.64 0.68 0.72 0.77 0.75</span>
+<span class="co">## [6,] 0.78 0.75 0.68 0.75 0.65 0.78 0.68 0.71</span>
+<span class="co">## [7,] 0.71 0.72 0.82 0.94 0.75 0.78 0.62 0.67</span>
+<span class="co">## [8,] 0.77 0.67 0.72 0.71 0.83 0.67 0.64 0.67</span></code></pre>
 <p>If we run this for five time steps using a loop in
 <code>gmse_apply</code>, then resources will continue to deplete crops
 on the landscape.</p>
@@ -697,14 +697,14 @@ on the landscape.</p>
 <span class="op">}</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span>,,<span class="fl">2</span><span class="op">]</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span>;</code></pre></div>
 <pre><code><span class="co">##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]</span>
-<span class="co">## [1,] 0.16 0.13 0.11 0.12 0.12 0.14 0.14 0.13</span>
-<span class="co">## [2,] 0.11 0.15 0.15 0.11 0.18 0.14 0.21 0.13</span>
-<span class="co">## [3,] 0.15 0.13 0.10 0.13 0.17 0.14 0.19 0.14</span>
-<span class="co">## [4,] 0.12 0.20 0.19 0.15 0.08 0.14 0.17 0.17</span>
-<span class="co">## [5,] 0.14 0.14 0.12 0.20 0.19 0.12 0.13 0.12</span>
-<span class="co">## [6,] 0.14 0.10 0.11 0.13 0.18 0.12 0.14 0.14</span>
-<span class="co">## [7,] 0.16 0.14 0.11 0.12 0.20 0.16 0.15 0.22</span>
-<span class="co">## [8,] 0.16 0.14 0.17 0.17 0.20 0.14 0.10 0.12</span></code></pre>
+<span class="co">## [1,] 0.12 0.12 0.15 0.13 0.15 0.16 0.14 0.09</span>
+<span class="co">## [2,] 0.13 0.23 0.14 0.14 0.14 0.17 0.10 0.12</span>
+<span class="co">## [3,] 0.14 0.16 0.12 0.17 0.14 0.10 0.15 0.20</span>
+<span class="co">## [4,] 0.18 0.14 0.15 0.16 0.21 0.13 0.12 0.16</span>
+<span class="co">## [5,] 0.22 0.16 0.14 0.14 0.12 0.18 0.14 0.15</span>
+<span class="co">## [6,] 0.14 0.14 0.16 0.17 0.10 0.14 0.09 0.11</span>
+<span class="co">## [7,] 0.17 0.11 0.10 0.16 0.14 0.20 0.16 0.13</span>
+<span class="co">## [8,] 0.16 0.10 0.15 0.22 0.20 0.12 0.18 0.16</span></code></pre>
 <p>Notice that the amount of crops on each cell has decreased
 substantially after five time steps. To replenish the crops after every
 <code>repl</code> time step, we can use the following code.</p>
@@ -722,14 +722,14 @@ substantially after five time steps. To replenish the crops after every
 <span class="op">}</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">sim_old</span><span class="op">$</span><span class="va">LAND</span><span class="op">[</span>,,<span class="fl">2</span><span class="op">]</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span>;</code></pre></div>
 <pre><code><span class="co">##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]</span>
-<span class="co">## [1,] 0.11 0.14 0.16 0.14 0.12 0.14 0.18 0.11</span>
-<span class="co">## [2,] 0.16 0.10 0.11 0.12 0.12 0.13 0.13 0.11</span>
-<span class="co">## [3,] 0.17 0.12 0.14 0.23 0.17 0.12 0.15 0.19</span>
-<span class="co">## [4,] 0.12 0.18 0.18 0.17 0.12 0.15 0.16 0.15</span>
-<span class="co">## [5,] 0.19 0.18 0.14 0.11 0.14 0.11 0.24 0.13</span>
-<span class="co">## [6,] 0.14 0.13 0.19 0.12 0.18 0.10 0.13 0.12</span>
-<span class="co">## [7,] 0.14 0.15 0.19 0.16 0.12 0.24 0.12 0.19</span>
-<span class="co">## [8,] 0.19 0.13 0.16 0.13 0.14 0.16 0.15 0.18</span></code></pre>
+<span class="co">## [1,] 0.19 0.11 0.10 0.15 0.14 0.16 0.13 0.14</span>
+<span class="co">## [2,] 0.16 0.11 0.18 0.14 0.14 0.18 0.17 0.18</span>
+<span class="co">## [3,] 0.12 0.14 0.14 0.18 0.10 0.14 0.16 0.13</span>
+<span class="co">## [4,] 0.14 0.15 0.10 0.14 0.14 0.13 0.14 0.16</span>
+<span class="co">## [5,] 0.20 0.13 0.11 0.11 0.14 0.18 0.18 0.13</span>
+<span class="co">## [6,] 0.11 0.12 0.15 0.15 0.19 0.16 0.17 0.12</span>
+<span class="co">## [7,] 0.19 0.15 0.16 0.15 0.13 0.11 0.23 0.14</span>
+<span class="co">## [8,] 0.15 0.13 0.11 0.12 0.17 0.22 0.11 0.18</span></code></pre>
 <p>Now with the crop on the landscape replenishing every time step,
 consumption after five time steps comparable to consumption after a
 single time step. This is likely to be critical if simulating resources
@@ -753,7 +753,7 @@ landscape values change from one time step to the next.</p>
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman, Ochoa Gabriela.</p>
+<p>Developed by A. Bradley Duthie, Adrian Bach, Jeroen Minderman, Ochoa Gabriela, Nils Bunnefeld.</p>
 </div>
 
 <div class="pkgdown">

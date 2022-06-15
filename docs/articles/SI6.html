@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.2</span>
       </span>
     </div>
 
@@ -169,22 +169,22 @@ complex systems. We can see a simple example of this by calling
 <code class="sourceCode R"><span class="va">rand_eg_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span><span class="op">(</span><span class="op">)</span>;
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">rand_eg_1</span><span class="op">)</span>;</code></pre></div>
 <pre><code><span class="co">## $resource_results</span>
-<span class="co">## [1] 1095</span>
+<span class="co">## [1] 1109</span>
 <span class="co">## </span>
 <span class="co">## $observation_results</span>
-<span class="co">## [1] 839.0023</span>
+<span class="co">## [1] 748.2993</span>
 <span class="co">## </span>
 <span class="co">## $manager_results</span>
 <span class="co">##          resource_type scaring culling castration feeding help_offspring</span>
-<span class="co">## policy_1             1      NA      85         NA      NA             NA</span>
+<span class="co">## policy_1             1      NA      69         NA      NA             NA</span>
 <span class="co">## </span>
 <span class="co">## $user_results</span>
 <span class="co">##         resource_type scaring culling castration feeding help_offspring</span>
 <span class="co">## Manager             1      NA       0         NA      NA             NA</span>
-<span class="co">## user_1              1      NA      11         NA      NA             NA</span>
-<span class="co">## user_2              1      NA      11         NA      NA             NA</span>
-<span class="co">## user_3              1      NA      11         NA      NA             NA</span>
-<span class="co">## user_4              1      NA      11         NA      NA             NA</span>
+<span class="co">## user_1              1      NA      14         NA      NA             NA</span>
+<span class="co">## user_2              1      NA      14         NA      NA             NA</span>
+<span class="co">## user_3              1      NA      14         NA      NA             NA</span>
+<span class="co">## user_4              1      NA      14         NA      NA             NA</span>
 <span class="co">##         tend_crops kill_crops</span>
 <span class="co">## Manager         NA         NA</span>
 <span class="co">## user_1          NA         NA</span>
@@ -200,22 +200,22 @@ below.</p>
 <code class="sourceCode R"><span class="va">rand_eg_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_apply.html">gmse_apply</a></span><span class="op">(</span><span class="op">)</span>;
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">rand_eg_2</span><span class="op">)</span>;</code></pre></div>
 <pre><code><span class="co">## $resource_results</span>
-<span class="co">## [1] 1101</span>
+<span class="co">## [1] 1092</span>
 <span class="co">## </span>
 <span class="co">## $observation_results</span>
-<span class="co">## [1] 1292.517</span>
+<span class="co">## [1] 907.0295</span>
 <span class="co">## </span>
 <span class="co">## $manager_results</span>
 <span class="co">##          resource_type scaring culling castration feeding help_offspring</span>
-<span class="co">## policy_1             1      NA      71         NA      NA             NA</span>
+<span class="co">## policy_1             1      NA      64         NA      NA             NA</span>
 <span class="co">## </span>
 <span class="co">## $user_results</span>
 <span class="co">##         resource_type scaring culling castration feeding help_offspring</span>
 <span class="co">## Manager             1      NA       0         NA      NA             NA</span>
-<span class="co">## user_1              1      NA      14         NA      NA             NA</span>
-<span class="co">## user_2              1      NA      14         NA      NA             NA</span>
-<span class="co">## user_3              1      NA      14         NA      NA             NA</span>
-<span class="co">## user_4              1      NA      14         NA      NA             NA</span>
+<span class="co">## user_1              1      NA      15         NA      NA             NA</span>
+<span class="co">## user_2              1      NA      15         NA      NA             NA</span>
+<span class="co">## user_3              1      NA      15         NA      NA             NA</span>
+<span class="co">## user_4              1      NA      15         NA      NA             NA</span>
 <span class="co">##         tend_crops kill_crops</span>
 <span class="co">## Manager         NA         NA</span>
 <span class="co">## user_1          NA         NA</span>
@@ -245,28 +245,28 @@ below.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sim_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_table.html">gmse_table</a></span><span class="op">(</span>gmse_sim <span class="op">=</span> <span class="va">gmse_sim</span><span class="op">)</span>;
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sim_table</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##       time_step resources  estimate cost_culling cost_unused act_culling</span>
-<span class="co">##  [1,]         1      1111 1201.8141           80          30          48</span>
-<span class="co">##  [2,]         2      1200 1201.8141           23          87         172</span>
-<span class="co">##  [3,]         3      1178 1201.8141           23          87         172</span>
-<span class="co">##  [4,]         4      1168  907.0295          110           0          36</span>
-<span class="co">##  [5,]         5      1347 1700.6803           10         100         400</span>
-<span class="co">##  [6,]         6      1234 1315.1927           14          96         284</span>
-<span class="co">##  [7,]         7      1121 1292.5170           16          94         248</span>
-<span class="co">##  [8,]         8      1047 1179.1383           26          84         152</span>
-<span class="co">##  [9,]         9      1078 1065.7596           71          39          56</span>
-<span class="co">## [10,]        10      1229 1269.8413           18          92         220</span>
+<pre><code><span class="co">##       time_step resources estimate cost_culling cost_unused act_culling</span>
+<span class="co">##  [1,]         1      1123 1156.463           66          44          60</span>
+<span class="co">##  [2,]         2      1214 1133.787           35          75         112</span>
+<span class="co">##  [3,]         3      1255 1337.868           14          96         284</span>
+<span class="co">##  [4,]         4      1132  952.381          110           0          36</span>
+<span class="co">##  [5,]         5      1320 1269.841           18          92         220</span>
+<span class="co">##  [6,]         6      1437 1700.680           10         100         400</span>
+<span class="co">##  [7,]         7      1240 1247.166           19          91         208</span>
+<span class="co">##  [8,]         8      1245 1315.193           14          96         284</span>
+<span class="co">##  [9,]         9      1158  952.381          108           0          36</span>
+<span class="co">## [10,]        10      1343 1428.571           11          99         360</span>
 <span class="co">##       act_unused harvested</span>
-<span class="co">##  [1,]          9        48</span>
-<span class="co">##  [2,]          1       172</span>
-<span class="co">##  [3,]          0       172</span>
-<span class="co">##  [4,]          1        36</span>
-<span class="co">##  [5,]          0       400</span>
-<span class="co">##  [6,]          0       284</span>
-<span class="co">##  [7,]          0       248</span>
-<span class="co">##  [8,]          1       152</span>
-<span class="co">##  [9,]          0        56</span>
-<span class="co">## [10,]          0       220</span></code></pre>
+<span class="co">##  [1,]          2        60</span>
+<span class="co">##  [2,]          3       112</span>
+<span class="co">##  [3,]          0       284</span>
+<span class="co">##  [4,]          3        36</span>
+<span class="co">##  [5,]          1       220</span>
+<span class="co">##  [6,]          0       400</span>
+<span class="co">##  [7,]          0       208</span>
+<span class="co">##  [8,]          0       284</span>
+<span class="co">##  [9,]          1        36</span>
+<span class="co">## [10,]          0       360</span></code></pre>
 <p>The above table can be saved as a CSV file using the
 <code>write.csv</code> function.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -278,9 +278,9 @@ record only the last time step in <code>gmse_table</code> using the
 <code class="sourceCode R"><span class="va">sim_table_last</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_table.html">gmse_table</a></span><span class="op">(</span>gmse_sim <span class="op">=</span> <span class="va">gmse_sim</span>, all_time <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>;
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sim_table_last</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">##    time_step    resources     estimate cost_culling  cost_unused  act_culling </span>
-<span class="co">##       10.000     1229.000     1269.841       18.000       92.000      220.000 </span>
+<span class="co">##       10.000     1343.000     1428.571       11.000       99.000      360.000 </span>
 <span class="co">##   act_unused    harvested </span>
-<span class="co">##        0.000      220.000</span></code></pre>
+<span class="co">##        0.000      360.000</span></code></pre>
 <p>The <code>gmse_replicates</code> function replicates multiple
 simulations <code>replicates</code> times under the same initial
 conditions, then returns a table showing the values of all simulations.
@@ -300,27 +300,27 @@ replicates below.</p>
 <code class="sourceCode R"><span class="va">gmse_reps1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_replicates.html">gmse_replicates</a></span><span class="op">(</span>replicates <span class="op">=</span> <span class="fl">10</span>, time_max <span class="op">=</span> <span class="fl">20</span>, plotting <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>;
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">gmse_reps1</span><span class="op">)</span>;</code></pre></div>
 <pre><code><span class="co">##       time_step resources  estimate cost_culling cost_unused act_culling</span>
-<span class="co">##  [1,]        20      1246 1065.7596           71          39          56</span>
-<span class="co">##  [2,]        20      1349 1247.1655           18          92         220</span>
-<span class="co">##  [3,]        20      1417 1428.5714           11          99         360</span>
-<span class="co">##  [4,]        20      1215 1201.8141           24          86         164</span>
-<span class="co">##  [5,]        20      1470 1564.6259           10         100         400</span>
-<span class="co">##  [6,]        20      1074 1043.0839          110           0          36</span>
-<span class="co">##  [7,]        20      1197 1292.5170           16          94         248</span>
-<span class="co">##  [8,]        20      1280 1337.8685           14          96         284</span>
-<span class="co">##  [9,]        20      1155  907.0295          110           0          36</span>
-<span class="co">## [10,]        20      1402 1065.7596           70          40          56</span>
+<span class="co">##  [1,]        20       987  816.3265          110           0          36</span>
+<span class="co">##  [2,]        20      1160 1111.1111           42          68          92</span>
+<span class="co">##  [3,]        20      1096 1179.1383           27          83         148</span>
+<span class="co">##  [4,]        20       895 1065.7596           72          38          52</span>
+<span class="co">##  [5,]        20      1197 1201.8141           24          86         164</span>
+<span class="co">##  [6,]        20      1281 1587.3016           10         100         400</span>
+<span class="co">##  [7,]        20      1284  952.3810          108           1          36</span>
+<span class="co">##  [8,]        20      1124 1156.4626           30          80         132</span>
+<span class="co">##  [9,]        20      1429 1791.3832           10         100         400</span>
+<span class="co">## [10,]        20      1227 1088.4354           54          56          72</span>
 <span class="co">##       act_unused harvested</span>
-<span class="co">##  [1,]          0        56</span>
-<span class="co">##  [2,]          2       220</span>
-<span class="co">##  [3,]          1       360</span>
-<span class="co">##  [4,]          3       164</span>
-<span class="co">##  [5,]          0       400</span>
-<span class="co">##  [6,]          3        36</span>
-<span class="co">##  [7,]          0       248</span>
-<span class="co">##  [8,]          0       284</span>
-<span class="co">##  [9,]          3        36</span>
-<span class="co">## [10,]          0        56</span></code></pre>
+<span class="co">##  [1,]          1        36</span>
+<span class="co">##  [2,]          6        92</span>
+<span class="co">##  [3,]          0       148</span>
+<span class="co">##  [4,]         12        52</span>
+<span class="co">##  [5,]          2       164</span>
+<span class="co">##  [6,]          0       400</span>
+<span class="co">##  [7,]          2        36</span>
+<span class="co">##  [8,]          0       132</span>
+<span class="co">##  [9,]          0       400</span>
+<span class="co">## [10,]          6        72</span></code></pre>
 <p>Note from the results above that resources in all simulations
 persisted for 20 time steps, which means that extinction never occurred.
 We can also see that the population in all simulations never terminated
@@ -341,34 +341,34 @@ This can be done by changing the default <code>manage_freq = 1</code> to
                               manage_freq <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>;
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">gmse_reps2</span><span class="op">)</span>;</code></pre></div>
 <pre><code><span class="co">##       time_step resources  estimate cost_culling cost_unused act_culling</span>
-<span class="co">##  [1,]        20      1648 1564.6259           10         100         400</span>
-<span class="co">##  [2,]        20       913  929.7052          110           0          36</span>
-<span class="co">##  [3,]        20      1670 1632.6531           10         100         400</span>
-<span class="co">##  [4,]        20       988 1111.1111           42          68          92</span>
-<span class="co">##  [5,]        20       871  997.7324          110           0          36</span>
-<span class="co">##  [6,]        20      1591 1496.5986           10         100         400</span>
-<span class="co">##  [7,]        20      1119 1224.4898           21          89         188</span>
-<span class="co">##  [8,]        20      1324 1383.2200           12          98         332</span>
-<span class="co">##  [9,]        20       969  884.3537          110           0          36</span>
-<span class="co">## [10,]        20      1124 1088.4354           54          56          72</span>
+<span class="co">##  [1,]        20      1670 1814.0590           10         100         400</span>
+<span class="co">##  [2,]        20      1416 1383.2200           12          98         332</span>
+<span class="co">##  [3,]        20      1156 1315.1927           15          95         264</span>
+<span class="co">##  [4,]        20      1171 1088.4354           53          57          72</span>
+<span class="co">##  [5,]        20      1241 1519.2744           10         100         400</span>
+<span class="co">##  [6,]        20      1500 1405.8957           12          98         332</span>
+<span class="co">##  [7,]        20      1263  907.0295          110           0          36</span>
+<span class="co">##  [8,]        20      1399 1632.6531           10         100         400</span>
+<span class="co">##  [9,]        20      1287 1451.2472           10         100         400</span>
+<span class="co">## [10,]        20       906  884.3537          110           0          36</span>
 <span class="co">##       act_unused harvested</span>
 <span class="co">##  [1,]          0       400</span>
-<span class="co">##  [2,]          3        36</span>
-<span class="co">##  [3,]          0       400</span>
-<span class="co">##  [4,]          9        92</span>
-<span class="co">##  [5,]          1        36</span>
-<span class="co">##  [6,]          0       400</span>
-<span class="co">##  [7,]          3       188</span>
-<span class="co">##  [8,]          0       332</span>
-<span class="co">##  [9,]          0        36</span>
-<span class="co">## [10,]          5        72</span></code></pre>
+<span class="co">##  [2,]          0       332</span>
+<span class="co">##  [3,]          1       264</span>
+<span class="co">##  [4,]         10        72</span>
+<span class="co">##  [5,]          0       400</span>
+<span class="co">##  [6,]          0       332</span>
+<span class="co">##  [7,]          2        36</span>
+<span class="co">##  [8,]          0       400</span>
+<span class="co">##  [9,]          0       400</span>
+<span class="co">## [10,]          2        36</span></code></pre>
 <p>Note that while extinction still does not occur in these simulations,
 when populations are managed less frequently, they tend to be less close
 to the target size of 1000 after 20 generations. The median population
 size of <code>gmse_reps1</code> (management in every time step) was
-1263, with a maximum of 1470 and minimum of 1074. The median population
+1178.5, with a maximum of 1429 and minimum of 895. The median population
 size of the newly simulated <code>gmse_reps2</code> (management every
-two time steps) is 1121.5, with a maximum of 1670 and minimum of 871. We
+two time steps) is 1275, with a maximum of 1670 and minimum of 906. We
 can now see what happens when management occurs only once in every three
 time steps.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
@@ -376,30 +376,30 @@ time steps.</p>
                              manage_freq <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>;
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">gmse_reps3</span><span class="op">)</span>;</code></pre></div>
 <pre><code><span class="co">##       time_step resources  estimate cost_culling cost_unused act_culling</span>
-<span class="co">##  [1,]        20      1463 1065.7596           71          39          56</span>
-<span class="co">##  [2,]        20      1914 1247.1655           20          90         200</span>
-<span class="co">##  [3,]        20       710 1609.9773           10         100         400</span>
-<span class="co">##  [4,]        20       787 1405.8957           12          98         332</span>
-<span class="co">##  [5,]        20       979 1247.1655           19          91         208</span>
-<span class="co">##  [6,]        20      1804  884.3537          110           0          36</span>
-<span class="co">##  [7,]        20      1259 1315.1927           15          95         264</span>
-<span class="co">##  [8,]        20       849 1451.2472           10         100         400</span>
-<span class="co">##  [9,]        20      1492 1020.4082          110           0          36</span>
-<span class="co">## [10,]        20      1066 1292.5170           16          94         248</span>
+<span class="co">##  [1,]        20      1153  839.0023          110           0          36</span>
+<span class="co">##  [2,]        20       996 1541.9501           10         100         400</span>
+<span class="co">##  [3,]        20      1035 1156.4626           30          80         132</span>
+<span class="co">##  [4,]        20       613 1632.6531           10         100         400</span>
+<span class="co">##  [5,]        20       964  793.6508          110           0          36</span>
+<span class="co">##  [6,]        20       709  544.2177          109           1          36</span>
+<span class="co">##  [7,]        20      1292  884.3537          110           0          36</span>
+<span class="co">##  [8,]        20      1438  907.0295          110           0          36</span>
+<span class="co">##  [9,]        20       700  476.1905          109           0          36</span>
+<span class="co">## [10,]        20      1157 1247.1655           18          92         220</span>
 <span class="co">##       act_unused harvested</span>
-<span class="co">##  [1,]          0        56</span>
-<span class="co">##  [2,]          0       200</span>
-<span class="co">##  [3,]          0       400</span>
-<span class="co">##  [4,]          0       332</span>
-<span class="co">##  [5,]          3       208</span>
-<span class="co">##  [6,]          0        36</span>
-<span class="co">##  [7,]          1       264</span>
-<span class="co">##  [8,]          0       400</span>
-<span class="co">##  [9,]          0        36</span>
-<span class="co">## [10,]          0       248</span></code></pre>
+<span class="co">##  [1,]          1        36</span>
+<span class="co">##  [2,]          0       400</span>
+<span class="co">##  [3,]          2       132</span>
+<span class="co">##  [4,]          0       400</span>
+<span class="co">##  [5,]          0        36</span>
+<span class="co">##  [6,]          1        36</span>
+<span class="co">##  [7,]          2        36</span>
+<span class="co">##  [8,]          2        36</span>
+<span class="co">##  [9,]          3        36</span>
+<span class="co">## [10,]          4       220</span></code></pre>
 <p>Given a management frequency of once every three time steps, the
 median population size of <code>gmse_reps3</code> (management in every
-time step) is 1162.5, with a maximum of 1914 and minimum of 710. The
+time step) is 1015.5, with a maximum of 1438 and minimum of 613. The
 number of extinctions observed in these replicate populations was 0.
 Below we change the management frequency to once every four time
 steps.</p>
@@ -407,35 +407,35 @@ steps.</p>
 <code class="sourceCode R"><span class="va">gmse_reps4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse_replicates.html">gmse_replicates</a></span><span class="op">(</span>replicates <span class="op">=</span> <span class="fl">10</span>, time_max <span class="op">=</span> <span class="fl">20</span>, plotting <span class="op">=</span> <span class="cn">FALSE</span>, 
                              manage_freq <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>;
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">gmse_reps4</span><span class="op">)</span>;</code></pre></div>
-<pre><code><span class="co">##       time_step resources   estimate cost_culling cost_unused act_culling</span>
-<span class="co">##  [1,]         6         0    0.00000          110           0          36</span>
-<span class="co">##  [2,]         4         0    0.00000          110           0          36</span>
-<span class="co">##  [3,]         4         6    0.00000          110           0          36</span>
-<span class="co">##  [4,]         4         0    0.00000          110           0          36</span>
-<span class="co">##  [5,]         7         0   22.67574          110           0          36</span>
-<span class="co">##  [6,]        13         0   22.67574          109           1          36</span>
-<span class="co">##  [7,]         4         0    0.00000          110           0          36</span>
-<span class="co">##  [8,]         6         0   22.67574          110           0          36</span>
-<span class="co">##  [9,]         4         0    0.00000          110           0          36</span>
-<span class="co">## [10,]        20      1161 1247.16553           19          91         208</span>
+<pre><code><span class="co">##       time_step resources estimate cost_culling cost_unused act_culling</span>
+<span class="co">##  [1,]         5         0  0.00000          110           0          36</span>
+<span class="co">##  [2,]         8         0  0.00000          110           0          36</span>
+<span class="co">##  [3,]         4         0  0.00000          110           0          36</span>
+<span class="co">##  [4,]         5         0 90.70295          110           0          36</span>
+<span class="co">##  [5,]         6         0 45.35147          109           1          36</span>
+<span class="co">##  [6,]         9         0  0.00000          110           0          36</span>
+<span class="co">##  [7,]         4         0  0.00000          110           0          36</span>
+<span class="co">##  [8,]         5         0 22.67574          110           0          36</span>
+<span class="co">##  [9,]         6         1 68.02721          110           0          36</span>
+<span class="co">## [10,]         4         0  0.00000          110           0          36</span>
 <span class="co">##       act_unused harvested</span>
 <span class="co">##  [1,]          1         0</span>
-<span class="co">##  [2,]          0         0</span>
-<span class="co">##  [3,]          1         6</span>
+<span class="co">##  [2,]          2         0</span>
+<span class="co">##  [3,]          1         0</span>
 <span class="co">##  [4,]          2         0</span>
-<span class="co">##  [5,]          1         0</span>
-<span class="co">##  [6,]          1         0</span>
+<span class="co">##  [5,]          3         0</span>
+<span class="co">##  [6,]          2         0</span>
 <span class="co">##  [7,]          1         0</span>
-<span class="co">##  [8,]          3         0</span>
-<span class="co">##  [9,]          2         0</span>
-<span class="co">## [10,]          2       208</span></code></pre>
+<span class="co">##  [8,]          1         0</span>
+<span class="co">##  [9,]          1         1</span>
+<span class="co">## [10,]          3         0</span></code></pre>
 <p>Now note from the first column of <code>gmse_reps4</code> above that
-9 populations did not persist to the 20th time step; i.e., 9 populations
-went to extinction (note that GMSE has a minimum resource population
-size of 5). This has occured because managers cannot respond quickly
-enough to changes in the population density, and therefore cannot
-increase the cost of culling to maintain target resource levels if
-population size starts to decrease. We can see the extinction risk
+10 populations did not persist to the 20th time step; i.e., 10
+populations went to extinction (note that GMSE has a minimum resource
+population size of 5). This has occured because managers cannot respond
+quickly enough to changes in the population density, and therefore
+cannot increase the cost of culling to maintain target resource levels
+if population size starts to decrease. We can see the extinction risk
 increase even further if management only occurs once every 5 time
 steps.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
@@ -443,26 +443,26 @@ steps.</p>
                              manage_freq <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>;
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">gmse_reps5</span><span class="op">)</span>;</code></pre></div>
 <pre><code><span class="co">##       time_step resources estimate cost_culling cost_unused act_culling</span>
-<span class="co">##  [1,]         5         0        0          110           0          36</span>
-<span class="co">##  [2,]         5         0        0          110           0          36</span>
+<span class="co">##  [1,]         4         0     1000            0         -10         400</span>
+<span class="co">##  [2,]         5         0        0          109           1          36</span>
 <span class="co">##  [3,]         5         0        0          110           0          36</span>
-<span class="co">##  [4,]         5         0        0          110           0          36</span>
-<span class="co">##  [5,]         5         0        0          109           1          36</span>
+<span class="co">##  [4,]         4         0     1000            0         -10         400</span>
+<span class="co">##  [5,]         4         0     1000            0         -10         400</span>
 <span class="co">##  [6,]         5         0        0          110           0          36</span>
-<span class="co">##  [7,]         4         0     1000            0         -10         400</span>
+<span class="co">##  [7,]         5         0        0          110           0          36</span>
 <span class="co">##  [8,]         4         0     1000            0         -10         400</span>
-<span class="co">##  [9,]         4         0     1000            0         -10         400</span>
+<span class="co">##  [9,]         5         0        0          110           0          36</span>
 <span class="co">## [10,]         5         0        0          110           0          36</span>
 <span class="co">##       act_unused harvested</span>
-<span class="co">##  [1,]          1         0</span>
-<span class="co">##  [2,]          2         0</span>
-<span class="co">##  [3,]          1         0</span>
-<span class="co">##  [4,]          2         0</span>
+<span class="co">##  [1,]          0         0</span>
+<span class="co">##  [2,]          1         0</span>
+<span class="co">##  [3,]          0         0</span>
+<span class="co">##  [4,]          0         0</span>
 <span class="co">##  [5,]          0         0</span>
-<span class="co">##  [6,]          0         0</span>
-<span class="co">##  [7,]          0         0</span>
+<span class="co">##  [6,]          2         0</span>
+<span class="co">##  [7,]          1         0</span>
 <span class="co">##  [8,]          0         0</span>
-<span class="co">##  [9,]          0         0</span>
+<span class="co">##  [9,]          2         0</span>
 <span class="co">## [10,]          1         0</span></code></pre>
 <p>When a manager can only make policy decisions once every five time
 steps, extinction occurs in 10 out of 10 simulated populations before
@@ -514,8 +514,8 @@ Modelling</em> 115 (2-3): 129–48. <a href="https://doi.org/10.1016/S0304-3800(
 </div>
 <div id="ref-Uchmanski1996" class="csl-entry">
 Uchmański, J, and Volker Grimm. 1996. <span>“<span class="nocase">Individual-based modelling in ecology: what makes the
-difference?</span>”</span> <em>Trends in Ecology <span>&amp;</span>
-Evolution</em> 11 (10): 437–41. <a href="http://www.sciencedirect.com/science/article/pii/0169534796200916" class="external-link">http://www.sciencedirect.com/science/article/pii/0169534796200916</a>.
+difference?</span>”</span> <em>Trends in Ecology &amp; Evolution</em> 11
+(10): 437–41. <a href="http://www.sciencedirect.com/science/article/pii/0169534796200916" class="external-link">http://www.sciencedirect.com/science/article/pii/0169534796200916</a>.
 </div>
 </div>
 </div>
@@ -533,7 +533,7 @@ Evolution</em> 11 (10): 437–41. <a href="http://www.sciencedirect.com/science/
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman, Ochoa Gabriela.</p>
+<p>Developed by A. Bradley Duthie, Adrian Bach, Jeroen Minderman, Ochoa Gabriela, Nils Bunnefeld.</p>
 </div>
 
 <div class="pkgdown">

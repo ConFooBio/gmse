@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.2</span>
       </span>
     </div>
 
@@ -294,26 +294,26 @@ simulating a new time step and recording simulation results. This
 includes the key simulation output, which is located in
 <code>sim_old$basic_output</code>, which is printed below.</p>
 <pre><code><span class="co">## $resource_results</span>
-<span class="co">## [1] 34352</span>
+<span class="co">## [1] 34219</span>
 <span class="co">## </span>
 <span class="co">## $observation_results</span>
-<span class="co">## [1] 34352</span>
+<span class="co">## [1] 34219</span>
 <span class="co">## </span>
 <span class="co">## $manager_results</span>
 <span class="co">##          resource_type scaring culling castration feeding help_offspring</span>
-<span class="co">## policy_1             1      NA     524         NA      NA             NA</span>
+<span class="co">## policy_1             1      NA     509         NA      NA             NA</span>
 <span class="co">## </span>
 <span class="co">## $user_results</span>
 <span class="co">##         resource_type scaring culling castration feeding help_offspring</span>
 <span class="co">## Manager             1      NA       0         NA      NA             NA</span>
-<span class="co">## user_1              1      NA     190         NA      NA             NA</span>
-<span class="co">## user_2              1      NA     190         NA      NA             NA</span>
-<span class="co">## user_3              1      NA     190         NA      NA             NA</span>
-<span class="co">## user_4              1      NA     190         NA      NA             NA</span>
-<span class="co">## user_5              1      NA     190         NA      NA             NA</span>
-<span class="co">## user_6              1      NA     190         NA      NA             NA</span>
-<span class="co">## user_7              1      NA     190         NA      NA             NA</span>
-<span class="co">## user_8              1      NA     190         NA      NA             NA</span>
+<span class="co">## user_1              1      NA     196         NA      NA             NA</span>
+<span class="co">## user_2              1      NA     196         NA      NA             NA</span>
+<span class="co">## user_3              1      NA     196         NA      NA             NA</span>
+<span class="co">## user_4              1      NA     196         NA      NA             NA</span>
+<span class="co">## user_5              1      NA     196         NA      NA             NA</span>
+<span class="co">## user_6              1      NA     196         NA      NA             NA</span>
+<span class="co">## user_7              1      NA     196         NA      NA             NA</span>
+<span class="co">## user_8              1      NA     196         NA      NA             NA</span>
 <span class="co">##         tend_crops kill_crops</span>
 <span class="co">## Manager         NA         NA</span>
 <span class="co">## user_1          NA         NA</span>
@@ -347,36 +347,36 @@ step.</p>
                          <span class="st">"Cull_count"</span><span class="op">)</span>;
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sim_sum_1</span><span class="op">)</span>;</code></pre></div>
 <pre><code><span class="co">##       Time Pop_size Pop_est Cull_cost Cull_count</span>
-<span class="co">##  [1,]    1    32723   32723      1010        792</span>
-<span class="co">##  [2,]    2    32606   32606      1010        791</span>
-<span class="co">##  [3,]    3    32878   32878      1010        792</span>
-<span class="co">##  [4,]    4    33855   33855      1010        791</span>
-<span class="co">##  [5,]    5    38056   38056      1010        792</span>
-<span class="co">##  [6,]    6    39209   39209      1010        792</span>
-<span class="co">##  [7,]    7    40516   40516      1010        791</span>
-<span class="co">##  [8,]    8    42243   42243      1010        792</span>
-<span class="co">##  [9,]    9    44197   44197      1010        792</span>
-<span class="co">## [10,]   10    46331   46331      1010        792</span>
-<span class="co">## [11,]   11    48856   48856      1009        792</span>
-<span class="co">## [12,]   12    51395   51395      1010        791</span>
-<span class="co">## [13,]   13    53999   53999      1009        792</span>
-<span class="co">## [14,]   14    57012   57012      1010        791</span>
-<span class="co">## [15,]   15    60225   60225      1009        792</span>
-<span class="co">## [16,]   16    63617   63617      1010        792</span>
-<span class="co">## [17,]   17    67179   67179      1010        792</span>
-<span class="co">## [18,]   18    71039   71039       885        896</span>
-<span class="co">## [19,]   19    74883   74883       187       4272</span>
-<span class="co">## [20,]   20    75586   75586       164       4872</span>
-<span class="co">## [21,]   21    75348   75348       172       4648</span>
-<span class="co">## [22,]   22    75609   75609       164       4872</span>
-<span class="co">## [23,]   23    75349   75349       171       4672</span>
-<span class="co">## [24,]   24    75311   75311       173       4624</span>
-<span class="co">## [25,]   25    75606   75606       164       4872</span>
-<span class="co">## [26,]   26    75446   75446       168       4760</span>
-<span class="co">## [27,]   27    75700   75700       161       4968</span>
-<span class="co">## [28,]   28    75445   75445       168       4760</span>
-<span class="co">## [29,]   29    75471   75471       168       4760</span>
-<span class="co">## [30,]   30    75696   75696       162       4936</span></code></pre>
+<span class="co">##  [1,]    1    32517   32517      1010        792</span>
+<span class="co">##  [2,]    2    32395   32395      1010        791</span>
+<span class="co">##  [3,]    3    32712   32712      1010        792</span>
+<span class="co">##  [4,]    4    33580   33580      1010        792</span>
+<span class="co">##  [5,]    5    38101   38101      1010        792</span>
+<span class="co">##  [6,]    6    39250   39250      1010        791</span>
+<span class="co">##  [7,]    7    40918   40918      1010        792</span>
+<span class="co">##  [8,]    8    42854   42854      1010        791</span>
+<span class="co">##  [9,]    9    44967   44967      1009        792</span>
+<span class="co">## [10,]   10    47505   47505      1010        792</span>
+<span class="co">## [11,]   11    50236   50236      1010        792</span>
+<span class="co">## [12,]   12    52902   52902      1010        792</span>
+<span class="co">## [13,]   13    55560   55560      1010        791</span>
+<span class="co">## [14,]   14    58577   58577      1009        792</span>
+<span class="co">## [15,]   15    61604   61604      1010        792</span>
+<span class="co">## [16,]   16    64668   64668      1010        791</span>
+<span class="co">## [17,]   17    68072   68072      1010        792</span>
+<span class="co">## [18,]   18    71685   71685       545       1464</span>
+<span class="co">## [19,]   19    74949   74949       185       4320</span>
+<span class="co">## [20,]   20    75314   75314       173       4624</span>
+<span class="co">## [21,]   21    75378   75378       171       4672</span>
+<span class="co">## [22,]   22    75332   75332       172       4648</span>
+<span class="co">## [23,]   23    75427   75427       169       4728</span>
+<span class="co">## [24,]   24    75574   75574       165       4848</span>
+<span class="co">## [25,]   25    75374   75374       171       4672</span>
+<span class="co">## [26,]   26    75730   75730       160       5000</span>
+<span class="co">## [27,]   27    75799   75799       158       5056</span>
+<span class="co">## [28,]   28    75757   75757       159       5024</span>
+<span class="co">## [29,]   29    75408   75408       170       4704</span>
+<span class="co">## [30,]   30    75880   75880       156       5128</span></code></pre>
 <p>The above output from <code>sim_sum_1</code> shows the data frame
 that holds the information we were interested in pulling out of our
 simulation results. All of this information was available under the list
@@ -672,36 +672,36 @@ rules.</p>
                          <span class="st">"Cull_count"</span><span class="op">)</span>;
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sim_sum_2</span><span class="op">)</span>;</code></pre></div>
 <pre><code><span class="co">##       Time Pop_size Pop_est Cull_cost Cull_count</span>
-<span class="co">##  [1,]    1    33851   33851      1006         52</span>
-<span class="co">##  [2,]    2    34179   34179      1010         52</span>
-<span class="co">##  [3,]    3    35212   35212       999         60</span>
-<span class="co">##  [4,]    4    36810   36810      1003         52</span>
-<span class="co">##  [5,]    5    42297   42297      1007         52</span>
-<span class="co">##  [6,]    6    44344   44344      1010         52</span>
-<span class="co">##  [7,]    7    46685   46685      1004         52</span>
-<span class="co">##  [8,]    8    49632   49632      1008         52</span>
-<span class="co">##  [9,]    9    52916   52916      1010         52</span>
-<span class="co">## [10,]   10    56460   56460      1002         52</span>
-<span class="co">## [11,]   11    60131   60131      1008         52</span>
-<span class="co">## [12,]   12    63856   63856      1010         52</span>
-<span class="co">## [13,]   13    68098   68098      1010         52</span>
-<span class="co">## [14,]   14    72819   72819        22       2722</span>
-<span class="co">## [15,]   15    74716   74716        15       3903</span>
-<span class="co">## [16,]   16    75538   75538        12       4649</span>
-<span class="co">## [17,]   17    75603   75603        12       4682</span>
-<span class="co">## [18,]   18    75485   75485        12       4647</span>
-<span class="co">## [19,]   19    75605   75605        11       4975</span>
-<span class="co">## [20,]   20    75343   75343        12       4648</span>
-<span class="co">## [21,]   21    75630   75630        11       4960</span>
-<span class="co">## [22,]   22    75727   75727        11       5007</span>
-<span class="co">## [23,]   23    75499   75499        12       4649</span>
-<span class="co">## [24,]   24    75729   75729        11       5042</span>
-<span class="co">## [25,]   25    75662   75662        11       4984</span>
-<span class="co">## [26,]   26    75550   75550        11       5011</span>
-<span class="co">## [27,]   27    76546   76546        10       5405</span>
-<span class="co">## [28,]   28    77515   77515        10       5429</span>
-<span class="co">## [29,]   29    79218   79218        10       5407</span>
-<span class="co">## [30,]   30    80863   80863        10       5392</span></code></pre>
+<span class="co">##  [1,]    1    33435   33435      1008         52</span>
+<span class="co">##  [2,]    2    33562   33562      1010         52</span>
+<span class="co">##  [3,]    3    34467   34467       998         60</span>
+<span class="co">##  [4,]    4    35898   35898      1002         52</span>
+<span class="co">##  [5,]    5    41222   41222      1010         52</span>
+<span class="co">##  [6,]    6    43201   43201       992         60</span>
+<span class="co">##  [7,]    7    45494   45494      1010         52</span>
+<span class="co">##  [8,]    8    48070   48070       999         60</span>
+<span class="co">##  [9,]    9    51173   51173      1006         52</span>
+<span class="co">## [10,]   10    54558   54558      1008         52</span>
+<span class="co">## [11,]   11    58090   58090      1010         52</span>
+<span class="co">## [12,]   12    61635   61635      1000         60</span>
+<span class="co">## [13,]   13    65631   65631      1005         52</span>
+<span class="co">## [14,]   14    70030   70030      1009         52</span>
+<span class="co">## [15,]   15    74541   74541        14       4099</span>
+<span class="co">## [16,]   16    75133   75133        12       4646</span>
+<span class="co">## [17,]   17    75393   75393        12       4636</span>
+<span class="co">## [18,]   18    75571   75571        11       4983</span>
+<span class="co">## [19,]   19    75425   75425        12       4666</span>
+<span class="co">## [20,]   20    75491   75491        12       4658</span>
+<span class="co">## [21,]   21    75854   75854        12       4650</span>
+<span class="co">## [22,]   22    76014   76014        11       5004</span>
+<span class="co">## [23,]   23    75801   75801        11       4996</span>
+<span class="co">## [24,]   24    75521   75521        11       4997</span>
+<span class="co">## [25,]   25    75064   75064        12       4680</span>
+<span class="co">## [26,]   26    75100   75100        13       4379</span>
+<span class="co">## [27,]   27    75912   75912        11       5032</span>
+<span class="co">## [28,]   28    76896   76896        10       5404</span>
+<span class="co">## [29,]   29    77964   77964        10       5382</span>
+<span class="co">## [30,]   30    79982   79982        10       5476</span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="conclusions">Conclusions<a class="anchor" aria-label="anchor" href="#conclusions"></a>
@@ -725,7 +725,7 @@ contributions, can be submitted to <a href="https://github.com/bradduthie/gmse/i
 <div id="ref-AEWA2016" class="csl-entry">
 AEWA. 2016. <span>“<span class="nocase">International single species
 action plan for the conservation of the Taiga Bean Goose (Anser fabalis
-fabalis)</span>.”</span> <a href="http://www.unep-aewa.org/sites/default/files/document/aewa%7B%5C_%7Degmp%7B%5C_%7Dinf%7B%5C_%7D2%7B%5C_%7Dissap%7B%5C_%7Dtbg.pdf" class="external-link">http://www.unep-aewa.org/sites/default/files/document/aewa{\_}egmp{\_}inf{\_}2{\_}issap{\_}tbg.pdf</a>.
+fabalis)</span>.”</span> <a href="http://www.unep-aewa.org/sites/default/files/document/aewa_egmp_inf_2_issap_tbg.pdf" class="external-link">http://www.unep-aewa.org/sites/default/files/document/aewa_egmp_inf_2_issap_tbg.pdf</a>.
 </div>
 <div id="ref-Cusack2018" class="csl-entry">
 Cusack, Jeremy J, A Bradley Duthie, Sarobidy Rakotonarivo, Rocío A Pozo,
@@ -773,7 +773,7 @@ Conservation</em> 214: 147–55. <a href="https://doi.org/10.1016/j.biocon.2017.
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman, Ochoa Gabriela.</p>
+<p>Developed by A. Bradley Duthie, Adrian Bach, Jeroen Minderman, Ochoa Gabriela, Nils Bunnefeld.</p>
 </div>
 
 <div class="pkgdown">

@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.2</span>
       </span>
     </div>
 
@@ -161,7 +161,7 @@ step.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sim.fli</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse.html">gmse</a></span><span class="op">(</span><span class="op">)</span>;</code></pre></div>
 <pre><code><span class="co">## [1] "Initialising simulations ... "</span>
-<span class="co">## [1] "Generation  25 of  40"</span></code></pre>
+<span class="co">## [1] "Generation  27 of  40"</span></code></pre>
 <p><img src="SI8_files/figure-html/unnamed-chunk-3-1.png" width="576"></p>
 <p>And here the same simulation, except managers update policy only when
 they observe the population to be plus or minus the target by 20%, and
@@ -169,7 +169,7 @@ receive a bonus of 30% of their initial budget when they do not.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sim.ati</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gmse.html">gmse</a></span><span class="op">(</span>action_thres <span class="op">=</span> <span class="fl">0.2</span>, budget_bonus <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span>;</code></pre></div>
 <pre><code><span class="co">## [1] "Initialising simulations ... "</span>
-<span class="co">## [1] "Generation  32 of  40"</span></code></pre>
+<span class="co">## [1] "Generation  33 of  40"</span></code></pre>
 <p><img src="SI8_files/figure-html/unnamed-chunk-5-1.png" width="576"></p>
 <p>Note how the costs plateau (lower left panel) when the population
 monitored (blue line, upper left panel) is in between the two green
@@ -193,7 +193,7 @@ every time step.</p>
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman, Ochoa Gabriela.</p>
+<p>Developed by A. Bradley Duthie, Adrian Bach, Jeroen Minderman, Ochoa Gabriela, Nils Bunnefeld.</p>
 </div>
 
 <div class="pkgdown">

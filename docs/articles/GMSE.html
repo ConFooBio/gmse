@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">GMSE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.2</span>
       </span>
     </div>
 
@@ -183,16 +183,17 @@ changing conditions <span class="citation">(<a href="#ref-Keith2011" role="doc-b
 especially effective when considering multiple aspects of the
 social-ecological system being managed, including the dynamics of
 resources, monitoring, and the decision-making processes of stakeholders
-<span class="citation">(<a href="#ref-Bunnefeld2011" role="doc-biblioref">Bunnefeld, Hoshino, and Milner-Gulland 2011</a>; <a href="#ref-Bunnefeld2014" role="doc-biblioref">Bunnefeld and Keane
+<span class="citation">(<a href="#ref-Bunnefeld2011" role="doc-biblioref">Bunnefeld et al. 2011</a>; <a href="#ref-Bunnefeld2014" role="doc-biblioref">Bunnefeld and Keane
 2014</a>)</span>. Management strategy evaluation (MSE) is a modelling
 framework, first developed in fisheries <span class="citation">(e.g., <a href="#ref-Sainsbury2000" role="doc-biblioref">Sainsbury, Punt, and
 Smith 2000</a>; <a href="#ref-Polacheck1999" role="doc-biblioref">Polacheck et al. 1999</a>; <a href="#ref-Smith1999" role="doc-biblioref">Smith, Sainsbury, and Stevens 1999</a>; <a href="#ref-Moore2013" role="doc-biblioref">Moore et al.
 2013</a>)</span>, for simulating all of these aspects of resource
 management in a way that uniquely considers the uncertainties inherent
-to every stage of the management process <span class="citation">(<a href="#ref-Bunnefeld2011" role="doc-biblioref">Bunnefeld, Hoshino, and
-Milner-Gulland 2011</a>; <a href="#ref-Punt2016" role="doc-biblioref">Punt et al. 2016</a>)</span>. Nevertheless, MSE
-models developed hitherto have been limited in their ability to model
-human decision-making <span class="citation">(<a href="#ref-Fulton2011" role="doc-biblioref">Fulton et al. 2011</a>; <a href="#ref-Dichmont2017" role="doc-biblioref">Dichmont and Fulton 2017</a>)</span>; manager
+to every stage of the management process <span class="citation">(<a href="#ref-Bunnefeld2011" role="doc-biblioref">Bunnefeld et al.
+2011</a>; <a href="#ref-Punt2016" role="doc-biblioref">Punt et al.
+2016</a>)</span>. Nevertheless, MSE models developed hitherto have been
+limited in their ability to model human decision-making <span class="citation">(<a href="#ref-Fulton2011" role="doc-biblioref">Fulton
+et al. 2011</a>; <a href="#ref-Dichmont2017" role="doc-biblioref">Dichmont and Fulton 2017</a>)</span>; manager
 decisions are typically based on fixed rules, and user behaviour
 likewise remains fixed over time instead of dynamically responding to
 changing resource availability and management decisions <span class="citation">(<a href="#ref-Schluter2012" role="doc-biblioref">M.
@@ -274,11 +275,11 @@ evaluation framework, which is comprised of four separate sub-models.
 <div class="section level3">
 <h3 id="genetic-algorithm">Genetic Algorithm<a class="anchor" aria-label="anchor" href="#genetic-algorithm"></a>
 </h3>
-<p>Consistent with the MSE approach <span class="citation">(<a href="#ref-Bunnefeld2011" role="doc-biblioref">Bunnefeld, Hoshino, and
-Milner-Gulland 2011</a>)</span>, GMSE does not attempt to find optimal
-strategies or solutions for agents (stakeholders). Instead, a genetic
-algorithm is used to heuristically find strategies that reflect the
-individual objectives of each stakeholder in each time step (see <a href="SI1.html">The Genetic Algorithm of GMSE</a> for details).
+<p>Consistent with the MSE approach <span class="citation">(<a href="#ref-Bunnefeld2011" role="doc-biblioref">Bunnefeld et al.
+2011</a>)</span>, GMSE does not attempt to find optimal strategies or
+solutions for agents (stakeholders). Instead, a genetic algorithm is
+used to heuristically find strategies that reflect the individual
+objectives of each stakeholder in each time step (see <a href="SI1.html">The Genetic Algorithm of GMSE</a> for details).
 Critically, all stakeholders involved in resource conservation are
 constrained in their decision-making; managing and using resources takes
 effort (e.g., time or money), and effort expended in developing or
@@ -339,8 +340,7 @@ performing these actions.</p>
             user_budget <span class="op">=</span> <span class="fl">1000</span>, manager_budget <span class="op">=</span> <span class="fl">1000</span>, res_consume <span class="op">=</span> <span class="fl">1</span>, 
             scaring <span class="op">=</span> <span class="cn">TRUE</span>, plotting <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>;</code></pre></div>
 <pre><code><span class="co">## [1] "Initialising simulations ... "</span>
-<span class="co">## [1] "Generation  20 of  40"</span>
-<span class="co">## [1] "Generation  39 of  40"</span></code></pre>
+<span class="co">## [1] "Generation  22 of  40"</span></code></pre>
 <p>Parameters in <a href="../reference/gmse.html"><code>gmse</code></a>
 not listed are set to default values. By plotting the output with <a href="../reference/plot_gmse_results.html"><code>plot_gmse_results</code></a>,
 simulation results can be interpreted visually (manager and user
@@ -492,16 +492,16 @@ two anonymous reviewers for helpful comments.</p>
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-Bunnefeld2011" class="csl-entry">
-Bunnefeld, Nils, Eriko Hoshino, and Eleanor J Milner-Gulland. 2011.
-<span>“<span class="nocase">Management strategy evaluation: A powerful
-tool for conservation?</span>”</span> <em>Trends in Ecology and
-Evolution</em> 26 (9): 441–47. <a href="https://doi.org/10.1016/j.tree.2011.05.003" class="external-link">https://doi.org/10.1016/j.tree.2011.05.003</a>.
-</div>
 <div id="ref-Bunnefeld2014" class="csl-entry">
 Bunnefeld, Nils, and Aidan Keane. 2014. <span>“<span class="nocase">Managing wildlife for ecological, socioeconomic, and
 evolutionary sustainability</span>.”</span> <em>Proceedings of the
 National Academy of Sciences</em> 111 (36): 12964–65. <a href="https://doi.org/10.1073/pnas.1413571111" class="external-link">https://doi.org/10.1073/pnas.1413571111</a>.
+</div>
+<div id="ref-Bunnefeld2011" class="csl-entry">
+Bunnefeld, Nils, Daniel C Reuman, David Baines, and E J Milner-Gulland.
+2011. <span>“<span class="nocase">Impact of unintentional selective
+harvesting on the population dynamics of red grouse</span>.”</span>
+<em>Journal of Animal Ecology</em> 80 (6): 1258–68. <a href="https://doi.org/10.1111/j.1365-2656.2011.01862.x" class="external-link">https://doi.org/10.1111/j.1365-2656.2011.01862.x</a>.
 </div>
 <div id="ref-Ceballos2017a" class="csl-entry">
 Ceballos, Gerardo, Paul R Ehrlich, and Rodolfo Dirzo. 2017. <span>“<span class="nocase">Biological annihilation via the ongoing sixth mass
@@ -510,8 +510,9 @@ declines</span>.”</span> <em>Proceedings of the National Academy of
 Sciences</em> 114 (30): E6089—–E609. <a href="https://doi.org/10.1073/pnas.1704949114" class="external-link">https://doi.org/10.1073/pnas.1704949114</a>.
 </div>
 <div id="ref-Chang2017" class="csl-entry">
-Chang, Winston, Joe Cheng, JJ Allaire, Yihui Xie, and Jonathan
-McPherson. 2017. <em>Shiny: Web Application Framework for r</em>. <a href="https://CRAN.R-project.org/package=shiny" class="external-link">https://CRAN.R-project.org/package=shiny</a>.
+Chang, Winston, Joe Cheng, J J Allaire, Yihui Xie, and Jonathan
+McPherson. 2017. <span>“<span class="nocase">shiny: Web Application
+Framework for R</span>.”</span> <a href="https://cran.r-project.org/package=shiny" class="external-link">https://cran.r-project.org/package=shiny</a>.
 </div>
 <div id="ref-Crist2017" class="csl-entry">
 Crist, Eileen, Camilo Mora, and Robert Engelman. 2017. <span>“<span class="nocase">The interaction of human population, food production, and
@@ -526,8 +527,8 @@ Approaches</em>, edited by Nils Bunnefeld, Emily Nicholson, and Eleanor
 J Milner-Gulland, 19–45. Cambridge: Cambridge University Press.
 </div>
 <div id="ref-Dirzo2014" class="csl-entry">
-Dirzo, Rodolfo, H S Young, M Galetti, G Ceballos, Nick J B Isaac, and
-Ben Collen. 2014. <span>“<span class="nocase">Defaunation in the
+Dirzo, Rodolfo, H S Young, M Galetti, Gerardo Ceballos, Nick J B Isaac,
+and Ben Collen. 2014. <span>“<span class="nocase">Defaunation in the
 Anthropocene</span>.”</span> <em>Science</em> 345 (6195): 401–6. <a href="https://doi.org/10.1126/science.1251817" class="external-link">https://doi.org/10.1126/science.1251817</a>.
 </div>
 <div id="ref-Fischer2017" class="csl-entry">
@@ -625,10 +626,10 @@ southern bluefin tuna fishery</span>.”</span> <em>ICES Journal of Marine
 Science</em> 56 (6): 811–26. <a href="https://doi.org/10.1006/jmsc.1999.0554" class="external-link">https://doi.org/10.1006/jmsc.1999.0554</a>.
 </div>
 <div id="ref-Pozo2017" class="csl-entry">
-Pozo, A, Tim Coulson, Graham Mcculloch, and Amanda L Stronza. 2017.
-<span>“<span class="nocase">Determining baselines for human-elephant
-conflict : A matter of time</span>.”</span> <em>PLoS One</em> 12 (6):
-e0178840.
+Pozo, Rocio A, Tim Coulson, Graham Mcculloch, and Amanda L Stronza.
+2017. <span>“<span class="nocase">Determining baselines for
+human-elephant conflict : A matter of time</span>.”</span> <em>PLoS
+One</em> 12 (6): e0178840.
 </div>
 <div id="ref-Punt2016" class="csl-entry">
 Punt, André E, Doug S Butterworth, Carryn L de Moor, José A A De
@@ -643,8 +644,8 @@ towards solutions</span></em>. Cambridge University Press.
 <div id="ref-Redpath2013" class="csl-entry">
 Redpath, Steve M, Juliette Young, Anna Evely, William M Adams, William J
 Sutherland, Andrew Whitehouse, Arjun Amar, et al. 2013. <span>“<span class="nocase">Understanding and managing conservation
-conflicts</span>.”</span> <em>Trends in Ecology <span>&amp;</span>
-Evolution</em> 28 (2): 100–109. <a href="https://doi.org/10.1016/j.tree.2012.08.021" class="external-link">https://doi.org/10.1016/j.tree.2012.08.021</a>.
+conflicts</span>.”</span> <em>Trends in Ecology &amp; Evolution</em> 28
+(2): 100–109. <a href="https://doi.org/10.1016/j.tree.2012.08.021" class="external-link">https://doi.org/10.1016/j.tree.2012.08.021</a>.
 </div>
 <div id="ref-Sainsbury2000" class="csl-entry">
 Sainsbury, Keith J, André E Punt, and Anthony DM Smith. 2000.
@@ -705,7 +706,7 @@ Conservation</em> 214: 147–55. <a href="https://doi.org/10.1016/j.biocon.2017.
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by A. Bradley Duthie, Adrian Bach, Nils Bunnefeld, Jeroen Minderman, Ochoa Gabriela.</p>
+<p>Developed by A. Bradley Duthie, Adrian Bach, Jeroen Minderman, Ochoa Gabriela, Nils Bunnefeld.</p>
 </div>
 
 <div class="pkgdown">
