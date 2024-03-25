@@ -39,13 +39,14 @@ gmse_apply_summary <- function(data, output = NULL, include = NULL) {
         colnames(output) <- include
     } else {
         if(!is.matrix(output)) {
-            output <- try( {t(as.matrix(output)) }, silent = TRUE)
-            if(class(output)=="try-error"){
-                pt1 <- "Existing output needs to be a matrix,"
-                pt2 <- " and failed to convert!"
-                msg <- paste(pt1, pt2, sep = "")
-                stop(msg)
-            }
+            output <- t(as.matrix(output))
+            # output <- try( {t(as.matrix(output)) }, silent = TRUE)
+            # if(class(output)=="try-error"){
+            #     pt1 <- "Existing output needs to be a matrix,"
+            #     pt2 <- " and failed to convert!"
+            #     msg <- paste(pt1, pt2, sep = "")
+            #     stop(msg)
+            # }
         }
         if(is.null(include)){
             include <- colnames(output)
