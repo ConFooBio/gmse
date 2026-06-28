@@ -256,7 +256,7 @@ update_old_gmse <- function(arg_vals, ol, list_add){
            is.na(ol[["AGENTS"]])[1] == FALSE){
             ol[["AGENTS"]][,7] <- list_add[["agent_move"]];
         }
-        ol[["agent_view"]] <- list_add[["agent_move"]];
+        ol[["agent_move"]] <- list_add[["agent_move"]];
     }
     if("res_birth_K" %in% names_add){
         if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
@@ -638,7 +638,7 @@ update_old_gmse <- function(arg_vals, ol, list_add){
     if("times_feeding" %in% names_add){
         ol[["times_feeding"]]     <- list_add[["times_feeding"]];
         if(is.null(ol[["PARAS"]]) == FALSE & is.na(ol[["PARAS"]])[1] == FALSE){
-            ol[["PARAS"]][125] <- list_add[["consume_repr"]];
+            ol[["PARAS"]][125] <- list_add[["times_feeding"]];
         }
     }
     if("usr_yld_budget" %in% names_add){
@@ -737,16 +737,16 @@ apply_old_gmse <- function(arg_vals, old_list,  ...){
 }
 
 fun_warn <- function(res_mod, obs_mod, man_mod, use_mod){
-    if( is.function(res_mod) == "FALSE" ){
+    if( !is.function(res_mod) ){
         stop( "ERROR: Resource model needs to be a function");
     }
-    if( is.function(obs_mod) == "FALSE" ){
+    if( !is.function(obs_mod) ){
         stop( "ERROR: Observation model needs to be a function");
     }
-    if( is.function(man_mod) == "FALSE" ){
+    if( !is.function(man_mod) ){
         stop( "ERROR: Manager model needs to be a function");
     }
-    if( is.function(use_mod) == "FALSE" ){
+    if( !is.function(use_mod) ){
         stop( "ERROR: User model needs to be a function");
     }
 }
